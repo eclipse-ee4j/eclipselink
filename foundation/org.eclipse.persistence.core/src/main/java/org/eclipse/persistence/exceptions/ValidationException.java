@@ -38,20 +38,22 @@
 //       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.exceptions;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.internal.helper.JavaVersion;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.AttributeGroup;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroup;
+
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Vector;
-import java.lang.reflect.*;
-
-import org.eclipse.persistence.mappings.DatabaseMapping;// 78aclt
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.helper.JavaVersion;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
 /**
  * <p><b>Purpose</b>: This exception is used if incorrect state or method arguments are detected

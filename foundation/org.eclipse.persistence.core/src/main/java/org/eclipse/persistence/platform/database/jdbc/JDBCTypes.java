@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 
 package org.eclipse.persistence.platform.database.jdbc;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.sql.Array;
+import java.sql.Struct;
+import java.util.List;
+import java.util.ListIterator;
 
 import static java.lang.Integer.MIN_VALUE;
 import static java.sql.Types.ARRAY;
@@ -56,23 +73,6 @@ import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Void_Class;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
-
-import java.sql.Array;
-import java.sql.Struct;
-import java.util.List;
-import java.util.ListIterator;
-
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
-import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
-import org.eclipse.persistence.queries.StoredProcedureCall;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <b>PUBLIC</b>: JDBC types

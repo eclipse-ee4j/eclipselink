@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 // mmacivor - June 05/2008 - 1.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm;
 
-import org.xml.sax.SAXException;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
@@ -25,6 +24,7 @@ import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.xml.sax.SAXException;
 
 public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl {
     NodeValue nodeValue;

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,14 @@
 //     13/01/2022-4.0.0 Tomas Kraus
 //       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.helper;
+
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,14 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>

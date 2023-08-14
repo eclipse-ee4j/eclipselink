@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,15 +16,14 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.Collection;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Used for wrapping collection of values or expressions.

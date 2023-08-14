@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.asm.internal.platform.ow2;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-
 import org.eclipse.persistence.asm.Attribute;
 import org.eclipse.persistence.asm.ClassVisitor;
 import org.objectweb.asm.ClassReader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 
 public class ClassReaderImpl extends org.eclipse.persistence.asm.ClassReader {
 

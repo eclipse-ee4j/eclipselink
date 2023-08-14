@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,14 +16,6 @@
 //       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.internal.descriptors;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.indirection.IndirectCollection;
@@ -34,6 +26,14 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 /**
  * This class provides a generic way of using the descriptor information

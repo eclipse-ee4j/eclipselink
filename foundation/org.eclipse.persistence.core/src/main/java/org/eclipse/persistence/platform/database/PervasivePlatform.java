@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All Rights Reserved.
- * Copyright (c) 2012, 2018 Pervasive Software Inc. All Rights Reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) 2012, 2023 Pervasive Software Inc. All Rights Reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,13 +25,6 @@
 */
 package org.eclipse.persistence.platform.database;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
@@ -39,6 +32,13 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /** <p><b>Purpose</b>: Provides Pervasive SQL DBMS specific behavior.
 *

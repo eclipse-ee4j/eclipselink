@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,10 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
-
-import java.lang.reflect.Modifier;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -55,6 +51,9 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.namespace.QName;
+import java.lang.reflect.Modifier;
 
 /**
  * <p>Composite object XML mappings represent a relationship between two classes.  In XML, the "owned"

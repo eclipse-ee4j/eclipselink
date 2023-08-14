@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,12 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm.mappings;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+
+import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * <p>Subclass of Field for fields that are mapped to unions. Maintains a list

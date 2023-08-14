@@ -18,11 +18,6 @@
 //       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.ResourceBundle;
 import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
@@ -56,7 +51,16 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
-import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
+
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.HermesParser_GrammarValidator_ErrorMessage;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.HermesParser_SemanticValidator_ErrorMessage;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.HermesParser_UnexpectedException_ErrorMessage;
 
 /**
  * This class compiles a JPQL query into a {@link DatabaseQuery}. If validation is not turned off,

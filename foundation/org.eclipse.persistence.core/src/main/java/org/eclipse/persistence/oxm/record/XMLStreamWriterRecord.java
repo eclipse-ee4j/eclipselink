@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,6 @@
 // mmacivor - June 24/2009 - 1.0 - Initial implementation
 package org.eclipse.persistence.oxm.record;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -28,6 +21,12 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.DomToXMLStreamWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is an XMLStreamWriter

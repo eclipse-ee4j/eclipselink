@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,13 @@
 //     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property
 package org.eclipse.persistence.internal.oxm;
 
-import javax.xml.validation.Schema;
-
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.xml.sax.ErrorHandler;
+
+import javax.xml.validation.Schema;
 
 public abstract class Unmarshaller<
     ABSTRACT_SESSION extends CoreAbstractSession,

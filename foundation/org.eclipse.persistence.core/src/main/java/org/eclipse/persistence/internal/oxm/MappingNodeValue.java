@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 // bdoughan - January 7/2009 - 1.1 - Initial implementation
 package org.eclipse.persistence.internal.oxm;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
+
+import javax.xml.namespace.QName;
 
 /**
  * A node value corresponding to mapping.

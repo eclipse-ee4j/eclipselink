@@ -15,11 +15,14 @@
 package org.eclipse.persistence.internal.jpa.parsing;
 
 // Java imports
-import java.util.*;
 
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * INTERNAL

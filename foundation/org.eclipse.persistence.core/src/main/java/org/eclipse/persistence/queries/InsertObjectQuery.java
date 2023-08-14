@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,7 +16,7 @@
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sequencing.NativeSequence;

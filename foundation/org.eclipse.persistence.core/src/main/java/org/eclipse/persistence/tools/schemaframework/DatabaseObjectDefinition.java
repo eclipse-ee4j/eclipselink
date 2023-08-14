@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,16 +20,19 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
-import java.util.Map;
-import java.util.Set;
-
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.SQLCall;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>

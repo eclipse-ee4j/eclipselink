@@ -14,11 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.history;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -46,6 +41,11 @@ import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * <b>Purpose:</b>Expresses how historical data is saved on the data store.

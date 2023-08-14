@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,37 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.record;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.ReferenceResolver;
+import org.eclipse.persistence.internal.oxm.UnmarshalXPathEngine;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathEngine;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.TransformationRecord;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.IDResolver;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.platform.xml.XMLParser;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.namespace.QName;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -26,38 +57,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.oxm.ReferenceResolver;
-import org.eclipse.persistence.internal.oxm.UnmarshalXPathEngine;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.oxm.IDResolver;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.internal.oxm.XPathEngine;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.oxm.record.TransformationRecord;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
-import org.eclipse.persistence.platform.xml.XMLParser;
-import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.platform.xml.XMLTransformer;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * PUBLIC:

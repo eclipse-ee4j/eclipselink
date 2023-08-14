@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 // dmccann - September 14/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.oxm.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 /**
  * <p><b>XmlJoinNodes</b> is a holder for multiple {@code XmlJoinNode} annotations. This is used to specify the source to target
  * associations in a reference mapping with multiple keys. XmlJoinNodes will contain one XmlJoinNode for each key. The

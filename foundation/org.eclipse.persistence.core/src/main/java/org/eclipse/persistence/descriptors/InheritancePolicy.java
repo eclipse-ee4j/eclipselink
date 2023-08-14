@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,18 +21,6 @@
 //     08/01/2012-2.5 Chris Delahunt
 //       - 371950: Metadata caching
 package org.eclipse.persistence.descriptors;
-
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
@@ -59,6 +47,18 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Allows customization of an object's inheritance.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,6 @@
 //       - 522635: ConcurrentModificationException when triggering lazy load from conforming query
 package org.eclipse.persistence.sessions.interceptors;
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -28,6 +23,11 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**

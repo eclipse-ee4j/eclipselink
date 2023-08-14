@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,13 +18,6 @@
 //       - 465452: Throw ServerPlatformException rather than NPE on create null platformClass
 package org.eclipse.persistence.platform.server;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ServerPlatformException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -39,6 +32,13 @@ import org.eclipse.persistence.platform.server.glassfish.GlassfishPlatformDetect
 import org.eclipse.persistence.platform.server.was.WebSpherePlatformDetector;
 import org.eclipse.persistence.platform.server.wls.WebLogicPlatformDetector;
 import org.eclipse.persistence.sessions.DatabaseSession;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A utility class to interact with ServerPlatforms.

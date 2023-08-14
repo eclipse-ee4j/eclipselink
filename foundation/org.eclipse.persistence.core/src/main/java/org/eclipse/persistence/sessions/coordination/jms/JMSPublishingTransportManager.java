@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,19 @@
 //     cdelahun - Bug 214534: added JMS Cache Coordination for publishing only
 package org.eclipse.persistence.sessions.coordination.jms;
 
-import java.util.Map;
-
 import jakarta.jms.Topic;
 import jakarta.jms.TopicConnectionFactory;
-import javax.naming.Context;
-import javax.naming.NamingException;
-
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.jms.JMSTopicRemoteConnection;
-import org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
+import org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
+import java.util.Map;
 
 /**
  * <p>

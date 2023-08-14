@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,24 +16,8 @@
 package org.eclipse.persistence.internal.sessions.factories;
 
 // javase imports
-import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
-import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_10_SCHEMA;
-
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.Vector;
-
-// Java extension imports
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.config.CacheIsolationType;
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
@@ -64,7 +48,6 @@ import org.eclipse.persistence.descriptors.invalidation.NoExpiryCacheInvalidatio
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.eis.EISLogin;
-//import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISCompositeDirectCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISCompositeObjectMapping;
@@ -213,6 +196,20 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+
+import javax.xml.namespace.QName;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_10_SCHEMA;
 
 /**
  * INTERNAL: Define the TopLink OX project and descriptor information to read a OracleAS TopLink 10<i>g</i> (10.0.3) project from an XML file. Note any changes must be reflected in the OPM XML schema.

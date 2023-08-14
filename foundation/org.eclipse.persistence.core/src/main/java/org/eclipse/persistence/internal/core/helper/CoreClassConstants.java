@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,11 @@
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.internal.core.helper;
 
+import org.w3c.dom.Node;
+
+import javax.xml.datatype.Duration;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -34,12 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import javax.xml.datatype.Duration;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
-
-import org.w3c.dom.Node;
 
 @SuppressWarnings({"rawtypes"})
 public class CoreClassConstants {

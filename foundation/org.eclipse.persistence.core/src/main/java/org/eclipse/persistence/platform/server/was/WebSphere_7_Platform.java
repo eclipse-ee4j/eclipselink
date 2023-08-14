@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,15 +24,15 @@
 //       - 480787: Wrap several privileged method calls with a doPrivileged block
 package org.eclipse.persistence.platform.server.was;
 
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedExceptionAction;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
 import org.eclipse.persistence.services.websphere.MBeanWebSphereRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
+
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
 
 /**
  * PUBLIC:

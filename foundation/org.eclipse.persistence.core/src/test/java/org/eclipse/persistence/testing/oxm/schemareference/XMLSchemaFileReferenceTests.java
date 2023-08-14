@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.schemareference;
 
-import java.io.File;
-import java.io.InputStream;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.schema.XMLSchemaFileReference;
+import org.w3c.dom.Document;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.eclipse.persistence.oxm.*;
-import org.eclipse.persistence.oxm.schema.*;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-
-import org.w3c.dom.Document;
+import java.io.File;
+import java.io.InputStream;
 
 public class XMLSchemaFileReferenceTests extends org.eclipse.persistence.testing.oxm.XMLTestCase {
     private java.io.File schemaFile;

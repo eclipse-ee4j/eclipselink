@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,6 @@
 package org.eclipse.persistence.internal.oxm;
 
 import jakarta.activation.DataHandler;
-import javax.xml.namespace.QName;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
@@ -32,6 +29,10 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+
+import javax.xml.namespace.QName;
 
 /**
  * INTERNAL:

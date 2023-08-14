@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.queries;
 
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -37,6 +27,16 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.Iterator;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p><b>Purpose</b>: The abstract class for ContainerPolicy's whose container class implements

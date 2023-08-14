@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbynamespace.withgroupingelement;
 
-import java.io.InputStream;
-import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.compositecollection.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.EmailAddress;
+import org.eclipse.persistence.testing.oxm.mappings.compositecollection.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.MailingAddress;
+
+import javax.xml.namespace.QName;
+import java.io.InputStream;
 
 public class CompositeCollectionWithGroupingByNamespaceNoRefClassTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/identifiedbynamespace/withgroupingelement/CompositeCollectionWithGroupingElementNoRefClass.xml";

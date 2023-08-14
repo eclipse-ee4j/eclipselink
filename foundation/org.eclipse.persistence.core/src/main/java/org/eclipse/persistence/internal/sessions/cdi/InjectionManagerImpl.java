@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,21 +18,20 @@
 //       - 438663: Fix injection ordering bug.
 package org.eclipse.persistence.internal.sessions.cdi;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.InjectionTarget;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.logging.SessionLog;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Manages calls to CDI to inject into managed beans

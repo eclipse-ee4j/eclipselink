@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,15 @@
 //     Tomas Kraus - Initial API and implementation
 package org.eclipse.persistence.internal.core.queries;
 
+import org.eclipse.persistence.internal.helper.StringHelper;
+
 import java.util.ArrayDeque;
 
-import org.eclipse.persistence.internal.helper.StringHelper;
-import static org.eclipse.persistence.internal.helper.StringHelper.TAB;
-import static org.eclipse.persistence.internal.helper.StringHelper.LF;
-import static org.eclipse.persistence.internal.helper.StringHelper.FF;
 import static org.eclipse.persistence.internal.helper.StringHelper.CR;
+import static org.eclipse.persistence.internal.helper.StringHelper.FF;
+import static org.eclipse.persistence.internal.helper.StringHelper.LF;
 import static org.eclipse.persistence.internal.helper.StringHelper.SPACE;
+import static org.eclipse.persistence.internal.helper.StringHelper.TAB;
 
 // This class have huge performance impact because convert method is used very often.
 /**

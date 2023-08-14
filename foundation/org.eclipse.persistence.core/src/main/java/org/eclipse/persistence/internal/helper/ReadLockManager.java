@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,12 @@ package org.eclipse.persistence.internal.helper;
 
 import org.eclipse.persistence.internal.helper.type.ReadLockAcquisitionMetadata;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 public class ReadLockManager {
 

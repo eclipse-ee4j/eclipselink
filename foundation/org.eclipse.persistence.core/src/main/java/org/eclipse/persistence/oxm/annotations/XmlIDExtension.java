@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     Martin Vojtek - 2.6 - Initial contribution
 package org.eclipse.persistence.oxm.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 
 /**
  * <b>Purpose:</b> Provide a way to allow properties with XmlID annotation have different type than java.lang.String.

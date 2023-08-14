@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,8 @@ package org.eclipse.persistence.internal.sessions;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DescriptorCompare;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * This class calculates a commit order for a series of classes

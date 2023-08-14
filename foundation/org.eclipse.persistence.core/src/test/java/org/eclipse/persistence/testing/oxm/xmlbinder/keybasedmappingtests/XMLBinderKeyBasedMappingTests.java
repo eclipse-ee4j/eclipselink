@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xmlbinder.keybasedmappingtests;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Vector;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.eclipse.persistence.oxm.*;
-import org.eclipse.persistence.testing.oxm.*;
+import org.eclipse.persistence.oxm.XMLBinder;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
+import java.util.Vector;
 
 /**
  *  @version $Header: BasicDocumentPreservationTestCases.java 06-jun-2005.08:50:20 dmahar Exp $

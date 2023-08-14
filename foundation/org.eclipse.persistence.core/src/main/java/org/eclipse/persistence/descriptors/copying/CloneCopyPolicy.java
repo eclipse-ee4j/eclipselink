@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors.copying;
 
-import java.lang.reflect.Method;
-
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -25,6 +23,8 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
+
+import java.lang.reflect.Method;
 
 /**
  * <p><b>Purpose</b>: Allows a clone of an object to be created with a method that returns

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,14 @@
 //     ailitchev - bug  235433: Can't customize ConnectionPolicy through JPA + some comments.
 package org.eclipse.persistence.sessions.server;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.sessions.Login;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>

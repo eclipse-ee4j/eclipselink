@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,23 +27,6 @@
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.Array;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -60,6 +43,23 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.Array;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Struct;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /**
  * INTERNAL:

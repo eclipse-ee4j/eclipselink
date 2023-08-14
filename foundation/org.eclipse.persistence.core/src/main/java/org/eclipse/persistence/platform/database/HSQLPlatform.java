@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,11 +20,8 @@
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 package org.eclipse.persistence.platform.database;
 
-import java.io.StringWriter;
-import java.io.Writer;
-import java.io.IOException;
-import java.util.*;
-
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
@@ -32,9 +29,16 @@ import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.queries.ValueReadQuery;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Provides HSQL specific behavior.

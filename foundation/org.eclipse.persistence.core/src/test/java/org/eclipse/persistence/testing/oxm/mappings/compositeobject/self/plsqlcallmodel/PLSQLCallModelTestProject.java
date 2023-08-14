@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,6 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel;
 
-import static java.lang.Integer.MIN_VALUE;
-
-import org.xml.sax.Attributes;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.ClassExtractor;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
@@ -31,10 +27,12 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-//import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import org.xml.sax.Attributes;
+
+import static java.lang.Integer.MIN_VALUE;
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLargument.IN;
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLargument.INOUT;
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLargument.OUT;

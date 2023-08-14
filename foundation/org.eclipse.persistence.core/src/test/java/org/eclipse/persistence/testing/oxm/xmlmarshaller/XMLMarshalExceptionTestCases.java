@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,21 +14,10 @@
 //     Denise Smith - October 20, 2009
 package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 
-import java.io.InputStream;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import junit.textui.TestRunner;
-
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class XMLMarshalExceptionTestCases  extends OXTestCase {

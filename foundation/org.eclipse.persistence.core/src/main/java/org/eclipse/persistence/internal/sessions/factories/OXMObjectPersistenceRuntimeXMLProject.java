@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,6 @@
 package org.eclipse.persistence.internal.sessions.factories;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.sessions.factories.NamespaceResolvableProject;
-import org.eclipse.persistence.internal.sessions.factories.NamespaceResolverWithPrefixes;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;

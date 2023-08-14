@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.expressions.spatial;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 
-import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_WITHIN_DISTANCE;
-import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_RELATE;
+import java.util.List;
+import java.util.Vector;
+
 import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_FILTER;
 import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_NN;
+import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_RELATE;
+import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_WITHIN_DISTANCE;
 
 /**
  * This class is used to construct expressions that use Oracle Spatial operators

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,14 +15,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.core.sessions.CoreSessionEventManager;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ClientSession;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Used to support session events.

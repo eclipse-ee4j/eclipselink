@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -25,6 +23,8 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+
+import javax.xml.namespace.QName;
 
 /**
  * INTERNAL:

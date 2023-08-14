@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.xml;
 
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.xml.sax.SAXParseException;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import org.xml.sax.SAXParseException;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
 public class XMLPlatformException extends EclipseLinkException {
     public static final int XML_PLATFORM_CLASS_NOT_FOUND = 27001;

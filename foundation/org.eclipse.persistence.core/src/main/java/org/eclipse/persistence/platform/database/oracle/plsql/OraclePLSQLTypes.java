@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,6 @@
 
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
-import java.util.List;
-import java.util.ListIterator;
-import static java.sql.Types.OTHER;
-
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
@@ -27,6 +23,11 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.util.List;
+import java.util.ListIterator;
+
+import static java.sql.Types.OTHER;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
 import static org.eclipse.persistence.platform.database.jdbc.JDBCTypes.INTEGER_TYPE;

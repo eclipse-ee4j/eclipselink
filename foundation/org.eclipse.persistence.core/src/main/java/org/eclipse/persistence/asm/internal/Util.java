@@ -15,9 +15,7 @@
 package org.eclipse.persistence.asm.internal;
 
 import org.eclipse.persistence.asm.ASMFactory;
-import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;

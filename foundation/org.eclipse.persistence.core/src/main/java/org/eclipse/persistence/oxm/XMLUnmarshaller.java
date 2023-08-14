@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm;
 
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * <p>Class used to unmarshal XML {@literal &} JSON to objects.

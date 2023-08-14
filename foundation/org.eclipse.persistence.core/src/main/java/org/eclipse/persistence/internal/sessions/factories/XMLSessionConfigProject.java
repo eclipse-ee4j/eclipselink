@@ -20,13 +20,7 @@
 package org.eclipse.persistence.internal.sessions.factories;
 
 // javase imports
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.event.SessionEventManagerConfig;
@@ -100,6 +94,13 @@ import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader.ECLIPSELINK_SESSIONS_SCHEMA;
 
 /**

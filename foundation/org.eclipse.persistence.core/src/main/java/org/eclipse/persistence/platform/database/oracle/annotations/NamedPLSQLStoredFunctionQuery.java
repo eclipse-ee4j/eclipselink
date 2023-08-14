@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.platform.database.oracle.annotations;
 
+import jakarta.persistence.QueryHint;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import jakarta.persistence.QueryHint;
 
 /**
  * A NamedPLSQLStoredFunctionQuery annotation allows the definition of queries that

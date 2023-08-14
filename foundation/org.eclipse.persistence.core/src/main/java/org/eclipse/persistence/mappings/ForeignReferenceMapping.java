@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,19 +24,6 @@
 //     08/12/2015-2.6 Mythily Parthasarathy
 //       - 474752: Address NPE for Embeddable with 1-M association
 package org.eclipse.persistence.mappings;
-
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -95,6 +82,19 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Abstract class for relationship mappings
@@ -2270,7 +2270,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
         }
 
-        // CR #4365, 3610825 - moved up from the block below, needs to be set with
+        // CR #4365, 2023825 - moved up from the block below, needs to be set with
         // indirection off. Clone the query and set its id.
         // All indirections are triggered in sopObject, therefore if sopObject is used then indirection on targetQuery to be triggered, too.
         if (!this.indirectionPolicy.usesIndirection() || shouldUseSopObject) {

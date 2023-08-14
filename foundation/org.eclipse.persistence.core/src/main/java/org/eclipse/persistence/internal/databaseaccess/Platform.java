@@ -15,13 +15,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.databaseaccess.CorePlatform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -31,6 +24,12 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.Session;
+
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Platform is private to TopLink. It encapsulates behavior specific to a datasource platform

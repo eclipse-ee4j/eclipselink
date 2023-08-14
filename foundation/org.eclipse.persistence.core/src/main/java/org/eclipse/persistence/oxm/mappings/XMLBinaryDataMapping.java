@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,6 @@
 package org.eclipse.persistence.oxm.mappings;
 
 import jakarta.activation.DataHandler;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -44,6 +40,8 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.Session;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * <p><b>Purpose:</b>Provide a mapping for binary data that can be treated as either inline or as

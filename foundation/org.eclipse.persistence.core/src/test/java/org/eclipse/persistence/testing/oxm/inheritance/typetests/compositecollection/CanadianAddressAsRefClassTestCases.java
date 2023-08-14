@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Denise Smith - February 2010 - 2.1
 package org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecollection;
 
-import java.util.ArrayList;
-
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.CanadianAddress;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
+
+import java.util.ArrayList;
 
 public class CanadianAddressAsRefClassTestCases extends XMLWithJSONMappingTestCases {
     private static final String READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/employee_with_address_cdnaddressnoxsi.xml";

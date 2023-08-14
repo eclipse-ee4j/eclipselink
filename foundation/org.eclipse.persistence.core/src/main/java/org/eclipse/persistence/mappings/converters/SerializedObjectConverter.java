@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.converters;
-
-import java.security.AccessController;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -30,6 +28,8 @@ import org.eclipse.persistence.sessions.serializers.JSONSerializer;
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.sessions.serializers.XMLSerializer;
+
+import java.security.AccessController;
 
 /**
  * <p><b>Purpose</b>: The serialized object converter can be used to store an arbitrary object or set of objects into a database binary or character field.

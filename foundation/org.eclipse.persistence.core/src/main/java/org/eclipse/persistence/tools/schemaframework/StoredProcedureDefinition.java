@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,15 +16,15 @@
 //     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Allow a semi-generic way of creating stored procedures.

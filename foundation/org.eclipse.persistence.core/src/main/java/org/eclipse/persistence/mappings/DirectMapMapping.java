@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +17,6 @@
 //      //     30/05/2012-2.4 Guy Pelletier
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.mappings;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
@@ -69,6 +62,13 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Mapping for a collection of key-value pairs.

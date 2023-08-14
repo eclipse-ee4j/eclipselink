@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     Tomas Kraus - Initial API and implementation
 package org.eclipse.persistence.internal.descriptors;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * <p><b>Purpose</b>: Define any useful static methods to manipulate with descriptors content.</p>

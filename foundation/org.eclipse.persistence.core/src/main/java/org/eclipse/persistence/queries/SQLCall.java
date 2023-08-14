@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,19 @@
 //     arnaud nauwynck, tware - Bug 274975 - ensure custom sql calls are only translated once
 package org.eclipse.persistence.queries;
 
-import java.util.List;
-import java.io.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.QueryStringCall;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.List;
 
 /**
  * <b>Purpose</b>: Used as an abstraction of an SQL call.

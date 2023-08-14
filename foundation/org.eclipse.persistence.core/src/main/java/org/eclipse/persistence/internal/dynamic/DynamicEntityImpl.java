@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,12 +18,6 @@
 package org.eclipse.persistence.internal.dynamic;
 
 //javase imports
-import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
@@ -50,6 +44,13 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 
 /**
  * This abstract class is used to represent an entity which typically is not

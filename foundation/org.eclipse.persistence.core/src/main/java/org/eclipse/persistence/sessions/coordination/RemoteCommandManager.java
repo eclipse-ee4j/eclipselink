@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,6 @@
 //     11/07/2017 - Dalia Abo Sheasha
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.sessions.coordination;
-
-import java.net.InetAddress;
 
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -35,6 +33,8 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
+
+import java.net.InetAddress;
 
 /**
  * <p>

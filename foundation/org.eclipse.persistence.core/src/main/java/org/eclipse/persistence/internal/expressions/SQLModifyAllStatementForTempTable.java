@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,16 +15,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.List;
-import java.util.Vector;
-import java.util.Collection;
-
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author Andrei Ilitchev

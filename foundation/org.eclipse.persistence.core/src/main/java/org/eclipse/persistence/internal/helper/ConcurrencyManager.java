@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,15 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
+
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -30,15 +39,6 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.ConcurrencyException;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.localization.ToStringLocalization;
-import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:

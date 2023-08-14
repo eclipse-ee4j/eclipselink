@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     David McCann - May 15, 2012 - 2.4 - Initial implementation
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
-import java.util.ListIterator;
-import static java.sql.Types.OTHER;
-
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
+
+import java.util.ListIterator;
+
+import static java.sql.Types.OTHER;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 
 /**

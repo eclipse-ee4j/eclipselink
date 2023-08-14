@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +17,6 @@
 //         (non-default) will now invalidate the implementing subtree
 //           from [Class] down.  Previously only the single Class inside the tree was invalidated.
 package org.eclipse.persistence.internal.sessions;
-
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -43,6 +36,13 @@ import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
+
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * INTERNAL:

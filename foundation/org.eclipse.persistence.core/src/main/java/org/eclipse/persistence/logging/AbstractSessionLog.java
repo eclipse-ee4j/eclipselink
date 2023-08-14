@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,15 +17,6 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.logging;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.DateFormat;
-import java.util.Date;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
@@ -34,6 +25,15 @@ import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sessions.Session;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.

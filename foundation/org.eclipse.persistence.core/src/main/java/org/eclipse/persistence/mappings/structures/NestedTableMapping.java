@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,9 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.structures;
-
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -39,6 +36,9 @@ import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.InsertObjectQuery;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose:</b>

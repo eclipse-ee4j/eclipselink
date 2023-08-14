@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,12 +17,6 @@
 //     05/26/2016-2.7 Tomas Kraus
 //       - 494610: Session Properties map should be Map<String, Object>
 package org.eclipse.persistence.sessions;
-
-import java.io.Writer;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.core.sessions.CoreSession;
@@ -48,6 +42,12 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.serializers.Serializer;
+
+import java.io.Writer;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>

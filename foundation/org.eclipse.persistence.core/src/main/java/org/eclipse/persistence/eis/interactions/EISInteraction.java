@@ -14,18 +14,30 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis.interactions;
 
-import java.io.*;
-import java.util.*;
-import jakarta.resource.*;
-import jakarta.resource.cci.*;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.IndexedRecord;
+import jakarta.resource.cci.InteractionSpec;
+import jakarta.resource.cci.MappedRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.eis.EISAccessor;
+import org.eclipse.persistence.eis.EISDescriptor;
+import org.eclipse.persistence.eis.EISException;
+import org.eclipse.persistence.eis.EISMappedRecord;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
-import org.eclipse.persistence.eis.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Defines the specification for a call to a JCA interaction.

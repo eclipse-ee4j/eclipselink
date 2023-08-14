@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,25 +15,7 @@
 package org.eclipse.persistence.sessions.factories;
 
 // javase imports
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
-import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-// EclipseLink imports
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -48,6 +30,22 @@ import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.Project;
+import org.w3c.dom.Document;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p><b>Purpose</b>: Allow for a EclipseLink Mapping Workbench generated deployment XML project file to be read.

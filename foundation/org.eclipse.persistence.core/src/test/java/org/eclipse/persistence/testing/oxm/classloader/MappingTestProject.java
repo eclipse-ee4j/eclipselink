@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,29 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.classloader;
 
-import java.lang.reflect.Method;
-
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
+import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+
+import java.lang.reflect.Method;
 
 /**
  * Tests class loader usage in the following mappings:

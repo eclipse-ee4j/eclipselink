@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.exceptions;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  *    <p><b>Purpose</b>: IntegrityChecker is used for catching all the descriptor exceptions,

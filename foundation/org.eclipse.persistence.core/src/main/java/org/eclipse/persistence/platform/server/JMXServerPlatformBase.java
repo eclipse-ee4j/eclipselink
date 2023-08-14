@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2010, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2010, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,12 +31,13 @@
 //       - 520316: Multiple MBeanServers discovered by EclipseLink result in warnings
 package org.eclipse.persistence.platform.server;
 
-import java.lang.management.ManagementFactory;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.List;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.services.mbean.MBeanDevelopmentServices;
+import org.eclipse.persistence.services.mbean.MBeanRuntimeServicesMBean;
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -49,15 +50,12 @@ import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.services.mbean.MBeanDevelopmentServices;
-import org.eclipse.persistence.services.mbean.MBeanRuntimeServicesMBean;
-import org.eclipse.persistence.sessions.DatabaseSession;
+import java.lang.management.ManagementFactory;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.List;
 
 /**
  * PUBLIC:

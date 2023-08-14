@@ -14,7 +14,5 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.asm;
 
-import org.eclipse.persistence.asm.ClassVisitor;
-
 public abstract class SerialVersionUIDAdder extends ClassVisitor {
 }

@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
- * Copyright (c) 2009, 2022 Fujitsu Limited. All rights reserved.
+ * Copyright (c) 2009, 2023 Fujitsu Limited. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,16 +20,6 @@
 //
 package org.eclipse.persistence.platform.database;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
@@ -41,6 +31,16 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /**
  *  Symfoware Server<p>

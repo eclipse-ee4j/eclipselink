@@ -21,13 +21,6 @@
 //       - 405640: JPA 2.1 schema generation drop operation fails to include dropping defaulted fk constraints.
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.Writer;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -41,6 +34,13 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
+
+import java.io.Writer;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p>

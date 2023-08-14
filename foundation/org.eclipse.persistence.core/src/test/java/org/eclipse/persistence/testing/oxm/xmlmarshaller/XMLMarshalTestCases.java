@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,22 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamResult;
-
-import junit.framework.TestCase;
+import junit.textui.TestRunner;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -53,7 +38,19 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;
 
-import junit.textui.TestRunner;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * Test marshalling the control object to each of the possible outputs

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,18 +16,7 @@
 package org.eclipse.persistence.internal.sessions.factories;
 
 // javase imports
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
-import static java.lang.Integer.MIN_VALUE;
-
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -39,7 +28,11 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
+import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
@@ -64,6 +57,8 @@ import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
@@ -73,12 +68,6 @@ import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.oxm.mappings.XMLNillableMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
-import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
-import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
-import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
-import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -88,17 +77,28 @@ import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCursor;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
-import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import static java.lang.Integer.MIN_VALUE;
 import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_11_SCHEMA;

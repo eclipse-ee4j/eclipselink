@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.security;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.Helper;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -26,10 +26,9 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 /**
  * EclipseLink reference implementation for password encryption.

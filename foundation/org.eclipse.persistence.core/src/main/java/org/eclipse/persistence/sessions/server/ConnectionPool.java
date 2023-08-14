@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.server;
 
-import java.util.*;
-
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.Login;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p>

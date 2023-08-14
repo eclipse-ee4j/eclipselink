@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,25 +15,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.databaseaccess;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+
 import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Array;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Struct;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:

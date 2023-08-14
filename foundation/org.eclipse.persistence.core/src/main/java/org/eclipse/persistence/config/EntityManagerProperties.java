@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,11 +18,11 @@
 //        Now properties' names that could be used both in createEM and createEMF are the same.
 package org.eclipse.persistence.config;
 
+import jakarta.persistence.EntityManager;
+
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collections;
-
-import jakarta.persistence.EntityManager;
 
 /**
  * The class defines EclipseLink properties' names for use at the EntityManager level.

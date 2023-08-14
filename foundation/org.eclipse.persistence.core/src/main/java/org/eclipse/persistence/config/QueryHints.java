@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,11 @@
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.config;
 
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.sessions.DataRecord;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * The class defines EclipseLink query hints.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     rbarkhouse - 2009-04-14 - 2.0 - Initial implementation
 
 package org.eclipse.persistence.oxm.mappings;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -36,6 +34,8 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
 
 /**
  * <p><b>Purpose:</b> An abstract superclass for XMLAnyObjectMapping and XMLAnyCollectionMapping.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import java.io.*;
-import java.util.*;
-import javax.naming.*;
-import jakarta.resource.*;
-import jakarta.resource.cci.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.Connection;
+import jakarta.resource.cci.ConnectionFactory;
+import jakarta.resource.cci.ConnectionSpec;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.Session;
+
+import javax.naming.CompositeName;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.InvalidNameException;
+import javax.naming.Name;
+import java.io.Writer;
+import java.util.Properties;
 
 /**
  * <p>An <code>EISConnectionSpec</code> specifies how the

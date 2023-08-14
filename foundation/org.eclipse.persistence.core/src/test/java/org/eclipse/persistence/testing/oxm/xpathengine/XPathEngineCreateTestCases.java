@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xpathengine;
 
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import junit.framework.TestCase;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -31,12 +22,18 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
-import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.oxm.XMLTestCase {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.directcollection.errortests;
 
-import java.io.InputStream;
-import java.util.Vector;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import junit.framework.TestCase;
-import org.w3c.dom.Document;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+
+import java.util.Vector;
 
 public class DirectCollectionErrorTestCases extends OXTestCase {
     public DirectCollectionErrorTestCases(String name) throws Exception {

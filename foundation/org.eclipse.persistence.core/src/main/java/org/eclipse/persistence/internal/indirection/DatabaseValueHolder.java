@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.indirection;
 
-import java.io.Serializable;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
@@ -24,6 +22,8 @@ import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+
+import java.io.Serializable;
 
 /**
  * DatabaseValueHolder wraps a database-stored object and implements

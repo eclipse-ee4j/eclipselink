@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
-import java.util.*;
+import org.eclipse.persistence.core.descriptors.CoreDescriptorEvent;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.core.descriptors.CoreDescriptorEvent;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.internal.sessions.*;
+
+import java.util.EventObject;
 
 /**
  * <p><b>Purpose</b>: Encapsulate the information provided with descriptor events.

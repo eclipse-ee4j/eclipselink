@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,10 @@
 //     @since   EclipseLink 1.0 enh# 235168
 package org.eclipse.persistence.services.mbean;
 
+import org.eclipse.persistence.services.ClassSummaryDetailBase;
+
 import java.util.List;
 import java.util.Vector;
-
-import org.eclipse.persistence.services.ClassSummaryDetailBase;
 
 /**
  * <p>

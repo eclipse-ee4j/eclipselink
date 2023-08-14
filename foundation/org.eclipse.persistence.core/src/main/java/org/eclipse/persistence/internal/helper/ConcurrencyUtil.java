@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021 Oracle, IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2023 Oracle, IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,17 @@
 //     IBM - ConcurrencyUtil call of ThreadMXBean.getThreadInfo() needs doPriv
 package org.eclipse.persistence.internal.helper;
 
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.internal.helper.type.CacheKeyToThreadRelationships;
+import org.eclipse.persistence.internal.helper.type.ConcurrencyManagerState;
+import org.eclipse.persistence.internal.helper.type.DeadLockComponent;
+import org.eclipse.persistence.internal.helper.type.ReadLockAcquisitionMetadata;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
@@ -29,17 +40,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.internal.helper.type.CacheKeyToThreadRelationships;
-import org.eclipse.persistence.internal.helper.type.ConcurrencyManagerState;
-import org.eclipse.persistence.internal.helper.type.DeadLockComponent;
-import org.eclipse.persistence.internal.helper.type.ReadLockAcquisitionMetadata;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 public class ConcurrencyUtil {
 

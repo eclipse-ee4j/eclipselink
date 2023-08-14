@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,14 +15,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.database;
 
-import java.io.*;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.io.Writer;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
-
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import java.util.Hashtable;
 
 /**
  *    <p><b>Purpose</b>: Provides DBase specific behavior.

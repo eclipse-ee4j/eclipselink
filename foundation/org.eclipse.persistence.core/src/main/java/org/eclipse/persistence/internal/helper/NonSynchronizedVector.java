@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,18 @@ package org.eclipse.persistence.internal.helper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.StreamCorruptedException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.ConcurrentModificationException;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;

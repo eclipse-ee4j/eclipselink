@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,11 @@
 // dmccann - 1.0M9 - Initial implementation
 package org.eclipse.persistence.testing.oxm.events.descriptor;
 
-import java.util.ArrayList;
-
-import org.eclipse.persistence.oxm.platform.XMLPlatform;
-import org.eclipse.persistence.testing.oxm.OXTestCase.Platform;
 import org.eclipse.persistence.testing.oxm.events.Address;
 import org.eclipse.persistence.testing.oxm.events.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.w3c.dom.Document;
+
+import java.util.ArrayList;
 
 public class PostBuildEventTestCases extends XMLMappingTestCases {
     static Integer EMPLOYEE_POST_BUILD = 0;

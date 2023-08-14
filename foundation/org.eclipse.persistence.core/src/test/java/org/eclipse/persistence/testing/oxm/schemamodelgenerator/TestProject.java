@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,11 @@
 // dmccann - Mar 2/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.oxm.schemamodelgenerator;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.FixedMimeTypePolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
@@ -41,6 +35,9 @@ import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.sessions.Project;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class TestProject extends Project {
     NamespaceResolver nsr;

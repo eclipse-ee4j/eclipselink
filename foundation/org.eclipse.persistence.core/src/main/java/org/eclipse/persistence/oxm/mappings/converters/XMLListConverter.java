@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     rbarkhouse - 2009-05-05 14:32:00 - initial implementation
 package org.eclipse.persistence.oxm.mappings.converters;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
@@ -25,6 +22,9 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.sessions.Session;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 /**
  * <p><b>Purpose:</b> Provides an implementation of Converter that can be used to convert a

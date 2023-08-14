@@ -14,17 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-// TopLink imports
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * INTERNAL

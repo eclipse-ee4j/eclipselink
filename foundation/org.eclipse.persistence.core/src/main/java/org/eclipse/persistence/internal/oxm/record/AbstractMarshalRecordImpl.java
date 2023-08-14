@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,13 +13,6 @@
 // Contributors:
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm.record;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.internal.core.helper.CoreField;
@@ -39,6 +32,12 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class AbstractMarshalRecordImpl<
     ABSTRACT_SESSION extends CoreAbstractSession,

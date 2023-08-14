@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,20 +31,6 @@
 //     03/22/2018-2.7.2 Lukas Jungmann
 //       - 441498: @ElementCollection on Map<@Embeddable,String> cause NullPointerException when @Embeddable has a FK
 package org.eclipse.persistence.mappings;
-
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -90,6 +76,20 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
+
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:Two objects can be considered to be related by aggregation if there is a strict

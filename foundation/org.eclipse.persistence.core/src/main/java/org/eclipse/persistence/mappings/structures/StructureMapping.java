@@ -14,14 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.structures;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 
 /**

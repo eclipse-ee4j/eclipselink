@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,19 +18,6 @@
 //     02/01/2022: Tomas Kraus
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.expressions;
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -60,6 +47,19 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * <p>

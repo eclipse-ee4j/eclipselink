@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,6 @@
 //       - 490114: Add support for PersistenceUnitUtil.getIdentifier with nested embeddables in EmbeddedId class
 package org.eclipse.persistence.descriptors;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -41,6 +36,11 @@ import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>

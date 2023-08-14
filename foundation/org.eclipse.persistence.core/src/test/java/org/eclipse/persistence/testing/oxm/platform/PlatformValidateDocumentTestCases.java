@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.platform;
 
-import java.io.InputStream;
-import java.net.URL;
-import org.w3c.dom.Document;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.w3c.dom.Document;
+
+import java.io.InputStream;
+import java.net.URL;
 
 public class PlatformValidateDocumentTestCases extends org.eclipse.persistence.testing.oxm.XMLTestCase {
 

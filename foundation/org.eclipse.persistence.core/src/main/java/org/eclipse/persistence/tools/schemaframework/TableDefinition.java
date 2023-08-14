@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,17 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.tools.schemaframework;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -35,17 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.SQLCall;
 
 /**
  * <p>

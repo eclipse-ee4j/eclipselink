@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,9 @@
 //       - 458877 : Add national character support
 package org.eclipse.persistence.exceptions;
 
-import java.util.*;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+
+import java.util.Calendar;
 
 /**
  * <P><B>Purpose</B>: Conversion exceptions such as method or class not defined will raise this exception.

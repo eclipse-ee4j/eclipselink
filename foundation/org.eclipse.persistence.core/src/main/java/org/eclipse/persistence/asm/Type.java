@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.asm;
 
+import org.eclipse.persistence.asm.internal.Util;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.persistence.asm.internal.Util;
 
 public abstract class Type {
 

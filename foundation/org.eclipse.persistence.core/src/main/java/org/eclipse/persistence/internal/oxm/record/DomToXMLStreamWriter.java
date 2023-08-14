@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 // mmacivor - June 24/2009 - 1.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.ArrayList;
-
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.w3c.dom.Attr;
@@ -28,6 +22,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.ArrayList;
 
 public class DomToXMLStreamWriter{
 

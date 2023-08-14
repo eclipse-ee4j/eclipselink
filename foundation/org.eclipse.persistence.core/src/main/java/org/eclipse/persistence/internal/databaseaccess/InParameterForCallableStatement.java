@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,11 +15,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.databaseaccess;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 public class InParameterForCallableStatement extends BindCallCustomParameter {
     protected Object inParameter;

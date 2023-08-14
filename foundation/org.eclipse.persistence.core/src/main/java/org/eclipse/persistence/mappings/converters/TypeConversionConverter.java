@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,9 +17,6 @@
 //         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
 package org.eclipse.persistence.mappings.converters;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
@@ -29,6 +26,9 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.Session;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 /**
  * <b>Purpose</b>: Type conversion converters are used to explicitly map a database type to a

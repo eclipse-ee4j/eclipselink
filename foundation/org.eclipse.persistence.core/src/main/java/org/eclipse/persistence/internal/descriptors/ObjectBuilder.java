@@ -29,23 +29,6 @@
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
 package org.eclipse.persistence.internal.descriptors;
 
-import java.io.Serializable;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.Semaphore;
-
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
@@ -131,6 +114,23 @@ import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.Semaphore;
 
 /**
  * <p><b>Purpose</b>: Object builder is one of the behavior class attached to descriptor.

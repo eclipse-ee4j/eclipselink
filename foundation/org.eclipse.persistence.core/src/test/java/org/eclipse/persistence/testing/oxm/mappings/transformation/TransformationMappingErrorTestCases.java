@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.transformation;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.transformers.FieldTransformer;
-import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
-import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 
 /**
  *  @version $Header: TransformationMappingErrorTestCases.java 02-nov-2006.10:56:47 gyorke Exp $

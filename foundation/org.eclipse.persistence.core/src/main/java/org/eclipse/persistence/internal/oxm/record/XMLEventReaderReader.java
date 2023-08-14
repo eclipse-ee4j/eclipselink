@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     mmacivor - September 14/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.Locator2;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -30,13 +31,11 @@ import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.ProcessingInstruction;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
-import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.Unmarshaller;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.Locator2;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Convert and XMLEventReader into SAX events.

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,29 +37,50 @@
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.io.*;
-
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.config.ParameterDelimiterType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.expressions.SQLStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.queries.CallQueryMechanism;
+import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
+import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
+import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
+import org.eclipse.persistence.internal.queries.StatementQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>

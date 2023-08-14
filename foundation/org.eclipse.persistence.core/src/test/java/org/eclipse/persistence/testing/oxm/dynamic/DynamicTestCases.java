@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,18 @@
 //     rbarkhouse - 2009-11-16 14:08:13 - initial implementation
 package org.eclipse.persistence.testing.oxm.dynamic;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class DynamicTestCases extends XMLMappingTestCases {
 

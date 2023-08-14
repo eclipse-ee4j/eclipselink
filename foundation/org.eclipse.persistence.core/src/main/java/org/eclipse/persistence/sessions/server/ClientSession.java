@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,21 +23,32 @@
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.sessions.server;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.platform.server.ServerPlatform;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
-import org.eclipse.persistence.sessions.coordination.CommandManager;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ClientSessionIdentityMapAccessor;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.coordination.CommandManager;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Acts as a client to the server session.

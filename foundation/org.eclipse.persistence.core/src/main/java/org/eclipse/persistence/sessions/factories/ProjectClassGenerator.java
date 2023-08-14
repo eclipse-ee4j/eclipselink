@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,20 +18,6 @@
 //     09/03/2015 - Will Dazey
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.sessions.factories;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.CachePolicy;
@@ -112,6 +98,20 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Allow for a class storing a TopLink project's descriptors (meta-data) to be generated.

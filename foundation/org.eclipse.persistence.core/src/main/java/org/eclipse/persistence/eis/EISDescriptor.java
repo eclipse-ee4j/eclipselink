@@ -16,9 +16,6 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.eis;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
@@ -47,6 +44,9 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  *

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,37 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm;
 
+import jakarta.xml.bind.JAXBElement;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
+import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRuntimeXMLProject_11_1_1;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.platform.DOMPlatform;
+import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,38 +60,6 @@ import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.TimeZone;
-
-import jakarta.xml.bind.JAXBElement;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.platform.DOMPlatform;
-import org.eclipse.persistence.oxm.platform.SAXPlatform;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
-import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRuntimeXMLProject_11_1_1;
-import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public abstract class OXTestCase extends XMLTestCase {
     protected static XMLInputFactory XML_INPUT_FACTORY;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.identitymaps;
 
-import java.lang.ref.SoftReference;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.lang.ref.SoftReference;
 
 /**
  * <p><b>Purpose</b>: A SoftCacheWeakIdentityMap is identical to the WeakIdentityMap, however the weak reference

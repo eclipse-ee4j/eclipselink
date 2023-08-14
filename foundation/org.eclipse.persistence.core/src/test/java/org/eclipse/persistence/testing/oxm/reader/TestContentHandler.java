@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.testing.oxm.reader;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestContentHandler implements ContentHandler {
 

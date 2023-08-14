@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,15 @@
 //     08/29/2016 Jody Grassel
 //       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
 package org.eclipse.persistence.internal.helper;
+
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreHelper;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 import java.io.Closeable;
 import java.io.File;
@@ -54,15 +63,6 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.core.helper.CoreHelper;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:

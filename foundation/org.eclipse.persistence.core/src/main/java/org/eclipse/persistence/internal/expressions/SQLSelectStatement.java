@@ -20,28 +20,6 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
-import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
-
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -72,6 +50,28 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
 
 /**
  * <p><b>Purpose</b>: Print SELECT statement.

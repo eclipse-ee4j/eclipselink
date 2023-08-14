@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,15 +18,6 @@
 //     14/05/2012-2.4 Guy Pelletier
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.internal.queries;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -68,6 +59,15 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A MappedKeyMapContainerPolicy should be used for mappings to implementers of Map.

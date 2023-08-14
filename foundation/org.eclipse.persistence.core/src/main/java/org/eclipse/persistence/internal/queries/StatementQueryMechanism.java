@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,9 +15,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.queries;
 
-import java.util.Enumeration;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
@@ -27,9 +24,11 @@ import org.eclipse.persistence.internal.expressions.SQLModifyStatement;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
+
+import java.util.Enumeration;
+import java.util.Vector;
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for all  statement objects.

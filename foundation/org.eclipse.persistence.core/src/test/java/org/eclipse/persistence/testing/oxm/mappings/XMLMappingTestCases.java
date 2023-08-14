@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,28 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Calendar;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Result;
-import javax.xml.validation.Schema;
-import javax.xml.validation.TypeInfoProvider;
-import javax.xml.validation.Validator;
-import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
@@ -61,6 +39,27 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.Result;
+import javax.xml.validation.Schema;
+import javax.xml.validation.TypeInfoProvider;
+import javax.xml.validation.Validator;
+import javax.xml.validation.ValidatorHandler;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Calendar;
 
 public abstract class XMLMappingTestCases extends OXTestCase {
 

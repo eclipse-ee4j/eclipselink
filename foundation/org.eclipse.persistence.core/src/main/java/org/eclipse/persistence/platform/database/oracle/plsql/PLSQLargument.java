@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,13 +17,12 @@
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
 // javase imports
-import static java.lang.Integer.MIN_VALUE;
-
-import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
-// EclipseLink imports
-import org.eclipse.persistence.internal.helper.DatabaseType;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
+import org.eclipse.persistence.internal.helper.DatabaseType;
+
+import static java.lang.Integer.MIN_VALUE;
 
 /**
  * <p>

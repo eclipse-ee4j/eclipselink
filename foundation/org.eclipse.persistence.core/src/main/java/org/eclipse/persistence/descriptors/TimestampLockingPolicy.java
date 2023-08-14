@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,13 +15,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ModifyQuery;
 
 import java.sql.Timestamp;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.exceptions.*;
 
 /**
  * <p><b>Purpose</b>: Used to allow a single version timestamp to be used for optimistic locking.

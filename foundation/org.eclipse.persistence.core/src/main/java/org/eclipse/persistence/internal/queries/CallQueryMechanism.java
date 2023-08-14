@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,15 +21,28 @@
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.internal.queries;
 
-import java.util.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,12 +17,17 @@
 //       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
 package org.eclipse.persistence.tools.profiler;
 
-import java.io.StringWriter;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.io.StringWriter;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p><b>Purpose</b>:

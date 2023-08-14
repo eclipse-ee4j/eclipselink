@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
- * Copyright (c) 2009, 2022 Markus Karg, SAP. All rights reserved.
+ * Copyright (c) 2009, 2023 Markus Karg, SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,15 @@
 // SAP AG      - finalized implementation (bug 327778)
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.expressions.ListExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
@@ -29,15 +38,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
-import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.expressions.ListExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.queries.ValueReadQuery;
-import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * <b>Database Platform for SAP MaxDB.</b>
@@ -154,7 +154,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
     /**
      * EclipseLink does not support length dependent type mapping.
      * Map VARCHAR types with length > MAX_VARCHAR_UNICODE_LENGTH to LONG UNICODE (i.e clob); shorter types to VARCHAR (n) UNICODE
-     * See also bugs 317597, 317448
+     * See also bugs 317597, 202348
      */
     protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType) throws IOException {
         String typeName = fieldType.getName();

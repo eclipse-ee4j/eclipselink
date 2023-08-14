@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     Marcel Valovy - major speed up, major refurbishing.
 package org.eclipse.persistence.internal.oxm;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.Callable;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
@@ -44,6 +34,16 @@ import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.Callable;
 
 /**
  * This class is leveraged by reference mappings. It plays 3 roles:

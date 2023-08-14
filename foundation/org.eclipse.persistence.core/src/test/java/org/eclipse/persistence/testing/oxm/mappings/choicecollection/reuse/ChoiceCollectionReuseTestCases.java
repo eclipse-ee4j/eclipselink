@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     rbarkhouse - 2009-10-06 13:06:00 - initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.choicecollection.reuse;
 
-import java.net.URL;
-import java.util.LinkedList;
-
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+
+import java.net.URL;
+import java.util.LinkedList;
 
 public class ChoiceCollectionReuseTestCases extends XMLMappingTestCases {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.Calendar;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+
+import java.io.StringWriter;
+import java.util.Calendar;
 
 /**
  * <p><b>Purpose</b>: Expression Java printer.

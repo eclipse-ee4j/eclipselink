@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,14 @@
 //       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
 package org.eclipse.persistence.sequencing;
 
-import java.io.StringWriter;
-import java.util.List;
-
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
+
+import java.io.StringWriter;
+import java.util.List;
 
 /**
  * <p>

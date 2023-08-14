@@ -14,11 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.structures;
 
-import java.sql.Ref;
-import java.sql.Struct;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
@@ -44,6 +39,11 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.sql.Ref;
+import java.sql.Struct;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose:</b>

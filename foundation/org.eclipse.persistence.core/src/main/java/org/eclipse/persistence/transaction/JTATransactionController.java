@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,9 @@
 //       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
 package org.eclipse.persistence.transaction;
 
-import jakarta.transaction.*;
-
+import jakarta.transaction.Status;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
 import org.eclipse.persistence.exceptions.TransactionException;
 
 /**

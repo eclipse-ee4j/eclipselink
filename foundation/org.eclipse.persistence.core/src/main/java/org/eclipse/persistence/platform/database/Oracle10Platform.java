@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,9 +16,9 @@
 //       - 532160 : Add support for non-extension OracleXPlatform classes
 package org.eclipse.persistence.platform.database;
 
-import java.util.Hashtable;
-
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+
+import java.util.Hashtable;
 
 /**
  * <p><b>Purpose:</b>

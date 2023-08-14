@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-import java.sql.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.databaseaccess.*;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class ScrollableCursor extends Cursor implements ListIterator {
     protected transient Object nextObject;

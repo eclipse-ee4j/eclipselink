@@ -38,34 +38,6 @@ package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
 
-import java.io.ByteArrayInputStream;
-import java.io.CharArrayReader;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Array;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Ref;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLXML;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.sql.Types;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -110,6 +82,34 @@ import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Array;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLXML;
+import java.sql.Statement;
+import java.sql.Struct;
+import java.sql.Types;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.Vector;
 
 /**
  * DatabasePlatform is private to EclipseLink. It encapsulates behavior specific to a database platform

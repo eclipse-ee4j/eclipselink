@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,16 +16,16 @@
 //       - 397772: JPA 2.1 Entity Graph Support
 package org.eclipse.persistence.queries;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.sessions.CopyGroup;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
-
-import org.eclipse.persistence.core.queries.CoreAttributeGroup;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.queries.AttributeItem;
-import org.eclipse.persistence.sessions.CopyGroup;
 
 /**
  * <b>Purpose</b>: An AttributeGroup represents a set of mappings and nested

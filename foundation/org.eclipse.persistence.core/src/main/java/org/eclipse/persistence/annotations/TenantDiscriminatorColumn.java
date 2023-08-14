@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,15 +17,14 @@
 //       - 518155: [jpa22] add support for repeatable annotations
 package org.eclipse.persistence.annotations;
 
+import jakarta.persistence.DiscriminatorType;
+
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import jakarta.persistence.DiscriminatorType;
-
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Repeatable;
 
 /**
  * Tenant discriminator column(s) are used with a SINGLE_TABLE multitenant

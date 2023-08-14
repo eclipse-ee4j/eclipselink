@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,13 +15,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Abstract class for expression that have exactly two children, such as and/or and relations.

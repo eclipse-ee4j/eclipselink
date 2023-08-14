@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //      Denise Smith - November 2, 2009
 package org.eclipse.persistence.oxm.record;
 
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -26,6 +23,9 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is an OutputStream and the

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,21 +13,6 @@
 // Contributors:
 // dmccann - Mar 2/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm.schema;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.core.mappings.CoreMapping;
@@ -79,6 +64,20 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.Project;
+
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * INTERNAL:

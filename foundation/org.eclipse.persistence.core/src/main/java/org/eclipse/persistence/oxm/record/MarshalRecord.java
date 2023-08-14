@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,34 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.record;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreField;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
+import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.Namespace;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.ObjectBuilder;
+import org.eclipse.persistence.internal.oxm.Root;
+import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.XPathPredicate;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.Login;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
+import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,35 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Stack;
-
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.core.helper.CoreField;
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.oxm.ConversionManager;
-import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.Marshaller;
-import org.eclipse.persistence.internal.oxm.Namespace;
-import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.oxm.ObjectBuilder;
-import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
-import org.eclipse.persistence.internal.oxm.XPathPredicate;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.oxm.mappings.Login;
-import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
-import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
-import org.eclipse.persistence.core.queries.CoreAttributeGroup;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
 
 /**
  * <p>A MarshalRecord encapsulates the marshal target.</p>

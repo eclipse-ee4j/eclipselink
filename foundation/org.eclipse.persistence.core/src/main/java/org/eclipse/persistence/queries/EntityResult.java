@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,23 +16,23 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.queries;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,6 @@
 //     Oracle - initial API and implementation
 //
 package org.eclipse.persistence.internal.jpa.jpql;
-
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
@@ -48,6 +37,17 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This context is used when creating and populating a {@link DatabaseQuery} when traversing the

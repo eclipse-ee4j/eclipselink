@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,15 +17,15 @@
 //       - 397772: JPA 2.1 Entity Graph Support
 package org.eclipse.persistence.internal.queries;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  *

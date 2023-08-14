@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,16 +24,6 @@
 //       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.expressions;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
@@ -48,6 +38,16 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * <p>

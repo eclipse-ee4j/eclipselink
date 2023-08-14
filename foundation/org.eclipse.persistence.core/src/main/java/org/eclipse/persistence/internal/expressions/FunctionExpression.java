@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -46,6 +37,15 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Used for expressions that have 0 to n children.

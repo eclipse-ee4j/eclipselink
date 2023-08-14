@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -26,7 +22,6 @@ import org.eclipse.persistence.internal.oxm.mappings.Login;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -37,6 +32,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.Locator2;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *  INTERNAL:

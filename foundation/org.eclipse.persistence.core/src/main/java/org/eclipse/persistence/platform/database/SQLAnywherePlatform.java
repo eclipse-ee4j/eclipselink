@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2008 Markus KARG(markus-karg@users.sourceforge.net).
  *
  * This program and the accompanying materials are made available under the
@@ -19,16 +19,16 @@
 //       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
 package org.eclipse.persistence.platform.database;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Hashtable;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.queries.ValueReadQuery;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Hashtable;
 
 /**
  * Provides SQL Anywhere specific behaviour.

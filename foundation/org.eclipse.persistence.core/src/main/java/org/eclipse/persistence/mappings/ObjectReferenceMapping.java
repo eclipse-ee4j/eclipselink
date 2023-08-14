@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,6 @@
 //     01/15/2015-2.6 Mythily Parthasarathy
 //       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
 package org.eclipse.persistence.mappings;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
@@ -58,6 +52,12 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Abstract class for 1:1, variable 1:1 and reference mappings

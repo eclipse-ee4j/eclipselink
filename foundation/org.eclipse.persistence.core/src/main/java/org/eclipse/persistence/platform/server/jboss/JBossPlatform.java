@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@
 package org.eclipse.persistence.platform.server.jboss;
 
 import jakarta.persistence.spi.PersistenceUnitInfo;
-
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,24 +15,42 @@
 //     stardif - ClientSession broker ServerSession and change propagation additions
 package org.eclipse.persistence.sessions.broker;
 
-import java.util.*;
-import java.io.Writer;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.history.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.IntegrityChecker;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
+import org.eclipse.persistence.internal.sequencing.Sequencing;
+import org.eclipse.persistence.internal.sequencing.SequencingFactory;
+import org.eclipse.persistence.internal.sequencing.SequencingHome;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.SessionBrokerIdentityMapAccessor;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.internal.sequencing.SequencingHome;
-import org.eclipse.persistence.internal.sequencing.Sequencing;
-import org.eclipse.persistence.internal.sequencing.SequencingFactory;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ServerSession;
+
+import java.io.Writer;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p>

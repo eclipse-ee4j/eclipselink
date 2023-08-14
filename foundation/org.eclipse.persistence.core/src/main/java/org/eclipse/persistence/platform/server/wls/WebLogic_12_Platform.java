@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,15 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.platform.server.wls;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public class WebLogic_12_Platform extends WebLogic_10_Platform {
 

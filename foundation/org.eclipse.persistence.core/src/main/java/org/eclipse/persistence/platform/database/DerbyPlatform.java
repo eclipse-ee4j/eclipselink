@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,26 @@
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.CollectionExpression;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.ValueReadQuery;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.CallableStatement;
@@ -35,26 +55,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.expressions.ExtractOperator;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.CollectionExpression;
-import org.eclipse.persistence.internal.expressions.ConstantExpression;
-import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
-import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
-import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * <p><b>Purpose</b>: Provides Derby DBMS specific behavior.

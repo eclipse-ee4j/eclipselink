@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
 //     Matt MacIvor - 2.5 - initial implementation
 package org.eclipse.persistence.core.queries;
 
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * INTERNAL

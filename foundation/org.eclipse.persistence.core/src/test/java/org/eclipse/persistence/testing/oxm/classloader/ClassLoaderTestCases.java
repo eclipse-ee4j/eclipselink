@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.classloader;
 
-import java.io.InputStream;
+import junit.textui.TestRunner;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
+import org.w3c.dom.Document;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import junit.textui.TestRunner;
-import org.w3c.dom.Document;
-import org.eclipse.persistence.oxm.*;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
+import java.io.InputStream;
 
 public class ClassLoaderTestCases extends OXTestCase {
     private static final String EMPLOYEE_CLASS = "org.eclipse.persistence.testing.oxm.classloader.Employee";

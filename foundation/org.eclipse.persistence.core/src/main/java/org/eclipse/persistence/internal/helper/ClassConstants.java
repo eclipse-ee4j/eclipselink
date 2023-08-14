@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,30 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
-import java.beans.PropertyChangeEvent;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
@@ -51,6 +40,8 @@ import org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.WeakIdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.CursoredStream;
@@ -64,10 +55,23 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.w3c.dom.Document;
 
-import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import java.beans.PropertyChangeEvent;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.Vector;
 
 /**
  * INTERNAL:

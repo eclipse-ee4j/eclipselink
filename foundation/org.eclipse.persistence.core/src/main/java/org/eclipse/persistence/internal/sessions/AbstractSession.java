@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,22 +34,6 @@
 //     05/26/2016-2.7 Tomas Kraus
 //       - 494610: Session Properties map should be Map<String, Object>
 package org.eclipse.persistence.internal.sessions;
-
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
@@ -131,6 +115,22 @@ import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
 import org.eclipse.persistence.sessions.serializers.Serializer;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.Session

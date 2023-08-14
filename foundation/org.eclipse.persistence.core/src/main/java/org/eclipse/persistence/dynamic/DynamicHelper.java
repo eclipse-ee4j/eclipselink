@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,14 +19,7 @@
 package org.eclipse.persistence.dynamic;
 
 //javase imports
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
@@ -39,6 +32,13 @@ import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.tools.schemaframework.DynamicSchemaManager;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A DynamicHelper provides some utility methods to simplify application

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,13 +13,6 @@
 // Contributors:
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.oxm.record;
-
-import java.util.HashMap;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.validation.Schema;
-import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -37,6 +30,12 @@ import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import javax.xml.namespace.QName;
+import javax.xml.validation.Schema;
+import javax.xml.validation.ValidatorHandler;
+import java.util.HashMap;
+import java.util.List;
 
 public class ValidatingMarshalRecord extends MarshalRecord<Marshaller> {
 

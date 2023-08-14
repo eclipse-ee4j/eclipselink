@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,10 @@
 //     rbarkhouse - 2009-10-09 14:17:31 - initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.reuse;
 
+import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
+
 import java.util.Stack;
 import java.util.Vector;
-import java.awt.Image;
-
-import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
 public class Employee {
     public static final int DEFAULT_ID = 123;

@@ -19,24 +19,23 @@
 package org.eclipse.persistence.dynamic;
 
 //static imports
-import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD;
 
-//javase imports
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-
-//EclipseLink imports
-import org.eclipse.persistence.dynamic.DynamicClassLoader.EnumInfo;
-import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.asm.ClassWriter;
 import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
 import org.eclipse.persistence.asm.MethodVisitor;
 import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.asm.Type;
+import org.eclipse.persistence.dynamic.DynamicClassLoader.EnumInfo;
+import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
+import org.eclipse.persistence.internal.helper.Helper;
+
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD;
 
 /**
  * Write the byte codes of a dynamic entity class. The class writer will create

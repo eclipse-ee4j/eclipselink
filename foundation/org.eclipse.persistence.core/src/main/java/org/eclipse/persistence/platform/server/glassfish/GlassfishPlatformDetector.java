@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,12 @@
 //       Bug 482894 - Provide autodetector for Glassfish
 package org.eclipse.persistence.platform.server.glassfish;
 
-import java.security.AccessController;
-
 import org.eclipse.persistence.config.TargetServer;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.platform.server.ServerPlatformDetector;
+
+import java.security.AccessController;
 
 public final class GlassfishPlatformDetector implements ServerPlatformDetector {
 

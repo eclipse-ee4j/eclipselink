@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,24 +16,47 @@
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.mappings.foundation;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ListContainerPolicy;
+import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.AggregateCollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.AggregateMapping;
+import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMapping;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMappingHelper;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Define an embedded collection of objects.

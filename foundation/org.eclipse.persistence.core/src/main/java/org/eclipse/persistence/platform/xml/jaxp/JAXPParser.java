@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.xml.jaxp;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.net.URL;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.validation.Schema;
-
 import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
@@ -43,6 +25,23 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.validation.Schema;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URL;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * <p><b>Purpose</b>:  An implementation of XMLParser using JAXP 1.3 APIs.</p>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,15 +18,14 @@
 //       - 518155: [jpa22] add support for repeatable annotations
 package org.eclipse.persistence.annotations;
 
+import jakarta.persistence.QueryHint;
+
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Repeatable;
-
-import jakarta.persistence.QueryHint;
 
 /**
  * A NamedStoredProcedureQuery annotation allows the definition of queries that

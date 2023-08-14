@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,21 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
-
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
+
+import javax.xml.namespace.QName;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
+import java.io.InputStream;
+import java.util.HashMap;
 
 public class AnyAttributeMultipleAttributesNSExcludeTestCases extends XMLMappingTestCases {
     public AnyAttributeMultipleAttributesNSExcludeTestCases(String name) throws Exception {

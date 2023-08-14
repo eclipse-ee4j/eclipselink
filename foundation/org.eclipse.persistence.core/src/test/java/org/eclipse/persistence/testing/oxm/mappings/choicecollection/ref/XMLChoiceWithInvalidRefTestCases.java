@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,9 @@
 // David McCann - 2.3.3 - Initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref;
 
-import java.util.ArrayList;
-
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
+
+import java.util.ArrayList;
 
 /**
  * Tests an invalid reference, i.e. one missing a primary key value.

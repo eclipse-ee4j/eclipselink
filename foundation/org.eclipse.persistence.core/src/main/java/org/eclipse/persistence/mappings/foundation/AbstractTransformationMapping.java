@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,17 +17,6 @@
 //                       warn if expected "_persistence_//_vh" method not found
 //                       instead of throwing NPE during deploy validation.
 package org.eclipse.persistence.mappings.foundation;
-
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -78,6 +67,17 @@ import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: A transformation mapping is used for a specialized translation between how

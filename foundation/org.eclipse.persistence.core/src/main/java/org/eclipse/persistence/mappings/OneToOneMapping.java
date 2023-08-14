@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,33 +19,70 @@
 //       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
 package org.eclipse.persistence.mappings;
 
-import java.util.*;
-
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
-import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
-import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.FieldExpression;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.queries.ComplexQueryResult;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: One to one mappings are used to represent a pointer references

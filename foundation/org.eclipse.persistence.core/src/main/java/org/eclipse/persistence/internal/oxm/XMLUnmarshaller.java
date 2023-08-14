@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,6 @@
 //     Blaise Doughan - 2.6 - initial implementation
 //     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling
 package org.eclipse.persistence.internal.oxm;
-
-import java.io.File;
-import java.io.InputStream;
-import java.io.Reader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-
-import javax.xml.transform.Source;
-import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -49,6 +36,18 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
+
+import javax.xml.transform.Source;
+import javax.xml.validation.Schema;
+import java.io.File;
+import java.io.InputStream;
+import java.io.Reader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * <p>Class used to unmarshal XML &amp; JSON to objects.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,14 +20,6 @@
 //     09/12/2018 - Will Dazey
 //       - 391279: Add support for Unidirectional OneToMany mappings with non-nullable values
 package org.eclipse.persistence.internal.queries;
-
-import java.io.Serializable;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -59,6 +51,14 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
+
+import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:

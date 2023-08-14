@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,9 +17,6 @@
 //     09/12/2018 - Will Dazey
 //       - 391279: Add support for Unidirectional OneToMany mappings with non-nullable values
 package org.eclipse.persistence.mappings;
-
-import java.util.Iterator;
-import java.util.Vector;
 
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -44,6 +41,9 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: UnidirectionalOneToManyMapping doesn't have 1:1 back reference mapping.

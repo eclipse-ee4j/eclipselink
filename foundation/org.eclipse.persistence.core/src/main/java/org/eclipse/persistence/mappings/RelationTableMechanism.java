@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,6 @@
 //     14/05/2012-2.4 Guy Pelletier
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.mappings;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.TablePerMultitenantPolicy;
@@ -52,6 +45,13 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Contains relation table functionality

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,25 +14,25 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.descriptors;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Iterator;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.queries.ReadObjectQuery;
-import org.eclipse.persistence.queries.DataReadQuery;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * INTERNAL:

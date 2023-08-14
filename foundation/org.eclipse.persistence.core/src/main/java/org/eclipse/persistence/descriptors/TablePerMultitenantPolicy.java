@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,6 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.descriptors;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import org.eclipse.persistence.annotations.TenantTableDiscriminatorType;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -33,6 +27,12 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * A table per tenant multitenant policy. Tables can either be per schema
