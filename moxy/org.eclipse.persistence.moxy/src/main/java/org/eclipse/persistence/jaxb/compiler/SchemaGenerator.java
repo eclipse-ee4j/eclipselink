@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb.compiler;
 
-import java.awt.Image;
-import java.beans.Introspector;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -115,6 +113,7 @@ public class SchemaGenerator {
 
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "jakarta.mail.internet.MimeMultipart";
+    private static final String AWT_IMAGE = "java.awt.Image";
     private static final String SWA_REF_IMPORT = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";
 
     private static final String COLON = ":";
@@ -611,7 +610,7 @@ public class SchemaGenerator {
     }
 
     public String getSchemaTypeNameForClassName(String className) {
-        return Introspector.decapitalize(className.substring(className.lastIndexOf(DOT_CHAR) + 1));
+        return org.eclipse.persistence.internal.helper.Helper.decapitalize(className.substring(className.lastIndexOf(DOT_CHAR) + 1));
     }
 
     public ArrayList<Object> getEnumerationFacetsFor(EnumTypeInfo info) {
@@ -822,7 +821,7 @@ public class SchemaGenerator {
                         QName schemaType = helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
                         if (schemaType != null) {
                             element.setType(Constants.SCHEMA_PREFIX + COLON + schemaType.getLocalPart());
-                        } else if (areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, Image.class) || areEquals(javaClass, Source.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
+                        } else if (areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, AWT_IMAGE) || areEquals(javaClass, Source.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
                             schemaType = Constants.BASE_64_BINARY_QNAME;
                             if(nextElement.getTypeMappingInfo() != null) {
                                 if(nextElement.isXmlAttachmentRef()) {

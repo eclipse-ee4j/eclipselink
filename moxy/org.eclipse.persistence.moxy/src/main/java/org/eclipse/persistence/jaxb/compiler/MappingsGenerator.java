@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb.compiler;
 
-import java.awt.Image;
-import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -44,6 +42,7 @@ import jakarta.xml.bind.annotation.XmlValue;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 
+import org.eclipse.persistence.Version;
 import org.eclipse.persistence.asm.ClassWriter;
 import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
 import org.eclipse.persistence.asm.MethodVisitor;
@@ -110,6 +109,7 @@ import org.eclipse.persistence.internal.oxm.record.XMLTransformationRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
@@ -1386,7 +1386,7 @@ public class MappingsGenerator {
             QName elementName = element.getElementName();
             JavaClass    pType = element.getJavaType();
             String    pTypeName = element.getJavaTypeName();
-            boolean isBinaryType = (areEquals(pType, AnnotationsProcessor.JAVAX_ACTIVATION_DATAHANDLER) || areEquals(pType, byte[].class) || areEquals(pType, Image.class) || areEquals(pType, Source.class) || areEquals(pType, AnnotationsProcessor.JAVAX_MAIL_INTERNET_MIMEMULTIPART));
+            boolean isBinaryType = (areEquals(pType, AnnotationsProcessor.JAVAX_ACTIVATION_DATAHANDLER) || areEquals(pType, byte[].class) || areEquals(pType, "java.awt.Image") || areEquals(pType, Source.class) || areEquals(pType, AnnotationsProcessor.JAVAX_MAIL_INTERNET_MIMEMULTIPART));
             boolean isText = pType.isEnum() || (!isBinaryType && !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME)));
             String xPath = wrapperXPath;
 
@@ -1721,7 +1721,7 @@ public class MappingsGenerator {
         } else {
             if(areEquals(property.getType(), javax.xml.transform.Source.class)) {
                 mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/xml", (DatabaseMapping)mapping));
-            } else if(areEquals(property.getType(), java.awt.Image.class)) {
+            } else if(areEquals(property.getType(), "java.awt.Image")) {
                 mapping.setMimeTypePolicy(new FixedMimeTypePolicy("image/png", (DatabaseMapping)mapping));
             } else {
                 mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream", (DatabaseMapping)mapping));
@@ -2069,6 +2069,16 @@ public class MappingsGenerator {
         cw.visitEnd();
 
         byte[] classBytes =cw.toByteArray();
+
+        if (NEEDS_OPEN) {
+            Module moxyModule = MappingsGenerator.class.getModule();
+            if (moxyModule.isNamed() && !moxyModule.isExported(WrappedValue.class.getPackageName(), getJaxbClassLoader().getUnnamedModule())) {
+                // our generated classes live in unnamed module, therefore we need to export our private class
+                // to the unnamed module as we don't want to export internal package from eclipselink.jar
+                moxyModule.addExports(WrappedValue.class.getPackageName(), getJaxbClassLoader().getUnnamedModule());
+            }
+        }
+
         Class<?> generatedClass = getJaxbClassLoader().generateClass(className, classBytes);
         return generatedClass;
     }
@@ -2928,8 +2938,7 @@ public class MappingsGenerator {
     }
 
     public String getSchemaTypeNameForClassName(String className) {
-        String typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
-        return typeName;
+        return org.eclipse.persistence.internal.helper.Helper.decapitalize(className.substring(className.lastIndexOf('.') + 1));
     }
 
     public void processGlobalElements(CoreProject project) {
@@ -2973,17 +2982,7 @@ public class MappingsGenerator {
                     if(nextElement.getJavaType().isEnum()) {
                         if(!(helper.getClassLoader() instanceof DynamicClassLoader)) {
                             //  Only generate enum wrappers in non-dynamic case.
-                            Class<?> generatedClass = addEnumerationWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement, nextClassName, attributeTypeName);
-                            this.qNamesToGeneratedClasses.put(next, generatedClass);
-                            if(nextElement.getTypeMappingInfo() != null) {
-                                typeMappingInfoToGeneratedClasses.put(nextElement.getTypeMappingInfo(), generatedClass);
-                            }
-                            try{
-                                Class<Object> declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
-                                this.qNamesToDeclaredClasses.put(next, declaredClass);
-                            }catch(Exception ex) {
-
-                            }
+                            addEnumerationWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement, nextClassName, attributeTypeName);
                         }
 
                     }
@@ -3026,7 +3025,11 @@ public class MappingsGenerator {
     private Class<?> addEnumerationWrapperAndDescriptor(TypeInfo type, String javaClassName, ElementDeclaration nextElement, String nextClassName, String attributeTypeName) {
         Class<?> generatedClass = classToGeneratedClasses.get(javaClassName);
         if(generatedClass == null){
-            generatedClass = generateWrapperClassAndDescriptor(type, nextElement.getElementName(), nextElement, nextClassName, attributeTypeName);
+            QName q = nextElement.getElementName();
+            if (q == null) {
+                q = new QName(type.getClassNamespace(), type.getSchemaTypeName());
+            }
+            generatedClass = generateWrapperClassAndDescriptor(type, q, nextElement, nextClassName, attributeTypeName);
             classToGeneratedClasses.put(javaClassName, generatedClass);
         }
         return generatedClass;
@@ -3286,11 +3289,13 @@ public class MappingsGenerator {
         byte[] classBytes = cw.toByteArray();
         //byte[] classBytes = new byte[]{};
 
-        Module moxyModule = MappingsGenerator.class.getModule();
-        if (moxyModule.isNamed() && !moxyModule.isExported(WrappedValue.class.getPackageName(), getJaxbClassLoader().getUnnamedModule())) {
-            // our generated classes live in unnamed module, therefore we need to export our private class
-            // to the unnamed module as we don't want to export internal package from eclipselink.jar
-            moxyModule.addExports(WrappedValue.class.getPackageName(), getJaxbClassLoader().getUnnamedModule());
+        if (NEEDS_OPEN) {
+            Module moxyModule = MappingsGenerator.class.getModule();
+            if (moxyModule.isNamed() && !moxyModule.isExported(WrappedValue.class.getPackageName(), getJaxbClassLoader().getUnnamedModule())) {
+                // our generated classes live in unnamed module, therefore we need to export our private class
+                // to the unnamed module as we don't want to export internal package from eclipselink.jar
+                moxyModule.addExports(WrappedValue.class.getPackageName(), getJaxbClassLoader().getUnnamedModule());
+            }
         }
         Class<?> generatedClass = getJaxbClassLoader().generateClass(className, classBytes);
         return generatedClass;
@@ -3528,5 +3533,18 @@ public class MappingsGenerator {
             xmlMapping = (Mapping) mappingIterator.next();
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, xmlMapping.toString(), new Object[0], false);
         }
+    }
+
+    private static final boolean NEEDS_OPEN;
+
+    static {
+        boolean b = false;
+        try {
+            b = JAXBContext.class.getModule() != Version.class.getModule();
+        } catch (NoSuchMethodError nsme) {
+            //android
+            b = false;
+        }
+        NEEDS_OPEN = b;
     }
 }

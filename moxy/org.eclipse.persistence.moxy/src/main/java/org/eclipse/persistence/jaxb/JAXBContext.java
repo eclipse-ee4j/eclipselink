@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@
 //     Dmitry Kornilov - 2.6.1 - BeanValidationHelper refactoring
 package org.eclipse.persistence.jaxb;
 
-import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -1478,7 +1477,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 if (name == null) {
                     Class<?> theClass = (Class) type;
                     //Change default for byte[] to Base64 (JAXB 2.0 default)
-                    if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("jakarta.activation.DataHandler")) {
+                    if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || theClass.getCanonicalName().equals("java.awt.Image") || type == Source.class || theClass.getCanonicalName().equals("jakarta.activation.DataHandler")) {
                         name = Constants.BASE_64_BINARY_QNAME;
                     } else if (type == CoreClassConstants.OBJECT) {
                         name = Constants.ANY_TYPE_QNAME;
@@ -1729,6 +1728,17 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
     }
 
-    private static final boolean NEEDS_OPEN = JAXBContext.class.getModule() != Version.class.getModule();
+    private static final boolean NEEDS_OPEN;
+
+    static {
+        boolean b = false;
+        try {
+            b = JAXBContext.class.getModule() != Version.class.getModule();
+        } catch (NoSuchMethodError nsme) {
+            //android
+            b = false;
+        }
+        NEEDS_OPEN = b;
+    }
 
 }
