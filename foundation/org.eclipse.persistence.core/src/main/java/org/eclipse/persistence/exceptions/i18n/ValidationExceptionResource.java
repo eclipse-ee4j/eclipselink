@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,9 +43,9 @@
 //       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.exceptions.i18n;
 
-import java.util.ListResourceBundle;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+
+import java.util.ListResourceBundle;
 
 /**
  * INTERNAL:

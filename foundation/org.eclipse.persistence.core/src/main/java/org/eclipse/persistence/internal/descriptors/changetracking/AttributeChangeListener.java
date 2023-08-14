@@ -14,15 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.descriptors.changetracking;
 
-import java.beans.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import java.beans.PropertyChangeEvent;
 
 /**
  * <p>

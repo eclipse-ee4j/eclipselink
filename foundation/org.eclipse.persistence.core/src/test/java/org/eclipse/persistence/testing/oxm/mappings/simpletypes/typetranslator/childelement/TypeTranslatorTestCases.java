@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,8 @@
 package org.eclipse.persistence.testing.oxm.mappings.simpletypes.typetranslator.childelement;
 
 // JDK imports
-import java.io.InputStream;
 
-// TopLink imports
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class TypeTranslatorTestCases extends XMLMappingTestCases {

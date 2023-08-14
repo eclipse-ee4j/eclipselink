@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Denise Smith - 2.6 - initial implementation
 //     Radek Felman - 2.7.5 - Bug 389815 - Enhancement Request - JSON specific multidimensional array support
 package org.eclipse.persistence.oxm.record;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.List;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
@@ -42,6 +36,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
+
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.List;
 
 public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalRecord<XMLMarshaller> {
 

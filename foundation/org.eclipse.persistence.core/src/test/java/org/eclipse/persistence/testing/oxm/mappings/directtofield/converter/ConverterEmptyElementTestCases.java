@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,8 @@
 // Denise Smith - September 22 /2009
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.converter;
 
-import java.io.InputStream;
-
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullvalue.xmlelement.DefaultNullValueElementProject;
-import org.w3c.dom.Document;
 
 public class ConverterEmptyElementTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/converter/employee_empty.xml";

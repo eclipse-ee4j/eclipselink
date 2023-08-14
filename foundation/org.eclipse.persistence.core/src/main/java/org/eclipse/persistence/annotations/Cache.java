@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.annotations;
 
+import org.eclipse.persistence.config.CacheIsolationType;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_OBJECT_CHANGES;
 import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
 import static org.eclipse.persistence.config.CacheIsolationType.SHARED;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.eclipse.persistence.config.CacheIsolationType;
 
 /**
  * The Cache annotation is used to configure the EclipseLink object cache.

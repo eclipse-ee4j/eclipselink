@@ -14,20 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis.interactions;
 
-import java.io.*;
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.eis.EISAccessor;
+import org.eclipse.persistence.eis.EISDOMRecord;
+import org.eclipse.persistence.eis.EISDescriptor;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.w3c.dom.Element;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.eis.*;
+
+import java.io.StringWriter;
+import java.util.Vector;
 
 /**
  * Defines the specification for a call to a JCA interaction that uses XML.

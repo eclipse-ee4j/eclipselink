@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.sql.ResultSet;
-
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.sql.ResultSet;
 
 /**
  * Marks {@link DatabasePlatform} specific wrapper of instance from {@link java.sql.ResultSet}.

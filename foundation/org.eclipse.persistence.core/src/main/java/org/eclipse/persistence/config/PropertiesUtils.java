@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,12 +20,12 @@
 //       - 466626: Fix bug in getMethods() when Java 2 security is enabled.
 package org.eclipse.persistence.config;
 
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
  * A static utility class that handles parsing a String

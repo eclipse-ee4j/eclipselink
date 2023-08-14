@@ -20,16 +20,20 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.util.List;
-import java.util.Vector;
-import java.io.*;
-import java.math.BigDecimal;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.DefaultSequence;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p>

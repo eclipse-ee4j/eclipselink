@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sequencing;
 
-import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.exceptions.ConcurrencyException;
+import org.eclipse.persistence.sessions.Login;
 
 class DatabaseSessionConnectionHandler implements SequencingConnectionHandler {
     DatabaseSessionConnectionHandler(DatabaseSessionImpl ownerSession, Login login) {

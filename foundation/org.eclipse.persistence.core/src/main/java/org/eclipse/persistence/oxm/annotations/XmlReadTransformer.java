@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
 //     Oracle = 2.2 - Initial contribution
 package org.eclipse.persistence.oxm.annotations;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * <p><b>Purpose: </b>XmlReadTransformer is used to allow the user direct access to the XML in order to populate their

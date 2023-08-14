@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm.mappings;
 
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.core.mappings.converters.CoreConverter;
@@ -28,6 +25,9 @@ import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
+
+import java.util.List;
+import java.util.Map;
 
 public interface ChoiceCollectionMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,

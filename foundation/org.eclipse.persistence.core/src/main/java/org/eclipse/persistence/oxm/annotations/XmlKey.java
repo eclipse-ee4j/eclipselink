@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 // dmccann - September 14/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.oxm.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 /**
  * <p>XmlKey is used to mark a property as a key, to be referenced using a key-based mapping via {@code XmlJoinNode}. This is
  * similar to the {@code XmlID} annotation, but doesn't require the property be bound to the schema type ID. XmlKey is

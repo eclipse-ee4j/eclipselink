@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,15 @@
 //       - 341940: Add disable/enable allowing native queries
 package org.eclipse.persistence.sequencing;
 
-import java.util.Vector;
-import java.math.BigDecimal;
-
-import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.sessions.DataRecord;
+
+import java.math.BigDecimal;
+import java.util.Vector;
 
 /**
  * <p>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,17 +16,16 @@
 package org.eclipse.persistence.internal.sessions.factories;
 
 //javase imports
-import java.util.Iterator;
 
-import javax.xml.namespace.QName;
-
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sessions.Project;
+
+import javax.xml.namespace.QName;
+import java.util.Iterator;
+
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 public abstract class NamespaceResolvableProject extends Project {
 

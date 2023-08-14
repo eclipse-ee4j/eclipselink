@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,10 @@ import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootNullSchemaRefe
 import org.eclipse.persistence.testing.oxm.xmlroot.nil.XMLRootNilForceWrapTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.nil.XMLRootNilTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootDurationTestCases;
-import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootSimpleCollectionTestCases;
-import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootSimpleTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootNoPrefixTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootNullUriTestCases;
+import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootSimpleCollectionTestCases;
+import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootSimpleTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.simple.XMLRootXMLGregorianCalendarTestCases;
 
 public class XMLRootTestSuite extends TestCase {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.remote;
 
-import java.rmi.server.ObjID;
-import java.io.*;
-import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.indirection.*;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
+import org.eclipse.persistence.internal.indirection.UnitOfWorkValueHolder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
+
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.rmi.server.ObjID;
 
 /**
  * Remote value holders can be invoked locally and remotely.

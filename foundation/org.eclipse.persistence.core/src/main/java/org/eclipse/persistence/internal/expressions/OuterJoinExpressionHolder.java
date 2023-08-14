@@ -15,6 +15,13 @@
 //       - 374771 : TREAT support
 package org.eclipse.persistence.internal.expressions;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.platform.database.DB2MainframePlatform;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
@@ -22,13 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.platform.database.DB2MainframePlatform;
 
 /**
  * Holder class storing a QueryKeyExpression representing an outer join

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,15 +33,6 @@
 //       - 440018: Failed to find mbean server warning in the wls admin server log
 package org.eclipse.persistence.platform.server.wls;
 
-import java.lang.reflect.Method;
-import java.security.AccessController;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.logging.SessionLog;
@@ -50,6 +41,14 @@ import org.eclipse.persistence.services.weblogic.MBeanWebLogicRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.wls.WebLogicTransactionController11;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
 
 /**
  * PUBLIC:

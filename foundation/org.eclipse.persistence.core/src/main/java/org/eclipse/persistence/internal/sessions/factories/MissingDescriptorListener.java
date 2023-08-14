@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.factories;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.eis.EISObjectPersistenceXMLProject;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 /**
  * INTERNAL:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
@@ -27,9 +27,8 @@
 //       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
 package org.eclipse.persistence.mappings.converters;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.PersistenceException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -44,8 +43,8 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.sessions.Session;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.PersistenceException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 /**
  * A JPA attribute converter class wrapped with an EclipseLink converter. This

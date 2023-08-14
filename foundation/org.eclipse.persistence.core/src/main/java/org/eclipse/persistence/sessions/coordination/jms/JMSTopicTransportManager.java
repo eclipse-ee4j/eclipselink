@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,12 @@
 //     cdelahun - Bug 214534: added JMS Cache Coordination for publishing only
 package org.eclipse.persistence.sessions.coordination.jms;
 
-import java.util.Map;
-
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.jms.JMSTopicRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
+
+import java.util.Map;
 
 /**
  * <p>

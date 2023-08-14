@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,6 @@
 //       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.internal.queries;
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -46,6 +41,11 @@ import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:

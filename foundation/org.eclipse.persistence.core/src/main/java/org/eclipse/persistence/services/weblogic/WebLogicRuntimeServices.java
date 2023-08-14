@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,10 +29,10 @@
 //       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
 package org.eclipse.persistence.services.weblogic;
 
-import java.util.Locale;
-
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.services.RuntimeServices;
+
+import java.util.Locale;
 
 /**
  * <p>

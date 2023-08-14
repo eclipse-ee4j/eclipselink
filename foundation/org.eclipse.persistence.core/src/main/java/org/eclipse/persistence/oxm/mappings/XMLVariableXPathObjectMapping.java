@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,10 +13,6 @@
 // Contributors:
 //     Matt MacIvor - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.oxm.mappings;
-
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -37,6 +33,9 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Session;
+
+import javax.xml.namespace.QName;
+import java.util.Vector;
 
 public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  implements VariableXPathObjectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session,  XMLUnmarshaller, XMLRecord>, XMLMapping {
 

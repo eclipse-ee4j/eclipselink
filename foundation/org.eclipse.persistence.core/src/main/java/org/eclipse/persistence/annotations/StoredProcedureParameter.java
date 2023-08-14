@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,12 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.annotations;
 
+import jakarta.persistence.ParameterMode;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import jakarta.persistence.ParameterMode;
-
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import static org.eclipse.persistence.annotations.Direction.IN;
 
 /**

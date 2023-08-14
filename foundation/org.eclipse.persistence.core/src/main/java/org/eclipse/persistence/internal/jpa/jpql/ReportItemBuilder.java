@@ -19,10 +19,6 @@
 //       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
@@ -79,6 +75,10 @@ import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE;
 import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_LAST_PATH;

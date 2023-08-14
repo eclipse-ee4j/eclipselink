@@ -14,14 +14,14 @@
 //     tware - initial implementation as part of JPA 2.0 RI
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * INTERNAL

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,16 @@
 //       - 254437: Added getSystemProperty methods and fixed line separator property.
 package org.eclipse.persistence.internal.security;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.JavaVersion;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -36,16 +46,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.JavaVersion;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.platform.server.ServerPlatformBase;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 /**
  * INTERNAL:

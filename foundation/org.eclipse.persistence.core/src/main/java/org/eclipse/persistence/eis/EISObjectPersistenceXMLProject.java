@@ -15,17 +15,7 @@
 package org.eclipse.persistence.eis;
 
 // javase imports
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
-// Java extension imports
-import javax.xml.namespace.QName;
-
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.interactions.XMLInteraction;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
@@ -64,6 +54,14 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatasourceLogin;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * INTERNAL:

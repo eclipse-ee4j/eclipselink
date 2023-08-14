@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,18 +18,7 @@
 //       - 489794: Add support for WebSphere EJBEmbeddable platform.
 package org.eclipse.persistence.internal.sessions.factories;
 
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-
-import java.util.Iterator;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.internal.sessions.factories.model.login.AppendNewElementsOrderingPolicyConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DescriptorLevelDocumentPreservationPolicyConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DocumentPreservationPolicyConfig;
@@ -46,7 +35,17 @@ import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSph
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_7_0_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_EJBEmbeddable_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_Liberty_Platform_Config;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.TransportManagerConfig;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+
+import java.util.Iterator;
+
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 /**
  * INTERNAL:

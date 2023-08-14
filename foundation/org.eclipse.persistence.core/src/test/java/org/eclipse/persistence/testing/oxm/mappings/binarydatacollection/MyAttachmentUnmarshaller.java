@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 
-import java.io.IOException;
-import java.util.HashMap;
-
 import jakarta.activation.DataHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 public class MyAttachmentUnmarshaller implements XMLAttachmentUnmarshaller {
     public static final String PHOTO_PATH1 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,15 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
-
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.text.MessageFormat;
-import java.util.Map;
-import java.util.Properties;
 
 import org.eclipse.persistence.Version;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -40,6 +31,15 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
+
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.text.MessageFormat;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * <p>

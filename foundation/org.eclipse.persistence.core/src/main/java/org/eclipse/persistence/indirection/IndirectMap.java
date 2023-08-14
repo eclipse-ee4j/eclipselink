@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,10 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.indirection;
+
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
+import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
 
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
@@ -29,10 +33,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
-import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
-import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
 
 /**
  * IndirectMap allows a domain class to take advantage of TopLink indirection

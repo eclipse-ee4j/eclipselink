@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,16 +15,15 @@
 //        - New file introduced for bug 211300.
 package org.eclipse.persistence.annotations;
 
+import jakarta.persistence.FetchType;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import static jakarta.persistence.FetchType.EAGER;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import jakarta.persistence.FetchType;
-
-import static jakarta.persistence.FetchType.EAGER;
 
 /**
  * Transformation is an optional annotation for org.eclipse.persistence.mappings.TransformationMapping.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,11 +17,12 @@
 //       - 397772: JPA 2.1 Entity Graph Support
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
-
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.queries.AttributeGroup;
+
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * <b>Purpose</b>: Define how an object is to be copied.<p>

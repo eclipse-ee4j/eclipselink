@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2015 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  * Copyright (c) 2016 Payara Foundation and/or its affiliates.
  *
  * This program and the accompanying materials are made available under the
@@ -21,6 +21,13 @@
 //       - 458877 : Add national character support
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -28,13 +35,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Hashtable;
-
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.queries.ValueReadQuery;
-import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  *    <p><b>Purpose</b>: Provides Informix specific behavior.

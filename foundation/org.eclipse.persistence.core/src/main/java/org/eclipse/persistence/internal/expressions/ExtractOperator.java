@@ -14,12 +14,12 @@
 //     07/29/2022-4.0.0 Tomas Kraus - 1573: Fixed types returned by JPQL EXTRACT()
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Expression operator customization for {@code EXTRACT(<date-time-part> FROM <date-time>)}.

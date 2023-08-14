@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,8 @@
 package org.eclipse.persistence.internal.expressions;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 public class NestedTable extends DatabaseTable {
     //the handle of the queryKey

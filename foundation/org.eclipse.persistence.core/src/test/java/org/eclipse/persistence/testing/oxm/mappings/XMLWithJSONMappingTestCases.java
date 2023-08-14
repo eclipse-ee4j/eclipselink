@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings;
 
+import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
+import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
+import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.NamespacePrefixMapper;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.xml.sax.InputSource;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,17 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
-import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
-import org.eclipse.persistence.oxm.MediaType;
-import org.eclipse.persistence.oxm.NamespacePrefixMapper;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.xml.sax.InputSource;
 
 public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     private String controlJSONLocation;

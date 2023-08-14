@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,6 @@
 // dmccann - April 30/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
@@ -30,6 +21,14 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.schemamodelgenerator.GenerateSchemaTestCases;
 import org.w3c.dom.Document;
+
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
     protected static final String MYNS = "http://www.example.org/customer-example";

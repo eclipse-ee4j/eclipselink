@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,12 +17,11 @@ package org.eclipse.persistence.testing.oxm.mappings.compositecollection.identif
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
+import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.withgroupingelement.CompositeCollectionEmptyCollectionTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.withgroupingelement.CompositeCollectionNullElementTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.withgroupingelement.CompositeCollectionSingleElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.withgroupingelement.CompositeCollectionWithGroupingElementIdentifiedByNameTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.withoutgroupingelement.CompositeCollectionWithoutGroupingElementIdentifiedByNameTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.withgroupingelement.CompositeCollectionSingleElementTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.withgroupingelement.CompositeCollectionNullElementTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.withgroupingelement.CompositeCollectionEmptyCollectionTestCases;
 
 public class IdentifiedByNameTestCases extends TestCase {
 

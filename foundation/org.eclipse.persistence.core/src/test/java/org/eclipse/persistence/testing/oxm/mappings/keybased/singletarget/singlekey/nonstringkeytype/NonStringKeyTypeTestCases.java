@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singlekey.nonstringkeytype;
 
-import java.util.ArrayList;
-
 import org.eclipse.persistence.testing.oxm.mappings.keybased.KeyBasedMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Root;
+
+import java.util.ArrayList;
 
 public class NonStringKeyTypeTestCases extends KeyBasedMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/keybased/singletarget/singlekey/attributekey/instance.xml";

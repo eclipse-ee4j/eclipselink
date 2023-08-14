@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     bdoughan - October 21/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.List;
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
@@ -25,6 +22,9 @@ import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+
+import javax.xml.namespace.QName;
+import java.util.List;
 
 public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
 

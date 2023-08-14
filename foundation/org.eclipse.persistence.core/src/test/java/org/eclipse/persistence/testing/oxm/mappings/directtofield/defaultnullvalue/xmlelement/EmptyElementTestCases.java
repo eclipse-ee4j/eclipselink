@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,11 @@
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullvalue.xmlelement;
 
 import junit.textui.TestRunner;
-
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.OXTestCase.Metadata;
-import org.eclipse.persistence.testing.oxm.OXTestCase.Platform;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullvalue.Employee;
-
 import org.w3c.dom.Document;
 
 public class EmptyElementTestCases extends XMLMappingTestCases {

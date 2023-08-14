@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,15 +12,10 @@
 
 package org.eclipse.persistence.testing.oxm.xmllogin;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
 import junit.framework.TestCase;
-
 import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
-import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.documentpreservation.AppendNewElementsOrderingPolicy;
 import org.eclipse.persistence.oxm.documentpreservation.IgnoreNewElementsOrderingPolicy;
@@ -30,6 +25,9 @@ import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
+
+import java.io.StringReader;
+import java.io.StringWriter;
 
 public class XMLLoginDeploymentXMLTestCases extends TestCase {
 

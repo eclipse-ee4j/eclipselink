@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,9 @@
 //     tware - updates for JPA 2.0 specification
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.util.List;
-
 import org.eclipse.persistence.internal.jpa.parsing.TemporalLiteralNode.TemporalType;
+
+import java.util.List;
 
 /**
  * INTERNAL

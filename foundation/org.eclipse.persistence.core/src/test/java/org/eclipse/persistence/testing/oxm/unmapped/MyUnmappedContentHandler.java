@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.unmapped;
 
+import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 
 public class MyUnmappedContentHandler implements UnmappedContentHandler {
     public static int INSTANCE_COUNTER = 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,10 +13,6 @@
 // Contributors:
 //     rbarkhouse - 2009-11-26 13:04:58 - 2.0 - initial implementation
 package org.eclipse.persistence.oxm.mappings;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -44,6 +40,10 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * This mapping is used to map a back-pointer.  It represents the "opposite" of one of the

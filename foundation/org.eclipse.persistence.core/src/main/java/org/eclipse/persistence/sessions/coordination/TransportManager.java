@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,19 +18,18 @@
 //       WebLogic: weblogic.jndi.WLInitialContextFactory
 package org.eclipse.persistence.sessions.coordination;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.naming.Context;
-import javax.naming.NamingException;
-
 import org.eclipse.persistence.exceptions.CommunicationException;
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.coordination.ConnectToHostCommand;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * <p>

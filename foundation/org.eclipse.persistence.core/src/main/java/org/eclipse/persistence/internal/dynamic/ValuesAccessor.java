@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,7 @@
 package org.eclipse.persistence.internal.dynamic;
 
 //javase imports
-import java.util.Map;
 
-//EclipseLink imports
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl.PropertyWrapper;
@@ -28,6 +26,8 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+
+import java.util.Map;
 
 /**
  * ValueAccessor is a specialized AttributeAccessor enabling access to property values

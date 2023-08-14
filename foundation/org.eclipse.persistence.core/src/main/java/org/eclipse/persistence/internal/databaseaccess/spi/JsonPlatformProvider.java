@@ -15,11 +15,11 @@
 //       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.databaseaccess.spi;
 
-import java.util.Map;
-import java.util.function.Supplier;
-
 import org.eclipse.persistence.internal.databaseaccess.DatabaseJsonPlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+
+import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Java service provider interface for database platform JSOn extension.

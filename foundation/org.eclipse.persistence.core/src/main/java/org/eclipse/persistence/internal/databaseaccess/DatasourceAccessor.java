@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,17 +17,18 @@
 //              will allow the retry code to function.
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sequencing.SequencingCallback;
 import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
+
+import java.util.Vector;
 
 /**
  * INTERNAL:

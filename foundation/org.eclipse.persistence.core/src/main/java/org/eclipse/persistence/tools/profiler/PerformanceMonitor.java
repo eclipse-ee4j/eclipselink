@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,21 @@
 //     James Sutherland (Oracle) - initial API and implementation
 package org.eclipse.persistence.tools.profiler;
 
-import java.text.NumberFormat;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.io.*;
-
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.SessionProfiler;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.text.NumberFormat;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p><b>Purpose</b>: A tool used to provide performance monitoring information in a server environment.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,16 +12,14 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.nillable;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.OXTestCase.Metadata;
-import org.eclipse.persistence.testing.oxm.OXTestCase.Platform;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
+
+import java.util.Vector;
 
 public class CompositeCollectionAbsentNodeTestCases extends XMLWithJSONMappingTestCases {
 

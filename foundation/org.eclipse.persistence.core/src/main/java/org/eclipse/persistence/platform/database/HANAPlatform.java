@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
- * Copyright (c) 2012, 2022 SAP. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2023 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,21 @@
 // lists or the bug database.
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
@@ -36,21 +51,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
-
-import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
-import org.eclipse.persistence.internal.expressions.FunctionExpression;
-import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.ReadQuery;
-import org.eclipse.persistence.queries.ValueReadQuery;
-import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
-import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
  * <b>Database Platform for SAP HANA</b> <br>
@@ -171,7 +171,7 @@ public final class HANAPlatform extends DatabasePlatform {
     /**
      * EclipseLink does not support length dependent type mapping.
      * Map varchar types with length > MAX_VARCHAR_UNICODE_LENGTH to CLOB (i.e clob); shorter types to NVARCHAR (n)
-     * See also bugs 317597, 317448
+     * See also bugs 317597, 202348
      */
     protected void printFieldTypeSize(Writer writer, FieldDefinition field,
             FieldTypeDefinition fieldType) throws IOException {

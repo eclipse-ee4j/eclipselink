@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,12 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel;
 
+import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.JDBCTypes.DATE_TYPE;
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.JDBCTypes.NUMERIC_TYPE;
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.JDBCTypes.VARCHAR_TYPE;
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.OraclePLSQLTypes.PLSQLBoolean;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class PLSQLCallModelTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/PLSQLCallResult.xml";

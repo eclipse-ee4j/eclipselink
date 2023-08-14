@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 package org.eclipse.persistence.logging;
 
 
+import org.eclipse.persistence.sessions.Session;
+
 import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -23,8 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
-
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * PUBLIC:

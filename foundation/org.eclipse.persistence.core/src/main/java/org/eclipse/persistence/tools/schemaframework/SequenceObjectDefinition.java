@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,16 @@
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
-import org.eclipse.persistence.queries.SQLCall;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sequencing.Sequence;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * <p>

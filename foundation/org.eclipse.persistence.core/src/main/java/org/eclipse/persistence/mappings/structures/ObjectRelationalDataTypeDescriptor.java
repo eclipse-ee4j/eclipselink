@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,14 +16,6 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.mappings.structures;
 
-import java.sql.Array;
-import java.sql.Ref;
-import java.sql.Struct;
-import java.sql.Types;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -39,6 +31,14 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.sql.Array;
+import java.sql.Ref;
+import java.sql.Struct;
+import java.sql.Types;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose:</b>

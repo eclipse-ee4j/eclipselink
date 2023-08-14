@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.keybased;
 
-import java.io.*;
-import javax.xml.parsers.*;
-import org.eclipse.persistence.oxm.*;
+import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-//import org.custommonkey.xmlunit.Diff;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
     protected static final String CONTROL_ID = "222";

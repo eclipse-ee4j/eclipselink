@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement;
 
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.oxm.mappings.*;
-import org.eclipse.persistence.oxm.platform.DOMPlatform;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
+import org.eclipse.persistence.sessions.Project;
 
 /**
  *  @version $Header: AnyAttributeWithoutGroupingElementProject.java 02-nov-2006.10:56:47 gyorke Exp $

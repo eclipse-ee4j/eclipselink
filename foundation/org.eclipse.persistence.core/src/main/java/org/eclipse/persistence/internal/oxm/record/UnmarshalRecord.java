@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,11 +13,6 @@
 // Contributors:
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm.record;
-
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.core.helper.CoreField;
@@ -43,6 +38,10 @@ import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
+
+import javax.xml.namespace.QName;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents unmarshal record behaviour that is specific to the SAX

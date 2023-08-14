@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,12 @@
 
 package org.eclipse.persistence.internal.oxm.record.deferred;
 
-import org.xml.sax.SAXException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.xml.sax.SAXException;
 
 /**
  * <p><b>Purpose</b>: Implementation of DeferredContentHandler for XMLAnyCollectionMappings.

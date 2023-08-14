@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     Denise Smith - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.VariableXPathCollectionMapping;
@@ -25,6 +22,9 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class XMLVariableXPathCollectionMappingNodeValue extends XMLVariableXPathMappingNodeValue implements ContainerValue{
 

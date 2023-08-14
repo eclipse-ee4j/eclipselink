@@ -22,22 +22,6 @@
 //       - Issue 1771: Fix UUID handling for PostgreSQL
 package org.eclipse.persistence.platform.database;
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -60,6 +44,22 @@ import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+import java.util.Vector;
 
 /**
  * <p>

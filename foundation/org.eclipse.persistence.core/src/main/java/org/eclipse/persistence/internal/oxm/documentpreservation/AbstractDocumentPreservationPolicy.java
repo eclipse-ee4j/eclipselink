@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm.documentpreservation;
 
-import java.util.Map;
-
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.w3c.dom.Node;
+
+import java.util.Map;
 
 abstract class AbstractDocumentPreservationPolicy extends DocumentPreservationPolicy {
 

@@ -14,11 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.factories;
 
-import java.io.File;
-import java.net.URL;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -39,6 +34,11 @@ import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import java.io.File;
+import java.net.URL;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Provide a mechanism for loading Session configuration XML files.

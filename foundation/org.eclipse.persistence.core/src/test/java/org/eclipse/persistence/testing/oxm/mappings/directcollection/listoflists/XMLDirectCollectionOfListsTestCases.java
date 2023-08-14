@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,9 @@
 //     rbarkhouse - 2009-05-05 14:32:00 - initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.directcollection.listoflists;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+
+import java.util.ArrayList;
 
 public class XMLDirectCollectionOfListsTestCases extends XMLMappingTestCases {
 

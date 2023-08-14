@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,12 @@
 //       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
 package org.eclipse.persistence.sequencing;
 
-import java.util.Vector;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.DatabaseException;
+
+import java.util.Vector;
 
 /**
  * <p>

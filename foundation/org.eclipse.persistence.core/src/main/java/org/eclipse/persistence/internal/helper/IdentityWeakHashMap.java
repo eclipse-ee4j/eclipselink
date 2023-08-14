@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,9 @@ package org.eclipse.persistence.internal.helper;
  */
 
 // J2SE imports
+
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -50,8 +53,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, Cloneable, Serializable {
     static final long serialVersionUID = -5176951017503351630L;

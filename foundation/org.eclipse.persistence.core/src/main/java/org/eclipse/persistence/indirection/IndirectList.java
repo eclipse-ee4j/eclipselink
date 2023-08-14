@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,14 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.indirection;
+
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
+import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
+import org.eclipse.persistence.internal.indirection.UnitOfWorkValueHolder;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -28,14 +36,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
-
-import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
-import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
-import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
-import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
-import org.eclipse.persistence.internal.indirection.UnitOfWorkValueHolder;
-import org.eclipse.persistence.mappings.CollectionMapping;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * IndirectList allows a domain class to take advantage of TopLink indirection

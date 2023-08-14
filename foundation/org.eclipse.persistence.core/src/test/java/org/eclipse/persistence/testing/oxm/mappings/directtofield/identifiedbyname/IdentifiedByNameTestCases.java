@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,23 +17,20 @@ package org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyn
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlattribute.DirectToXMLAttributeIdentifiedByNameTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlattribute.DirectToXMLAttributeIdentifiedByNameNullTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlattribute.DirectToXMLAttributeIdentifiedByNameEmptyTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlattribute.DirectToXMLAttributeIdentifiedByNameSpecialCharactersTestCases;
-
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameMissingTextXPathTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameNullTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameEmptyTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameWithCommentTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameSpecialCharactersTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameNegativeTestCases;
-
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.calendartest.CalendarTestIdentifiedByNameTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.calendartest.CalendarDateTestIdentifiedByNameTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.calendartest.CalendarTestIdentifiedByNameTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.calendartest.CalendarTimeTestIdentifiedByNameTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlattribute.DirectToXMLAttributeIdentifiedByNameEmptyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlattribute.DirectToXMLAttributeIdentifiedByNameNullTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlattribute.DirectToXMLAttributeIdentifiedByNameSpecialCharactersTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlattribute.DirectToXMLAttributeIdentifiedByNameTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameEmptyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameMissingTextXPathTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameNegativeTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameNullTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameSpecialCharactersTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.xmlelement.DirectToXMLElementIdentifiedByNameWithCommentTestCases;
 
 public class IdentifiedByNameTestCases extends TestCase {
 

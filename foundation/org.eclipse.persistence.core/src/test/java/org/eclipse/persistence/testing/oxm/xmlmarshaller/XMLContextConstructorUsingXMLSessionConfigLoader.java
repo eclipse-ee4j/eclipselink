@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 
-import java.io.StringWriter;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.platform.xml.XMLPlatformException;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
+
+import javax.xml.parsers.DocumentBuilder;
+import java.io.StringWriter;
 
 public class XMLContextConstructorUsingXMLSessionConfigLoader extends OXTestCase {
     public static String sessionpath = "org/eclipse/persistence/testing/oxm/xmlmarshaller";

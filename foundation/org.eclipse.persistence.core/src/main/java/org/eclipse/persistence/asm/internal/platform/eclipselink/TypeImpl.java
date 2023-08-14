@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.asm.internal.platform.eclipselink;
 
+import org.eclipse.persistence.internal.libraries.asm.Type;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
-
-import org.eclipse.persistence.internal.libraries.asm.Type;
 
 public class TypeImpl extends org.eclipse.persistence.asm.Type {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sequencing;
 
-import org.eclipse.persistence.sessions.server.ClientSession;
-import org.eclipse.persistence.sessions.remote.DistributedSession;
-import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+import org.eclipse.persistence.sessions.server.ClientSession;
 
 /**
  * SequencingFactory is private to EclipseLink.

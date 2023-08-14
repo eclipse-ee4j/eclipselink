@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,11 +21,12 @@
 package org.eclipse.persistence.tools.schemaframework;
 
 //EclipseLink imports
-import java.util.Collection;
 
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
+
+import java.util.Collection;
 
 /**
  * Extended SchemaManager to handle the creation of tables for dynamic types.

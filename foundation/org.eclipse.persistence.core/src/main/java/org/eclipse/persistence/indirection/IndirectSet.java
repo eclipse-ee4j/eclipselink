@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.indirection;
 
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
+import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -26,15 +35,6 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
-import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
-import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
-import org.eclipse.persistence.internal.localization.ToStringLocalization;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * IndirectSet is an example implementation of the Set protocol that

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,14 @@
 package org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey.maptests;
 
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
-import org.eclipse.persistence.testing.oxm.mappings.keybased.KeyBasedMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Address;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.KeyBasedMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Root;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 public class SingleElementKeyUsingMapTestCases extends KeyBasedMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/keybased/multipletargets/singlekey/elementkey/instance.xml";

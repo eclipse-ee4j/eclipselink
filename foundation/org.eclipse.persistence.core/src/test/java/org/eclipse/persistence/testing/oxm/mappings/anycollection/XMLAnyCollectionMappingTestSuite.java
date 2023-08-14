@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.anycollection;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionKeepAllAsElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionKeepUnknownAsElementNS2TestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionKeepUnknownAsElementNSTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionKeepUnknownAsElementTestCases;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionSkipUnknownTestCases;
 
 public class XMLAnyCollectionMappingTestSuite extends TestCase {

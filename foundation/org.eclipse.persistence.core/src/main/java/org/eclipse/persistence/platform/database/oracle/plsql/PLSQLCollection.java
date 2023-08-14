@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,13 @@
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
 //javase imports
-import static java.sql.Types.ARRAY;
+
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
+import org.eclipse.persistence.internal.helper.DatabaseType;
 
 import java.util.ArrayList;
 
-//EclipseLink imports
-import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
-import org.eclipse.persistence.internal.helper.DatabaseType;
+import static java.sql.Types.ARRAY;
 
 /**
  * <b>PUBLIC</b>: Marker interface for Oracle PL/SQL Collections (Nested Tables and Varrays)

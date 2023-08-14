@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,8 +24,8 @@ package org.eclipse.persistence.internal.helper;
  * object redefines its equals() method. Additionally, this implementation does
  * <b>not</b> allow null elements.
  * <p>
- * This class does <b>not</b> inherit from {@link AbstractSet} because the
- * method {@link AbstractSet#removeAll removeAll(Collection c)} does not work
+ * This class does <b>not</b> inherit from {@link java.util.AbstractSet} because the
+ * method {@link java.util.AbstractSet#removeAll removeAll(Collection c)} does not work
  * correctly with reference equality testing (NB the Javadocs for
  * {@link AbstractCollection} indicates that removeAll is an optional method).
  *

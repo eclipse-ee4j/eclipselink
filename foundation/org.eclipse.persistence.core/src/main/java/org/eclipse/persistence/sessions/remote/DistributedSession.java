@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,31 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.remote;
 
-import java.util.*;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.DistributedSessionIdentityMapAccessor;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
+import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
+import org.eclipse.persistence.internal.sessions.remote.RemoteCursoredStream;
+import org.eclipse.persistence.internal.sessions.remote.RemoteScrollableCursor;
+import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
+import org.eclipse.persistence.queries.CursoredStreamPolicy;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.sessions.*;
+
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Super class to all remote client session's.

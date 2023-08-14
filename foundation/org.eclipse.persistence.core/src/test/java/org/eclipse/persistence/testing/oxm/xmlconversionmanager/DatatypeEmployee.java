@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,14 +12,10 @@
 
 package org.eclipse.persistence.testing.oxm.xmlconversionmanager;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class DatatypeEmployee {
 

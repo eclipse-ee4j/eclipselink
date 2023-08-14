@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,9 @@
 // mmacivor - June 11/2008 - 1.0 - Initial implementation
 package org.eclipse.persistence.exceptions;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+
+import javax.xml.namespace.QName;
 
 /**
  * <b>Purpose:</b>

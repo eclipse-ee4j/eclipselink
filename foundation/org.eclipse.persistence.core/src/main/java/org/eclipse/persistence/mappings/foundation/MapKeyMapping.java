@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,10 +13,6 @@
 // Contributors:
 //     tware - initial API check-in for MappedKeyMapContainerPolicy
 package org.eclipse.persistence.mappings.foundation;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -36,6 +32,10 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * MapKeyMapping is implemented by DatabaseMappings that can be used to map the key in a map

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
 //  - rbarkhouse - 08 February 2012 - 2.3.3 - Initial implementation
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.reflect.Method;
-
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Method;
 
 /**
  * INTERNAL:

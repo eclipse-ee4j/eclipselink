@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     Denise Smith - EclipseLink 2.3 - Initial Implementation
 package org.eclipse.persistence.oxm.annotations;
 
+import org.eclipse.persistence.oxm.XMLNameTransformer;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 /**
  * An XmlNameTransformer allows for a user defined class to transform names.

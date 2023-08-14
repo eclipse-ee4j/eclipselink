@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,15 +21,14 @@
 //       - 455690: Move JNDIConnector lookup type to ServerPlatform.
 package org.eclipse.persistence.platform.server;
 
-import java.sql.SQLException;
-
 import jakarta.persistence.spi.PersistenceUnitInfo;
-
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
+
+import java.sql.SQLException;
 
 /**
  * PUBLIC:

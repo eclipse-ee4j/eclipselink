@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,11 @@
 //       - 368490: Add support for Metadata to be refreshed through RCM
 package org.eclipse.persistence.internal.sessions.coordination;
 
-import java.util.Map;
-
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.coordination.Command;
 import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
+
+import java.util.Map;
 
 
 /**

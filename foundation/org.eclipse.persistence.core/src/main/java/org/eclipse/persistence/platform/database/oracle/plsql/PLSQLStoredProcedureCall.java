@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,15 +17,22 @@
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
 //javase imports
-import static java.lang.Integer.MIN_VALUE;
-import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
-import static org.eclipse.persistence.internal.helper.Helper.INDENT;
-import static org.eclipse.persistence.internal.helper.Helper.NL;
-import static org.eclipse.persistence.platform.database.jdbc.JDBCTypes.getDatabaseTypeForCode;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_IN_CONV;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_OUT_CONV;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
-import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
+
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 import java.io.Serializable;
 import java.sql.CallableStatement;
@@ -45,22 +52,15 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
-// EclipseLink imports
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
-import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
-import org.eclipse.persistence.queries.StoredProcedureCall;
-import org.eclipse.persistence.sessions.DatabaseRecord;
+import static java.lang.Integer.MIN_VALUE;
+import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
+import static org.eclipse.persistence.internal.helper.Helper.INDENT;
+import static org.eclipse.persistence.internal.helper.Helper.NL;
+import static org.eclipse.persistence.platform.database.jdbc.JDBCTypes.getDatabaseTypeForCode;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_IN_CONV;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_OUT_CONV;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
 /**
  * <b>Purpose</b>:
  * Generates an Anonymous PL/SQL block to invoke the specified Stored Procedure

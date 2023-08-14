@@ -19,11 +19,6 @@
 //       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -37,6 +32,11 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 
 public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {

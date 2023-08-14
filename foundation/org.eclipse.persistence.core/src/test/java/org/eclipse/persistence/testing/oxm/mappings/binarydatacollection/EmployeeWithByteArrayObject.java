@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Denise Smith - December 15, 2009
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 
+import jakarta.activation.DataHandler;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.oxm.conversion.Base64;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Vector;
-import jakarta.activation.DataHandler;
-
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.oxm.conversion.Base64;
 
 public class EmployeeWithByteArrayObject {
     public static final int DEFAULT_ID = 123;

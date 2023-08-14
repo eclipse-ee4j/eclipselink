@@ -16,32 +16,17 @@
 //       - 462586 : Add national character support for z/OS.
 package org.eclipse.persistence.platform.database;
 
-import java.io.ByteArrayInputStream;
-import java.io.CharArrayReader;
-import java.io.StringWriter;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.sql.CallableStatement;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.List;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.CollectionExpression;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -58,6 +43,21 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+
+import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
+import java.io.StringWriter;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.sql.CallableStatement;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * <b>Purpose</b>: Provides DB2 z/OS specific behavior.

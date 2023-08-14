@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,11 @@
 //     bdoughan - June 25/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm.record.namespaces;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.eclipse.persistence.internal.oxm.Constants;
 
 import javax.xml.stream.XMLStreamReader;
-
-import org.eclipse.persistence.internal.oxm.Constants;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *  An UnmarshalNamespaceResolver that delegates all work to a NamespaceContext.

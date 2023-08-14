@@ -15,16 +15,15 @@
 //       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.lang.reflect.InvocationTargetException;
+import org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
-
-import org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * Java service manager and service loader for {@link DatabaseJsonPlatform} interface.

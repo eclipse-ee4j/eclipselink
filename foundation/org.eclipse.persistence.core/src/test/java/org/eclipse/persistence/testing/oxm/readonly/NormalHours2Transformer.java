@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,12 @@
 package org.eclipse.persistence.testing.oxm.readonly;
 
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.mappings.transformers.*;
-import java.util.Vector;
-
+import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
+import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.Session;
+
+import java.util.Vector;
 
 public class NormalHours2Transformer implements FieldTransformer, AttributeTransformer
 {

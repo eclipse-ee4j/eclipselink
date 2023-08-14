@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,12 @@
 package org.eclipse.persistence.testing.oxm.mappings.serializedobject;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.mappings.converters.*;
-import org.eclipse.persistence.oxm.*;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
-import javax.xml.namespace.QName;
 
 public class SerializedObjectProject extends Project {
     public SerializedObjectProject() {
