@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb.compiler;
 
-import java.awt.Image;
-import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -200,6 +198,7 @@ public final class AnnotationsProcessor {
     static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
     static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
     static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "jakarta.mail.internet.MimeMultipart";
+    private static final String AWT_IMAGE = "java.awt.Image";
     private static final String JAVAX_XML_BIND_JAXBELEMENT = "jakarta.xml.bind.JAXBElement";
     private static final String JAVAX_XML_BIND_ANNOTATION = "jakarta.xml.bind.annotation";
     private static final String OXM_ANNOTATIONS = "org.eclipse.persistence.oxm.annotations";
@@ -363,7 +362,7 @@ public final class AnnotationsProcessor {
                         } else {
                             qname = getUserDefinedSchemaTypes().get(nextClassName);
                             if (qname == null) {
-                                if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("jakarta.activation.DataHandler")) {
+                                if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(AWT_IMAGE) || nextClassName.equals(Source.class.getName()) || nextClassName.equals(JAVAX_ACTIVATION_DATAHANDLER)) {
                                     if (xmlAttachmentRef) {
                                         qname = Constants.SWA_REF_QNAME;
                                     } else {
@@ -1229,7 +1228,7 @@ public final class AnnotationsProcessor {
             }
         }
 
-        if (areEquals(javaClass, byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, Image.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
+        if (areEquals(javaClass, byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, AWT_IMAGE) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
             if (tmi == null || tmi.getXmlTagName() == null) {
                 ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
                 declaration.setTypeMappingInfo(tmi);
@@ -2977,7 +2976,7 @@ public final class AnnotationsProcessor {
 
                 // use the JavaBean API to correctly decapitalize the first
                 // character, if necessary
-                propertyName = Introspector.decapitalize(propertyName);
+                propertyName = org.eclipse.persistence.internal.helper.Helper.decapitalize(propertyName);
 
                 JavaClass[] paramTypes = { getMethod.getReturnType() };
                 setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
@@ -3079,7 +3078,7 @@ public final class AnnotationsProcessor {
                 }
                 // use the JavaBean API to correctly decapitalize the first
                 // character, if necessary
-                propertyName = Introspector.decapitalize(propertyName);
+                propertyName = org.eclipse.persistence.internal.helper.Helper.decapitalize(propertyName);
             }
 
             JavaClass ptype = null;
@@ -5014,7 +5013,7 @@ public final class AnnotationsProcessor {
      */
     public boolean isMtomAttachment(Property property) {
         JavaClass ptype = property.getActualType();
-        return (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART));
+        return (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, AWT_IMAGE) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART));
     }
 
     public boolean hasSwaRef() {

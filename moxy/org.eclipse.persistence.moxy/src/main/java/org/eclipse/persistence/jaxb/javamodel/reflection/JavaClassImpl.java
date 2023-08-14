@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -177,9 +177,13 @@ public class JavaClassImpl implements JavaClass {
         Field[] fields = PrivilegedAccessHelper.getDeclaredFields(jClass);
 
         for (Field field : fields) {
-            if (!field.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
-                        "field", field.getName(), jClass.getName());
+            try {
+                if (!field.trySetAccessible()) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                            "field", field.getName(), jClass.getName());
+                }
+            } catch (NoSuchMethodError nsme) {
+                //android
             }
             fieldCollection.add(getJavaField(field));
         }

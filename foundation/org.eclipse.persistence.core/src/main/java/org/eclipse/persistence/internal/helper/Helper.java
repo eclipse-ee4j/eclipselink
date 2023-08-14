@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2326,7 +2326,22 @@ public class Helper extends CoreHelper implements Serializable {
             restOfName = methodName.substring(POSITION_AFTER_IS_PREFIX);
         }
         //added for bug 234222 - property name generation differs from Introspector.decapitalize
-        return java.beans.Introspector.decapitalize(restOfName);
+        return decapitalize(restOfName);
+    }
+
+    public static String decapitalize(String s) {
+        // XXX - behaviour of this method must be same as of Introspector.decapitalize
+        // which is not used to avoid dependency on java.desktop
+        if (s == null || s.isEmpty()) {
+            return s;
+        }
+        if (s.length() > 1 && Character.isUpperCase(s.charAt(1))
+                && Character.isUpperCase(s.charAt(0))) {
+            return s;
+        }
+        char[] chars = s.toCharArray();
+        chars[0] = Character.toLowerCase(chars[0]);
+        return new String(chars);
     }
 
     public static String getDefaultStartDatabaseDelimiter(){
