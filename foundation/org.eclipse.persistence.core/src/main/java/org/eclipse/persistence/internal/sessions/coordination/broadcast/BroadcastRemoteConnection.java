@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.sessions.coordination.broadcast;
 
 import org.eclipse.persistence.exceptions.CommunicationException;
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.sessions.coordination.Command;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
@@ -199,19 +198,19 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
                 }
                 if (remoteCommand.getServiceId().getChannel().equals(this.serviceId.getChannel())) {
                     if(rcm.shouldLogDebugMessage()) {
-                        Object[] args = { toString(), messageId, remoteCommand.getServiceId().toString(), Helper.getShortClassName(remoteCommand) };
+                        Object[] args = { toString(), messageId, remoteCommand.getServiceId().toString(), remoteCommand.getClass().getSimpleName() };
                         rcm.logDebugWithoutLevelCheck("broadcast_processing_remote_command", args);
                     }
                     rcm.processCommandFromRemoteConnection(remoteCommand);
                 } else {
                     if(rcm.shouldLogWarningMessage()) {
-                        Object[] args = { toString(), messageId, remoteCommand.getServiceId().toString(), Helper.getShortClassName(remoteCommand)};
+                        Object[] args = { toString(), messageId, remoteCommand.getServiceId().toString(), remoteCommand.getClass().getSimpleName()};
                         rcm.logWarningWithoutLevelCheck("broadcast_ignore_remote_command_from_different_channel", args);
                     }
                 }
             } catch (RuntimeException e) {
                 try {
-                    rcm.handleException(RemoteCommandManagerException.errorProcessingRemoteCommand(toString(), messageId, remoteCommand.getServiceId().toString(), Helper.getShortClassName(remoteCommand), e));
+                    rcm.handleException(RemoteCommandManagerException.errorProcessingRemoteCommand(toString(), messageId, remoteCommand.getServiceId().toString(), remoteCommand.getClass().getSimpleName(), e));
                 } catch (RuntimeException ex) {
                     // User had a chance to handle the exception.
                     // The method is called by a listener thread - no one could catch this exception.
@@ -375,7 +374,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
      * INTERNAL:
      */
     protected void createDisplayString() {
-        this.displayString = Helper.getShortClassName(this) + "[" + serviceId.toString() + ", topic " + topicName +"]";
+        this.displayString = getClass().getSimpleName() + "[" + serviceId.toString() + ", topic " + topicName +"]";
     }
 
     /**

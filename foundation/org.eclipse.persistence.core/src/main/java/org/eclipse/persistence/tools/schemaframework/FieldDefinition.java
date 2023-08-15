@@ -18,7 +18,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -472,6 +471,6 @@ public class FieldDefinition implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getName() + "(" + getType() + "))";
+        return getClass().getSimpleName() + "(" + getName() + "(" + getType() + "))";
     }
 }

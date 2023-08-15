@@ -1860,7 +1860,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getDescriptor() + ")";
+        return getClass().getSimpleName() + "(" + getDescriptor() + ")";
     }
 
     /**

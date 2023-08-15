@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.sessions.coordination.jgroups;
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
@@ -179,7 +178,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
      */
     @Override
     protected void createDisplayString() {
-        this.displayString = Helper.getShortClassName(this) + "[" + serviceId.toString() + "]";
+        this.displayString = getClass().getSimpleName() + "[" + serviceId.toString() + "]";
     }
 
     /**

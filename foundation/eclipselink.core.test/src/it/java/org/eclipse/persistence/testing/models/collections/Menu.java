@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -223,10 +223,10 @@ public class Menu implements ChangeTracker{
      */
     public String toString() {
         StringBuffer buf = new StringBuffer();
-        buf.append(org.eclipse.persistence.internal.helper.Helper.getShortClassName(this.getClass()) + ": " + this.getType());
+        buf.append(getClass().getSimpleName() + ": " + this.getType());
         buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
         if (getItems() != null) {
-            buf.append("MenuItems: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getItems().getClass()));
+            buf.append("MenuItems: " + getItems().getClass().getSimpleName());
             buf.append(getItems().toString());
             buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
         }

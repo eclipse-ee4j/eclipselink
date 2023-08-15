@@ -735,7 +735,7 @@ public class ProjectClassGenerator {
         String mappingClassName = mapping.getClass().getName();
         String packageName = mappingClassName.substring(0, mappingClassName.lastIndexOf('.'));
         if (packageName.equals("org.eclipse.persistence.mappings")) {
-            mappingClassName = Helper.getShortClassName(mapping);
+            mappingClassName = mapping.getClass().getSimpleName();
         }
         method.addLine(mappingClassName + " " + mappingName + " = new " + mappingClassName + "();");
         if (!mapping.isWriteOnly()) {
@@ -849,7 +849,7 @@ public class ProjectClassGenerator {
         String policyClassName = policy.getClass().getName();
         String packageName = policyClassName.substring(0, policyClassName.lastIndexOf('.'));
         if (packageName.equals("org.eclipse.persistence.descriptors")) {
-            policyClassName = Helper.getShortClassName(policy);
+            policyClassName = policy.getClass().getSimpleName();
         }
         method.addLine(policyClassName + " lockingPolicy = new " + policyClassName + "();");
 
@@ -1636,7 +1636,7 @@ public class ProjectClassGenerator {
 
         String loginClassName = datasourceLogin.getClass().getName();
         if (datasourceLogin.getClass().equals(DatabaseLogin.class)) {
-            loginClassName = Helper.getShortClassName(datasourceLogin);
+            loginClassName = datasourceLogin.getClass().getSimpleName();
         }
         method.addLine(loginClassName + " login = new " + loginClassName + "();");
 
@@ -1744,7 +1744,7 @@ public class ProjectClassGenerator {
             UnaryTableSequence uts = (UnaryTableSequence)sequence;
             str = "UnaryTableSequence(\"" + uts.getName() + "\", " + uts.getPreallocationSize() + ", \"" + uts.getCounterFieldName() + "\"));";
         } else {
-            String typeName = Helper.getShortClassName(sequence);
+            String typeName = sequence.getClass().getSimpleName();
             str = typeName + "(\"" + sequence.getName() + "\", " + sequence.getPreallocationSize() + "));";
         }
         return prefix + str;

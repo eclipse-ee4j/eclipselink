@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -138,12 +138,12 @@ public class SDOClassGenerator {
      */
     private void printUsage(String messageID) {
         if (null != messageID) {
-            System.out.println(ToStringLocalization.buildMessage(messageID, new Object[] { Helper.getShortClassName(getClass()) }));
+            System.out.println(ToStringLocalization.buildMessage(messageID, new Object[] { getClass().getSimpleName() }));
         }
 
         // Because we can no longer use Helper.cr() inside of message bundles, we must break
         // up the message into separate lines and use Helper.cr() here instead. (bug6470503)
-        String messageString = ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_1of8", new Object[] { Helper.getShortClassName(getClass()) });
+        String messageString = ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_1of8", new Object[] { getClass().getSimpleName() });
         messageString += Helper.cr() + Helper.cr();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_2of8");
         messageString += Helper.cr();

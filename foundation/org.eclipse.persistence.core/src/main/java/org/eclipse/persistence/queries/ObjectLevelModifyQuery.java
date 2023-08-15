@@ -19,7 +19,6 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -278,6 +277,6 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getObject() + ")";
+        return getClass().getSimpleName() + "(" + getObject() + ")";
     }
 }

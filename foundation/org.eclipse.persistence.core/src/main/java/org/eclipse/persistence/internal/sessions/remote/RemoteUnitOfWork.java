@@ -24,7 +24,6 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -798,7 +797,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "()";
+        return getClass().getSimpleName() + "()";
     }
 
     /**

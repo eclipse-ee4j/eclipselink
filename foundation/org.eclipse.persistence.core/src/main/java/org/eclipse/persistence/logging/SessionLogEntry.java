@@ -270,7 +270,7 @@ public class SessionLogEntry implements Serializable {
      * @return if the log entry has a message
      */
     public boolean hasMessage() {
-        return getMessage() != null && !(getMessage().length() == 0);
+        return getMessage() != null && getMessage().length() != 0;
     }
 
     /**
@@ -389,6 +389,6 @@ public class SessionLogEntry implements Serializable {
 
     @Override
     public String toString() {
-        return org.eclipse.persistence.internal.helper.Helper.getShortClassName(getClass()) + "(" + getMessage() + ")";
+        return getClass().getSimpleName() + "(" + getMessage() + ")";
     }
 }

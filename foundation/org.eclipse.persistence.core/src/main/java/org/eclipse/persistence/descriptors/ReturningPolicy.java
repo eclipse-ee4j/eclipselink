@@ -20,7 +20,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -858,7 +857,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
             verifyFieldAndMapping(session, field, referenceDescriptor, mapping);
         }
         if (!mapping.isDirectToFieldMapping() && !mapping.isTransformationMapping()) {
-            String mappingTypeName = Helper.getShortClassName(mapping);
+            String mappingTypeName = mapping.getClass().getSimpleName();
             session.getIntegrityChecker().handleError(DescriptorException.returningPolicyMappingNotSupported(field.getName(), mappingTypeName, mapping));
             return false;
         } else {
@@ -928,7 +927,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
                 // this operation requires some fields to be returned
                 if ((query[operation] == null) || (query[operation].getDatasourceCall() == null)) {
                     if (!session.getPlatform().canBuildCallWithReturning()) {
-                        session.getIntegrityChecker().handleError(DescriptorException.noCustomQueryForReturningPolicy(queryTypeName[operation], Helper.getShortClassName(session.getPlatform()), getDescriptor()));
+                        session.getIntegrityChecker().handleError(DescriptorException.noCustomQueryForReturningPolicy(queryTypeName[operation], session.getPlatform().getClass().getSimpleName(), getDescriptor()));
                     }
                 } else if (query[operation].getDatasourceCall() instanceof StoredProcedureCall) {
                     // SQLCall with custom SQL calculates its outputRowFields later (in prepare() method) -

@@ -1003,7 +1003,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
         if (this.isInstantiated()) {
             return "{" + this.getDelegate().toString() + "}";
         } else {
-            return "{" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(this.getClass()) + ": not instantiated}";
+            return "{" + getClass().getSimpleName() + ": not instantiated}";
         }
     }
 

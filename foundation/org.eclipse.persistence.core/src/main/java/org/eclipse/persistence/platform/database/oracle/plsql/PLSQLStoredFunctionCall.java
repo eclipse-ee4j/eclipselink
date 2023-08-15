@@ -18,7 +18,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 
@@ -101,7 +100,7 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
         if (session.getPlatform().supportsStoredFunctions()) {
             super.prepareInternal(session);
         } else {
-            throw ValidationException.platformDoesNotSupportStoredFunctions(Helper.getShortClassName(session.getPlatform()));
+            throw ValidationException.platformDoesNotSupportStoredFunctions(session.getPlatform().getClass().getSimpleName());
         }
     }
 

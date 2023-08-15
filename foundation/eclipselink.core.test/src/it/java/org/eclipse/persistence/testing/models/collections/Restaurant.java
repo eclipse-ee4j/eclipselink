@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,27 +121,27 @@ public class Restaurant implements ChangeTracker {
         buf.append("Restaurant: " + this.getName());
         buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
         if (getMenus() != null) {
-            buf.append("Menus: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getMenus().getClass()));
+            buf.append("Menus: " + getMenus().getClass().getSimpleName());
             buf.append(getMenus().toString());
             buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
         }
         if (getWaiters() != null) {
-            buf.append("Waiters: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getWaiters().getClass()));
+            buf.append("Waiters: " + getWaiters().getClass().getSimpleName());
             buf.append(getWaiters().toString());
             buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
         }
         if (getPreferredCustomers() != null) {
-            buf.append("PreferredCustomers: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getPreferredCustomers().getClass()));
+            buf.append("PreferredCustomers: " + getPreferredCustomers().getClass().getSimpleName());
             buf.append(getPreferredCustomers().toString());
             buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
         }
         if (getLocations() != null) {
-            buf.append("Locations: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getLocations().getClass()));
+            buf.append("Locations: " + getLocations().getClass().getSimpleName());
             buf.append(getLocations().toString());
             buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
         }
         if (getSlogans() != null) {
-            buf.append("Slogan: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getSlogans().getClass()));
+            buf.append("Slogan: " + getSlogans().getClass().getSimpleName());
             buf.append(getSlogans().toString());
             buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
         }

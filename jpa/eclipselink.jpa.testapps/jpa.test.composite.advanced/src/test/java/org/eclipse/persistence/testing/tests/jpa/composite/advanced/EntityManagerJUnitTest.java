@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -6887,7 +6887,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             return;
         }
 
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         HashMap map = null;
@@ -6994,7 +6994,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         boolean ok = false;
@@ -7076,7 +7076,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         Employee empTemp = null;
@@ -10706,8 +10706,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             } else {
                 // note that the order of listeners (session's before broker's) only guaranteed if listeners were set before ServerSession was created.
                 // Listeners set after ServerSession has been created appear on the list in chronological order.
-                if( !(Helper.getShortClassName(clientSessionListeners.get(0)).equals("MemberEventListener")) ||
-                    !(Helper.getPackageName(clientSessionListeners.get(0).getClass()).equals(Helper.getPackageName(classes[i])))) {
+                if( !("MemberEventListener".equals(clientSessionListeners.get(0).getClass().getSimpleName())) ||
+                    !(clientSessionListeners.get(0).getClass().getPackageName().equals(classes[i].getPackageName()))) {
                     fail ("the first clientSession's listener expected to be MemberEventListener from its package, found " + clientSessionListeners.get(0).getClass().getName());
                 }
                 if( !(clientSessionListeners.get(1) instanceof CompositeEventListener)) {
@@ -10731,7 +10731,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             SessionEventListener listener = allListeners.get(i);
             if (listener instanceof CompositeEventListener) {
                 list.add(listener);
-            } else if (Helper.getShortClassName(listener).equals("MemberEventListener")) {
+            } else if ("MemberEventListener".equals(listener.getClass().getSimpleName())) {
                 list.add(listener);
             }
         }

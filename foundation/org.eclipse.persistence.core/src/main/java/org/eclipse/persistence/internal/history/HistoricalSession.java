@@ -19,7 +19,6 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.history.AsOfClause;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -87,7 +86,7 @@ public class HistoricalSession extends AbstractSession {
      */
     @Override
     public UnitOfWorkImpl acquireUnitOfWork() {
-        throw ValidationException.operationNotSupported(Helper.getShortClassName(getClass()) + ".acquireUnitOfWork");
+        throw ValidationException.operationNotSupported(getClass().getSimpleName() + ".acquireUnitOfWork");
     }
 
     /**
@@ -96,7 +95,7 @@ public class HistoricalSession extends AbstractSession {
      */
     @Override
     public void beginTransaction() throws DatabaseException, ConcurrencyException {
-        throw ValidationException.operationNotSupported(Helper.getShortClassName(getClass()) + ".beginTransaction");
+        throw ValidationException.operationNotSupported(getClass().getSimpleName() + ".beginTransaction");
     }
 
     /**
@@ -105,7 +104,7 @@ public class HistoricalSession extends AbstractSession {
      */
     @Override
     public void commitTransaction() throws DatabaseException, ConcurrencyException {
-        throw ValidationException.operationNotSupported(Helper.getShortClassName(getClass()) + ".commitTransaction");
+        throw ValidationException.operationNotSupported(getClass().getSimpleName() + ".commitTransaction");
     }
 
     /**
@@ -232,7 +231,7 @@ public class HistoricalSession extends AbstractSession {
      */
     @Override
     public void rollbackTransaction() throws DatabaseException, ConcurrencyException {
-        throw ValidationException.operationNotSupported(Helper.getShortClassName(getClass()) + ".rollbackTransaction");
+        throw ValidationException.operationNotSupported(getClass().getSimpleName() + ".rollbackTransaction");
     }
 
     @Override

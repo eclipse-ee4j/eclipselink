@@ -176,7 +176,7 @@ public class StoredProcedureGenerator {
                 }
                 outputWriter.write(methodComment);
                 outputWriter.write("\npublic static void amend");
-                outputWriter.write(Helper.getShortClassName(descriptor.getJavaClass()));
+                outputWriter.write(descriptor.getJavaClass().getSimpleName());
                 outputWriter.write("ClassDescriptor(ClassDescriptor descriptor){\n\t");
                 storedProcedureVector = this.storedProcedures.get(descriptor);
                 mappingHashtable = this.mappingStoredProcedures.get(descriptor);
@@ -355,7 +355,7 @@ public class StoredProcedureGenerator {
             outputWriter.write("\n\tfor(Iterator enumtr = project.getDescriptors().values().iterator(); enumtr.hasNext();) {");
             outputWriter.write("\n\t\tDescriptor descriptor = (ClassDescriptor)enumtr.next();");
             outputWriter.write("\n\t\tif(!(descriptor.isAggregateDescriptor() || descriptor.isDescriptorForInterface())) {");
-            outputWriter.write("\n\t\t\tMethod method = " + className + ".class.getMethod(\"amend\"+org.eclipse.persistence.internal.helper.Helper.getShortClassName(descriptor.getJavaClass())+\"ClassDescriptor\", new Class[] {ClassDescriptor.class});");
+            outputWriter.write("\n\t\t\tMethod method = " + className + ".class.getMethod(\"amend\"+descriptor.getJavaClass().getSimpleName()+\"ClassDescriptor\", new Class[] {ClassDescriptor.class});");
             outputWriter.write("\n\t\t\tmethod.invoke(null, new Object[] {descriptor});");
             outputWriter.write("\n\t\t}");
             outputWriter.write("\n\t}");
@@ -419,7 +419,7 @@ public class StoredProcedureGenerator {
      * INTERNAL: Generates the object level stored procedure based on the passed in query
      */
     protected StoredProcedureDefinition generateObjectStoredProcedure(DatabaseQuery query, List<DatabaseField> fields, String namePrefix) {
-        String className = Helper.getShortClassName(query.getDescriptor().getJavaClass());
+        String className = query.getDescriptor().getJavaClass().getSimpleName();
 
         return generateStoredProcedure(query, fields, getPrefix() + namePrefix + className);
     }
@@ -440,7 +440,7 @@ public class StoredProcedureGenerator {
      * INTERNAL: Generates all the stored procedures for this mapping
      */
     protected StoredProcedureDefinition generateOneToManyMappingProcedures(OneToManyMapping mapping, DatabaseQuery query, Map<DatabaseField, DatabaseField> fields, String namePrefix) {
-        String sourceClassName = Helper.getShortClassName(mapping.getDescriptor().getJavaClass());
+        String sourceClassName = mapping.getDescriptor().getJavaClass().getSimpleName();
         return generateStoredProcedure(query, new ArrayList<>(fields.values()), getPrefix() + namePrefix + sourceClassName + "_" + mapping.getAttributeName());
     }
 

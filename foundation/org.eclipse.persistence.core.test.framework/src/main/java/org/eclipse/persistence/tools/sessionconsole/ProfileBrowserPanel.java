@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.sessionconsole;
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.tools.beans.MessageDialog;
 import org.eclipse.persistence.tools.profiler.Profile;
@@ -495,7 +494,7 @@ public class ProfileBrowserPanel extends JPanel {
             if (profile.getQueryClass() == null) {
                 items[0] = "";
             } else {
-                items[0] = Helper.getShortClassName(profile.getQueryClass());
+                items[0] = profile.getQueryClass().getSimpleName();
             }
             if (profile.getDomainClass() == null) {
                 items[1] = "";
@@ -504,7 +503,7 @@ public class ProfileBrowserPanel extends JPanel {
                     items[1] = profile.getDomainClass().getName();
                 } else {
                     items[1] =
-                            Helper.getShortClassName(profile.getDomainClass());
+                            profile.getDomainClass().getSimpleName();
                 }
             }
             items[2] = Long.valueOf(profile.getTotalTime()).toString();

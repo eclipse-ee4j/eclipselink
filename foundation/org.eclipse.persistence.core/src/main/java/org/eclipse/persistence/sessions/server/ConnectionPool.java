@@ -18,7 +18,6 @@ import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Login;
@@ -519,7 +518,7 @@ public class ConnectionPool {
     @Override
     public String toString() {
         Object[] args = {getMinNumberOfConnections(), getMaxNumberOfConnections()};
-        return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("min_max", args);
+        return getClass().getSimpleName() + ToStringLocalization.buildMessage("min_max", args);
     }
 
     /**

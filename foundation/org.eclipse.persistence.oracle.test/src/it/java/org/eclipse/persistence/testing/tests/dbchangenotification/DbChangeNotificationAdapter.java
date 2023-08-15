@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -176,9 +176,9 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
     }
 
     protected String getJmsPropertyTypeName(Class<?> type) {
-        if (Helper.getShortClassName(type).equals("BigDecimal")) {
+        if ("BigDecimal".equals(type.getSimpleName())) {
             return "double";
-        } else if (Helper.getShortClassName(type).equals("String")) {
+        } else if ("String".equals(type.getSimpleName())) {
             return "String";
         } else {
             throw new TestProblemException("No JMS property type corresponds to the DatabaseField type " + type, null);

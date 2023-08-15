@@ -16,7 +16,6 @@ package org.eclipse.persistence.sessions;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -315,7 +314,7 @@ public class DefaultConnector implements Connector {
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getConnectionString() + ")";
+        return getClass().getSimpleName() + "(" + getConnectionString() + ")";
     }
 
     /**

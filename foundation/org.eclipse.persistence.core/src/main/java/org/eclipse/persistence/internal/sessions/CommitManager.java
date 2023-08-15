@@ -678,6 +678,6 @@ public class CommitManager {
     @Override
     public String toString() {
         Object[] args = {this.commitDepth};
-        return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("commit_depth", args);
+        return getClass().getSimpleName() + ToStringLocalization.buildMessage("commit_depth", args);
     }
 }

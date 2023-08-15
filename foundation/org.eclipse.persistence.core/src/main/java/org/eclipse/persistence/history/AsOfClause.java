@@ -20,7 +20,6 @@ import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -155,7 +154,7 @@ public class AsOfClause implements Serializable {
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
         writer.write(String.valueOf(getValue()));
         writer.write(")");

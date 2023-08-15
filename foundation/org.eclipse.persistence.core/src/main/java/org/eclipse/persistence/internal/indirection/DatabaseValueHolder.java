@@ -17,7 +17,6 @@ package org.eclipse.persistence.internal.indirection;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -325,7 +324,7 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
         if (isInstantiated()) {
             return "{" + getValue() + "}";
         } else {
-            return "{" + Helper.getShortClassName(getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
+            return "{" + getClass().getSimpleName() + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
         }
     }
 }

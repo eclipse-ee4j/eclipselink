@@ -36,7 +36,6 @@ import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -559,7 +558,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
                   } else {
                        if (outParameterFound) {
                             //multiple outs found
-                            throw ValidationException.multipleOutParamsNotSupported(Helper.getShortClassName(this), call.getProcedureName());
+                            throw ValidationException.multipleOutParamsNotSupported(getClass().getSimpleName(), call.getProcedureName());
                        }
                        outParameterFound = true; //PostGreSQL uses a very different header to execute when there are out params
                   }

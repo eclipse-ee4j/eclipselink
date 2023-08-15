@@ -27,7 +27,7 @@ package org.eclipse.persistence.internal.helper;
  * This class does <b>not</b> inherit from {@link java.util.AbstractSet} because the
  * method {@link java.util.AbstractSet#removeAll removeAll(Collection c)} does not work
  * correctly with reference equality testing (NB the Javadocs for
- * {@link AbstractCollection} indicates that removeAll is an optional method).
+ * {@link java.util.AbstractCollection} indicates that removeAll is an optional method).
  *
  * @author Mike Norman (since TopLink 10.1.3)
  *

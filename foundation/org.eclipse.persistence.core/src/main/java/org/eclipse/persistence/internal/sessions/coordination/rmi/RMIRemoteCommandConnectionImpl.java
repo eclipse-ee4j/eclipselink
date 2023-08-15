@@ -56,7 +56,7 @@ public class RMIRemoteCommandConnectionImpl extends UnicastRemoteObject implemen
             rcm.processCommandFromRemoteConnection(command);
         } catch (Exception e) {
             // Log the problem
-            Object[] args = { Helper.getShortClassName(command), Helper.printStackTraceToString(e) };
+            Object[] args = { command.getClass().getSimpleName(), Helper.printStackTraceToString(e) };
             rcm.logWarning("error_executing_remote_command", args);
             // Return the string in case the exception doesn't exist on the other side
             return e.toString();
@@ -79,7 +79,7 @@ public class RMIRemoteCommandConnectionImpl extends UnicastRemoteObject implemen
             this.rcm.processCommandFromRemoteConnection(command);
         } catch (Exception e) {
             // Log the problem
-            Object[] args = { Helper.getShortClassName(command), Helper.printStackTraceToString(e) };
+            Object[] args = { command.getClass().getSimpleName(), Helper.printStackTraceToString(e) };
             this.rcm.logWarning("error_executing_remote_command", args);
             // Return the string in case the exception doesn't exist on the other side
             return e.toString();

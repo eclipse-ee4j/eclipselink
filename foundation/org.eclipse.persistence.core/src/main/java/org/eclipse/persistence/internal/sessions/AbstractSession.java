@@ -2673,7 +2673,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * IsolatedClientSession.
      */
     public String getSessionTypeString() {
-        return Helper.getShortClassName(getClass());
+        return getClass().getSimpleName();
     }
 
     /**

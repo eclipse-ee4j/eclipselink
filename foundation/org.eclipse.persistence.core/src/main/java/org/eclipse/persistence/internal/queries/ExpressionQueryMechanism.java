@@ -54,7 +54,6 @@ import org.eclipse.persistence.internal.expressions.SQLUpdateAllStatementForTemp
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -1562,7 +1561,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if(getExecutionSession().getPlatform().supportsTempTables()) {
             prepareDeleteAllUsingTempTables();
         } else {
-            throw QueryException.tempTablesNotSupported(getQuery(), Helper.getShortClassName(getExecutionSession().getPlatform()));
+            throw QueryException.tempTablesNotSupported(getQuery(), getExecutionSession().getPlatform().getClass().getSimpleName());
         }
     }
 
@@ -2463,7 +2462,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         } else if(getExecutionSession().getPlatform().isOracle()) {
             prepareUpdateAllUsingOracleAnonymousBlock(tables_databaseFieldsToValues, tablesToPrimaryKeyFields);
         } else {
-            throw QueryException.tempTablesNotSupported(getQuery(), Helper.getShortClassName(getExecutionSession().getPlatform()));
+            throw QueryException.tempTablesNotSupported(getQuery(), getExecutionSession().getPlatform().getClass().getSimpleName());
         }
     }
 

@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
@@ -123,7 +122,7 @@ public class XMLAccessor extends DatasourceAccessor {
     public String toString() {
         StringWriter sw = new StringWriter();
         PrintWriter writer = new PrintWriter(sw);
-        writer.write(Helper.getShortClassName(this));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
         this.toString(writer);
         writer.write(")");

@@ -476,7 +476,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Returns null unless the platform supports call with returning
      */
     public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector<DatabaseField> returnFields) {
-        throw ValidationException.platformDoesNotSupportCallWithReturning(Helper.getShortClassName(this));
+        throw ValidationException.platformDoesNotSupportCallWithReturning(getClass().getSimpleName());
     }
 
     /**
@@ -1307,7 +1307,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         if (getDefaultSequence().isTable()) {
             return getQualifiedName(((TableSequence)getDefaultSequence()).getTableName());
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getTableName");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "getTableName");
         }
     }
 
@@ -1365,7 +1365,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         if (getDefaultSequence().isTable()) {
             return ((TableSequence)getDefaultSequence()).getCounterFieldName();
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getCounterFieldName");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "getCounterFieldName");
         }
     }
 
@@ -1373,7 +1373,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         if (getDefaultSequence().isTable()) {
             return ((TableSequence)getDefaultSequence()).getNameFieldName();
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getNameFieldName");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "getNameFieldName");
         }
     }
 
@@ -1390,7 +1390,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             }
             return tableName;
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getTableName");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "getTableName");
         }
     }
 
@@ -1747,7 +1747,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             ((TableSequence)getDefaultSequence()).setCounterFieldName(name);
         } else {
             if (!name.equals((new TableSequence()).getCounterFieldName())) {
-                throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setCounterFieldName");
+                throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "setCounterFieldName");
             }
         }
     }
@@ -1757,7 +1757,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             ((TableSequence)getDefaultSequence()).setNameFieldName(name);
         } else {
             if (!name.equals((new TableSequence()).getNameFieldName())) {
-                throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setNameFieldName");
+                throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "setNameFieldName");
             }
         }
     }
@@ -1767,7 +1767,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             ((TableSequence)getDefaultSequence()).setTableName(name);
         } else {
             if (!name.equals((new TableSequence()).getTableName())) {
-                throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setTableName");
+                throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "setTableName");
             }
         }
     }
@@ -2961,7 +2961,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Don't forget to end it with a space.
      */
      protected String getCreateTempTableSqlPrefix() {
-         throw ValidationException.platformDoesNotOverrideGetCreateTempTableSqlPrefix(Helper.getShortClassName(this));
+         throw ValidationException.platformDoesNotOverrideGetCreateTempTableSqlPrefix(getClass().getSimpleName());
      }
 
     /**

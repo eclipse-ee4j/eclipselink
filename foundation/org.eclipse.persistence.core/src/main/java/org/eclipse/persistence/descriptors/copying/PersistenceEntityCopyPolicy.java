@@ -16,7 +16,6 @@ package org.eclipse.persistence.descriptors.copying;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.PersistenceObject;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -46,6 +45,6 @@ public class PersistenceEntityCopyPolicy extends AbstractCopyPolicy {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(this) + "()";
+        return getClass().getSimpleName() + "()";
     }
 }

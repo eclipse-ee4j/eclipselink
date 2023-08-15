@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,9 +29,9 @@ public class CommitOrderTest extends ManualVerifyTestCase {
         setDescription("Check that the commit order is consistent and order by 1-1 constraints.");
     }
 
-    public void printClasses(List classes) {
-        for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
-            System.out.print(org.eclipse.persistence.internal.helper.Helper.getShortClassName((Class)iterator.next()));
+    public void printClasses(List<Class<?>> classes) {
+        for (Iterator<Class<?>> iterator = classes.iterator(); iterator.hasNext();) {
+            System.out.print(iterator.next().getSimpleName());
             System.out.print(", ");
         }
         System.out.println(":");

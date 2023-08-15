@@ -430,7 +430,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         } else {
             mName = this.getMethodName();
         }
-        return Helper.getShortClassName(this) + "(" + mName + ")";
+        return getClass().getSimpleName() + "(" + mName + ")";
     }
 
     public void useDefaultConstructorInstantiationPolicy() {

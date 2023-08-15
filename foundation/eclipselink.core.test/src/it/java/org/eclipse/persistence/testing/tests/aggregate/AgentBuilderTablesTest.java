@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,7 +81,7 @@ public class AgentBuilderTablesTest extends TestCase {
             }
         }
         if(localErrorMsg.length() > 0) {
-            localErrorMsg = "Ref.descriptor class: " + Helper.getShortClassName(desc.getJavaClass()) +"; mapping: "+ attributeName + ": " + localErrorMsg + "\n";
+            localErrorMsg = "Ref.descriptor class: " + desc.getJavaClass().getSimpleName() +"; mapping: "+ attributeName + ": " + localErrorMsg + "\n";
         }
         return localErrorMsg;
     }

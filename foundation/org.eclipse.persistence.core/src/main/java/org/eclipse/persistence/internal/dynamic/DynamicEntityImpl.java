@@ -50,8 +50,6 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
-
 /**
  * This abstract class is used to represent an entity which typically is not
  * realized in Java code. In combination with the DynamicClassLoader ASM is used
@@ -593,7 +591,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         // this will print something like {Emp 10} or {Phone 234-5678 10}
         StringBuilder sb = new StringBuilder(20);
         sb.append('{');
-        sb.append(getShortClassName(this.getClass()));
+        sb.append(getClass().getSimpleName());
         if (primaryKey != null) {
             sb.append(' ');
             sb.append(primaryKey);

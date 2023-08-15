@@ -19,7 +19,6 @@ package org.eclipse.persistence.sessions;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 
 import javax.naming.CompositeName;
@@ -250,7 +249,7 @@ public class JNDIConnector implements Connector {
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("datasource_name", null) + "=>" + getName();
+        return getClass().getSimpleName() + ToStringLocalization.buildMessage("datasource_name", null) + "=>" + getName();
     }
 
     /**
@@ -259,7 +258,7 @@ public class JNDIConnector implements Connector {
      */
     @Override
     public void toString(java.io.PrintWriter writer) {
-        writer.print(ToStringLocalization.buildMessage("connector", null) + "=>" + Helper.getShortClassName(getClass()));
+        writer.print(ToStringLocalization.buildMessage("connector", null) + "=>" + getClass().getSimpleName());
         writer.print(" ");
         writer.println(ToStringLocalization.buildMessage("datasource_name", null) + "=>" + getName());
     }

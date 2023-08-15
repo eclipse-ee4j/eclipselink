@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,8 +20,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-
-import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 
 /**
  * <b>Purpose</b>: Used to define a platform independent function call.
@@ -94,7 +92,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
         if (session.getPlatform().supportsStoredFunctions()) {
             super.prepareInternal(session);
         } else {
-            throw ValidationException.platformDoesNotSupportStoredFunctions(getShortClassName(session.getPlatform()));
+            throw ValidationException.platformDoesNotSupportStoredFunctions(session.getPlatform().getClass().getSimpleName());
         }
     }
 

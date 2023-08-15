@@ -24,7 +24,6 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.SQLCall;
 
@@ -359,6 +358,6 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getFullName() + ")";
+        return getClass().getSimpleName() + "(" + getFullName() + ")";
     }
 }

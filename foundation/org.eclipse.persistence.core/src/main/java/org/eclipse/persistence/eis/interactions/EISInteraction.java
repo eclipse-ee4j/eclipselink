@@ -525,6 +525,6 @@ public abstract class EISInteraction extends DatasourceCall {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getFunctionName() + ")";
+        return getClass().getSimpleName() + "(" + getFunctionName() + ")";
     }
 }

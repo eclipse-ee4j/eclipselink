@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.testing.framework;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
@@ -771,7 +770,7 @@ public class SessionEventTracker implements SessionEventListener {
     }
 
     public String toString() {
-        return Helper.getShortClassName(this) + "(" + (name != null ? name : "") + ")";
+        return getClass().getSimpleName() + "(" + (name != null ? name : "") + ")";
     }
 
     public static String eventToString(SessionEvent event) {
@@ -788,6 +787,6 @@ public class SessionEventTracker implements SessionEventListener {
     }
 
     public static String sessionToString(Session session) {
-        return Helper.getShortClassName(session) + "(" + session.getName() + ")";
+        return session.getClass().getSimpleName() + "(" + session.getName() + ")";
     }
 }

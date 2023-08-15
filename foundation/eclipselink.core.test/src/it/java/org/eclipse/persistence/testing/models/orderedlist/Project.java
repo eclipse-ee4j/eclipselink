@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -132,7 +132,7 @@ public abstract class Project implements ChangeTracker {
     public String toString() {
         StringWriter writer = new StringWriter();
 
-        writer.write(Helper.getShortClassName(this) + ": ");
+        writer.write(getClass().getSimpleName() + ": ");
         writer.write(getName());
         return writer.toString();
     }
