@@ -213,7 +213,7 @@
                         </goals>
                         <configuration>
                             <skipTests>${test-skip-jpa-wdf}</skipTests>
-                            <argValue>-Dignore</argValue>
+                            <argLine>-Dignore</argLine>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
                             </includes>
