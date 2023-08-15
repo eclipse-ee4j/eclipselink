@@ -1063,7 +1063,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     @Override
     public String toString() {
-        String str = Helper.getShortClassName(getClass());
+        String str = getClass().getSimpleName();
         if (getSQLString() == null) {
             return str;
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -173,7 +173,7 @@ public class Address implements java.io.Serializable {
     public String toString() {
         java.io.StringWriter stringWriter = new java.io.StringWriter();
         java.io.PrintWriter writer = new java.io.PrintWriter(stringWriter);
-        writer.print(org.eclipse.persistence.internal.helper.Helper.getShortClassName(getClass()));
+        writer.print(getClass().getSimpleName());
         writer.print("(");
         if (streetAddress == null) {
             writer.print("null");

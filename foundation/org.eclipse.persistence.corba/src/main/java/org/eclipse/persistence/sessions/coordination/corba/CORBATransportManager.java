@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -156,7 +156,7 @@ public abstract class CORBATransportManager extends TransportManager {
             }
         } catch (Exception e) {
             // Log the problem encountered during deserialization or rcm processing command
-            Object[] args = { Helper.getShortClassName(command), Helper.printStackTraceToString(e) };
+            Object[] args = { command.getClass().getSimpleName(), Helper.printStackTraceToString(e) };
             rcm.logWarning("error_executing_remote_command", args);
 
             // Return the byte[] of exception String in case the exception doesn't exist on the other side

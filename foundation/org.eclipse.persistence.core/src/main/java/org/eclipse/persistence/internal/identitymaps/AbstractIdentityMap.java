@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.io.Serializable;
@@ -528,6 +527,6 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "[" + getSize() + "]";
+        return getClass().getSimpleName() + "[" + getSize() + "]";
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -426,7 +426,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 em.close();
             }
         };
-        test.setName("ReadAllVsReadAllResultSet(" + Helper.getShortClassName(targetClass) + ')');
+        test.setName("ReadAllVsReadAllResultSet(" + targetClass.getSimpleName() + ')');
         return test;
     }
 
@@ -967,7 +967,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
             super();
             this.targetClass = targetClass;
             this.withCache = withCache;
-            setName("ResultSetOptimizationSideBySideTest(" + Helper.getShortClassName(targetClass) + ')' + (withCache ? " CACHE" : " NO CACHE"));
+            setName("ResultSetOptimizationSideBySideTest(" + targetClass.getSimpleName() + ')' + (withCache ? " CACHE" : " NO CACHE"));
         }
 
         @Override

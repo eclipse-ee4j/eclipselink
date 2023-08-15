@@ -941,7 +941,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
         if (this.isInstantiated()) {
             return "{" + getDelegate().toString() + "}";
         } else {
-            return "{" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(this.getClass()) + ": not instantiated}";
+            return "{" + getClass().getSimpleName() + ": not instantiated}";
         }
     }
 

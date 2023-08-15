@@ -1537,7 +1537,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(this.getClass()) + "(" + toStringInfo() + ")";
+        return getClass().getSimpleName() + "(" + toStringInfo() + ")";
     }
 
     protected Object toStringInfo() {

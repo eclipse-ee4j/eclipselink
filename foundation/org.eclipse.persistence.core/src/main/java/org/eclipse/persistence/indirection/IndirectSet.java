@@ -640,7 +640,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         if (this.isInstantiated()) {
             return "{" + this.getDelegate().toString() + "}";
         } else {
-            return "{" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(this.getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
+            return "{" + getClass().getSimpleName() + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
 
         }
     }

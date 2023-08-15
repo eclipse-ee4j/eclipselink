@@ -33,7 +33,6 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -354,7 +353,7 @@ public class DatasourcePlatform implements Platform {
         if (getDefaultSequence() instanceof QuerySequence) {
             return ((QuerySequence)getDefaultSequence()).getSelectQuery();
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getSelectQuery");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "getSelectQuery");
         }
     }
 
@@ -436,7 +435,7 @@ public class DatasourcePlatform implements Platform {
         if (getDefaultSequence() instanceof QuerySequence) {
             return ((QuerySequence)getDefaultSequence()).getUpdateQuery();
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getUpdateQuery");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "getUpdateQuery");
         }
     }
 
@@ -762,7 +761,7 @@ public class DatasourcePlatform implements Platform {
         if (getDefaultSequence() instanceof QuerySequence) {
             ((QuerySequence)getDefaultSequence()).setSelectQuery(seqQuery);
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setSelectQuery");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "setSelectQuery");
         }
     }
 
@@ -808,13 +807,13 @@ public class DatasourcePlatform implements Platform {
         if (getDefaultSequence() instanceof QuerySequence) {
             ((QuerySequence)getDefaultSequence()).setUpdateQuery(updateSequenceNumberQuery);
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setUpdateQuery");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "setUpdateQuery");
         }
     }
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(this.getClass());
+        return getClass().getSimpleName();
     }
 
     /**
@@ -944,7 +943,7 @@ public class DatasourcePlatform implements Platform {
      * Create platform-default Sequence
      */
     protected Sequence createPlatformDefaultSequence() {
-        throw ValidationException.createPlatformDefaultSequenceUndefined(Helper.getShortClassName(this));
+        throw ValidationException.createPlatformDefaultSequenceUndefined(getClass().getSimpleName());
     }
 
     /**

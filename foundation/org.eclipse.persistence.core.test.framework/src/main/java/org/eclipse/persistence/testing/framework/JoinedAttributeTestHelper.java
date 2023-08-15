@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -245,7 +244,7 @@ public class JoinedAttributeTestHelper {
                 Object obj2 = map2.get(pk);
                 String objErrorMsg = compareObjects(obj1, obj2, session, processed);
                 if(objErrorMsg.length() > 0) {
-                    errorMsg += "PK = " + pk.toString() + ": " + Helper.getShortClassName(obj1.getClass()) + objErrorMsg + "  ";
+                    errorMsg += "PK = " + pk.toString() + ": " + obj1.getClass().getSimpleName() + objErrorMsg + "  ";
                 }
 
             }
@@ -297,7 +296,7 @@ public class JoinedAttributeTestHelper {
             Object obj2 = map2.get(key);
             String objErrorMsg = compareObjects(obj1, obj2, session, processed);
             if(objErrorMsg.length() > 0) {
-                errorMsg += "Key = " + key.toString() + ": " + Helper.getShortClassName(obj1.getClass()) + objErrorMsg + "  ";
+                errorMsg += "Key = " + key.toString() + ": " + obj1.getClass().getSimpleName() + objErrorMsg + "  ";
             }
 
         }

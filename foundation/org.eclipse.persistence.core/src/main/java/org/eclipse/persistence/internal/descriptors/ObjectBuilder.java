@@ -4536,7 +4536,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + this.descriptor.toString() + ")";
+        return getClass().getSimpleName() + "(" + this.descriptor.toString() + ")";
     }
 
     /**

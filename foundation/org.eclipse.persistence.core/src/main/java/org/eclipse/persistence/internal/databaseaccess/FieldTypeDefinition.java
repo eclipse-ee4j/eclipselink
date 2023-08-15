@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.databaseaccess;
 
-import org.eclipse.persistence.internal.helper.Helper;
-
 import java.io.Serializable;
 
 /**
@@ -310,6 +308,6 @@ public class FieldTypeDefinition implements Serializable {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getName() + ")";
+        return getClass().getSimpleName() + "(" + getName() + ")";
     }
 }

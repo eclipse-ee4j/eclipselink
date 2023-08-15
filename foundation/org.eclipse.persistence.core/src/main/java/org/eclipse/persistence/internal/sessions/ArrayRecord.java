@@ -340,7 +340,7 @@ public class ArrayRecord extends DatabaseRecord {
     public String toString() {
         if (this.valuesArray != null) {
             StringWriter writer = new StringWriter();
-            writer.write(Helper.getShortClassName(getClass()));
+            writer.write(getClass().getSimpleName());
             writer.write("(");
             writer.write(toStringAditional());
             for (int index = 0; index < this.fieldsArray.length; index++) {

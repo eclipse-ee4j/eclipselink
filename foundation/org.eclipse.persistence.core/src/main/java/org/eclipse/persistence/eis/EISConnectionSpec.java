@@ -20,7 +20,6 @@ import jakarta.resource.cci.ConnectionFactory;
 import jakarta.resource.cci.ConnectionSpec;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.Session;
 
@@ -309,9 +308,9 @@ public class EISConnectionSpec implements Connector {
     @Override
     public String toString() {
         if (getName() != null) {
-            return Helper.getShortClassName(getClass()) + "(connection manager url => " + getName() + ")";
+            return getClass().getSimpleName() + "(connection manager url => " + getName() + ")";
         } else {
-            return Helper.getShortClassName(getClass()) + "()";
+            return getClass().getSimpleName() + "()";
         }
     }
 

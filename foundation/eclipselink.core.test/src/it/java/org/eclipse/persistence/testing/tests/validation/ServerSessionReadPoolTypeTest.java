@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class ServerSessionReadPoolTypeTest extends AutoVerifyTestCase {
     @Override
     public void verify() {
         Class<? extends ConnectionPool> readPoolClass = serverSession.getReadConnectionPool().getClass();
-        String readPoolClassName = Helper.getShortClassName(readPoolClass);
+        String readPoolClassName = readPoolClass.getSimpleName();
         if (serverSession.getLogin().shouldUseExternalConnectionPooling()) {
             if (!readPoolClass.equals(ExternalConnectionPool.class)) {
                 throw new TestErrorException("In case external connection pooling is used, readConnectionPool by default should be an instance of ExternalConnectionPool class, not " + readPoolClassName);

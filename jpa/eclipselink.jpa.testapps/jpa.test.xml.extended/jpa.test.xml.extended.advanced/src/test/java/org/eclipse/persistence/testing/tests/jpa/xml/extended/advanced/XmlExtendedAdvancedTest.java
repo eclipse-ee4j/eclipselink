@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -866,7 +866,7 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
         }
     }
     protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
-        return verifyPropertyValue(propertyName, descriptor.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, Helper.getShortClassName(descriptor.getJavaClass()) + " descriptor");
+        return verifyPropertyValue(propertyName, descriptor.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, descriptor.getJavaClass().getSimpleName() + " descriptor");
     }
     protected String verifyPropertyValue(DatabaseMapping mapping, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
         return verifyPropertyValue(propertyName, mapping.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, mapping.getAttributeName() + " attribute");

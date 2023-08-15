@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import junit.framework.Test;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.framework.TestSuite;
@@ -54,10 +55,10 @@ public class CorbaTestModel extends TestModel {
         }
 
         // Sort the tests alphabetically.
-        Collections.sort(this.getTests(), new Comparator<Object>() {
+        Collections.sort(this.getTests(), new Comparator<Test>() {
             @Override
-            public int compare(Object left, Object right) {
-                return Helper.getShortClassName(left.getClass()).compareTo(Helper.getShortClassName(right.getClass()));
+            public int compare(Test left, Test right) {
+                return left.getClass().getSimpleName().compareTo(right.getClass().getSimpleName());
             }
         });
     }

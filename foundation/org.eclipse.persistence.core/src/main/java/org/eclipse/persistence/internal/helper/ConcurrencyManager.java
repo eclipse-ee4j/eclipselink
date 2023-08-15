@@ -821,7 +821,7 @@ public class ConcurrencyManager implements Serializable {
     @Override
     public String toString() {
         Object[] args = {getDepth()};
-        return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("nest_level", args);
+        return getClass().getSimpleName() + ToStringLocalization.buildMessage("nest_level", args);
     }
 
     public Exception getStack() {

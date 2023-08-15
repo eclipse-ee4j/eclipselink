@@ -18,7 +18,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.UnmarshalXPathEngine;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -746,7 +745,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
         transformToWriter(writer);
         writer.write(")");

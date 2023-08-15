@@ -18,7 +18,6 @@
 package org.eclipse.persistence.exceptions.i18n;
 
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import java.text.MessageFormat;
@@ -57,7 +56,7 @@ public final class ExceptionMessageGenerator {
      * Return the message for the given exception class and error number.
      */
     public static String buildMessage(Class<?> exceptionClass, int errorNumber, Object[] arguments) {
-        String shortClassName = Helper.getShortClassName(exceptionClass);
+        String shortClassName = exceptionClass.getSimpleName();
         String message = "";
         ResourceBundle bundle = null;
 

@@ -187,6 +187,6 @@ public class QueryKey implements Cloneable, Serializable {
      */
     @Override
     public String toString() {
-        return org.eclipse.persistence.internal.helper.Helper.getShortClassName(this) + "(" + getName() + ")";
+        return getClass().getSimpleName() + "(" + getName() + ")";
     }
 }

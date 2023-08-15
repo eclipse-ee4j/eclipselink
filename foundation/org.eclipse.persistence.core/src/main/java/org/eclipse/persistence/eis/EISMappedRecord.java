@@ -198,7 +198,7 @@ public class EISMappedRecord extends AbstractRecord {
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
 
         for (Iterator<?> keysIterator = keySet().iterator(); keysIterator.hasNext();) {

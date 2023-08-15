@@ -1212,16 +1212,16 @@ public class IdentityMapManager implements Serializable, Cloneable {
         if (map == null) {
             return;
         }
-        writer.write(LoggingLocalization.buildMessage("identitymap_for", new Object[] { cr, Helper.getShortClassName(map.getClass()), Helper.getShortClassName(businessClass) }));
+        writer.write(LoggingLocalization.buildMessage("identitymap_for", new Object[] { cr, map.getClass().getSimpleName(), businessClass.getSimpleName() }));
         if (descriptor.hasInheritance()) {
             if (descriptor.getInheritancePolicy().isRootParentDescriptor()) {
                 writer.write(LoggingLocalization.buildMessage("includes"));
                 List<ClassDescriptor> childDescriptors = descriptor.getInheritancePolicy().getChildDescriptors();
-                if ((childDescriptors != null) && (childDescriptors.size() != 0)) {//Bug#2675242
+                if ((childDescriptors != null) && (!childDescriptors.isEmpty())) {//Bug#2675242
                     Iterator<ClassDescriptor> iterator = childDescriptors.iterator();
-                    writer.write(Helper.getShortClassName(iterator.next().getJavaClass()));
+                    writer.write(iterator.next().getJavaClass().getSimpleName());
                     while (iterator.hasNext()) {
-                        writer.write(", " + Helper.getShortClassName(iterator.next().getJavaClass()));
+                        writer.write(", " + iterator.next().getJavaClass().getSimpleName());
                     }
                 }
                 writer.write(")");

@@ -15,7 +15,6 @@
 package org.eclipse.persistence.tools.schemaframework;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.io.IOException;
@@ -42,7 +41,7 @@ public class StoredFunctionDefinition extends StoredProcedureDefinition {
         if (session.getPlatform().supportsStoredFunctions()) {
             super.buildCreationWriter(session, writer);
         } else {
-            throw ValidationException.platformDoesNotSupportStoredFunctions(Helper.getShortClassName(session.getPlatform()));
+            throw ValidationException.platformDoesNotSupportStoredFunctions(session.getPlatform().getClass().getSimpleName());
         }
         return writer;
     }
@@ -56,7 +55,7 @@ public class StoredFunctionDefinition extends StoredProcedureDefinition {
         if (session.getPlatform().supportsStoredFunctions()) {
             super.buildDeletionWriter(session, writer);
         } else {
-            throw ValidationException.platformDoesNotSupportStoredFunctions(Helper.getShortClassName(session.getPlatform()));
+            throw ValidationException.platformDoesNotSupportStoredFunctions(session.getPlatform().getClass().getSimpleName());
         }
         return writer;
     }

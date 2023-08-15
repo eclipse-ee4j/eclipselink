@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -5226,24 +5226,24 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         Class<?> defaultCacheType = ss.getDescriptor(Project.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(defaultCacheType).equals("FullIdentityMap")) {
-            fail("defaultCacheType is wrong: "+Helper.getShortClassName(defaultCacheType));
+        if(! "FullIdentityMap".equals(defaultCacheType.getSimpleName())) {
+            fail("defaultCacheType is wrong: "+defaultCacheType.getSimpleName());
         }
 
         Class<?> employeeCacheType = ss.getDescriptor(Employee.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(employeeCacheType).equals("WeakIdentityMap")) {
-            fail("employeeCacheType is wrong: "+Helper.getShortClassName(employeeCacheType));
+        if(! "WeakIdentityMap".equals(employeeCacheType.getSimpleName())) {
+            fail("employeeCacheType is wrong: "+employeeCacheType.getSimpleName());
         }
 
         Class<?> addressCacheType = ss.getDescriptor(Address.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(addressCacheType).equals("HardCacheWeakIdentityMap")) {
-            fail("addressCacheType is wrong: "+Helper.getShortClassName(addressCacheType));
+        if(! "HardCacheWeakIdentityMap".equals(addressCacheType.getSimpleName())) {
+            fail("addressCacheType is wrong: "+addressCacheType.getSimpleName());
         }
 
         // Department cache type specified in @Cache annotation - that should override default property
         Class<?> departmentCacheType = ss.getDescriptor(Department.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(departmentCacheType).equals("SoftCacheWeakIdentityMap")) {
-            fail("departmentCacheType is wrong: "+Helper.getShortClassName(departmentCacheType));
+        if(! "SoftCacheWeakIdentityMap".equals(departmentCacheType.getSimpleName())) {
+            fail("departmentCacheType is wrong: "+departmentCacheType.getSimpleName());
         }
 
         int numSessionCalls = Customizer.getNumberOfCallsForSession(ss.getName());
@@ -7959,7 +7959,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
 
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         HashMap map = null;
@@ -8094,7 +8094,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         boolean ok = false;
@@ -8201,7 +8201,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform." );
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         Employee empTemp = null;

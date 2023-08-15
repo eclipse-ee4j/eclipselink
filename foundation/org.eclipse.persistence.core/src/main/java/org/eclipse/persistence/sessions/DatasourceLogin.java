@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedProperties;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -789,7 +788,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public String toString() {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.println("(");
         writer.println("\t" + ToStringLocalization.buildMessage("platform", null) + "=> " + getDatasourcePlatform());
         if (!shouldUseExternalConnectionPooling()) {

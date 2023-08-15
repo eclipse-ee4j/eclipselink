@@ -25,7 +25,6 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -376,7 +375,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException couldNotInstantiateIndirectContainerClass(Class<?> containerClass, Exception exception) {
-        Object[] args = { containerClass, Helper.getShortClassName(containerClass) };
+        Object[] args = { containerClass, containerClass.getSimpleName() };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, COULD_NOT_INSTANTIATE_INDIRECT_CONTAINER_CLASS, args));
         descriptorException.setErrorCode(COULD_NOT_INSTANTIATE_INDIRECT_CONTAINER_CLASS);

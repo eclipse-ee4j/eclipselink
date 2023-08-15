@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.tests;
 
 import junit.framework.Test;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.TestModel;
 
@@ -165,10 +164,10 @@ public class TestRunModel extends TestModel {
         }
 
         // Sort the tests alphabetically.
-        this.getTests().sort(new Comparator<Object>() {
+        this.getTests().sort(new Comparator<Test>() {
             @Override
-            public int compare(Object left, Object right) {
-                return Helper.getShortClassName(left.getClass()).compareTo(Helper.getShortClassName(right.getClass()));
+            public int compare(Test left, Test right) {
+                return left.getClass().getSimpleName().compareTo(right.getClass().getSimpleName());
             }
         });
         testList = tests;

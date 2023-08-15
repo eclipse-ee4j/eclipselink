@@ -17,7 +17,6 @@ package org.eclipse.persistence.sessions.remote;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -388,7 +387,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "()";
+        return getClass().getSimpleName() + "()";
     }
 
     /**

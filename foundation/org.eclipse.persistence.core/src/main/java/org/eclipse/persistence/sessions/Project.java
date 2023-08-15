@@ -47,7 +47,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
@@ -1129,7 +1128,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getName() + ")";
+        return getClass().getSimpleName() + "(" + getName() + ")";
     }
 
     /**

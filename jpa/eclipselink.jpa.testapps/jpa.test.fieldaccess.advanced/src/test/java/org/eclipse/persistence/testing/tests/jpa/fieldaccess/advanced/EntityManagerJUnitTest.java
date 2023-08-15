@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2405,17 +2405,17 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
 
         Class<?> defaultCacheType = ss.getDescriptor(Project.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(defaultCacheType).equals("FullIdentityMap")) {
+        if(! defaultCacheType.getSimpleName().equals("FullIdentityMap")) {
             fail("defaultCacheType is wrong");
         }
 
         Class<?> employeeCacheType = ss.getDescriptor(Employee.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(employeeCacheType).equals("WeakIdentityMap")) {
+        if(! employeeCacheType.getSimpleName().equals("WeakIdentityMap")) {
             fail("employeeCacheType is wrong");
         }
 
         Class<?> addressCacheType = ss.getDescriptor(Address.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(addressCacheType).equals("HardCacheWeakIdentityMap")) {
+        if(! addressCacheType.getSimpleName().equals("HardCacheWeakIdentityMap")) {
             fail("addressCacheType is wrong");
         }
 
@@ -4056,7 +4056,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             return;
         }
 
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         HashMap map = null;
@@ -4163,7 +4163,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         boolean ok = false;
@@ -4245,7 +4245,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         Employee empTemp = null;

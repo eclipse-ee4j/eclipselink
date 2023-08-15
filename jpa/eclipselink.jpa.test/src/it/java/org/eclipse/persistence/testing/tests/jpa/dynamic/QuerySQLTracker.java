@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ package org.eclipse.persistence.testing.tests.jpa.dynamic;
 
 //javase imports
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -199,7 +198,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
         @SuppressWarnings("unchecked")
         protected void setResult(Object queryResult, Session session) {
             StringWriter writer = new StringWriter();
-            writer.write(Helper.getShortClassName(query));
+            writer.write(query.getClass().getSimpleName());
             writer.write("[" + System.identityHashCode(query) + "]");
             writer.write(" result = ");
 
@@ -234,7 +233,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
                             }
                         }
                         if (writePkOnly) {
-                            writer.write(Helper.getShortClassName(object) + "("
+                            writer.write(object.getClass().getSimpleName() + "("
                                     + session.getDescriptor(object.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(object, (AbstractSession) session) + ")");
                         } else {
                             writer.write(object + "");

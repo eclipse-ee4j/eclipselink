@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -219,7 +219,7 @@ public class ExpressionTestSuite extends TestSuite {
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(cls, 1);
         test.setExpression(expression);
-        test.setName("Aggregate Colection Join Test " + Helper.getShortClassName(cls));
+        test.setName("Aggregate Colection Join Test " + cls.getSimpleName());
         test.setDescription("Test aggregate collection join with 2 anyOf clauses");
         addTest(test);
     }

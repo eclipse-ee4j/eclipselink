@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.remote;
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
@@ -135,7 +134,7 @@ public class Transporter implements Serializable {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getObject() + ")";
+        return getClass().getSimpleName() + "(" + getObject() + ")";
     }
 
     /**

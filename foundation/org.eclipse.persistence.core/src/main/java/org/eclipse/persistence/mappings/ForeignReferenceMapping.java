@@ -2200,7 +2200,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * If isJoiningSupported()==true then this method must be overridden.
      */
     protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey parentCacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
-        throw ValidationException.mappingDoesNotOverrideValueFromRowInternalWithJoin(Helper.getShortClassName(this.getClass()));
+        throw ValidationException.mappingDoesNotOverrideValueFromRowInternalWithJoin(getClass().getSimpleName());
     }
 
     /**

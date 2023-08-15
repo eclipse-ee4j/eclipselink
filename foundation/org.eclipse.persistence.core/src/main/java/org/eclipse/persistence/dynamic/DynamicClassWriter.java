@@ -29,7 +29,6 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader.EnumInfo;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
-import org.eclipse.persistence.internal.helper.Helper;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -379,6 +378,6 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
     @Override
     public String toString() {
         String parentName = getParentClass() == null ? getParentClassName() : getParentClass().getName();
-        return Helper.getShortClassName(getClass()) + "(" + parentName + ")";
+        return getClass().getSimpleName() + "(" + parentName + ")";
     }
 }

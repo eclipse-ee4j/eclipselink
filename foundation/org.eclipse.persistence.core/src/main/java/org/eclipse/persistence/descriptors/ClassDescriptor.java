@@ -1868,7 +1868,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
          *   Default alias to the Java class name if the alias is not set
          */
         if ((alias == null) && (getJavaClassName() != null)) {
-            alias = org.eclipse.persistence.internal.helper.Helper.getShortClassName(getJavaClassName());
+            alias = Helper.getShortClassName(getJavaClassName());
         }
         return alias;
     }
@@ -5672,7 +5672,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getJavaClassName() + " --> " + getTables() + ")";
+        return getClass().getSimpleName() + "(" + getJavaClassName() + " --> " + getTables() + ")";
     }
 
     /**

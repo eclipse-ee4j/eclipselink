@@ -166,7 +166,7 @@ public class Profile implements Serializable, Cloneable {
         try {
             writer.write(ToStringLocalization.buildMessage("profile", null) + "(");
             if (getQueryClass() != null) {
-                writer.write(Helper.getShortClassName(getQueryClass()) + "," + cr);
+                writer.write(getQueryClass().getSimpleName() + "," + cr);
             } else {
                 writer.write(cr);
             }

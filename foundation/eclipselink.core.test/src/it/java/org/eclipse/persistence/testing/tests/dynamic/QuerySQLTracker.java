@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -174,7 +174,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
         @SuppressWarnings("unchecked")
         protected void setResult(Object queryResult) {
             StringWriter writer = new StringWriter();
-            writer.write(Helper.getShortClassName(query));
+            writer.write(query.getClass().getSimpleName());
             writer.write("[" + System.identityHashCode(query) + "]");
             writer.write(" result = ");
 

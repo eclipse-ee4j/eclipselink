@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public class SwitchableOptimisticLockingPolicyTest extends TestCase {
 
     public SwitchableOptimisticLockingPolicyTest(Class<?> optimisticLockingPolicyClass) {
         super();
-        setName(getName() + " (" + Helper.getShortClassName(optimisticLockingPolicyClass) + ")");
+        setName(getName() + " (" + optimisticLockingPolicyClass.getSimpleName() + ")");
         this.optimisticLockingPolicyClass = optimisticLockingPolicyClass;
         this.oldOptimisticLockingPolicies = new HashMap();
     }

@@ -208,6 +208,6 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(this) + "(" + this.getMethodName() + ")";
+        return getClass().getSimpleName() + "(" + this.getMethodName() + ")";
     }
 }

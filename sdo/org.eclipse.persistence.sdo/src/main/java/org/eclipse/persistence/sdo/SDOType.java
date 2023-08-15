@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,6 @@ import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -860,7 +859,7 @@ public class SDOType implements Type, Serializable {
         }
         AbstractSessionLog.getLog().log(AbstractSessionLog.FINER,//
                                         "sdo_type_generation_processing_type", //
-                                        new Object[] { Helper.getShortClassName(getClass()), getInstanceClassName() });
+                                        new Object[] { getClass().getSimpleName(), getInstanceClassName() });
 
         initializeNamespaces(namespaceResolvers);
         getXmlDescriptor().setJavaClassName(getImplClassName());

@@ -713,7 +713,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      *    Return the type that is appropriate for the indirection policy.
      */
     protected String validTypeName() {
-        return Helper.getShortClassName(this.getContainerClass());
+        return getContainerClass().getSimpleName();
     }
 
     /**

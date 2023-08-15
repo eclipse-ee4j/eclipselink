@@ -923,7 +923,7 @@ public class StoredProcedureCall extends DatabaseCall {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getProcedureName() + ")";
+        return getClass().getSimpleName() + "(" + getProcedureName() + ")";
     }
 
     /**

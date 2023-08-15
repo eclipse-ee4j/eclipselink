@@ -816,7 +816,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
 
         for (int index = 0; index < getFields().size(); index++) {

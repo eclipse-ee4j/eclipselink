@@ -16,7 +16,6 @@
 package org.eclipse.persistence.sessions.server;
 
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.sessions.Login;
 
@@ -342,7 +341,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
             type = type + "," + ToStringLocalization.buildMessage("non-lazy", null) + ")";
         }
 
-        return Helper.getShortClassName(getClass()) + type;
+        return getClass().getSimpleName() + type;
     }
 
     /**

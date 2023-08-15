@@ -146,7 +146,7 @@ public class TableCreatorClassGenerator {
 
         String loginClassName = login.getClass().getName();
         if (login.getClass().equals(DatabaseLogin.class)) {
-            loginClassName = Helper.getShortClassName(login);
+            loginClassName = login.getClass().getSimpleName();
         }
         method.addLine(loginClassName + " login = new " + loginClassName + "();");
 
@@ -343,7 +343,7 @@ public class TableCreatorClassGenerator {
         }
 
         // This handles most cases.
-        return "new " + Helper.getShortClassName(value) + "(" + value + ")";
+        return "new " + value.getClass().getSimpleName() + "(" + value + ")";
     }
 
     protected String removeDots(String packageName) {

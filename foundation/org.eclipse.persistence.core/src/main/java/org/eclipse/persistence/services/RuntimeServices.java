@@ -708,7 +708,7 @@ public abstract class RuntimeServices {
       * Types include: "ServerSession", "DatabaseSession", "SessionBroker"
       */
      public String getSessionType() {
-         return Helper.getShortClassName(getSession().getClass());
+         return getSession().getClass().getSimpleName();
      }
 
      /**
