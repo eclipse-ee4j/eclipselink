@@ -1069,8 +1069,9 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      *    Answers the unqualified class name for the provided class.
      */
+    @Deprecated(forRemoval = true)
     public static String getShortClassName(Class<?> javaClass) {
-        return getShortClassName(javaClass.getName());
+        return javaClass.getSimpleName();
     }
 
     /**
@@ -1083,6 +1084,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      *    Answers the unqualified class name for the specified object.
      */
+    @Deprecated(forRemoval = true)
     public static String getShortClassName(Object object) {
         return getShortClassName(object.getClass());
     }
@@ -1090,9 +1092,9 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      *    return a package name for the specified class.
      */
+    @Deprecated(forRemoval = true)
     public static String getPackageName(Class<?> javaClass) {
-        String className = Helper.getShortClassName(javaClass);
-        return javaClass.getName().substring(0, (javaClass.getName().length() - (className.length() + 1)));
+        return javaClass.getPackageName();
     }
 
     /**
