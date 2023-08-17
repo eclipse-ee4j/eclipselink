@@ -58,6 +58,7 @@ import org.eclipse.persistence.jpa.jpql.parser.MultiplicationExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
@@ -489,6 +490,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
     protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
+    }
+
+    @Override
+    public void visit(ReplaceExpression expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
     @Override

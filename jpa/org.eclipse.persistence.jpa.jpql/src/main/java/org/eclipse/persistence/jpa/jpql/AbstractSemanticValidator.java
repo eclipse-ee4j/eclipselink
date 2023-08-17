@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -91,6 +91,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -2066,6 +2067,50 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      */
     protected void validateRangeVariableDeclarationRootObject(RangeVariableDeclaration expression) {
         expression.getRootObject().accept(this);
+    }
+
+
+    /**
+     * Validates the encapsulated expression of the given <code><b>REPLACEMENT</b></code> expression.
+     * The test to perform is:
+     * <ul>
+     * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+     * mapping, an association field is not allowed.</li>
+     * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+     * that expression but the returned status will not be changed.</li>
+     * </ul>
+     *
+     * @param expression The {@link ReplaceExpression} to validate by validating its encapsulated expression
+     * @return A number indicating the validation result. {@link #isValid(int, int)} can be used to
+     * determine the validation status of an expression based on its position
+     */
+    protected int validateReplaceExpression(ReplaceExpression expression) {
+
+        int result = 0;
+
+        // Validate the first expression
+        if (expression.hasFirstExpression()) {
+            Expression firstExpression = expression.getFirstExpression();
+
+            // Special case for state field path expression, association field is not allowed
+            StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
+
+            if (pathExpression != null) {
+                boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
+                updateStatus(result, 0, valid);
+            }
+            else {
+                firstExpression.accept(this);
+            }
+        }
+
+        // Validate the second expression
+        expression.getSecondExpression().accept(this);
+
+        // Validate the third expression
+        expression.getThirdExpression().accept(this);
+
+        return result;
     }
 
     /**

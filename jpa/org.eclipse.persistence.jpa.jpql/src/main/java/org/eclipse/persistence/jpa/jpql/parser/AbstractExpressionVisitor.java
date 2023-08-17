@@ -315,6 +315,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
     }
 

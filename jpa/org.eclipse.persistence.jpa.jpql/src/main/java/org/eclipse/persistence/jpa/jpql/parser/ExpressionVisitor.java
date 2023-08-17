@@ -516,6 +516,13 @@ public interface ExpressionVisitor {
     void visit(RangeVariableDeclaration expression);
 
     /**
+     * Visits the {@link ReplaceExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(ReplaceExpression expression);
+
+    /**
      * Visits the {@link ResultVariable} expression.
      *
      * @param expression The {@link Expression} to visit

@@ -1071,6 +1071,11 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+        type = String.class;
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
         expression.getSelectExpression().accept(this);
     }

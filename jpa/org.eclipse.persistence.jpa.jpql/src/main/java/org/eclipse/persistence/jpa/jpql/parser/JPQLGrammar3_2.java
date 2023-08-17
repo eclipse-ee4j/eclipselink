@@ -19,12 +19,15 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONCAT_PIPES;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.REPLACE;
 
 /**
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in Jakarta Persistence 3.2.
  * <pre><code>
  *
  * string_expression ::= string_expression || string_term
+ *
+ * functions_returning_strings ::= REPLACE(string_primary, string_primary, string_primary)
  *
  * </code></pre>
  */
@@ -98,20 +101,26 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         registerBNF(new StringFactorBNF());
         registerBNF(new StringTermBNF());
         registerBNF(new SimpleStringExpressionBNF());
+        registerBNF(new InternalReplacePositionExpressionBNF());
+        registerBNF(new InternalReplaceStringExpressionBNF());
 
         // Extend some query BNFs
         addChildBNF(StringPrimaryBNF.ID,   SimpleStringExpressionBNF.ID);
+        addChildFactory(FunctionsReturningStringsBNF.ID, ReplaceExpressionFactory.ID);
     }
 
     @Override
     protected void initializeExpressionFactories() {
         registerFactory(new StringExpressionFactory());
+        registerFactory(new ReplaceExpressionFactory());
     }
 
     @Override
     protected void initializeIdentifiers() {
         registerIdentifierRole(CONCAT_PIPES,                  IdentifierRole.AGGREGATE);          // x || y
         registerIdentifierVersion(CONCAT_PIPES, JPAVersion.VERSION_3_2);
+        registerIdentifierRole(REPLACE,             IdentifierRole.FUNCTION);           // REPLACE(x, y, z)
+        registerIdentifierVersion(REPLACE, JPAVersion.VERSION_3_2);
     }
 
     @Override

@@ -39,4 +39,20 @@ public class JPQLQueries3_2 {
     public static String query_ConcatPipes_Where() {
         return "SELECT c FROM Customer c WHERE c.firstName || 'Smith' = 'JohnSmith'";
     }
+
+    public static String query_ReplaceFunction_Select01() {
+        return "SELECT REPLACE('Hello Vorld', 'V', 'W') FROM Customer c";
+    }
+
+    public static String query_ReplaceFunction_Select02() {
+        return "SELECT REPLACE('Hella Warld', 'a', 'o') FROM Customer c";
+    }
+
+    public static String query_ReplaceFunction_Select03() {
+        return "SELECT REPLACE(c.firstName, 'a', 'o') FROM Customer c";
+    }
+
+    public static String query_ReplaceFunction_Where() {
+        return "SELECT c FROM Customer c WHERE REPLACE(c.firstName, 'o', 'a') = 'Jahn'";
+    }
 }

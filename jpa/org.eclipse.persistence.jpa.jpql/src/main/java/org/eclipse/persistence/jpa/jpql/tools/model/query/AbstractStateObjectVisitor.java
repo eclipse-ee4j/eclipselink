@@ -267,6 +267,10 @@ public abstract class AbstractStateObjectVisitor implements StateObjectVisitor {
     }
 
     @Override
+    public void visit(ReplaceExpressionStateObject stateObject) {
+    }
+
+    @Override
     public void visit(ResultVariableStateObject stateObject) {
     }
 

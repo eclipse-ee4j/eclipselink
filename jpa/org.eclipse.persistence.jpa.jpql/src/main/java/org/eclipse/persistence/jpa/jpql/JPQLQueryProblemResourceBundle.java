@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -474,7 +474,23 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
             {"REGEXP_EXPRESSION_INVALID_STRING_EXPRESSION", "The string expression is not a valid expression."},
             {"REGEXP_EXPRESSION_MISSING_PATTERN_VALUE",     "The pattern value must be specified."},
             {"REGEXP_EXPRESSION_MISSING_STRING_EXPRESSION", "The string expression must be specified."},
-
+                
+            // ReplaceExpression - Grammar
+            {"REPLACE_EXPRESSION_INVALID_FIRST_EXPRESSION",     "The first argument is not a valid expression."},
+            {"REPLACE_EXPRESSION_INVALID_SECOND_EXPRESSION",    "The second argument is not a valid expression."},
+            {"REPLACE_EXPRESSION_INVALID_THIRD_EXPRESSION",     "The third argument is not a valid expression."},
+            {"REPLACE_EXPRESSION_MISSING_FIRST_COMMA",          "The first comma is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_FIRST_EXPRESSION",     "The first argument is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_LEFT_PARENTHESIS",     "The left parenthesis is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_RIGHT_PARENTHESIS",    "The right parenthesis is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_SECOND_COMMA",         "The second comma is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_SECOND_EXPRESSION",    "The second argument is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_THIRD_EXPRESSION",     "The third argument is missing from the REPLACE expression."},
+            // ReplaceExpression - Semantic
+            {"REPLACE_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE",  "The first argument is not a String value."},
+            {"REPLACE_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The second argument is not an integer value."},
+            {"REPLACE_EXPRESSION_THIRD_EXPRESSION_WRONG_TYPE",  "The third argument is not an integer value."},
+                
             // ResultVariable - Grammar
             {"RESULT_VARIABLE_INVALID_JPA_VERSION",       "A result variable cannot be used in a JPQL query when the JPA platform is 1.0."},
             {"RESULT_VARIABLE_MISSING_SELECT_EXPRESSION", "The select item is missing from the result variable declaration."},

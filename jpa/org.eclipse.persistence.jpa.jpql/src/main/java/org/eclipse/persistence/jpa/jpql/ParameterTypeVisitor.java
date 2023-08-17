@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,6 +65,7 @@ import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
@@ -510,6 +511,16 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     @Override
     public void visit(OrExpression expression) {
         visitCompoundExpression(expression);
+    }
+
+    @Override
+    public void visit(ReplaceExpression expression) {
+        // All parameters are always a string
+        if (expression.getFirstExpression().isAncestor(inputParameter) ||
+            expression.getSecondExpression().isAncestor(inputParameter) ||
+            expression.getThirdExpression() .isAncestor(inputParameter)) {
+            type = String.class;
+        }
     }
 
     @Override

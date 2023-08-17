@@ -23,10 +23,15 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_Concat
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Select02;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Select_Chained;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ReplaceFunction_Select01;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ReplaceFunction_Select02;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ReplaceFunction_Select03;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ReplaceFunction_Where;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.concatPipes;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.from;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.numeric;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.path;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.replace;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.resultVariable;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.select;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.selectStatement;
@@ -101,6 +106,70 @@ public class JPQLQueriesTest3_2 extends JPQLParserTest {
         }
     }
 
+    @Test
+    public void test_Query_ReplaceFunction_Select01() {
+
+        // SELECT REPLACE('Hello Vorld', 'V', 'W') FROM Customer c
+        ExpressionTester selectStatement = selectStatement(
+                select(replace(string("'Hello Vorld'"), string("'V'"), string("'W'"))),
+                from("Customer", "c")
+        );
+        try {
+            testQuery(query_ReplaceFunction_Select01(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_ReplaceFunction_Select02() {
+
+        // SELECT REPLACE('Hella Warld', 'a', 'o') FROM Customer c
+        ExpressionTester selectStatement = selectStatement(
+                select(replace(string("'Hella Warld'"), string("'a'"), string("'o'"))),
+                from("Customer", "c")
+        );
+        try {
+            testQuery(query_ReplaceFunction_Select02(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_ReplaceFunction_Select03() {
+
+        // SELECT REPLACE(c.firstName, 'a', 'o') FROM Customer c
+        ExpressionTester selectStatement = selectStatement(
+                select(replace(path("c.firstName"), string("'a'"), string("'o'"))),
+                from("Customer", "c")
+        );
+        try {
+            testQuery(query_ReplaceFunction_Select03(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_ReplaceFunction_Where() {
+
+        // SELECT c FROM Customer c WHERE REPLACE(c.firstName, 'o', 'a') = 'Jahn'
+        ExpressionTester selectStatement = selectStatement(
+                select(variable("c")),
+                from("Customer", "c"),
+                where(replace(path("c.firstName"), string("'o'"), string("'a'")).equal(string("'Jahn'")))
+        );
+        try {
+            testQuery(query_ReplaceFunction_Where(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
 
 //    @Test
     public void test_Query_013() {

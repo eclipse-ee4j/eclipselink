@@ -451,6 +451,13 @@ public interface StateObjectVisitor {
     void visit(RangeVariableDeclarationStateObject stateObject);
 
     /**
+     * Visits the given {@link ReplaceExpressionStateObject}.
+     *
+     * @param stateObject The {@link ReplaceExpressionStateObject} to visit
+     */
+    void visit(ReplaceExpressionStateObject stateObject);
+
+    /**
      * Visits the given {@link ResultVariableStateObject}.
      *
      * @param stateObject The {@link ResultVariableStateObject} to visit

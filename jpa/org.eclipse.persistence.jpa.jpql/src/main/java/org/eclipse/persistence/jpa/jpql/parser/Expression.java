@@ -674,6 +674,11 @@ public interface Expression {
     String REGEXP = "REGEXP";
 
     /**
+     * The constant for 'REPLACE'.
+     */
+    String REPLACE = "REPLACE";
+
+    /**
      * The constant for 'ROUND'.
      */
     String ROUND = "ROUND";

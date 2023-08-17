@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression]) |
  * TRIM([[trim_specification] [trim_character] FROM] string_primary) |
  * LOWER(string_primary) | UPPER(string_primary)</code></div>
+ * Jakarta Persistence 3.2:
+ * <div><b>BNF:</b> <code>functions_returning_string ::= REPLACE(string_primary, string_primary, string_primary})</code></div>
  *
  * @version 2.4
  * @since 2.3

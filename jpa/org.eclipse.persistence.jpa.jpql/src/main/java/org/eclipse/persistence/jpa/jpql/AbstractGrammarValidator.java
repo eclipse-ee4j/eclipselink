@@ -112,6 +112,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeDeclarationBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -827,6 +828,55 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             public String rightParenthesisMissingKey(ObjectExpression expression) {
                 return ObjectExpression_MissingRightParenthesis;
+            }
+        };
+    }
+
+    protected AbstractTripleEncapsulatedExpressionHelper<ReplaceExpression> buildReplaceExpressionHelper() {
+        return new AbstractTripleEncapsulatedExpressionHelper<ReplaceExpression>(this) {
+            @Override
+            protected String firstCommaMissingKey() {
+                return ReplaceExpression_MissingFirstComma;
+            }
+            @Override
+            protected String firstExpressionInvalidKey() {
+                return ReplaceExpression_InvalidFirstExpression;
+            }
+            @Override
+            protected String firstExpressionMissingKey() {
+                return ReplaceExpression_MissingFirstExpression;
+            }
+            @Override
+            public String identifier(ReplaceExpression expression) {
+                return REPLACE;
+            }
+            @Override
+            public String leftParenthesisMissingKey(ReplaceExpression expression) {
+                return ReplaceExpression_MissingLeftParenthesis;
+            }
+            @Override
+            public String rightParenthesisMissingKey(ReplaceExpression expression) {
+                return ReplaceExpression_MissingRightParenthesis;
+            }
+            @Override
+            protected String secondCommaMissingKey() {
+                return ReplaceExpression_MissingSecondComma;
+            }
+            @Override
+            protected String secondExpressionInvalidKey() {
+                return ReplaceExpression_InvalidSecondExpression;
+            }
+            @Override
+            protected String secondExpressionMissingKey() {
+                return ReplaceExpression_MissingSecondExpression;
+            }
+            @Override
+            protected String thirdExpressionInvalidKey() {
+                return ReplaceExpression_InvalidThirdExpression;
+            }
+            @Override
+            protected String thirdExpressionMissingKey() {
+                return ReplaceExpression_MissingThirdExpression;
             }
         };
     }
@@ -1584,6 +1634,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      */
     protected void registerHelper(String id, Object helper) {
         helpers.put(id, helper);
+    }
+
+    protected AbstractTripleEncapsulatedExpressionHelper<ReplaceExpression> replaceExpressionHelper() {
+        AbstractTripleEncapsulatedExpressionHelper<ReplaceExpression> helper = getHelper(REPLACE);
+        if (helper == null) {
+            helper = buildReplaceExpressionHelper();
+            registerHelper(REPLACE, helper);
+        }
+        return helper;
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<SizeExpression> sizeExpressionHelper() {
@@ -3952,6 +4011,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else {
             expression.getIdentificationVariable().accept(this);
         }
+    }
+
+    @Override
+    public void visit(ReplaceExpression expression) {
+        validateAbstractTripleEncapsulatedExpression(expression, replaceExpressionHelper());
     }
 
     @Override
