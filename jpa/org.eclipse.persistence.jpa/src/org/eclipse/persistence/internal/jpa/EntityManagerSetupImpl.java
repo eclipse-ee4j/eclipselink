@@ -1456,6 +1456,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if ((queryCache != null) && queryCache.equalsIgnoreCase("true")) {
             session.getProject().setDefaultQueryResultsCachePolicy(new QueryResultsCachePolicy());
         }
+        String queryCacheForceDeferredLocks = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_QUERY_FORCE_DEFERRED_LOCKS, m, session);
+        session.getProject().setQueryCacheForceDeferredLocks("true".equalsIgnoreCase(queryCacheForceDeferredLocks));
 
         Map typeMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_TYPE_, m, session);
         Map sizeMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_SIZE_, m, session);
@@ -1463,8 +1465,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if(typeMap.isEmpty() && sizeMap.isEmpty() && sharedMap.isEmpty()) {
             return;
         }
-        String queryCacheForceDeferredLocks = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_QUERY_FORCE_DEFERRED_LOCKS, m, session);
-        session.getProject().setQueryCacheForceDeferredLocks("true".equalsIgnoreCase(queryCacheForceDeferredLocks));
 
         String defaultTypeName = (String)typeMap.remove(PersistenceUnitProperties.DEFAULT);
         if (defaultTypeName != null) {
