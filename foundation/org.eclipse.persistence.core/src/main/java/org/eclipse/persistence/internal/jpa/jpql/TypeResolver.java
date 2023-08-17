@@ -103,6 +103,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
