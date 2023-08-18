@@ -508,6 +508,14 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
 
     /**
      * PUBLIC:
+     * Return the ID of the session.
+     *
+     * @return The ID of the session.
+     */
+    String getSessionId();
+
+    /**
+     * PUBLIC:
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      * NOTE: this must only be used for relational specific usage,
