@@ -407,6 +407,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * Finalize method in case the query is not closed.
      */
     @Override
+    @SuppressWarnings("removal")
     public void finalize() {
         close();
     }
@@ -695,6 +696,12 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } finally {
             close(); // Close the connection once we're done.
         }
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Object getSingleResultOrNull() {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**

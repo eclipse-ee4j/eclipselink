@@ -13,6 +13,7 @@
 package jpql.query;
 
 import java.util.Date;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
@@ -27,6 +28,7 @@ public class LargeProject extends Project {
 
     @Basic
     @Temporal(TemporalType.DATE)
+    @SuppressWarnings("deprecation")
     private Date endDate;
 
     @OneToOne
@@ -34,6 +36,7 @@ public class LargeProject extends Project {
 
     @Basic
     @Temporal(TemporalType.DATE)
+    @SuppressWarnings("deprecation")
     private Date startDate;
 
     public LargeProject() {

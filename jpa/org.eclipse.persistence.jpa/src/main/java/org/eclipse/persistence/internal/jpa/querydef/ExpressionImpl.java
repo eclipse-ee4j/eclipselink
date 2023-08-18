@@ -72,8 +72,39 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         return (Expression<T>) this;
     }
 
+    // TODO-API-3.2
+    //@Override
+    public <X1> Expression<X1> cast(Class<X1> type) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
     protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
         return (Expression<T>) this;
+    }
+
+
+    // TODO-API-3.2
+    //@Override
+    public Predicate equalTo(Expression<?> value) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Predicate equalTo(Object value) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Predicate notEqualTo(Expression<?> value) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Predicate notEqualTo(Object value) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     @Override
@@ -153,7 +184,6 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
-
 
     @Override
     public Predicate isNull() {

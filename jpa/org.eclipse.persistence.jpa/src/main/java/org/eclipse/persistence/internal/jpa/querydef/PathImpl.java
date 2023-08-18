@@ -16,6 +16,9 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.Collection;
+import java.util.Map;
+
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.metamodel.Bindable;
@@ -87,27 +90,24 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
     }
 
     /**
-     * Return the path corresponding to the referenced collection-valued
-     * attribute.
-     *
-     * @param collection
-     *            collection-valued attribute
-     * @return expression corresponding to the referenced attribute
-     */
+    * Return the path corresponding to the referenced collection-valued attribute.
+    *
+    * @param collection collection-valued attribute
+    * @return expression corresponding to the referenced attribute
+    */
     @Override
-    public <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection){
+    public <E, C extends Collection<E>> Expression<C> get(PluralAttribute<? super X, C, E> collection) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     /**
      * Return the path corresponding to the referenced map-valued attribute.
      *
-     * @param map
-     *            map-valued attribute
+     * @param map map-valued attribute
      * @return expression corresponding to the referenced attribute
      */
     @Override
-    public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map){
+    public <K, V, M extends Map<K, V>> Expression<M> get(MapAttribute<? super X, K, V> map) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 

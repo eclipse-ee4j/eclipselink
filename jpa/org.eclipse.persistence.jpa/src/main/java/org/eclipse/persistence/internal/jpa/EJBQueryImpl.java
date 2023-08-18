@@ -400,6 +400,12 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         return (X) super.getSingleResult();
     }
 
+    // TODO-API-3.2
+    //@Override
+    public X getSingleResultOrNull() {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
     /**
      * Set the position of the first result to retrieve.
      *

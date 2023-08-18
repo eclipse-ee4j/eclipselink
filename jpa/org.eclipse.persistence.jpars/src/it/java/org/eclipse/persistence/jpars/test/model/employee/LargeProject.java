@@ -12,8 +12,6 @@
 
 package org.eclipse.persistence.jpars.test.model.employee;
 
-import static jakarta.persistence.TemporalType.TIMESTAMP;
-
 import java.util.Calendar;
 
 import jakarta.persistence.Basic;
@@ -21,6 +19,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "JPARS_LPROJECT")
@@ -29,7 +28,8 @@ public class LargeProject extends Project {
     @Basic
     private double budget;
     @Basic
-    @Temporal(TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
+    @SuppressWarnings("deprecation")
     private Calendar milestone = Calendar.getInstance();
 
     public LargeProject() {

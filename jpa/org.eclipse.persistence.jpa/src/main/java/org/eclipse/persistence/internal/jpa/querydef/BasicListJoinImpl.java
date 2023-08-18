@@ -74,24 +74,22 @@ public class BasicListJoinImpl<Z, E> extends ListJoinImpl<Z, E> {
      * Return the path corresponding to the referenced collection-valued
      * attribute.
      *
-     * @param collection
-     *            collection-valued attribute
+     * @param collection collection-valued attribute
      * @return expression corresponding to the referenced attribute
      */
     @Override
-    public <Y, C extends java.util.Collection<Y>> Expression<C> get(PluralAttribute<E, C, Y> collection){
+    public <Y, C extends java.util.Collection<Y>> Expression<C> get(PluralAttribute<? super E, C, Y> collection){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
     /**
      * Return the path corresponding to the referenced map-valued attribute.
      *
-     * @param map
-     *            map-valued attribute
+     * @param map map-valued attribute
      * @return expression corresponding to the referenced attribute
      */
     @Override
-    public <L, W, M extends java.util.Map<L, W>> Expression<M> get(MapAttribute<E, L, W> map){
+    public <L, W, M extends java.util.Map<L, W>> Expression<M> get(MapAttribute<? super E, L, W> map){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 

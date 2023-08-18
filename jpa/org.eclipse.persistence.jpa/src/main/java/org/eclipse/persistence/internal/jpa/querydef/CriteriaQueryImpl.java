@@ -280,6 +280,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return (CriteriaQuery<T>) super.where(restrictions);
     }
 
+    // TODO-API-3.2
+    //@Override
+    public CriteriaQuery<T> where(List<Predicate> list) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
     /**
      * Specify the expressions that are used to form groups over the query
      * results. Replaces the previous specified grouping expressions, if any. If
@@ -345,6 +351,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     public CriteriaQuery<T> having(Predicate... restrictions) {
         super.having(restrictions);
         return this;
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public CriteriaQuery<T> having(List<Predicate> list) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**

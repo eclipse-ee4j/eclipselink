@@ -38,6 +38,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.Nulls;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Path;
@@ -178,6 +179,12 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new OrderImpl(x);
     }
 
+    // TODO-API-3.2
+    //@Override
+    public Order asc(Expression<?> expression, Nulls nulls) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
     /**
      * Create an ordering by the descending value of the expression.
      *
@@ -192,6 +199,13 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }
         OrderImpl order = new OrderImpl(x, false);
         return order;
+    }
+
+
+    // TODO-API-3.2
+    //@Override
+    public Order desc(Expression<?> expression, Nulls nulls) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     // aggregate functions:
@@ -465,6 +479,12 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return a;
     }
 
+    // TODO-API-3.2
+    //@Override
+    public Predicate and(List<Predicate> list) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
     /**
      * Create a disjunction of the given restriction predicates. A disjunction
      * of zero predicates is false.
@@ -484,6 +504,12 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             a = this.or(a, restrictions[i]);
         }
         return a;
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Predicate or(List<Predicate> list) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**
@@ -1863,6 +1889,12 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return this.notLike(x, this.internalLiteral(pattern), this.internalLiteral(escapeChar));
     }
 
+    // TODO-API-3.2
+    //@Override
+    public Expression<String> concat(List<Expression<String>> list) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
     /**
      * String concatenation operation.
      *
@@ -2113,6 +2145,56 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     @Override
     public Expression<Integer> length(Expression<String> x){
         return new FunctionExpressionImpl(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().length(), buildList(x), "length");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Expression<String> left(Expression<String> expression, int i) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Expression<String> right(Expression<String> expression, int i) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Expression<String> left(Expression<String> expression, Expression<Integer> expression1) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Expression<String> right(Expression<String> expression, Expression<Integer> expression1) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Expression<String> replace(Expression<String> expression,
+                                      Expression<String> expression1,
+                                      Expression<String> expression2) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Expression<String> replace(Expression<String> expression, String s, Expression<String> expression1) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Expression<String> replace(Expression<String> expression, Expression<String> expression1, String s) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Expression<String> replace(Expression<String> expression, String s, String s1) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**
