@@ -266,7 +266,7 @@ public class ClassDefinition extends CodeDefinition {
      */
     @Override
     public void write(CodeGenerator generator) {
-        if (getPackageName().length() > 0) {
+        if (!getPackageName().isEmpty()) {
             generator.write("package ");
             generator.write(getPackageName());
             generator.writeln(";");

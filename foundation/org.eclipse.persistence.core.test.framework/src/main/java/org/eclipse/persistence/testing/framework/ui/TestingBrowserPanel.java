@@ -879,7 +879,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     private void handleException(Throwable exception) {
         try {
             getExecutor().getLog().write("--------- UNCAUGHT EXCEPTION ---------" +
-                                         org.eclipse.persistence.internal.helper.Helper.cr());
+                                         System.lineSeparator());
             exception.printStackTrace(new PrintWriter(getExecutor().getLog()));
             getExecutor().getLog().flush();
         } catch (IOException e) {
@@ -1075,7 +1075,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     public void notifyException(Throwable exception) {
         try {
             getExecutor().getLog().write("--------- UNCAUGHT EXCEPTION ---------" +
-                                         org.eclipse.persistence.internal.helper.Helper.cr());
+                                         System.lineSeparator());
             exception.printStackTrace(new PrintWriter(getExecutor().getLog()));
             getExecutor().getLog().flush();
         } catch (IOException e) {

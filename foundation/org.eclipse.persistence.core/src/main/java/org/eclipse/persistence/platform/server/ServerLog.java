@@ -90,7 +90,7 @@ public class ServerLog extends AbstractSessionLog {
         try {
             printPrefixString(level, null);
             getWriter().write(message);
-            getWriter().write(Helper.cr());
+            getWriter().write(System.lineSeparator());
             getWriter().flush();
         } catch (IOException exception) {
             throw ValidationException.logIOError(exception);

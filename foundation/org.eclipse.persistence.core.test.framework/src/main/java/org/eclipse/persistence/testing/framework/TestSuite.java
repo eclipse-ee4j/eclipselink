@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,7 +110,7 @@ public class TestSuite extends TestCollection {
     @Override
     protected void logFootNote(Writer log) {
         try {
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "RESULTS OF TEST SUITE: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(System.lineSeparator() + getIndentationString() + "RESULTS OF TEST SUITE: " + getName() + System.lineSeparator());
         } catch (IOException exception) {
         }
     }
@@ -122,8 +122,8 @@ public class TestSuite extends TestCollection {
     @Override
     protected void logRegressionHeadNote(Writer log) {
         try {
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "TEST SUITE NAME: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
-            log.write(getIndentationString() + "SUITE DESCRIPTION: " + getDescription() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(System.lineSeparator() + getIndentationString() + "TEST SUITE NAME: " + getName() + System.lineSeparator());
+            log.write(getIndentationString() + "SUITE DESCRIPTION: " + getDescription() + System.lineSeparator());
         } catch (IOException exception) {
         }
     }
@@ -134,9 +134,9 @@ public class TestSuite extends TestCollection {
     @Override
     protected void logHeadNote(Writer log) {
         try {
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "VERSION: " + org.eclipse.persistence.sessions.DatabaseLogin.getVersion());
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "TEST SUITE NAME: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
-            log.write(getIndentationString() + "SUITE DESCRIPTION: " + getDescription() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(System.lineSeparator() + System.lineSeparator() + getIndentationString() + "VERSION: " + org.eclipse.persistence.sessions.DatabaseLogin.getVersion());
+            log.write(System.lineSeparator() + getIndentationString() + "TEST SUITE NAME: " + getName() + System.lineSeparator());
+            log.write(getIndentationString() + "SUITE DESCRIPTION: " + getDescription() + System.lineSeparator());
         } catch (IOException exception) {
         }
     }

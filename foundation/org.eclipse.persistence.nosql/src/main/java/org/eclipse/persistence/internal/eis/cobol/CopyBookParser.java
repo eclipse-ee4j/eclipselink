@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,7 +86,7 @@ public class CopyBookParser {
     */
     private Vector<RecordMetaData> buildStructure(String fileString) throws Exception {
         Vector<RecordMetaData> records = new Vector<>();
-        StringTokenizer lineTokenizer = new StringTokenizer(fileString, System.getProperty("line.separator"), false);
+        StringTokenizer lineTokenizer = new StringTokenizer(fileString, System.lineSeparator(), false);
         RecordMetaData record = new RecordMetaData();
         Vector<String> recordLines = new Vector<>();
         Vector<Integer> lineNums = new Vector<>();

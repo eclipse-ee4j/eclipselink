@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,6 +94,6 @@ public abstract class AbstractOrderLine implements Serializable, Cloneable {
     }
 
     public String toString() {
-        return "OrderLine(" + id + ": " + itemName + " - " + quantity + ")" + org.eclipse.persistence.internal.helper.Helper.cr() + "\t" + System.identityHashCode(this);
+        return "OrderLine(" + id + ": " + itemName + " - " + quantity + ")" + System.lineSeparator() + "\t" + System.identityHashCode(this);
     }
 }

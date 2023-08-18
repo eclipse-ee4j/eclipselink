@@ -143,7 +143,6 @@ import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
-import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.StringExpression_InvalidLeftExpression;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**

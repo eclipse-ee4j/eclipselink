@@ -26,7 +26,6 @@ import org.eclipse.persistence.eis.EISMappedRecord;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -300,13 +299,13 @@ public abstract class EISInteraction extends DatasourceCall {
         StringWriter writer = new StringWriter();
         writer.write("Executing ");
         writer.write(toString());
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tspec => ");
         writer.write(String.valueOf(getInteractionSpec()));
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tproperties => ");
         writer.write(String.valueOf(getProperties()));
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tinput => [");
         if (!getParameters().isEmpty()) {
             for (Iterator<?> iterator = getParameters().iterator(); iterator.hasNext();) {

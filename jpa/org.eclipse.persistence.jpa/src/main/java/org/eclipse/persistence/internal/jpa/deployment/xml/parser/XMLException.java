@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,6 @@ package org.eclipse.persistence.internal.jpa.deployment.xml.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.persistence.internal.helper.Helper;
 
 public class XMLException extends RuntimeException {
     private List m_nestedExceptions;
@@ -37,7 +35,7 @@ public class XMLException extends RuntimeException {
         Exception nestedException;
         for (int x=0; x<m_nestedExceptions.size(); x++) {
             nestedException = (Exception) m_nestedExceptions.get(x);
-            buffer.append(Helper.cr());
+            buffer.append(System.lineSeparator());
             buffer.append('(');
             buffer.append(x + 1);
             buffer.append(". ");

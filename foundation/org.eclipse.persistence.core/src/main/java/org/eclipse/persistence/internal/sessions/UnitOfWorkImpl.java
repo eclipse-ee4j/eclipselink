@@ -63,7 +63,6 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.IdentityWeakHashMap;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -3952,7 +3951,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Print the objects in the unit of work.
      */
     protected void basicPrintRegisteredObjects() {
-        String cr = Helper.cr();
+        String cr = System.lineSeparator();
         StringWriter writer = new StringWriter();
         writer.write(LoggingLocalization.buildMessage("unitofwork_identity_hashcode", new Object[] { cr, String.valueOf(System.identityHashCode(this)) }));
         if (hasDeletedObjects()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -212,10 +212,10 @@ public abstract class CodeDefinition {
      * Write the code out to the generator's stream.
      */
     public void write(CodeGenerator generator) {
-        if (getComment().length() > 0) {
+        if (!getComment().isEmpty()) {
             generator.writeln("/**");
             String comment = getComment();
-            String cr = org.eclipse.persistence.internal.helper.Helper.cr();
+            String cr = System.lineSeparator();
             int lastLineIndex = 0;
             int nextLineIndex = comment.indexOf(cr);
             while (nextLineIndex != -1) {

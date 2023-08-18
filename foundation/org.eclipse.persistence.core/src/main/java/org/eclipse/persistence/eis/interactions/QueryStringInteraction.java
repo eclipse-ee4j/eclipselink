@@ -16,7 +16,6 @@ package org.eclipse.persistence.eis.interactions;
 
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.QueryStringCall;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -98,13 +97,13 @@ public class QueryStringInteraction extends MappedInteraction implements QuerySt
         StringWriter writer = new StringWriter();
         writer.write("Executing ");
         writer.write(toString());
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tspec => ");
         writer.write(String.valueOf(getInteractionSpec()));
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tquery => ");
         writer.write(getQueryString());
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tparameters => [");
         if (hasParameters()) {
             for (Iterator<?> iterator = getParameters().iterator(); iterator.hasNext();) {

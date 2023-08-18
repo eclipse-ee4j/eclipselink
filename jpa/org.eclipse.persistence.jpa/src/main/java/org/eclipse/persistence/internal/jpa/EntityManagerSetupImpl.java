@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -283,7 +283,6 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
-import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
@@ -2134,7 +2133,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     String message = LoggingLocalization.buildMessage("predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), "N/A", state, factoryCount});
                     try {
                         logWriter.write(message);
-                        logWriter.write(Helper.cr());
+                        logWriter.write(System.lineSeparator());
                     } catch (IOException ioex) {
                         // Ignore IOException
                     }

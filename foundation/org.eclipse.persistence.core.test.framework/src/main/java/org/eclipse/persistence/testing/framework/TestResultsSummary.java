@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -332,28 +332,28 @@ public class TestResultsSummary implements ResultInterface, Comparable<TestResul
 
         try {
             if (didSetupFail()) {
-                log.write(indentationString + org.eclipse.persistence.internal.helper.Helper.cr() + "## SETUP FAILURE: " + org.eclipse.persistence.internal.helper.Helper.cr() + getSetupException() + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(indentationString + System.lineSeparator() + "## SETUP FAILURE: " + System.lineSeparator() + getSetupException() + System.lineSeparator());
                 PrintWriter printWriter = new PrintWriter(log);
                 getSetupException().printStackTrace(printWriter);
                 log.flush();
             } else if (didSetupWarn()) {
-                log.write(indentationString + "SETUP WARNING: " + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(indentationString + "SETUP WARNING: " + System.lineSeparator());
                 ((TestWarningException)getSetupException()).setIndentationString(indentationString);
-                log.write(getSetupException() + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(getSetupException() + System.lineSeparator());
                 log.flush();
             } else {
                 if ((getErrors() > 0) || (getFatalErrors() > 0) || (getProblems() > 0)) {
-                    log.write(indentationString + "###ERRORS###" + org.eclipse.persistence.internal.helper.Helper.cr());
+                    log.write(indentationString + "###ERRORS###" + System.lineSeparator());
                 }
-                log.write(indentationString + "Warnings: " + getWarnings() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Problems: " + getProblems() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Errors: " + getErrors() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Fatal Errors: " + getFatalErrors() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Passed: " + getPassed() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Setup Warnings: " + getSetupWarnings() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Setup Failures: " + getSetupFailures() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Total Time: " + getTotalTime() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Total Tests: " + getTotalTests() + org.eclipse.persistence.internal.helper.Helper.cr() + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(indentationString + "Warnings: " + getWarnings() + System.lineSeparator());
+                log.write(indentationString + "Problems: " + getProblems() + System.lineSeparator());
+                log.write(indentationString + "Errors: " + getErrors() + System.lineSeparator());
+                log.write(indentationString + "Fatal Errors: " + getFatalErrors() + System.lineSeparator());
+                log.write(indentationString + "Passed: " + getPassed() + System.lineSeparator());
+                log.write(indentationString + "Setup Warnings: " + getSetupWarnings() + System.lineSeparator());
+                log.write(indentationString + "Setup Failures: " + getSetupFailures() + System.lineSeparator());
+                log.write(indentationString + "Total Time: " + getTotalTime() + System.lineSeparator());
+                log.write(indentationString + "Total Tests: " + getTotalTests() + System.lineSeparator() + System.lineSeparator());
                 log.flush();
             }
         } catch (IOException exception) {
@@ -370,24 +370,24 @@ public class TestResultsSummary implements ResultInterface, Comparable<TestResul
 
         try {
             if (didSetupFail()) {
-                log.write(indentationString + org.eclipse.persistence.internal.helper.Helper.cr() + "## SETUP FAILURE: " + org.eclipse.persistence.internal.helper.Helper.cr() + getSetupException() + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(indentationString + System.lineSeparator() + "## SETUP FAILURE: " + System.lineSeparator() + getSetupException() + System.lineSeparator());
                 PrintWriter printWriter = new PrintWriter(log);
                 getSetupException().printStackTrace(printWriter);
                 log.flush();
             } else {
                 if ((getErrors() > 0) || (getFatalErrors() > 0) || (getProblems() > 0)) {
-                    log.write(indentationString + "###ERRORS###" + org.eclipse.persistence.internal.helper.Helper.cr());
+                    log.write(indentationString + "###ERRORS###" + System.lineSeparator());
                 }
 
-                //log.write(indentationString + "Warnings: " + getWarnings() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Problems: " + getProblems() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Errors: " + getErrors() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Fatal Errors: " + getFatalErrors() + org.eclipse.persistence.internal.helper.Helper.cr());
-                //log.write(indentationString + "Passed: " + getPassed() + org.eclipse.persistence.internal.helper.Helper.cr());
-                log.write(indentationString + "Setup Failures: " + getSetupFailures() + org.eclipse.persistence.internal.helper.Helper.cr() + org.eclipse.persistence.internal.helper.Helper.cr());
+                //log.write(indentationString + "Warnings: " + getWarnings() + System.lineSeparator());
+                log.write(indentationString + "Problems: " + getProblems() + System.lineSeparator());
+                log.write(indentationString + "Errors: " + getErrors() + System.lineSeparator());
+                log.write(indentationString + "Fatal Errors: " + getFatalErrors() + System.lineSeparator());
+                //log.write(indentationString + "Passed: " + getPassed() + System.lineSeparator());
+                log.write(indentationString + "Setup Failures: " + getSetupFailures() + System.lineSeparator() + System.lineSeparator());
                 //log.write(
-                //    indentationString + "Total Tests: " + getTotalTests() + org.eclipse.persistence.internal.helper.Helper.cr()
-                //    + org.eclipse.persistence.internal.helper.Helper.cr());
+                //    indentationString + "Total Tests: " + getTotalTests() + System.lineSeparator()
+                //    + System.lineSeparator());
                 log.flush();
             }
         } catch (IOException exception) {

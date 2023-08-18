@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.profiler;
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 
 import java.io.IOException;
@@ -162,7 +161,7 @@ public class Profile implements Serializable, Cloneable {
     }
 
     public void write(Writer writer, PerformanceProfiler profiler) {
-        String cr = Helper.cr();
+        String cr = System.lineSeparator();
         try {
             writer.write(ToStringLocalization.buildMessage("profile", null) + "(");
             if (getQueryClass() != null) {

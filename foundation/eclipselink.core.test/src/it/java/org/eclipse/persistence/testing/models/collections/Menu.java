@@ -224,11 +224,11 @@ public class Menu implements ChangeTracker{
     public String toString() {
         StringBuffer buf = new StringBuffer();
         buf.append(getClass().getSimpleName() + ": " + this.getType());
-        buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+        buf.append(System.lineSeparator());
         if (getItems() != null) {
             buf.append("MenuItems: " + getItems().getClass().getSimpleName());
             buf.append(getItems().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         return buf.toString();
     }

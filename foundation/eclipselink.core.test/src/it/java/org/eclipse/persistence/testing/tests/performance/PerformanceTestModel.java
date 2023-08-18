@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -377,10 +377,10 @@ public class PerformanceTestModel extends TestModel {
         super.logHeadNote(log);
         try {
             if (!System.getProperties().containsKey("toplink.loadbuild.baseline-version")) {
-                log.write(getIndentationString() + "BASELINE VERSION: NONE SET" + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(getIndentationString() + "BASELINE VERSION: NONE SET" + System.lineSeparator());
             } else {
                 String baselineVersion = System.getProperties().getProperty("toplink.loadbuild.baseline-version");
-                log.write(getIndentationString() + "BASELINE VERSION: " + baselineVersion + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(getIndentationString() + "BASELINE VERSION: " + baselineVersion + System.lineSeparator());
             }
         } catch (IOException exception) {
         }

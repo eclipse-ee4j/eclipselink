@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.profiler;
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -245,7 +244,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                 Writer writer = getSession().getLog();
                 try {
                     profile.write(writer, this);
-                    writer.write(Helper.cr());
+                    writer.write(System.lineSeparator());
                     writer.flush();
                 } catch (IOException ioe) {
                 }
@@ -333,7 +332,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         Writer writer = getSession().getLog();
         try {
             writer.write(buildProfileSummary().toString());
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
         } catch (IOException ioe) {
         }
     }
@@ -350,7 +349,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
             Writer writer = getSession().getLog();
             try {
                 writer.write(summaries.get(domainClass).toString());
-                writer.write(Helper.cr());
+                writer.write(System.lineSeparator());
             } catch (IOException ioe) {
             }
         }
@@ -368,7 +367,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
             Writer writer = getSession().getLog();
             try {
                 writer.write(summaries.get(queryType).toString());
-                writer.write(Helper.cr());
+                writer.write(System.lineSeparator());
             } catch (IOException ioe) {
             }
         }
@@ -396,7 +395,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         try {
             if (shouldLogProfile()) {
                 writeNestingTabs(writer);
-                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query + Helper.cr());
+                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query + System.lineSeparator());
                 writer.flush();
             }
 
@@ -439,10 +438,10 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                     long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
                     profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
                     profile.write(writer, this);
-                    writer.write(Helper.cr());
+                    writer.write(System.lineSeparator());
                     writeNestingTabs(writer);
                     writer.write("}" + ToStringLocalization.buildMessage("end_profile", null));
-                    writer.write(Helper.cr());
+                    writer.write(System.lineSeparator());
                     writer.flush();
                 }
 

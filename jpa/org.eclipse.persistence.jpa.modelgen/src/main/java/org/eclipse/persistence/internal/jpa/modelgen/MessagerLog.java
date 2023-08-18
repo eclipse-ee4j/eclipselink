@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -123,19 +122,19 @@ final class MessagerLog extends AbstractSessionLog {
 
         if (entry.hasMessage()) {
             sb.append(formatMessage(entry));
-            sb.append(Helper.cr());
+            sb.append(System.lineSeparator());
         }
 
         if (entry.hasException()) {
             if (shouldLogExceptionStackTrace()) {
                 for (StackTraceElement stackTrace : entry.getException().getStackTrace()) {
                     sb.append(stackTrace);
-                    sb.append(Helper.cr());
+                    sb.append(System.lineSeparator());
                 }
             } else {
                 sb.append(entry.getException().toString());
             }
-            sb.append(Helper.cr());
+            sb.append(System.lineSeparator());
         }
 
         if (getWriter() == NULL_WRITER) {

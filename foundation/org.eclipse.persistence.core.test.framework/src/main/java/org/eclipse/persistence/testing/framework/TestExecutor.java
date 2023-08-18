@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,7 +93,7 @@ public class TestExecutor {
     /** Allow only errors to be logged. */
     protected boolean shouldLogOnlyErrors = false;
 
-    public static String CR = org.eclipse.persistence.internal.helper.Helper.cr();
+    public static String CR = System.lineSeparator();
 
     /**
      * Return a default executor.  Used as the executor for tests run in JUnit, or by themselves.

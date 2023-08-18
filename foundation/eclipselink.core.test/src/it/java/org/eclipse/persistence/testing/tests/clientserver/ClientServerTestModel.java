@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,8 +35,8 @@ public class ClientServerTestModel extends TestModel {
     public void addRequiredSystems() {
         try {
             getSession().getLog().write("WARNING, some JDBC drivers may fail if they are not thread safe." +
-                                        Helper.cr() + "JDBC-ODBC will not be run for this test." + Helper.cr() +
-                                        "Oracle OCI may fail." + Helper.cr() + "DB2 IBM JDBC may fail." + Helper.cr());
+                                        System.lineSeparator() + "JDBC-ODBC will not be run for this test." + System.lineSeparator() +
+                                        "Oracle OCI may fail." + System.lineSeparator() + "DB2 IBM JDBC may fail." + System.lineSeparator());
             getSession().getLog().flush();
         } catch (java.io.IOException e) {
         }

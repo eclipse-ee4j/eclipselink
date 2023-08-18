@@ -15,7 +15,6 @@
 package org.eclipse.persistence.eis;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 import java.io.StringWriter;
@@ -203,7 +202,7 @@ public class EISMappedRecord extends AbstractRecord {
 
         for (Iterator<?> keysIterator = keySet().iterator(); keysIterator.hasNext();) {
             Object key = keysIterator.next();
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             writer.write("\t");
             writer.write(String.valueOf(key));
             writer.write(" => ");

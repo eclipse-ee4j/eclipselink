@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -251,7 +251,7 @@ public class TestResult implements ResultInterface, Comparable<TestResult>, Seri
     public void logRegressionResult(Writer log) {
         String indentationString = getTestCase().getIndentationString();
         try {
-            log.write(indentationString + "RESULT:      " + getOutcome() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(indentationString + "RESULT:      " + getOutcome() + System.lineSeparator());
             log.flush();
         } catch (IOException exception) {
         }
@@ -266,20 +266,20 @@ public class TestResult implements ResultInterface, Comparable<TestResult>, Seri
         String indentationString = getTestCase().getIndentationString();
         try {
             if (hasError() || hasFatalError() || hasProblem()) {
-                log.write(indentationString + "##FAILURE##" + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(indentationString + "##FAILURE##" + System.lineSeparator());
             }
-            log.write(indentationString + "TEST TIME:      " + getTestTime() + org.eclipse.persistence.internal.helper.Helper.cr());
-            log.write(indentationString + "TOTAL TIME:      " + getTotalTime() + org.eclipse.persistence.internal.helper.Helper.cr());
-            log.write(indentationString + "RESULT:      " + getOutcome() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(indentationString + "TEST TIME:      " + getTestTime() + System.lineSeparator());
+            log.write(indentationString + "TOTAL TIME:      " + getTotalTime() + System.lineSeparator());
+            log.write(indentationString + "RESULT:      " + getOutcome() + System.lineSeparator());
             if (getException() != null) {
                 getException().setIndentationString(indentationString);
                 // Do not print the stack for warnings, just the exception.
                 if (hasWarning()) {
-                    log.write(getException() + org.eclipse.persistence.internal.helper.Helper.cr());
+                    log.write(getException() + System.lineSeparator());
                 } else {
                     log.write(indentationString);
                     log.flush();
-                    log.write(getExceptionStackTrace() + org.eclipse.persistence.internal.helper.Helper.cr());
+                    log.write(getExceptionStackTrace() + System.lineSeparator());
                 }
             }
             log.flush();

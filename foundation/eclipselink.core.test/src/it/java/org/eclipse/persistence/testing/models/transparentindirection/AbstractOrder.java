@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -229,7 +229,7 @@ public abstract class AbstractOrder implements Serializable {
             return buffer.toString();
         }
 
-        buffer.append(System.getProperty("line.separator"));
+        buffer.append(System.lineSeparator());
         if ((container instanceof IndirectContainer) && (!((IndirectContainer)container).isInstantiated())) {
             buffer.append("\t");
             buffer.append("uninstantiated order lines...");
@@ -237,7 +237,7 @@ public abstract class AbstractOrder implements Serializable {
             for (Enumeration stream = getLineStream(); stream.hasMoreElements();) {
                 buffer.append("\t");
                 buffer.append(stream.nextElement());
-                buffer.append(System.getProperty("line.separator"));
+                buffer.append(System.lineSeparator());
             }
         }
         return buffer.toString();

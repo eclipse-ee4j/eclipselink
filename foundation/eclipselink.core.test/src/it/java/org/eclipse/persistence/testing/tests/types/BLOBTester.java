@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,7 +112,7 @@ public class BLOBTester extends TypeTester {
         try {
             super.test(testCase);
         } catch (NullPointerException e) {
-            throw new TestWarningException("Blob value was returned as null, this means the drivers max size was exceeded." + org.eclipse.persistence.internal.helper.Helper.cr() + caughtException);
+            throw new TestWarningException("Blob value was returned as null, this means the drivers max size was exceeded." + System.lineSeparator() + caughtException);
         }
     }
 
