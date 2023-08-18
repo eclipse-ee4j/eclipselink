@@ -139,14 +139,14 @@ public class JavaLog extends AbstractSessionLog {
         if (logger == null) {
             return;
         }
-
-        AccessController.doPrivileged(new PrivilegedAction() {
-            @Override
-            public Object run() {
+        if (System.getSecurityManager() != null) {
+            AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
                 logger.setLevel(getJavaLevel(level));
                 return null; // nothing to return
-            }
-        });
+            });
+        } else {
+            logger.setLevel(getJavaLevel(level));
+        }
     }
 
     /**
@@ -173,7 +173,7 @@ public class JavaLog extends AbstractSessionLog {
     protected String getNameSpaceString(String category) {
         if (session == null) {
             return DEFAULT_TOPLINK_NAMESPACE;
-        } else if ((category == null) || (category.length() == 0)) {
+        } else if ((category == null) || (category.isEmpty())) {
             return sessionNameSpace;
         } else {
             return nameSpaceMap.get(category);
@@ -187,7 +187,7 @@ public class JavaLog extends AbstractSessionLog {
     protected Logger getLogger(String category) {
         if (session == null) {
             return categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE);
-        } else if ((category == null) || (category.length() == 0) || !this.categoryloggers.containsKey(category)) {
+        } else if ((category == null) || (category.isEmpty()) || !this.categoryloggers.containsKey(category)) {
             return categoryloggers.get(sessionNameSpace);
         } else {
             Logger logger = categoryloggers.get(category);
@@ -210,7 +210,7 @@ public class JavaLog extends AbstractSessionLog {
         super.setSession(session);
         if (session != null) {
             String sessionName = session.getName();
-            if ((sessionName != null) && (sessionName.length() != 0)) {
+            if ((sessionName != null) && (!sessionName.isEmpty())) {
                 sessionNameSpace = SESSION_TOPLINK_NAMESPACE + "." + sessionName;
             } else {
                 sessionNameSpace = DEFAULT_TOPLINK_NAMESPACE;

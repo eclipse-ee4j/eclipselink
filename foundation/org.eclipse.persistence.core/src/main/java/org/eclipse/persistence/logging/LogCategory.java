@@ -14,8 +14,6 @@
 //      Tomas Kraus - Initial implementation
 package org.eclipse.persistence.logging;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,14 +89,14 @@ public enum LogCategory {
     private static final String[] levelNameSpaces = new String[length];
 
     static {
-        // Initialize String to LogCategory case insensitive lookup Map.
+        // Initialize String to LogCategory case-insensitive lookup Map.
         for (LogCategory category : LogCategory.values()) {
             stringValuesMap.put(category.name.toLowerCase(), category);
         }
         // Initialize logger name spaces lookup table.
         for (LogCategory category : LogCategory.values()) {
             nameSpaces[category.id] = (NAMESPACE_PREFIX + category.name).intern();
-            levelNameSpaces[category.id] = (PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_ + category.name).intern();
+            levelNameSpaces[category.id] = ("eclipselink.logging.level." + category.name).intern();
         }
     }
 

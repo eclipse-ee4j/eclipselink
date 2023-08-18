@@ -15,15 +15,16 @@
 package org.eclipse.persistence.logging;
 
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.Session;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 
 /**
  * SessionLogEntry is a simple container object that holds
  * all the information pertinent to an EclipseLink logging event.
- * It has a date/time stamp indicating when the event took
+ * It has a time stamp indicating when the event took
  * place. It holds the session, thread, and accessor
  * responsible for the event. And it holds whatever message
  * was passed through to be logged.
@@ -35,8 +36,9 @@ import java.util.Date;
  * @since TOPLink/Java 3.0
  */
 public class SessionLogEntry implements Serializable {
+    @Deprecated(forRemoval = true)
     protected Date date;
-    protected transient AbstractSession session;
+    protected transient Session session;
     protected transient Thread thread;
     protected transient Accessor connection;
     protected String message;
@@ -48,13 +50,15 @@ public class SessionLogEntry implements Serializable {
     protected String sourceClassName;
     protected String sourceMethodName;
 
+    private Instant timeStamp;
+
     /**
      * Create a new session log entry for a session.
      *
      * @param session the session
      */
-    public SessionLogEntry(AbstractSession session) {
-        this.date = new Date();
+    public SessionLogEntry(Session session) {
+        this.timeStamp = Instant.now();
         this.thread = Thread.currentThread();
         this.session = session;
         this.message = "";
@@ -67,7 +71,7 @@ public class SessionLogEntry implements Serializable {
      * @param session the session
      * @param throwable the throwable
      */
-    public SessionLogEntry(AbstractSession session, Throwable throwable) {
+    public SessionLogEntry(Session session, Throwable throwable) {
         this(session);
         this.throwable = throwable;
         this.level = SessionLog.SEVERE;
@@ -79,7 +83,7 @@ public class SessionLogEntry implements Serializable {
      * @param session the session
      * @param message the message
      */
-    public SessionLogEntry(AbstractSession session, String message) {
+    public SessionLogEntry(Session session, String message) {
         this(session);
         this.message = message;
     }
@@ -91,7 +95,7 @@ public class SessionLogEntry implements Serializable {
      * @param message the message
      * @param connection the accessor
      */
-    public SessionLogEntry(AbstractSession session, String message, Accessor connection) {
+    public SessionLogEntry(Session session, String message, Accessor connection) {
         this(session, message);
         this.connection = connection;
     }
@@ -110,7 +114,7 @@ public class SessionLogEntry implements Serializable {
      *
      * @see SessionLog
      */
-    public SessionLogEntry(int level, AbstractSession session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
+    public SessionLogEntry(int level, Session session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
         this(session, message, connection);
         this.level = level;
         this.parameters = params;
@@ -132,7 +136,7 @@ public class SessionLogEntry implements Serializable {
      *
      * @see SessionLog
      */
-    public SessionLogEntry(int level, String category, AbstractSession session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
+    public SessionLogEntry(int level, String category, Session session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
         this(level, session, message, params, connection, shouldTranslate);
         this.nameSpace = category;
     }
@@ -149,7 +153,7 @@ public class SessionLogEntry implements Serializable {
      *
      * @see SessionLog
      */
-    public SessionLogEntry(AbstractSession session, int level, String category, Throwable throwable) {
+    public SessionLogEntry(Session session, int level, String category, Throwable throwable) {
         this(session, throwable);
         this.level = level;
         this.nameSpace = category;
@@ -168,9 +172,18 @@ public class SessionLogEntry implements Serializable {
      * Return the date of the log entry.
      *
      * @return the date
+     * @deprecated Use {@link #getTimeStamp()}.
      */
+    @Deprecated(forRemoval = true)
     public Date getDate() {
+        if (date == null) {
+            this.date = Date.from(getTimeStamp());
+        }
         return date;
+    }
+
+    public Instant getTimeStamp() {
+        return timeStamp;
     }
 
     /**
@@ -196,7 +209,7 @@ public class SessionLogEntry implements Serializable {
      *
      * @return the session
      */
-    public AbstractSession getSession() {
+    public Session getSession() {
         return session;
     }
 
@@ -270,7 +283,7 @@ public class SessionLogEntry implements Serializable {
      * @return if the log entry has a message
      */
     public boolean hasMessage() {
-        return getMessage() != null && getMessage().length() != 0;
+        return getMessage() != null && !getMessage().isEmpty();
     }
 
     /**
@@ -286,9 +299,15 @@ public class SessionLogEntry implements Serializable {
      * Set the date of the log entry.
      *
      * @param date the date
+     * @deprecated Use {@link #setTimeStamp(Instant)}.
      */
+    @Deprecated(forRemoval = true)
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public void setTimeStamp(Instant timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     /**
@@ -314,7 +333,7 @@ public class SessionLogEntry implements Serializable {
      *
      * @param session the session
      */
-    public void setSession(AbstractSession session) {
+    public void setSession(Session session) {
         this.session = session;
     }
 
