@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * JPA 3.2:
  * <div><b>BNF</b> ::= REPLACE(string_expression, string_expression, string_expression)</div>
  *
- * @version 4.1
  * @since 4.1
  * @author Radek Felcman
  */
