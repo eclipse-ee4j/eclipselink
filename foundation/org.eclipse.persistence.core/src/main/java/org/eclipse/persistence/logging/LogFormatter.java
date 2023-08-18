@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.logging;
 
-import org.eclipse.persistence.internal.helper.Helper;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
@@ -32,13 +30,13 @@ import java.util.logging.SimpleFormatter;
  */
 public class LogFormatter extends SimpleFormatter {
     Date dat = new Date();
-    private final static String format = "{0,date} {0,time}";
+    private static final String format = "{0,date} {0,time}";
     private MessageFormat formatter;
     private final Object[] args = new Object[1];
 
     // Line separator string.  This is the value of the line.separator
     // property at the moment that the SimpleFormatter was created.
-    private final String lineSeparator = Helper.cr();
+    private final String lineSeparator = System.lineSeparator();
 
     /**
      * Format the given LogRecord.

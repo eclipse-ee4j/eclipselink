@@ -58,7 +58,7 @@ public class IntegrityException extends ValidationException {
      */
     @Override
     public String getMessage() {
-        String cr = org.eclipse.persistence.internal.helper.Helper.cr();
+        String cr = System.lineSeparator();
         java.io.StringWriter swriter = new java.io.StringWriter();
         java.io.PrintWriter writer = new java.io.PrintWriter(swriter);
         writer.println(cr + ExceptionMessageGenerator.getHeader("DescriptorExceptionsHeader"));
@@ -113,7 +113,7 @@ public class IntegrityException extends ValidationException {
     @Override
     public void printStackTrace(PrintWriter writer) {
         super.printStackTrace(writer);
-        String cr = org.eclipse.persistence.internal.helper.Helper.cr();
+        String cr = System.lineSeparator();
         writer.println(cr + ExceptionMessageGenerator.getHeader("DescriptorExceptionsHeader"));
         writer.println("---------------------------------------------------------");
         for (Enumeration<Exception> enumtr = getIntegrityChecker().getCaughtExceptions().elements();

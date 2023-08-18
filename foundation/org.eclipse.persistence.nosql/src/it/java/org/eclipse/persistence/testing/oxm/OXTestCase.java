@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -343,7 +343,7 @@ public abstract class OXTestCase extends XMLTestCase {
 
     protected String loadFileToString(String fileName){
         StringBuffer sb = new StringBuffer();
-        String lineSep = System.getProperty("line.separator");
+        String lineSep = System.lineSeparator();
 
         try {
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);

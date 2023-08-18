@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
-
-import org.eclipse.persistence.internal.helper.Helper;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -235,56 +233,56 @@ public class PerformanceComparisonTestResult extends TestResult {
         String indentationString = getTestCase().getIndentationString();
         try {
             if (hasError() || hasFatalError() || hasProblem()) {
-                log.write(indentationString + "##FAILURE##" + Helper.cr());
+                log.write(indentationString + "##FAILURE##" + System.lineSeparator());
             }
             if (!getTestCounts().isEmpty()) {
-                log.write(indentationString + "RUNS:                    " + getTestCounts().get(0).size() + Helper.cr());
+                log.write(indentationString + "RUNS:                    " + getTestCounts().get(0).size() + System.lineSeparator());
             }
 
             for (int index = 0; index < getTestCounts().size(); index++) {
                 PerformanceComparisonTest test = (PerformanceComparisonTest)this.testCase;
-                log.write(Helper.cr());
+                log.write(System.lineSeparator());
                 if (index == 0) {
-                    log.write(indentationString + "BASE_LINE TEST" + Helper.cr());
+                    log.write(indentationString + "BASE_LINE TEST" + System.lineSeparator());
                 } else {
                     test = (PerformanceComparisonTest)test.getTests().get(index - 1);
                 }
-                log.write(indentationString + "TEST: " + test.getName() + Helper.cr());
+                log.write(indentationString + "TEST: " + test.getName() + System.lineSeparator());
                 log.write(indentationString + "TEST RUN TIME:                " + (test.getTestRunTime() / 1000) + " seconds" +
-                          Helper.cr());
-                log.write(indentationString + "MEAN TEST COUNT:            " + this.testAverages.get(index) + Helper.cr());
-                log.write(indentationString + "MAX TEST COUNT:                " + this.testMaxs.get(index) + Helper.cr());
-                log.write(indentationString + "MIN TEST COUNT:                " + this.testMins.get(index) + Helper.cr());
+                          System.lineSeparator());
+                log.write(indentationString + "MEAN TEST COUNT:            " + this.testAverages.get(index) + System.lineSeparator());
+                log.write(indentationString + "MAX TEST COUNT:                " + this.testMaxs.get(index) + System.lineSeparator());
+                log.write(indentationString + "MIN TEST COUNT:                " + this.testMins.get(index) + System.lineSeparator());
                 log.write(indentationString + "TEST % STANDARD DEVIATION:        " + this.testStandardDeviations.get(index) +
-                          Helper.cr());
+                          System.lineSeparator());
 
                 if (index > 0) {
                     log.write(indentationString + "% DIFFERENCE:                " + this.percentageDifferences.get(index - 1) +
-                              Helper.cr());
-                    log.write(indentationString + "% DIFFERENCE ALLOWABLE:            " + test.getAllowableDecrease() + Helper.cr());
+                              System.lineSeparator());
+                    log.write(indentationString + "% DIFFERENCE ALLOWABLE:            " + test.getAllowableDecrease() + System.lineSeparator());
                 }
             }
 
             if (getTestCase() instanceof PerformanceRegressionTest) {
-                log.write(indentationString + "BASELINE VERSION:            " + getBaselineVersion() + Helper.cr());
-                log.write(indentationString + "BASELINE VERSION RESULTS:        " + getBaselineVersionResults() + Helper.cr());
+                log.write(indentationString + "BASELINE VERSION:            " + getBaselineVersion() + System.lineSeparator());
+                log.write(indentationString + "BASELINE VERSION RESULTS:        " + getBaselineVersionResults() + System.lineSeparator());
                 log.write(indentationString + "BASELINE VERSION % STANDARD DEVIATION:    " + this.baselineStandardDeviation +
-                          Helper.cr());
-                log.write(indentationString + "CURRENT VERSION RESULTS:        " + this.getCurrentVersionResults() + Helper.cr());
+                          System.lineSeparator());
+                log.write(indentationString + "CURRENT VERSION RESULTS:        " + this.getCurrentVersionResults() + System.lineSeparator());
                 log.write(indentationString + "CURRENT VERSION % STANDARD DEVIATION:    " + this.currentStandardDeviation +
-                          Helper.cr());
-                log.write(indentationString + "% DIFFERENCE (last run):        " + getPercentageDifferenceLastRun() + Helper.cr());
-                log.write(indentationString + "% DIFFERENCE (average):            " + getPercentageDifferenceAverage() + Helper.cr());
+                          System.lineSeparator());
+                log.write(indentationString + "% DIFFERENCE (last run):        " + getPercentageDifferenceLastRun() + System.lineSeparator());
+                log.write(indentationString + "% DIFFERENCE (average):            " + getPercentageDifferenceAverage() + System.lineSeparator());
             }
 
-            log.write(Helper.cr() + indentationString + "RESULT:                      " + getOutcome() + Helper.cr());
+            log.write(System.lineSeparator() + indentationString + "RESULT:                      " + getOutcome() + System.lineSeparator());
         } catch (IOException | ArrayIndexOutOfBoundsException exception) {
             // Ignore.
         }
         try {
             if (getException() != null) {
                 getException().setIndentationString(indentationString);
-                log.write(getException() + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(getException() + System.lineSeparator());
             }
             log.flush();
         } catch (IOException exception) {

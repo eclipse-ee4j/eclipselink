@@ -149,7 +149,7 @@ public class XMLBinaryDataHelper {
             ContentType contentType = new ContentType(value.getContentType());
             String boundary = contentType.getParameter("boundary");
 
-            output.write(Constants.cr().getBytes());
+            output.write(System.lineSeparator().getBytes());
             output.write(("Content-Type: " + contentType.getBaseType() + "; boundary=\"" + boundary + "\"\n").getBytes());
         } catch (Exception ex) {
             throw ConversionException.couldNotBeConverted(value, byte[].class, ex);

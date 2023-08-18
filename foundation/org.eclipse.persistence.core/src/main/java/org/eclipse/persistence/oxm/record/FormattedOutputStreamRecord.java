@@ -51,7 +51,7 @@ import java.io.UnsupportedEncodingException;
  */
 public class FormattedOutputStreamRecord extends OutputStreamRecord {
 
-    private byte[] cr = Constants.cr().getBytes(Constants.DEFAULT_CHARSET);
+    private byte[] cr = System.lineSeparator().getBytes(Constants.DEFAULT_CHARSET);
     private byte[] tab;
     private int numberOfTabs;
     private boolean complexType;

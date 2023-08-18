@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,10 +94,10 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
         if (!errors.isEmpty()) {
             StringBuffer buffer = new StringBuffer();
             buffer.append("Errors occurred with duplicate SQL being executed whilst building an object tree. The UnitOfWork cache should have been hit instead:");
-            buffer.append(Helper.cr());
+            buffer.append(System.lineSeparator());
             for (int i = 0; i < errors.size(); i++) {
                 buffer.append(errors.get(i));
-                buffer.append(Helper.cr());
+                buffer.append(System.lineSeparator());
             }
             throw new TestErrorException(buffer.toString());
         }

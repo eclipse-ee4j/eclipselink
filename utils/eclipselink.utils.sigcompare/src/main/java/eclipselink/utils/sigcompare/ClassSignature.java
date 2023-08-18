@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public class ClassSignature {
         return false;
     }
 
-    public static String newline = System.getProperty("line.separator");
+    public static String newline = System.lineSeparator();
 
     public void compare(ClassSignature targetSig, Writer writer, ExcludePatterns excludes, boolean printAlternatives) throws IOException {
 

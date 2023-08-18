@@ -65,7 +65,7 @@ public class PrivilegedAccessHelper {
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
 
-    private final static String[] legalProperties = { "file.separator", "java.io.tmpdir", JavaVersion.VM_VERSION_PROPERTY, "line.separator", "path.separator", "user.dir",
+    private final static String[] legalProperties = { "file.separator", "java.io.tmpdir", JavaVersion.VM_VERSION_PROPERTY, "path.separator", "user.dir",
             "org.eclipse.persistence.fetchgroupmonitor", "org.eclipse.persistence.querymonitor", "SAP_J2EE_Engine_Version",
             PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.JAVASE_DB_INTERACTION,
             PersistenceUnitProperties.LOGGING_FILE, PersistenceUnitProperties.LOGGING_LEVEL,
@@ -79,8 +79,7 @@ public class PrivilegedAccessHelper {
             XMLPlatformFactory.XML_PLATFORM_PROPERTY};
     private final static Set<String> legalPropertiesSet = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(legalProperties)));
 
-    private final static String[] exemptedProperties = { "line.separator" };
-    private final static Set<String> exemptedPropertiesSet = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(exemptedProperties)));
+    private static final Set<String> exemptedPropertiesSet = Collections.emptySet();
 
     private static final Map<String, Class<?>> primitiveClasses;
 
@@ -675,9 +674,10 @@ public class PrivilegedAccessHelper {
      * INTERNAL:
      * Get the line separator character.
      * @return The {@link String} containing the platform-appropriate characters for line separator.
+     * @deprecated Use {@link System#lineSeparator()}
      */
     public static String getLineSeparator() {
-        return getSystemProperty("line.separator");
+        return System.lineSeparator();
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,9 +44,9 @@ public class ShouldPrepareTest extends AutoVerifyTestCase {
     public void setup() {
         if (getSession().getPlatform().isDB2()) {
             throw new TestWarningException("This test is not supposed to work with DB2. " +
-                                           org.eclipse.persistence.internal.helper.Helper.cr() +
+                                           System.lineSeparator() +
                                            "\t\tBecause as expected, sql string contains (t0.F_NAME = NULL) when the query is executed the second time with argument null, and '=NULL' is illegal syntax on DB2." +
-                                           org.eclipse.persistence.internal.helper.Helper.cr() +
+                                           System.lineSeparator() +
                                            "\t\tHence, executing the query would result in runtime exception.");
         }
         query =

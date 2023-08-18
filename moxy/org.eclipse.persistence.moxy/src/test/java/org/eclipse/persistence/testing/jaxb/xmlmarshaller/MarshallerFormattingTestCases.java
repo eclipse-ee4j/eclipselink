@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class MarshallerFormattingTestCases extends OXTestCase {
     private final static int CONTROL_EMPLOYEE_ID = 123;
-    private final static String CRLF = System.getProperty("line.separator");
+    private final static String CRLF = System.lineSeparator();
     private final static String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     private final static String XML_BODY = "<employee><id>123</id><name>Bob</name><phone>123456789</phone></employee>";
     private final static String XML_BODY_FORMATTED = "<employee>" + CRLF + "   <id>123</id>" + CRLF + "   <name>Bob</name>" + CRLF + "   <phone>123456789</phone>" + CRLF + "</employee>" + CRLF;

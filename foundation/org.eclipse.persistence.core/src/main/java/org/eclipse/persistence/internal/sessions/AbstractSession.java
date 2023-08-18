@@ -4240,7 +4240,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(getSessionTypeString() + "(" + Helper.cr() + "\t" + getAccessor() + Helper.cr() + "\t" + getDatasourcePlatform() + ")");
+        writer.write(getSessionTypeString() + "(" + System.lineSeparator() + "\t" + getAccessor() + System.lineSeparator() + "\t" + getDatasourcePlatform() + ")");
         return writer.toString();
     }
 

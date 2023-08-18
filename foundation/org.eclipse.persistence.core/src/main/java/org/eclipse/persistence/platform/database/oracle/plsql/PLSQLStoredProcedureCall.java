@@ -70,7 +70,7 @@ import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQL
  */
 public class PLSQLStoredProcedureCall extends StoredProcedureCall {
 
-    // can't use Helper.cr(), Oracle PL/SQL parser only likes Unix-style newlines '\n'
+    // can't use System.lineSeparator(), Oracle PL/SQL parser only likes Unix-style newlines '\n'
     final static String BEGIN_DECLARE_BLOCK = NL + "DECLARE" + NL;
     final static String BEGIN_BEGIN_BLOCK = "BEGIN" + NL;
     final static String END_BEGIN_BLOCK = "END;";
@@ -1193,7 +1193,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public String getLogString(Accessor accessor) {
 
         StringBuilder sb = new StringBuilder(getSQLString());
-        sb.append(Helper.cr());
+        sb.append(System.lineSeparator());
         sb.append(INDENT);
         sb.append("bind => [");
         List<PLSQLargument> specifiedArguments = this.arguments;

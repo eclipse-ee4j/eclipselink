@@ -436,7 +436,7 @@ public abstract class OXTestCase extends XMLTestCase {
 
     protected String loadInputStreamToString(InputStream inputStream){
         StringBuilder sb = new StringBuilder();
-        String lineSep = System.getProperty("line.separator");
+        String lineSep = System.lineSeparator();
 
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

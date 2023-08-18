@@ -18,7 +18,6 @@
 package org.eclipse.persistence.exceptions.i18n;
 
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -33,7 +32,7 @@ import java.util.Vector;
  * @author Rick Barkhouse
  */
 public final class ExceptionMessageGenerator {
-    private final static String CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
+    private final static String CR = System.lineSeparator();
 
     private ExceptionMessageGenerator() {
         // for reflection

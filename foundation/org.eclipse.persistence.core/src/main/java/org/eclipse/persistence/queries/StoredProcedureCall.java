@@ -24,7 +24,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -1092,7 +1091,7 @@ public class StoredProcedureCall extends DatabaseCall {
         if (hasParameters()) {
             StringWriter writer = new StringWriter();
             writer.write(getSQLString());
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             if (hasParameters()) {
                 AbstractSession session = null;
                 if (getQuery() != null) {

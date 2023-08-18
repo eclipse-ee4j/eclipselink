@@ -44,7 +44,7 @@ public class SDOClassGenerator {
     // Source Gen Stuff
     private String indent = SDOConstants.EMPTY_STRING;
     private static int INDENT_TAB = 3;
-    private static final String lsep = System.getProperty("line.separator");
+    private static final String lsep = System.lineSeparator();
     private static final String lsep2 = lsep + lsep;
     private static final String START_PROPERTY_INDEX = "START_PROPERTY_INDEX";
     private Map generatedBuffers;
@@ -141,24 +141,24 @@ public class SDOClassGenerator {
             System.out.println(ToStringLocalization.buildMessage(messageID, new Object[] { getClass().getSimpleName() }));
         }
 
-        // Because we can no longer use Helper.cr() inside of message bundles, we must break
-        // up the message into separate lines and use Helper.cr() here instead. (bug6470503)
+        // Because we can no longer use System.lineSeparator() inside of message bundles, we must break
+        // up the message into separate lines and use System.lineSeparator() here instead. (bug6470503)
         String messageString = ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_1of8", new Object[] { getClass().getSimpleName() });
-        messageString += Helper.cr() + Helper.cr();
+        messageString += System.lineSeparator() + System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_2of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_3of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_4of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_5of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_6of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_7of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_8of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
 
         System.out.println(messageString);
     }

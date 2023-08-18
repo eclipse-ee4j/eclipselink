@@ -32,7 +32,6 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.queries.CallQueryMechanism;
 import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -409,7 +408,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (hasParameters()) {
             StringWriter writer = new StringWriter();
             writer.write(getSQLString());
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             if (hasParameters()) {
                 AbstractSession session = null;
                 if (getQuery() != null) {

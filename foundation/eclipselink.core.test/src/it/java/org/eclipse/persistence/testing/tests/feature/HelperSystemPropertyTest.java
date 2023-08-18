@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,8 +28,8 @@ public class HelperSystemPropertyTest extends AutoVerifyTestCase {
 
     @Override
     public void verify() {
-        if (!org.eclipse.persistence.internal.helper.Helper.cr().equals(System.getProperty("line.separator"))) {
-            throw new TestErrorException("Helper.cr() returns the incorrect value.");
+        if (!System.lineSeparator().equals(System.getProperty("line.separator"))) {
+            throw new TestErrorException("System.lineSeparator() returns the incorrect value.");
         }
 
         if (!org.eclipse.persistence.internal.helper.Helper.pathSeparator().equals(System.getProperty("path.separator"))) {

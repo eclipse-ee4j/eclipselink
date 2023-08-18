@@ -15,7 +15,6 @@
 package org.eclipse.persistence.logging;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -142,7 +141,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
 
                 if (entry.hasMessage()) {
                     writeMessage(formatMessage(entry));
-                    getWriter().write(Helper.cr());
+                    getWriter().write(System.lineSeparator());
                     getWriter().flush();
                 }
 
@@ -152,7 +151,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
                     } else {
                         writeMessage(entry.getException().toString());
                     }
-                    getWriter().write(Helper.cr());
+                    getWriter().write(System.lineSeparator());
                     getWriter().flush();
                 }
             } catch (IOException exception) {

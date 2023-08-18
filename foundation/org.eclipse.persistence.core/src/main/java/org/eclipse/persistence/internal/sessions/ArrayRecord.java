@@ -15,7 +15,6 @@
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
@@ -344,14 +343,14 @@ public class ArrayRecord extends DatabaseRecord {
             writer.write("(");
             writer.write(toStringAditional());
             for (int index = 0; index < this.fieldsArray.length; index++) {
-                writer.write(Helper.cr());
+                writer.write(System.lineSeparator());
                 writer.write("\t");
                 writer.write(String.valueOf(this.fieldsArray[index]));
                 writer.write(" => ");
                 writer.write(String.valueOf(this.valuesArray[index]));
             }
             if (this.sopObject != null) {
-                writer.write(Helper.cr());
+                writer.write(System.lineSeparator());
                 writer.write(" sopObject = ");
                 writer.write(this.sopObject.toString());
             }

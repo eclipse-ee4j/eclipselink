@@ -119,31 +119,31 @@ public class Restaurant implements ChangeTracker {
     public String allToString() {
         StringBuffer buf = new StringBuffer();
         buf.append("Restaurant: " + this.getName());
-        buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+        buf.append(System.lineSeparator());
         if (getMenus() != null) {
             buf.append("Menus: " + getMenus().getClass().getSimpleName());
             buf.append(getMenus().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         if (getWaiters() != null) {
             buf.append("Waiters: " + getWaiters().getClass().getSimpleName());
             buf.append(getWaiters().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         if (getPreferredCustomers() != null) {
             buf.append("PreferredCustomers: " + getPreferredCustomers().getClass().getSimpleName());
             buf.append(getPreferredCustomers().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         if (getLocations() != null) {
             buf.append("Locations: " + getLocations().getClass().getSimpleName());
             buf.append(getLocations().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         if (getSlogans() != null) {
             buf.append("Slogan: " + getSlogans().getClass().getSimpleName());
             buf.append(getSlogans().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         return buf.toString();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class ConstructorTest extends ExceptionTest {
     @Override
     protected void verify() {
         if (caughtException == null) {
-            throwError("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "caught exception was null! " + org.eclipse.persistence.internal.helper.Helper.cr() + org.eclipse.persistence.internal.helper.Helper.cr() + "[EXPECTING] " + expectedException + " or " + secondExpectedException);
+            throwError("The proper exception was not thrown:" + System.lineSeparator() + "caught exception was null! " + System.lineSeparator() + System.lineSeparator() + "[EXPECTING] " + expectedException + " or " + secondExpectedException);
         }
 
         if (caughtException instanceof IntegrityException) {
@@ -89,7 +89,7 @@ public class ConstructorTest extends ExceptionTest {
                 }
             }
 
-            String cr = org.eclipse.persistence.internal.helper.Helper.cr();
+            String cr = System.lineSeparator();
 
             if (!illegalAccessConstructorInit && !noSuchMethodConstructorInit && !noSuchMethodInstantiationInit) {
                 throw new org.eclipse.persistence.testing.framework.TestErrorException("The proper exception was not thrown:" + cr + "[CAUGHT] " + caughtException + cr + cr + "[EXPECTING] " + expectedException.getMessage() + cr + " or " + secondExpectedException.getMessage() + cr + " or " + thirdExpectedException.getMessage());

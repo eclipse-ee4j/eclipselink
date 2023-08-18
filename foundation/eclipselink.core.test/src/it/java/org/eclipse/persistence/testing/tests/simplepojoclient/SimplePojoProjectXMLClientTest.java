@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ public class SimplePojoProjectXMLClientTest extends TestCase {
     public void setup() throws TestErrorException {
         simplePojoProjectXMLClient = new SimplePojoProjectXMLClientTest();
 
-        System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "Now running Simple POJO test using Project Deployment XML file...");
+        System.out.println(System.lineSeparator() + System.lineSeparator() + "Now running Simple POJO test using Project Deployment XML file...");
 
         try {
             org.eclipse.persistence.sessions.Project project = XMLProjectReader.read("PojoEmployee.xml");
@@ -53,7 +53,7 @@ public class SimplePojoProjectXMLClientTest extends TestCase {
             for (Iterator itr = objects.iterator(); itr.hasNext(); ) {
                 simplePojoProjectXMLClient.printObjectAttributes(itr.next());
             }
-            System.out.println(System.getProperty("line.separator") + System.getProperty("line.separator") + "Test using Project Deployment XML file is complete" + System.getProperty("line.separator") + System.getProperty("line.separator"));
+            System.out.println(System.lineSeparator() + System.lineSeparator() + "Test using Project Deployment XML file is complete" + System.lineSeparator() + System.lineSeparator());
         } catch (Exception e) {
             throw new TestErrorException("" + e);
         }

@@ -15,7 +15,6 @@
 package org.eclipse.persistence.internal.codegen;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -46,7 +45,7 @@ public class CodeGenerator {
     }
 
     public void cr() {
-        write(Helper.cr());
+        write(System.lineSeparator());
     }
 
     public ClassDefinition getCurrentClass() {

@@ -17,7 +17,6 @@
 package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.io.PrintStream;
@@ -34,7 +33,7 @@ public abstract class EclipseLinkException extends RuntimeException {
     protected static Boolean shouldPrintInternalException = null;
     protected String indentationString;
     protected int errorCode;
-    protected static final String CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
+    protected static final String CR = System.lineSeparator();
     //Bug#3559280  Added to avoid logging an exception twice
     protected boolean hasBeenLogged;
 
@@ -70,7 +69,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * Convenience method - return a platform-specific line-feed.
      */
     protected static String cr() {
-        return org.eclipse.persistence.internal.helper.Helper.cr();
+        return System.lineSeparator();
     }
 
     /**

@@ -17,7 +17,6 @@ package org.eclipse.persistence.internal.sessions;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.sessions.DataRecord;
 
@@ -820,14 +819,14 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
         writer.write("(");
 
         for (int index = 0; index < getFields().size(); index++) {
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             writer.write("\t");
             writer.write(String.valueOf((getFields().elementAt(index))));
             writer.write(" => ");
             writer.write(String.valueOf((getValues().elementAt(index))));
         }
         if (this.sopObject != null) {
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             writer.write(" sopObject = ");
             writer.write(this.sopObject.toString());
         }
