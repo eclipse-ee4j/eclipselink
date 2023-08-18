@@ -90,7 +90,9 @@ public class Helper extends CoreHelper implements Serializable {
 
     // Changed static initialization to lazy initialization for bug 2756643
 
-    /** Store CR string, for some reason \n is not platform independent. */
+    /** Store CR string, for some reason \n is not platform independent.
+     * @deprecated Use {@link System#lineSeparator()}. */
+    @Deprecated(forRemoval = true)
     protected static String CR;
 
     /** formatting strings for indenting */
@@ -825,10 +827,12 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Return a string containing the platform-appropriate
      * characters for carriage return.
+     * @deprecated Use {@link System#lineSeparator()}.
      */
+    @Deprecated(forRemoval = true)
     public static String cr() {
         if (CR == null) {
-            CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
+            CR = System.lineSeparator();
         }
         return CR;
     }
