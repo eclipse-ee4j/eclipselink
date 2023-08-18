@@ -108,6 +108,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -3822,6 +3823,26 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
             sb.append(patternValue);
             return sb.toString();
+        }
+    }
+
+    public static final class ReplaceExpressionTester extends AbstractTripleEncapsulatedExpressionTester {
+
+        protected ReplaceExpressionTester(ExpressionTester firstExpression,
+                                          ExpressionTester secondExpression,
+                                          ExpressionTester thirdExpression) {
+
+            super(firstExpression, secondExpression, thirdExpression);
+        }
+
+        @Override
+        protected Class<? extends AbstractTripleEncapsulatedExpression> expressionType() {
+            return ReplaceExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return ReplaceExpression.REPLACE;
         }
     }
 

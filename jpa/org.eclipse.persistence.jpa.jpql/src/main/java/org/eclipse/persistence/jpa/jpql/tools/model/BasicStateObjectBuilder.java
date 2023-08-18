@@ -87,6 +87,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -174,6 +175,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.ObjectExpressionStateO
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrderByClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrderByItemStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.ReplaceExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ResultVariableStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectStatementStateObject;
@@ -1320,6 +1322,29 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
     public final void visit(RangeVariableDeclaration expression) {
         // Not done here
         stateObject = null;
+    }
+
+    @Override
+    public void visit(ReplaceExpression expression) {
+
+        expression.getFirstExpression().accept(this);
+        StateObject firstExpression = stateObject;
+
+        expression.getSecondExpression().accept(this);
+        StateObject secondExpression = stateObject;
+
+        expression.getThirdExpression().accept(this);
+        StateObject thirdExpression = stateObject;
+
+        ReplaceExpressionStateObject stateObject = new ReplaceExpressionStateObject(
+                parent,
+                firstExpression,
+                secondExpression,
+                thirdExpression
+        );
+
+        stateObject.setExpression(expression);
+        this.stateObject = stateObject;
     }
 
     @Override

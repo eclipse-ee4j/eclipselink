@@ -103,6 +103,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -1068,6 +1069,11 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     @Override
     public void visit(RegexpExpression expression) {
         type = Boolean.class;
+    }
+
+    @Override
+    public void visit(ReplaceExpression expression) {
+        type = String.class;
     }
 
     @Override

@@ -327,6 +327,11 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
     }
 
     @Override
+    public void visit(ReplaceExpressionStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
     public void visit(ResultVariableStateObject stateObject) {
         visit((StateObject) stateObject);
     }

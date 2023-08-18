@@ -142,6 +142,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.QueryPosition;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclarationBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
@@ -3512,6 +3513,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+        super.visit(expression);
+        visitCollectionExpression(expression, REPLACE, getTripleEncapsulatedCollectionHelper());
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
         super.visit(expression);
         int position = queryPosition.getPosition(expression) - corrections.peek();
@@ -6055,6 +6062,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(ReplaceExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
+        }
+
+        @Override
         public void visit(ResultVariable expression) {
             // The result variable is parsed without AS
             appendable = !expression.hasAs() &&
@@ -8103,6 +8116,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(ReplaceExpression expression) {
+            visitAbstractTripleEncapsulatedExpression(expression);
+        }
+
+        @Override
         public void visit(ResultVariable expression) {
 
             if (badExpression) {
@@ -9984,6 +10002,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
             //          2. Could become 'e.employees IS NOT NULL'
             //          3. Could become e.address.zipcode = 27519
             filter = NullFilter.instance();
+        }
+
+        @Override
+        public void visit(ReplaceExpression expression) {
+            filter = visitor.getMappingPropertyFilter();
         }
 
         @Override

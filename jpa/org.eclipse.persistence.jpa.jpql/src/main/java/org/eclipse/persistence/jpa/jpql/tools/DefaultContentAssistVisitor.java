@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
@@ -145,6 +146,11 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
         public void visit(ModExpression expression) {
             // In theory we would only allow Long and Integer
             type = queryContext.getType(Number.class);
+        }
+
+        @Override
+        public void visit(ReplaceExpression expression) {
+            type = queryContext.getType(CharSequence.class);
         }
 
         @Override

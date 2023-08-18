@@ -392,6 +392,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
         visit((Expression) expression);
     }

@@ -118,6 +118,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -1754,6 +1755,28 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
         // Set the expression type
         type[0] = Boolean.class;
+    }
+
+    @Override
+    public void visit(ReplaceExpression expression) {
+
+        // Create the first expression
+        expression.getFirstExpression().accept(this);
+        Expression firstExpression = queryExpression;
+
+        // Create the second expression
+        expression.getSecondExpression().accept(this);
+        Expression secondExpression = queryExpression;
+
+        // Create the third expression
+        expression.getThirdExpression().accept(this);
+        Expression thirdExpression = queryExpression;
+
+        // Now create the REPLACE expression
+        queryExpression = firstExpression.replace(secondExpression, thirdExpression);
+
+        // Set the expression type
+        type[0] = String.class;
     }
 
     @Override

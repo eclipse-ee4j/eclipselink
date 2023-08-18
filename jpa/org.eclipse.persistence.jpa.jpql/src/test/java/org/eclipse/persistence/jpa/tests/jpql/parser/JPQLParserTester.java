@@ -95,6 +95,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrderSibling
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.PowerExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RangeVariableDeclarationTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RegexpExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ReplaceExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ResultVariableTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RoundExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SelectClauseTester;
@@ -3535,6 +3536,13 @@ public final class JPQLParserTester {
 
     public static CollectionMemberDeclarationTester subFromIn(String collectionPath) {
         return subFromIn(collectionPath(collectionPath));
+    }
+
+    public static ReplaceExpressionTester replace(ExpressionTester firstExpression,
+                                                                   ExpressionTester secondExpression,
+                                                                   ExpressionTester thirdExpression) {
+
+        return new ReplaceExpressionTester(firstExpression, secondExpression, thirdExpression);
     }
 
     public static SimpleSelectStatementTester subquery(ExpressionTester selectClause,

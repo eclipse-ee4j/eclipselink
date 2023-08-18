@@ -176,6 +176,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.OrExpressionStateObjec
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrderByClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrderByItemStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.RangeVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.ReplaceExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ResultVariableStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectStatementStateObject;
@@ -1689,6 +1690,11 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     @Override
     public void visit(RangeVariableDeclarationStateObject stateObject) {
         toStringRangeVariableDeclaration(stateObject);
+    }
+
+    @Override
+    public void visit(ReplaceExpressionStateObject stateObject) {
+        toStringTripleEncapsulated(stateObject);
     }
 
     @Override

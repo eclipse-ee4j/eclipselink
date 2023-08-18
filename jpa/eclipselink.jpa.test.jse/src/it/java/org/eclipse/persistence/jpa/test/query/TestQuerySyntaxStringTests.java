@@ -18,11 +18,13 @@ package org.eclipse.persistence.jpa.test.query;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.test.query.model.StringEntity;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.sessions.Session;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -202,6 +204,131 @@ public class TestQuerySyntaxStringTests {
             TypedQuery<String> query = em.createQuery("SELECT s.firstName || s.lastName FROM StringEntity s WHERE s.firstName || s.lastName || s.firstName = 'JohnSmithJohn'", String.class);
             String result = query.getSingleResult();
             Assert.assertEquals("JohnSmith", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_replaceFunctionSelect01() {
+        if (emf == null)
+            return;
+
+        //REPLACE is not implemented in Apache Derby DB
+        if (emf.unwrap(Session.class).getPlatform().isDerby()) {
+            return;
+        }
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT REPLACE('John', 'o', 'a') FROM StringEntity s WHERE s.id = 1", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("Jahn", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_replaceFunctionSelect02() {
+        if (emf == null)
+            return;
+
+        //REPLACE is not implemented in Apache Derby DB
+        if (emf.unwrap(Session.class).getPlatform().isDerby()) {
+            return;
+        }
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT REPLACE(s.firstName, 'o', 'a') FROM StringEntity s WHERE s.id = 1", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("Jahn", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_replaceFunctionSelect03() {
+        if (emf == null)
+            return;
+
+        //REPLACE is not implemented in Apache Derby DB
+        if (emf.unwrap(Session.class).getPlatform().isDerby()) {
+            return;
+        }
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT REPLACE(REPLACE(s.firstName, 'o', 'a'), 'a', 'o') FROM StringEntity s WHERE s.id = 1", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("John", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_replaceFunctionWhere01() {
+        if (emf == null)
+            return;
+
+        //REPLACE is not implemented in Apache Derby DB
+        if (emf.unwrap(Session.class).getPlatform().isDerby()) {
+            return;
+        }
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT s.firstName FROM StringEntity s WHERE REPLACE(s.firstName, 'o', 'a') = 'Jahn'", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("John", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_replaceFunctionWhere02() {
+        if (emf == null)
+            return;
+
+        //REPLACE is not implemented in Apache Derby DB
+        if (emf.unwrap(Session.class).getPlatform().isDerby()) {
+            return;
+        }
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT s.firstName FROM StringEntity s WHERE REPLACE(REPLACE(s.firstName, 'o', 'a'), 'a', 'o') = 'John'", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("John", result);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

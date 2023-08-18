@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,9 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ModExpre
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ModExpression_SecondExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.NotExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.NullComparisonExpression_InvalidType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ReplaceExpression_FirstExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ReplaceExpression_SecondExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ReplaceExpression_ThirdExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SqrtExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SubstringExpression_FirstExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SubstringExpression_SecondExpression_WrongType;
@@ -107,6 +110,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleArithmeticExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
@@ -893,6 +897,44 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
     }
 
     @Override
+    protected int validateReplaceExpression(ReplaceExpression expression) {
+
+        int result = super.validateReplaceExpression(expression);
+
+        if (isValid(result, 0)) {
+            boolean valid = validateStringType(
+                    expression.getFirstExpression(),
+                    ReplaceExpression_FirstExpression_WrongType
+            );
+            updateStatus(result, 0, valid);
+        }
+
+        // The second and third arguments of the REPLACE function denote the pattern to replace and
+        // replacement string. These arguments are strings
+        if (isValid(result, 1)) {
+
+            boolean valid = validateStringType(
+                    expression.getSecondExpression(),
+                    ReplaceExpression_SecondExpression_WrongType
+            );
+
+            updateStatus(result, 1, valid);
+        }
+
+        if (isValid(result, 2)) {
+
+            boolean valid = validateStringType(
+                    expression.getThirdExpression(),
+                    ReplaceExpression_ThirdExpression_WrongType
+            );
+
+            updateStatus(result, 2, valid);
+        }
+
+        return result;
+    }
+
+    @Override
     protected boolean validateSqrtExpression(SqrtExpression expression) {
 
         boolean valid = super.validateSqrtExpression(expression);
@@ -1345,6 +1387,12 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         @Override
         public void visit(LowerExpression expression) {
             // LOWER always returns a string
+            valid = true;
+        }
+
+        @Override
+        public void visit(ReplaceExpression expression) {
+            // REPLACE always returns a string
             valid = true;
         }
 

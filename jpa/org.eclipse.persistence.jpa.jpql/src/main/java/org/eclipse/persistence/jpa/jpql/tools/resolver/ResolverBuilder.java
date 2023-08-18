@@ -100,6 +100,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -908,6 +909,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     @Override
     public void visit(RangeVariableDeclaration expression) {
         resolver = buildClassResolver(Object.class);
+    }
+
+    @Override
+    public void visit(ReplaceExpression expression) {
+        resolver = buildClassResolver(String.class);
     }
 
     @Override
