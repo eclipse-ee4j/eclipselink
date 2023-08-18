@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -4754,7 +4754,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (createDDLJdbc == null) {
                 // Using EclipseLink properties, the create script has a default.
                 // Using JPA properties, the user must specify the target else an exception must be thrown.
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21-ddl-create-script-target-not-specified"));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21-ddl-create-script-target-not-specified", new Object[]{SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET}));
             } else if (createDDLJdbc instanceof Writer) {
                 mgr.outputCreateDDLToWriter((Writer) createDDLJdbc);
             } else {
@@ -4767,7 +4767,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (dropDDLJdbc == null) {
                 // Using EclipseLink properties, the drop script has a default.
                 // Using JPA properties, the user must specify the target else an exception must be thrown.
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21-ddl-drop-script-target-not-specified"));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21-ddl-drop-script-target-not-specified", new Object[]{SCHEMA_GENERATION_SCRIPTS_DROP_TARGET}));
             } else if (dropDDLJdbc instanceof Writer) {
                 mgr.outputDropDDLToWriter((Writer) dropDDLJdbc);
             } else if (dropDDLJdbc instanceof String) {
