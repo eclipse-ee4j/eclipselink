@@ -2646,10 +2646,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This should be the implementation of toString(), and also the
      * value should be calculated in the constructor for it is used all the
-     * time.  However everything is lazily initialized now and the value is
+     * time.  However, everything is lazily initialized now and the value is
      * transient for the system hashcode could vary?
      */
-    public String getLogSessionString() {
+    @Override
+    public String getSessionId() {
         if (logSessionString == null) {
             StringWriter writer = new StringWriter();
             writer.write(getSessionTypeString());
@@ -2659,6 +2660,21 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             logSessionString = writer.toString();
         }
         return logSessionString;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the name of the session: class name + system hashcode.
+     * <p>
+     * This should be the implementation of toString(), and also the
+     * value should be calculated in the constructor for it is used all the
+     * time.  However, everything is lazily initialized now and the value is
+     * transient for the system hashcode could vary?
+     * @deprecated Use {@link #getSessionId()}.
+     */
+    @Deprecated(forRemoval = true)
+    public String getLogSessionString() {
+        return getSessionId();
     }
 
     /**

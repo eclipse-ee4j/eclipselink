@@ -17,13 +17,10 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.logging;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sessions.Session;
 
 import java.io.IOException;
@@ -32,15 +29,19 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.DateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.
  * It contains a singleton SessionLog that logs messages from outside any EclipseLink session.
  * The singleton SessionLog can also be passed to an EclipseLink session when messages
- * are logged through that session.  When JDK1.4 is used, a singleton JavaLog is created.
- * Otherwise a singleton DefaultSessionLog is created.
+ * are logged through that session. By default, a singleton {@linkplain DefaultSessionLog} is created.
  *
  * @see SessionLog
  * @see SessionLogEntry
@@ -119,11 +120,23 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     protected Writer writer;
 
+    /**
+     * The pattern for formatting date-time in the log entries.
+     * By default, set to {@code "yyyy.MM.dd HH:mm:ss.SSS"}.
+     */
     protected static String DATE_FORMAT_STR = "yyyy.MM.dd HH:mm:ss.SSS";
+
     /**
      * Format use to print the current date/time.
+     * @deprecated Use {@link #timeStampFormatter}.
      */
+    @Deprecated(forRemoval = true)
     protected DateFormat dateFormat;
+
+    /**
+     * Formatter used to print the current date/time.
+     */
+    protected DateTimeFormatter timeStampFormatter;
 
     /**
      * Allows the printing of the stack to be explicitly disabled/enabled.
@@ -168,7 +181,11 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @return The system default log level property value or {@code null} if no such property is set.
      */
     private static String getDefaultLoggingLevelProperty() {
-        return PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.LOGGING_LEVEL);
+        if (System.getSecurityManager() != null) {
+            return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("eclipselink.logging.level", null));
+        } else {
+            return System.getProperty("eclipselink.logging.level", null);
+        }
     }
 
     /**
@@ -580,16 +597,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
-     * Log a SessionLogEntry
-     *
-     * @param sessionLogEntry SessionLogEntry that holds all the information for an EclipseLink logging event
-     */
-    @Override
-    public abstract void log(SessionLogEntry sessionLogEntry);
-
-    /**
      * By default the session (and its connection is available) are printed,
      * this can be turned off.
      */
@@ -752,7 +759,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * PUBLIC:
      * Return the date format to be used when printing a log entry date.
      * @return the date format
+     * @deprecated Use {@link #getTimeStampFormatter()}.
      */
+    @Deprecated(forRemoval = true)
     public DateFormat getDateFormat() {
         return dateFormat;
     }
@@ -760,20 +769,35 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * Return the specified date and/or time information in string.
      * The format will be determined by the date format settings.
+     * @deprecated Use {@link #getTimeStampString(TemporalAccessor)}.
      */
+    @Deprecated(forRemoval = true)
     protected String getDateString(Date date) {
-        if (getDateFormat() != null) {
-            return getDateFormat().format(date);
-
-        }
-
         if (date == null) {
             return null;
         }
+        return getTimeStampString(date.toInstant());
+    }
 
-        // Since we currently do not have a thread-safe way to format dates,
-        // we will use ConversionManager to build the string.
-        return ConversionManager.getDefaultManager().convertObject(date, String.class).toString();
+    /**
+     * Return the specified date and/or time information in string.
+     * The format will be determined by the {@linkplain  DateTimeFormatter} settings.
+     * By default, the value of the {@linkplain #DATE_FORMAT_STR} pattern is used.
+     */
+    public DateTimeFormatter getTimeStampFormatter() {
+        if (timeStampFormatter == null) {
+            timeStampFormatter = DateTimeFormatter
+                    .ofPattern(DATE_FORMAT_STR)
+                    .withZone(ZoneId.systemDefault());
+        }
+        return timeStampFormatter;
+    }
+
+    protected String getTimeStampString(TemporalAccessor temporalAccessor) {
+        if (temporalAccessor == null) {
+            return null;
+        }
+        return getTimeStampFormatter().format(temporalAccessor);
     }
 
     /**
@@ -784,7 +808,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         StringWriter writer = new StringWriter();
 
         if (shouldPrintDate()) {
-            writer.write(getDateString(entry.getDate()));
+            writer.write(getTimeStampString(entry.getTimeStamp()));
             writer.write("--");
         }
         if (shouldPrintSession() && (entry.getSession() != null)) {
@@ -818,7 +842,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         // event, not the static one in the SessionLog, for there are many
         // sessions but only one SessionLog.
         if (session != null) {
-            return ((org.eclipse.persistence.internal.sessions.AbstractSession)session).getLogSessionString();
+            return session.getSessionId();
         } else {
             return "";
         }
@@ -913,13 +937,24 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * PUBLIC:
      * Set the date format to be used when printing a log entry date.
      * <p>Note: the JDK's <code>java.text.SimpleDateFormat</code> is <b>NOT</b> thread-safe.<br>
-     * The user is <b>strongly</b> advised to consider using Apache Commons<br>
-     * <code>org.apache.commons.lang.time.FastDateFormat</code> instead.</p>
+     * The user is <b>strongly</b> advised to use {@linkplain #setTimeStampFormatter(DateTimeFormatter)} instead.</p>
      *
      * @param dateFormat java.text.DateFormat
+     * @deprecated Use {@link #setTimeStampFormatter(DateTimeFormatter)}.
      */
+    @Deprecated(forRemoval = true)
     public void setDateFormat(DateFormat dateFormat) {
         this.dateFormat = dateFormat;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the date-time format to be used when printing a log entry date.
+     *
+     * @param timeStampFormatter Formatter for printing time stamp in the log entry.
+     */
+    public void setTimeStampFormatter(DateTimeFormatter timeStampFormatter) {
+        this.timeStampFormatter = timeStampFormatter;
     }
 
     /**
@@ -938,7 +973,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         } else {
             //Bug5976657, if there are entry parameters and the string "{0" contained in the message
             //body, we assume it needs to be formatted.
-            if (entry.getParameters()!=null && entry.getParameters().length>0 && message.indexOf("{0") >= 0) {
+            if (entry.getParameters() != null && entry.getParameters().length > 0 && message.contains("{0")) {
                 message = java.text.MessageFormat.format(message, entry.getParameters());
             }
         }
