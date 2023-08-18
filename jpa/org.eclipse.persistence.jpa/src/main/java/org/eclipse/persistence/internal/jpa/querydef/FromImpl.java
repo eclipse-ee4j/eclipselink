@@ -288,12 +288,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      * Return the path corresponding to the referenced collection-valued
      * attribute.
      *
-     * @param collection
-     *            collection-valued attribute
+     * @param collection collection-valued attribute
      * @return expression corresponding to the referenced attribute
      */
     @Override
-    public <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection){
+    public <E, C extends Collection<E>> Expression<C> get(PluralAttribute<? super X, C, E> collection) {
 
         // This is a special Expression that represents just the collection for member of etc...
         return new ExpressionImpl<C>(this.metamodel, (Class<C>) ((Class<E>) Class.class) ,this.currentNode.anyOf(collection.getName()));
@@ -302,12 +301,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     /**
      * Return the path corresponding to the referenced map-valued attribute.
      *
-     * @param map
-     *            map-valued attribute
+     * @param map map-valued attribute
      * @return expression corresponding to the referenced attribute
      */
     @Override
-    public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map){
+    public <K, V, M extends Map<K, V>> Expression<M> get(MapAttribute<? super X, K, V> map) {
         return new ExpressionImpl<M>(this.metamodel, (Class<M>) ((Class<?>) Class.class) ,this.currentNode.anyOf(map.getName()));
     }
 

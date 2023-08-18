@@ -73,6 +73,7 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
      */
     void refreshMetadata(Map<String, Object> properties);
 
+    // TODO-API-3.2: To be replaced
     /**
      * Create a new application-managed {@code EntityManager}, start a resource-local
      * transaction, and call the given function, passing both the {@code EntityManager}
@@ -90,6 +91,7 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
         }
     }
 
+    // TODO-API-3.2: To be replaced
     /**
      * Create a new application-managed {@code EntityManager}, start a resource-local
      * transaction, and call the given function, passing both the {@code EntityManager}
@@ -108,6 +110,7 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
         }
     }
 
+    // TODO-API-3.2: To be replaced
     /**
      * Create a new application-managed {@code EntityManager}, start a resource-local
      * transaction, and call the given function, passing the {@code EntityManager}.
@@ -132,6 +135,7 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
         }
     }
 
+    // TODO-API-3.2: To be replaced
     /**
      * Create a new application-managed {@code EntityManager}, start a resource-local
      * transaction, and call the given function, passing the {@code EntityManager}.

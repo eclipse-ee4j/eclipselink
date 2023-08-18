@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.io.Serializable;
 
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Nulls;
 import jakarta.persistence.criteria.Order;
 
 public class OrderImpl implements Order, Serializable{
@@ -42,6 +43,12 @@ public class OrderImpl implements Order, Serializable{
     @Override
     public boolean isAscending() {
         return this.isAscending;
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public Nulls getNullPrecedence() {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     @Override

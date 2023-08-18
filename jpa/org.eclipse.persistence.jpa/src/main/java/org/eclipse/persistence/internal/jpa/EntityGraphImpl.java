@@ -24,6 +24,7 @@ import jakarta.persistence.AttributeNode;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.Subgraph;
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.MapAttribute;
 import jakarta.persistence.metamodel.PluralAttribute;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -78,6 +79,24 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return attributeGroup.getName();
     }
 
+    // TODO-API-3.2
+    //@Override
+    public <S extends X> Subgraph<S> addTreatedSubgraph(Class<S> aClass) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public void addAttributeNode(String s) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public void addAttributeNode(Attribute<? super X, ?> attribute) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
     @Override
     public void addAttributeNodes(String... attributeNames) {
         if (!this.isMutable) {
@@ -103,11 +122,11 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     @Override
-    public void addAttributeNodes(Attribute<X, ?>... attribute) {
+    public void addAttributeNodes(Attribute<? super X, ?>... attribute) {
         if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
         }
-        for (Attribute<X, ?> attrNode : attribute) {
+        for (Attribute<? super X, ?> attrNode : attribute) {
             this.addAttributeNodeImpl(new AttributeNodeImpl<X>(attrNode.getName()));
             //order is important here, must add attribute node to node list before adding to group or it will appear in node list twice.
             this.attributeGroup.addAttribute(attrNode.getName());
@@ -115,7 +134,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     @Override
-    public <T> Subgraph<T> addSubgraph(Attribute<X, T> attribute) {
+    public <T> Subgraph<T> addSubgraph(Attribute<? super X, T> attribute) {
         Class<T> type = attribute.getJavaType();
         if (attribute.isCollection()) {
             type = ((PluralAttribute) attribute).getBindableJavaType();
@@ -124,7 +143,13 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     @Override
-    public <T> Subgraph<? extends T> addSubgraph(Attribute<X, T> attribute, Class<? extends T> type) {
+    public <Y> Subgraph<Y> addTreatedSubgraph(Attribute<? super X, ? super Y> attribute, Class<Y> aClass) {
+        return null;
+    }
+
+    @Override
+    @SuppressWarnings("removal")
+    public <T> Subgraph<? extends T> addSubgraph(Attribute<? super X, T> attribute, Class<? extends T> type) {
         return addSubgraph(attribute.getName(), type);
     }
 
@@ -169,7 +194,38 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     @Override
-    public <T> Subgraph<T> addKeySubgraph(Attribute<X, T> attribute) {
+    public <E> Subgraph<E> addElementSubgraph(PluralAttribute<? super X, ?, E> pluralAttribute) {
+        return null;
+    }
+
+    @Override
+    public <E> Subgraph<E> addTreatedElementSubgraph(PluralAttribute<? super X, ?, ? super E> pluralAttribute, Class<E> aClass) {
+        return null;
+    }
+
+    @Override
+    public <X1> Subgraph<X1> addElementSubgraph(String s) {
+        return null;
+    }
+
+    @Override
+    public <X1> Subgraph<X1> addElementSubgraph(String s, Class<X1> aClass) {
+        return null;
+    }
+
+    @Override
+    public <K> Subgraph<K> addMapKeySubgraph(MapAttribute<? super X, K, ?> mapAttribute) {
+        return null;
+    }
+
+    @Override
+    public <K> Subgraph<K> addTreatedMapKeySubgraph(MapAttribute<? super X, ? super K, ?> mapAttribute, Class<K> aClass) {
+        return null;
+    }
+
+    @Override
+    @SuppressWarnings("removal")
+    public <T> Subgraph<T> addKeySubgraph(Attribute<? super X, T> attribute) {
         if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
         }
@@ -181,7 +237,8 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     @Override
-    public <T> Subgraph<? extends T> addKeySubgraph(Attribute<X, T> attribute, Class<? extends T> type) {
+    @SuppressWarnings("removal")
+    public <T> Subgraph<? extends T> addKeySubgraph(Attribute<? super X, T> attribute, Class<? extends T> type) {
         return addKeySubgraph(attribute.getName(), type);
     }
 
@@ -229,6 +286,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     @Override
+    @SuppressWarnings("removal")
     public <T> Subgraph<? extends T> addSubclassSubgraph(Class<? extends T> type) {
         if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");

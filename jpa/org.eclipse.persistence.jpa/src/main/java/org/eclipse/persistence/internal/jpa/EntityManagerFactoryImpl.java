@@ -26,17 +26,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
 import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.config.ReferenceMode;
@@ -584,6 +588,12 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return delegate.isLoaded(entity, attributeName);
     }
 
+    // TODO-API-3.2
+    //@Override
+    public <E> boolean isLoaded(E e, Attribute<? super E, ?> attribute) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
     /**
      * Determine the load state of an entity belonging to the persistence unit.
      * This method can be used to determine the load state of an entity passed
@@ -600,6 +610,36 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     @Override
     public boolean isLoaded(Object entity) {
         return delegate.isLoaded(entity);
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public void load(Object o, String s) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public <E> void load(E e, Attribute<? super E, ?> attribute) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public void load(Object o) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public boolean isInstance(Object o, Class<?> aClass) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    //@Override
+    public <T> Class<? extends T> getClass(T t) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**
