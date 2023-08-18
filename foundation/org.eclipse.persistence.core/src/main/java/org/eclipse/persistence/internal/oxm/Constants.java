@@ -17,7 +17,6 @@
 //       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
 package org.eclipse.persistence.internal.oxm;
 
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
@@ -31,7 +30,6 @@ public class Constants {
     public static final String BOOLEAN_STRING_TRUE = "true";
     public static final String CDATA = "CDATA";
     public static final char COLON = ':';
-    private static String CR;
     public static final String DEFAULT_XML_ENCODING = "UTF-8";
     public static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_XML_ENCODING);
     public static final char DOT = '.';
@@ -185,12 +183,11 @@ public class Constants {
     /**
      * Return a string containing the platform-appropriate
      * characters for carriage return.
+     * @deprecated Use {@link System#lineSeparator()}.
      */
+    @Deprecated(forRemoval = true)
     public static String cr() {
-        if (CR == null) {
-            CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
-        }
-        return CR;
+        return System.lineSeparator();
     }
 
 }

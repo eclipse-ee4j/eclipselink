@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,21 +17,23 @@
 //       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
 package org.eclipse.persistence.internal.core.helper;
 
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-
 public class CoreHelper {
 
-    /** Store CR string, for some reason \n is not platform independent. */
+    /** Store CR string, for some reason \n is not platform independent.
+     * @deprecated Use {@link System#lineSeparator()}. */
+    @Deprecated(forRemoval = true)
     protected static String CR = null;
 
     /**
      * Return a string containing the platform-appropriate
-     * characters for carriage return.
+     * characters for carriage return
+     * @deprecated Use {@link System#lineSeparator()}.
      */
+    @Deprecated(forRemoval = true)
     public static String cr() {
         // bug 2756643
         if (CR == null) {
-            CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
+            CR = System.lineSeparator();
         }
         return CR;
     }
