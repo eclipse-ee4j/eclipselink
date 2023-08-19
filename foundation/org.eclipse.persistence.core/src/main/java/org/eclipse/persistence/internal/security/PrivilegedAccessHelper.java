@@ -65,7 +65,7 @@ public class PrivilegedAccessHelper {
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
 
-    private final static String[] legalProperties = { "file.separator", "java.io.tmpdir", JavaVersion.VM_VERSION_PROPERTY, "path.separator", "user.dir",
+    private final static String[] legalProperties = { "java.io.tmpdir", JavaVersion.VM_VERSION_PROPERTY, "user.dir",
             "org.eclipse.persistence.fetchgroupmonitor", "org.eclipse.persistence.querymonitor", "SAP_J2EE_Engine_Version",
             PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.JAVASE_DB_INTERACTION,
             PersistenceUnitProperties.LOGGING_FILE, PersistenceUnitProperties.LOGGING_LEVEL,

@@ -102,10 +102,14 @@ public class Helper extends CoreHelper implements Serializable {
     /** Store newline string */
     public static final String NL = "\n";
 
-    /** Prime the platform-dependent path separator */
+    /** Prime the platform-dependent path separator
+     * @deprecated Use {@link File#pathSeparator}. */
+    @Deprecated(forRemoval = true)
     protected static String PATH_SEPARATOR = null;
 
-    /** Prime the platform-dependent file separator */
+    /** Prime the platform-dependent file separator
+     * @deprecated Use {@link File#separator}. */
+    @Deprecated(forRemoval = true)
     protected static String FILE_SEPARATOR = null;
 
     /** Prime the platform-dependent current working directory */
@@ -983,11 +987,13 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Return a string containing the platform-appropriate
      * characters for separating directory and file names.
+     * @deprecated Use {@link File#separator}.
      */
+    @Deprecated(forRemoval = true)
     public static String fileSeparator() {
         //Bug 2756643
         if (FILE_SEPARATOR == null) {
-            FILE_SEPARATOR = PrivilegedAccessHelper.getSystemProperty("file.separator");
+            FILE_SEPARATOR = File.separator;
         }
         return FILE_SEPARATOR;
     }
@@ -1251,11 +1257,13 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Return a string containing the platform-appropriate
      * characters for separating entries in a path (e.g. the classpath)
+     * @deprecated Use {@link File#pathSeparator}.
      */
+    @Deprecated(forRemoval = true)
     public static String pathSeparator() {
         // Bug 2756643
         if (PATH_SEPARATOR == null) {
-            PATH_SEPARATOR = PrivilegedAccessHelper.getSystemProperty("path.separator");
+            PATH_SEPARATOR = File.pathSeparator;
         }
         return PATH_SEPARATOR;
     }

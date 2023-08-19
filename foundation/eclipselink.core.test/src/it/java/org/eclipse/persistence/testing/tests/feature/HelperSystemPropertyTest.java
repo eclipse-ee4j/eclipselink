@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.testing.framework.*;
 
+import java.io.File;
+
 /**
  * Parital test for Bug 2756643.
  * Tests to ensure the Helper statics which access System Properties
@@ -32,11 +34,11 @@ public class HelperSystemPropertyTest extends AutoVerifyTestCase {
             throw new TestErrorException("System.lineSeparator() returns the incorrect value.");
         }
 
-        if (!org.eclipse.persistence.internal.helper.Helper.pathSeparator().equals(System.getProperty("path.separator"))) {
+        if (!org.eclipse.persistence.internal.helper.Helper.pathSeparator().equals(File.pathSeparator)) {
             throw new TestErrorException("Helper.pathSeparator() returns the incorrect value.");
         }
 
-        if (!org.eclipse.persistence.internal.helper.Helper.fileSeparator().equals(System.getProperty("file.separator"))) {
+        if (!org.eclipse.persistence.internal.helper.Helper.fileSeparator().equals(File.separator)) {
             throw new TestErrorException("Helper.fileSeparator() returns the incorrect value.");
         }
 
