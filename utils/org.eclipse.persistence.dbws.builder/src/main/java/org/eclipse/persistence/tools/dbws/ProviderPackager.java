@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -211,7 +211,7 @@ public class ProviderPackager extends XRPackager {
                 source.append(DBWS_PROVIDER_SOURCE_SOAP11HTTP_MTOM_BINDING);
             }
         }
-        source.append(new StringBuilder(DBWS_PROVIDER_SOURCE_PREAMBLE_END));
+        source.append(DBWS_PROVIDER_SOURCE_PREAMBLE_END);
         String wsdlPathPrevix = getWSDLPathPrefix();
         if (wsdlPathPrevix != null) {
             source.append(DBWS_PROVIDER_SOURCE_WSDL_LOCATION);

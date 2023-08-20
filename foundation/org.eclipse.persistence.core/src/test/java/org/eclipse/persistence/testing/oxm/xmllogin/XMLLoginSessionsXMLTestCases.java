@@ -159,7 +159,7 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
         SessionConfigs readConfigs = sessionLoader.loadConfigsForMappingWorkbench(this.getClass().getClassLoader());
 
         // There is only one session in this sessions.xml
-        return (DatabaseSessionConfig) readConfigs.getSessionConfigs().firstElement();
+        return (DatabaseSessionConfig) readConfigs.getSessionConfigs().get(0);
     }
 
     @Override

@@ -32,7 +32,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatasourceLogin;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
@@ -109,7 +109,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
 
     @Override
     protected ConstantTransformer getConstantTransformerForProjectVersionMapping() {
-        return new ConstantTransformer(DatabaseLogin.getVersion());
+        return new ConstantTransformer(DatasourceLogin.getVersion());
     }
 
     @Override

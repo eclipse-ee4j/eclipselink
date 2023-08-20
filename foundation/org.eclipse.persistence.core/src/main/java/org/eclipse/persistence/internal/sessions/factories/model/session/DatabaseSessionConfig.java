@@ -17,21 +17,21 @@ package org.eclipse.persistence.internal.sessions.factories.model.session;
 import org.eclipse.persistence.internal.sessions.factories.model.login.LoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
 
-import java.util.Vector;
+import java.util.List;
 
 /**
  * INTERNAL:
  */
 public class DatabaseSessionConfig extends SessionConfig {
     private LoginConfig m_loginConfig;
-    private Vector<ProjectConfig> m_additionalProjects;
+    private List<ProjectConfig> m_additionalProjects;
     private ProjectConfig m_primaryProject;
 
     public DatabaseSessionConfig() {
         super();
     }
 
-    public Vector<ProjectConfig> getAdditionalProjects() {
+    public List<ProjectConfig> getAdditionalProjects() {
         return m_additionalProjects;
     }
 
@@ -51,7 +51,7 @@ public class DatabaseSessionConfig extends SessionConfig {
         m_primaryProject = primaryProject;
     }
 
-    public void setAdditionalProjects(Vector<ProjectConfig> additionalProjects) {
+    public void setAdditionalProjects(List<ProjectConfig> additionalProjects) {
         m_additionalProjects = additionalProjects;
     }
 }

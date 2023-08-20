@@ -42,8 +42,6 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 
-import java.util.Iterator;
-
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
@@ -83,8 +81,8 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         namespaceResolver.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
         namespaceResolver.put("xsd", W3C_XML_SCHEMA_NS_URI);
 
-        for (Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
-            XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
+        for (ClassDescriptor classDescriptor : getDescriptors().values()) {
+            XMLDescriptor descriptor = (XMLDescriptor) classDescriptor;
             descriptor.setNamespaceResolver(namespaceResolver);
         }
     }

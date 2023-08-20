@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,25 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.factories.model.login;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StructConverterConfig {
-    private Vector<String> m_structConverterClasses;
+    private List<String> m_structConverterClasses;
 
     public StructConverterConfig() {
-        m_structConverterClasses = new Vector<>();
+        m_structConverterClasses = new ArrayList<>();
     }
 
     public void addStructConverterClass(String listener) {
         m_structConverterClasses.add(listener);
     }
 
-    public void setStructConverterClasses(Vector<String> dataConverters) {
+    public void setStructConverterClasses(List<String> dataConverters) {
         m_structConverterClasses = dataConverters;
     }
 
-    public Vector<String> getStructConverterClasses() {
+    public List<String> getStructConverterClasses() {
         return m_structConverterClasses;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.factories;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -30,26 +31,26 @@ import java.util.Vector;
 public class SessionBrokerPlaceHolder extends org.eclipse.persistence.sessions.broker.SessionBroker {
 
     /** This member variable stores the sessions that have been retreived */
-    protected Vector<String> sessionsCompleted;
+    protected List<String> sessionsCompleted;
 
     /** This member variable stores the sessions that need to be retreived */
-    protected Vector<String> sessionNamesRequired;
+    protected List<String> sessionNamesRequired;
 
     public SessionBrokerPlaceHolder() {
         super();
-        this.sessionNamesRequired = new Vector<>();
-        this.sessionsCompleted = new Vector<>();
+        this.sessionNamesRequired = new ArrayList<>();
+        this.sessionsCompleted = new ArrayList<>();
     }
 
     public void addSessionName(String sessionName) {
         this.sessionNamesRequired.add(sessionName);
     }
 
-    public Vector<String> getSessionNamesRequired() {
+    public List<String> getSessionNamesRequired() {
         return this.sessionNamesRequired;
     }
 
-    public Vector<String> getSessionCompleted() {
+    public List<String> getSessionCompleted() {
         return this.sessionsCompleted;
     }
 }

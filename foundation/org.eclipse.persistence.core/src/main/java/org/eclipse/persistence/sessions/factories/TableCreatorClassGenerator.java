@@ -224,7 +224,7 @@ public class TableCreatorClassGenerator {
     /**
      * PUBLIC:
      * Generate the creator class, output the java source code to the stream or file.
-     * useUnicode determines if unicode escaped characters for non_ASCII charaters will be used.
+     * useUnicode determines if unicode escaped characters for non_ASCII characters will be used.
      */
     public void generate(boolean useUnicode) throws ValidationException {
         if (getOutputWriter() == null) {
@@ -249,7 +249,7 @@ public class TableCreatorClassGenerator {
     /**
      * PUBLIC:
      * Generate the project class, output the java source code to the stream or file.
-     * Unicode escaped characters for non_ASCII charaters will be used.
+     * Unicode escaped characters for non_ASCII characters will be used.
      */
     public void generate() throws ValidationException {
         generate(true);
@@ -331,7 +331,7 @@ public class TableCreatorClassGenerator {
 
     /**
      * Return the printed version of the primitive value object.
-     * This must determine the class and use the correct constrcutor arguments.
+     * This must determine the class and use the correct constructor arguments.
      */
     protected String printString(Object value) {
         if ((value == null) || (value == Helper.NULL_VALUE)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -33,28 +31,28 @@ import java.util.Vector;
  */
 public class ClassDefinition extends CodeDefinition {
     protected String packageName;
-    protected Vector<String> imports;
+    protected List<String> imports;
     protected int type;
     public static final int CLASS_TYPE = 1;
     public static final int INTERFACE_TYPE = 2;
     protected String superClass;
-    protected Vector<String> interfaces;
-    protected Vector<AttributeDefinition> attributes;
-    protected Vector<MethodDefinition> methods;
-    protected Vector<ClassDefinition> innerClasses;
+    protected List<String> interfaces;
+    protected List<AttributeDefinition> attributes;
+    protected List<MethodDefinition> methods;
+    protected List<ClassDefinition> innerClasses;
 
     public ClassDefinition() {
         this.packageName = "";
-        this.imports = new Vector<>(3);
+        this.imports = new ArrayList<>(3);
         this.type = CLASS_TYPE;
-        this.interfaces = new Vector<>(3);
-        this.attributes = new Vector<>();
-        this.methods = new Vector<>();
-        this.innerClasses = new Vector<>(3);
+        this.interfaces = new ArrayList<>(3);
+        this.attributes = new ArrayList<>();
+        this.methods = new ArrayList<>();
+        this.innerClasses = new ArrayList<>(3);
     }
 
     public void addAttribute(AttributeDefinition attribute) {
-        getAttributes().addElement(attribute);
+        getAttributes().add(attribute);
     }
 
     /**
@@ -63,7 +61,7 @@ public class ClassDefinition extends CodeDefinition {
      */
     public void addImport(String importStatement) {
         if (!getImports().contains(importStatement)) {
-            getImports().addElement(importStatement);
+            getImports().add(importStatement);
         }
     }
 
@@ -77,7 +75,7 @@ public class ClassDefinition extends CodeDefinition {
             }
 
             for (String packageName : packageNames) {
-                if (!packageName.equals(JAVA_LANG_PACKAGE_NAME) && !packageName.equals(getPackageName()) && !packageName.equals("")) {
+                if (!packageName.equals(JAVA_LANG_PACKAGE_NAME) && !packageName.equals(getPackageName()) && !packageName.isEmpty()) {
                     addImport(packageName + "." + shortName);
                 }
             }
@@ -91,43 +89,42 @@ public class ClassDefinition extends CodeDefinition {
     }
 
     public void addInterface(String interfaceClassName) {
-        getInterfaces().addElement(interfaceClassName);
+        getInterfaces().add(interfaceClassName);
     }
 
     public void addMethod(MethodDefinition method) {
-        getMethods().addElement(method);
+        getMethods().add(method);
     }
 
     private void addTypeNamesToMap(HashMap<String, Set<String>> typeNameMap) {
         putTypeNameInMap(getSuperClass(), typeNameMap);
 
-        for (Iterator<String> i = getInterfaces().iterator(); i.hasNext();) {
-            putTypeNameInMap(i.next(), typeNameMap);
+        for (String s : getInterfaces()) {
+            putTypeNameInMap(s, typeNameMap);
         }
 
-        for (Iterator<AttributeDefinition> i = getAttributes().iterator(); i.hasNext();) {
-            (i.next()).putTypeNamesInMap(typeNameMap);
+        for (AttributeDefinition attributeDefinition : getAttributes()) {
+            attributeDefinition.putTypeNamesInMap(typeNameMap);
         }
 
-        for (Iterator<MethodDefinition> i = getMethods().iterator(); i.hasNext();) {
-            i.next().putTypeNamesInMap(typeNameMap);
+        for (MethodDefinition methodDefinition : getMethods()) {
+            methodDefinition.putTypeNamesInMap(typeNameMap);
         }
     }
 
     private void adjustTypeNames(HashMap<String, Set<String>> typeNameMap) {
         setSuperClass(adjustTypeName(getSuperClass(), typeNameMap));
 
-        for (Iterator<String> i = new Vector<>(getInterfaces()).iterator(); i.hasNext();) {
-            String interfaceName = i.next();
+        for (String interfaceName : new ArrayList<>(getInterfaces())) {
             replaceInterface(interfaceName, adjustTypeName(interfaceName, typeNameMap));
         }
 
-        for (Iterator<AttributeDefinition> i = getAttributes().iterator(); i.hasNext();) {
-            (i.next()).adjustTypeNames(typeNameMap);
+        for (AttributeDefinition attributeDefinition : getAttributes()) {
+            attributeDefinition.adjustTypeNames(typeNameMap);
         }
 
-        for (Iterator<MethodDefinition> i = getMethods().iterator(); i.hasNext();) {
-            i.next().adjustTypeNames(typeNameMap);
+        for (MethodDefinition methodDefinition : getMethods()) {
+            methodDefinition.adjustTypeNames(typeNameMap);
         }
     }
 
@@ -141,7 +138,7 @@ public class ClassDefinition extends CodeDefinition {
      * - Will not add imports for classes in the same package.
      * - Will not parse method bodies, but will unqualify types it finds.
      *
-     * ?? - Should unqualification occur during writing?  That way, reflective definitions could take advantage.
+     * ?? - Should un-qualification occur during writing?  That way, reflective definitions could take advantage.
      *
      */
     public void calculateImports() {
@@ -162,23 +159,23 @@ public class ClassDefinition extends CodeDefinition {
         return getMethods().contains(method);
     }
 
-    protected Vector<AttributeDefinition> getAttributes() {
+    protected List<AttributeDefinition> getAttributes() {
         return attributes;
     }
 
-    protected Vector<String> getImports() {
+    protected List<String> getImports() {
         return imports;
     }
 
-    protected Vector<ClassDefinition> getInnerClasses() {
+    protected List<ClassDefinition> getInnerClasses() {
         return innerClasses;
     }
 
-    protected Vector<String> getInterfaces() {
+    protected List<String> getInterfaces() {
         return interfaces;
     }
 
-    protected Vector<MethodDefinition> getMethods() {
+    protected List<MethodDefinition> getMethods() {
         return methods;
     }
 
@@ -206,11 +203,11 @@ public class ClassDefinition extends CodeDefinition {
         }
     }
 
-    private void setImports(Vector<String> imports) {
+    private void setImports(List<String> imports) {
         this.imports = imports;
     }
 
-    private void setMethods(Vector<MethodDefinition> methods) {
+    private void setMethods(List<MethodDefinition> methods) {
         this.methods = methods;
     }
 
@@ -231,34 +228,20 @@ public class ClassDefinition extends CodeDefinition {
     }
 
     protected void sortImports() {
-        setImports(new Vector<>(new TreeSet<>(getImports())));
+        setImports(new ArrayList<>(new TreeSet<>(getImports())));
     }
 
     protected void sortMethods() {
-        //Object methodArray[] = getMethods().toArray();
-        MethodDefinition[] methodArray = getMethods().toArray(new MethodDefinition[0]);
-
-        Comparator<MethodDefinition> comparison = new Comparator<MethodDefinition>() {
-            @Override
-            public int compare(MethodDefinition first, MethodDefinition second) {
-                if (first.isConstructor()) {
-                    return -1;
-                } else if (second.isConstructor()) {
-                    return 1;
-                } else {
-                    return first.getName().compareTo(second.getName());
-                }
+        Comparator<MethodDefinition> comparison = (first, second) -> {
+            if (first.isConstructor()) {
+                return -1;
+            } else if (second.isConstructor()) {
+                return 1;
+            } else {
+                return first.getName().compareTo(second.getName());
             }
         };
-
-        Arrays.sort(methodArray, comparison);
-
-        Vector<MethodDefinition> sortedMethods = new Vector<>(getMethods().size());
-        for (int index = 0; index < methodArray.length; index++) {
-            sortedMethods.addElement(methodArray[index]);
-        }
-
-        setMethods(sortedMethods);
+        getMethods().sort(comparison);
     }
 
     /**
@@ -273,8 +256,7 @@ public class ClassDefinition extends CodeDefinition {
             generator.cr();
         }
 
-        for (Enumeration<String> importsEnum = getImports().elements(); importsEnum.hasMoreElements();) {
-            String importLine = importsEnum.nextElement();
+        for (String importLine : getImports()) {
             generator.write("import ");
             generator.write(importLine);
             generator.writeln(";");
@@ -306,10 +288,7 @@ public class ClassDefinition extends CodeDefinition {
         }
 
         boolean isFirst = true;
-        for (Enumeration<String> interfacesEnum = getInterfaces().elements();
-             interfacesEnum.hasMoreElements();) {
-            String interfaceName = interfacesEnum.nextElement();
-
+        for (String interfaceName : getInterfaces()) {
             if (isFirst) {
                 if (isInterface()) {
                     generator.write(" extends");
@@ -329,10 +308,9 @@ public class ClassDefinition extends CodeDefinition {
         generator.writeln(" {");
         generator.cr();
 
-        for (Enumeration<AttributeDefinition> attributesEnum = getAttributes().elements();
-             attributesEnum.hasMoreElements();) {
+        for (AttributeDefinition attributeDefinition : getAttributes()) {
             generator.tab();
-            (attributesEnum.nextElement()).write(generator);
+            attributeDefinition.write(generator);
             generator.cr();
         }
 
@@ -340,16 +318,15 @@ public class ClassDefinition extends CodeDefinition {
             generator.cr();
         }
 
-        for (Enumeration<MethodDefinition> methodsEnum = getMethods().elements(); methodsEnum.hasMoreElements();) {
-            methodsEnum.nextElement().write(generator);
+        for (MethodDefinition methodDefinition : getMethods()) {
+            methodDefinition.write(generator);
             generator.cr();
             generator.cr();
         }
 
         //used for Oc4j code gen
-        for (Enumeration<ClassDefinition> innerClassesEnum = getInnerClasses().elements();
-             innerClassesEnum.hasMoreElements();) {
-            (innerClassesEnum.nextElement()).write(generator);
+        for (ClassDefinition classDefinition : getInnerClasses()) {
+            classDefinition.write(generator);
             generator.cr();
             generator.cr();
         }

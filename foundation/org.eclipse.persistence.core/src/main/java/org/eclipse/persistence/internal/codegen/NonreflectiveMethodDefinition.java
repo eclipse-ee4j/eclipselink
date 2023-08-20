@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -28,21 +28,20 @@ import java.util.Vector;
  * @author Paul Fullbright
  */
 public class NonreflectiveMethodDefinition extends MethodDefinition {
-    protected Vector<String> argumentTypeNames;
+    protected List<String> argumentTypeNames;
 
     public NonreflectiveMethodDefinition() {
         super();
-        this.argumentTypeNames = new Vector<>(5);
+        this.argumentTypeNames = new ArrayList<>(5);
     }
 
     public void addArgument(String argumentType, String argumentName) {
-        getArgumentNames().addElement(argumentName);
-        getArgumentTypes().addElement(argumentType);
+        getArgumentNames().add(argumentName);
+        getArgumentTypes().add(argumentType);
     }
 
     private void adjustArgumentTypeNames(Map<String, Set<String>> typeNameMap) {
-        for (Iterator<String> i = new Vector<>(getArgumentTypeNames()).iterator(); i.hasNext();) {
-            String argumentTypeName = i.next();
+        for (String argumentTypeName : new ArrayList<>(getArgumentTypeNames())) {
             String adjustedArgumentTypeName = adjustTypeName(argumentTypeName, typeNameMap);
 
             if (!argumentTypeName.equals(adjustedArgumentTypeName)) {
@@ -73,26 +72,26 @@ public class NonreflectiveMethodDefinition extends MethodDefinition {
     }
 
     @Override
-    protected Vector<String> getArgumentTypeNames() {
+    protected List<String> getArgumentTypeNames() {
         return getArgumentTypes();
     }
 
     @Override
-    public Vector<String> getArgumentTypes() {
+    public List<String> getArgumentTypes() {
         return this.argumentTypeNames;
     }
 
     protected void replaceArgumentTypeName(String oldArgumentTypeName, String newArgumentTypeName) {
         int index = getArgumentTypeNames().indexOf(oldArgumentTypeName);
         getArgumentTypeNames().remove(oldArgumentTypeName);
-        getArgumentTypeNames().insertElementAt(newArgumentTypeName, index);
+        getArgumentTypeNames().add(index, newArgumentTypeName);
     }
 
     @Override
     protected void writeArguments(CodeGenerator generator) {
         boolean isFirst = true;
         for (int index = 0; index < getArgumentTypes().size(); ++index) {
-            String argument = getArgumentTypes().elementAt(index);
+            String argument = getArgumentTypes().get(index);
             if (isFirst) {
                 isFirst = false;
             } else {
@@ -100,7 +99,7 @@ public class NonreflectiveMethodDefinition extends MethodDefinition {
             }
             generator.write(argument);
             generator.write(" ");
-            generator.write(getArgumentNames().elementAt(index));
+            generator.write(getArgumentNames().get(index));
         }
     }
 }

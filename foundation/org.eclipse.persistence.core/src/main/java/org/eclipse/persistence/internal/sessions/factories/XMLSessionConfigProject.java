@@ -96,7 +96,6 @@ import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
@@ -235,8 +234,8 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         namespaceResolver.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
         namespaceResolver.put("xsd", W3C_XML_SCHEMA_NS_URI);
 
-        for (Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
-            XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
+        for (ClassDescriptor classDescriptor : getDescriptors().values()) {
+            XMLDescriptor descriptor = (XMLDescriptor) classDescriptor;
             descriptor.setNamespaceResolver(namespaceResolver);
         }
 

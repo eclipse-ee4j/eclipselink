@@ -202,7 +202,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -463,11 +462,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List<Association> associations = (List<Association>) value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setTargetForeignKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator<Association> iterator = associations.iterator();
-                while (iterator.hasNext()) {
-                    Association association = iterator.next();
-                    mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
-                    mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
+                for (Association association : associations) {
+                    mapping.getSourceKeyFields().add((DatabaseField) association.getValue());
+                    mapping.getTargetForeignKeyFields().add((DatabaseField) association.getKey());
                 }
             }
         });
@@ -579,10 +576,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
                 List<Association> associations = mapping.getAggregateToSourceFieldAssociations();
                 Vector<FieldTranslation> translations = new Vector<>(associations.size());
-                for (int index = 0; index < associations.size(); index++) {
-                    Association association = associations.get(index);
+                for (Association association : associations) {
                     FieldTranslation translation = new FieldTranslation();
-                    translation.setKey(new DatabaseField((String)association.getKey()));
+                    translation.setKey(new DatabaseField((String) association.getKey()));
                     translation.setValue(association.getValue());
                     translations.add(translation);
                 }
@@ -594,9 +590,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
                 @SuppressWarnings({"unchecked"})
                 Vector<Association> associations = (Vector<Association>)value;
-                for (int index = 0; index < associations.size(); index++) {
-                    Association association = associations.get(index);
-                    association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
+                for (Association association : associations) {
+                    association.setKey(((DatabaseField) association.getKey()).getQualifiedName());
                 }
 
                 mapping.setAggregateToSourceFieldAssociations(associations);
@@ -1238,7 +1233,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                         child.setLocalBase(new ExpressionBuilder());
                     }
                 }
-                if (expression.getChildren().size() > 0) {
+                if (!expression.getChildren().isEmpty()) {
                     expression.setBaseExpression(expression.getChildren().get(0));
                 }
                 else {
@@ -1374,9 +1369,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List<String> arguments = new ArrayList<>(queryArguments.size());
                 List<Class<?>> types = new ArrayList<>(queryArguments.size());
                 List<Object> values = new ArrayList<>(queryArguments.size());
-                for (int index = 0; index < queryArguments.size(); index++) {
-                    QueryArgument queryArgument = queryArguments.get(index);
-                    arguments.add((String)queryArgument.getKey());
+                for (QueryArgument queryArgument : queryArguments) {
+                    arguments.add((String) queryArgument.getKey());
                     if (queryArgument.getValue() != null) {
                         values.add(queryArgument.getValue());
                     }
@@ -1384,7 +1378,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                         types.add(queryArgument.getType());
                     }
                     if (queryArgument.isNullable()) {
-                        query.getNullableArguments().add(new DatabaseField((String)queryArgument.getKey()));
+                        query.getNullableArguments().add(new DatabaseField((String) queryArgument.getKey()));
                     }
                 }
                 query.setArguments(arguments);
@@ -2044,8 +2038,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public Object getAttributeValueFromObject(Object object) {
                 DatabaseMapping mapping = (DatabaseMapping)object;
                 List<PropertyAssociation> propertyAssociations = new ArrayList<>();
-                for (Iterator<Map.Entry<?, ?>> i = mapping.getProperties().entrySet().iterator(); i.hasNext();) {
-                    Map.Entry<?, ?> me = i.next();
+                for (Map.Entry<?, ?> me : (Iterable<Map.Entry<?, ?>>) mapping.getProperties().entrySet()) {
                     PropertyAssociation propertyAssociation = new PropertyAssociation();
                     propertyAssociation.setKey(me.getKey());
                     propertyAssociation.setValue(me.getValue());
@@ -2059,8 +2052,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 DatabaseMapping mapping = (DatabaseMapping)object;
                 @SuppressWarnings({"unchecked"})
                 List<PropertyAssociation> propertyAssociations = (List<PropertyAssociation>) value;
-                for (int i = 0; i < propertyAssociations.size(); i++) {
-                    PropertyAssociation propertyAssociation = propertyAssociations.get(i);
+                for (PropertyAssociation propertyAssociation : propertyAssociations) {
                     mapping.getProperties().put(propertyAssociation.getKey(), propertyAssociation.getValue());
                 }
             }
@@ -2423,8 +2415,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor desc = (ClassDescriptor)object;
                 List<PropertyAssociation> propertyAssociations = new ArrayList<>();
-                for (Iterator<Map.Entry<?, ?>> i = desc.getProperties().entrySet().iterator(); i.hasNext();) {
-                    Map.Entry<?, ?> me = i.next();
+                for (Map.Entry<?, ?> me : (Iterable<Map.Entry<?, ?>>) desc.getProperties().entrySet()) {
                     PropertyAssociation propertyAssociation = new PropertyAssociation();
                     propertyAssociation.setKey(me.getKey());
                     propertyAssociation.setValue(me.getValue());
@@ -2438,8 +2429,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 ClassDescriptor desc = (ClassDescriptor)object;
                 @SuppressWarnings({"unchecked"})
                 List<PropertyAssociation> propertyAssociations = (List<PropertyAssociation>) value;
-                for (int i = 0; i < propertyAssociations.size(); i++) {
-                    PropertyAssociation propertyAssociation = propertyAssociations.get(i);
+                for (PropertyAssociation propertyAssociation : propertyAssociations) {
                     desc.getProperties().put(propertyAssociation.getKey(), propertyAssociation.getValue());
                 }
             }
@@ -2470,10 +2460,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
                 List<Association> associations = mapping.getMultipleTablePrimaryKeyAssociations();
-                for (int index = 0; index < associations.size(); index++) {
-                    Association association = associations.get(index);
-                    association.setKey(new DatabaseField((String)association.getKey()));
-                    association.setValue(new DatabaseField((String)association.getValue()));
+                for (Association association : associations) {
+                    association.setKey(new DatabaseField((String) association.getKey()));
+                    association.setValue(new DatabaseField((String) association.getValue()));
                 }
                 return associations;
             }
@@ -2483,10 +2472,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 ClassDescriptor mapping = (ClassDescriptor)object;
                 @SuppressWarnings({"unchecked"})
                 List<Association> associations = (List<Association>) value;
-                for (int index = 0; index < associations.size(); index++) {
-                    Association association = associations.get(index);
-                    association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
-                    association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
+                for (Association association : associations) {
+                    association.setKey(((DatabaseField) association.getKey()).getQualifiedName());
+                    association.setValue(((DatabaseField) association.getValue()).getQualifiedName());
                 }
                 mapping.setForeignKeyFieldNamesForMultipleTable(associations);
             }
@@ -2504,10 +2492,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
                 List<Association> associations = mapping.getMultipleTableForeignKeyAssociations();
-                for (int index = 0; index < associations.size(); index++) {
-                    Association association = associations.get(index);
-                    association.setKey(new DatabaseField((String)association.getKey()));
-                    association.setValue(new DatabaseField((String)association.getValue()));
+                for (Association association : associations) {
+                    association.setKey(new DatabaseField((String) association.getKey()));
+                    association.setValue(new DatabaseField((String) association.getValue()));
                 }
                 return associations;
             }
@@ -2517,10 +2504,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 ClassDescriptor mapping = (ClassDescriptor)object;
                 @SuppressWarnings({"unchecked"})
                 List<Association> associations = (List<Association>) value;
-                for (int index = 0; index < associations.size(); index++) {
-                    Association association = associations.get(index);
-                    association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
-                    association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
+                for (Association association : associations) {
+                    association.setKey(((DatabaseField) association.getKey()).getQualifiedName());
+                    association.setValue(((DatabaseField) association.getValue()).getQualifiedName());
                 }
                 mapping.setForeignKeyFieldNamesForMultipleTable(associations);
             }
@@ -2626,11 +2612,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List<Association> associations = (List<Association>)value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setReferenceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator<Association> iterator = associations.iterator();
-                while (iterator.hasNext()) {
-                    Association association = iterator.next();
-                    mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
-                    mapping.getReferenceKeyFields().add((DatabaseField)association.getKey());
+                for (Association association : associations) {
+                    mapping.getSourceKeyFields().add((DatabaseField) association.getValue());
+                    mapping.getReferenceKeyFields().add((DatabaseField) association.getKey());
                 }
             }
         });
@@ -3238,11 +3222,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List<Association> associations = (List<Association>)value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setSourceRelationKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator<Association> iterator = associations.iterator();
-                while (iterator.hasNext()) {
-                    Association association = iterator.next();
-                    mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
-                    mapping.getSourceRelationKeyFields().add((DatabaseField)association.getKey());
+                for (Association association : associations) {
+                    mapping.getSourceKeyFields().add((DatabaseField) association.getValue());
+                    mapping.getSourceRelationKeyFields().add((DatabaseField) association.getKey());
                 }
             }
         });
@@ -3272,11 +3254,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List<Association> associations = (List<Association>)value;
                 mapping.setTargetKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setTargetRelationKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator<Association> iterator = associations.iterator();
-                while (iterator.hasNext()) {
-                    Association association = iterator.next();
-                    mapping.getTargetKeyFields().add((DatabaseField)association.getValue());
-                    mapping.getTargetRelationKeyFields().add((DatabaseField)association.getKey());
+                for (Association association : associations) {
+                    mapping.getTargetKeyFields().add((DatabaseField) association.getValue());
+                    mapping.getTargetRelationKeyFields().add((DatabaseField) association.getKey());
                 }
             }
         });
@@ -3526,11 +3506,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List<Association> associations = (List<Association>)value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setTargetForeignKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator<Association> iterator = associations.iterator();
-                while (iterator.hasNext()) {
-                    Association association = iterator.next();
-                    mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
-                    mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
+                for (Association association : associations) {
+                    mapping.getSourceKeyFields().add((DatabaseField) association.getValue());
+                    mapping.getTargetForeignKeyFields().add((DatabaseField) association.getKey());
                 }
             }
         });
@@ -3613,9 +3591,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public Object getAttributeValueFromObject(Object object) {
                 Map<DatabaseField, DatabaseField> sourceToTargetKeyFields = ((OneToOneMapping)object).getSourceToTargetKeyFields();
                 List<Association> associations = new ArrayList<>(sourceToTargetKeyFields.size());
-                Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
+                for (Map.Entry<DatabaseField, DatabaseField> entry : sourceToTargetKeyFields.entrySet()) {
                     associations.add(new Association(entry.getKey(), entry.getValue()));
                 }
                 return associations;
@@ -3628,11 +3604,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List<Association> associations = (List<Association>)value;
                 mapping.setSourceToTargetKeyFields(new HashMap<>(associations.size() + 1));
                 mapping.setTargetToSourceKeyFields(new HashMap<>(associations.size() + 1));
-                Iterator<Association> iterator = associations.iterator();
-                while (iterator.hasNext()) {
-                    Association association = iterator.next();
-                    mapping.getSourceToTargetKeyFields().put((DatabaseField)association.getKey(), (DatabaseField)association.getValue());
-                    mapping.getTargetToSourceKeyFields().put((DatabaseField)association.getValue(), (DatabaseField)association.getKey());
+                for (Association association : associations) {
+                    mapping.getSourceToTargetKeyFields().put((DatabaseField) association.getKey(), (DatabaseField) association.getValue());
+                    mapping.getTargetToSourceKeyFields().put((DatabaseField) association.getValue(), (DatabaseField) association.getKey());
                 }
             }
         });
@@ -4679,10 +4653,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
                 List<Association> associations = mapping.getSourceToTargetQueryKeyFieldAssociations();
                 Vector<QueryKeyReference> queryKeyReferences = new Vector<>(associations.size());
-                for (int index = 0; index < associations.size(); index++) {
-                    Association association = associations.get(index);
+                for (Association association : associations) {
                     QueryKeyReference reference = new QueryKeyReference();
-                    reference.setKey(new DatabaseField((String)association.getKey()));
+                    reference.setKey(new DatabaseField((String) association.getKey()));
                     reference.setValue(association.getValue());
                     queryKeyReferences.add(reference);
                 }
@@ -4694,9 +4667,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
                 @SuppressWarnings({"unchecked"})
                 Vector<Association> associations = (Vector<Association>)value;
-                for (int index = 0; index < associations.size(); index++) {
-                    Association association = associations.get(index);
-                    association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
+                for (Association association : associations) {
+                    association.setKey(((DatabaseField) association.getKey()).getQualifiedName());
                 }
                 mapping.setSourceToTargetQueryKeyFieldAssociations(associations);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,7 +52,7 @@ public class WeblogicPackager extends WarPackager {
         String dataSource = builder.getDataSource();
         if (dataSource != null) {
             DatabaseSessionConfig tmpConfig =
-                (DatabaseSessionConfig)ts.getSessionConfigs().firstElement();
+                (DatabaseSessionConfig)ts.getSessionConfigs().get(0);
             buildDatabaseSessionConfig(ts, tmpConfig, builder);
         }
         return ts;
@@ -72,9 +72,9 @@ public class WeblogicPackager extends WarPackager {
         customServerPlatformConfig.setEnableJTA(true);
         customServerPlatformConfig.setEnableRuntimeServices(true);
         customServerPlatformConfig.setServerClassName(
-            "org.eclipse.persistence.platform.server.wls.WebLogic_10_Platform");
+            "org.eclipse.persistence.platform.server.wls.WebLogic_12_Platform");
         customServerPlatformConfig.setExternalTransactionControllerClass(
-            "org.eclipse.persistence.transaction.wls.WebLogicTransactionController");
+            "org.eclipse.persistence.transaction.wls.WebLogicTransactionController11");
         orSessionConfig.setServerPlatformConfig(customServerPlatformConfig);
         DatabaseLoginConfig dlc = new DatabaseLoginConfig();
         dlc.setPlatformClass(builder.getPlatformClassname());

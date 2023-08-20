@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -26,18 +26,18 @@ import java.util.Vector;
  * @author Paul Fullbright
  */
 public class ReflectiveMethodDefinition extends MethodDefinition {
-    protected Vector<Class<?>> argumentTypes;
+    protected List<Class<?>> argumentTypes;
     protected Class<?> type;
 
     public ReflectiveMethodDefinition() {
         super();
-        this.argumentTypes = new Vector<>(5);
+        this.argumentTypes = new ArrayList<>(5);
         this.type = null;
     }
 
     public void addArgument(Class<?> argumentType, String argumentName) {
-        getArgumentNames().addElement(argumentName);
-        argumentTypes.addElement(argumentType);
+        getArgumentNames().add(argumentName);
+        argumentTypes.add(argumentType);
     }
 
     @Override
@@ -58,18 +58,18 @@ public class ReflectiveMethodDefinition extends MethodDefinition {
     }
 
     @Override
-    protected Vector<String> getArgumentTypeNames() {
-        Vector<String> argumentTypeNames = new Vector<>();
+    protected List<String> getArgumentTypeNames() {
+        List<String> argumentTypeNames = new ArrayList<>();
 
-        for (Iterator<Class<?>> i = argumentTypes.iterator(); i.hasNext();) {
-            argumentTypeNames.add(i.next().getName());
+        for (Class<?> argumentType : argumentTypes) {
+            argumentTypeNames.add(argumentType.getName());
         }
 
         return argumentTypeNames;
     }
 
     @Override
-    public Vector<String> getArgumentTypes() {
+    public List<String> getArgumentTypes() {
         return getArgumentTypeNames();
     }
 
@@ -77,7 +77,7 @@ public class ReflectiveMethodDefinition extends MethodDefinition {
     protected void writeArguments(CodeGenerator generator) {
         boolean isFirst = true;
         for (int index = 0; index < argumentTypes.size(); ++index) {
-            Class<?> argument = argumentTypes.elementAt(index);
+            Class<?> argument = argumentTypes.get(index);
             if (isFirst) {
                 isFirst = false;
             } else {
@@ -102,7 +102,7 @@ public class ReflectiveMethodDefinition extends MethodDefinition {
                 generator.write(name);
             }
             generator.write(" ");
-            generator.write(getArgumentNames().elementAt(index));
+            generator.write(getArgumentNames().get(index));
         }
     }
 

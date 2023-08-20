@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,27 +14,28 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.factories.model.event;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
  */
 public class SessionEventManagerConfig {
-    private Vector<String> m_sessionEventListeners;
+    private List<String> m_sessionEventListeners;
 
     public SessionEventManagerConfig() {
-        m_sessionEventListeners = new Vector<>();
+        m_sessionEventListeners = new ArrayList<>();
     }
 
     public void addSessionEventListener(String listener) {
         m_sessionEventListeners.add(listener);
     }
 
-    public void setSessionEventListeners(Vector<String> sessionEventListeners) {
+    public void setSessionEventListeners(List<String> sessionEventListeners) {
         m_sessionEventListeners = sessionEventListeners;
     }
 
-    public Vector<String> getSessionEventListeners() {
+    public List<String> getSessionEventListeners() {
         return m_sessionEventListeners;
     }
 }

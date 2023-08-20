@@ -98,16 +98,16 @@ public class CodeGenerator {
                         String escapedChar = Long.toHexString((c)).toUpperCase();
                         switch (escapedChar.length()) {
                         case 1:
-                            escapedStr.append("\\u000" + escapedChar);
+                            escapedStr.append("\\u000").append(escapedChar);
                             break;
                         case 2:
-                            escapedStr.append("\\u00" + escapedChar);
+                            escapedStr.append("\\u00").append(escapedChar);
                             break;
                         case 3:
-                            escapedStr.append("\\u0" + escapedChar);
+                            escapedStr.append("\\u0").append(escapedChar);
                             break;
                         default:
-                            escapedStr.append("\\u" + escapedChar);
+                            escapedStr.append("\\u").append(escapedChar);
                             break;
                         }
                     }

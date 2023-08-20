@@ -16,28 +16,29 @@ package org.eclipse.persistence.internal.sessions.factories.model;
 
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
  */
 public class SessionConfigs {
-    private Vector<SessionConfig> m_sessionConfigs;
+    private List<SessionConfig> m_sessionConfigs;
     private String m_version;
 
     public SessionConfigs() {
-        m_sessionConfigs = new Vector<>();
+        m_sessionConfigs = new ArrayList<>();
     }
 
     public void addSessionConfig(SessionConfig sessionConfig) {
         m_sessionConfigs.add(sessionConfig);
     }
 
-    public void setSessionConfigs(Vector<SessionConfig> sessionConfigs) {
+    public void setSessionConfigs(List<SessionConfig> sessionConfigs) {
         m_sessionConfigs = sessionConfigs;
     }
 
-    public Vector<SessionConfig> getSessionConfigs() {
+    public List<SessionConfig> getSessionConfigs() {
         return m_sessionConfigs;
     }
 
