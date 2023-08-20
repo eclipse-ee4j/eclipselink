@@ -40,11 +40,11 @@ public abstract class CodeDefinition {
     }
 
     private static boolean adjustmentNeededForType(String typeName, Map<String, Set<String>> typeNameMap) {
-        if ((typeName == null) || typeName.equals("")) {
+        if ((typeName == null) || typeName.isEmpty()) {
             return false;
         }
 
-        if (packageName(typeName).length() == 0) {
+        if (packageName(typeName).isEmpty()) {
             return false;
         }
 
@@ -117,14 +117,14 @@ public abstract class CodeDefinition {
      * Used for calculating imports.  @see org.eclipse.persistence.internal.codegen.ClassDefinition#calculateImports()
      */
     protected static void putTypeNameInMap(String typeName, Map<String, Set<String>> typeNameMap) {
-        if ((typeName == null) || typeName.equals("")) {
+        if ((typeName == null) || typeName.isEmpty()) {
             return;
         }
 
         String shortName = shortName(typeName);
         String packageName = packageName(typeName);
 
-        if (packageName.length() > 0) {
+        if (!packageName.isEmpty()) {
             Set<String> packageNames;
 
             if (typeNameMap.get(shortName) == null) {

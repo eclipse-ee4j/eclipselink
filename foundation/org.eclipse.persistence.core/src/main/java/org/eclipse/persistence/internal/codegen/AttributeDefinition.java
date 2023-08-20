@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,8 +43,7 @@ public abstract class AttributeDefinition extends CodeDefinition {
         StringBuilder initialValue = new StringBuilder(getInitialValue());
         Set<String> typeNames = parseForTypeNames(initialValue.toString());
 
-        for (Iterator<String> i = typeNames.iterator(); i.hasNext();) {
-            String typeName = i.next();
+        for (String typeName : typeNames) {
             String adjustedTypeName = adjustTypeName(typeName, typeNameMap);
 
             if (!typeName.equals(adjustedTypeName)) {
@@ -77,8 +75,8 @@ public abstract class AttributeDefinition extends CodeDefinition {
     protected void putTypeNamesInMap(Map<String, Set<String>> typeNameMap) {
         putTypeNameInMap(getTypeName(), typeNameMap);
 
-        for (Iterator<String> i = parseForTypeNames(getInitialValue()).iterator(); i.hasNext();) {
-            putTypeNameInMap(i.next(), typeNameMap);
+        for (String s : parseForTypeNames(getInitialValue())) {
+            putTypeNameInMap(s, typeNameMap);
         }
     }
 

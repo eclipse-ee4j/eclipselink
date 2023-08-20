@@ -17,8 +17,7 @@ package org.eclipse.persistence.internal.codegen;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Project;
 
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,7 +34,7 @@ public class InheritanceHierarchyBuilder {
      * Based on a class name either return a pre-existing node from the hierarchyTree or build one and
      * add it to the tree.
      */
-    public static HierarchyNode getNodeForClass(String className, Hashtable<String, HierarchyNode> hierarchyTree) {
+    public static HierarchyNode getNodeForClass(String className, Map<String, HierarchyNode> hierarchyTree) {
         HierarchyNode node = hierarchyTree.get(className);
         if (node == null) {
             node = new HierarchyNode(className);
@@ -44,12 +43,10 @@ public class InheritanceHierarchyBuilder {
         return node;
     }
 
-    public static Hashtable<String, HierarchyNode> buildInheritanceHierarchyTree(Project project) {
+    public static Map<String, HierarchyNode> buildInheritanceHierarchyTree(Project project) {
         Map<Class<?>, ClassDescriptor> descriptors = project.getDescriptors();
-        Hashtable<String, HierarchyNode> hierarchyTree = new Hashtable<>(descriptors.size());
-        for (Iterator<ClassDescriptor> descriptorIterator = descriptors.values().iterator();
-                 descriptorIterator.hasNext();) {
-            ClassDescriptor descriptor = descriptorIterator.next();
+        Map<String, HierarchyNode> hierarchyTree = new HashMap<>(descriptors.size());
+        for (ClassDescriptor descriptor : descriptors.values()) {
             String className = descriptor.getJavaClassName();
             if (className == null) {
                 className = descriptor.getJavaClass().getName();

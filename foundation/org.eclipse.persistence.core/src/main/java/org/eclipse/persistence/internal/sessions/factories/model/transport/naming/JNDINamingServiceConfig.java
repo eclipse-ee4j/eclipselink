@@ -17,7 +17,7 @@ package org.eclipse.persistence.internal.sessions.factories.model.transport.nami
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.factories.model.property.PropertyConfig;
 
-import java.util.Vector;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -28,7 +28,7 @@ public class JNDINamingServiceConfig {
     private char[] m_encryptedPassword;
     private SecurableObjectHolder m_securableObjectHolder;
     private String m_initialContextFactoryName;
-    private Vector<PropertyConfig> m_propertyConfigs;
+    private List<PropertyConfig> m_propertyConfigs;
 
     public JNDINamingServiceConfig() {
         // Without setting the encryption class name the object holder will
@@ -83,7 +83,7 @@ public class JNDINamingServiceConfig {
         if (encryptedPassword == null) {
             // respect explicit de-referencing of password
             m_encryptedPassword = null;
-        } else if (encryptedPassword.length() == 0) {
+        } else if (encryptedPassword.isEmpty()) {
             m_encryptedPassword = new char[0];
         } else {
             // If the decrypted password is the same as the encrypted one then
@@ -129,11 +129,11 @@ public class JNDINamingServiceConfig {
         return m_initialContextFactoryName;
     }
 
-    public void setPropertyConfigs(Vector<PropertyConfig> propertyConfigs) {
+    public void setPropertyConfigs(List<PropertyConfig> propertyConfigs) {
         m_propertyConfigs = propertyConfigs;
     }
 
-    public Vector<PropertyConfig> getPropertyConfigs() {
+    public List<PropertyConfig> getPropertyConfigs() {
         return m_propertyConfigs;
     }
 }

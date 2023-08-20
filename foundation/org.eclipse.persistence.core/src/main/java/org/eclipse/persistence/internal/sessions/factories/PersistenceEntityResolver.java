@@ -22,8 +22,8 @@ import org.xml.sax.InputSource;
 import java.io.InputStream;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * INTERNAL:
@@ -35,7 +35,7 @@ import java.util.Hashtable;
  * @author Gordon Yorke, Guy Pelletier
  */
 public class PersistenceEntityResolver implements EntityResolver {
-    protected Hashtable<String, String> m_localResources;
+    protected Map<String, String> m_localResources;
     protected static final String dtdFileName40 = "sessions_4_0.dtd";
     protected static final String doctTypeId40 = "-//Oracle Corp.//DTD TopLink for JAVA 4.0//EN";
     protected static final String dtdFileName45 = "sessions_4_5.dtd";
@@ -47,7 +47,7 @@ public class PersistenceEntityResolver implements EntityResolver {
      * INTERNAL:
      */
     public PersistenceEntityResolver() {
-        m_localResources = new Hashtable<>();
+        m_localResources = new HashMap<>();
         populateLocalResources();
     }
 
@@ -70,14 +70,14 @@ public class PersistenceEntityResolver implements EntityResolver {
     /**
      * INTERNAL:
      */
-    public Hashtable<String, String> getLocalResources() {
+    public Map<String, String> getLocalResources() {
         return m_localResources;
     }
 
     /**
      * INTERNAL:
      */
-    public void setLocalResources(Hashtable<String, String> ht) {
+    public void setLocalResources(Map<String, String> ht) {
         m_localResources = ht;
     }
 
@@ -93,18 +93,16 @@ public class PersistenceEntityResolver implements EntityResolver {
      */
     @Override
     public InputSource resolveEntity(String publicId, String systemId) {
-        for (Enumeration<String> docTypeIds = m_localResources.keys(); docTypeIds.hasMoreElements();) {
-            String docTypeId = docTypeIds.nextElement();
-
+        for (String docTypeId : m_localResources.keySet()) {
             if ((publicId != null) && publicId.equals(docTypeId)) {
                 InputStream localDtdStream;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
                         localDtdStream = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(getClass())).getResourceAsStream(getDtdFileName(docTypeId));
-                    }catch (PrivilegedActionException ex){
+                    } catch (PrivilegedActionException ex) {
                         throw (RuntimeException) ex.getCause();
                     }
-                }else{
+                } else {
                     localDtdStream = PrivilegedAccessHelper.getClassLoaderForClass(getClass()).getResourceAsStream(getDtdFileName(docTypeId));
 
                 }
