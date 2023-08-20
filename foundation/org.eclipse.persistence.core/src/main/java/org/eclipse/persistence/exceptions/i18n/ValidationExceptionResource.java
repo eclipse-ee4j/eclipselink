@@ -43,8 +43,6 @@
 //       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.exceptions.i18n;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-
 import java.util.ListResourceBundle;
 
 /**
@@ -360,7 +358,7 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7343", "Multiple VPD identifiers (tenant discriminator context property) have been specified. Entity [{1}] uses [{0}] and Entity [{3}] uses [{2}]. The Multitenant VPD strategy allows only one tenant discriminator column for each entity and its context property must be consistent across all the Multitenant VPD entities."},
                                            { "7344", "VPD (connections and DDL generation) is not supported for the platform: [{0}]."},
                                            { "7345", "{0} file specified for XMLMetadataSource is not found"},
-                                           { "7346", "The multitenant context property [{0}] has not been provided. When the persistence unit property (" + PersistenceUnitProperties.MULTITENANT_SHARED_EMF + ") is set to false, all multitenant context properties must be provided up front. This can be done through the persistence unit definition directly or by passing a properties map containing all the multitenant context properties on the create EntityManagerFactory call."},
+                                           { "7346", "The multitenant context property [{0}] has not been provided. When the persistence unit property ({1}) is set to false, all multitenant context properties must be provided up front. This can be done through the persistence unit definition directly or by passing a properties map containing all the multitenant context properties on the create EntityManagerFactory call."},
                                            { "7347", "The class [{0}] specifies type level convert metadata without specifying an attribute name for each. An attribute name must be provided for all type level convert metadata to ensure the correct application to a super class attribute."},
                                            { "7348", "The embedded mapping [{1}] from [{0}] does not specify an attribute name to which the convert is to be applied. You must specify an attribute name on the Embeddable."},
                                            { "7350", "The convert attribute name [{3}] from the mapping [{1}] from the class [{0}] was not found on the embeddable class [{2}]. Please ensure the attribute exists and is correctly named." },

@@ -283,8 +283,8 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException nativeSQLQueriesAreDisabled(DatabaseQuery query) {
-        Object[] args = {};
+    public static QueryException nativeSQLQueriesAreDisabled(DatabaseQuery query, String prop, String nativeProp) {
+        Object[] args = { prop, nativeProp };
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, NATIVE_SQL_QUERIES_ARE_DISABLED, args), query);
         queryException.setErrorCode(NATIVE_SQL_QUERIES_ARE_DISABLED);
         return queryException;
