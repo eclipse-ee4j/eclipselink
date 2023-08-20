@@ -890,7 +890,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             if (!Boolean.parseBoolean(value)) {
                 for (String property : getMultitenantContextProperties()) {
                     if (! getProperties().containsKey(property)) {
-                        throw ValidationException.multitenantContextPropertyForNonSharedEMFNotSpecified(property);
+                        throw ValidationException.multitenantContextPropertyForNonSharedEMFNotSpecified(property, PersistenceUnitProperties.MULTITENANT_SHARED_EMF);
                     }
                 }
 

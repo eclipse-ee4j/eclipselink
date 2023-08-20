@@ -36,6 +36,7 @@
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -1809,7 +1810,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             if (! query.shouldAllowNativeSQLQuery(getProject().allowNativeSQLQueries())) {
                 // If the session/project says no to SQL queries and the database
                 // query doesn't ask to bypass this decision then throw an exception.
-                throw QueryException.nativeSQLQueriesAreDisabled(query);
+                throw QueryException.nativeSQLQueriesAreDisabled(query, PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES, QueryHints.ALLOW_NATIVE_SQL_QUERY);
             }
         }
 

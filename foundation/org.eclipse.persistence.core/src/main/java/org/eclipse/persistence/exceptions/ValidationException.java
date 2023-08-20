@@ -1906,8 +1906,8 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException multitenantContextPropertyForNonSharedEMFNotSpecified(String contextProperty) {
-        Object[] args = { contextProperty };
+    public static ValidationException multitenantContextPropertyForNonSharedEMFNotSpecified(String contextProperty, String key) {
+        Object[] args = { contextProperty, key };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTITENANT_PROPERTY_FOR_NON_SHARED_EMF_NOT_SPECIFIED, args));
         validationException.setErrorCode(MULTITENANT_PROPERTY_FOR_NON_SHARED_EMF_NOT_SPECIFIED);
         return validationException;
