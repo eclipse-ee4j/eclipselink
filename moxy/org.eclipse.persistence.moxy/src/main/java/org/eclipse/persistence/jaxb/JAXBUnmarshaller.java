@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,6 +65,7 @@ import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -539,7 +540,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
                     adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
                 }
-                UnmarshalRecord wrapper = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecordFromXMLContext(xmlUnmarshaller.getXMLContext());
+                UnmarshalRecord wrapper = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) xmlUnmarshaller.getXMLContext().getSession());
                 org.eclipse.persistence.internal.oxm.record.UnmarshalRecord unmarshalRecord = wrapper.getUnmarshalRecord();
                 XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
                 unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
