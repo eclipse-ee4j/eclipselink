@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,11 +15,14 @@
 //     Gordon Yorke - Initial development
 //     02/03/2017 - Dalia Abo Sheasha
 //       - 509693 : EclipseLink generates inconsistent SQL statements for SubQuery
+//     08/22/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.criteria.AbstractQuery;
@@ -106,12 +109,13 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * Specify a restriction over the groups of the query. Replaces the previous
      * having restriction(s), if any.
      *
-     * @param restriction
-     *            a simple or compound boolean expression
+     * @param restriction a simple or compound boolean expression
      * @return the modified query
+     * @throws NullPointerException when restriction expression is {@code null}
      */
     @Override
     public AbstractQuery<T> having(Expression<Boolean> restriction) {
+        Objects.requireNonNull(restriction, "Restriction expression is null");
         findRootAndParameters(restriction);
         if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()) {
             this.havingClause = (Predicate) restriction;
@@ -127,20 +131,29 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * previously added restriction(s), if any. If no restrictions are
      * specified, any previously added restrictions are simply removed.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions zero or more restriction predicates
      * @return the modified query
      */
     @Override
-    public AbstractQuery<T> having(Predicate... restrictions){
-        if (restrictions != null && restrictions.length > 0) {
-            Predicate conjunction = this.queryBuilder.conjunction();
-            for (Predicate predicate : restrictions) {
-                conjunction = this.queryBuilder.and(conjunction, predicate);
-            }
-            findRootAndParameters(conjunction);
-            this.havingClause = conjunction;
-        }
+    public AbstractQuery<T> having(Predicate... restrictions) {
+        return having(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    /**
+     * Specify restrictions over the groups of the query according the
+     * conjunction of the specified restriction predicates. Replaces the
+     * previously added restriction(s), if any. If no restrictions are
+     * specified, any previously added restrictions are simply removed.
+     *
+     * @param restrictions zero or more restriction predicates
+     * @return the modified query
+     */
+    // TODO-API-3.2: Prototype is missing in API
+    //@Override
+    public AbstractQuery<T> having(List<Predicate> restrictions) {
+        Predicate predicate = queryBuilder.and(restrictions);
+        findRootAndParameters(predicate);
+        this.havingClause = predicate;
         return this;
     }
 
@@ -273,11 +286,12 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * This method only overrides the return type of the corresponding
      * AbstractQuery method.
      *
-     * @param restriction
-     *            a simple or compound boolean expression
+     * @param restriction a simple or compound boolean expression
      * @return the modified query
+     * @throws NullPointerException when restriction expression is {@code null}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public AbstractQuery<T> where(Expression<Boolean> restriction){
         return (AbstractQuery<T>)super.where(restriction);
     }
@@ -290,12 +304,31 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * method only overrides the return type of the corresponding AbstractQuery
      * method.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions zero or more restriction predicates
      * @return the modified query
+     * @throws NullPointerException when restrictions array is {@code null}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public AbstractQuery<T> where(Predicate... restrictions) {
+        return (AbstractQuery<T>) super.where(restrictions);
+    }
+
+    /**
+     * Modify the query to restrict the query result according to the
+     * conjunction of the specified restriction predicates. Replaces the
+     * previously added restriction(s), if any. If no restrictions are
+     * specified, any previously added restrictions are simply removed. This
+     * method only overrides the return type of the corresponding AbstractQuery
+     * method.
+     *
+     * @param restrictions zero or more restriction predicates
+     * @return the modified query
+     * @throws NullPointerException when restrictions {@link List} is {@code null}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public AbstractQuery<T> where(List<Predicate> restrictions) {
         return (AbstractQuery<T>) super.where(restrictions);
     }
 

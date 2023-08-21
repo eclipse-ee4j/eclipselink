@@ -254,9 +254,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * This method only overrides the return type of the corresponding
      * AbstractQuery method.
      *
-     * @param restriction
-     *            a simple or compound boolean expression
+     * @param restriction a simple or compound boolean expression
      * @return the modified query
+     * @throws NullPointerException when restriction expression is {@code null}
      */
     @Override
     public CriteriaQuery<T> where(Expression<Boolean> restriction) {
@@ -271,19 +271,31 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * method only overrides the return type of the corresponding AbstractQuery
      * method.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions zero or more restriction predicates
      * @return the modified query
+     * @throws NullPointerException when restrictions array is {@code null}
      */
     @Override
     public CriteriaQuery<T> where(Predicate... restrictions) {
         return (CriteriaQuery<T>) super.where(restrictions);
     }
 
+    /**
+     * Modify the query to restrict the query result according to the
+     * conjunction of the specified restriction predicates. Replaces the
+     * previously added restriction(s), if any. If no restrictions are
+     * specified, any previously added restrictions are simply removed. This
+     * method only overrides the return type of the corresponding AbstractQuery
+     * method.
+     *
+     * @param restrictions zero or more restriction predicates
+     * @return the modified query
+     * @throws NullPointerException when restrictions {@link List} is {@code null}
+     */
     // TODO-API-3.2
     //@Override
-    public CriteriaQuery<T> where(List<Predicate> list) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public CriteriaQuery<T> where(List<Predicate> restrictions) {
+        return (CriteriaQuery<T>) super.where(restrictions);
     }
 
     /**
@@ -325,9 +337,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * having restriction(s), if any. This method only overrides the return type
      * of the corresponding AbstractQuery method.
      *
-     * @param restriction
-     *            a simple or compound boolean expression
+     * @param restriction a simple or compound boolean expression
      * @return the modified query
+     * @throws NullPointerException when restriction expression is {@code null}
      */
     @Override
     public CriteriaQuery<T> having(Expression<Boolean> restriction) {
@@ -343,8 +355,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * method only overrides the return type of the corresponding AbstractQuery
      * method.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions zero or more restriction predicates
      * @return the modified query
      */
     @Override
@@ -353,10 +364,22 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return this;
     }
 
+    /**
+     * Specify restrictions over the groups of the query according the
+     * conjunction of the specified restriction predicates. Replaces the
+     * previously added restriction(s), if any. If no restrictions are
+     * specified, any previously added restrictions are simply removed. This
+     * method only overrides the return type of the corresponding AbstractQuery
+     * method.
+     *
+     * @param restrictions zero or more restriction predicates
+     * @return the modified query
+     */
     // TODO-API-3.2
     //@Override
-    public CriteriaQuery<T> having(List<Predicate> list) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public CriteriaQuery<T> having(List<Predicate> restrictions) {
+        super.having(restrictions);
+        return this;
     }
 
     /**
