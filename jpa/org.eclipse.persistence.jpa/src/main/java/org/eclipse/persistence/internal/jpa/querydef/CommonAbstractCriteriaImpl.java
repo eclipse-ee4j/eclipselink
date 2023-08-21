@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,10 +14,14 @@
 // Contributors:
 //     10/26/2012-2.5 Chris Delahunt
 //       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
+//     08/22/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.criteria.CommonAbstractCriteria;
@@ -125,8 +129,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      * Modify the query to restrict the query results according to the specified
      * boolean expression. Replaces the previously added restriction(s), if any.
      *
-     * @param restriction
-     *            a simple or compound boolean expression
+     * @param restriction a simple or compound boolean expression
      * @return the modified query
      */
     public CommonAbstractCriteria where(Expression<Boolean> restriction) {
@@ -141,17 +144,26 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      * previously added restriction(s), if any. If no restrictions are
      * specified, any previously added restrictions are simply removed.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions zero or more restriction predicates
      * @return the modified query
      */
     public CommonAbstractCriteria where(Predicate... restrictions) {
-        if (restrictions == null || restrictions.length == 0){
-            this.where = null;
-        }
-        Predicate predicate = this.queryBuilder.and(restrictions);
+        return where(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    /**
+     * Modify the query to restrict the query results according to the
+     * conjunction of the specified restriction predicates. Replaces the
+     * previously added restriction(s), if any. If no restrictions are
+     * specified, any previously added restrictions are simply removed.
+     *
+     * @param restrictions zero or more restriction predicates
+     * @return the modified query
+     */
+    public CommonAbstractCriteria where(List<Predicate> restrictions) {
+        Predicate predicate = queryBuilder.and(restrictions);
         findRootAndParameters(predicate);
-        this.where = predicate;
+        where = predicate;
         return this;
     }
 
@@ -172,10 +184,12 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     protected abstract void integrateRoot(RootImpl root);
 
     protected void findRootAndParameters(Expression<?> predicate) {
+        Objects.requireNonNull(predicate, "Predicate expression is null");
         ((InternalSelection) predicate).findRootAndParameters(this);
     }
 
     protected void findRootAndParameters(Order order) {
+        Objects.requireNonNull(order, "Order is null");
         ((OrderImpl) order).findRootAndParameters(this);
     }
 

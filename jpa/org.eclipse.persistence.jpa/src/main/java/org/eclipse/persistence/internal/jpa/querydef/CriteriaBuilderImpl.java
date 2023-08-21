@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,6 +17,8 @@
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 //     04/19/2022: Jody Grassel
 //       - Issue 579726: CriteriaBuilder neg() only returns Integer type, instead of it's argument expression type.
+//     08/22/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serializable;
@@ -459,57 +461,81 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
     /**
-     * Create a conjunction of the given restriction predicates. A conjunction
-     * of zero predicates is true.
+     * Create a conjunction of the given restriction predicates.
+     * A conjunction of {@code null} or zero predicates is {@code true}.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions zero or more restriction predicates
      * @return and predicate
      */
     @Override
-    public Predicate and(Predicate... restrictions){
-        int max = restrictions.length;
-        if (max == 0){
-            return this.conjunction();
-        }
-        Predicate a = restrictions[0];
-        for (int i = 1; i < max; ++i){
-            a = this.and(a, restrictions[i]);
-        }
-        return a;
-    }
-
-    // TODO-API-3.2
-    //@Override
-    public Predicate and(List<Predicate> list) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public Predicate and(Predicate... restrictions) {
+        return and(restrictions != null ?  List.of(restrictions) : null);
     }
 
     /**
-     * Create a disjunction of the given restriction predicates. A disjunction
-     * of zero predicates is false.
+     * Create a conjunction of the given restriction predicates.
+     * A conjunction of {@code null} or zero predicates is {@code true}.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions a list of zero or more restriction predicates
+     * @return and predicate
+     */
+    // TODO-API-3.2
+    //@Override
+    public Predicate and(List<Predicate> restrictions) {
+        // PERF: Build simple cases directly
+        switch (restrictions != null ? restrictions.size() : 0) {
+            case 0:
+                return this.conjunction();
+            case 1:
+                return restrictions.get(0);
+            case 2:
+                return and(restrictions.get(0), restrictions.get(1));
+            default:
+                Predicate predicate = restrictions.get(0);
+                for (int i = 1; i < restrictions.size(); i++) {
+                    predicate = and(predicate, restrictions.get(i));
+                }
+                return predicate;
+        }
+    }
+
+    /**
+     * Create a disjunction of the given restriction predicates.
+     * A disjunction of {@code null} or zero predicates is {@code false}.
+     *
+     * @param restrictions zero or more restriction predicates
      * @return and predicate
      */
     @Override
-    public Predicate or(Predicate... restrictions){
-        int max = restrictions.length;
-        if (max == 0){
-            return this.disjunction();
-        }
-        Predicate a = restrictions[0];
-        for (int i = 1; i < max; ++i){
-            a = this.or(a, restrictions[i]);
-        }
-        return a;
+    public Predicate or(Predicate... restrictions) {
+        return or(restrictions != null ?  List.of(restrictions) : null);
     }
 
+    /**
+     * Create a disjunction of the given restriction predicates.
+     * A disjunction of {@code null} or zero predicates is {@code false}.
+     *
+     * @param restrictions a list of zero or more restriction predicates
+     * @return or predicate
+     */
     // TODO-API-3.2
     //@Override
-    public Predicate or(List<Predicate> list) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public Predicate or(List<Predicate> restrictions) {
+        // PERF: Build simple cases directly
+        switch (restrictions != null ? restrictions.size() : 0) {
+            case 0:
+                return this.disjunction();
+            case 1:
+                return restrictions.get(0);
+            case 2:
+                return or(restrictions.get(0), restrictions.get(1));
+            default:
+                Predicate predicate = restrictions.get(0);
+                for (int i = 1; i < restrictions.size(); i++) {
+                    predicate = or(predicate, restrictions.get(i));
+                }
+                return predicate;
+        }
     }
 
     /**
@@ -1889,10 +1915,30 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return this.notLike(x, this.internalLiteral(pattern), this.internalLiteral(escapeChar));
     }
 
+    /**
+     *  Create an expression for {@link String} concatenation.
+     *  If the given list of expressions is {@code null} or empty, returns an expression equivalent to {@code literal("")}.
+     *
+     *  @param expressions {@link String} expressions
+     *  @return expression corresponding to concatenation
+     */
     // TODO-API-3.2
     //@Override
-    public Expression<String> concat(List<Expression<String>> list) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public Expression<String> concat(List<Expression<String>> expressions) {
+        switch(expressions != null ? expressions.size() : 0) {
+            case 0:
+                return literal("");
+            case 1:
+                return expressions.get(0);
+            case 2:
+                return concat(expressions.get(0), expressions.get(1));
+            default:
+                Expression<String> expression = expressions.get(0);
+                for (int i = 1; i < expressions.size(); i++) {
+                    expression = concat(expression, expressions.get(i));
+                }
+                return expression;
+        }
     }
 
     /**
