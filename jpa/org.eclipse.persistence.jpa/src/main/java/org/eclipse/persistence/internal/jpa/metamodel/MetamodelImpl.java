@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,8 @@
 //     03/06/2011-2.3 mobrien 338837 - Metamodel entity processing requires specified entities in persistence.xml
 //        to avoid IllegalArgumentException when accessing an EntityType|EmbeddableType|ManagedType
 //        "The type [null] is not the expected [EntityType] for the key class" will result in certain managed persistence contexts
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.io.Serializable;
@@ -181,6 +183,21 @@ public class MetamodelImpl implements Metamodel, Serializable {
                         new Object[] { clazz, metamodelTypeName, aType}));
             }
         }
+    }
+
+    /**
+     *  Return the metamodel entity type representing the entity.
+     *
+     *  @param entityName the name of the represented entity
+     *  @return the metamodel entity type
+     *  @throws IllegalArgumentException if not an entity
+     *  @see jakarta.persistence.Entity#name
+     *  @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public EntityType<?> entity(String entityName) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     09 Jan 2013-2.5 Gordon Yorke
 //       - 397772: JPA 2.1 Entity Graph Support
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.ArrayList;
@@ -79,12 +81,18 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public void addAttributeNode(String attributeName) {
         if (!isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
         addAttributeNodeImpl(attributeName);
+    }
+
+    // TODO-API-3.2
+    @Override
+    public void removeAttributeNode(String attributeName) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     @Override
@@ -98,12 +106,18 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public void addAttributeNode(Attribute<? super X, ?> attribute) {
         if (!isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
         addAttributeNodeImpl(attribute.getName());
+    }
+
+    // TODO-API-3.2
+    @Override
+    public void removeAttributeNode(Attribute<? super X, ?> attribute) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     @Override
@@ -115,6 +129,12 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         for (Attribute<? super X, ?> attribute : attributes) {
             addAttributeNodeImpl(attribute.getName());
         }
+    }
+
+    // TODO-API-3.2
+    @Override
+    public void removeAttributeNodes(Attribute.PersistentAttributeType nodeTypes) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     // Add an attribute node of given name to the entity graph.
@@ -146,8 +166,8 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return addSubgraph(attribute.getName(), type);
     }
 
-    // TODO-API-3.2: Implementace sem!
-    //@Override
+    // TODO-API-3.2
+    @Override
     public <S extends X> Subgraph<S> addTreatedSubgraph(Class<S> type) {
         if (!this.isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
@@ -173,7 +193,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     // TODO-API-3.2: alias pro addSubgraph se st. attr
-    //@Override
+    @Override
     public <Y> Subgraph<Y> addTreatedSubgraph(Attribute<? super X, ? super Y> attribute, Class<Y> type) {
         return addSubgraph(attribute.getName(), type);
     }

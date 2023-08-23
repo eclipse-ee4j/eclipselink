@@ -159,6 +159,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *
      * @param restrictions zero or more restriction predicates
      * @return the modified query
+     * @since 4.1
      */
     public CommonAbstractCriteria where(List<Predicate> restrictions) {
         Predicate predicate = queryBuilder.and(restrictions);

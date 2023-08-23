@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -32,6 +32,8 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 //     11/05/2012-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import java.sql.CallableStatement;
@@ -46,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
@@ -875,6 +879,79 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQueryImpl setFlushMode(FlushModeType flushMode) {
         return (StoredProcedureQueryImpl) super.setFlushMode(flushMode);
+    }
+
+    /**
+     * The cache retrieval mode that will be in effect during query execution.
+     *
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public CacheRetrieveMode getCacheRetrieveMode() {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Set the cache retrieval mode that is in effect during query execution.
+     * This cache retrieval mode overrides the cache retrieve mode in use by the entity manager.
+     *
+     * @param cacheRetrieveMode cache retrieval mode
+     * @return the same query instance
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public StoredProcedureQueryImpl setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * The cache storage mode that will be in effect during query execution.
+     *
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public CacheStoreMode getCacheStoreMode() {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Set the cache storage mode that is in effect during query execution.
+     * This cache storage mode overrides the cache storage mode in use by the entity manager.
+     *
+     * @param cacheStoreMode cache storage mode
+     * @return the same query instance
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public StoredProcedureQueryImpl setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * The query timeout.
+     *
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public Integer getTimeout() {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Set the query timeout.
+     *
+     * @param timeout the timeout, or {@code null} to indicate no timeout
+     * @return the same query instance
+     * @since 4.1
+     */
+    @Override
+    public StoredProcedureQueryImpl setTimeout(Integer timeout) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**
