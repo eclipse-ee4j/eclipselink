@@ -209,6 +209,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *
      * @return the query parameters
      */
+    @Override
     public Set<ParameterExpression<?>> getParameters() {
         if (this.parameters == null) {
             this.parameters = new HashSet<ParameterExpression<?>>();
