@@ -181,9 +181,17 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new OrderImpl(x);
     }
 
+    /**
+     * Create an ordering by the ascending value of the expression.
+     *
+     * @param expression  expression used to define the ordering
+     * @param nullPrecedence  the precedence of null values
+     * @return ascending ordering corresponding to the expression
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Order asc(Expression<?> expression, Nulls nulls) {
+    @Override
+    public Order asc(Expression<?> expression, Nulls nullPrecedence) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
@@ -204,9 +212,17 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
 
+    /**
+     * Create an ordering by the descending value of the expression.
+     *
+     * @param expression  expression used to define the ordering
+     * @param nullPrecedence  the precedence of null values
+     * @return descending ordering corresponding to the expression
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Order desc(Expression<?> expression, Nulls nulls) {
+    @Override
+    public Order desc(Expression<?> expression, Nulls nullPrecedence) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
@@ -478,9 +494,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param restrictions a list of zero or more restriction predicates
      * @return and predicate
+     * @since 4.1
      */
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate and(List<Predicate> restrictions) {
         // PERF: Build simple cases directly
         switch (restrictions != null ? restrictions.size() : 0) {
@@ -517,9 +534,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param restrictions a list of zero or more restriction predicates
      * @return or predicate
+     * @since 4.1
      */
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate or(List<Predicate> restrictions) {
         // PERF: Build simple cases directly
         switch (restrictions != null ? restrictions.size() : 0) {
@@ -1916,14 +1934,15 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
     /**
-     *  Create an expression for {@link String} concatenation.
-     *  If the given list of expressions is {@code null} or empty, returns an expression equivalent to {@code literal("")}.
+     * Create an expression for {@link String} concatenation.
+     * If the given list of expressions is {@code null} or empty, returns an expression equivalent to {@code literal("")}.
      *
-     *  @param expressions {@link String} expressions
-     *  @return expression corresponding to concatenation
+     * @param expressions {@link String} expressions
+     * @return expression corresponding to concatenation
+     * @sincde 4.1
      */
     // TODO-API-3.2
-    //@Override
+    @Override
     public Expression<String> concat(List<Expression<String>> expressions) {
         switch(expressions != null ? expressions.size() : 0) {
             case 0:
@@ -2193,53 +2212,119 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new FunctionExpressionImpl(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().length(), buildList(x), "length");
     }
 
+    /**
+     * Create an expression for the leftmost substring of a string.
+     *
+     * @param expression string expression
+     * @param len length of the substring to return
+     * @return expression for the leftmost substring
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Expression<String> left(Expression<String> expression, int i) {
+    @Override
+    public Expression<String> left(Expression<String> expression, int len) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
+    /**
+     * Create an expression for the rightmost substring of a string.
+     *
+     * @param expression string expression
+     * @param len length of the substring to return
+     * @return expression for the rightmost substring
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Expression<String> right(Expression<String> expression, int i) {
+    @Override
+    public Expression<String> right(Expression<String> expression, int len) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
+    /**
+     * Create an expression for the leftmost substring of a string.
+     *
+     * @param expression  string expression
+     * @param len  length of the substring to return
+     * @return expression for the leftmost substring
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Expression<String> left(Expression<String> expression, Expression<Integer> expression1) {
+    @Override
+    public Expression<String> left(Expression<String> expression, Expression<Integer> len) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
+    /**
+     * Create an expression for the rightmost substring of a string
+     *
+     * @param expression  string expression
+     * @param len  length of the substring to return
+     * @return expression for the rightmost substring
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Expression<String> right(Expression<String> expression, Expression<Integer> expression1) {
+    @Override
+    public Expression<String> right(Expression<String> expression, Expression<Integer> len) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
+    /**
+     * Create an expression replacing every occurrence of a substring within a string.
+     *
+     * @param expression  string expression
+     * @param substring  the literal substring to replace
+     * @param replacement  the replacement string
+     * @return expression for the resulting string
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Expression<String> replace(Expression<String> expression,
-                                      Expression<String> expression1,
-                                      Expression<String> expression2) {
+    @Override
+    public Expression<String> replace(Expression<String> expression, Expression<String> substring, Expression<String> replacement) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
+    /**
+     * Create an expression replacing every occurrence of a substring within a string.
+     *
+     * @param expression  string expression
+     * @param substring  the literal substring to replace
+     * @param replacement  the replacement string
+     * @return expression for the resulting string
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Expression<String> replace(Expression<String> expression, String s, Expression<String> expression1) {
+    @Override
+    public Expression<String> replace(Expression<String> expression, String substring, Expression<String> replacement) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
+    /**
+     * Create an expression replacing every occurrence of a substring within a string.
+     *
+     * @param expression  string expression
+     * @param substring  the literal substring to replace
+     * @param replacement  the replacement string
+     * @return expression for the resulting string
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Expression<String> replace(Expression<String> expression, Expression<String> expression1, String s) {
+    @Override
+    public Expression<String> replace(Expression<String> expression, Expression<String> substring, String replacement) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
+    /**
+     * Create an expression replacing every occurrence of a substring within a string.
+     *
+     * @param expression  string expression
+     * @param substring  the literal substring to replace
+     * @param replacement  the replacement string
+     * @return expression for the resulting string
+     * @since 4.1
+     */
     // TODO-API-3.2
-    //@Override
-    public Expression<String> replace(Expression<String> expression, String s, String s1) {
+    @Override
+    public Expression<String> replace(Expression<String> expression, String substring, String replacement) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
@@ -2991,5 +3076,99 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         EntityType<T> entity = this.metamodel.entity(type);
         return new RootImpl<T>(entity, this.metamodel, type, parentRoot.currentNode.treat(type), entity);
     }
+
+    /**
+     * Create a query which is the union of the given queries.
+     *
+     * @param first first query
+     * @param second second query
+     * @param <T> the type of the {@link CriteriaQuery} result
+     * @return a new criteria query which returns the union of the results of the given queries
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <T> CriteriaQuery<T> union(CriteriaQuery<? extends T> first, CriteriaQuery<? extends T> second) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Create a query which is the union of the given queries, without elimination of duplicate results.
+     * @return a new criteria query which returns the union of the results of the given queries
+     *
+     * @param first first query
+     * @param second second query
+     * @param <T> the type of the {@link CriteriaQuery} result
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <T> CriteriaQuery<T> unionAll(CriteriaQuery<? extends T> first, CriteriaQuery<? extends T> second) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Create a query which is the intersection of the given queries.
+     *
+     * @param first first query
+     * @param second second query
+     * @param <T> the type of the {@link CriteriaQuery} result
+     * @return a new criteria query which returns the intersection of the results of the given queries
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <T> CriteriaQuery<T> intersect(CriteriaQuery<? super T> first, CriteriaQuery<? super T> second) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Create a query which is the intersection of the given queries, without elimination of duplicate results.
+     *
+     * @param first first query
+     * @param second second query
+     * @param <T> the type of the {@link CriteriaQuery} result
+     * @return a new criteria query which returns the intersection of the results of the given queries
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <T> CriteriaQuery<T> intersectAll(CriteriaQuery<? super T> first, CriteriaQuery<? super T> second) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Create a query by (setwise) subtraction of the second query from the first query.
+     *
+     * @param first first query
+     * @param second second query
+     * @param <T> the type of the {@link CriteriaQuery} result
+     * @return a new criteria query which returns the result of subtracting the results of the second query
+     *         from the results of the first query
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <T> CriteriaQuery<T> except(CriteriaQuery<T> first, CriteriaQuery<?> second) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Create a query by (setwise) subtraction of the second query from the first query, without elimination
+     * of duplicate results.
+     *
+     * @param first first query
+     * @param second second query
+     * @param <T> the type of the {@link CriteriaQuery} result
+     * @return a new criteria query which returns the result of subtracting the results of the second query
+     *         from the results of the first query
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <T> CriteriaQuery<T> exceptAll(CriteriaQuery<T> first, CriteriaQuery<?> second) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
 }
 

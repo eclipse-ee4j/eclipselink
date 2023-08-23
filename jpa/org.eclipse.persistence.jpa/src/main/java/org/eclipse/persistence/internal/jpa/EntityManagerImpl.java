@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -43,6 +43,8 @@
 //       - 547173: EntityManager.unwrap(Connection.class) returns null
 //     09/02/2019-2.7 Alexandre Jacob
 //        - 527415: Fix code when locale is tr, az or lt
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.ArrayList;
@@ -56,19 +58,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.ConnectionConsumer;
+import jakarta.persistence.ConnectionFunction;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.FindOption;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockOption;
 import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.Query;
+import jakarta.persistence.RefreshOption;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.TransactionRequiredException;
@@ -824,6 +832,125 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
+     * Find an instance of the given entity class by primary key,
+     * using the specified {@linkplain FindOption options}.
+     * Search for an entity with the specified class and primary key.
+     * If the given options include a {@link LockModeType}, lock it
+     * with respect to the specified lock type.
+     * If the entity instance is contained in the persistence context,
+     * it is returned from there.
+     * <p>If the entity is found within the persistence context and
+     * the lock mode type is pessimistic and the entity has a version
+     * attribute, the persistence provider must perform optimistic
+     * version checks when obtaining the database lock.  If these checks
+     * fail, the <code>OptimisticLockException</code> will be thrown.
+     * <p>If the lock mode type is pessimistic and the entity instance
+     * is found but cannot be locked:
+     * <ul>
+     * <li> the <code>PessimisticLockException</code> will be thrown
+     *      if the database locking failure causes transaction-level
+     *      rollback
+     * <li> the <code>LockTimeoutException</code> will be thrown if
+     *      the database locking failure causes only statement-level
+     *      rollback
+     * </ul>
+     * <p>If a vendor-specific {@linkplain FindOption option} is not
+     * recognized, it is silently ignored.
+     * <p>Portable applications should not rely on the standard
+     * {@linkplain jakarta.persistence.Timeout timeout option}. Depending on the database
+     * in use and the locking mechanisms used by the provider, this
+     * option may or may not be observed.
+     * @param entityClass  entity class
+     * @param primaryKey  primary key
+     * @param options  standard and vendor-specific options
+     * @return the found entity instance or null if the entity does
+     *         not exist
+     * @throws IllegalArgumentException if there are contradictory
+     *         options, if the first argument does not denote an entity
+     *         type belonging to the persistence unit, or if the second
+     *         argument is not a valid non-null instance of the entity
+     *         primary key type
+     * @throws TransactionRequiredException if there is no transaction
+     *         and a lock mode other than <code>NONE</code> is
+     *         specified or if invoked on an entity manager which has
+     *         not been joined to the current transaction and a lock
+     *         mode other than <code>NONE</code> is specified
+     * @throws OptimisticLockException if the optimistic version check
+     *         fails
+     * @throws PessimisticLockException if pessimistic locking fails
+     *         and the transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and
+     *         only the statement is rolled back
+     * @throws PersistenceException if an unsupported lock call is made
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <T> T find(Class<T> entityClass, Object primaryKey, FindOption... options) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Find an instance of the root entity of the given {@link EntityGraph}
+     * by primary key, using the specified {@linkplain FindOption options},
+     * and interpreting the {@code EntityGraph} as a load graph.
+     * Search for an entity with the specified type and primary key.
+     * If the given options include a {@link LockModeType}, lock it
+     * with respect to the specified lock type.
+     * If the entity instance is contained in the persistence context,
+     * it is returned from there.
+     * <p> If the entity is found within the persistence context and
+     * the lock mode type is pessimistic and the entity has a version
+     * attribute, the persistence provider must perform optimistic
+     * version checks when obtaining the database lock.  If these checks
+     * fail, the <code>OptimisticLockException</code> will be thrown.
+     * <p>If the lock mode type is pessimistic and the entity instance
+     * is found but cannot be locked:
+     * <ul>
+     * <li> the <code>PessimisticLockException</code> will be thrown
+     *      if the database locking failure causes transaction-level
+     *      rollback
+     * <li> the <code>LockTimeoutException</code> will be thrown if
+     *      the database locking failure causes only statement-level
+     *      rollback
+     * </ul>
+     * <p>If a vendor-specific {@linkplain FindOption option} is not
+     * recognized, it is silently ignored.
+     * <p>Portable applications should not rely on the standard
+     * {@linkplain jakarta.persistence.Timeout timeout option}. Depending on the database
+     * in use and the locking mechanisms used by the provider, this
+     * option may or may not be observed.
+     * @param entityGraph  entity graph interpreted as a load graph
+     * @param primaryKey  primary key
+     * @param options  standard and vendor-specific options
+     * @return the found entity instance or null if the entity does
+     *         not exist
+     * @throws IllegalArgumentException if there are contradictory
+     *         options, if the first argument does not denote an entity
+     *         type belonging to the persistence unit, or if the second
+     *         argument is not a valid non-null instance of the entity
+     *         primary key type
+     * @throws TransactionRequiredException if there is no transaction
+     *         and a lock mode other than <code>NONE</code> is
+     *         specified or if invoked on an entity manager which has
+     *         not been joined to the current transaction and a lock
+     *         mode other than <code>NONE</code> is specified
+     * @throws OptimisticLockException if the optimistic version check
+     *         fails
+     * @throws PessimisticLockException if pessimistic locking fails
+     *         and the transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and
+     *         only the statement is rolled back
+     * @throws PersistenceException if an unsupported lock call is made
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
      * Find by primary key.
      *
      * @param entityName
@@ -1150,6 +1277,55 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
+     * Refresh the state of the given entity instance from the
+     * database, using the specified {@linkplain RefreshOption options},
+     * overwriting changes made to the entity, if any. If the supplied
+     * options include a {@link LockModeType}, lock the given entity with
+     * respect to the specified lock type.
+     * <p>If the lock mode type is pessimistic and the entity instance is
+     * found but cannot be locked:
+     * <ul>
+     * <li> the <code>PessimisticLockException</code> will be thrown if
+     *      the database locking failure causes transaction-level rollback
+     * <li> the <code>LockTimeoutException</code> will be thrown if the
+     *      database locking failure causes only statement-level rollback
+     * </ul>
+     * <p>If a vendor-specific {@link RefreshOption} is not recognized,
+     * it is silently ignored.
+     * <p>Portable applications should not rely on the standard
+     * {@linkplain jakarta.persistence.Timeout timeout option}. Depending on the database in
+     * use and the locking mechanisms used by the provider, the hint may
+     * or may not be observed.
+     *
+     * @param entity  entity instance
+     * @param options  standard and vendor-specific options
+     * @throws IllegalArgumentException if the instance is not an entity
+     *         or the entity is not managed
+     * @throws TransactionRequiredException if invoked on a
+     *         container-managed entity manager of type
+     *         <code>PersistenceContextType.TRANSACTION</code> when there
+     *         is no transaction; if invoked on an extended entity manager
+     *         when there is no transaction and a lock mode other than
+     *         <code>NONE</code> has been specified; or if invoked on an
+     *         extended entity manager that has not been joined to the
+     *         current transaction and a lock mode other than
+     *         <code>NONE</code> has been specified
+     * @throws EntityNotFoundException if the entity no longer exists in
+     *         the database
+     * @throws PessimisticLockException if pessimistic locking fails and
+     *         the transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and only
+     *         the statement is rolled back
+     * @throws PersistenceException if an unsupported lock call is made
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public void refresh(Object entity, RefreshOption... options) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
      * Check if the instance belongs to the current persistence context.
      *
      * @throws IllegalArgumentException
@@ -1425,6 +1601,54 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             setRollbackOnly();
             throw e;
         }
+    }
+
+    /**
+     * Execute the given action using the database connection underlying this
+     * {@code EntityManager}. Usually, the connection is a JDBC connection, but a
+     * provider might support some other native connection type, and is not required
+     * to support {@code java.sql.Connection}. If this {@code EntityManager} is
+     * associated with a transaction, the action is executed in the context of the
+     * transaction. The given action should close any resources it creates, but should
+     * not close the connection itself, nor commit or roll back the transaction. If
+     * the given action throws an exception, the persistence provider must mark the
+     * transaction for rollback.
+     *
+     * @param action the action
+     * @param <C> the connection type, usually {@code java.sql.Connection}
+     * @throws PersistenceException wrapping the checked {@link Exception} thrown by
+     *         {@link ConnectionConsumer#accept}, if any
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <C> void runWithConnection(ConnectionConsumer<C> action) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Call the given function and return its result using the database connection
+     * underlying this {@code EntityManager}. Usually, the connection is a JDBC
+     * connection, but a provider might support some other native connection type,
+     * and is not required to support {@code java.sql.Connection}. If this
+     * {@code EntityManager} is associated with a transaction, the function is
+     * executed in the context of the transaction. The given function should close
+     * any resources it creates, but should not close the connection itself, nor
+     * commit or roll back the transaction. If the given action throws an exception,
+     * the persistence provider must mark the transaction for rollback.
+     *
+     * @param function the function
+     * @param <C> the connection type, usually {@code java.sql.Connection}
+     * @param <T> the type of result returned by the function
+     * @return the value returned by {@link ConnectionFunction#apply}.
+     * @throws PersistenceException wrapping the checked {@link Exception} thrown by
+     *         {@link ConnectionFunction#apply}, if any
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <C, T> T callWithConnection(ConnectionFunction<C, T> function) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**
@@ -2034,6 +2258,58 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             setRollbackOnly();
             throw e;
         }
+    }
+
+    /**
+     * Lock an entity instance that is contained in the persistence
+     * context with the specified lock mode type, using specified
+     * {@linkplain LockOption options}.
+     * <p>If a pessimistic lock mode type is specified and the entity
+     * contains a version attribute, the persistence provider must
+     * also perform optimistic version checks when obtaining the
+     * database lock. If these checks fail, the
+     * <code>OptimisticLockException</code> will be thrown.
+     * <p>If the lock mode type is pessimistic and the entity instance
+     * is found but cannot be locked:
+     * <ul>
+     * <li> the <code>PessimisticLockException</code> will be thrown
+     *      if the database locking failure causes transaction-level
+     *      rollback
+     * <li> the <code>LockTimeoutException</code> will be thrown if
+     *      the database locking failure causes only statement-level
+     *      rollback
+     * </ul>
+     * <p>If a vendor-specific {@link LockOption} is not recognized,
+     * it is silently ignored.
+     * <p>Portable applications should not rely on the standard
+     * {@linkplain jakarta.persistence.Timeout timeout option}. Depending on the database
+     * in use and the locking mechanisms used by the provider, the
+     * option may or may not be observed.
+     *
+     * @param entity  entity instance
+     * @param lockMode  lock mode
+     * @param options  standard and vendor-specific options
+     * @throws IllegalArgumentException if the instance is not an
+     *         entity or is a detached entity
+     * @throws TransactionRequiredException if there is no
+     *         transaction or if invoked on an entity manager which
+     *         has not been joined to the current transaction
+     * @throws EntityNotFoundException if the entity does not exist
+     *         in the database when pessimistic locking is
+     *         performed
+     * @throws OptimisticLockException if the optimistic version
+     *         check fails
+     * @throws PessimisticLockException if pessimistic locking fails
+     *         and the transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and
+     *         only the statement is rolled back
+     * @throws PersistenceException if an unsupported lock call is made
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public void lock(Object entity, LockModeType lockMode, LockOption... options) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     public void verifyOpen() {
@@ -2834,6 +3110,53 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             setRollbackOnly();
             throw exception;
         }
+    }
+
+    /**
+     * The cache retrieval mode for this persistence context.
+     *
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public CacheRetrieveMode getCacheRetrieveMode() {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Set the cache retrieval mode that is in effect during query execution.
+     * This cache retrieval mode overrides the cache retrieve mode in use by the entity manager.
+     *
+     * @param cacheRetrieveMode cache retrieval mode
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public void setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * The cache storage mode for this persistence context.
+     *
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public CacheStoreMode getCacheStoreMode() {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Set the default cache storage mode for this persistence context.
+     *
+     * @param cacheStoreMode cache storage mode
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public void setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**

@@ -147,6 +147,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      *
      * @param restrictions zero or more restriction predicates
      * @return the modified query
+     * @since 4.1
      */
     // TODO-API-3.2: Prototype is missing in API
     //@Override

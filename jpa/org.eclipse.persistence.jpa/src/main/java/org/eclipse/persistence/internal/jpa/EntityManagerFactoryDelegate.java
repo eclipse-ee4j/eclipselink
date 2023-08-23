@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -29,6 +29,8 @@
 //       - 489787: Fixed NullPointerException when specifying non-entity object to PersistenceUnitUtil.isLoaded
 //     09/02/2019-3.0 Alexandre Jacob
 //        - 527415: Fix code when locale is tr, az or lt
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.Collections;
@@ -36,6 +38,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
@@ -45,6 +49,7 @@ import jakarta.persistence.FlushModeType;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
+import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
@@ -549,6 +554,19 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     /**
+     * Return interface providing access to schema management operations for the persistence unit.
+     *
+     * @return <code>SchemaManager</code> interface
+     * @throws IllegalStateException if the entity manager factory has been closed
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public SchemaManager getSchemaManager() {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
      * Set default property to avoid discover new objects in unit of work if
      * application always uses persist.
      */
@@ -797,6 +815,22 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     /**
+     * Return the version of the entity.
+     * A generated version is not guaranteed to be available until after the database insert has occurred.
+     * Returns null if the entity does not yet have an id.
+     *
+     * @param entity  entity instance
+     * @return id of the entity
+     * @throws IllegalArgumentException if the object is found not to be an entity
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public Object getVersion(Object entity) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
      * Return if updates should be ordered by primary key, to avoid potential database deadlocks.
      */
     public CommitOrderType getCommitOrder() {
@@ -850,6 +884,68 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         group.setName(graphName);
         this.getAbstractSession().getAttributeGroups().put(graphName, group);
         this.getAbstractSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
+    }
+
+    /**
+     * Create a new application-managed {@code EntityManager} with an active
+     * transaction, and execute the given function, passing the {@code EntityManager}
+     * to the function.
+     * <p>
+     * If the transaction type of the persistence unit is JTA, and there is a JTA
+     * transaction already associated with the caller, then the {@code EntityManager}
+     * is associated with this current transaction. If the given function throws an
+     * exception, the JTA transaction is marked for rollback, and the exception is
+     * rethrown.
+     * <p>
+     * Otherwise, if the transaction type of the persistence unit is resource-local,
+     * or if there is no JTA transaction already associated with the caller, then
+     * the {@code EntityManager} is associated with a new transaction. If the given
+     * function returns without throwing an exception, this transaction is committed.
+     * If the function does throw an exception, the transaction is rolled back, and
+     * the exception is rethrown.
+     * <p>
+     * Finally, the {@code EntityManager} is closed before this method returns
+     * control to the client.
+     *
+     * @param work a function to be executed in the scope of the transaction
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public void runInTransaction(Consumer<EntityManager> work) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    /**
+     * Create a new application-managed {@code EntityManager} with an active
+     * transaction, and call the given function, passing the {@code EntityManager}
+     * to the function.
+     * <p>
+     * If the transaction type of the persistence unit is JTA, and there is a JTA
+     * transaction already associated with the caller, then the {@code EntityManager}
+     * is associated with this current transaction. If the given function returns
+     * without throwing an exception, the result of the function is returned. If the
+     * given function throws an exception, the JTA transaction is marked for rollback,
+     * and the exception is rethrown.
+     * <p>
+     * Otherwise, if the transaction type of the persistence unit is resource-local,
+     * or if there is no JTA transaction already associated with the caller, then
+     * the {@code EntityManager} is associated with a new transaction. If the given
+     * function returns without throwing an exception, this transaction is committed
+     * and the result of the function is returned. If the function does throw an
+     * exception, the transaction is rolled back, and the exception is rethrown.
+     * <p>
+     * Finally, the {@code EntityManager} is closed before this method returns
+     * control to the client.
+     *
+     * @param work a function to be called in the scope of the transaction
+     * @return the value returned by the given function
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <R> R callInTransaction(Function<EntityManager, R> work) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
 }

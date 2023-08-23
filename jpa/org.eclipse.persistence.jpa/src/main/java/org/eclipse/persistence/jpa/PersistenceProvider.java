@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,6 +28,8 @@
 //       - 458462: generateSchema throws a ClassCastException within a container
 //     02/17/2015-2.6 Rick Curtis
 //       - 460138: Change method visibility.
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.jpa;
 
 import java.util.HashMap;
@@ -35,6 +37,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.LoadState;
@@ -169,17 +172,13 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     }
 
     /**
-     * Called by Persistence class when an EntityManagerFactory
-     * is to be created.
+     * Called by Persistence class when an EntityManagerFactory is to be created.
      *
      * @param emName The name of the persistence unit
-     * @param properties A Map of properties for use by the
-     * persistence provider. These properties may be used to
-     * override the values of the corresponding elements in
-     * the persistence.xml file or specify values for
-     * properties not specified in the persistence.xml.
-     * @return EntityManagerFactory for the persistence unit,
-     * or null if the provider is not the right provider
+     * @param properties A Map of properties for use by the persistence provider. These properties may be used
+     *                   to override the values of the corresponding elements in the {@code persistence.xml} file
+     *                   or specify values for properties not specified in the {@code persistence.xml}.
+     * @return EntityManagerFactory for the persistence unit, or {@code null} if the provider is not the right provider
      */
     @Override
     public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
@@ -193,6 +192,22 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
 
         // Not EclipseLink so return null;
         return null;
+    }
+
+    /**
+     * Called by <code>Persistence</code> class when an <code>EntityManagerFactory</code> is to be created.
+     *
+     * @param configuration  the configuration of the persistence unit
+     * @return EntityManagerFactory for the persistence unit, or {@code null} if the provider is not the right provider
+     * @throws IllegalStateException if required configuration is missing
+     *
+     * @see jakarta.persistence.Persistence#createEntityManagerFactory(PersistenceConfiguration)
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,24 +20,26 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 //     05/26/2016-2.7 Tomas Kraus
 //       - 494610: Session Properties map should be Map<String, Object>
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
+import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
@@ -77,8 +79,8 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  *
  */
 public class EntityManagerFactoryImpl implements EntityManagerFactory, PersistenceUnitUtil, JpaEntityManagerFactory {
-    protected EntityManagerFactoryDelegate delegate;
 
+    protected EntityManagerFactoryDelegate delegate;
 
     /**
      * Returns the id of the entity. A generated id is not guaranteed to be
@@ -452,6 +454,19 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     /**
+     * Return interface providing access to schema management operations for the persistence unit.
+     *
+     * @return <code>SchemaManager</code> interface
+     * @throws IllegalStateException if the entity manager factory has been closed
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public SchemaManager getSchemaManager() {
+        return delegate.getSchemaManager();
+    }
+
+    /**
      * Set default property to avoid discover new objects in unit of work if
      * application always uses persist.
      */
@@ -657,6 +672,22 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     /**
+     * Return the version of the entity.
+     * A generated version is not guaranteed to be available until after the database insert has occurred.
+     * Returns null if the entity does not yet have an id.
+     *
+     * @param entity  entity instance
+     * @return id of the entity
+     * @throws IllegalArgumentException if the object is found not to be an entity
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public Object getVersion(Object entity) {
+        return delegate.getVersion(entity);
+    }
+
+    /**
      * Return if updates should be ordered by primary key to avoid possible database deadlocks.
      */
     public CommitOrderType getCommitOrder() {
@@ -708,6 +739,68 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         group.setName(graphName);
         this.getServerSession().getAttributeGroups().put(graphName, group);
         this.getServerSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
+    }
+
+    /**
+     * Create a new application-managed {@code EntityManager} with an active
+     * transaction, and execute the given function, passing the {@code EntityManager}
+     * to the function.
+     * <p>
+     * If the transaction type of the persistence unit is JTA, and there is a JTA
+     * transaction already associated with the caller, then the {@code EntityManager}
+     * is associated with this current transaction. If the given function throws an
+     * exception, the JTA transaction is marked for rollback, and the exception is
+     * rethrown.
+     * <p>
+     * Otherwise, if the transaction type of the persistence unit is resource-local,
+     * or if there is no JTA transaction already associated with the caller, then
+     * the {@code EntityManager} is associated with a new transaction. If the given
+     * function returns without throwing an exception, this transaction is committed.
+     * If the function does throw an exception, the transaction is rolled back, and
+     * the exception is rethrown.
+     * <p>
+     * Finally, the {@code EntityManager} is closed before this method returns
+     * control to the client.
+     *
+     * @param work a function to be executed in the scope of the transaction
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public void runInTransaction(Consumer<EntityManager> work) {
+        delegate.runInTransaction(work);
+    }
+
+    /**
+     * Create a new application-managed {@code EntityManager} with an active
+     * transaction, and call the given function, passing the {@code EntityManager}
+     * to the function.
+     * <p>
+     * If the transaction type of the persistence unit is JTA, and there is a JTA
+     * transaction already associated with the caller, then the {@code EntityManager}
+     * is associated with this current transaction. If the given function returns
+     * without throwing an exception, the result of the function is returned. If the
+     * given function throws an exception, the JTA transaction is marked for rollback,
+     * and the exception is rethrown.
+     * <p>
+     * Otherwise, if the transaction type of the persistence unit is resource-local,
+     * or if there is no JTA transaction already associated with the caller, then
+     * the {@code EntityManager} is associated with a new transaction. If the given
+     * function returns without throwing an exception, this transaction is committed
+     * and the result of the function is returned. If the function does throw an
+     * exception, the transaction is rolled back, and the exception is rethrown.
+     * <p>
+     * Finally, the {@code EntityManager} is closed before this method returns
+     * control to the client.
+     *
+     * @param work a function to be called in the scope of the transaction
+     * @return the value returned by the given function
+     * @since 4.1
+     */
+    // TODO-API-3.2
+    @Override
+    public <R> R callInTransaction(Function<EntityManager, R> work) {
+        return delegate.callInTransaction(work);
     }
 
 }

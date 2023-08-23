@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -5681,7 +5681,7 @@ public class MetamodelTest extends MetamodelTestBase {
             // test variant path: null causes IAE
             expectedIAExceptionThrown = false;
         try {
-            EntityType<Manufacturer> aType = metamodel.entity(null);
+            EntityType<Manufacturer> aType = metamodel.entity((Class<Manufacturer>) null);
         } catch (IllegalArgumentException iae) {
             expectedIAExceptionThrown = true;
             }
