@@ -104,6 +104,10 @@ public class EclipseLinkJPQLGrammar4_1 extends AbstractJPQLGrammar {
         // Extend to support scalarExpression
         addChildBNF(InternalReplacePositionExpressionBNF.ID, ScalarExpressionBNF.ID);
         addChildBNF(InternalReplaceStringExpressionBNF.ID,   ScalarExpressionBNF.ID);
+        addChildBNF(InternalLeftPositionExpressionBNF.ID, ScalarExpressionBNF.ID);
+        addChildBNF(InternalLeftStringExpressionBNF.ID,   ScalarExpressionBNF.ID);
+        addChildBNF(InternalRightPositionExpressionBNF.ID, ScalarExpressionBNF.ID);
+        addChildBNF(InternalRightStringExpressionBNF.ID,   ScalarExpressionBNF.ID);
     }
 
     @Override

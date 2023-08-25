@@ -16,26 +16,26 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * The query BNF for the parameter of the <code><b>REPLACE</b></code> expression.
+ * The query BNF for the position parameters of the <code><b>RIGHT</b></code> expression.
  * <br>
  * JPA 3.2:
- * <div><b>BNF</b> ::= REPLACE(string_expression, string_expression, string_expression)</div>
+ * <div><b>BNF</b> ::= RIGHT(string_expression, simple_arithmetic_expression)</div>
  *
  * @since 4.1
  * @author Radek Felcman
  */
 @SuppressWarnings("nls")
-public final class InternalReplaceStringExpressionBNF extends JPQLQueryBNF {
+public final class InternalRightPositionExpressionBNF extends JPQLQueryBNF {
 
     /**
      * The unique identifier of this BNF rule.
      */
-    public static final String ID = "replace_item";
+    public static final String ID = "right_position";
 
     /**
-     * Creates a new <code>InternalReplaceStringExpressionBNF</code>.
+     * Creates a new <code>InternalRightPositionExpressionBNF</code>.
      */
-    public InternalReplaceStringExpressionBNF() {
+    public InternalRightPositionExpressionBNF() {
         super(ID);
     }
 
@@ -44,6 +44,6 @@ public final class InternalReplaceStringExpressionBNF extends JPQLQueryBNF {
         super.initialize();
         setFallbackBNFId(ID);
         setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
-        registerChild(StringPrimaryBNF.ID);
+        registerChild(SimpleStringExpressionBNF.ID);
     }
 }

@@ -242,6 +242,11 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
     }
 
     @Override
+    public void visit(LeftExpressionStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
     public void visit(LengthExpressionStateObject stateObject) {
         visit((StateObject) stateObject);
     }
@@ -333,6 +338,11 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
 
     @Override
     public void visit(ResultVariableStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
+    public void visit(RightExpressionStateObject stateObject) {
         visit((StateObject) stateObject);
     }
 

@@ -458,10 +458,12 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.initcap());
         addOperator(ExpressionOperator.instring());
         addOperator(ExpressionOperator.soundex());
+        addOperator(ExpressionOperator.left());
         addOperator(ExpressionOperator.leftPad());
         addOperator(ExpressionOperator.leftTrim());
         addOperator(ExpressionOperator.leftTrim2());
         addOperator(ExpressionOperator.replace());
+        addOperator(ExpressionOperator.right());
         addOperator(ExpressionOperator.rightPad());
         addOperator(ExpressionOperator.rightTrim());
         addOperator(ExpressionOperator.rightTrim2());

@@ -21,11 +21,13 @@ import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.DefaultJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
@@ -127,6 +129,11 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
         }
 
         @Override
+        public void visit(LeftExpression expression) {
+            type = queryContext.getType(CharSequence.class);
+        }
+
+        @Override
         public void visit(LengthExpression expression) {
             type = queryContext.getType(CharSequence.class);
         }
@@ -150,6 +157,11 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 
         @Override
         public void visit(ReplaceExpression expression) {
+            type = queryContext.getType(CharSequence.class);
+        }
+
+        @Override
+        public void visit(RightExpression expression) {
             type = queryContext.getType(CharSequence.class);
         }
 

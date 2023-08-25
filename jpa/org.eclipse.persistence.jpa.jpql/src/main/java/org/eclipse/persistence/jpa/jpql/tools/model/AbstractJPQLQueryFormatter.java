@@ -74,6 +74,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.JPQLQueryStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.JoinStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.KeyExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.KeywordExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.LeftExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.LengthExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.LikeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ListHolderStateObject;
@@ -94,6 +95,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.OrderByItemStateObject
 import org.eclipse.persistence.jpa.jpql.tools.model.query.RangeVariableDeclarationStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ReplaceExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ResultVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.RightExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SimpleFromClauseStateObject;
@@ -956,6 +958,11 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
     }
 
     @Override
+    public void visit(LeftExpressionStateObject stateObject) {
+        toStringDoubleEncapsulated(stateObject);
+    }
+
+    @Override
     public void visit(LengthExpressionStateObject stateObject) {
         toStringSingleEncapsulated(stateObject);
     }
@@ -1144,6 +1151,11 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
                 writer.append(stateObject.getResultVariable());
             }
         }
+    }
+
+    @Override
+    public void visit(RightExpressionStateObject stateObject) {
+        toStringDoubleEncapsulated(stateObject);
     }
 
     @Override

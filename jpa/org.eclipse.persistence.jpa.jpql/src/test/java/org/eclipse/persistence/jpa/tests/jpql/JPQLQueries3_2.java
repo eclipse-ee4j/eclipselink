@@ -55,4 +55,44 @@ public class JPQLQueries3_2 {
     public static String query_ReplaceFunction_Where() {
         return "SELECT c FROM Customer c WHERE REPLACE(c.firstName, 'o', 'a') = 'Jahn'";
     }
+
+    public static String query_LeftFunction_Select01() {
+        return "SELECT LEFT('Hello World', 5) FROM Customer c";
+    }
+
+    public static String query_LeftFunction_Select02() {
+        return "SELECT LEFT(LEFT('Hello World', 5), 2) FROM Customer c";
+    }
+
+    public static String query_LeftFunction_Select03() {
+        return "SELECT LEFT(c.firstName, 2) FROM Customer c";
+    }
+
+    public static String query_LeftFunction_Select04() {
+        return "SELECT LEFT(cr.name, 5), COUNT (res) " +
+                "FROM Cruise cr LEFT JOIN cr.reservations res " +
+                "GROUP BY cr.name " +
+                "HAVING count(res) > 10";
+    }
+
+    public static String query_LeftFunction_Where() {
+        return "SELECT c FROM Customer c WHERE LEFT(c.firstName, 4) = 'John'";
+    }
+
+    public static String query_RightFunction_Select01() {
+        return "SELECT RIGHT('Hello World', 5) FROM Customer c";
+    }
+
+    public static String query_RightFunction_Select02() {
+        return "SELECT RIGHT(RIGHT('Hello World', 5), 2) FROM Customer c";
+    }
+
+    public static String query_RightFunction_Select03() {
+        return "SELECT RIGHT(c.firstName, 2) FROM Customer c";
+    }
+
+    public static String query_RightFunction_Where() {
+        return "SELECT c FROM Customer c WHERE RIGHT(c.firstName, 4) = 'John'";
+    }
+
 }

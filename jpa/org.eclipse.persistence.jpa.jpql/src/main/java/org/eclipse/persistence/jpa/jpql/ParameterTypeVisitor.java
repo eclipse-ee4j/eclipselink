@@ -51,6 +51,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
@@ -66,6 +67,7 @@ import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
@@ -397,6 +399,19 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     }
 
     @Override
+    public void visit(LeftExpression expression) {
+
+        // The string primary is always a string
+        if (expression.getFirstExpression().isAncestor(inputParameter)) {
+            type = String.class;
+        }
+        // The second arithmetic expression is always an integer
+        else if (expression.getSecondExpression().isAncestor(inputParameter)) {
+            type = Integer.class;
+        }
+    }
+
+    @Override
     public void visit(LengthExpression expression) {
 
         // LENGTH takes a string as argument
@@ -520,6 +535,19 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
             expression.getSecondExpression().isAncestor(inputParameter) ||
             expression.getThirdExpression() .isAncestor(inputParameter)) {
             type = String.class;
+        }
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+
+        // The string primary is always a string
+        if (expression.getFirstExpression().isAncestor(inputParameter)) {
+            type = String.class;
+        }
+        // The second arithmetic expression is always an integer
+        else if (expression.getSecondExpression().isAncestor(inputParameter)) {
+            type = Integer.class;
         }
     }
 

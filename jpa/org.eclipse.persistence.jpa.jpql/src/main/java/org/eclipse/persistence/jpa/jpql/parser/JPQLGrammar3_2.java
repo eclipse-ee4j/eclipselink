@@ -19,7 +19,9 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONCAT_PIPES;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.REPLACE;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.RIGHT;
 
 /**
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in Jakarta Persistence 3.2.
@@ -103,16 +105,24 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         registerBNF(new SimpleStringExpressionBNF());
         registerBNF(new InternalReplacePositionExpressionBNF());
         registerBNF(new InternalReplaceStringExpressionBNF());
+        registerBNF(new InternalLeftPositionExpressionBNF());
+        registerBNF(new InternalLeftStringExpressionBNF());
+        registerBNF(new InternalRightPositionExpressionBNF());
+        registerBNF(new InternalRightStringExpressionBNF());
 
         // Extend some query BNFs
         addChildBNF(StringPrimaryBNF.ID,   SimpleStringExpressionBNF.ID);
         addChildFactory(FunctionsReturningStringsBNF.ID, ReplaceExpressionFactory.ID);
+        addChildFactory(FunctionsReturningStringsBNF.ID, LeftExpressionFactory.ID);
+        addChildFactory(FunctionsReturningStringsBNF.ID, RightExpressionFactory.ID);
     }
 
     @Override
     protected void initializeExpressionFactories() {
         registerFactory(new StringExpressionFactory());
         registerFactory(new ReplaceExpressionFactory());
+        registerFactory(new LeftExpressionFactory());
+        registerFactory(new RightExpressionFactory());
     }
 
     @Override
@@ -121,6 +131,10 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         registerIdentifierVersion(CONCAT_PIPES, JPAVersion.VERSION_3_2);
         registerIdentifierRole(REPLACE,             IdentifierRole.FUNCTION);           // REPLACE(x, y, z)
         registerIdentifierVersion(REPLACE, JPAVersion.VERSION_3_2);
+        registerIdentifierRole(LEFT,             IdentifierRole.FUNCTION);           // LEFT(x, y)
+        registerIdentifierVersion(LEFT, JPAVersion.VERSION_3_2);
+        registerIdentifierRole(RIGHT,             IdentifierRole.FUNCTION);           // REPLACE(x, y)
+        registerIdentifierVersion(RIGHT, JPAVersion.VERSION_3_2);
     }
 
     @Override

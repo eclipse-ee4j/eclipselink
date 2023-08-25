@@ -350,6 +350,18 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
             {"KEY_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the ABS expression."},
             {"KEY_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the ABS expression."},
 
+            // LeftExpression - Grammar
+            {"LEFT_EXPRESSION_INVALID_FIRST_EXPRESSION",     "The first argument is not a valid expression."},
+            {"LEFT_EXPRESSION_INVALID_SECOND_EXPRESSION",    "The second argument is not a valid expression."},
+            {"LEFT_EXPRESSION_MISSING_FIRST_COMMA",          "The first comma is missing from the LEFT expression."},
+            {"LEFT_EXPRESSION_MISSING_FIRST_EXPRESSION",     "The first argument is missing from the LEFT expression."},
+            {"LEFT_EXPRESSION_MISSING_LEFT_PARENTHESIS",     "The left parenthesis is missing from the LEFT expression."},
+            {"LEFT_EXPRESSION_MISSING_RIGHT_PARENTHESIS",    "The right parenthesis is missing from the LEFT expression."},
+            {"LEFT_EXPRESSION_MISSING_SECOND_EXPRESSION",    "The second argument is missing from the LEFT expression."},
+            // LeftExpression - Semantic
+            {"LEFT_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE",  "The first argument is not a String value."},
+            {"LEFT_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The second argument is not an integer value."},
+                
             // LengthExpression - Grammar
             {"LENGTH_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
             {"LENGTH_EXPRESSION_MISSING_EXPRESSION",        "An expression must be provided for a LENGTH expression."},
@@ -488,14 +500,26 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
             {"REPLACE_EXPRESSION_MISSING_THIRD_EXPRESSION",     "The third argument is missing from the REPLACE expression."},
             // ReplaceExpression - Semantic
             {"REPLACE_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE",  "The first argument is not a String value."},
-            {"REPLACE_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The second argument is not an integer value."},
-            {"REPLACE_EXPRESSION_THIRD_EXPRESSION_WRONG_TYPE",  "The third argument is not an integer value."},
+            {"REPLACE_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The second argument is not an String value."},
+            {"REPLACE_EXPRESSION_THIRD_EXPRESSION_WRONG_TYPE",  "The third argument is not an String value."},
                 
             // ResultVariable - Grammar
             {"RESULT_VARIABLE_INVALID_JPA_VERSION",       "A result variable cannot be used in a JPQL query when the JPA platform is 1.0."},
             {"RESULT_VARIABLE_MISSING_SELECT_EXPRESSION", "The select item is missing from the result variable declaration."},
             {"RESULT_VARIABLE_MISSING_RESULT_VARIABLE",   "The result variable is missing from the select item declaration."},
-
+                
+            // RightExpression - Grammar
+            {"RIGHT_EXPRESSION_INVALID_FIRST_EXPRESSION",     "The first argument is not a valid expression."},
+            {"RIGHT_EXPRESSION_INVALID_SECOND_EXPRESSION",    "The second argument is not a valid expression."},
+            {"RIGHT_EXPRESSION_MISSING_FIRST_COMMA",          "The first comma is missing from the RIGHT expression."},
+            {"RIGHT_EXPRESSION_MISSING_FIRST_EXPRESSION",     "The first argument is missing from the RIGHT expression."},
+            {"RIGHT_EXPRESSION_MISSING_LEFT_PARENTHESIS",     "The left parenthesis is missing from the RIGHT expression."},
+            {"RIGHT_EXPRESSION_MISSING_RIGHT_PARENTHESIS",    "The right parenthesis is missing from the RIGHT expression."},
+            {"RIGHT_EXPRESSION_MISSING_SECOND_EXPRESSION",    "The second argument is missing from the RIGHT expression."},
+            // RightExpression - Semantic
+            {"RIGHT_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE",  "The first argument is not a String value."},
+            {"RIGHT_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The second argument is not an integer value."},
+                
             // SimpleSelectClause - Grammar
             {"SIMPLE_SELECT_CLAUSE_NOT_SINGLE_EXPRESSION", "Only one expression can be declared in a SELECT clause of a subquery."},
 

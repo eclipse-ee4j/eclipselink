@@ -16,26 +16,26 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * The query BNF for the parameter of the <code><b>REPLACE</b></code> expression.
+ * The query BNF for the parameter of the <code><b>LEFT</b></code> expression.
  * <br>
  * JPA 3.2:
- * <div><b>BNF</b> ::= REPLACE(string_expression, string_expression, string_expression)</div>
+ * <div><b>BNF</b> ::= LEFT(string_expression, simple_arithmetic_expression)</div>
  *
  * @since 4.1
  * @author Radek Felcman
  */
 @SuppressWarnings("nls")
-public final class InternalReplaceStringExpressionBNF extends JPQLQueryBNF {
+public final class InternalLeftStringExpressionBNF extends JPQLQueryBNF {
 
     /**
      * The unique identifier of this BNF rule.
      */
-    public static final String ID = "replace_item";
+    public static final String ID = "left_item";
 
     /**
-     * Creates a new <code>InternalReplaceStringExpressionBNF</code>.
+     * Creates a new <code>InternalLeftStringExpressionBNF</code>.
      */
-    public InternalReplaceStringExpressionBNF() {
+    public InternalLeftStringExpressionBNF() {
         super(ID);
     }
 

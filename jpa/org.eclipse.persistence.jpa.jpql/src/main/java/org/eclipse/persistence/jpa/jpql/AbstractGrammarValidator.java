@@ -90,6 +90,7 @@ import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.JoinAssociationPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpressionEscapeCharacterBNF;
@@ -114,6 +115,7 @@ import org.eclipse.persistence.jpa.jpql.parser.RangeDeclarationBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -588,6 +590,43 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         };
     }
 
+    protected AbstractDoubleEncapsulatedExpressionHelper<LeftExpression> buildLeftExpressionHelper() {
+        return new AbstractDoubleEncapsulatedExpressionHelper<LeftExpression>(this) {
+            @Override
+            protected String firstExpressionInvalidKey() {
+                return LeftExpression_InvalidFirstExpression;
+            }
+            @Override
+            protected String firstExpressionMissingKey() {
+                return LeftExpression_MissingFirstExpression;
+            }
+            @Override
+            public String identifier(LeftExpression expression) {
+                return RIGHT;
+            }
+            @Override
+            public String leftParenthesisMissingKey(LeftExpression expression) {
+                return LeftExpression_MissingLeftParenthesis;
+            }
+            @Override
+            public String rightParenthesisMissingKey(LeftExpression expression) {
+                return LeftExpression_MissingRightParenthesis;
+            }
+            @Override
+            protected String missingCommaKey() {
+                return LeftExpression_MissingFirstComma;
+            }
+            @Override
+            protected String secondExpressionInvalidKey() {
+                return LeftExpression_InvalidSecondExpression;
+            }
+            @Override
+            protected String secondExpressionMissingKey() {
+                return LeftExpression_MissingSecondExpression;
+            }
+        };
+    }
+
     protected AbstractSingleEncapsulatedExpressionHelper<LengthExpression> buildLengthExpressionHelper() {
         return new AbstractSingleEncapsulatedExpressionHelper<LengthExpression>(this) {
             @Override
@@ -876,6 +915,43 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             protected String thirdExpressionMissingKey() {
                 return ReplaceExpression_MissingThirdExpression;
+            }
+        };
+    }
+
+    protected AbstractDoubleEncapsulatedExpressionHelper<RightExpression> buildRightExpressionHelper() {
+        return new AbstractDoubleEncapsulatedExpressionHelper<RightExpression>(this) {
+            @Override
+            protected String firstExpressionInvalidKey() {
+                return RightExpression_InvalidFirstExpression;
+            }
+            @Override
+            protected String firstExpressionMissingKey() {
+                return RightExpression_MissingFirstExpression;
+            }
+            @Override
+            public String identifier(RightExpression expression) {
+                return RIGHT;
+            }
+            @Override
+            public String leftParenthesisMissingKey(RightExpression expression) {
+                return RightExpression_MissingLeftParenthesis;
+            }
+            @Override
+            public String rightParenthesisMissingKey(RightExpression expression) {
+                return RightExpression_MissingRightParenthesis;
+            }
+            @Override
+            protected String missingCommaKey() {
+                return RightExpression_MissingFirstComma;
+            }
+            @Override
+            protected String secondExpressionInvalidKey() {
+                return RightExpression_InvalidSecondExpression;
+            }
+            @Override
+            protected String secondExpressionMissingKey() {
+                return RightExpression_MissingSecondExpression;
             }
         };
     }
@@ -1545,6 +1621,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         return helper;
     }
 
+    protected AbstractDoubleEncapsulatedExpressionHelper<LeftExpression> leftExpressionHelper() {
+        AbstractDoubleEncapsulatedExpressionHelper<LeftExpression> helper = getHelper(LEFT);
+        if (helper == null) {
+            helper = buildLeftExpressionHelper();
+            registerHelper(LEFT, helper);
+        }
+        return helper;
+    }
+
     protected AbstractSingleEncapsulatedExpressionHelper<LengthExpression> lengthExpressionHelper() {
         AbstractSingleEncapsulatedExpressionHelper<LengthExpression> helper = getHelper(LENGTH);
         if (helper == null) {
@@ -1640,6 +1725,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (helper == null) {
             helper = buildReplaceExpressionHelper();
             registerHelper(REPLACE, helper);
+        }
+        return helper;
+    }
+
+    protected AbstractDoubleEncapsulatedExpressionHelper<RightExpression> rightExpressionHelper() {
+        AbstractDoubleEncapsulatedExpressionHelper<RightExpression> helper = getHelper(RIGHT);
+        if (helper == null) {
+            helper = buildRightExpressionHelper();
+            registerHelper(RIGHT, helper);
         }
         return helper;
     }
@@ -3734,6 +3828,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(LeftExpression expression) {
+        validateAbstractDoubleEncapsulatedExpression(expression, leftExpressionHelper());
+    }
+
+    @Override
     public void visit(LengthExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, lengthExpressionHelper());
     }
@@ -4061,6 +4160,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 expression.getResultVariable().accept(this);
             }
         }
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+        validateAbstractDoubleEncapsulatedExpression(expression, rightExpressionHelper());
     }
 
     @Override

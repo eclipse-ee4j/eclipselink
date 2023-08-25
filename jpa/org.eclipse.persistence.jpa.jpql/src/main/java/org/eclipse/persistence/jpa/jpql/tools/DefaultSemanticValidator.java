@@ -26,6 +26,8 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.Construc
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.CountFunction_DistinctEmbeddable;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.EncapsulatedIdentificationVariableExpression_NotMapValued;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.IdentificationVariable_EntityName;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LeftExpression_FirstExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LeftExpression_SecondExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LengthExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LocateExpression_FirstExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.LocateExpression_SecondExpression_WrongType;
@@ -38,6 +40,8 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.NullComp
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ReplaceExpression_FirstExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ReplaceExpression_SecondExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ReplaceExpression_ThirdExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.RightExpression_FirstExpression_WrongType;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.RightExpression_SecondExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SqrtExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SubstringExpression_FirstExpression_WrongType;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.SubstringExpression_SecondExpression_WrongType;
@@ -92,6 +96,7 @@ import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LiteralBNF;
@@ -111,6 +116,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleArithmeticExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
@@ -744,6 +750,33 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
     }
 
     @Override
+    protected int validateLeftExpression(LeftExpression expression) {
+
+        int result = super.validateLeftExpression(expression);
+
+        if (isValid(result, 0)) {
+            boolean valid = validateStringType(
+                    expression.getFirstExpression(),
+                    LeftExpression_FirstExpression_WrongType
+            );
+            updateStatus(result, 0, valid);
+        }
+
+        // The second arguments of the LEFT function denote index/number of characters. This argument is integer.
+        if (isValid(result, 1)) {
+
+            boolean valid = validateNumericType(
+                    expression.getSecondExpression(),
+                    LeftExpression_SecondExpression_WrongType
+            );
+
+            updateStatus(result, 1, valid);
+        }
+
+        return result;
+    }
+
+    @Override
     protected boolean validateLengthExpression(LengthExpression expression) {
 
         boolean valid = super.validateLengthExpression(expression);
@@ -929,6 +962,33 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
             );
 
             updateStatus(result, 2, valid);
+        }
+
+        return result;
+    }
+
+    @Override
+    protected int validateRightExpression(RightExpression expression) {
+
+        int result = super.validateRightExpression(expression);
+
+        if (isValid(result, 0)) {
+            boolean valid = validateStringType(
+                    expression.getFirstExpression(),
+                    RightExpression_FirstExpression_WrongType
+            );
+            updateStatus(result, 0, valid);
+        }
+
+        // The second arguments of the RIGHT function denote index/number of characters. This argument is integer.
+        if (isValid(result, 1)) {
+
+            boolean valid = validateNumericType(
+                    expression.getSecondExpression(),
+                    RightExpression_SecondExpression_WrongType
+            );
+
+            updateStatus(result, 1, valid);
         }
 
         return result;
@@ -1385,6 +1445,12 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
 
         @Override
+        public void visit(LeftExpression expression) {
+            // LEFT always returns a string
+            valid = true;
+        }
+
+        @Override
         public void visit(LowerExpression expression) {
             // LOWER always returns a string
             valid = true;
@@ -1393,6 +1459,12 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         @Override
         public void visit(ReplaceExpression expression) {
             // REPLACE always returns a string
+            valid = true;
+        }
+
+        @Override
+        public void visit(RightExpression expression) {
+            // RIGHT always returns a string
             valid = true;
         }
 

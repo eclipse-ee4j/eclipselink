@@ -338,4 +338,214 @@ public class TestQuerySyntaxStringTests {
             }
         }
     }
+
+    @Test
+    public void testString_leftFunctionSelect01() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT LEFT('John', 3) FROM StringEntity s WHERE s.id = 1", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("Joh", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_leftFunctionSelect02() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT LEFT(LEFT('John', 3), 2) FROM StringEntity s WHERE s.id = 1", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("Jo", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_leftFunctionSelect03() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT LEFT(s.firstName, 3) FROM StringEntity s WHERE s.id = 1", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("Joh", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_leftFunctionWhere01() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT s.firstName FROM StringEntity s WHERE LEFT(s.firstName, 3) = 'Joh'", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("John", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_leftFunctionWhere02() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT s.firstName FROM StringEntity s WHERE LEFT(LEFT(s.firstName, 3), 2) = 'Jo'", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("John", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_rightFunctionSelect01() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT RIGHT('John', 3) FROM StringEntity s WHERE s.id = 1", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("ohn", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_rightFunctionSelect02() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT RIGHT(RIGHT('John', 3), 2) FROM StringEntity s WHERE s.id = 1", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("hn", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_rightFunctionSelect03() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT RIGHT(s.firstName, 3) FROM StringEntity s WHERE s.id = 1", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("ohn", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_rightFunctionWhere01() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT s.firstName FROM StringEntity s WHERE RIGHT(s.firstName, 3) = 'ohn'", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("John", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testString_rightFunctionWhere02() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            TypedQuery<String> query = em.createQuery("SELECT s.firstName FROM StringEntity s WHERE RIGHT(RIGHT(s.firstName, 3), 2) = 'hn'", String.class);
+            String result = query.getSingleResult();
+            Assert.assertEquals("John", result);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
 }

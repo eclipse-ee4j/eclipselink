@@ -93,6 +93,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
@@ -120,6 +121,7 @@ import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -1277,6 +1279,24 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     }
 
     @Override
+    public void visit(LeftExpression expression) {
+
+        // Create the first expression
+        expression.getFirstExpression().accept(this);
+        Expression firstExpression = queryExpression;
+
+        // Create the second expression
+        expression.getSecondExpression().accept(this);
+        Expression secondExpression = queryExpression;
+
+        // Now create the LEFT expression
+        queryExpression = firstExpression.left(secondExpression);
+
+        // Set the expression type
+        type[0] = String.class;
+    }
+
+    @Override
     public void visit(LengthExpression expression) {
 
         // Create the expression from the encapsulated expression
@@ -1788,6 +1808,24 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryContext.addQueryExpression(variableName, queryExpression);
 
         // Note: The type will be calculated when traversing the select expression
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+
+        // Create the first expression
+        expression.getFirstExpression().accept(this);
+        Expression firstExpression = queryExpression;
+
+        // Create the second expression
+        expression.getSecondExpression().accept(this);
+        Expression secondExpression = queryExpression;
+
+        // Now create the RIGHT expression
+        queryExpression = firstExpression.right(secondExpression);
+
+        // Set the expression type
+        type[0] = String.class;
     }
 
     @Override

@@ -72,6 +72,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.InputParamet
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.JPQLExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.JoinTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.KeywordExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LeftExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LengthExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LikeExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LnExpressionTester;
@@ -97,6 +98,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RangeVariabl
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RegexpExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ReplaceExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ResultVariableTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RightExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RoundExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SelectClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SelectStatementTester;
@@ -3536,6 +3538,18 @@ public final class JPQLParserTester {
 
     public static CollectionMemberDeclarationTester subFromIn(String collectionPath) {
         return subFromIn(collectionPath(collectionPath));
+    }
+
+    public static LeftExpressionTester left(ExpressionTester firstExpression,
+                                                  ExpressionTester secondExpression) {
+
+        return new LeftExpressionTester(firstExpression, secondExpression);
+    }
+
+    public static RightExpressionTester right(ExpressionTester firstExpression,
+                                            ExpressionTester secondExpression) {
+
+        return new RightExpressionTester(firstExpression, secondExpression);
     }
 
     public static ReplaceExpressionTester replace(ExpressionTester firstExpression,

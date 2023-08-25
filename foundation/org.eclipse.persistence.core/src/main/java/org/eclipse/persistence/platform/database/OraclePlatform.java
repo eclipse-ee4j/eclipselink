@@ -600,6 +600,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(regexpOperator());
         addOperator(exceptOperator());
         addOperator(oracleExtractOperator());
+        addOperator(oracleLeft());
+        addOperator(oracleRight());
     }
 
     /**
@@ -720,6 +722,46 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = { 1, 0 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Oracle equivalent to LEFT e.g. LEFT(dname, 5) is SUBSTR e.g. SUBSTR(dname, 1, 5).
+     */
+    protected static ExpressionOperator oracleLeft() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Left);
+        List<String> v = new ArrayList<>(3);
+        v.add("SUBSTR(");
+        v.add(", 1, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 0, 1 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Oracle equivalent to RIGHT e.g. RIGHT(dname, 5) is SUBSTR e.g. SUBSTR(dname, -5).
+     */
+    protected static ExpressionOperator oracleRight() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Right);
+        List<String> v = new ArrayList<>(3);
+        v.add("SUBSTR(");
+        v.add(", -");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 0, 1 };
         exOperator.setArgumentIndices(indices);
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;

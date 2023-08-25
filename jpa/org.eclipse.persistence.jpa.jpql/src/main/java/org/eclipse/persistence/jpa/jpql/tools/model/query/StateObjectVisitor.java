@@ -332,6 +332,13 @@ public interface StateObjectVisitor {
     void visit(KeywordExpressionStateObject stateObject);
 
     /**
+     * Visits the given {@link LeftExpressionStateObject}.
+     *
+     * @param stateObject The {@link LeftExpressionStateObject} to visit
+     */
+    void visit(LeftExpressionStateObject stateObject);
+
+    /**
      * Visits the given {@link LengthExpressionStateObject}.
      *
      * @param stateObject The {@link LengthExpressionStateObject} to visit
@@ -463,6 +470,13 @@ public interface StateObjectVisitor {
      * @param stateObject The {@link ResultVariableStateObject} to visit
      */
     void visit(ResultVariableStateObject stateObject);
+
+    /**
+     * Visits the given {@link RightExpressionStateObject}.
+     *
+     * @param stateObject The {@link RightExpressionStateObject} to visit
+     */
+    void visit(RightExpressionStateObject stateObject);
 
     /**
      * Visits the given {@link SelectClauseStateObject}.
