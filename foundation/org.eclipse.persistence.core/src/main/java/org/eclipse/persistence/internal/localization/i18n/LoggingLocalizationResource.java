@@ -411,6 +411,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "osgi_initializer", "Using OSGi initializer: [{0}]."},
         { "entity_manager_ignores_nonjta_data_source", "Persistence unit uses JTA, therefore the EntityManager ignores non jta data source. "},
         { "entity_manager_ignores_jta_data_source", "Persistence unit does not use JTA, therefore the EntityManager ignores jta data source. "},
+        { "entity_manager_has_multiple_connections", "Persistence unit has multiple connections, returning the first one from the list."},
         { "problem_registering_mbean", "Problem while registering MBean: {0}" },
         { "problem_unregistering_mbean", "Problem while unregistering MBean: {0}" },
         { "session_key_for_mbean_name_is_null", "Session name used for the MBean registration cannot be null." },

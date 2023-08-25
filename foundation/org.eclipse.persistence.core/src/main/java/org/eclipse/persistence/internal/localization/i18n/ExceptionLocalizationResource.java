@@ -83,6 +83,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "bean_definition_vector_arguments_are_of_different_sizes", "Bean definition vector arguments are of different sizes" },
                                            { "missing_toplink_bean_definition_for", "Missing TopLink bean definition for {0}" },
                                            { "argument_collection_was_null", "Argument collection was null" },
+                                           { "entity_manager_with_connection_failed", "Execution of user code failed: {0}"},
                                            { "no_entities_retrieved_for_get_single_result", "getSingleResult() did not retrieve any entities." },
                                            { "no_entities_retrieved_for_get_reference", "Could not find Entity for id: {0}" },
                                            { "too_many_results_for_get_single_result", "More than one result was returned from Query.getSingleResult()" },
