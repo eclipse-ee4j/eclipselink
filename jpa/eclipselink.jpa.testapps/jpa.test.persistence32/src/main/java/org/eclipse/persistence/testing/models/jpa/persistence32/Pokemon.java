@@ -30,8 +30,8 @@ import jakarta.persistence.Table;
 @NamedQuery(name="Pokemon.get", query="SELECT p FROM Pokemon p WHERE p.id = :id")
 public class Pokemon {
 
+    // ID is assigned in tests to avoid collisions
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String name;

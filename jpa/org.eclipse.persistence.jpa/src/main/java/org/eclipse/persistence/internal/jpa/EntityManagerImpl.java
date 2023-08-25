@@ -1623,7 +1623,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     // TODO-API-3.2
     @Override
     public <C> void runWithConnection(ConnectionConsumer<C> action) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        if (getAbstractSession().getAccessors().size() > 1) {
+            getAbstractSession().log(SessionLog.WARNING, SessionLog.CONNECTION, "entity_manager_has_multiple_connections");
+        }
+        @SuppressWarnings("unchecked")
+        C connection = (C) getAbstractSession().getAccessor().getDatasourceConnection();
+        try {
+            action.accept(connection);
+        } catch (Exception e) {
+            transaction.setRollbackOnlyInternal();
+            throw new PersistenceException(
+                    ExceptionLocalization.buildMessage(
+                            "entity_manager_with_connection_failed", new String[] {e.getLocalizedMessage()}), e);
+        }
     }
 
     /**
@@ -1648,7 +1660,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     // TODO-API-3.2
     @Override
     public <C, T> T callWithConnection(ConnectionFunction<C, T> function) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        if (getAbstractSession().getAccessors().size() > 1) {
+            getAbstractSession().log(SessionLog.WARNING, SessionLog.CONNECTION, "entity_manager_has_multiple_connections");
+        }
+        @SuppressWarnings("unchecked")
+        C connection = (C) getAbstractSession().getAccessor().getDatasourceConnection();
+        try {
+            return function.apply(connection);
+        } catch (Exception e) {
+            transaction.setRollbackOnlyInternal();
+            throw new PersistenceException(
+                    ExceptionLocalization.buildMessage(
+                            "entity_manager_with_connection_failed", new String[] {e.getLocalizedMessage()}), e);
+        }
     }
 
     /**

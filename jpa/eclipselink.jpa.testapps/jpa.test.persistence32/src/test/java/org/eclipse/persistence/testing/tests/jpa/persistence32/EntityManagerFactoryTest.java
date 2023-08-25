@@ -12,6 +12,12 @@
 
 package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import junit.framework.Test;
@@ -20,6 +26,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Persistence32TableCreator;
+import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
 
 public class EntityManagerFactoryTest extends JUnitTestCase {
@@ -54,10 +61,10 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerFactoryTest");
         suite.addTest(new EntityManagerFactoryTest("testSetup"));
-//        suite.addTest(new EntityManagerFactoryTest("testWithApplicationManagedTransaction"));
-//        suite.addTest(new EntityManagerFactoryTest("testWithApplicationManagedTransactionVoid"));
-//        suite.addTest(new EntityManagerFactoryTest("testWithUserManagedTransaction"));
-//        suite.addTest(new EntityManagerFactoryTest("testWithUserManagedTransactionVoid"));
+        suite.addTest(new EntityManagerFactoryTest("testCallInTransaction"));
+        suite.addTest(new EntityManagerFactoryTest("testRunInTransaction"));
+        suite.addTest(new EntityManagerFactoryTest("testRunWithConnection"));
+        suite.addTest(new EntityManagerFactoryTest("testCallWithConnection"));
         return suite;
     }
 
@@ -97,84 +104,114 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
             EntityTransaction et = em.getTransaction();
             try {
                 et.begin();
-
                 for (int i = 1; i < TYPES.length; i++) {
                     em.persist(TYPES[i]);
                 }
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
+                throw e;
             }
         }
     }
 
-    // TODO-API-3.2 - rewrite using new API
-    /*
-    public void testWithApplicationManagedTransaction() {
-        Pokemon pokemon = emf.withTransaction((em -> {
+    public void testCallInTransaction() {
+        Pokemon pokemon = emf.callInTransaction((em -> {
             Map<Integer, Type> types = new HashMap<>(24);
             em.createNamedQuery("Type.all", Type.class)
                     .getResultList()
                     .forEach(type -> types.put(type.getId(), type));
-            Pokemon newPokemon = new Pokemon("Pidgey", List.of(types.get(1), types.get(3)));
+            Pokemon newPokemon = new Pokemon(1, "Pidgey", List.of(types.get(1), types.get(3)));
             em.persist(newPokemon);
             return newPokemon;
         }));
         verifyObjectInEntityManager(pokemon, getPersistenceUnitName());
     }
 
-    public void testWithApplicationManagedTransactionVoid() {
+    public void testRunInTransaction() {
         Pokemon[] pokemon = new Pokemon[1];
-        emf.withTransaction((em -> {
+        emf.runInTransaction((em -> {
             Map<Integer, Type> types = new HashMap<>(24);
             em.createNamedQuery("Type.all", Type.class)
                     .getResultList()
                     .forEach(type -> types.put(type.getId(), type));
-            Pokemon newPokemon = new Pokemon("Beedrill", List.of(types.get(7), types.get(4)));
+            Pokemon newPokemon = new Pokemon(2, "Beedrill", List.of(types.get(7), types.get(4)));
             em.persist(newPokemon);
             pokemon[0] = newPokemon;
         }));
         verifyObjectInEntityManager(pokemon[0], getPersistenceUnitName());
     }
 
-    public void testWithUserManagedTransaction() {
-        Pokemon pokemon = emf.withTransaction(((em, et) -> {
-            try {
-                Map<Integer, Type> types = new HashMap<>(24);
-                em.createNamedQuery("Type.all", Type.class)
-                        .getResultList()
-                        .forEach(type -> types.put(type.getId(), type));
-                Pokemon newPokemon = new Pokemon("Caterpie", List.of(types.get(7)));
-                em.persist(newPokemon);
-                et.commit();
-                return newPokemon;
-            } catch (Exception e) {
-                et.rollback();
-                throw e;
-            }
-        }));
-        verifyObjectInEntityManager(pokemon, getPersistenceUnitName());
-    }
-
-
-    public void testWithUserManagedTransactionVoid() {
+    public void testRunWithConnection() {
         Pokemon[] pokemon = new Pokemon[1];
-        emf.withTransaction(((em, et) -> {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
             try {
-                Map<Integer, Type> types = new HashMap<>(24);
-                em.createNamedQuery("Type.all", Type.class)
-                        .getResultList()
-                        .forEach(type -> types.put(type.getId(), type));
-                Pokemon newPokemon = new Pokemon("Squirtle", List.of(types.get(11)));
-                em.persist(newPokemon);
+                et.begin();
+                em.<Connection>runWithConnection(
+                        connection -> {
+                            Pokemon newPokemon = new Pokemon(3, "Squirtle", List.of(TYPES[10]));
+                            try (PreparedStatement stmt = connection.prepareStatement(
+                                    "INSERT INTO PERSISTENCE32_POKEMON (ID, NAME) VALUES(?, ?)")) {
+                                stmt.setInt(1, newPokemon.getId());
+                                stmt.setString(2, newPokemon.getName());
+                                stmt.executeUpdate();
+                            }
+                            try (PreparedStatement stmt = connection.prepareStatement(
+                                    "INSERT INTO PERSISTENCE32_POKEMON_TYPE (POKEMON_ID, TYPE_ID) VALUES(?, ?)")) {
+                                for (Type type : newPokemon.getTypes()) {
+                                    stmt.setInt(1, newPokemon.getId());
+                                    stmt.setInt(2, type.getId());
+                                    stmt.executeUpdate();
+                                }
+                            }
+                            pokemon[0] = newPokemon;
+                        }
+                );
                 et.commit();
-                pokemon[0] = newPokemon;
             } catch (Exception e) {
                 et.rollback();
                 throw e;
             }
-        }));
-        verifyObjectInEntityManager(pokemon[0], getPersistenceUnitName());
+        }
+        Pokemon dbPokemon = createEntityManager().find(Pokemon.class, 3);
+        assertEquals(pokemon[0], dbPokemon);
     }
-    */
+
+    public void testCallWithConnection() {
+        Pokemon pokemon;
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                pokemon = em.<Connection, Pokemon>callWithConnection(
+                        connection -> {
+                            Pokemon newPokemon = new Pokemon(4, "Caterpie", List.of(TYPES[6]));
+                            try (PreparedStatement stmt = connection.prepareStatement(
+                                    "INSERT INTO PERSISTENCE32_POKEMON (ID, NAME) VALUES(?, ?)")) {
+                                stmt.setInt(1, newPokemon.getId());
+                                stmt.setString(2, newPokemon.getName());
+                                stmt.executeUpdate();
+                            }
+                            try (PreparedStatement stmt = connection.prepareStatement(
+                                    "INSERT INTO PERSISTENCE32_POKEMON_TYPE (POKEMON_ID, TYPE_ID) VALUES(?, ?)")) {
+                                for (Type type : newPokemon.getTypes()) {
+                                    stmt.setInt(1, newPokemon.getId());
+                                    stmt.setInt(2, type.getId());
+                                    stmt.executeUpdate();
+                                }
+                            }
+                            return newPokemon;
+                        }
+                );
+                et.commit();
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+        Pokemon dbPokemon = createEntityManager().find(Pokemon.class, 4);
+        assertEquals(pokemon, dbPokemon);
+    }
+
 }

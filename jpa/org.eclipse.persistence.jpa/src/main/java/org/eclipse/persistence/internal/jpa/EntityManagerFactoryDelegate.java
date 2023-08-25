@@ -45,6 +45,7 @@ import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PersistenceUnitUtil;
@@ -913,7 +914,29 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     // TODO-API-3.2
     @Override
     public void runInTransaction(Consumer<EntityManager> work) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        try (EntityManager em = createEntityManager()) {
+            switch (setupImpl.getPersistenceUnitInfo().getTransactionType()) {
+                case JTA:
+                    em.joinTransaction();
+                    work.accept(em);
+                    return;
+                case RESOURCE_LOCAL:
+                    EntityTransaction et = em.getTransaction();
+                    et.begin();
+                    try {
+                        work.accept(em);
+                        et.commit();
+                        return;
+                    } catch (Exception e) {
+                        et.rollback();
+                        throw e;
+                    }
+                // This may happen only when JPA gets new transaction type
+                default:
+                    throw new IllegalStateException(
+                            "Unknown transaction type " + setupImpl.getPersistenceUnitInfo().getTransactionType().name());
+            }
+        }
     }
 
     /**
@@ -945,7 +968,28 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     // TODO-API-3.2
     @Override
     public <R> R callInTransaction(Function<EntityManager, R> work) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        try (EntityManager em = createEntityManager()) {
+            switch (setupImpl.getPersistenceUnitInfo().getTransactionType()) {
+                case JTA:
+                    em.joinTransaction();
+                    return work.apply(em);
+                case RESOURCE_LOCAL:
+                    EntityTransaction et = em.getTransaction();
+                    et.begin();
+                    try {
+                        R result = work.apply(em);
+                        et.commit();
+                        return result;
+                    } catch (Exception e) {
+                        et.rollback();
+                        throw e;
+                    }
+                // This may happen only when JPA gets new transaction type
+                default:
+                    throw new IllegalStateException(
+                            "Unknown transaction type " + setupImpl.getPersistenceUnitInfo().getTransactionType().name());
+            }
+        }
     }
 
 }
