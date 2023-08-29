@@ -703,7 +703,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public Object getSingleResultOrNull() {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
@@ -881,74 +881,37 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         return (StoredProcedureQueryImpl) super.setFlushMode(flushMode);
     }
 
-    /**
-     * The cache retrieval mode that will be in effect during query execution.
-     *
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * Set the cache retrieval mode that is in effect during query execution.
-     * This cache retrieval mode overrides the cache retrieve mode in use by the entity manager.
-     *
-     * @param cacheRetrieveMode cache retrieval mode
-     * @return the same query instance
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public StoredProcedureQueryImpl setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * The cache storage mode that will be in effect during query execution.
-     *
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public CacheStoreMode getCacheStoreMode() {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * Set the cache storage mode that is in effect during query execution.
-     * This cache storage mode overrides the cache storage mode in use by the entity manager.
-     *
-     * @param cacheStoreMode cache storage mode
-     * @return the same query instance
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public StoredProcedureQueryImpl setCacheStoreMode(CacheStoreMode cacheStoreMode) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * The query timeout.
-     *
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public Integer getTimeout() {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * Set the query timeout.
-     *
-     * @param timeout the timeout, or {@code null} to indicate no timeout
-     * @return the same query instance
-     * @since 4.1
-     */
+    // TODO-API-3.2
     @Override
     public StoredProcedureQueryImpl setTimeout(Integer timeout) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");

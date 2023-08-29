@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.MapAttribute;
@@ -122,7 +123,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         }
         return this.correlatedParent;
     }
-
 
     /**
      * Fetch join to the specified attribute using an inner join.
@@ -284,13 +284,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         }
     }
 
-    /**
-     * Return the path corresponding to the referenced collection-valued
-     * attribute.
-     *
-     * @param collection collection-valued attribute
-     * @return expression corresponding to the referenced attribute
-     */
     @Override
     public <E, C extends Collection<E>> Expression<C> get(PluralAttribute<? super X, C, E> collection) {
 
@@ -298,12 +291,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         return new ExpressionImpl<C>(this.metamodel, (Class<C>) ((Class<E>) Class.class) ,this.currentNode.anyOf(collection.getName()));
     }
 
-    /**
-     * Return the path corresponding to the referenced map-valued attribute.
-     *
-     * @param map map-valued attribute
-     * @return expression corresponding to the referenced attribute
-     */
     @Override
     public <K, V, M extends Map<K, V>> Expression<M> get(MapAttribute<? super X, K, V> map) {
         return new ExpressionImpl<M>(this.metamodel, (Class<M>) ((Class<?>) Class.class) ,this.currentNode.anyOf(map.getName()));
@@ -536,6 +523,30 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         }else{
             return join(((SingularAttribute)attribute), jt);
         }
+    }
+
+    // TODO-API-3.2
+    @Override
+    public <Y> Join<X, Y> join(Class<Y> entityClass) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    @Override
+    public <Y> Join<X, Y> join(Class<Y> entityClass, JoinType joinType) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    @Override
+    public <Y> Join<X, Y> join(EntityType<Y> entity) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    // TODO-API-3.2
+    @Override
+    public <Y> Join<X, Y> join(EntityType<Y> entity, JoinType joinType) {
+        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     @Override

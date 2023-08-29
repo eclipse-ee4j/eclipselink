@@ -139,18 +139,8 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return having(restrictions != null ? List.of(restrictions) : null);
     }
 
-    /**
-     * Specify restrictions over the groups of the query according the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed.
-     *
-     * @param restrictions zero or more restriction predicates
-     * @return the modified query
-     * @since 4.1
-     */
-    // TODO-API-3.2: Prototype is missing in API
-    //@Override
+    // TODO-API-3.2
+    @Override
     public AbstractQuery<T> having(List<Predicate> restrictions) {
         Predicate predicate = queryBuilder.and(restrictions);
         findRootAndParameters(predicate);
@@ -315,18 +305,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return (AbstractQuery<T>) super.where(restrictions);
     }
 
-    /**
-     * Modify the query to restrict the query result according to the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed. This
-     * method only overrides the return type of the corresponding AbstractQuery
-     * method.
-     *
-     * @param restrictions zero or more restriction predicates
-     * @return the modified query
-     * @throws NullPointerException when restrictions {@link List} is {@code null}
-     */
+    // TODO-API-3.2
     @Override
     @SuppressWarnings("unchecked")
     public AbstractQuery<T> where(List<Predicate> restrictions) {

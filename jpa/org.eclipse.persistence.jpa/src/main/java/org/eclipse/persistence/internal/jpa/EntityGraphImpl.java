@@ -192,7 +192,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return addTreatedSubgraph((Class)type);
     }
 
-    // TODO-API-3.2: alias pro addSubgraph se st. attr
+    // TODO-API-3.2
     @Override
     public <Y> Subgraph<Y> addTreatedSubgraph(Attribute<? super X, ? super Y> attribute, Class<Y> type) {
         return addSubgraph(attribute.getName(), type);

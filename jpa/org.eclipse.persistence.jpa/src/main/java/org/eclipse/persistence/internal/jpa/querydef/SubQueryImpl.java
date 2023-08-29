@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -138,49 +138,28 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         }
         return this;
     }
+
     // override the return type only:
-    /**
-     * Modify the query to restrict the query result according to the specified
-     * boolean expression. Replaces the previously added restriction(s), if any.
-     * This method only overrides the return type of the corresponding
-     * AbstractQuery method.
-     *
-     * @param restriction
-     *            a simple or compound boolean expression
-     * @return the modified query
-     */
     @Override
     public Subquery<T> where(Expression<Boolean> restriction){
         super.where(restriction);
-        org.eclipse.persistence.expressions.Expression currentNode = ((InternalSelection)this.where).getCurrentNode();
-        for(org.eclipse.persistence.expressions.Expression exp: this.correlations){
-            currentNode = currentNode.and(exp);
-        }
-        this.subQuery.setSelectionCriteria(currentNode);
-        for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();){
-            findJoins((FromImpl)iterator.next());
-        }
-        for (Iterator<Join<?, ?>> iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
-            findJoins((FromImpl)iterator.next());
-        }
+        setWhereInternal();
         return this;
     }
 
-    /**
-     * Modify the query to restrict the query result according to the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed. This
-     * method only overrides the return type of the corresponding AbstractQuery
-     * method.
-     *
-     * @param restrictions
-     *            zero or more restriction predicates
-     * @return the modified query
-     */
     @Override
-    public Subquery<T> where(Predicate... restrictions){
+    public Subquery<T> where(Predicate... restrictions) {
+        return where(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    @Override
+    public Subquery<T> where(List<Predicate> restrictions) {
         super.where(restrictions);
+        setWhereInternal();
+        return this;
+    }
+
+    private void setWhereInternal() {
         org.eclipse.persistence.expressions.Expression currentNode = ((InternalSelection)this.where).getCurrentNode();
         for(org.eclipse.persistence.expressions.Expression exp: this.correlations){
             currentNode = currentNode.and(exp);
@@ -192,7 +171,6 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         for (Iterator<Join<?, ?>> iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
-        return this;
     }
 
     /**
@@ -237,47 +215,31 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         return this;
     }
 
-    /**
-     * Specify a restriction over the groups of the query. Replaces the previous
-     * having restriction(s), if any. This method only overrides the return type
-     * of the corresponding AbstractQuery method.
-     *
-     * @param restriction
-     *            a simple or compound boolean expression
-     * @return the modified query
-     */
     @Override
     public Subquery<T> having(Expression<Boolean> restriction){
         super.having(restriction);
-        if (this.havingClause != null){
-            this.subQuery.setHavingExpression(((InternalSelection)restriction).getCurrentNode());
-        }else{
-            this.subQuery.setHavingExpression(null);
-        }
+        setHavingClauseInternal(((InternalSelection)restriction).getCurrentNode());
         return this;
     }
 
-    /**
-     * Specify restrictions over the groups of the query according the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed. This
-     * method only overrides the return type of the corresponding AbstractQuery
-     * method.
-     *
-     * @param restrictions
-     *            zero or more restriction predicates
-     * @return the modified query
-     */
     @Override
     public Subquery<T> having(Predicate... restrictions) {
+        return having(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    @Override
+    public Subquery<T> having(List<Predicate> restrictions) {
         super.having(restrictions);
-        if (this.havingClause != null){
-            this.subQuery.setHavingExpression(((InternalSelection) this.havingClause).getCurrentNode());
-        }else{
+        setHavingClauseInternal(((InternalSelection) this.havingClause).getCurrentNode());
+        return this;
+    }
+
+    private void setHavingClauseInternal(org.eclipse.persistence.expressions.Expression currentNode) {
+        if (this.havingClause != null) {
+            this.subQuery.setHavingExpression(currentNode);
+        } else {
             this.subQuery.setHavingExpression(null);
         }
-        return this;
     }
 
     /**
@@ -533,25 +495,25 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate equalTo(Expression<?> expression) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate equalTo(Object o) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate notEqualTo(Expression<?> expression) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate notEqualTo(Object o) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
@@ -701,7 +663,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public <X> Expression<X> cast(Class<X> aClass) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }

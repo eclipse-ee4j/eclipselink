@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,47 +56,21 @@ public class BasicMapJoinImpl<Z, K, E> extends MapJoinImpl<Z, K, E> {
         super(parentPath, null, metamodel, javaClass, expressionNode, modelArtifact, joinType);
     }
 
-    /**
-     * Return the path corresponding to the referenced non-collection valued
-     * attribute.
-     *
-     * @param att
-     *            attribute
-     * @return path corresponding to the referenced attribute
-     */
     @Override
     public <Y> Path<Y> get(SingularAttribute<? super E, Y> att){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
-    /**
-     * Return the path corresponding to the referenced collection-valued
-     * attribute.
-     *
-     * @param collection collection-valued attribute
-     * @return expression corresponding to the referenced attribute
-     */
     @Override
     public <Y, C extends java.util.Collection<Y>> Expression<C> get(PluralAttribute<? super E, C, Y> collection){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
-    /**
-     * Return the path corresponding to the referenced map-valued attribute.
-     *
-     * @param map map-valued attribute
-     * @return expression corresponding to the referenced attribute
-     */
     @Override
     public <L, W, M extends java.util.Map<L, W>> Expression<M> get(MapAttribute<? super E, L, W> map){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
-    /**
-     * Return an expression corresponding to the type of the path.
-     *
-     * @return expression corresponding to the type of the path
-     */
     @Override
     public Expression<Class<? extends E>> type(){
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_type_does_not_apply"));
