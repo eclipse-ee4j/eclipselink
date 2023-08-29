@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,7 +73,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public <X1> Expression<X1> cast(Class<X1> type) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
@@ -84,25 +84,25 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate equalTo(Expression<?> value) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate equalTo(Object value) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate notEqualTo(Expression<?> value) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public Predicate notEqualTo(Object value) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }

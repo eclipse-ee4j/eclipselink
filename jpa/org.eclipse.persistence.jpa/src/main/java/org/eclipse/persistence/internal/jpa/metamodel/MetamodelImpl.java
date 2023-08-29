@@ -185,15 +185,6 @@ public class MetamodelImpl implements Metamodel, Serializable {
         }
     }
 
-    /**
-     *  Return the metamodel entity type representing the entity.
-     *
-     *  @param entityName the name of the represented entity
-     *  @return the metamodel entity type
-     *  @throws IllegalArgumentException if not an entity
-     *  @see jakarta.persistence.Entity#name
-     *  @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public EntityType<?> entity(String entityName) {

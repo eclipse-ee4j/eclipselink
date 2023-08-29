@@ -171,15 +171,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return null;
     }
 
-    /**
-     * Called by Persistence class when an EntityManagerFactory is to be created.
-     *
-     * @param emName The name of the persistence unit
-     * @param properties A Map of properties for use by the persistence provider. These properties may be used
-     *                   to override the values of the corresponding elements in the {@code persistence.xml} file
-     *                   or specify values for properties not specified in the {@code persistence.xml}.
-     * @return EntityManagerFactory for the persistence unit, or {@code null} if the provider is not the right provider
-     */
     @Override
     public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
         Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
@@ -194,16 +185,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return null;
     }
 
-    /**
-     * Called by <code>Persistence</code> class when an <code>EntityManagerFactory</code> is to be created.
-     *
-     * @param configuration  the configuration of the persistence unit
-     * @return EntityManagerFactory for the persistence unit, or {@code null} if the provider is not the right provider
-     * @throws IllegalStateException if required configuration is missing
-     *
-     * @see jakarta.persistence.Persistence#createEntityManagerFactory(PersistenceConfiguration)
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {

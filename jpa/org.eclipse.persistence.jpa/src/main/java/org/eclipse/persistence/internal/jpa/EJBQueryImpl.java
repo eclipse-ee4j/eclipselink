@@ -300,61 +300,30 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         return (EJBQueryImpl) super.setLockMode(lockMode);
     }
 
-    /**
-     * The cache retrieval mode that will be in effect during query execution.
-     *
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * Set the cache retrieval mode that is in effect during query execution.
-     * This cache retrieval mode overrides the cache retrieve mode in use by the entity manager.
-     *
-     * @param cacheRetrieveMode cache retrieval mode
-     * @return the same query instance
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public TypedQuery<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * The cache storage mode that will be in effect during query execution.
-     *
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public CacheStoreMode getCacheStoreMode() {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * Set the cache storage mode that is in effect during query execution.
-     * This cache storage mode overrides the cache storage mode in use by the entity manager.
-     *
-     * @param cacheStoreMode cache storage mode
-     * @return the same query instance
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public TypedQuery<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * The query timeout.
-     *
-     * @since 4.1
-     */
     // TODO-API-3.2
     @Override
     public Integer getTimeout() {
@@ -478,7 +447,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     }
 
     // TODO-API-3.2
-    //@Override
+    @Override
     public X getSingleResultOrNull() {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }

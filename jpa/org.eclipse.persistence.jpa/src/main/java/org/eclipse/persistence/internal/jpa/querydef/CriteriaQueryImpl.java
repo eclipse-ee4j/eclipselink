@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -68,15 +68,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         super(metamodel, queryResult, queryBuilder, result);
     }
 
-    /**
-     * Specify the item that is to be returned in the query result. Replaces the
-     * previously specified selection, if any.
-     *
-     * @param selection
-     *            selection specifying the item that is to be returned in the
-     *            query result
-     * @return the modified query
-     */
     @Override
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
         this.selection = (SelectionImpl<? extends T>) selection;
@@ -248,52 +239,18 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     // override the return type only:
-    /**
-     * Modify the query to restrict the query result according to the specified
-     * boolean expression. Replaces the previously added restriction(s), if any.
-     * This method only overrides the return type of the corresponding
-     * AbstractQuery method.
-     *
-     * @param restriction a simple or compound boolean expression
-     * @return the modified query
-     * @throws NullPointerException when restriction expression is {@code null}
-     */
     @Override
     public CriteriaQuery<T> where(Expression<Boolean> restriction) {
         return (CriteriaQuery<T>) super.where(restriction);
     }
 
-    /**
-     * Modify the query to restrict the query result according to the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed. This
-     * method only overrides the return type of the corresponding AbstractQuery
-     * method.
-     *
-     * @param restrictions zero or more restriction predicates
-     * @return the modified query
-     * @throws NullPointerException when restrictions array is {@code null}
-     */
     @Override
     public CriteriaQuery<T> where(Predicate... restrictions) {
         return (CriteriaQuery<T>) super.where(restrictions);
     }
 
-    /**
-     * Modify the query to restrict the query result according to the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed. This
-     * method only overrides the return type of the corresponding AbstractQuery
-     * method.
-     *
-     * @param restrictions zero or more restriction predicates
-     * @return the modified query
-     * @throws NullPointerException when restrictions {@link List} is {@code null}
-     */
     // TODO-API-3.2
-    //@Override
+    @Override
     public CriteriaQuery<T> where(List<Predicate> restrictions) {
         return (CriteriaQuery<T>) super.where(restrictions);
     }
@@ -332,51 +289,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return this;
     }
 
-    /**
-     * Specify a restriction over the groups of the query. Replaces the previous
-     * having restriction(s), if any. This method only overrides the return type
-     * of the corresponding AbstractQuery method.
-     *
-     * @param restriction a simple or compound boolean expression
-     * @return the modified query
-     * @throws NullPointerException when restriction expression is {@code null}
-     */
     @Override
     public CriteriaQuery<T> having(Expression<Boolean> restriction) {
         super.having(restriction);
         return this;
     }
 
-    /**
-     * Specify restrictions over the groups of the query according the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed. This
-     * method only overrides the return type of the corresponding AbstractQuery
-     * method.
-     *
-     * @param restrictions zero or more restriction predicates
-     * @return the modified query
-     */
     @Override
     public CriteriaQuery<T> having(Predicate... restrictions) {
         super.having(restrictions);
         return this;
     }
 
-    /**
-     * Specify restrictions over the groups of the query according the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed. This
-     * method only overrides the return type of the corresponding AbstractQuery
-     * method.
-     *
-     * @param restrictions zero or more restriction predicates
-     * @return the modified query
-     */
     // TODO-API-3.2
-    //@Override
+    @Override
     public CriteriaQuery<T> having(List<Predicate> restrictions) {
         super.having(restrictions);
         return this;
@@ -447,6 +373,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
         Constructor constructor = null;
         try {
+            // TODO: Remove AccessController.doPrivileged
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(class1, constructorArgs, false));
             } else {

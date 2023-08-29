@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,23 +89,11 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
-    /**
-    * Return the path corresponding to the referenced collection-valued attribute.
-    *
-    * @param collection collection-valued attribute
-    * @return expression corresponding to the referenced attribute
-    */
     @Override
     public <E, C extends Collection<E>> Expression<C> get(PluralAttribute<? super X, C, E> collection) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
-    /**
-     * Return the path corresponding to the referenced map-valued attribute.
-     *
-     * @param map map-valued attribute
-     * @return expression corresponding to the referenced attribute
-     */
     @Override
     public <K, V, M extends Map<K, V>> Expression<M> get(MapAttribute<? super X, K, V> map) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
