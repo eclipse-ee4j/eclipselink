@@ -178,6 +178,7 @@ public class ExpressionOperator implements Serializable {
     public static final int Reverse = 99;
     public static final int Replicate = 100;
     public static final int Right = 101;
+    public static final int Left = 153;
     public static final int Locate = 112;
     public static final int Locate2 = 113;
     public static final int ToChar = 114;
@@ -1650,6 +1651,7 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(Reverse, "Reverse");
         platformOperatorNames.put(Replicate, "Replicate");
         platformOperatorNames.put(Right, "Right");
+        platformOperatorNames.put(Left, "Left");
         platformOperatorNames.put(Locate, "Locate");
         platformOperatorNames.put(Locate2, "Locate");
         platformOperatorNames.put(ToNumber, "ToNumber");
@@ -1754,6 +1756,7 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put("Reverse", Reverse);
         platformOperatorNames.put("Replicate", Replicate);
         platformOperatorNames.put("Right", Right);
+        platformOperatorNames.put("Left", Left);
         platformOperatorNames.put("Locate", Locate);
         platformOperatorNames.put("ToNumber", ToNumber);
         platformOperatorNames.put("ToChar", ToChar);
@@ -1999,6 +2002,14 @@ public class ExpressionOperator implements Serializable {
         v.add(")");
         result.printsJavaAs(v);
         return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator left() {
+        return simpleTwoArgumentFunction(Left, "LEFT");
     }
 
     /**

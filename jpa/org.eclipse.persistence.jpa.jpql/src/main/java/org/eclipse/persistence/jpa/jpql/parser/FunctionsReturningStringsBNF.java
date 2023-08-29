@@ -24,6 +24,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * LOWER(string_primary) | UPPER(string_primary)</code></div>
  * Jakarta Persistence 3.2:
  * <div><b>BNF:</b> <code>functions_returning_string ::= REPLACE(string_primary, string_primary, string_primary})</code></div>
+ * <div><b>BNF:</b> <code>functions_returning_string ::= LEFT(string_primary, simple_arithmetic_expression})</code></div>
+ * <div><b>BNF:</b> <code>functions_returning_string ::= RIGHT(string_primary, simple_arithmetic_expression})</code></div>
  *
  * @version 2.4
  * @since 2.3

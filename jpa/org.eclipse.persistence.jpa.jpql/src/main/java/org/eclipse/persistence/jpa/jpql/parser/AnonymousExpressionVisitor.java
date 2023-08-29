@@ -252,6 +252,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(LeftExpression expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
     public void visit(LengthExpression expression) {
         visit((Expression) expression);
     }
@@ -398,6 +403,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(ResultVariable expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
         visit((Expression) expression);
     }
 

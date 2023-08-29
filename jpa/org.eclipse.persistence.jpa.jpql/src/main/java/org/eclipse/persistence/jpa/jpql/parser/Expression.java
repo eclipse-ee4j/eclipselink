@@ -414,6 +414,8 @@ public interface Expression {
 
     /**
      * The constant for 'LEFT'.
+     * Primary usage is as the constant for 'LEFT' String function, but
+     * it also used to parse JOIN expression e.g. LEFT JOIN
      */
     String LEFT = "LEFT";
 
@@ -677,6 +679,11 @@ public interface Expression {
      * The constant for 'REPLACE'.
      */
     String REPLACE = "REPLACE";
+
+    /**
+     * The constant for 'RIGHT'.
+     */
+    String RIGHT = "RIGHT";
 
     /**
      * The constant for 'ROUND'.

@@ -203,6 +203,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(LeftExpression expression) {
+    }
+
+    @Override
     public void visit(LengthExpression expression) {
     }
 
@@ -320,6 +324,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(ResultVariable expression) {
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
     }
 
     @Override

@@ -199,6 +199,10 @@ public abstract class AbstractStateObjectVisitor implements StateObjectVisitor {
     }
 
     @Override
+    public void visit(LeftExpressionStateObject stateObject) {
+    }
+
+    @Override
     public void visit(LengthExpressionStateObject stateObject) {
     }
 
@@ -272,6 +276,10 @@ public abstract class AbstractStateObjectVisitor implements StateObjectVisitor {
 
     @Override
     public void visit(ResultVariableStateObject stateObject) {
+    }
+
+    @Override
+    public void visit(RightExpressionStateObject stateObject) {
     }
 
     @Override

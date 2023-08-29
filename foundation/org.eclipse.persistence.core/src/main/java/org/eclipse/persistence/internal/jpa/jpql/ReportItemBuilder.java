@@ -46,6 +46,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
@@ -60,6 +61,7 @@ import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
@@ -378,6 +380,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
     }
 
     @Override
+    public void visit(LeftExpression expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
     public void visit(LengthExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
@@ -509,6 +517,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         expression.getSelectExpression().accept(this);
 
         resultVariable = null;
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
     @Override

@@ -82,6 +82,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLStatementBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
@@ -110,6 +111,7 @@ import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -3181,6 +3183,25 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class LeftExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
+
+        protected LeftExpressionTester(ExpressionTester firstExpression,
+                                          ExpressionTester secondExpression) {
+
+            super(firstExpression, secondExpression);
+        }
+
+        @Override
+        protected Class<? extends AbstractDoubleEncapsulatedExpression> expressionType() {
+            return LeftExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return LeftExpression.LEFT;
+        }
+    }
+
     public static final class LengthExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
         protected LengthExpressionTester(ExpressionTester expression) {
@@ -3895,6 +3916,25 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
             sb.append(resultVariable);
             return sb.toString();
+        }
+    }
+
+    public static final class RightExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
+
+        protected RightExpressionTester(ExpressionTester firstExpression,
+                                       ExpressionTester secondExpression) {
+
+            super(firstExpression, secondExpression);
+        }
+
+        @Override
+        protected Class<? extends AbstractDoubleEncapsulatedExpression> expressionType() {
+            return RightExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return ReplaceExpression.RIGHT;
         }
     }
 

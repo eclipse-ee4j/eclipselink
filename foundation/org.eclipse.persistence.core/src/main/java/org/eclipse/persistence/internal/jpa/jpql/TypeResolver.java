@@ -78,6 +78,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
@@ -105,6 +106,7 @@ import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -863,6 +865,11 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     }
 
     @Override
+    public void visit(LeftExpression expression) {
+        type = String.class;
+    }
+
+    @Override
     public void visit(LengthExpression expression) {
         type = Integer.class;
     }
@@ -1079,6 +1086,11 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     @Override
     public void visit(ResultVariable expression) {
         expression.getSelectExpression().accept(this);
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+        type = String.class;
     }
 
     @Override

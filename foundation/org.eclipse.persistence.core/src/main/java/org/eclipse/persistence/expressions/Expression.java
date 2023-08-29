@@ -3066,6 +3066,37 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * PUBLIC:
+     * Function return a given number of characters starting at the
+     * left of a string. Equivalent to the Sybase LEFT function
+     * <p>Example:
+     * <blockquote><pre>
+     * EclipseLink: employee.get("name").left(2)
+     * Java: NA
+     * SQL: LEFT(name, 2)
+     * </pre></blockquote>
+     */
+    public Expression left(int characters) {
+        return left(Integer.valueOf(characters));
+    }
+
+    /**
+     * PUBLIC:
+     * Function return a given number of characters starting at the
+     * left of a string. Equivalent to the Sybase LEFT function
+     * <p>Example:
+     * <blockquote><pre>
+     * EclipseLink: employee.get("name").left(2)
+     * Java: NA
+     * SQL: LEFT(name, 2)
+     * </pre></blockquote>
+     */
+    public Expression left(Object characters) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.Left);
+        return anOperator.expressionFor(this, characters);
+    }
+
+    /**
+     * PUBLIC:
      * Return an expression that compares if the receivers value is like other value.
      * This is equivalent to the SQL "LIKE ESCAPE" operator that except wildcards.
      * The character "%" means any sequence of characters and the character "_" mean any character.

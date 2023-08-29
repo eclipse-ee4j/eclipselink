@@ -70,6 +70,7 @@ import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -93,6 +94,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -1737,6 +1739,46 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     /**
+     * Validates the encapsulated expression of the given <code><b>LEFT</b></code> expression.
+     * The test to perform is:
+     * <ul>
+     * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+     * mapping, an association field is not allowed.</li>
+     * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+     * that expression but the returned status will not be changed.</li>
+     * </ul>
+     *
+     * @param expression The {@link LeftExpression} to validate by validating its encapsulated expression
+     * @return A number indicating the validation result. {@link #isValid(int, int)} can be used to
+     * determine the validation status of an expression based on its position
+     */
+    protected int validateLeftExpression(LeftExpression expression) {
+
+        int result = 0;
+
+        // Validate the first expression
+        if (expression.hasFirstExpression()) {
+            Expression firstExpression = expression.getFirstExpression();
+
+            // Special case for state field path expression, association field is not allowed
+            StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
+
+            if (pathExpression != null) {
+                boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
+                updateStatus(result, 0, valid);
+            }
+            else {
+                firstExpression.accept(this);
+            }
+        }
+
+        // Validate the second expression
+        expression.getSecondExpression().accept(this);
+
+        return result;
+    }
+
+    /**
      * Validates the encapsulated expression of the given <code><b>LENGTH</b></code> expression. The
      * test to perform is:
      * <ul>
@@ -2069,7 +2111,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         expression.getRootObject().accept(this);
     }
 
-
     /**
      * Validates the encapsulated expression of the given <code><b>REPLACEMENT</b></code> expression.
      * The test to perform is:
@@ -2123,6 +2164,46 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         // TODO: Validate identification to make sure it does not
         //       collide with one defined in the FROM clause
         super.visit(expression);
+    }
+
+    /**
+     * Validates the encapsulated expression of the given <code><b>RIGHT</b></code> expression.
+     * The test to perform is:
+     * <ul>
+     * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+     * mapping, an association field is not allowed.</li>
+     * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+     * that expression but the returned status will not be changed.</li>
+     * </ul>
+     *
+     * @param expression The {@link RightExpression} to validate by validating its encapsulated expression
+     * @return A number indicating the validation result. {@link #isValid(int, int)} can be used to
+     * determine the validation status of an expression based on its position
+     */
+    protected int validateRightExpression(RightExpression expression) {
+
+        int result = 0;
+
+        // Validate the first expression
+        if (expression.hasFirstExpression()) {
+            Expression firstExpression = expression.getFirstExpression();
+
+            // Special case for state field path expression, association field is not allowed
+            StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
+
+            if (pathExpression != null) {
+                boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
+                updateStatus(result, 0, valid);
+            }
+            else {
+                firstExpression.accept(this);
+            }
+        }
+
+        // Validate the second expression
+        expression.getSecondExpression().accept(this);
+
+        return result;
     }
 
     /**

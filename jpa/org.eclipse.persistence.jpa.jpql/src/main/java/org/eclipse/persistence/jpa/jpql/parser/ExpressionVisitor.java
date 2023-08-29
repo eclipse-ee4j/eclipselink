@@ -320,6 +320,13 @@ public interface ExpressionVisitor {
     void visit(KeywordExpression expression);
 
     /**
+     * Visits the {@link LeftExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(LeftExpression expression);
+
+    /**
      * Visits the {@link LengthExpression} expression.
      *
      * @param expression The {@link Expression} to visit
@@ -528,6 +535,13 @@ public interface ExpressionVisitor {
      * @param expression The {@link Expression} to visit
      */
     void visit(ResultVariable expression);
+
+    /**
+     * Visits the {@link RightExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(RightExpression expression);
 
     /**
      * Visits the {@link SelectClause} expression.

@@ -23,16 +23,31 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_Concat
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Select02;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Select_Chained;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select01;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select02;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select03;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select04;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Where;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ReplaceFunction_Select01;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ReplaceFunction_Select02;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ReplaceFunction_Select03;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ReplaceFunction_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Select01;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Select02;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Select03;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Where;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.concatPipes;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.count;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.from;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.groupBy;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.having;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.left;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.leftJoin;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.numeric;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.path;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.replace;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.resultVariable;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.right;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.select;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.selectStatement;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.string;
@@ -165,6 +180,159 @@ public class JPQLQueriesTest3_2 extends JPQLParserTest {
         );
         try {
             testQuery(query_ReplaceFunction_Where(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_LeftFunction_Select01() {
+
+        // SELECT LEFT('Hello World', 5) FROM Customer c
+        ExpressionTester selectStatement = selectStatement(
+                select(left(string("'Hello World'"), numeric(5))),
+                from("Customer", "c")
+        );
+        try {
+            testQuery(query_LeftFunction_Select01(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_LeftFunction_Select02() {
+
+        // SELECT LEFT(LEFT('Hello World', 5), 2) FROM Customer c
+        ExpressionTester selectStatement = selectStatement(
+                select(left(left(string("'Hello World'"), numeric(5)), numeric(2))),
+                from("Customer", "c")
+        );
+        try {
+            testQuery(query_LeftFunction_Select02(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_LeftFunction_Select03() {
+
+        // SELECT LEFT(c.firstName, 2) FROM Customer c
+        ExpressionTester selectStatement = selectStatement(
+                select(left(path("c.firstName"), numeric(2))),
+                from("Customer", "c")
+        );
+        try {
+            testQuery(query_LeftFunction_Select03(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_LeftFunction_Select04() {
+
+        // SELECT LEFT(cr.name, 5), COUNT (res)
+        // FROM Cruise cr LEFT JOIN cr.reservations res
+        // GROUP BY cr.name
+        // HAVING count(res) > 10
+        ExpressionTester selectStatement = selectStatement(
+                select(left(path("cr.name"), numeric(5)), count(variable("res"))),
+                from("Cruise", "cr", leftJoin("cr.reservations", "res")),
+                groupBy(path("cr.name")),
+                having(count(variable("res")).greaterThan(numeric(10)))
+        );
+        try {
+            testQuery(query_LeftFunction_Select04(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+
+    @Test
+    public void test_Query_LeftFunction_Where() {
+
+        // SELECT c FROM Customer c WHERE LEFT(c.firstName, 4) = 'John'
+        ExpressionTester selectStatement = selectStatement(
+                select(variable("c")),
+                from("Customer", "c"),
+                where(left(path("c.firstName"), numeric(4)).equal(string("'John'")))
+        );
+        try {
+            testQuery(query_LeftFunction_Where(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+
+    @Test
+    public void test_Query_RightFunction_Select01() {
+
+        // SELECT RIGHT('Hello World', 5) FROM Customer c
+        ExpressionTester selectStatement = selectStatement(
+                select(right(string("'Hello World'"), numeric(5))),
+                from("Customer", "c")
+        );
+        try {
+            testQuery(query_RightFunction_Select01(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_RightFunction_Select02() {
+
+        // SELECT RIGHT(RIGHT('Hello World', 5), 2) FROM Customer c
+        ExpressionTester selectStatement = selectStatement(
+                select(right(right(string("'Hello World'"), numeric(5)), numeric(2))),
+                from("Customer", "c")
+        );
+        try {
+            testQuery(query_RightFunction_Select02(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_RightFunction_Select03() {
+
+        // SELECT RIGHT(c.firstName, 2) FROM Customer c
+        ExpressionTester selectStatement = selectStatement(
+                select(right(path("c.firstName"), numeric(2))),
+                from("Customer", "c")
+        );
+        try {
+            testQuery(query_RightFunction_Select03(), selectStatement);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    @Test
+    public void test_Query_RightFunction_Where() {
+
+        // SELECT c FROM Customer c WHERE RIGHT(c.firstName, 4) = 'John'
+        ExpressionTester selectStatement = selectStatement(
+                select(variable("c")),
+                from("Customer", "c"),
+                where(right(path("c.firstName"), numeric(4)).equal(string("'John'")))
+        );
+        try {
+            testQuery(query_RightFunction_Where(), selectStatement);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;

@@ -352,6 +352,8 @@ public class DerbyPlatform extends DB2Platform {
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
         addOperator(derbyExtractOperator());
         addOperator(derbyPowerOperator());
+        addOperator(derbyLeftOperator());
+        addOperator(derbyRightOperator());
 
         addOperator(avgOperator());
         addOperator(sumOperator());
@@ -484,6 +486,48 @@ public class DerbyPlatform extends DB2Platform {
         argumentIndices[1] = 0;
         operator.setArgumentIndices(argumentIndices);
         return operator;
+    }
+
+    /**
+     * INTERNAL:
+     * Derby equivalent to LEFT e.g. LEFT(dname, 5) is SUBSTR e.g. SUBSTR(dname, 1, 5).
+     */
+    protected static ExpressionOperator derbyLeftOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Left);
+        List<String> v = new ArrayList<>(3);
+        v.add("SUBSTR(");
+        v.add(", 1, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 0, 1 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Derby equivalent to RIGHT e.g. RIGHT(dname, 5) is SUBSTR e.g. SUBSTR(dname, LENGTH(dname) +1 - 5, 5).
+     */
+    protected static ExpressionOperator derbyRightOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Right);
+        List<String> v = new ArrayList<>(3);
+        v.add("SUBSTR(");
+        v.add(", LENGTH(");
+        v.add(") + 1 - ");
+        v.add(", ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 0, 0, 1, 1 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
 
     // Derby does not suport native EXTRACT at all. There are specific functions for most of the date/time parts.
