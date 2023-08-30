@@ -1981,6 +1981,11 @@ public abstract class Expression implements Serializable, Cloneable {
         int start = 0;
         int index = sql.indexOf('?');
         while (index != -1) {
+            // ? can be escaped as ?? to support ? as a native SQL operator (e.g. on Postgres)
+            if (index < sql.length() - 1 && sql.charAt(index + 1) == '?') {
+                index = sql.indexOf('?', index + 2);
+                continue;
+            }
             v.add(sql.substring(start, index));
             start = index + 1;
             index = sql.indexOf('?', start);
