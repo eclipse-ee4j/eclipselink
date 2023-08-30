@@ -32,6 +32,7 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.jpa;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -172,9 +173,8 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     }
 
     @Override
-    public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
-        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
-
+    public EntityManagerFactory createEntityManagerFactory(String emName, Map<?, ?> properties) {
+        Map<?, ?> nonNullProperties = (properties == null) ? new HashMap<>() : properties;
         if (checkForProviderProperty(nonNullProperties)){
             String name = (emName == null) ? "" : emName;
             JPAInitializer initializer = getInitializer(name, nonNullProperties);
@@ -188,7 +188,11 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     // TODO-API-3.2
     @Override
     public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
+        return createEntityManagerFactoryImpl(
+                initializer.customPersistenceUnitInfo(configuration),
+                Collections.emptyMap(),
+                true);
     }
 
     /**

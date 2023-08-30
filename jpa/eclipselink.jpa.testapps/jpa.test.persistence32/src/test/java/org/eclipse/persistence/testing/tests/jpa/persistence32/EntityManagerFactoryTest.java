@@ -14,12 +14,18 @@ package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PersistenceUnitTransactionType;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -34,7 +40,6 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
     // Pokemon types. Array index is ID value. Value of ID = 0 does not exist,
     // so it's array instance is set to null.
     private static final Type[] TYPES = new Type[] {
-        null,
         new Type( 1, "Normal"),
         new Type( 2, "Fighting"),
         new Type( 3, "Flying"),
@@ -53,7 +58,7 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
         new Type(16, "Dragon"),
         new Type(17, "Dark"),
         new Type(18, "Fairy")
-    } ;
+    };
 
     private JpaEntityManagerFactory emf = null;
 
@@ -65,16 +70,19 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
         suite.addTest(new EntityManagerFactoryTest("testRunInTransaction"));
         suite.addTest(new EntityManagerFactoryTest("testRunWithConnection"));
         suite.addTest(new EntityManagerFactoryTest("testCallWithConnection"));
+        suite.addTest(new EntityManagerFactoryTest("testCreateCustomEntityManagerFactory"));
+        suite.addTest(new EntityManagerFactoryTest("testCreateConflictingCustomEntityManagerFactory"));
+        suite.addTest(new EntityManagerFactoryTest("testCreateConflictingConfiguredEntityManagerFactory"));
         return suite;
     }
 
-    public EntityManagerFactoryTest() {}
+    public EntityManagerFactoryTest() {
+    }
 
     public EntityManagerFactoryTest(String name) {
         super(name);
         setPuName(getPersistenceUnitName());
     }
-
 
     @Override
     public String getPersistenceUnitName() {
@@ -82,13 +90,13 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
     }
 
     @Override
-    public void setUp () {
+    public void setUp() {
         super.setUp();
         emf = getEntityManagerFactory(getPersistenceUnitName()).unwrap(EntityManagerFactoryImpl.class);
     }
 
     @Override
-    public void tearDown () {
+    public void tearDown() {
         super.tearDown();
     }
 
@@ -104,8 +112,8 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
             EntityTransaction et = em.getTransaction();
             try {
                 et.begin();
-                for (int i = 1; i < TYPES.length; i++) {
-                    em.persist(TYPES[i]);
+                for (Type type : TYPES) {
+                    em.persist(type);
                 }
                 et.commit();
             } catch (Exception e) {
@@ -116,7 +124,7 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
     }
 
     public void testCallInTransaction() {
-        Pokemon pokemon = emf.callInTransaction((em -> {
+        Pokemon pokemon = emf.callInTransaction(em -> {
             Map<Integer, Type> types = new HashMap<>(24);
             em.createNamedQuery("Type.all", Type.class)
                     .getResultList()
@@ -124,21 +132,21 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
             Pokemon newPokemon = new Pokemon(1, "Pidgey", List.of(types.get(1), types.get(3)));
             em.persist(newPokemon);
             return newPokemon;
-        }));
+        });
         verifyObjectInEntityManager(pokemon, getPersistenceUnitName());
     }
 
     public void testRunInTransaction() {
         Pokemon[] pokemon = new Pokemon[1];
-        emf.runInTransaction((em -> {
+        emf.runInTransaction(em -> {
             Map<Integer, Type> types = new HashMap<>(24);
             em.createNamedQuery("Type.all", Type.class)
-                    .getResultList()
-                    .forEach(type -> types.put(type.getId(), type));
+                 .getResultList()
+                 .forEach(type -> types.put(type.getId(), type));
             Pokemon newPokemon = new Pokemon(2, "Beedrill", List.of(types.get(7), types.get(4)));
             em.persist(newPokemon);
             pokemon[0] = newPokemon;
-        }));
+        });
         verifyObjectInEntityManager(pokemon[0], getPersistenceUnitName());
     }
 
@@ -174,8 +182,10 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
                 throw e;
             }
         }
-        Pokemon dbPokemon = createEntityManager().find(Pokemon.class, 3);
-        assertEquals(pokemon[0], dbPokemon);
+        try (EntityManager em = createEntityManager()) {
+            Pokemon dbPokemon = em.find(Pokemon.class, 3);
+            assertEquals(pokemon[0], dbPokemon);
+        }
     }
 
     public void testCallWithConnection() {
@@ -210,8 +220,86 @@ public class EntityManagerFactoryTest extends JUnitTestCase {
                 throw e;
             }
         }
-        Pokemon dbPokemon = createEntityManager().find(Pokemon.class, 4);
-        assertEquals(pokemon, dbPokemon);
+        try (EntityManager em = createEntityManager()) {
+            Pokemon dbPokemon = em.find(Pokemon.class, 4);
+            assertEquals(pokemon, dbPokemon);
+        }
+    }
+
+    // Test Persistence.createEntityManagerFactory(PersistenceConfiguration)
+    public void testCreateCustomEntityManagerFactory() {
+        PersistenceConfiguration configuration = new PersistenceConfiguration("persistence32_custom");
+        configuration.properties(emf.getProperties());
+        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
+        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
+        configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
+        configuration.provider("org.eclipse.persistence.jpa.PersistenceProvider");
+        Pokemon pokemon = new Pokemon(5, "Primeape", List.of(TYPES[1]));
+        try (EntityManagerFactory emfFromConfig = Persistence.createEntityManagerFactory(configuration)) {
+            try (EntityManager em = emfFromConfig.createEntityManager()) {
+                EntityTransaction et = em.getTransaction();
+                try {
+                    et.begin();
+                    em.persist(pokemon);
+                    et.commit();
+                } catch (Exception e) {
+                    et.rollback();
+                    throw e;
+                }
+            }
+        }
+        try (EntityManager em = createEntityManager()) {
+            Pokemon dbPokemon = em.find(Pokemon.class, 5);
+            assertEquals(pokemon, dbPokemon);
+        }
+    }
+
+    // Test Persistence.createEntityManagerFactory(PersistenceConfiguration) with already configured PU name
+    public void testCreateConflictingCustomEntityManagerFactory() {
+        try {
+            // Create custom PU name to be in conflict with already configured one
+            PersistenceConfiguration configuration = new PersistenceConfiguration("persistence32");
+            configuration.properties(emf.getProperties());
+            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
+            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
+            configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
+            configuration.provider("org.eclipse.persistence.jpa.PersistenceProvider");
+            // Attempt to create configured PU with conflicting name to trigger validation failure
+            Persistence.createEntityManagerFactory(configuration);
+            fail("Persistence.createEntityManagerFactory(PersistenceConfiguration) with already existing PU name shall throw PersistenceException");
+        } catch (PersistenceException pe) {
+            assertTrue(
+                    "Unexpected exception message: " + pe.getLocalizedMessage(),
+                    pe.getLocalizedMessage().contains("Cannot create custom persistence unit with name"));
+            assertTrue(
+                    "Unexpected exception message: " + pe.getLocalizedMessage(),
+                    pe.getLocalizedMessage().contains("This name was found in xml configuration."));
+        }
+    }
+
+    // Test Persistence.createEntityManagerFactory(String, Map) with already used custom PU name
+    public void testCreateConflictingConfiguredEntityManagerFactory() {
+        try {
+            // Create custom PU name to be in conflict with later used PU name from config
+            PersistenceConfiguration configuration = new PersistenceConfiguration("persistence32_custom");
+            configuration.properties(emf.getProperties());
+            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
+            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
+            configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
+            configuration.provider("org.eclipse.persistence.jpa.PersistenceProvider");
+            // Make sure custom PU is cached
+            Persistence.createEntityManagerFactory(configuration).close();
+            // Attempt to create configured PU with the same name to trigger validation failure
+            Persistence.createEntityManagerFactory("persistence32_custom", Collections.emptyMap());
+            fail("Persistence.createEntityManagerFactory(String, Map) with already existing PU name shall throw PersistenceException");
+        } catch (PersistenceException pe) {
+            assertTrue(
+                    "Unexpected exception message: " + pe.getLocalizedMessage(),
+                    pe.getLocalizedMessage().contains("Cannot create configured persistence unit with name"));
+            assertTrue(
+                    "Unexpected exception message: " + pe.getLocalizedMessage(),
+                    pe.getLocalizedMessage().contains("This name was found in custom persistence units."));
+        }
     }
 
 }

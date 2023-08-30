@@ -24,12 +24,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
+import jakarta.persistence.PersistenceUnitTransactionType;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
+
 import javax.sql.DataSource;
 
 /**
@@ -51,7 +55,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
 
     // names of jars specified in persistence.xml. they are later on used
     // to build jar-file URL.
-    private Collection<String> jarFiles = new ArrayList<String>();
+    private final Collection<String> jarFiles = new ArrayList<String>();
     protected List<URL> jarFileUrls;
     protected List<String> managedClassNames;
     protected URL persistenceUnitRootUrl;
@@ -73,6 +77,38 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         properties = new Properties();
         persistenceUnitTransactionType = PersistenceUnitTransactionType.RESOURCE_LOCAL;
         // don't initialize jarFileUrls as it is lazily initialized
+    }
+
+    /**
+     * Creates internal implementation of the {@link PersistenceUnitInfo}
+     * from {@link PersistenceConfiguration} content.
+     *
+     * @param configuration configuration of a persistence unit
+     */
+    public SEPersistenceUnitInfo(PersistenceConfiguration configuration) {
+        persistenceUnitName = configuration.name();
+        persistenceProviderClassName = configuration.provider();
+        if (configuration.jtaDataSource() != null && !configuration.jtaDataSource().isEmpty()) {
+            jtaDataSource = new DataSourceImpl(configuration.jtaDataSource(), null, null, null);
+        }
+        if (configuration.nonJtaDataSource() != null && !configuration.nonJtaDataSource().isEmpty()) {
+            nonJtaDataSource = new DataSourceImpl(configuration.nonJtaDataSource(), null, null, null);
+        }
+        cacheMode = configuration.sharedCacheMode();
+        validationMode = configuration.validationMode();
+        persistenceUnitTransactionType = configuration.transactionType();
+        mappingFiles = configuration.mappingFiles();
+        managedClassNames = configuration.managedClasses()
+                .stream()
+                .map(Class::getName)
+                .toList();
+        properties = new Properties();
+        properties.putAll(configuration.properties());
+        if (properties.contains(PersistenceUnitProperties.CLASSLOADER)) {
+            realClassLoader = (ClassLoader) properties.get(PersistenceUnitProperties.CLASSLOADER);
+        } else {
+            realClassLoader = Thread.currentThread().getContextClassLoader();
+        }
     }
 
     /**
@@ -118,18 +154,49 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     }
 
     /**
-    * @return The transaction type of the entity managers created
-    * by the EntityManagerFactory.
-    * The transaction type corresponds to the transaction-type
-    * attribute in the persistence.xml file.
-    */
+     * Get the transaction type of the persistence unit.
+     * The transaction type corresponds to the transaction-type attribute
+     * in the {@code persistence.xml} file.
+     *
+     * @return The transaction type of the entity managers created
+     *         by the EntityManagerFactory.
+     * @deprecated Use {@link PersistenceUnitTransactionType}
+     *             instead of {@link jakarta.persistence.spi.PersistenceUnitTransactionType}
+     */
     @Override
-    public PersistenceUnitTransactionType getTransactionType(){
-        return persistenceUnitTransactionType;
+    @Deprecated
+    @SuppressWarnings("removal")
+    public jakarta.persistence.spi.PersistenceUnitTransactionType getTransactionType() {
+        return switch (persistenceUnitTransactionType) {
+            case JTA -> jakarta.persistence.spi.PersistenceUnitTransactionType.JTA;
+            case RESOURCE_LOCAL -> jakarta.persistence.spi.PersistenceUnitTransactionType.RESOURCE_LOCAL;
+        };
     }
 
-    public void setTransactionType(PersistenceUnitTransactionType persistenceUnitTransactionType){
-        this.persistenceUnitTransactionType = persistenceUnitTransactionType;
+    /**
+     * Specify the transaction type of the persistence unit.
+     *
+     * @param transactionType the transaction type of the entity managers
+     *                        created by the EntityManagerFactory.
+     * @deprecated Use {@link PersistenceUnitTransactionType}
+     *             instead of {@link jakarta.persistence.spi.PersistenceUnitTransactionType}
+     */
+    @Deprecated
+    @SuppressWarnings("removal")
+    public void setTransactionType(jakarta.persistence.spi.PersistenceUnitTransactionType transactionType) {
+        persistenceUnitTransactionType = switch (transactionType) {
+            case JTA -> PersistenceUnitTransactionType.JTA;
+            case RESOURCE_LOCAL -> PersistenceUnitTransactionType.RESOURCE_LOCAL;
+        };
+    }
+
+    /**
+     * Specify the transaction type for the persistence unit.
+     *
+     * @param transactionType the transaction type
+     */
+    public void setTransactionType(PersistenceUnitTransactionType transactionType){
+        persistenceUnitTransactionType = transactionType;
     }
 
     /**
