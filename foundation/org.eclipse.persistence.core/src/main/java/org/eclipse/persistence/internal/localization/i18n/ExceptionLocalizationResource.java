@@ -84,6 +84,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "missing_toplink_bean_definition_for", "Missing TopLink bean definition for {0}" },
                                            { "argument_collection_was_null", "Argument collection was null" },
                                            { "entity_manager_with_connection_failed", "Execution of user code failed: {0}"},
+                                           { "custom_pu_name_conflict", "Cannot create custom persistence unit with name {0}. This name was found in xml configuration."},
+                                           { "configured_pu_name_conflict", "Cannot create configured persistence unit with name {0}. This name was found in custom persistence units."},
                                            { "no_entities_retrieved_for_get_single_result", "getSingleResult() did not retrieve any entities." },
                                            { "no_entities_retrieved_for_get_reference", "Could not find Entity for id: {0}" },
                                            { "too_many_results_for_get_single_result", "More than one result was returned from Query.getSingleResult()" },

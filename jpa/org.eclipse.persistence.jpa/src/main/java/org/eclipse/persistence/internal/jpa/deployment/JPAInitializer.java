@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -29,7 +29,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 
@@ -37,6 +40,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -60,8 +64,10 @@ public abstract class JPAInitializer {
 
     protected ClassLoader initializationClassloader = null;
 
-    // Cache the initial puInfos - those used by  initialEmSetupImpls
+    // Cache the initial puInfos - those used by initialEmSetupImpls
     protected Map<String, SEPersistenceUnitInfo> initialPuInfos;
+    // Cache custom puInfos from PersistenceConfiguration instances
+    protected Map<String, SEPersistenceUnitInfo> customPuInfos = new ConcurrentHashMap<>();
     // Cache the initial emSetupImpls - those created and predeployed by JavaSECMPInitializer.initialize method.
     protected Map<String, EntityManagerSetupImpl> initialEmSetupImpls;
 
@@ -133,7 +139,14 @@ public abstract class JPAInitializer {
      * Find PersistenceUnitInfo corresponding to the persistence unit name.
      * Returns null if either persistence unit either not found or provider is not supported.
      */
-    public SEPersistenceUnitInfo findPersistenceUnitInfo(String puName, Map m) {
+    public SEPersistenceUnitInfo findPersistenceUnitInfo(String puName, Map<?, ?> m) {
+        validateConfiguredPersistenceUnitName(puName);
+        return findPersistenceUnitInfoImpl(puName, m);
+    }
+
+    // findPersistenceUnitInfo(String, Map) without validation
+    // Used also to validate custom persistence unit name (search for duplicity)
+    private SEPersistenceUnitInfo findPersistenceUnitInfoImpl(String puName, Map<?, ?> m) {
         SEPersistenceUnitInfo persistenceUnitInfo = null;
         if(initialPuInfos != null) {
             persistenceUnitInfo = initialPuInfos.get(puName);
@@ -149,10 +162,44 @@ public abstract class JPAInitializer {
     }
 
     /**
+     * Find custom PersistenceUnitInfo in custom persistence unit cache by provided {@link PersistenceConfiguration}.
+     * If no cached instance exists, create and cache a new one.
+     *
+     * @param configuration configuration of the persistence unit
+     * @return {@link PersistenceUnitInfo} matching provided configuration
+     */
+    public SEPersistenceUnitInfo customPersistenceUnitInfo(PersistenceConfiguration configuration) {
+        validateCustomPersistenceUnitName(configuration);
+        SEPersistenceUnitInfo persistenceUnitInfo = customPuInfos.get(configuration.name());
+        if (persistenceUnitInfo != null) {
+            return persistenceUnitInfo;
+        }
+        persistenceUnitInfo = new SEPersistenceUnitInfo(configuration);
+        customPuInfos.put(configuration.name(), persistenceUnitInfo);
+        return persistenceUnitInfo;
+    }
+
+    // Check that custom persistence unit name does not exist in xml configurations.
+    private void validateCustomPersistenceUnitName(PersistenceConfiguration configuration) {
+        if (findPersistenceUnitInfoImpl(configuration.name(), Collections.emptyMap()) != null) {
+            throw new PersistenceException(
+                    ExceptionLocalization.buildMessage("custom_pu_name_conflict", new String[] {configuration.name()}));
+        }
+    }
+
+    // Check that persistence unit name from xml configurations does not exist also in custom persistence units
+    private void validateConfiguredPersistenceUnitName(String puName) {
+        if (customPuInfos.containsKey(puName)) {
+            throw new PersistenceException(
+                    ExceptionLocalization.buildMessage("configured_pu_name_conflict", new String[] {puName}));
+        }
+    }
+
+    /**
      * Find PersistenceUnitInfo corresponding to the persistence unit name.
      * Returns null if either persistence unit either not found or provider is not supported.
      */
-    protected SEPersistenceUnitInfo findPersistenceUnitInfoInArchives(String puName, Map m) {
+    protected SEPersistenceUnitInfo findPersistenceUnitInfoInArchives(String puName, Map<?, ?> m) {
         SEPersistenceUnitInfo persistenceUnitInfo = null;
         // mkeith - get resource name from prop and include in subsequent call
         String descriptorPath = (String) m.get(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
@@ -181,7 +228,7 @@ public abstract class JPAInitializer {
      * Find PersistenceUnitInfo corresponding to the persistence unit name in the archive.
      * Returns null if either persistence unit either not found or provider is not supported.
      */
-    protected SEPersistenceUnitInfo findPersistenceUnitInfoInArchive(String puName, Archive archive, Map m){
+    protected SEPersistenceUnitInfo findPersistenceUnitInfoInArchive(String puName, Archive archive, Map<?, ?> m){
         Iterator<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, initializationClassloader).iterator();
         while (persistenceUnits.hasNext()) {
             SEPersistenceUnitInfo persistenceUnitInfo = persistenceUnits.next();
