@@ -168,47 +168,32 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new CompoundSelectionImpl(ClassConstants.AOBJECT, selections, true);
     }
 
-    /**
-     * Create an ordering by the ascending value of the expression.
-     *
-     * @param x
-     *            expression used to define the ordering
-     * @return ascending ordering corresponding to the expression
-     */
     @Override
-    public Order asc(Expression<?> x){
-        if (((InternalSelection)x).getCurrentNode() == null){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
-        }
-        return new OrderImpl(x);
+    public Order asc(Expression<?> expression) {
+        return asc(expression, Nulls.NONE);
     }
 
-    // TODO-API-3.2
+    // TODO-API-3.2 - Nulls added to OrderImpl and ObjectLevelReadQuery in CriteriaQueryImpl, but no tests exist
     @Override
     public Order asc(Expression<?> expression, Nulls nullPrecedence) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
-    }
-
-    /**
-     * Create an ordering by the descending value of the expression.
-     *
-     * @param x
-     *            expression used to define the ordering
-     * @return descending ordering corresponding to the expression
-     */
-    @Override
-    public Order desc(Expression<?> x){
-        if (((InternalSelection)x).getCurrentNode() == null){
+        if (((InternalSelection)expression).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        OrderImpl order = new OrderImpl(x, false);
-        return order;
+        return new OrderImpl(expression, true, nullPrecedence);
     }
 
-    // TODO-API-3.2
+    @Override
+    public Order desc(Expression<?> expression){
+        return desc(expression, Nulls.NONE);
+    }
+
+    // TODO-API-3.2 - Nulls added to OrderImpl and ObjectLevelReadQuery in CriteriaQueryImpl, but no tests exist
     @Override
     public Order desc(Expression<?> expression, Nulls nullPrecedence) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        if (((InternalSelection)expression).getCurrentNode() == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
+        }
+        return new OrderImpl(expression, false, nullPrecedence);
     }
 
     // aggregate functions:

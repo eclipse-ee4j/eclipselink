@@ -723,11 +723,15 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         if (this.orderBy != null && !this.orderBy.isEmpty()) {
             for (Order order : this.orderBy) {
                 OrderImpl orderImpl = (OrderImpl) order;
-                org.eclipse.persistence.expressions.Expression orderExp = ((ExpressionImpl) orderImpl.getExpression()).getCurrentNode();
-                if (orderImpl.isAscending()) {
-                    orderExp = orderExp.ascending();
-                } else {
-                    orderExp = orderExp.descending();
+                org.eclipse.persistence.expressions.Expression orderExp = ((ExpressionImpl<?>) orderImpl.getExpression()).getCurrentNode();
+                orderExp = orderImpl.isAscending() ? orderExp.ascending() : orderExp.descending();
+                switch (orderImpl.getNullPrecedence()) {
+                    case FIRST:
+                        orderExp = orderExp.nullsFirst();
+                        break;
+                    case LAST:
+                        orderExp = orderExp.nullsLast();
+                        break;
                 }
                 query.addOrdering(orderExp);
             }
