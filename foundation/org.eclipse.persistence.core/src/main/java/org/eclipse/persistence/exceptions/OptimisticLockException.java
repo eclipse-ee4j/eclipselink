@@ -18,6 +18,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -40,6 +41,7 @@ public class OptimisticLockException extends EclipseLinkException {
     public final static int UNWRAPPING_OBJECT_DELETED_SINCE_LAST_READ = 5009;
     public final static int OBJECT_CHANGED_SINCE_LAST_MERGE = 5010;
     public final static int STATEMENT_NOT_EXECUTED_IN_BATCH = 5011;
+    public final static int STATEMENT_NOT_EXECUTED_IN_BATCH_WITH_PARAMETERS_LIST = 5012;
 
     /**
      * INTERNAL:
@@ -90,6 +92,14 @@ public class OptimisticLockException extends EclipseLinkException {
         optimisticLockException.setErrorCode(STATEMENT_NOT_EXECUTED_IN_BATCH);
         return optimisticLockException;
 
+    }
+
+    public static OptimisticLockException batchStatementExecutionFailureWithParametersList(Object object, List<List> parameters, String queryString){
+        Object[] args = { object.getClass().getName(), parameters.toString(), queryString};
+
+        OptimisticLockException optimisticLockException = new OptimisticLockException(ExceptionMessageGenerator.buildMessage(OptimisticLockException.class, STATEMENT_NOT_EXECUTED_IN_BATCH_WITH_PARAMETERS_LIST, args));
+        optimisticLockException.setErrorCode(STATEMENT_NOT_EXECUTED_IN_BATCH_WITH_PARAMETERS_LIST);
+        return optimisticLockException;
     }
 
     public static OptimisticLockException mustHaveMappingWhenStoredInObject(Class<?> aClass) {

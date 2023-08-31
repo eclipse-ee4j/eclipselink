@@ -279,6 +279,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /** JSON support for ResultSet data retrieval. */
     private transient volatile DatabaseJsonPlatform jsonPlatform;
 
+    private int[] executeBatchRowCounts;
     /**
      * Creates an instance of default database platform.
      */
@@ -308,6 +309,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.useJDBCStoredProcedureSyntax = null;
         this.storedProcedureTerminationToken = ";";
         this.jsonPlatform = null;
+        this.executeBatchRowCounts = new int[0];
     }
 
     /**
@@ -1476,6 +1478,14 @@ public class DatabasePlatform extends DatasourcePlatform {
         return true;
     }
 
+    public int[] getExecuteBatchRowCounts() {
+        return executeBatchRowCounts;
+    }
+
+    public void setExecuteBatchRowCounts(int[] rowCounts) {
+        executeBatchRowCounts = rowCounts;
+    }
+
     /**
      *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
@@ -2266,6 +2276,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public int executeBatch(Statement statement, boolean isStatementPrepared) throws java.sql.SQLException {
        int[] rowCounts = statement.executeBatch();
+       setExecuteBatchRowCounts(rowCounts);
        int rowCount = 0;
        // Otherwise check if the row counts were returned.
        for (int count : rowCounts) {
