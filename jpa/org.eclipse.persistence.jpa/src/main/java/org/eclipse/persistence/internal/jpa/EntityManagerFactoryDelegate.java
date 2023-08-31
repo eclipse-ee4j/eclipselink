@@ -723,50 +723,22 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         this.setupImpl.setMetamodel(aMetamodel);
     }
 
-    /**
-     * Determine the load state of a given persistent attribute of an entity
-     * belonging to the persistence unit.
-     *
-     * @param entity
-     *            containing the attribute
-     * @param attributeName
-     *            name of attribute whose load state is to be determined
-     * @return false if entity's state has not been loaded or if the attribute
-     *         state has not been loaded, otherwise true
-     */
     @Override
     public boolean isLoaded(Object entity, String attributeName) {
-        if (Boolean.TRUE.equals(EntityManagerFactoryImpl.isLoaded(entity, attributeName, session))) {
-            return true;
-        }
-        return false;
+        return Boolean.TRUE.equals(
+                EntityManagerFactoryImpl.isLoaded(entity, attributeName, session));
     }
 
     // TODO-API-3.2
     @Override
-    public <E> boolean isLoaded(E e, Attribute<? super E, ?> attribute) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public <E> boolean isLoaded(E entity, Attribute<? super E, ?> attribute) {
+        return isLoaded(entity, attribute.getName());
     }
 
-    /**
-     * Determine the load state of an entity belonging to the persistence unit.
-     * This method can be used to determine the load state of an entity passed
-     * as a reference. An entity is considered loaded if all attributes for
-     * which FetchType EAGER has been specified have been loaded. The
-     * isLoaded(Object, String) method should be used to determine the load
-     * state of an attribute. Not doing so might lead to unintended loading of
-     * state.
-     *
-     * @param entity
-     *            whose load state is to be determined
-     * @return false if the entity has not been loaded, else true.
-     */
     @Override
     public boolean isLoaded(Object entity) {
-        if (Boolean.TRUE.equals(EntityManagerFactoryImpl.isLoaded(entity, session))) {
-            return true;
-        }
-        return false;
+        return Boolean.TRUE.equals(
+                EntityManagerFactoryImpl.isLoaded(entity, session));
     }
 
     // TODO-API-3.2

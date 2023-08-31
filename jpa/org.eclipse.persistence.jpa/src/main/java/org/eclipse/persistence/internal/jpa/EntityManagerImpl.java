@@ -831,15 +831,18 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
 
-    // TODO-API-3.2
+    // TODO-API-3.2 - FindOption not defined in EclipseLink scope, just in API.
     @Override
     public <T> T find(Class<T> entityClass, Object primaryKey, FindOption... options) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        // Passing default find query hints, may be overwritten by options
+        FindOptionUtils.Options parsedOptions = FindOptionUtils.parse(getQueryHints(entityClass, OperationType.FIND), options);
+        return find(entityClass, primaryKey, parsedOptions.lockModeType(), parsedOptions.properties());
     }
 
     // TODO-API-3.2
     @Override
     public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {
+        FindOptionUtils.Options parsedOptions = FindOptionUtils.parse(options);
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
