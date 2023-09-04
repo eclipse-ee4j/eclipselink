@@ -21,7 +21,9 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ModifyQuery;
-import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
 import java.io.StringWriter;
@@ -156,8 +158,13 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 Object rowCount = this.databaseAccessor.basicExecuteCall(this.previousCall, null, session, false);
                 if (this.previousCall.hasOptimisticLock() && rowCount instanceof Integer) {
                     if ((Integer)rowCount != 1) {
-                        WriteObjectQuery query = (WriteObjectQuery) this.previousCall.getQuery();
-                        Object object = query.getObject();
+                        Object object = null;
+                        DatabaseQuery query = this.previousCall.getQuery();
+                        if (query instanceof UpdateObjectQuery) {
+                            object = ((UpdateObjectQuery) query).getObject();
+                        } else {
+                            object = ((DeleteObjectQuery) query).getObject();
+                        }
                         throw OptimisticLockException.batchStatementExecutionFailureWithParametersList(object, parameters, query.getSQLString());
                     }
                 }
@@ -196,8 +203,13 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                         failureParametersList.add(parameters.get(i));
                     }
                 }
-                WriteObjectQuery query = (WriteObjectQuery) this.previousCall.getQuery();
-                Object object = query.getObject();
+                Object object = null;
+                DatabaseQuery query = this.previousCall.getQuery();
+                if (query instanceof UpdateObjectQuery) {
+                    object = ((UpdateObjectQuery) query).getObject();
+                } else {
+                    object = ((DeleteObjectQuery) query).getObject();
+                }
                 throw OptimisticLockException.batchStatementExecutionFailureWithParametersList(object, failureParametersList, query.getSQLString());
             }
         } finally {
