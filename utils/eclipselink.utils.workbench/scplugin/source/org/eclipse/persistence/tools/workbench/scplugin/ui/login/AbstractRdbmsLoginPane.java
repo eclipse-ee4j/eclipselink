@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -516,17 +516,17 @@ abstract class AbstractRdbmsLoginPane extends AbstractLoginPane
         LookupType string = new LookupType
         (
             resourceRepository().getString("CONNECTION_RDBMS_LOOKUP_TYPE_STRING_CHOICE"),
-            new Integer(JNDIConnector.STRING_LOOKUP)
+            Integer.valueOf(JNDIConnector.STRING_LOOKUP)
         );
         LookupType compound = new LookupType
         (
             resourceRepository().getString("CONNECTION_RDBMS_LOOKUP_TYPE_COMPOUND_NAME_CHOICE"),
-            new Integer(JNDIConnector.COMPOUND_NAME_LOOKUP)
+            Integer.valueOf(JNDIConnector.COMPOUND_NAME_LOOKUP)
         );
         LookupType composite = new LookupType
         (
             resourceRepository().getString("CONNECTION_RDBMS_LOOKUP_TYPE_COMPOSITE_NAME_CHOICE"),
-            new Integer(JNDIConnector.COMPOSITE_NAME_LOOKUP)
+            Integer.valueOf(JNDIConnector.COMPOSITE_NAME_LOOKUP)
         );
 
         List lookupTypes = new Vector(3);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,8 +56,8 @@ public class ParallelBuilderReportItemTest extends ReportQueryTestCase {
             result[3] = wife.getLastName();
             result[4] = husband.getGender();
             result[5] = wife.getGender();
-            result[6] = new Integer(husband.getSalary());
-            result[7] = new Integer(wife.getSalary());
+            result[6] = Integer.valueOf(husband.getSalary());
+            result[7] = Integer.valueOf(wife.getSalary());
             addResult(result, null);
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -142,7 +142,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(1000));
+        theTest.getArguments().addElement(Integer.valueOf(1000));
 
         return theTest;
     }
@@ -167,7 +167,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(1000));
+        theTest.getArguments().addElement(Integer.valueOf(1000));
 
         return theTest;
     }
@@ -181,7 +181,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.getExpressionParameters().add(parameterName);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(new Integer(50000), builder).greaterThan(ExpressionMath.add(builder.get("salary"), (builder.getParameter(parameterName))));
+        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(50000), builder).greaterThan(ExpressionMath.add(builder.get("salary"), (builder.getParameter(parameterName))));
         theTest.setOriginalObjectExpression(whereClause);
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE 50000 > (emp.salary + ?1)";
@@ -192,7 +192,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(1000));
+        theTest.getArguments().addElement(Integer.valueOf(1000));
 
         return theTest;
     }
@@ -217,7 +217,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(1000));
+        theTest.getArguments().addElement(Integer.valueOf(1000));
 
         return theTest;
     }
@@ -242,7 +242,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(1000));
+        theTest.getArguments().addElement(Integer.valueOf(1000));
 
         return theTest;
     }
@@ -256,7 +256,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.getExpressionParameters().add(parameterName);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(new Integer(50000), builder).greaterThan(ExpressionMath.subtract(builder.get("salary"), (builder.getParameter(parameterName))));
+        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(50000), builder).greaterThan(ExpressionMath.subtract(builder.get("salary"), (builder.getParameter(parameterName))));
         theTest.setOriginalObjectExpression(whereClause);
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE 50000 > (emp.salary - ?1)";
@@ -267,7 +267,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(1000));
+        theTest.getArguments().addElement(Integer.valueOf(1000));
 
         return theTest;
     }
@@ -292,7 +292,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(2));
+        theTest.getArguments().addElement(Integer.valueOf(2));
 
         return theTest;
     }
@@ -317,7 +317,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(2));
+        theTest.getArguments().addElement(Integer.valueOf(2));
 
         return theTest;
     }
@@ -331,7 +331,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.getExpressionParameters().add(parameterName);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(new Integer(100000), builder).greaterThan(ExpressionMath.multiply(builder.get("salary"), (builder.getParameter(parameterName))));
+        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(100000), builder).greaterThan(ExpressionMath.multiply(builder.get("salary"), (builder.getParameter(parameterName))));
         theTest.setOriginalObjectExpression(whereClause);
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE 100000 > (emp.salary * ?1)";
@@ -342,7 +342,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(2));
+        theTest.getArguments().addElement(Integer.valueOf(2));
 
         return theTest;
     }
@@ -367,7 +367,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(2));
+        theTest.getArguments().addElement(Integer.valueOf(2));
 
         return theTest;
     }
@@ -392,7 +392,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(2));
+        theTest.getArguments().addElement(Integer.valueOf(2));
 
         return theTest;
     }
@@ -406,7 +406,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.getExpressionParameters().add(parameterName);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(new Integer(20000), builder).greaterThan(ExpressionMath.divide(builder.get("salary"), (builder.getParameter(parameterName))));
+        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(20000), builder).greaterThan(ExpressionMath.divide(builder.get("salary"), (builder.getParameter(parameterName))));
         theTest.setOriginalObjectExpression(whereClause);
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE 20000 > (emp.salary / ?1)";
@@ -417,7 +417,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(2));
+        theTest.getArguments().addElement(Integer.valueOf(2));
 
         return theTest;
     }
@@ -433,7 +433,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.getExpressionParameters().add(parameterNameForMultiply);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionMath.subtract(ExpressionMath.add(builder.get("salary"), 10000), ExpressionMath.multiply(ExpressionMath.divide(ExpressionBuilder.fromConstant(new Integer(10000), builder), builder.getParameter(parameterNameForDivide)), builder.getParameter(parameterNameForMultiply))).greaterThanEqual(50000);
+        Expression whereClause = ExpressionMath.subtract(ExpressionMath.add(builder.get("salary"), 10000), ExpressionMath.multiply(ExpressionMath.divide(ExpressionBuilder.fromConstant(Integer.valueOf(10000), builder), builder.getParameter(parameterNameForDivide)), builder.getParameter(parameterNameForMultiply))).greaterThanEqual(50000);
         theTest.setOriginalObjectExpression(whereClause);
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary + 10000 - 10000 / ?1 * ?2 >= 50000";
@@ -445,8 +445,8 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(2));
-        theTest.getArguments().addElement(new Integer(3));
+        theTest.getArguments().addElement(Integer.valueOf(2));
+        theTest.getArguments().addElement(Integer.valueOf(3));
 
         return theTest;
     }
@@ -474,8 +474,8 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(2));
-        theTest.getArguments().addElement(new Integer(3));
+        theTest.getArguments().addElement(Integer.valueOf(2));
+        theTest.getArguments().addElement(Integer.valueOf(3));
 
         return theTest;
     }
@@ -491,7 +491,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.getExpressionParameters().add(parameterNameForMultiply);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = builder.get("salary").greaterThan(ExpressionMath.subtract(ExpressionMath.add(ExpressionBuilder.fromConstant(new Integer(50000), builder), 10000), ExpressionMath.divide(ExpressionBuilder.fromConstant(new Integer(10000), builder), ExpressionMath.multiply(builder.getParameter(parameterNameForMultiply), builder.getParameter(parameterNameForDivide)))));
+        Expression whereClause = builder.get("salary").greaterThan(ExpressionMath.subtract(ExpressionMath.add(ExpressionBuilder.fromConstant(Integer.valueOf(50000), builder), 10000), ExpressionMath.divide(ExpressionBuilder.fromConstant(Integer.valueOf(10000), builder), ExpressionMath.multiply(builder.getParameter(parameterNameForMultiply), builder.getParameter(parameterNameForDivide)))));
         theTest.setOriginalObjectExpression(whereClause);
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary > (50000 + 10000 - 10000 / (?1 * ?2))";
@@ -503,8 +503,8 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(new Integer(2));
-        theTest.getArguments().addElement(new Integer(5));
+        theTest.getArguments().addElement(Integer.valueOf(2));
+        theTest.getArguments().addElement(Integer.valueOf(5));
 
         return theTest;
     }

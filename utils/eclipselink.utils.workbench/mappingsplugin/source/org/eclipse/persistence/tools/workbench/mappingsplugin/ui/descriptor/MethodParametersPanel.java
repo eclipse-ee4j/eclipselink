@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -245,7 +245,7 @@ final class MethodParametersPanel
     }
 
     private SpinnerTableCellRenderer buildNumberSpinnerRenderer() {
-        return new SpinnerTableCellRenderer(new NumberSpinnerModelAdapter(new SimplePropertyValueModel(), new Integer(0), null, new Integer(1), new Integer(0)));
+        return new SpinnerTableCellRenderer(new NumberSpinnerModelAdapter(new SimplePropertyValueModel(), Integer.valueOf(0), null, Integer.valueOf(1), Integer.valueOf(0)));
     }
 
     private TableCellRenderer buildTypeRenderer() {
@@ -350,7 +350,7 @@ final class MethodParametersPanel
         private PropertyValueModel buildDimensionalityAdapter(MWMethodParameter methodParameter) {
             return new PropertyAspectAdapter(MWMethodParameter.DIMENSIONALITY_PROPERTY, methodParameter) {
                 protected Object getValueFromSubject() {
-                    return new Integer(((MWMethodParameter) subject).getDimensionality());
+                    return Integer.valueOf(((MWMethodParameter) subject).getDimensionality());
                 }
                 protected void setValueOnSubject(Object value) {
                     ((MWMethodParameter) subject).setDimensionality(((Integer) value).intValue());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -193,7 +193,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.addArgument("1");
         Vector params = new Vector();
         //4000 is a more reasonable budget given test data if results are expected
-        params.add(new Integer(4000));
+        params.add(Integer.valueOf(4000));
         List results = (List)getServerSession().executeQuery(query, params);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));
@@ -212,7 +212,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.setShouldBindAllParameters(true);
         query.addArgument("1");
         Vector params = new Vector();
-        params.add(new Integer(4000));
+        params.add(Integer.valueOf(4000));
         List results = (List)getServerSession().executeQuery(query, params);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));

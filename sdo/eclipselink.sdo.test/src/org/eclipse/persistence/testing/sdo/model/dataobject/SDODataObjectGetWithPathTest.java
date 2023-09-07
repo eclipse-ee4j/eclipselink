@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
         dataObject_c._setType(type_c);
 
         boolean c = true;
-        Boolean C = new Boolean(c);
+        Boolean C = Boolean.valueOf(c);
 
         //dataObject_a.setBoolean("PName-a/PName-b/PName-c", c);// c dataobject's a property has value boolean 'true'
         dataObject_a.set("PName-a/PName-b/PName-c", C);
@@ -51,7 +51,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
         dataObject_c._setType(type_c);
 
         boolean c = true;
-        Boolean C = new Boolean(c);
+        Boolean C = Boolean.valueOf(c);
 
         dataObject_a.setBoolean("PName-a/PName-b/PName-c", c);// c dataobject's a property has value boolean 'true'
         //dataObject_a.set("PName-a/PName-b/PName-c", C);
@@ -68,7 +68,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
         dataObject_c_bNotSDODataOject._setType(type_c_bNotSDODataOject);
 
         boolean c = true;
-        Boolean C = new Boolean(c);
+        Boolean C = Boolean.valueOf(c);
 
         //dataObject_c_bNotSDODataOject.setBoolean(property_c_bNotSDODataOject, c);// c dataobject's a property has value boolean 'true'
         try {
@@ -90,7 +90,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
         dataObject_c_bNotSDODataOject._setType(type_c_bNotSDODataOject);
 
         boolean c = true;
-        //Boolean C = new Boolean(c);
+        //Boolean C = Boolean.valueOf(c);
 
         //dataObject_c_bNotSDODataOject.setBoolean(property_c_bNotSDODataOject, c);// c dataobject's a property has value boolean 'true'
         try {
@@ -112,7 +112,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
         dataObject_c_bNotSDODataOject._setType(type_c_bNotSDODataOject);
 
         boolean c = true;
-        //Boolean C = new Boolean(c);
+        //Boolean C = Boolean.valueOf(c);
 
         dataObject_c_bNotSDODataOject.setBoolean(property_c_bNotSDODataOject, c);// c dataobject's a property has value boolean 'true'
         assertNull(dataObject_a_bNotSDODataOject.get("PName-a/PName-b/PName-c"));
@@ -123,7 +123,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
     public void testGetBooleanConversionFromPathWithLength_1() {
         property_a_pathLength_1.setType(SDOConstants.SDO_BOOLEAN);
         boolean b = true;
-        Boolean B = new Boolean(b);
+        Boolean B = Boolean.valueOf(b);
 
         dataObject_a_pathLength_1.setBoolean("PName-a-length-1", b);
 
@@ -175,7 +175,7 @@ public class SDODataObjectGetWithPathTest extends SDODataObjectConversionWithPat
         aDataObject_a.set(aProperty_a, aDataObject_b);// a dataobject's a property has value b dataobject
         aDataObject_b.set(aProperty_b, null);// b dataobject's b property has value c dataobject
 
-        //Boolean C = new Boolean(true);
+        //Boolean C = Boolean.valueOf(true);
 
         //dataObject_a.setBoolean("PName-a/PName-b/PName-c", true);// c dataobject's a property has value boolean 'true'
         // null pointer is not handled yet

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class SDODataObjectGetStringByPositionalPathTest extends SDODataObjectGet
         dataObject_c._setType(type_c);
 
         boolean str = true;
-        Boolean B_STR = new Boolean(str);
+        Boolean B_STR = Boolean.valueOf(str);
         dataObject_a.setBoolean(propertyPath_a_b_c, str);// add it to instance list
 
         this.assertEquals(B_STR.toString(), dataObject_a.getString(propertyPath_a_b_c));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ public class ObjectFactory {
 
     @javax.xml.bind.annotation.XmlElementDecl(namespace="myns", name="integer-root")
     public javax.xml.bind.JAXBElement<Integer> createIntegerRoot() {
-        return new javax.xml.bind.JAXBElement<Integer>(new javax.xml.namespace.QName("myns", "integer-root"), Integer.class, new Integer(0));
+        return new javax.xml.bind.JAXBElement<Integer>(new javax.xml.namespace.QName("myns", "integer-root"), Integer.class, Integer.valueOf(0));
     }
 
     @javax.xml.bind.annotation.XmlElementDecl(name="a")

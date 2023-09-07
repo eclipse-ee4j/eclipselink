@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,8 @@ public class Car extends FueledVehicle {
     public static Car example1() {
         Car example = new Car();
 
-        example.setPassengerCapacity(new Integer(2));
-        example.setFuelCapacity(new Integer(30));
+        example.setPassengerCapacity(Integer.valueOf(2));
+        example.setFuelCapacity(Integer.valueOf(30));
         example.setDescription("PONTIAC");
         example.setFuelType("Petrol");
         example.addPartNumber("021776RM-b");
@@ -35,8 +35,8 @@ public class Car extends FueledVehicle {
     public static Car example2() {
         Car example = new Car();
 
-        example.setPassengerCapacity(new Integer(4));
-        example.setFuelCapacity(new Integer(50));
+        example.setPassengerCapacity(Integer.valueOf(4));
+        example.setFuelCapacity(Integer.valueOf(50));
         example.setDescription("TOYOTA");
         example.setFuelType("Petrol");
         example.addPartNumber("021776TT-a");
@@ -48,8 +48,8 @@ public class Car extends FueledVehicle {
     public static Car example3() {
         Car example = new Car();
 
-        example.setPassengerCapacity(new Integer(5));
-        example.setFuelCapacity(new Integer(60));
+        example.setPassengerCapacity(Integer.valueOf(5));
+        example.setFuelCapacity(Integer.valueOf(60));
         example.setDescription("BMW");
         example.setFuelType("Disel");
         example.addPartNumber("021776KM-k");
@@ -61,8 +61,8 @@ public class Car extends FueledVehicle {
     public static Car example4() {
         Car example = new Car();
 
-        example.setPassengerCapacity(new Integer(8));
-        example.setFuelCapacity(new Integer(100));
+        example.setPassengerCapacity(Integer.valueOf(8));
+        example.setFuelCapacity(Integer.valueOf(100));
         example.setDescription("Mazda");
         example.setFuelType("Coca-Cola");
         example.addPartNumber("021776KM-k");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         while (iterator.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
             checkCacheState.put(descriptor,
-                                new Integer(descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy()));
+                                Integer.valueOf(descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy()));
             if(descriptor.requiresInitialization((AbstractSession) getSession())) {
                 // identityMapClass is null for AggregateObject, AggregateMapping and Interface descriptors.
                 identityMapTypes.put(descriptor, descriptor.getIdentityMapClass());

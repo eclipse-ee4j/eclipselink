@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -101,7 +101,7 @@ public class TestRefresh extends JPA1Base {
             dep.setName("UPDATED");
             env.commitTransactionAndClear(em);
             // verify that updated name present on db
-            dep = em.find(Department.class, new Integer(id));
+            dep = em.find(Department.class, Integer.valueOf(id));
             checkDepartment(dep, id, "UPDATED");
         } finally {
             closeEntityManager(em);
@@ -152,7 +152,7 @@ public class TestRefresh extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // this is now in
+            dep = em.find(Department.class, Integer.valueOf(id)); // this is now in
                                                               // state MANAGED
             dep.setName("UPDATED");
             em.refresh(dep);
@@ -160,7 +160,7 @@ public class TestRefresh extends JPA1Base {
             verify(em.contains(dep), "Department is not managed");
             env.commitTransactionAndClear(em);
             // verify that original name present on db
-            dep = em.find(Department.class, new Integer(id));
+            dep = em.find(Department.class, Integer.valueOf(id));
             checkDepartment(dep, id, "MANAGED");
             // case 2: refresh with data changed on db in a different tx
             id = 22;
@@ -170,7 +170,7 @@ public class TestRefresh extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // this is now in
+            dep = em.find(Department.class, Integer.valueOf(id)); // this is now in
                                                               // state MANAGED
             updateDepartmentOnDatabase(updatedDep);
             em.refresh(dep);
@@ -179,7 +179,7 @@ public class TestRefresh extends JPA1Base {
             dep.setName("MANAGED");
             env.commitTransactionAndClear(em);
             // verify that original name present on db
-            dep = em.find(Department.class, new Integer(id));
+            dep = em.find(Department.class, Integer.valueOf(id));
             checkDepartment(dep, id, "MANAGED");
         } finally {
             closeEntityManager(em);
@@ -208,7 +208,7 @@ public class TestRefresh extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // this is now in
+            dep = em.find(Department.class, Integer.valueOf(id)); // this is now in
                                                               // state MANAGED
             deleteDepartmentFromDatabase(id);
             verifyAbsenceFromDatabase(em, id);
@@ -235,7 +235,7 @@ public class TestRefresh extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id));
+            dep = em.find(Department.class, Integer.valueOf(id));
             em.remove(dep);
             if (flush) {
                 em.flush(); // this is now in state DELETE_EXECUTED
@@ -316,7 +316,7 @@ public class TestRefresh extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // this is now in
+            dep = em.find(Department.class, Integer.valueOf(id)); // this is now in
                                                               // state MANAGED
             try {
                 em.refresh(detachedDep); // this object is detached
@@ -333,7 +333,7 @@ public class TestRefresh extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id));
+            dep = em.find(Department.class, Integer.valueOf(id));
             em.remove(dep); // this is now in state DELETED
             try {
                 em.refresh(detachedDep); // this object is detached
@@ -417,8 +417,8 @@ public class TestRefresh extends JPA1Base {
             em.persist(rev2);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp = em.find(Employee.class, new Integer(emp.getId()));
-            rev1 = em.find(Review.class, new Integer(rev1.getId()));
+            emp = em.find(Employee.class, Integer.valueOf(emp.getId()));
+            rev1 = em.find(Review.class, Integer.valueOf(rev1.getId()));
             Review rev3 = new Review(105, Date.valueOf("2006-02-05"), "Test coverage");
             Set<Review> reviews = new HashSet<Review>();
             reviews.add(rev1);
@@ -436,7 +436,7 @@ public class TestRefresh extends JPA1Base {
             }
             env.commitTransactionAndClear(em);
             // verify that original name present on db
-            rev1 = em.find(Review.class, new Integer(rev1.getId()));
+            rev1 = em.find(Review.class, Integer.valueOf(rev1.getId()));
             verify("UPDATED".equals(rev1.getReviewText()), "Rev1 has wrong text: " + rev1.getReviewText());
         } finally {
             closeEntityManager(em);

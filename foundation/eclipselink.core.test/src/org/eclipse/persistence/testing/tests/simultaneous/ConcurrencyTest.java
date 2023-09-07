@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,7 @@ public class ConcurrencyTest extends AutoVerifyTestCase {
     protected void test() throws Throwable {
         // TODO Auto-generated method stub
         super.test();
-            Integer i = new Integer(5);
+            Integer i = Integer.valueOf(5);
             Thread thread1 = new Thread(new Runner1(i,  emp.getId(),project.getId(),getSession()));
             thread1.setName("Runner1");
             Thread thread2 = new Thread(new Runner2(i, emp.getId(),project.getId(),getSession()));

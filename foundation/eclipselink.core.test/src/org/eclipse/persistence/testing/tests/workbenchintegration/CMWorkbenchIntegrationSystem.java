@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -139,7 +139,7 @@ public class CMWorkbenchIntegrationSystem extends ConversionManagerSystem {
 
     public static DatabaseQuery buildPersistenceTestEqualCharacterQuery() {
         ExpressionBuilder builder = new ExpressionBuilder(ConversionDataObject.class);
-        Expression expression = builder.get("aCharacter").equal(new Character('b'));
+        Expression expression = builder.get("aCharacter").equal(Character.valueOf('b'));
         ReadObjectQuery query = new ReadObjectQuery(ConversionDataObject.class);
         query.setSelectionCriteria(expression);
         return query;
@@ -171,7 +171,7 @@ public class CMWorkbenchIntegrationSystem extends ConversionManagerSystem {
 
     public static DatabaseQuery buildPersistenceTestEqualByteQuery() {
         ExpressionBuilder builder = new ExpressionBuilder(ConversionDataObject.class);
-        Expression expression = builder.get("aByte").equal(new Byte((byte)3));
+        Expression expression = builder.get("aByte").equal(Byte.valueOf((byte)3));
         ReadObjectQuery query = new ReadObjectQuery(ConversionDataObject.class);
         query.setSelectionCriteria(expression);
         return query;

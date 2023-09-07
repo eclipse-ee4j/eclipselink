@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,23 +65,23 @@ public class StringRepositoryTests extends TestCase {
     }
 
     public void testGetStringArgument() {
-        assertEquals("Single-argument message: {0, number}.", this.simpleRepos.getString("FORMATTED_MSG_1", new Integer(42)));
-        assertEquals("Single-argument message: 42.", this.defaultRepos.getString("FORMATTED_MSG_1", new Integer(42)));
+        assertEquals("Single-argument message: {0, number}.", this.simpleRepos.getString("FORMATTED_MSG_1", Integer.valueOf(42)));
+        assertEquals("Single-argument message: 42.", this.defaultRepos.getString("FORMATTED_MSG_1", Integer.valueOf(42)));
     }
 
     public void testGetStringArgumentArgument() {
-        assertEquals("Two-argument message: {0, number} + {1, number}.", this.simpleRepos.getString("FORMATTED_MSG_2", new Integer(42), new Integer(17)));
-        assertEquals("Two-argument message: 42 + 17.", this.defaultRepos.getString("FORMATTED_MSG_2", new Integer(42), new Integer(17)));
+        assertEquals("Two-argument message: {0, number} + {1, number}.", this.simpleRepos.getString("FORMATTED_MSG_2", Integer.valueOf(42), Integer.valueOf(17)));
+        assertEquals("Two-argument message: 42 + 17.", this.defaultRepos.getString("FORMATTED_MSG_2", Integer.valueOf(42), Integer.valueOf(17)));
     }
 
     public void testGetStringArgumentArgumentArgument() {
-        assertEquals("Three-argument message: {0, number} + {1, number} = {2, number}.", this.simpleRepos.getString("FORMATTED_MSG_3", new Integer(42), new Integer(17), new Integer(59)));
-        assertEquals("Three-argument message: 42 + 17 = 59.", this.defaultRepos.getString("FORMATTED_MSG_3", new Integer(42), new Integer(17), new Integer(59)));
+        assertEquals("Three-argument message: {0, number} + {1, number} = {2, number}.", this.simpleRepos.getString("FORMATTED_MSG_3", Integer.valueOf(42), Integer.valueOf(17), Integer.valueOf(59)));
+        assertEquals("Three-argument message: 42 + 17 = 59.", this.defaultRepos.getString("FORMATTED_MSG_3", Integer.valueOf(42), Integer.valueOf(17), Integer.valueOf(59)));
     }
 
     public void testGetStringArguments() {
-        assertEquals("{3}-argument message: {0, number} + {1, number} = {2, number}.", this.simpleRepos.getString("FORMATTED_MSG_4", new Object[] {new Integer(42), new Integer(17), new Integer(59), "Four"}));
-        assertEquals("Four-argument message: 42 + 17 = 59.", this.defaultRepos.getString("FORMATTED_MSG_4", new Object[] {new Integer(42), new Integer(17), new Integer(59), "Four"}));
+        assertEquals("{3}-argument message: {0, number} + {1, number} = {2, number}.", this.simpleRepos.getString("FORMATTED_MSG_4", new Object[] {Integer.valueOf(42), Integer.valueOf(17), Integer.valueOf(59), "Four"}));
+        assertEquals("Four-argument message: 42 + 17 = 59.", this.defaultRepos.getString("FORMATTED_MSG_4", new Object[] {Integer.valueOf(42), Integer.valueOf(17), Integer.valueOf(59), "Four"}));
     }
 
     public void testMissingString() {

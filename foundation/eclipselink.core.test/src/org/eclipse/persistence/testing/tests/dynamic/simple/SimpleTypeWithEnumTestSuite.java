@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -122,7 +122,7 @@ public class SimpleTypeWithEnumTestSuite {
         DynamicEntity simpleInstance = find(dynamicHelper, session, 1);
         assertNotNull("Could not find simple instance with id = 1", simpleInstance);
 
-        simpleInstance = find(dynamicHelper, session, new Integer(1));
+        simpleInstance = find(dynamicHelper, session, Integer.valueOf(1));
         assertNotNull("Could not find simple instance with id = Integer(1)", simpleInstance);
     }
 

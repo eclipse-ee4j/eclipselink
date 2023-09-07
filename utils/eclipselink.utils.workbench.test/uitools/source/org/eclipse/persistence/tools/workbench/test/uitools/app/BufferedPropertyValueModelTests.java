@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,7 +76,7 @@ public class BufferedPropertyValueModelTests extends TestCase {
     private PropertyValueModel buildIDAdapter(ValueModel eHolder) {
         return new PropertyAspectAdapter(eHolder, Employee.ID_PROPERTY) {
             protected Object getValueFromSubject() {
-                return new Integer(((Employee) this.subject).getID());
+                return Integer.valueOf(((Employee) this.subject).getID());
             }
             protected void setValueOnSubject(Object value) {
                 ((Employee) this.subject).setID(((Integer) value).intValue());
@@ -117,8 +117,8 @@ public class BufferedPropertyValueModelTests extends TestCase {
         this.bufferedNameHolder.addPropertyChangeListener(ValueModel.VALUE, bufferedListener);
         this.bufferedHireDateHolder.addPropertyChangeListener(ValueModel.VALUE, bufferedListener);
 
-        assertEquals(new Integer(17), this.idAdapter.getValue());
-        assertEquals(new Integer(17), this.bufferedIDHolder.getValue());
+        assertEquals(Integer.valueOf(17), this.idAdapter.getValue());
+        assertEquals(Integer.valueOf(17), this.bufferedIDHolder.getValue());
 
         assertEquals("Freddy", this.employee.getName());
         assertEquals("Freddy", this.nameAdapter.getValue());
@@ -129,10 +129,10 @@ public class BufferedPropertyValueModelTests extends TestCase {
         assertEquals(temp, this.hireDateAdapter.getValue());
         assertEquals(temp, this.bufferedHireDateHolder.getValue());
 
-        this.bufferedIDHolder.setValue(new Integer(323));
+        this.bufferedIDHolder.setValue(Integer.valueOf(323));
         assertEquals(17, this.employee.getID());
-        assertEquals(new Integer(17), this.idAdapter.getValue());
-        assertEquals(new Integer(323), this.bufferedIDHolder.getValue());
+        assertEquals(Integer.valueOf(17), this.idAdapter.getValue());
+        assertEquals(Integer.valueOf(323), this.bufferedIDHolder.getValue());
 
         this.bufferedNameHolder.setValue("Ripley");
         assertEquals("Freddy", this.employee.getName());
@@ -151,10 +151,10 @@ public class BufferedPropertyValueModelTests extends TestCase {
         this.bufferedNameHolder.addPropertyChangeListener(ValueModel.VALUE, bufferedListener);
         this.bufferedHireDateHolder.addPropertyChangeListener(ValueModel.VALUE, bufferedListener);
 
-        this.bufferedIDHolder.setValue(new Integer(323));
+        this.bufferedIDHolder.setValue(Integer.valueOf(323));
         assertEquals(17, this.employee.getID());
-        assertEquals(new Integer(17), this.idAdapter.getValue());
-        assertEquals(new Integer(323), this.bufferedIDHolder.getValue());
+        assertEquals(Integer.valueOf(17), this.idAdapter.getValue());
+        assertEquals(Integer.valueOf(323), this.bufferedIDHolder.getValue());
 
         this.bufferedNameHolder.setValue("Ripley");
         assertEquals("Freddy", this.employee.getName());
@@ -170,8 +170,8 @@ public class BufferedPropertyValueModelTests extends TestCase {
         this.trigger.accept();
 
         assertEquals(323, this.employee.getID());
-        assertEquals(new Integer(323), this.idAdapter.getValue());
-        assertEquals(new Integer(323), this.bufferedIDHolder.getValue());
+        assertEquals(Integer.valueOf(323), this.idAdapter.getValue());
+        assertEquals(Integer.valueOf(323), this.bufferedIDHolder.getValue());
 
         assertEquals("Ripley", this.employee.getName());
         assertEquals("Ripley", this.nameAdapter.getValue());
@@ -188,10 +188,10 @@ public class BufferedPropertyValueModelTests extends TestCase {
         this.bufferedNameHolder.addPropertyChangeListener(ValueModel.VALUE, bufferedListener);
         this.bufferedHireDateHolder.addPropertyChangeListener(ValueModel.VALUE, bufferedListener);
 
-        this.bufferedIDHolder.setValue(new Integer(323));
+        this.bufferedIDHolder.setValue(Integer.valueOf(323));
         assertEquals(17, this.employee.getID());
-        assertEquals(new Integer(17), this.idAdapter.getValue());
-        assertEquals(new Integer(323), this.bufferedIDHolder.getValue());
+        assertEquals(Integer.valueOf(17), this.idAdapter.getValue());
+        assertEquals(Integer.valueOf(323), this.bufferedIDHolder.getValue());
 
         this.bufferedNameHolder.setValue("Ripley");
         assertEquals("Freddy", this.employee.getName());
@@ -207,8 +207,8 @@ public class BufferedPropertyValueModelTests extends TestCase {
         this.trigger.reset();
 
         assertEquals(17, this.employee.getID());
-        assertEquals(new Integer(17), this.idAdapter.getValue());
-        assertEquals(new Integer(17), this.bufferedIDHolder.getValue());
+        assertEquals(Integer.valueOf(17), this.idAdapter.getValue());
+        assertEquals(Integer.valueOf(17), this.bufferedIDHolder.getValue());
 
         assertEquals("Freddy", this.employee.getName());
         assertEquals("Freddy", this.nameAdapter.getValue());

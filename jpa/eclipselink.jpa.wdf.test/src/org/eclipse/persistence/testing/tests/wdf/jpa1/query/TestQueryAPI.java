@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -129,11 +129,11 @@ public class TestQueryAPI extends QueryTest {
 
             // test invalid typed ordered param
             Query q3 = em.createQuery(queryStringOrderedParam);
-            assertOrderedParameterInvalid(q3, 1, new Integer(2));
+            assertOrderedParameterInvalid(q3, 1, Integer.valueOf(2));
 
             // test invalid typed named param
             Query q4 = em.createQuery(queryStringNamedParam);
-            assertNamedParameterInvalid(q4, "firstname", new Integer(3));
+            assertNamedParameterInvalid(q4, "firstname", Integer.valueOf(3));
 
             // test invalid named ordered param
             Query q5 = em.createQuery(queryStringOrderedParam);

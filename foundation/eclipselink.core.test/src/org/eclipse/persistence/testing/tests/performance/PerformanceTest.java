@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -158,7 +158,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
         // Load sequence query.
         rows = new Vector();
         record = new DatabaseRecord();
-        record.put("NEXTVAL", new Long(12345));
+        record.put("NEXTVAL", Long.valueOf(12345));
         rows.add(record);
         connection.putRows("SELECT EMP_SEQ.NEXTVAL FROM DUAL", rows);
         connection.putRows("SELECT ADDRESS_SEQ.NEXTVAL FROM DUAL", rows);*/

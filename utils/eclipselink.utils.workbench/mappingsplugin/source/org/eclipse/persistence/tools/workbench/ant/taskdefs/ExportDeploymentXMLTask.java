@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,7 @@ public class ExportDeploymentXMLTask extends MappingsTask implements ProjectExpl
         String user = this.getUser();
         String password = this.getPassword();
 
-        int status = this.execute( this.getProjectFile(), this.getDeploymentFile(), this.getEjbJarXMLDir(), getIgnoreErrorCodes(), new Boolean( failonerror), url, driverclass, user, password);
+        int status = this.execute( this.getProjectFile(), this.getDeploymentFile(), this.getEjbJarXMLDir(), getIgnoreErrorCodes(), Boolean.valueOf( failonerror), url, driverclass, user, password);
 
         if( status == 0) {
             if( getProperty() != null)

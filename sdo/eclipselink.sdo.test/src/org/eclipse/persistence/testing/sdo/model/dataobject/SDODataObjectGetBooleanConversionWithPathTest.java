@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,7 +94,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
 
         char s = 't';
 
-        //Short c = new Short(s);
+        //Short c = Short.valueOf(s);
         dataObject_a.setChar(property, s);// c dataobject's a property has value boolean 'true'
 
         try {
@@ -128,7 +128,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
 
         char s = 'f';
 
-        //Short c = new Short(s);
+        //Short c = Short.valueOf(s);
         dataObject_a.setChar(property, s);// c dataobject's a property has value boolean 'true'
 
         try {
@@ -151,7 +151,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
 
         double s = 0;
 
-        //Short c = new Short(s);
+        //Short c = Short.valueOf(s);
         dataObject_a.setDouble(property, s);// c dataobject's a property has value boolean 'true'
 
         this.assertEquals(false, dataObject_a.getBoolean(property));
@@ -177,9 +177,9 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Float s = new Float(0);
+        Float s = Float.valueOf(0);
 
-        //Short c = new Short(s);
+        //Short c = Short.valueOf(s);
         dataObject_a.setFloat(property, s.floatValue());// c dataobject's a property has value boolean 'true'
 
         this.assertEquals(false, dataObject_a.getBoolean(property));
@@ -207,7 +207,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
 
         int s = 1;
 
-        //Short c = new Short(s);
+        //Short c = Short.valueOf(s);
         dataObject_a.setInt(property, s);// c dataobject's a property has value boolean 'true'
 
         this.assertEquals(true, dataObject_a.getBoolean(property));
@@ -235,7 +235,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
 
         long s = 0;
 
-        //Short c = new Short(s);
+        //Short c = Short.valueOf(s);
         dataObject_a.setLong(property, s);// c dataobject's a property has value boolean 'true'
 
         this.assertEquals(false, dataObject_a.getBoolean(property));
@@ -263,7 +263,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
 
         short s = 0;
 
-        //Short c = new Short(s);
+        //Short c = Short.valueOf(s);
         dataObject_a.setShort(property, s);// c dataobject's a property has value boolean 'true'
 
         this.assertEquals(false, dataObject_a.getBoolean(property));
@@ -290,7 +290,7 @@ public class SDODataObjectGetBooleanConversionWithPathTest extends SDODataObject
         dataObject_c._setType(type_c);
 
         String str = "true";
-        Boolean B_STR = new Boolean(str);
+        Boolean B_STR = Boolean.valueOf(str);
         dataObject_a.setString(property, str);// add it to instance list
 
         this.assertEquals(B_STR.booleanValue(), dataObject_a.getBoolean("PName-a/PName-b/PName-c"));

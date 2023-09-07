@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,10 +58,10 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
 
     protected Object getControlObject() {
         ArrayList<Integer> integers = new ArrayList<Integer>();
-        integers.add(new Integer("10"));
-        integers.add(new Integer("20"));
-        integers.add(new Integer("30"));
-        integers.add(new Integer("40"));
+        integers.add(Integer.valueOf("10"));
+        integers.add(Integer.valueOf("20"));
+        integers.add(Integer.valueOf("30"));
+        integers.add(Integer.valueOf("40"));
 
         QName qname = new QName("examplenamespace", "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);

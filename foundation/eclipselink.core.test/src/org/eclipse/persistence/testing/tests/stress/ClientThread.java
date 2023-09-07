@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class ClientThread extends Thread {
         UnitOfWork uow = client.acquireUnitOfWork();
         uow.readAllObjects(SmallProject.class);
         edit = (org.eclipse.persistence.testing.models.employee.domain.Project)uow.registerObject(edit);
-        edit.setName((new Long(System.currentTimeMillis())).toString());
+        edit.setName((Long.valueOf(System.currentTimeMillis())).toString());
         try {
             uow.commit();
         } catch (OptimisticLockException exception) {

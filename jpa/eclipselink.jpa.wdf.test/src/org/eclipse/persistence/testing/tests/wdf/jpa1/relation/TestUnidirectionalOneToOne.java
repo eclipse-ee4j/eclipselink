@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -32,8 +32,8 @@ import org.junit.Test;
 public class TestUnidirectionalOneToOne extends JPA1Base {
     private static final int HANS_ID_VALUE = 1;
     private static final int FRED_ID_VALUE = 2;
-    private static final Integer HANS_ID = new Integer(HANS_ID_VALUE);
-    private static final Integer FRED_ID = new Integer(FRED_ID_VALUE);
+    private static final Integer HANS_ID = Integer.valueOf(HANS_ID_VALUE);
+    private static final Integer FRED_ID = Integer.valueOf(FRED_ID_VALUE);
     private static final byte[] SMOKER_GUID = new byte[16];
     private static final byte[] NON_SMOKER_GUID = new byte[16];
     static {

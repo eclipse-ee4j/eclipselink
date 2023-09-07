@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -215,7 +215,7 @@ public class SDODataObjectGetShortConversionTest extends SDODataObjectConversion
         property.setType(SDOConstants.SDO_STRING);
 
         String str = "12";
-        Short s_d = new Short(str);
+        Short s_d = Short.valueOf(str);
         dataObject.setString(property, str);// add it to instance list
 
         this.assertEquals(s_d.shortValue(), dataObject.getShort(property));
@@ -265,7 +265,7 @@ public class SDODataObjectGetShortConversionTest extends SDODataObjectConversion
     public void testGetShortFromInteger() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTEGER);
-        dataObject.set(property, new Integer("123"));
+        dataObject.set(property, Integer.valueOf("123"));
         try {
             short value = dataObject.getShort(property);
             //TODO: conversion not supported by sdo spec but is supported by TopLink
@@ -324,7 +324,7 @@ public class SDODataObjectGetShortConversionTest extends SDODataObjectConversion
     public void testGetShortFromCharacterObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-        dataObject.set(property,new Character('a'));
+        dataObject.set(property,Character.valueOf('a'));
         try {
             dataObject.getShort(property);
             fail("ClassCastException should be thrown.");

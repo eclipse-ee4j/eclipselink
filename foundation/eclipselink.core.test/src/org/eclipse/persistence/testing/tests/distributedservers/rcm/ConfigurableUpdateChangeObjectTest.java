@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
                 int cacheSyncType = descriptor.getCacheSynchronizationType();
                 Object newCacheSyncType = cacheSyncConfigValues.get(keyClass);
                 if (newCacheSyncType != null) {
-                    oldCacheSyncConfigValues.put(keyClass, new Integer(cacheSyncType));
+                    oldCacheSyncConfigValues.put(keyClass, Integer.valueOf(cacheSyncType));
                     descriptor.setCacheSynchronizationType(((Integer)newCacheSyncType).intValue());
                 }
             }

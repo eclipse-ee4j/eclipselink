@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1928,7 +1928,7 @@ public class ProjectClassGenerator {
         }
 
         if (value instanceof Character) {
-            return "new Character('" + value + "')";
+            return "Character.valueOf('" + value + "')";
         }
 
         //Bug2662265

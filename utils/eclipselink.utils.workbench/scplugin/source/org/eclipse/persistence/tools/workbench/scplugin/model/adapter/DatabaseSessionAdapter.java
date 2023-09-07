@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -264,7 +264,7 @@ public class DatabaseSessionAdapter extends SessionAdapter implements LoginHandl
             emptyConfig.setByteArrayBinding( XMLSessionConfigProject.BYTE_ARRAY_BINDING_DEFAULT);
             emptyConfig.setOptimizeDataConversion( XMLSessionConfigProject.OPTIMIZE_DATA_CONVERSION_DEFAULT);
             emptyConfig.setTrimStrings( XMLSessionConfigProject.TRIM_STRINGS_DEFAULT);
-            emptyConfig.setMaxBatchWritingSize(  new Integer( XMLSessionConfigProject.MAX_BATCH_WRITING_SIZE_DEFAULT));
+            emptyConfig.setMaxBatchWritingSize(  Integer.valueOf( XMLSessionConfigProject.MAX_BATCH_WRITING_SIZE_DEFAULT));
             emptyConfig.setJdbcBatchWriting( XMLSessionConfigProject.JDBC20_BATCH_WRITING_DEFAULT);
             databaseSession().setLoginConfig( emptyConfig);
         }

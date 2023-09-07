@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public class NullValueTest extends AutoVerifyTestCase {
         saveDefaultNullValues = getSession().getLogin().getPlatform().getConversionManager().getDefaultNullValues();
         getSession().getLogin().getPlatform().getConversionManager().setDefaultNullValues(new Hashtable());
         getSession().getLogin().setDefaultNullValue(String.class, "null");
-        getSession().getLogin().setDefaultNullValue(int.class, new Integer(-1));
+        getSession().getLogin().setDefaultNullValue(int.class, Integer.valueOf(-1));
         // Reinit mappings.
         for (DatabaseMapping mapping : getSession().getDescriptor(Address.class).getMappings()) {
             if (mapping.isDirectToFieldMapping()) {

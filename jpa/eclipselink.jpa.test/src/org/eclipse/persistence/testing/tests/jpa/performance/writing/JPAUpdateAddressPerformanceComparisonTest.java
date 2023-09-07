@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public class JPAUpdateAddressPerformanceComparisonTest extends PerformanceRegres
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Address address = manager.find(Address.class, new Long(this.addressId));
+        Address address = manager.find(Address.class, Long.valueOf(this.addressId));
         count++;
         address.setStreet(street + count);
         manager.getTransaction().commit();

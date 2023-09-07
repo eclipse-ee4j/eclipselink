@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -576,7 +576,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             query = query.setParameter("sal", null); // deliberate null parameter value
             Long result = (Long)query.getSingleResult(); // query should still function
             assertNotNull("Query result should be non-null", result);
-            assertEquals("Incorrect query results", new Long(2), result); // result value from db
+            assertEquals("Incorrect query results", Long.valueOf(2), result); // result value from db
         } catch (RuntimeException e) {
             throw e;
         } finally {

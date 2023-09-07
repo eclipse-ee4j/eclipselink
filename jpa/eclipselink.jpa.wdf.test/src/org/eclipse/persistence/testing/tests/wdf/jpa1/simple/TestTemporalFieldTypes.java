@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -47,60 +47,60 @@ public class TestTemporalFieldTypes extends JPA1Base {
             env.beginTransaction(em);
             em.persist(obj);
             env.commitTransactionAndClear(em);
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             Assert.assertTrue(fieldName + " is not null", validator.isNull(obj));
             // delete the object again
             env.beginTransaction(em);
-            em.remove(em.find(BasicTypesFieldAccess.class, new Integer(id)));
+            em.remove(em.find(BasicTypesFieldAccess.class, Integer.valueOf(id)));
             env.commitTransactionAndClear(em);
             // insert object with non-null field
             env.beginTransaction(em);
             validator.set(obj);
             em.persist(obj);
             env.commitTransactionAndClear(em);
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             Assert.assertTrue(fieldName + " not persisted", !validator.isChanged(obj));
             // update unchanged
             env.beginTransaction(em);
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             obj.clearPostUpdate();
             env.commitTransactionAndClear(em);
             Assert.assertTrue("postUpdate was not called", !obj.postUpdateWasCalled());
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             Assert.assertTrue(fieldName + " is changed", !validator.isChanged(obj));
             // update changed
             env.beginTransaction(em);
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             obj.clearPostUpdate();
             validator.setNull(obj);
             env.commitTransactionAndClear(em);
             Assert.assertTrue("postUpdate was not called", obj.postUpdateWasCalled());
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             Assert.assertTrue(fieldName + " is not null", validator.isNull(obj));
             // update original
             env.beginTransaction(em);
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             validator.set(obj);
             env.commitTransactionAndClear(em);
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             Assert.assertTrue(fieldName + " not persisted", !validator.isChanged(obj));
             // mutate
             env.beginTransaction(em);
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             obj.clearPostUpdate();
             validator.mutate(obj);
             env.commitTransactionAndClear(em);
             Assert.assertTrue("postUpdate was not called", obj.postUpdateWasCalled());
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             Assert.assertTrue(fieldName + " not mutated", validator.isChanged(obj));
             // update to null
             env.beginTransaction(em);
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             obj.clearPostUpdate();
             validator.setNull(obj);
             env.commitTransactionAndClear(em);
             Assert.assertTrue("postUpdate was not called", obj.postUpdateWasCalled());
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(id));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(id));
             Assert.assertTrue(fieldName + " is not null", validator.isNull(obj));
         } finally {
             closeEntityManager(em);

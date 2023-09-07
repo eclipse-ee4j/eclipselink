@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -153,13 +153,13 @@ public class XPathHelperTestCases extends SDOTestCase {
         // 20070618: an unset value with an IsSetNodeNullPolicy will return the default value increasing the list size to 4
         assertTrue(returnValue != null && returnValue.size() == 4);
         Float price = (Float) returnValue.get(0);
-        assertEquals(new Float("0.00"), price);
+        assertEquals(Float.valueOf("0.00"), price);
         price = (Float) returnValue.get(1);
-        assertEquals(new Float("39.98"), price);
+        assertEquals(Float.valueOf("39.98"), price);
         price = (Float) returnValue.get(2);
-        assertEquals(new Float("2.98"), price);
+        assertEquals(Float.valueOf("2.98"), price);
         price = (Float) returnValue.get(3);
-        assertEquals(new Float("12.98"), price);
+        assertEquals(Float.valueOf("12.98"), price);
     }
 
     public void testMultipleBracketExpression() {

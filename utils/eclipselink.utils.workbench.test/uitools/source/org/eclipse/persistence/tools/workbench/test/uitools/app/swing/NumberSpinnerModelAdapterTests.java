@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class NumberSpinnerModelAdapterTests extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        this.valueHolder = new SimplePropertyValueModel(new Integer(0));
+        this.valueHolder = new SimplePropertyValueModel(Integer.valueOf(0));
         this.spinnerModelAdapter = new NumberSpinnerModelAdapter(this.valueHolder, -33, 33, 1);
     }
 
@@ -60,9 +60,9 @@ public class NumberSpinnerModelAdapterTests extends TestCase {
                 NumberSpinnerModelAdapterTests.this.eventFired = true;
             }
         });
-        this.spinnerModelAdapter.setValue(new Integer(5));
+        this.spinnerModelAdapter.setValue(Integer.valueOf(5));
         assertTrue(this.eventFired);
-        assertEquals(new Integer(5), this.valueHolder.getValue());
+        assertEquals(Integer.valueOf(5), this.valueHolder.getValue());
     }
 
     public void testSetValueValueHolder() throws Exception {
@@ -72,10 +72,10 @@ public class NumberSpinnerModelAdapterTests extends TestCase {
                 NumberSpinnerModelAdapterTests.this.eventFired = true;
             }
         });
-        assertEquals(new Integer(0), this.spinnerModelAdapter.getValue());
-        this.valueHolder.setValue(new Integer(7));
+        assertEquals(Integer.valueOf(0), this.spinnerModelAdapter.getValue());
+        this.valueHolder.setValue(Integer.valueOf(7));
         assertTrue(this.eventFired);
-        assertEquals(new Integer(7), this.spinnerModelAdapter.getValue());
+        assertEquals(Integer.valueOf(7), this.spinnerModelAdapter.getValue());
     }
 
     public void testDefaultValue() throws Exception {
@@ -85,10 +85,10 @@ public class NumberSpinnerModelAdapterTests extends TestCase {
                 NumberSpinnerModelAdapterTests.this.eventFired = true;
             }
         });
-        assertEquals(new Integer(0), this.spinnerModelAdapter.getValue());
+        assertEquals(Integer.valueOf(0), this.spinnerModelAdapter.getValue());
         this.valueHolder.setValue(null);
         assertTrue(this.eventFired);
-        assertEquals(new Integer(-33), this.spinnerModelAdapter.getValue());
+        assertEquals(Integer.valueOf(-33), this.spinnerModelAdapter.getValue());
     }
 
     public void testHasListeners() throws Exception {
@@ -116,7 +116,7 @@ public class NumberSpinnerModelAdapterTests extends TestCase {
 
     public void testNullInitialValue() {
         this.valueHolder = new SimplePropertyValueModel();
-        this.spinnerModelAdapter = new NumberSpinnerModelAdapter(this.valueHolder, new Integer(-33), new Integer(33), new Integer(1), new Integer(0));
+        this.spinnerModelAdapter = new NumberSpinnerModelAdapter(this.valueHolder, Integer.valueOf(-33), Integer.valueOf(33), Integer.valueOf(1), Integer.valueOf(0));
 
         this.eventFired = false;
         this.spinnerModelAdapter.addChangeListener(new TestChangeListener() {
@@ -124,10 +124,10 @@ public class NumberSpinnerModelAdapterTests extends TestCase {
                 NumberSpinnerModelAdapterTests.this.eventFired = true;
             }
         });
-        assertEquals(new Integer(0), this.spinnerModelAdapter.getValue());
-        this.valueHolder.setValue(new Integer(7));
+        assertEquals(Integer.valueOf(0), this.spinnerModelAdapter.getValue());
+        this.valueHolder.setValue(Integer.valueOf(7));
         assertTrue(this.eventFired);
-        assertEquals(new Integer(7), this.spinnerModelAdapter.getValue());
+        assertEquals(Integer.valueOf(7), this.spinnerModelAdapter.getValue());
     }
 
 

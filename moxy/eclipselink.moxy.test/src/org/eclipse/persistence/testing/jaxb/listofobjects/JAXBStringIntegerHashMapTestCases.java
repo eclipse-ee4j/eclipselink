@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,9 +62,9 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsNoJSONTe
 
     protected Object getControlObject() {
         HashMap<String, Integer> theMap = new HashMap<String, Integer>();
-        theMap.put("thekey", new Integer(10));
-        theMap.put("thekey2", new Integer(20));
-        theMap.put("thekey3", new Integer(30));
+        theMap.put("thekey", Integer.valueOf(10));
+        theMap.put("thekey2", Integer.valueOf(20));
+        theMap.put("thekey3", Integer.valueOf(30));
 
         QName qname = new QName("examplenamespace", "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);

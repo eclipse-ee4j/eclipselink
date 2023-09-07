@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
         SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_LONG);
 
-        Long bb = new Long(12);
+        Long bb = Long.valueOf(12);
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -44,8 +44,8 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
         SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
         property_c1_object.setType(SDOConstants.SDO_LONG);
         List objects = new ArrayList();
-        Long b = new Long(12);
-        Long bb = new Long(2);
+        Long b = Long.valueOf(12);
+        Long bb = Long.valueOf(2);
         objects.add(b);
         objects.add(bb);
 
@@ -100,7 +100,7 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Long bb = new Long(12);
+        Long bb = Long.valueOf(12);
 
         dataObject_a.setLong("PName-a0/PName-b0[number='1']/PName-c1.0", bb.longValue());
 

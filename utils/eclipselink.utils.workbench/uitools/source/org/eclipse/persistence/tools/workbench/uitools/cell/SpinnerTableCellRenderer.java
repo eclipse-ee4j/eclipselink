@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -153,7 +153,7 @@ public class SpinnerTableCellRenderer implements TableCellEditorAdapter.Renderer
     protected void setValue(Object value) {
         // CR#3999318 - This null check needs to be removed once JDK bug is fixed
         if (value == null) {
-            value = new Integer(0);
+            value = Integer.valueOf(0);
         }
         this.spinner.setValue(value);
     }

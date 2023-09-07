@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2486,7 +2486,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         // verify properties set on Employee instance
         errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "Employee");
-        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, new Integer(1));
+        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, Integer.valueOf(1));
 
         // each attribute of Employee was assigned a property attributeName with the value attribute name.
         for(DatabaseMapping mapping : descriptor.getMappings()) {
@@ -2496,13 +2496,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
         errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, new Byte((byte)1));
-        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, new Character('A'));
-        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, new Double(1));
-        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, new Float(1));
-        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, new Integer(1));
-        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, new Long(1));
-        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, new Short((short)1));
+        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, Byte.valueOf((byte)1));
+        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, Character.valueOf('A'));
+        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, Double.valueOf(1));
+        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, Float.valueOf(1));
+        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, Integer.valueOf(1));
+        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, Long.valueOf(1));
+        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, Short.valueOf((short)1));
         errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
         errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
         errorMsg += verifyPropertyValue(mapping, "byte[]Property", byte[].class, new byte[]{1, 2, 3, 4});

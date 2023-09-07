@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -232,7 +232,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         assertEquals(myTestType, p.getContainingType());
         // check default value !! it is propbably good to also test string !!
         // !! reason: getDefault() returns Obj, but actual xml default value can be int or float which is not Obj !!
-        assertEquals(p.getDefault(), new Integer(3));
+        assertEquals(p.getDefault(), Integer.valueOf(3));
 
         // check opposite Property
         assertNull(p.getOpposite());
@@ -337,7 +337,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         // check default value
         //TODO:should defaultValue be null - 20070703: since propertyType is now complex - we expect a null Object reference for default
         assertNull(p.getDefault());
-        //assertEquals(new Integer(0), p.getDefault());
+        //assertEquals(Integer.valueOf(0), p.getDefault());
         // check opposite Property
         assertNull(p.getOpposite());
 
@@ -399,7 +399,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         // check default value
         //TODO:should defaultValue be null - 20070703: since propertyType is now complex - we expect a null Object reference for default
         assertNull(p.getDefault());
-        //assertEquals(new Integer(0), p.getDefault());
+        //assertEquals(Integer.valueOf(0), p.getDefault());
 
         // check opposite Property
         Property op_pro = p.getOpposite();

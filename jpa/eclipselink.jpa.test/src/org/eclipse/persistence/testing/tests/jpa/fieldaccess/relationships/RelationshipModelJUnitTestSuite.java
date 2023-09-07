@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -211,7 +211,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             returnedCustomers1 = query1.getResultCollection();
 
             EJBQueryImpl query2 = (EJBQueryImpl) entityManagerImpl.createQuery(ejbql1);
-            query2.setParameter("id", new Integer(-10));
+            query2.setParameter("id", Integer.valueOf(-10));
             returnedCustomers2 = query2.getResultCollection();
 
             // bug:4297903, check container policy failure
@@ -233,7 +233,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             entityManagerImpl = (EntityManagerImpl) em.getDelegate();
             // bug:4300879, check ReadObjectQuery fails
             EJBQueryImpl query4 = (EJBQueryImpl) entityManagerImpl.createQuery(ejbql1);
-            query4.setParameter("id", new Integer(-10));
+            query4.setParameter("id", Integer.valueOf(-10));
             ReadObjectQuery readObjectQuery2 = new ReadObjectQuery(Customer.class);
             readObjectQuery2.setEJBQLString(ejbql1);
             query4.setDatabaseQuery(readObjectQuery2);
@@ -293,7 +293,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             returnedCustomers1 = query1.getResultList();
 
             Query query2 = em.createQuery(ejbql1);
-            query2.setParameter("id", new Integer(-10));
+            query2.setParameter("id", Integer.valueOf(-10));
             returnedCustomers2 = query2.getResultList();
 
             // bug:4297903, check container policy failure
@@ -315,7 +315,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             entityManagerImpl = (EntityManagerImpl) em.getDelegate();
             // bug:4300879, check ReadObjectQuery fails
             EJBQueryImpl query4 = (EJBQueryImpl) entityManagerImpl.createQuery(ejbql1);
-            query4.setParameter("id", new Integer(-10));
+            query4.setParameter("id", Integer.valueOf(-10));
             ReadObjectQuery readObjectQuery2 = new ReadObjectQuery(Customer.class);
             readObjectQuery2.setEJBQLString(ejbql1);
             query4.setDatabaseQuery(readObjectQuery2);

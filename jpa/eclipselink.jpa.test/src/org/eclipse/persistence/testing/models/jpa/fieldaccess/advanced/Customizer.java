@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         if(numberOfCalls != null) {
             num = numberOfCalls.intValue();
         }
-        sessionCalls.put(sessionName, new Integer(num + 1));
+        sessionCalls.put(sessionName, Integer.valueOf(num + 1));
 
         session.getEventManager().addListener(new SessionEventAdapter() {
             public void postLogin(SessionEvent event) {
@@ -56,7 +56,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         if(numberOfCalls != null) {
             num = numberOfCalls.intValue();
         }
-        descriptorCalls.put(javaClassName, new Integer(num + 1));
+        descriptorCalls.put(javaClassName, Integer.valueOf(num + 1));
     }
 
     public static Map getSessionCalls() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,10 +72,10 @@ abstract class SequencePropertyPane extends AbstractSubjectPanel
             "SEQUENCE_PANE_PREALLOCATION_SIZE_LABEL",
             getSubjectHolder(),
             buildPreallocationSizeHolder(),
-            new SimplePropertyValueModel(new Integer(50)),
-            new Integer(0),
+            new SimplePropertyValueModel(Integer.valueOf(50)),
+            Integer.valueOf(0),
             Integer.MAX_VALUE,
-            new Integer(1),
+            Integer.valueOf(1),
             6,
             resourceRepository(),
             getAlignLeftGroup(),

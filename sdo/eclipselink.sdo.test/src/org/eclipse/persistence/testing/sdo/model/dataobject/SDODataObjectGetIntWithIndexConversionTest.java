@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -153,7 +153,7 @@ public class SDODataObjectGetIntWithIndexConversionTest extends SDODataObjectCon
         property.setType(SDOConstants.SDO_STRING);
 
         String str = "12";
-        Integer s_d = new Integer(str);
+        Integer s_d = Integer.valueOf(str);
         dataObject.setString(PROPERTY_INDEX, str);// add it to instance list
 
         this.assertEquals(s_d.intValue(), dataObject.getInt(PROPERTY_INDEX));

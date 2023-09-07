@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,11 +29,11 @@ public class VariableOneToOneInsertTest extends TransactionalTestCase {
         this.company = new Company();
         Company c = (Company)uow.registerObject(this.company);
         c.setName("Company One");
-        c.setId(new Integer(54));
+        c.setId(Integer.valueOf(54));
         Email email = new Email();
         email.setAddress("@Blather.ca");
         email.setHolder(c);
-        email.setId(new Integer(45));
+        email.setId(Integer.valueOf(45));
         c.setContact(email);
         c.email = email;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -448,7 +448,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         subQuery.setReferenceClass(Employee.class);
         Expression managerExpression = employeeBuilder.get("manager").get("id").equal(managerBuilder.get("id"));
-        subQuery.addAttribute("one", new ConstantExpression(new Integer(1), subQuery.getExpressionBuilder()));
+        subQuery.addAttribute("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
         subQuery.setSelectionCriteria(managerExpression);
         Expression employeeExpression = employeeBuilder.exists(subQuery);
 

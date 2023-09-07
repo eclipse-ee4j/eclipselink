@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -388,20 +388,20 @@ public final class MWCompoundExpression extends MWExpression {
 
             // if the user has chosen NAND or NOR .not() is called on the expression
             // when converting to runtime, so it became a function expression
-            if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.Not))) {
+            if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Not))) {
                 //if the operator is NOT, we know it is a function expression
                 selectionCriteria = ((FunctionExpression)selectionCriteria).getBaseExpression();
                 usesNot = true;
                 runtimeOperator = selectionCriteria.getOperator();
             }
 
-            if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.And))) {
+            if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.And))) {
                 if (!usesNot)
                     bldrExpression.setOperatorType(AND);
                 else
                     bldrExpression.setOperatorType(NAND);
             }
-            else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.Or))) {
+            else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Or))) {
                 if (!usesNot)
                     bldrExpression.setOperatorType(OR);
                 else//is FunctionExpression
@@ -426,13 +426,13 @@ public final class MWCompoundExpression extends MWExpression {
             }
 
             Expression firstChild = ((LogicalExpression)selectionCriteria).getFirstChild();
-            if (firstChild.isRelationExpression() || (firstChild.isFunctionExpression() && !(firstChild.getOperator() == ExpressionOperator.getOperator(new Integer(ExpressionOperator.Not)))))
+            if (firstChild.isRelationExpression() || (firstChild.isFunctionExpression() && !(firstChild.getOperator() == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Not)))))
                 bldrExpression.addExpression(MWBasicExpression.convertFromRuntime(bldrExpression, firstChild));
             else
                 bldrExpression.addExpression(MWCompoundExpression.convertFromRuntime(bldrExpression, firstChild));
 
             Expression secondChild = ((LogicalExpression)selectionCriteria).getSecondChild();
-            if (secondChild.isRelationExpression() || (secondChild.isFunctionExpression() && !(secondChild.getOperator() == ExpressionOperator.getOperator(new Integer(ExpressionOperator.Not)))))
+            if (secondChild.isRelationExpression() || (secondChild.isFunctionExpression() && !(secondChild.getOperator() == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Not)))))
                 bldrExpression.addExpression(MWBasicExpression.convertFromRuntime(bldrExpression,secondChild));
             else
                 bldrExpression.addExpression(MWCompoundExpression.convertFromRuntime(bldrExpression, secondChild));

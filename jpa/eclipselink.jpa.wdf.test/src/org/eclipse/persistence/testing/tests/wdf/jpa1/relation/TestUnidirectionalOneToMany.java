@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -40,7 +40,7 @@ import org.junit.Test;
 public class TestUnidirectionalOneToMany extends JPA1Base {
 
     private static final int EMP_ID_VALUE = 4;
-    private static final Integer EMP_ID = new Integer(EMP_ID_VALUE);
+    private static final Integer EMP_ID = Integer.valueOf(EMP_ID_VALUE);
     private static final Set<Pair> SEED_SET = new HashSet<Pair>();
     static {
         SEED_SET.add(new Pair(EMP_ID_VALUE, 1));
@@ -179,7 +179,7 @@ public class TestUnidirectionalOneToMany extends JPA1Base {
             emp = em.find(Employee.class, EMP_ID);
             reviews = emp.getReviews();
             verify(reviews.size() == 2, "not exactly 2 reviews but " + reviews.size());
-            Object object = em.find(Review.class, new Integer(removedId));
+            Object object = em.find(Review.class, Integer.valueOf(removedId));
             verify(object == null, "review found");
             env.rollbackTransactionAndClear(em);
         } finally {

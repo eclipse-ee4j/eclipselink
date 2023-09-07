@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,7 @@ public class JAXBInheritanceNSSeparatorTestCases extends JAXBInheritanceNSTestCa
                 StringWriter writer = new StringWriter();
 
                 XMLOutputFactory factory = XMLOutputFactory.newInstance();
-                factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+                factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
                 XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
                 Object objectToWrite = getWriteControlObject();

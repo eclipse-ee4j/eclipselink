@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,8 +48,8 @@ public class SDODataObjectGetByteConversionByXPathQueryTest extends SDODataObjec
         List objects = new ArrayList();
         byte by = 12;
         byte by1 = 1;
-        Byte b = new Byte(by);
-        Byte bb = new Byte(by1);
+        Byte b = Byte.valueOf(by);
+        Byte bb = Byte.valueOf(by1);
         objects.add(b);
         objects.add(bb);
 
@@ -107,7 +107,7 @@ public class SDODataObjectGetByteConversionByXPathQueryTest extends SDODataObjec
         type_c0.addDeclaredProperty(property_c1_object);
 
         byte by = 12;
-        Byte b = new Byte(by);
+        Byte b = Byte.valueOf(by);
 
         dataObject_a.set("PName-a0/PName-b0[number='1']/PName-c1.0", b);
 

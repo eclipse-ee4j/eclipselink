@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -810,38 +810,38 @@ final class ObjectTypeConverterPanel
             else if (javaClass == Short.class) {
                 return resourceRepository().getString("CONVERSION_VALUE_DIALOG.ILLEGAL_NUMBER_FORMAT",
                                                      new Object[] {javaClassName,
-                                                                   new Short(Short.MIN_VALUE),
-                                                                   new Short(Short.MAX_VALUE)});
+                                                                   Short.valueOf(Short.MIN_VALUE),
+                                                                   Short.valueOf(Short.MAX_VALUE)});
             }
             else if (javaClass == Byte.class) {
                 return resourceRepository().getString("CONVERSION_VALUE_DIALOG.ILLEGAL_NUMBER_FORMAT",
                                                      new Object[] {javaClassName,
-                                                                   new Byte(Byte.MIN_VALUE),
-                                                                   new Byte(Byte.MAX_VALUE)});
+                                                                   Byte.valueOf(Byte.MIN_VALUE),
+                                                                   Byte.valueOf(Byte.MAX_VALUE)});
             }
             else if (javaClass == Float.class) {
                 return resourceRepository().getString("CONVERSION_VALUE_DIALOG.ILLEGAL_FLOAT_NUMBER_FORMAT",
                                                      new Object[] {javaClassName,
-                                                                   new Float(Float.MIN_VALUE),
-                                                                   new Float(Float.MAX_VALUE)});
+                                                                   Float.valueOf(Float.MIN_VALUE),
+                                                                   Float.valueOf(Float.MAX_VALUE)});
             }
             else if (javaClass == Double.class) {
                 return resourceRepository().getString("CONVERSION_VALUE_DIALOG.ILLEGAL_FLOAT_NUMBER_FORMAT",
                                                      new Object[] {javaClassName,
-                                                                   new Double(Double.MIN_VALUE),
-                                                                   new Double(Double.MAX_VALUE)});
+                                                                   Double.valueOf(Double.MIN_VALUE),
+                                                                   Double.valueOf(Double.MAX_VALUE)});
             }
             else if (javaClass == Integer.class) {
                 return resourceRepository().getString("CONVERSION_VALUE_DIALOG.ILLEGAL_NUMBER_FORMAT",
                                                      new Object[] {javaClassName,
-                                                                   new Integer(Integer.MIN_VALUE),
-                                                                   new Integer(Integer.MAX_VALUE)});
+                                                                   Integer.valueOf(Integer.MIN_VALUE),
+                                                                   Integer.valueOf(Integer.MAX_VALUE)});
             }
             else if (javaClass == Long.class) {
                 return resourceRepository().getString("CONVERSION_VALUE_DIALOG.ILLEGAL_NUMBER_FORMAT",
                                                      new Object[] {javaClassName,
-                                                                   new Long(Long.MIN_VALUE),
-                                                                   new Long(Long.MAX_VALUE)});
+                                                                   Long.valueOf(Long.MIN_VALUE),
+                                                                   Long.valueOf(Long.MAX_VALUE)});
             }
             else if (javaClass == String.class) {
                 return resourceRepository().getString("CONVERSION_VALUE_DIALOG.ILLEGAL_STRING_FORMAT", new Object[] {javaClassName});

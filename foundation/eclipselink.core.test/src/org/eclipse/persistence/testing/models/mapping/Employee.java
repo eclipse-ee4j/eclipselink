@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -483,10 +483,10 @@ public class Employee implements Serializable {
         }
 
         if (getDesignation().getValue().equals("Executive")) {
-            rank = new Integer(1);
+            rank = Integer.valueOf(1);
         }
         if (getDesignation().getValue().equals("Non-Executive")) {
-            rank = new Integer(2);
+            rank = Integer.valueOf(2);
         }
         return rank;
     }
@@ -495,7 +495,7 @@ public class Employee implements Serializable {
         if (row.get("ERANK") == null) {
             return null;
         }
-        Integer value = new Integer(((Number)row.get("ERANK")).intValue());
+        Integer value = Integer.valueOf(((Number)row.get("ERANK")).intValue());
         String rank = null;
         Employee employee = new Employee();
 

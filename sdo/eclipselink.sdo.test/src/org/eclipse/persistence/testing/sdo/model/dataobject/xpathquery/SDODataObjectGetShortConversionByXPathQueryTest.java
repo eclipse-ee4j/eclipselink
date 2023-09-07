@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
         prop.setType(SDOConstants.SDO_SHORT);
 
         short s = 12;
-        Short bb = new Short(s);
+        Short bb = Short.valueOf(s);
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -47,9 +47,9 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
 
         List objects = new ArrayList();
         short s = 12;
-        Short b = new Short(s);
+        Short b = Short.valueOf(s);
         short s1 = 12;
-        Short bb = new Short(s1);
+        Short bb = Short.valueOf(s1);
         objects.add(b);
         objects.add(bb);
 
@@ -100,7 +100,7 @@ public class SDODataObjectGetShortConversionByXPathQueryTest extends SDODataObje
         property_c1_object.setType(SDOConstants.SDO_SHORT);
 
         short s = 12;
-        Short bb = new Short(s);
+        Short bb = Short.valueOf(s);
 
         dataObject_a.setShort("PName-a0/PName-b0[number='1']/PName-c1.0", bb.shortValue());
 

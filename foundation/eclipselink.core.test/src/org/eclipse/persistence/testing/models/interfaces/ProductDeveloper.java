@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ public class ProductDeveloper extends DevelopmentJob {
         ProductDeveloper example = new ProductDeveloper();
 
         example.setProduct("Quake 2 Maps");
-        example.setSalary(new Float(145000.00));
+        example.setSalary(145000.00f);
 
         return example;
     }
@@ -32,7 +32,7 @@ public class ProductDeveloper extends DevelopmentJob {
         ProductDeveloper example = new ProductDeveloper();
 
         example.setProduct("Trinity Operating System");
-        example.setSalary(new Float(85000.00));
+        example.setSalary(85000.00f);
 
         return example;
     }
@@ -41,7 +41,7 @@ public class ProductDeveloper extends DevelopmentJob {
         ProductDeveloper example = new ProductDeveloper();
 
         example.setProduct("Ada For Dummies");
-        example.setSalary(new Float(80000.00));
+        example.setSalary(80000.00f);
 
         return example;
     }

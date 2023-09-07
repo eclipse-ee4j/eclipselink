@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -44,7 +44,7 @@ public class TestGetReference extends JPA1Base {
     private final Department _dep = new Department(1, "eins");
     private final Department _dep2 = new Department(2, "zwei");
     private final Employee _emp = new Employee(7, "first", "last", _dep);
-    private final Cubicle _cub = new Cubicle(new Integer(1), new Integer(2), "yellow", _emp);
+    private final Cubicle _cub = new Cubicle(Integer.valueOf(1), Integer.valueOf(2), "yellow", _emp);
     private final Patent _pat = new Patent("12345", 2007, "whatever", Date.valueOf("2007-01-01"));
     private final CreditCardAccount _ccacc = new CreditCardAccount();
 
@@ -78,7 +78,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Employee emp = em.getReference(Employee.class, new Integer(7));
+            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
             verify(em.contains(emp), "Object not managed");
             env.commitTransactionAndClear(em);
         } finally {
@@ -92,13 +92,13 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Employee emp = em.getReference(Employee.class, new Integer(7));
+            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
             verify(em.contains(emp), "Object not managed");
             verify(emp.getId() == 7, "wrong id");
             verify(emp.getDepartment().getName().equals("eins"), "wrong department");
-            emp = em.getReference(Employee.class, new Integer(7));
+            emp = em.getReference(Employee.class, Integer.valueOf(7));
             verify(emp.getId() == 7, "wrong id");
-            Department dep = em.getReference(Department.class, new Integer(1));
+            Department dep = em.getReference(Department.class, Integer.valueOf(1));
             verify(em.contains(dep), "Object not loaded");
             verify(dep.getId() == 1, "wrong id");
             env.rollbackTransactionAndClear(em);
@@ -111,13 +111,13 @@ public class TestGetReference extends JPA1Base {
     public void testPositivNonTx() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Employee emp = em.getReference(Employee.class, new Integer(7));
+            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
             try {
                 verify(emp.getId() == 7, "wrong id");
                 verify(emp.getDepartment().getName().equals("eins"), "wrong department");
-                emp = em.getReference(Employee.class, new Integer(7));
+                emp = em.getReference(Employee.class, Integer.valueOf(7));
                 verify(emp.getId() == 7, "wrong id");
-                Department dep = em.getReference(Department.class, new Integer(1));
+                Department dep = em.getReference(Department.class, Integer.valueOf(1));
                 verify(dep.getId() == 1, "wrong id");
             } catch (PersistenceException e) {
                 if (getEnvironment().usesExtendedPC()) {
@@ -181,7 +181,7 @@ public class TestGetReference extends JPA1Base {
             boolean operationFailed = false;
             env.beginTransaction(em);
             try {
-                employee = em.getReference(Employee.class, new Integer(17 + 4));
+                employee = em.getReference(Employee.class, Integer.valueOf(17 + 4));
             } catch (EntityNotFoundException e) {
                 // $JL-EXC$ expected behavior
                 operationFailed = true;
@@ -210,7 +210,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
             try {
-                em.getReference(String.class, new Integer(17 + 4));
+                em.getReference(String.class, Integer.valueOf(17 + 4));
                 flop("no IllegalArgumentException thrown");
             } catch (IllegalArgumentException ex) {
                 verify(true, "");
@@ -244,8 +244,8 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Integer one = new Integer(1);
-            Integer two = new Integer(2);
+            Integer one = Integer.valueOf(1);
+            Integer two = Integer.valueOf(2);
             CubiclePrimaryKeyClass cubKey = new CubiclePrimaryKeyClass(one, two);
             Cubicle cub = em.getReference(Cubicle.class, cubKey);
             verify(cub.getFloor().equals(one) && cub.getPlace().equals(two), "wrong cubicle");
@@ -656,7 +656,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             // case 1: entity with standard serialization
-            Employee emp = em.getReference(Employee.class, new Integer(7));
+            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
             // load entity
             emp.getFirstName();
             Employee resultEmp = AbstractBaseTest.serializeDeserialize(emp);
@@ -665,7 +665,7 @@ public class TestGetReference extends JPA1Base {
             em.clear();
 
             // case 2: entity with writeReplace
-            Department dep = em.getReference(Department.class, new Integer(1));
+            Department dep = em.getReference(Department.class, Integer.valueOf(1));
             // load entity
             dep.getName();
             Department resultDep = AbstractBaseTest.serializeDeserialize(dep);
@@ -674,9 +674,9 @@ public class TestGetReference extends JPA1Base {
             em.clear();
 
             // case 3: related entities
-            emp = em.getReference(Employee.class, new Integer(7));
+            emp = em.getReference(Employee.class, Integer.valueOf(7));
             emp.getFirstName();
-            dep = em.getReference(Department.class, new Integer(2));
+            dep = em.getReference(Department.class, Integer.valueOf(2));
             dep.getName();
             emp.setDepartment(dep);
             Cubicle cub = em.getReference(Cubicle.class, new CubiclePrimaryKeyClass(1, 2));
@@ -698,7 +698,7 @@ public class TestGetReference extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             // case 1: entity with standard serialization
-            Employee emp = em.getReference(Employee.class, new Integer(7));
+            Employee emp = em.getReference(Employee.class, Integer.valueOf(7));
             boolean shouldFail = isHollow(emp);
             try {
                 Employee resultEmp = AbstractBaseTest.serializeDeserialize(emp);
@@ -712,7 +712,7 @@ public class TestGetReference extends JPA1Base {
             em.clear();
 
             // case 2: entity with writeReplace
-            Department dep = em.getReference(Department.class, new Integer(1));
+            Department dep = em.getReference(Department.class, Integer.valueOf(1));
             shouldFail = isHollow(dep);
             try {
                 Department resultDep = AbstractBaseTest.serializeDeserialize(dep);

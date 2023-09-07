@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -177,8 +177,8 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         beginTransaction(em);
 
         Bus bus = new Bus();
-        bus.setPassengerCapacity(new Integer(50));
-        bus.setFuelCapacity(new Integer(175));
+        bus.setPassengerCapacity(Integer.valueOf(50));
+        bus.setFuelCapacity(Integer.valueOf(175));
         bus.setDescription("OC Transpo Bus");
         bus.setFuelType("Diesel");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -281,10 +281,10 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
 
         // Inheritance properties.
         descriptor.getDescriptorInheritancePolicy().setClassIndicatorFieldName("POLICY.POL_TYPE");
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HousePolicy.class, new Long(3));
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HealthPolicy.class, new Long(2));
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.VehiclePolicy.class, new Long(1));
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.BicyclePolicy.class, new Long(0));
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HousePolicy.class, Long.valueOf(3));
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HealthPolicy.class, Long.valueOf(2));
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.VehiclePolicy.class, Long.valueOf(1));
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.BicyclePolicy.class, Long.valueOf(0));
 
         // Mappings.
         DirectToFieldMapping policyNumberMapping = new DirectToFieldMapping();
@@ -380,8 +380,8 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         sexMapping.setSetMethodName("setSex");
         sexMapping.setFieldName("HOLDER.SEX");
         ObjectTypeConverter sexConverter = new ObjectTypeConverter();
-        sexConverter.addConversionValue(new Character('F'), "Female");
-        sexConverter.addConversionValue(new Character('M'), "Male");
+        sexConverter.addConversionValue(Character.valueOf('F'), "Female");
+        sexConverter.addConversionValue(Character.valueOf('M'), "Male");
         sexMapping.setConverter(sexConverter);
         descriptor.addMapping(sexMapping);
 

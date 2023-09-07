@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -46,7 +46,7 @@ public class TestSelectListTypes extends JPA1Base {
             env.beginTransaction(em);
             em.persist(obj);
             env.commitTransactionAndClear(em);
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(0));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(0));
         } finally {
             closeEntityManager(em);
         }

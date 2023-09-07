@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public class DefineAndGenerateNillableTestCases extends XSDHelperDefineAndGenera
         //prop.setAttribute(true);
         //prop.setElement(false);
         prop.setXsd(true);
-        prop.setDefault(new Integer(0));
+        prop.setDefault(Integer.valueOf(0));
         prop.setXsdLocalName("myAttr");
         customerSDOType.addDeclaredProperty(prop);
 
@@ -67,7 +67,7 @@ public class DefineAndGenerateNillableTestCases extends XSDHelperDefineAndGenera
         //prop2.setElement(true);
         prop2.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         prop2.setXsd(true);
-        prop2.setDefault(new Integer(0));
+        prop2.setDefault(Integer.valueOf(0));
         prop2.setXsdLocalName("myNonSpecified");
 
         prop2.setXsdType(XMLConstants.INT_QNAME);
@@ -86,7 +86,7 @@ public class DefineAndGenerateNillableTestCases extends XSDHelperDefineAndGenera
         prop3.setXsdLocalName("myNonNillable");
         prop3.setContainment(true);
 
-        prop3.setDefault(new Integer(0));
+        prop3.setDefault(Integer.valueOf(0));
 
         customerSDOType.addDeclaredProperty(prop3);
 
@@ -95,7 +95,7 @@ public class DefineAndGenerateNillableTestCases extends XSDHelperDefineAndGenera
         prop4.setType(intType);
         //prop4.setAttribute(false);
         prop4.setXsd(true);
-        prop4.setDefault(new Integer(0));
+        prop4.setDefault(Integer.valueOf(0));
 
         prop4.setContainment(true);
         //prop4.setElement(true);

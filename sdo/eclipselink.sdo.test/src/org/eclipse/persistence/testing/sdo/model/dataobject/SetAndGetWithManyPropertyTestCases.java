@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myBigDecimal");
             myProp.set("type", SDOConstants.SDO_DECIMAL);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myBigDecimal");
             double db = 12;
@@ -75,7 +75,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myBigInteger");
             myProp.set("type", SDOConstants.SDO_INTEGER);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myBigInteger");
             double db = 12;
@@ -97,10 +97,10 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myBoolean");
             myProp.set("type", SDOConstants.SDO_BOOLEAN);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myBoolean");
-            boolean b = new Boolean("true").booleanValue();
+            boolean b = Boolean.valueOf("true").booleanValue();
             myDO.setBoolean(prop, b);
             boolean myboolean = myDO.getBoolean(prop);
             assertTrue("Expected Boolean [" + b + "], but was [" + myboolean + "]", myboolean == b);
@@ -117,10 +117,10 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myByte");
             myProp.set("type", SDOConstants.SDO_BYTE);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myByte");
-            byte b = new Byte("8").byteValue();
+            byte b = Byte.valueOf("8").byteValue();
             myDO.setByte(prop, b);
             byte mybyte = myDO.getByte(prop);
             assertTrue("Expected byte [" + b + "], but was [" + mybyte + "]", mybyte == b);
@@ -138,11 +138,11 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myBytes");
             myProp.set("type", SDOConstants.SDO_BYTES);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myBytes");
-            byte b1 = new Byte("16").byteValue();
-            byte b2 = new Byte("8").byteValue();
+            byte b1 = Byte.valueOf("16").byteValue();
+            byte b2 = Byte.valueOf("8").byteValue();
             byte[] bytes = new byte[] {b1, b2};
 
             myDO.setBytes(prop, bytes);
@@ -162,7 +162,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myChar");
             myProp.set("type", SDOConstants.SDO_CHARACTER);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myChar");
             char c = 'x';
@@ -182,7 +182,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myDate");
             myProp.set("type", SDOConstants.SDO_DATE);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             Calendar controlCalendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             controlCalendar.clear();
@@ -208,7 +208,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myDouble");
             myProp.set("type", SDOConstants.SDO_DOUBLE);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myDouble");
             double db = 12;
@@ -228,7 +228,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myFloat");
             myProp.set("type", SDOConstants.SDO_FLOAT);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myFloat");
             float fl = 12;
@@ -248,7 +248,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myInt");
             myProp.set("type", SDOConstants.SDO_INT);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myInt");
             int i = 69;
@@ -270,7 +270,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myLong");
             myProp.set("type", SDOConstants.SDO_LONG);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myLong");
             long l = 666L;
@@ -290,10 +290,10 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myShort");
             myProp.set("type", SDOConstants.SDO_SHORT);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myShort");
-            short s = new Short("66").shortValue();
+            short s = Short.valueOf("66").shortValue();
             myDO.setShort(prop, s);
             short myshort = myDO.getShort(prop);
             assertTrue("Expected short [" + s + "], but was [" + myshort + "]", myshort == s);
@@ -310,7 +310,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myString");
             myProp.set("type", SDOConstants.SDO_STRING);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myString");
             String s = new String("This is my string.");

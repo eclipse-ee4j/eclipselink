@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -270,14 +270,14 @@ public final class AddOrRefreshClassesAction
         protected Action buildOKAction() {
             Action action = super.buildOKAction();
             action.putValue(Action.NAME, this.resourceRepository().getString("EJB_JAR_XML_VALIDATOR_STATUS_DIALOG_YES_BUTTON"));
-            action.putValue(Action.MNEMONIC_KEY, new Integer(this.resourceRepository().getMnemonic("EJB_JAR_XML_VALIDATOR_STATUS_DIALOG_YES_BUTTON")));
+            action.putValue(Action.MNEMONIC_KEY, Integer.valueOf(this.resourceRepository().getMnemonic("EJB_JAR_XML_VALIDATOR_STATUS_DIALOG_YES_BUTTON")));
             return action;
         }
 
         protected Action buildCancelAction() {
             Action action = super.buildCancelAction();
             action.putValue(Action.NAME, this.resourceRepository().getString("EJB_JAR_XML_VALIDATOR_STATUS_DIALOG_NO_BUTTON"));
-            action.putValue(Action.MNEMONIC_KEY, new Integer(this.resourceRepository().getMnemonic("EJB_JAR_XML_VALIDATOR_STATUS_DIALOG_NO_BUTTON")));
+            action.putValue(Action.MNEMONIC_KEY, Integer.valueOf(this.resourceRepository().getMnemonic("EJB_JAR_XML_VALIDATOR_STATUS_DIALOG_NO_BUTTON")));
             return action;
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -251,37 +251,37 @@ public class ClassFileTests extends TestCase {
         Field field;
 
         field = fieldPool.fieldNamed("byteStatic_55");
-        assertEquals(new Integer(55), field.constantValue());
+        assertEquals(Integer.valueOf(55), field.constantValue());
 
         field = fieldPool.fieldNamed("shortStatic_55");
-        assertEquals(new Integer(55), field.constantValue());
+        assertEquals(Integer.valueOf(55), field.constantValue());
 
         field = fieldPool.fieldNamed("intStatic_55");
-        assertEquals(new Integer(55), field.constantValue());
+        assertEquals(Integer.valueOf(55), field.constantValue());
 
         field = fieldPool.fieldNamed("longStatic_55L");
-        assertEquals(new Long(55L), field.constantValue());
+        assertEquals(Long.valueOf(55L), field.constantValue());
 
         field = fieldPool.fieldNamed("floatStatic_5_55F");
-        assertEquals(new Float(5.55F), field.constantValue());
+        assertEquals(Float.valueOf(5.55F), field.constantValue());
 
         field = fieldPool.fieldNamed("floatStatic_5_0e7F");
-        assertEquals(new Float(5e7F), field.constantValue());
+        assertEquals(Float.valueOf(5e7F), field.constantValue());
 
         field = fieldPool.fieldNamed("doubleStatic_5_55D");
-        assertEquals(new Double(5.55D), field.constantValue());
+        assertEquals(Double.valueOf(5.55D), field.constantValue());
 
         field = fieldPool.fieldNamed("doubleStatic_5_0e55D");
-        assertEquals(new Double(5e55D), field.constantValue());
+        assertEquals(Double.valueOf(5e55D), field.constantValue());
 
         field = fieldPool.fieldNamed("booleanStatic_true");
-        assertEquals(new Integer(1), field.constantValue());
+        assertEquals(Integer.valueOf(1), field.constantValue());
 
         field = fieldPool.fieldNamed("booleanStatic_false");
-        assertEquals(new Integer(0), field.constantValue());
+        assertEquals(Integer.valueOf(0), field.constantValue());
 
         field = fieldPool.fieldNamed("charStatic_A");
-        assertEquals(new Integer('A'), field.constantValue());
+        assertEquals(Integer.valueOf('A'), field.constantValue());
 
         field = fieldPool.fieldNamed("stringStatic_A_String");
         assertEquals("A String", field.constantValue());

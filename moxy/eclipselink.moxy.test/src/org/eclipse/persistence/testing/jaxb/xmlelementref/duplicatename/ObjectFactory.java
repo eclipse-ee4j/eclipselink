@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ public class ObjectFactory {
 
     @XmlElementDecl(name="value", scope=BeanB.class)
     public JAXBElement<Integer> createBeanBValue() {
-        return new JAXBElement<Integer>(new QName("value"), Integer.class, new Integer(12));
+        return new JAXBElement<Integer>(new QName("value"), Integer.class, Integer.valueOf(12));
     }
 
     @XmlElementDecl(name="value")

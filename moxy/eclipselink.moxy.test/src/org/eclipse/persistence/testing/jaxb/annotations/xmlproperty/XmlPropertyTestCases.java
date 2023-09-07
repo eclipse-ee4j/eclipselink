@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public class XmlPropertyTestCases extends TestCase {
         assertTrue("Incorrect value for property", property.equals("value1"));
         property = properties.get(CLASS_PROPERTY_2_NAME);
         assertNotNull(property);
-        assertTrue("Incorrect value for property", property.equals(new Integer("121")));
+        assertTrue("Incorrect value for property", property.equals(Integer.valueOf("121")));
     }
 
     public void testXmlPropertyOnField() {

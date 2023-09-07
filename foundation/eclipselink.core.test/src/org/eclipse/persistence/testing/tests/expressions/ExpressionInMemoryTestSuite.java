@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,15 +42,15 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
         Expression expression = builder.get("salary").greaterThanEqual(1000);
 
         //expression = expression.and((ExpressionMath.ln(builder.get("salary"))).lessThan(10));
-        //expression = expression.and((ExpressionMath.mod(builder.get("salary"), new Integer(107)).lessThan(10)));
+        //expression = expression.and((ExpressionMath.mod(builder.get("salary"), Integer.valueOf(107)).lessThan(10)));
         expression = expression.and((ExpressionMath.floor(builder.get("salary"))).lessThan(45000));
         expression = expression.and((ExpressionMath.ceil(builder.get("salary"))).lessThan(10000));
         expression = expression.and(ExpressionMath.round(builder.get("salary"), 2).equal(40000));
-        expression = expression.and(ExpressionMath.min(builder.get("salary"), new Integer(30000)).greaterThan(30000));
-        expression = expression.and(ExpressionMath.max(builder.get("salary"), new Integer(30000)).lessThan(50000));
-        //expression = expression.and((ExpressionMath.sinh(ExpressionMath.divide(builder.get("salary"),new Integer(10000000))).lessThanEqual(100)));
-        //expression = expression.and((ExpressionMath.cosh(ExpressionMath.divide(builder.get("salary"),new Integer(10000000))).lessThanEqual(100)));
-        //expression = expression.and((ExpressionMath.tanh(ExpressionMath.divide(builder.get("salary"),new Integer(10000000))).lessThanEqual(1)));
+        expression = expression.and(ExpressionMath.min(builder.get("salary"), Integer.valueOf(30000)).greaterThan(30000));
+        expression = expression.and(ExpressionMath.max(builder.get("salary"), Integer.valueOf(30000)).lessThan(50000));
+        //expression = expression.and((ExpressionMath.sinh(ExpressionMath.divide(builder.get("salary"),Integer.valueOf(10000000))).lessThanEqual(100)));
+        //expression = expression.and((ExpressionMath.cosh(ExpressionMath.divide(builder.get("salary"),Integer.valueOf(10000000))).lessThanEqual(100)));
+        //expression = expression.and((ExpressionMath.tanh(ExpressionMath.divide(builder.get("salary"),Integer.valueOf(10000000))).lessThanEqual(1)));
         expression = expression.and((ExpressionMath.acos(ExpressionMath.power(builder.get("salary"), 0)).lessThanEqual(100)));
         expression = expression.and((ExpressionMath.asin(ExpressionMath.power(builder.get("salary"), 0)).lessThanEqual(100)));
         expression = expression.and((ExpressionMath.atan(ExpressionMath.power(builder.get("salary"), 0)).lessThanEqual(100)));
@@ -62,7 +62,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
         //expression = expression.and((ExpressionMath.sign(builder.get("salary"))).greaterThan(0));
         expression = expression.and((ExpressionMath.exp(ExpressionMath.min(builder.get("salary"), 5))).lessThan(1000000));
         // Test sqrt.
-        expression = expression.and(ExpressionMath.power(builder.get("salary"), new Double(0.5)).greaterThan(0));
+        expression = expression.and(ExpressionMath.power(builder.get("salary"), Double.valueOf(0.5)).greaterThan(0));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
         test.setExpression(expression);

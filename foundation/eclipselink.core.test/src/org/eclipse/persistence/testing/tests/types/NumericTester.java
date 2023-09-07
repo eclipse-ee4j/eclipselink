@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,17 +44,17 @@ public class NumericTester extends TypeTester {
     public NumericTester() {
         super("ZERO");
         intValue = 0;
-        integerClassValue = new Integer(0);
+        integerClassValue = Integer.valueOf(0);
         floatValue = 0;
-        floatClassValue = new Float(0);
+        floatClassValue = Float.valueOf(0);
         longValue = 0;
-        longClassValue = new Long(0);
+        longClassValue = Long.valueOf(0);
         doubleValue = 0;
-        doubleClassValue = new Double(0);
+        doubleClassValue = Double.valueOf(0);
         shortValue = (short)0;
-        shortClassValue = new Short((short)0);
+        shortClassValue = Short.valueOf((short)0);
         byteValue = (byte)0;
-        byteClassValue = new Byte((byte)0);
+        byteClassValue = Byte.valueOf((byte)0);
         bigIntegerValue = new BigInteger("0");
         bigDecimalValue = new BigDecimal(bigIntegerValue, 19);
     }
@@ -274,7 +274,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setByteClassValue(byte aByte) {
-        byteClassValue = new Byte(aByte);
+        byteClassValue = Byte.valueOf(aByte);
     }
 
     public void setByteClassValue(Byte aByte) {
@@ -286,7 +286,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setDoubleClassValue(double aDouble) {
-        doubleClassValue = new Double(aDouble);
+        doubleClassValue = Double.valueOf(aDouble);
     }
 
     public void setDoubleClassValue(Double aDouble) {
@@ -298,7 +298,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setFloatClassValue(float aFloat) {
-        floatClassValue = new Float(aFloat);
+        floatClassValue = Float.valueOf(aFloat);
     }
 
     public void setFloatClassValue(Float aFloat) {
@@ -310,7 +310,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setIntegerClassValue(int anInteger) {
-        integerClassValue = new Integer(anInteger);
+        integerClassValue = Integer.valueOf(anInteger);
     }
 
     public void setIntegerClassValue(Integer anInteger) {
@@ -322,7 +322,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setLongClassValue(long aLong) {
-        longClassValue = new Long(aLong);
+        longClassValue = Long.valueOf(aLong);
     }
 
     public void setLongClassValue(Long aLong) {
@@ -338,7 +338,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setShortClassValue(short aShort) {
-        shortClassValue = new Short(aShort);
+        shortClassValue = Short.valueOf(aShort);
     }
 
     public void setShortValue(short aShort) {
@@ -402,17 +402,17 @@ public class NumericTester extends TypeTester {
         NumericTester tester = new NumericTester("ZERO");
 
         tester.setIntegerValue(0);
-        tester.setIntegerClassValue(new Integer(0));
+        tester.setIntegerClassValue(Integer.valueOf(0));
         tester.setFloatValue(0);
-        tester.setFloatClassValue(new Float(0));
+        tester.setFloatClassValue(Float.valueOf(0));
         tester.setLongValue(0);
-        tester.setLongClassValue(new Long(0));
+        tester.setLongClassValue(Long.valueOf(0));
         tester.setDoubleValue(0);
-        tester.setDoubleClassValue(new Double(0));
+        tester.setDoubleClassValue(Double.valueOf(0));
         tester.setShortValue((short)0);
-        tester.setShortClassValue(new Short((short)0));
+        tester.setShortClassValue(Short.valueOf((short)0));
         tester.setByteValue((byte)0);
-        tester.setByteClassValue(new Byte((byte)0));
+        tester.setByteClassValue(Byte.valueOf((byte)0));
         tester.setBigIntegerValue(new BigInteger("0"));
         tester.setBigDecimalValue(new BigDecimal("0"));
 

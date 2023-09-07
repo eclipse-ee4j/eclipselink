@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
     Object result = null;
     Vector results2, results3 = null;
     Address originalAddress;
-    Long policyHolderIdToUse = new Long(12345);
+    Long policyHolderIdToUse = Long.valueOf(12345);
     boolean useCustomSQL;
 
     public StoredProcedureObjectRelationalParameters() {
@@ -73,7 +73,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
         Vector args = new Vector();
         args.addElement(policyHolderIdToUse);//ssn
         args.addElement(null);//occupation
-        args.addElement(new Character('M'));//sex
+        args.addElement(Character.valueOf('M'));//sex
         args.addElement("Chris");//firstName
         args.addElement(null);//birthDate
         args.addElement("Random");//lastName

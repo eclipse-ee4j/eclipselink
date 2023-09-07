@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -52,7 +52,7 @@ public class TestContains extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             // 1. managed after find ouside tx
-            Object obj = em.find(Department.class, new Integer(11));
+            Object obj = em.find(Department.class, Integer.valueOf(11));
             if (extended) {
                 verify(em.contains(obj), "object retrieved by find outside of transaction is not contained");
             } else {
@@ -61,7 +61,7 @@ public class TestContains extends JPA1Base {
             em.clear();
             // 2. managed after find inside tx
             env.beginTransaction(em);
-            obj = em.find(Department.class, new Integer(11));
+            obj = em.find(Department.class, Integer.valueOf(11));
             verify(em.contains(obj), "object retrieved by find inside transaction is not contained");
             env.rollbackTransactionAndClear(em);
             verify(!em.contains(obj), "object contained after rollback and clear");
@@ -94,7 +94,7 @@ public class TestContains extends JPA1Base {
             verify(!em.contains(dep), "object contained after commit");
             // 1. remove found object
             env.beginTransaction(em);
-            Object obj = em.find(Department.class, new Integer(21));
+            Object obj = em.find(Department.class, Integer.valueOf(21));
             verify(em.contains(obj), "object not contained after find inside tx");
             em.remove(obj);
             verify(!em.contains(obj), "object contained after remove");
@@ -136,7 +136,7 @@ public class TestContains extends JPA1Base {
             verify(!em.contains(detachedDep), "detached object contained, another object with same pk is in state MANAGED_NEW");
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // object is now in state MANAGED
+            dep = em.find(Department.class, Integer.valueOf(id)); // object is now in state MANAGED
             verify(!em.contains(detachedDep), "detached object contained, another object with same pk is in state MANAGED");
             em.remove(dep); // object is now in state DELETED
             verify(!em.contains(detachedDep), "detached object contained, another object with same pk is in state DELETED");

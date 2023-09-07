@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,7 +73,7 @@ public class XmlSchemaTypesTestCases extends JAXBWithJSONTestCases {
 
         //setup control Employee
         GregorianCalendar calendar = new GregorianCalendar();
-        Date theDate = new Date(new Long("1262840400000"));
+        Date theDate = new Date(Long.valueOf("1262840400000"));
         calendar.setTime(theDate);
 
         emp.hireDate = calendar;

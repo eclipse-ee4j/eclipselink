@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,7 +91,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         loginConfig.setExternalTransactionController(false);
         loginConfig.setForceFieldNamesToUppercase(false);
         loginConfig.setJdbcBatchWriting(false);
-        loginConfig.setMaxBatchWritingSize(new Integer(5));
+        loginConfig.setMaxBatchWritingSize(Integer.valueOf(5));
         loginConfig.setNativeSequencing(false);
         loginConfig.setNativeSQL(false);
         loginConfig.setOptimizeDataConversion(true);
@@ -99,7 +99,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         loginConfig.setPlatformClass("platform");
         loginConfig.setSequenceCounterField("SEQ_COUNT");
         loginConfig.setSequenceNameField("SEQ_NAME");
-        loginConfig.setSequencePreallocationSize(new Integer(99));
+        loginConfig.setSequencePreallocationSize(Integer.valueOf(99));
         loginConfig.setSequenceTable("\"SEQUENCE\"");
         loginConfig.setStreamsForBinding(false);
         loginConfig.setStringBinding(false);
@@ -161,16 +161,16 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         ServerSessionConfig serverSessionConfig = new ServerSessionConfig();
         serverSessionConfig.setPoolsConfig(new PoolsConfig());
         ReadConnectionPoolConfig readPool = new ReadConnectionPoolConfig();
-        readPool.setMaxConnections(new Integer(2));
-        readPool.setMinConnections(new Integer(2));
+        readPool.setMaxConnections(Integer.valueOf(2));
+        readPool.setMinConnections(Integer.valueOf(2));
         serverSessionConfig.getPoolsConfig().setReadConnectionPoolConfig(readPool);
         WriteConnectionPoolConfig writePool = new WriteConnectionPoolConfig();
-        writePool.setMaxConnections(new Integer(10));
-        writePool.setMinConnections(new Integer(5));
+        writePool.setMaxConnections(Integer.valueOf(10));
+        writePool.setMinConnections(Integer.valueOf(5));
         serverSessionConfig.getPoolsConfig().setWriteConnectionPoolConfig(writePool);
         WriteConnectionPoolConfig userPool = new WriteConnectionPoolConfig();
-        userPool.setMaxConnections(new Integer(5));
-        userPool.setMinConnections(new Integer(0));
+        userPool.setMaxConnections(Integer.valueOf(5));
+        userPool.setMinConnections(Integer.valueOf(0));
         serverSessionConfig.getPoolsConfig().addConnectionPoolConfig(userPool);
         sessions.addSessionConfig(serverSessionConfig);
         FileWriter writer = new FileWriter(m_resource);
@@ -253,7 +253,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
             checkBoolean("ExternalTransactionController", loginConfig.getExternalTransactionController(), false);
             checkBoolean("ForceFieldNamesToUppercase", loginConfig.getForceFieldNamesToUppercase(), false);
             checkBoolean("JdbcBatchWriting", loginConfig.getJdbcBatchWriting(), false);
-            check("MaxBatchWritingSize", loginConfig.getMaxBatchWritingSize(), new Integer(5));
+            check("MaxBatchWritingSize", loginConfig.getMaxBatchWritingSize(), Integer.valueOf(5));
             checkBoolean("NativeSequencing", loginConfig.getNativeSequencing(), false);
             checkBoolean("NativeSQL", loginConfig.getNativeSQL(), false);
             checkBoolean("OptimizeDataConversion", loginConfig.getOptimizeDataConversion(), true);
@@ -261,7 +261,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
             check("PlatformClass", loginConfig.getPlatformClass(), "platform");
             check("SequenceCounterField", loginConfig.getSequenceCounterField(), "SEQ_COUNT");
             check("SequenceNameField", loginConfig.getSequenceNameField(), "SEQ_NAME");
-            check("SequencePreallocationSize", loginConfig.getSequencePreallocationSize(), new Integer(99));
+            check("SequencePreallocationSize", loginConfig.getSequencePreallocationSize(), Integer.valueOf(99));
             check("SequenceTable", loginConfig.getSequenceTable(), "\"SEQUENCE\"");
             checkBoolean("StreamsForBinding", loginConfig.getStreamsForBinding(), false);
             checkBoolean("StringBinding", loginConfig.getStringBinding(), false);

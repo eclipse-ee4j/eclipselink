@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -234,25 +234,25 @@ public class PreferencePropertyValueModelTests extends PreferencesTestCase {
         this.testNode.putInt(KEY_NAME, 123);
         this.preferenceAdapter.setConverter(BidiStringConverter.INTEGER_CONVERTER);
         this.preferenceAdapter.addPropertyChangeListener(ValueModel.VALUE, this.listener);
-        assertEquals(new Integer(123), this.preferenceAdapter.getValue());
+        assertEquals(Integer.valueOf(123), this.preferenceAdapter.getValue());
         assertNull(this.event);
 
         this.testNode.putInt(KEY_NAME, 246);
         this.waitForEventQueueToClear();
-        this.verifyEvent(new Integer(123), new Integer(246));
-        assertEquals(new Integer(246), this.preferenceAdapter.getValue());
+        this.verifyEvent(Integer.valueOf(123), Integer.valueOf(246));
+        assertEquals(Integer.valueOf(246), this.preferenceAdapter.getValue());
 
         this.event = null;
         this.testNode.remove(KEY_NAME);
         this.waitForEventQueueToClear();
-        this.verifyEvent(new Integer(246), null);
+        this.verifyEvent(Integer.valueOf(246), null);
         assertNull(this.preferenceAdapter.getValue());
 
         this.event = null;
         this.testNode.putInt(KEY_NAME, 123);
         this.waitForEventQueueToClear();
-        this.verifyEvent(null, new Integer(123));
-        assertEquals(new Integer(123), this.preferenceAdapter.getValue());
+        this.verifyEvent(null, Integer.valueOf(123));
+        assertEquals(Integer.valueOf(123), this.preferenceAdapter.getValue());
     }
 
     /**

@@ -72,14 +72,14 @@ public class TestConvertResultToBoolean {
 
             DatabasePlatform platform = getPlatform(emf);
             if(platform.isDB2() || platform.isDerby()) {
-                assertEquals(new Integer(1), intList.get(0));
-                assertEquals(new Integer(0), intList.get(1));
+                assertEquals(Integer.valueOf(1), intList.get(0));
+                assertEquals(Integer.valueOf(0), intList.get(1));
             } else if(platform.isOracle()) {
                 assertEquals(new java.math.BigDecimal(1), intList.get(0));
                 assertEquals(new java.math.BigDecimal(0), intList.get(1));
             } else {
-                assertEquals(new Long(1), intList.get(0));
-                assertEquals(new Long(0), intList.get(1));
+                assertEquals(Long.valueOf(1), intList.get(0));
+                assertEquals(Long.valueOf(0), intList.get(1));
             }
         } finally {
             if (em.getTransaction().isActive()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -569,8 +569,8 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * <p>Set values in the object model based on the corresponding XML document.  The following pairings are equivalent:</p>
      *
      * <i>Set the Customer's ID</i>
-     * <pre> xmlContext.setValueByXPath(customer, "@id", null, new Integer(123));
-     * customer.setId(new Integer(123));</pre>
+     * <pre> xmlContext.setValueByXPath(customer, "@id", null, Integer.valueOf(123));
+     * customer.setId(Integer.valueOf(123));</pre>
      *
      * <i>Set the Customer's Name</i>
      * <pre> xmlContext.setValueByXPath(customer, "ns:personal-info/ns:name/text()", aNamespaceResolver, "Jane Doe");

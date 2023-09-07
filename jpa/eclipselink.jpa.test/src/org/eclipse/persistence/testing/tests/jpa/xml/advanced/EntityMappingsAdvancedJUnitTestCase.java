@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1049,8 +1049,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         int lastIndex = firstName.length();
         List employees = em.createQuery("SELECT object(e) FROM XMLEmployee e where e.firstName = substring(:p1, :p2, :p3)").
             setParameter("p1", firstName).
-            setParameter("p2", new Integer(firstIndex)).
-            setParameter("p3", new Integer(lastIndex)).
+            setParameter("p2", Integer.valueOf(firstIndex)).
+            setParameter("p3", Integer.valueOf(lastIndex)).
             getResultList();
 
         // clean up
@@ -1299,7 +1299,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
         // verify properties set on Employee instance
         errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "XMLEmployee");
-        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, new Integer(1));
+        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, Integer.valueOf(1));
         errorMsg += verifyPropertyValue(descriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE);
         errorMsg += verifyPropertyValue(descriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE);
 
@@ -1311,13 +1311,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
         errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, new Byte((byte)1));
-        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, new Character('A'));
-        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, new Double(1));
-        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, new Float(1));
-        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, new Integer(1));
-        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, new Long(1));
-        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, new Short((short)1));
+        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, Byte.valueOf((byte)1));
+        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, Character.valueOf('A'));
+        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, Double.valueOf(1));
+        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, Float.valueOf(1));
+        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, Integer.valueOf(1));
+        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, Long.valueOf(1));
+        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, Short.valueOf((short)1));
         errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
         errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
         errorMsg += verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59"));

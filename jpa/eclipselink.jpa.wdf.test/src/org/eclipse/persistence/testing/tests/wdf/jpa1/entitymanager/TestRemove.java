@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -96,7 +96,7 @@ public class TestRemove extends JPA1Base {
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             // find a department in the state MANAGED
-            dep = em.find(Department.class, new Integer(id1));
+            dep = em.find(Department.class, Integer.valueOf(id1));
             verify(dep != null, "department not found");
             dep.setName("NEW");
             if (flushBeforeRemove) {
@@ -147,7 +147,7 @@ public class TestRemove extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id1));
+            dep = em.find(Department.class, Integer.valueOf(id1));
             em.remove(dep);
             // no, the entity should be REMOVED
             if (flushBeforePersist) {
@@ -251,7 +251,7 @@ public class TestRemove extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // object is now in state MANAGED
+            dep = em.find(Department.class, Integer.valueOf(id)); // object is now in state MANAGED
             try {
                 em.remove(detachedDep);
             } catch (IllegalArgumentException e) {
@@ -275,7 +275,7 @@ public class TestRemove extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id));
+            dep = em.find(Department.class, Integer.valueOf(id));
             em.remove(dep); // object is now in state DELETED
             try {
                 em.remove(detachedDep);
@@ -318,7 +318,7 @@ public class TestRemove extends JPA1Base {
         em.persist(dep);
         env.commitTransactionAndClear(em);
         env.beginTransaction(em);
-        dep = em.find(Department.class, new Integer(id));
+        dep = em.find(Department.class, Integer.valueOf(id));
         em.remove(dep);
         em.flush();
         try {
@@ -373,8 +373,8 @@ public class TestRemove extends JPA1Base {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            Cubicle cub = new Cubicle(new Integer(30), new Integer(31), "green", null /* employee */);
-            CubiclePrimaryKeyClass cubKey = new CubiclePrimaryKeyClass(new Integer(30), new Integer(31));
+            Cubicle cub = new Cubicle(Integer.valueOf(30), Integer.valueOf(31), "green", null /* employee */);
+            CubiclePrimaryKeyClass cubKey = new CubiclePrimaryKeyClass(Integer.valueOf(30), Integer.valueOf(31));
             env.beginTransaction(em);
             em.persist(cub);
             env.commitTransactionAndClear(em);

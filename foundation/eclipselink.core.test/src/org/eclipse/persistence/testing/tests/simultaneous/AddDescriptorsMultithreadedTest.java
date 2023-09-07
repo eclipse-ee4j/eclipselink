@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,7 +147,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         long timeToSleepBetweenAddingDescriptors;
         InterfaceHashtableProject project;
         static int numberOfCompletedTests = 0;
-        static Object lock = new Boolean(true);
+        static Object lock = Boolean.valueOf(true);
         public void test() {
             DatabaseSession dbSession;
             if (getSession().isDatabaseSession()) {
@@ -320,7 +320,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         int testNumber;
         int numberOfTests;
         static int numberOfCompletedTests = 0;
-        static Object lock = new Boolean(true);
+        static Object lock = Boolean.valueOf(true);
         public void test() {
             // Test execution causes deadlock on SQL Server
             if (getAbstractSession().getParent().getPlatform().isSQLServer()) {

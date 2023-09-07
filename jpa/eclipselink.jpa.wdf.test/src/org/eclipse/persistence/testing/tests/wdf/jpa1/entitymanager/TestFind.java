@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -31,7 +31,7 @@ public class TestFind extends JPA1Base {
 
     private final Department _dep = new Department(1, "eins");
     private final Employee _emp = new Employee(7, "first", "last", _dep);
-    private final Cubicle _cub = new Cubicle(new Integer(1), new Integer(2), "yellow", _emp);
+    private final Cubicle _cub = new Cubicle(Integer.valueOf(1), Integer.valueOf(2), "yellow", _emp);
 
     @Override
     public void setup() {
@@ -57,13 +57,13 @@ public class TestFind extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            Employee emp = em.find(Employee.class, new Integer(7));
+            Employee emp = em.find(Employee.class, Integer.valueOf(7));
             verify(em.contains(emp), "Object not loaded");
             verify(emp.getId() == 7, "wrong id");
             verify(emp.getDepartment().getName().equals("eins"), "wrong department");
-            emp = em.find(Employee.class, new Integer(7));
+            emp = em.find(Employee.class, Integer.valueOf(7));
             verify(emp.getId() == 7, "wrong id");
-            Department dep = em.find(Department.class, new Integer(1));
+            Department dep = em.find(Department.class, Integer.valueOf(1));
             verify(em.contains(dep), "Object not loaded");
             verify(dep.getId() == 1, "wrong id");
             env.rollbackTransactionAndClear(em);
@@ -76,12 +76,12 @@ public class TestFind extends JPA1Base {
     public void testPositivNonTx() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Employee emp = em.find(Employee.class, new Integer(7));
+            Employee emp = em.find(Employee.class, Integer.valueOf(7));
             verify(emp.getId() == 7, "wrong id");
             verify(emp.getDepartment().getName().equals("eins"), "wrong department");
-            emp = em.find(Employee.class, new Integer(7));
+            emp = em.find(Employee.class, Integer.valueOf(7));
             verify(emp.getId() == 7, "wrong id");
-            Department dep = em.find(Department.class, new Integer(1));
+            Department dep = em.find(Department.class, Integer.valueOf(1));
             verify(dep.getId() == 1, "wrong id");
         } finally {
             closeEntityManager(em);
@@ -92,7 +92,7 @@ public class TestFind extends JPA1Base {
     public void testNegativ() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Object result = em.find(Employee.class, new Integer(17 + 4));
+            Object result = em.find(Employee.class, Integer.valueOf(17 + 4));
             verify(result == null, "found something");
         } finally {
             closeEntityManager(em);
@@ -108,7 +108,7 @@ public class TestFind extends JPA1Base {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
             try {
-                em.find(String.class, new Integer(17 + 4));
+                em.find(String.class, Integer.valueOf(17 + 4));
                 flop("no IllegalArgumentException thrown");
             } catch (IllegalArgumentException ex) {
                 verify(true, "");
@@ -140,8 +140,8 @@ public class TestFind extends JPA1Base {
     public void testFindWithCompositeKey() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Integer one = new Integer(1);
-            Integer two = new Integer(2);
+            Integer one = Integer.valueOf(1);
+            Integer two = Integer.valueOf(2);
             CubiclePrimaryKeyClass cubKey = new CubiclePrimaryKeyClass(one, two);
             Cubicle cub = em.find(Cubicle.class, cubKey);
             verify(cub.getFloor().equals(one) && cub.getPlace().equals(two), "wrong cubicle");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -447,7 +447,7 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
                 MWDescriptorCachingPolicy.DESCRIPTOR_INHERITANCE_PROPERTY)
         {
             protected Object getValueFromSubject() {
-                return new Integer(((MWCachingPolicy) this.subject).getCacheSize());
+                return Integer.valueOf(((MWCachingPolicy) this.subject).getCacheSize());
             }
 
             protected void setValueOnSubject(Object value) {
@@ -459,7 +459,7 @@ public final class CachingPolicyPropertiesPage extends ScrollablePropertiesPage
     private PropertyValueModel buildProjectCacheSizeHolder() {
         return new PropertyAspectAdapter(this.projectDefaultCachingPolicyHolder, MWCachingPolicy.CACHE_SIZE_PROPERTY) {
             protected Object getValueFromSubject() {
-                return new Integer(((MWCachingPolicy) this.subject).getCacheSize());
+                return Integer.valueOf(((MWCachingPolicy) this.subject).getCacheSize());
             }
             protected void setValueOnSubject(Object value) {
                 if (((Integer) value).intValue() !=  ((MWDescriptorCachingPolicy) cachingPolicyHolder.getValue()).getProject().getDefaultsPolicy().getCachingPolicy().getCacheSize()) {

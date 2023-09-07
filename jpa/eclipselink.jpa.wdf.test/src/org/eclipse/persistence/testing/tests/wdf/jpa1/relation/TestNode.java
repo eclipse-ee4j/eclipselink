@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,7 +41,7 @@ public class TestNode extends JPA1Base {
             em.persist(root);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            Node found = em.find(Node.class, new Integer(rootId));
+            Node found = em.find(Node.class, Integer.valueOf(rootId));
             verify(found != null, "no node found");
             verify(found.getParent() == null, "parent not null");
             verify(found.getChildren().size() == 0, "unexpected children");
@@ -67,13 +67,13 @@ public class TestNode extends JPA1Base {
             em.persist(child2);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            Node found = em.find(Node.class, new Integer(rootId));
+            Node found = em.find(Node.class, Integer.valueOf(rootId));
             verify(found != null, "no node found");
             verify(found.getParent() == null, "parent not null");
             verify(found.getChildren().size() == 2, "unexpected children");
             env.rollbackTransactionAndClear(em);
             env.beginTransaction(em);
-            found = em.find(Node.class, new Integer(child1Id));
+            found = em.find(Node.class, Integer.valueOf(child1Id));
             verify(found != null, "no node found");
             Node parent = found.getParent();
             verify(em.contains(parent), "parent not contained in em");
@@ -106,9 +106,9 @@ public class TestNode extends JPA1Base {
             env.commitTransactionAndClear(em);
             // change the parent
             env.beginTransaction(em);
-            child = em.find(Node.class, new Integer(childId));
+            child = em.find(Node.class, Integer.valueOf(childId));
             Node parent = child.getParent();
-            root2 = em.find(Node.class, new Integer(root2Id));
+            root2 = em.find(Node.class, Integer.valueOf(root2Id));
             Set<Node> children = parent.getChildren();
             parent.setChildren(null);
             child.setParent(root2);
@@ -119,16 +119,16 @@ public class TestNode extends JPA1Base {
             verify(child.postUpdateWasCalled(), "child was not updated but it is the owning side of the relationship");
             // check the relationship
             env.beginTransaction(em);
-            child = em.find(Node.class, new Integer(childId));
+            child = em.find(Node.class, Integer.valueOf(childId));
             verify(child != null, "child is null");
             parent = child.getParent();
             verify(parent != null, "parent is null");
-            root2 = em.find(Node.class, new Integer(root2Id));
+            root2 = em.find(Node.class, Integer.valueOf(root2Id));
             verify(root2 == parent, "root2 != parent");
             verify(children != null, "children is null");
             children = root2.getChildren();
             verify(children.contains(child), "child not contained in set of children");
-            root1 = em.find(Node.class, new Integer(root1Id));
+            root1 = em.find(Node.class, Integer.valueOf(root1Id));
             Set children1 = root1.getChildren();
             verify(children1 == null || children1.isEmpty(), "children of root1 not null or empty");
             env.rollbackTransactionAndClear(em);
@@ -153,7 +153,7 @@ public class TestNode extends JPA1Base {
             em.persist(root);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            Node found = em.find(Node.class, new Integer(rootId));
+            Node found = em.find(Node.class, Integer.valueOf(rootId));
             verify(found != null, "no node found");
             verify(found.getParent() == found, "parent != root");
             verify(found.getChildren().size() == 1, "unexpected children");

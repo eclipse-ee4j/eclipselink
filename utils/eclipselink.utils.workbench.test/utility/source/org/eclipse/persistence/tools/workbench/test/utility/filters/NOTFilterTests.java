@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,12 +63,12 @@ public class NOTFilterTests extends TestCase {
     }
 
     public void testFiltering() {
-        assertTrue(this.notFilter.accept(new Integer(0)));
-        assertTrue(this.notFilter.accept(new Integer(-1)));
-        assertTrue(this.notFilter.accept(new Double(-0.001)));
-        assertFalse(this.notFilter.accept(new Double(1)));
-        assertFalse(this.notFilter.accept(new Double(11)));
-        assertFalse(this.notFilter.accept(new Double(111)));
+        assertTrue(this.notFilter.accept(Integer.valueOf(0)));
+        assertTrue(this.notFilter.accept(Integer.valueOf(-1)));
+        assertTrue(this.notFilter.accept(Double.valueOf(-0.001)));
+        assertFalse(this.notFilter.accept(Double.valueOf(1)));
+        assertFalse(this.notFilter.accept(Double.valueOf(11)));
+        assertFalse(this.notFilter.accept(Double.valueOf(111)));
     }
 
     public void testClone() {

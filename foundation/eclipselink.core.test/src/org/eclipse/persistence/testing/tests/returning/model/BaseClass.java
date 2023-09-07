@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,12 +56,12 @@ public abstract class BaseClass implements Cloneable {
             a_plus_minus_b_BigDecimal[1] = null;
         }
         if (a != null) {
-            a_Integer = new Integer(a.intValue());
+            a_Integer = Integer.valueOf(a.intValue());
         } else {
             a_Integer = null;
         }
         if (b != null) {
-            b_Integer = new Integer(b.intValue());
+            b_Integer = Integer.valueOf(b.intValue());
         } else {
             b_Integer = null;
         }
@@ -70,7 +70,7 @@ public abstract class BaseClass implements Cloneable {
     protected void setC(BigDecimal c) {
         if (c != null) {
             c_BigDecimal = c;
-            c_Integer = new Integer(c_BigDecimal.intValue());
+            c_Integer = Integer.valueOf(c_BigDecimal.intValue());
         } else {
             c_BigDecimal = null;
             c_Integer = null;
@@ -102,8 +102,8 @@ public abstract class BaseClass implements Cloneable {
         } else {
             BigDecimal a_plus_b = a.add(b);
             BigDecimal a_minus_b = a.subtract(b);
-            a_plus_minus_b_Integer[0] = new Integer(a_plus_b.intValue());
-            a_plus_minus_b_Integer[1] = new Integer(a_minus_b.intValue());
+            a_plus_minus_b_Integer[0] = Integer.valueOf(a_plus_b.intValue());
+            a_plus_minus_b_Integer[1] = Integer.valueOf(a_minus_b.intValue());
         }
         return a_plus_minus_b_Integer;
     }*/

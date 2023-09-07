@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1048,8 +1048,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         b = (Book) em.merge(b);
         a = (Author) em.merge(a);
 
-        assertTrue("The PK value for "+ b.getClass() +" (" + b.getId().getNumberId().getValue() + ") is not sequence generated", (b.getId().getNumberId().getValue() >= new Long(1000)));
-        assertTrue("The PK value for "+ a.getClass() +" (" + a.getId().getNumberId().getValue() + ") is not sequence generated", (a.getId().getNumberId().getValue() >= new Long(1000)));
+        assertTrue("The PK value for "+ b.getClass() +" (" + b.getId().getNumberId().getValue() + ") is not sequence generated", (b.getId().getNumberId().getValue() >= Long.valueOf(1000)));
+        assertTrue("The PK value for "+ a.getClass() +" (" + a.getId().getNumberId().getValue() + ") is not sequence generated", (a.getId().getNumberId().getValue() >= Long.valueOf(1000)));
 
         rollbackTransaction(em);
     }

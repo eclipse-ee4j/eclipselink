@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -48,7 +48,7 @@ public class Cubicle implements Serializable {
     }
 
     public Cubicle(CubiclePrimaryKeyClass key, String color, Employee emp) {
-        this(new Integer(key.getFloor().intValue()), new Integer(key.getPlace().intValue()), color, emp);
+        this(Integer.valueOf(key.getFloor().intValue()), Integer.valueOf(key.getPlace().intValue()), color, emp);
     }
 
     public Cubicle(Integer aFloor, Integer aPlace, String aColor, Employee aEmployee) {

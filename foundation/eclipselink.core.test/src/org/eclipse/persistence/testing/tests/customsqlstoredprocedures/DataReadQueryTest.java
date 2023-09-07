@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class DataReadQueryTest extends TestCase {
         getSession().removeQuery("dblogin");
         getSession().addQuery("dblogin", readQuery);
         Vector args = new Vector(1);
-        args.addElement(new Integer(1));
+        args.addElement(Integer.valueOf(1));
         try {
             Vector vResult = (Vector)getSession().executeQuery("dblogin", args);
         } catch (ClassCastException e) {
@@ -52,7 +52,7 @@ public class DataReadQueryTest extends TestCase {
         readQuery = new DataReadQuery();
         call = new StoredProcedureCall();
         call.setProcedureName("Select_Employee_using_Output");
-        call.addNamedArgumentValue("ARG1", new Integer(1));
+        call.addNamedArgumentValue("ARG1", Integer.valueOf(1));
         call.addNamedOutputArgument("VERSION", "VERSION", java.math.BigDecimal.class);
         readQuery.setCall(call);
         try {

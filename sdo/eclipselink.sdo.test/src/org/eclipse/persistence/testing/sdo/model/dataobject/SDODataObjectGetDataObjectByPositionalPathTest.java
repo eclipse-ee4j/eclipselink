@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -125,7 +125,7 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
 
         boolean c = true;
-        Boolean C = new Boolean(c);
+        Boolean C = Boolean.valueOf(c);
 
         dataObject_c.set(property_c, C);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,8 +90,8 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
             // setup control objects
             Foo foo = new Foo();
             List theItems = new ArrayList();
-            theItems.add(new Float(2.5));
-            theItems.add(new Integer(1));
+            theItems.add(2.5f);
+            theItems.add(1);
             foo.items = theItems;
             return foo;
         }

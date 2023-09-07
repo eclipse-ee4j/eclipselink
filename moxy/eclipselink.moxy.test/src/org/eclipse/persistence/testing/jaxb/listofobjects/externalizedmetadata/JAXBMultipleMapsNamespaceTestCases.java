@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,8 +112,8 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsNoJSONT
     protected Object getControlObject() {
 
         Map<String, Integer> theMap = new HashMap<String, Integer>();
-        theMap.put("aaa", new Integer(1));
-        theMap.put("bbb", new Integer(2));
+        theMap.put("aaa", Integer.valueOf(1));
+        theMap.put("bbb", Integer.valueOf(2));
 
         QName qname = new QName("root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);

@@ -39,8 +39,8 @@ public class Dto01 {
     public Dto01(String str1, String str2, Long integer1, Long integer2) {
         this.str1 = str1;
         this.str2 = str2;
-        this.integer1 =  new Integer(integer1.intValue());
-        this.integer2 = new Integer(integer2.intValue());
+        this.integer1 =  Integer.valueOf(integer1.intValue());
+        this.integer2 = Integer.valueOf(integer2.intValue());
     }
 
     public String getStr1() {

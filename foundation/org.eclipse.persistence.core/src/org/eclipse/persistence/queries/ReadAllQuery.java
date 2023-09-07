@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1145,7 +1145,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * PUBLIC:
      * Set the Hierarchical Query Clause for the query
      * <p>Example:
-     * <p>Expression startWith = builder.get("id").equal(new Integer(100)); //can be any expression which identifies a set of employees
+     * <p>Expression startWith = builder.get("id").equal(Integer.valueOf(100)); //can be any expression which identifies a set of employees
      * <p>Expression connectBy = builder.get("managedEmployees"); //indicated the relationship that the hierarchy is based on, must be self-referential
      * <p>Vector orderBy = new Vector();
      * <p>orderBy.addElement(builder.get("startDate"));
@@ -1168,7 +1168,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * <p>
      * Example:
      * <p>
-     * Expression startWith = builder.get("id").equal(new Integer(100)); //can
+     * Expression startWith = builder.get("id").equal(Integer.valueOf(100)); //can
      * be any expression which identifies a set of employees <br>
      * Expression connectBy = builder.get("managedEmployees"); //indicated the
      * relationship that the hierarchy is based on, must be self-referential <br>

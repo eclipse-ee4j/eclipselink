@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,9 +49,9 @@ public class ChoiceMappingEmployeeTestCases extends JAXBWithJSONTestCases{
     public Object getWriteControlObject() {
         if(ctrlObject ==null){
             Employee emp = new Employee();
-            emp.thing = new Integer(INT_VAL);
-            emp.readOnlyThing = new Float(FLT_VAL);
-            emp.writeOnlyThing = new Integer(INT_VAL);
+            emp.thing = Integer.valueOf(INT_VAL);
+            emp.readOnlyThing = Float.valueOf(FLT_VAL);
+            emp.writeOnlyThing = Integer.valueOf(INT_VAL);
             ctrlObject = emp;
         }
         return ctrlObject;
@@ -60,8 +60,8 @@ public class ChoiceMappingEmployeeTestCases extends JAXBWithJSONTestCases{
     public Object getControlObject() {
         if(ctrlObject ==null){
             Employee emp = new Employee();
-            emp.thing = new Integer(INT_VAL);
-            emp.readOnlyThing = new Float(FLT_VAL);
+            emp.thing = Integer.valueOf(INT_VAL);
+            emp.readOnlyThing = Float.valueOf(FLT_VAL);
             ctrlObject = emp;
         }
         return ctrlObject;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,10 +27,10 @@ public class TestUpdateDirectAggregateMapMapping extends TestReadDirectAggregate
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectAggregateMapHolder.class, holderExp);
         changedHolder = (DirectAggregateMapHolder)holders.get(0);
-        changedHolder.removeDirectToAggregateMapItem(new Integer(1));
+        changedHolder.removeDirectToAggregateMapItem(Integer.valueOf(1));
         AggregateMapValue mapValue = new AggregateMapValue();
         mapValue.setValue(3);
-        changedHolder.addDirectToAggregateMapItem(new Integer(3), mapValue);
+        changedHolder.addDirectToAggregateMapItem(Integer.valueOf(3), mapValue);
         uow.commit();
         Object holderForComparison = uow.readObject(changedHolder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -46,10 +46,10 @@ public class TestUpdateDirectAggregateMapMapping extends TestReadDirectAggregate
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");
         }
-        if (holder.getDirectToAggregateMap().containsKey(new Integer(1))){
+        if (holder.getDirectToAggregateMap().containsKey(Integer.valueOf(1))){
             throw new TestErrorException("Item that was removed is still present in map.");
         }
-        AggregateMapValue value = (AggregateMapValue)holder.getDirectToAggregateMap().get(new Integer(3));
+        AggregateMapValue value = (AggregateMapValue)holder.getDirectToAggregateMap().get(Integer.valueOf(3));
         if (value.getValue() != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }

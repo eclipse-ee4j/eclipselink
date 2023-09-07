@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -35,7 +35,7 @@ public class TestEmployee_Cubicle extends JPA1Base {
             env.beginTransaction(em);
             Department dep = new Department(9, "neun");
             Employee emp = new Employee(5, "first", "last", dep);
-            Cubicle cub = new Cubicle(new Integer(3), new Integer(4), "red", emp);
+            Cubicle cub = new Cubicle(Integer.valueOf(3), Integer.valueOf(4), "red", emp);
             emp.setCubicle(cub);
             em.persist(dep);
             em.persist(emp);
@@ -51,7 +51,7 @@ public class TestEmployee_Cubicle extends JPA1Base {
     public void testRelationToCompositeKey() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {
-            Employee employee = em.find(Employee.class, new Integer(5));
+            Employee employee = em.find(Employee.class, Integer.valueOf(5));
             verify(employee.getId() == 5, "wrong employee");
             verify(employee.getCubicle() != null, "cubicle is null");
             verify(employee.getCubicle().getFloor() != null, "floor is null");

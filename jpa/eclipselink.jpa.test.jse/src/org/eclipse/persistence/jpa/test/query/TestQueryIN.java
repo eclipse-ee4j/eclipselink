@@ -65,7 +65,7 @@ public class TestQueryIN {
             Assert.assertEquals("TWO", dto01.get(0).getItemString2());
             Assert.assertEquals("THREE", dto01.get(0).getItemString3());
             Assert.assertEquals("FIVE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -103,7 +103,7 @@ public class TestQueryIN {
             Assert.assertEquals("TWO", dto01.get(0).getItemString2());
             Assert.assertEquals("THREE", dto01.get(0).getItemString3());
             Assert.assertEquals("FIVE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
 
             // equivalent test 2
             query = em.createQuery(""
@@ -118,7 +118,7 @@ public class TestQueryIN {
             Assert.assertEquals("TWO", dto01.get(0).getItemString2());
             Assert.assertEquals("THREE", dto01.get(0).getItemString3());
             Assert.assertEquals("FIVE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -158,7 +158,7 @@ public class TestQueryIN {
             Assert.assertEquals("TWO", dto01.get(0).getItemString2());
             Assert.assertEquals("THREE", dto01.get(0).getItemString3());
             Assert.assertEquals("FIVE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
 
             // equivalent test 2
             cb = em.getCriteriaBuilder();
@@ -179,7 +179,7 @@ public class TestQueryIN {
             Assert.assertEquals("TWO", dto01.get(0).getItemString2());
             Assert.assertEquals("THREE", dto01.get(0).getItemString3());
             Assert.assertEquals("FIVE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
 
             // equivalent test 3
             cb = em.getCriteriaBuilder();
@@ -200,7 +200,7 @@ public class TestQueryIN {
             Assert.assertEquals("TWO", dto01.get(0).getItemString2());
             Assert.assertEquals("THREE", dto01.get(0).getItemString3());
             Assert.assertEquals("FIVE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -248,7 +248,7 @@ public class TestQueryIN {
             Assert.assertEquals("TWO", dto01.get(0).getItemString2());
             Assert.assertEquals("THREE", dto01.get(0).getItemString3());
             Assert.assertEquals("FIVE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
 
             // equivalent test 2
             cb = em.getCriteriaBuilder();
@@ -277,7 +277,7 @@ public class TestQueryIN {
             Assert.assertEquals("TWO", dto01.get(0).getItemString2());
             Assert.assertEquals("THREE", dto01.get(0).getItemString3());
             Assert.assertEquals("FIVE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
 
             // equivalent test 3
             cb = em.getCriteriaBuilder();
@@ -299,7 +299,7 @@ public class TestQueryIN {
             Assert.assertEquals("TWO", dto01.get(0).getItemString2());
             Assert.assertEquals("THREE", dto01.get(0).getItemString3());
             Assert.assertEquals("FIVE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -334,7 +334,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -370,7 +370,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -415,7 +415,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
 
             // equivalent test 2
             cb = em.getCriteriaBuilder();
@@ -441,7 +441,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -488,7 +488,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
 
             // equivalent test 2
             cb = em.getCriteriaBuilder();
@@ -516,7 +516,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -551,7 +551,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -589,7 +589,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -634,7 +634,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
 
             // equivalent test 2
             cb = em.getCriteriaBuilder();
@@ -661,7 +661,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -712,7 +712,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
 
             // equivalent test 2
             cb = em.getCriteriaBuilder();
@@ -745,7 +745,7 @@ public class TestQueryIN {
             Assert.assertEquals("SEVEN", dto01.get(0).getItemString2());
             Assert.assertEquals("EIGHT", dto01.get(0).getItemString3());
             Assert.assertEquals("NINE", dto01.get(0).getItemString4());
-            Assert.assertEquals(new Integer(2), dto01.get(0).getItemInteger1());
+            Assert.assertEquals(Integer.valueOf(2), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,7 +78,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
             spCall.setProcedureName("Select_Output_and_ResultSet");
             spCall.addNamedArgument("ARG1", "argument");
             if (useInOut) {
-                spCall.addNamedInOutputArgumentValue("VERSION", new Long(0), "VERSION", java.math.BigDecimal.class);
+                spCall.addNamedInOutputArgumentValue("VERSION", Long.valueOf(0), "VERSION", java.math.BigDecimal.class);
             } else {
                 spCall.addNamedOutputArgument("VERSION", "VERSION", BigDecimal.class);
             }
@@ -93,9 +93,9 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         getSession().removeQuery("dblogin");
         getSession().addQuery("dblogin", readQuery);
         Vector args = new Vector(2);
-        args.addElement(new Integer(1));
+        args.addElement(Integer.valueOf(1));
         if (useCustomSQL && useInOut) {
-            args.addElement(new Long(0));
+            args.addElement(Long.valueOf(0));
         }
         try {
             Vector vResult = (Vector)getSession().executeQuery("dblogin", args);
@@ -109,9 +109,9 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         } else {
             spCall = new StoredProcedureCall();
             spCall.setProcedureName("Select_Output_and_ResultSet");
-            spCall.addNamedArgumentValue("ARG1", new Integer(1));
+            spCall.addNamedArgumentValue("ARG1", Integer.valueOf(1));
             if (useInOut) {
-                spCall.addNamedInOutputArgumentValue("VERSION", new Long(0), "VERSION", java.math.BigDecimal.class);
+                spCall.addNamedInOutputArgumentValue("VERSION", Long.valueOf(0), "VERSION", java.math.BigDecimal.class);
             } else {
                 spCall.addNamedOutputArgument("VERSION", "VERSION", BigDecimal.class);
             }

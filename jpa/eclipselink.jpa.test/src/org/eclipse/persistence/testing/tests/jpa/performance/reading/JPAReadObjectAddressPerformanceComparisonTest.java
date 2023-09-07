@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class JPAReadObjectAddressPerformanceComparisonTest extends PerformanceRe
         Query query = manager.createQuery("Select a from Address a where a.id = :id");
         query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheByExactPrimaryKey);
-        query.setParameter("id", new Long(this.addressId));
+        query.setParameter("id", Long.valueOf(this.addressId));
         Address address = (Address)query.getSingleResult();
         address.toString();
         manager.getTransaction().commit();

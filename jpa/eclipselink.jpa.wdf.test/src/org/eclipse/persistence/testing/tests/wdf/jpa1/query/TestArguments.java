@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -88,7 +88,7 @@ public class TestArguments extends QueryTest {
             Query updateQuery = em
                     .createQuery("UPDATE Employee e SET e.salary = e.salary*(1+(:percent/100)) WHERE EXISTS (SELECT p FROM e.projects p WHERE p.name LIKE :projectName)");
 
-            updateQuery.setParameter("percent", new Integer(15));
+            updateQuery.setParameter("percent", Integer.valueOf(15));
             updateQuery.setParameter("projectName", "testing project");
 
             updateQuery.executeUpdate();
@@ -279,7 +279,7 @@ public class TestArguments extends QueryTest {
 
     @Test
     public void testPrimitiveByte() {
-        assertValidParameterForBasicTypesFieldAccess("primititveByte", new Byte((byte) 2));
+        assertValidParameterForBasicTypesFieldAccess("primititveByte", Byte.valueOf((byte) 2));
     }
 
     @Test
@@ -315,42 +315,42 @@ public class TestArguments extends QueryTest {
     // wrappers of primitive types
     @Test
     public void testWrapperBoolean() {
-        assertValidParameterForBasicTypesFieldAccess("wrapperBoolean", new Boolean(true));
+        assertValidParameterForBasicTypesFieldAccess("wrapperBoolean", Boolean.valueOf(true));
     }
 
     @Test
     public void testWrapperByte() {
-        assertValidParameterForBasicTypesFieldAccess("wrapperByte", new Byte((byte) 2));
+        assertValidParameterForBasicTypesFieldAccess("wrapperByte", Byte.valueOf((byte) 2));
     }
 
     @Test
     public void testWrapperCharacter() {
-        assertValidParameterForBasicTypesFieldAccess("wrapperCharacter", new Character('c'));
+        assertValidParameterForBasicTypesFieldAccess("wrapperCharacter", Character.valueOf('c'));
     }
 
     @Test
     public void testWrapperShort() {
-        assertValidParameterForBasicTypesFieldAccess("wrapperShort", new Short((short) 1));
+        assertValidParameterForBasicTypesFieldAccess("wrapperShort", Short.valueOf((short) 1));
     }
 
     @Test
     public void testWrapperInteger() {
-        assertValidParameterForBasicTypesFieldAccess("wrapperInteger", new Integer(1));
+        assertValidParameterForBasicTypesFieldAccess("wrapperInteger", Integer.valueOf(1));
     }
 
     @Test
     public void testWrapperLong() {
-        assertValidParameterForBasicTypesFieldAccess("wrapperLong", new Long(1L));
+        assertValidParameterForBasicTypesFieldAccess("wrapperLong", Long.valueOf(1L));
     }
 
     @Test
     public void testWrapperDouble() {
-        assertValidParameterForBasicTypesFieldAccess("wrapperDouble", new Double(0.00));
+        assertValidParameterForBasicTypesFieldAccess("wrapperDouble", Double.valueOf(0.00));
     }
 
     @Test
     public void testWrapperFloat() {
-        assertValidParameterForBasicTypesFieldAccess("wrapperFloat", new Float(1F));
+        assertValidParameterForBasicTypesFieldAccess("wrapperFloat", Float.valueOf(1F));
     }
 
     // immutable reference types

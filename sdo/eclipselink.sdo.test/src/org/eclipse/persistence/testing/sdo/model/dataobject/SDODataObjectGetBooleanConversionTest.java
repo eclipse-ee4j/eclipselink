@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,7 +80,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_CHARACTER);
 
-        Character b = new Character('1');
+        Character b = '1';
 
         dataObject.setChar(property, b.charValue());// add it to instance list
 
@@ -102,7 +102,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_DOUBLE);
 
-        Double b = new Double(0);
+        Double b = (double) 0;
 
         dataObject.setDouble(property, b.doubleValue());// add it to instance list
 
@@ -124,7 +124,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_FLOAT);
 
-        Float b = new Float(1.20);
+        Float b = 1.20f;
 
         dataObject.setFloat(property, b.floatValue());// add it to instance list
 
@@ -146,7 +146,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_INT);
 
-        Integer b = new Integer(0);
+        Integer b = 0;
 
         dataObject.setInt(property, b.intValue());// add it to instance list
 
@@ -168,7 +168,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_LONG);
 
-        Double b = new Double(0);
+        Double b = 0.0;
 
         dataObject.setDouble(property, b.doubleValue());// add it to instance list
 
@@ -191,7 +191,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         property.setType(SDOConstants.SDO_SHORT);
 
         short s = 12;
-        Short b = new Short(s);
+        Short b = Short.valueOf(s);
 
         dataObject.setShort(property, b.shortValue());// add it to instance list
 
@@ -215,7 +215,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         property.setType(SDOConstants.SDO_STRING);
 
         String str = "true";
-        Boolean B_STR = new Boolean(str);
+        Boolean B_STR = Boolean.valueOf(str);
         dataObject.setString(property, str);// add it to instance list
 
         assertEquals(B_STR.booleanValue(), dataObject.getBoolean(property));
@@ -315,7 +315,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
     public void testGetBooleanFromByteObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTEOBJECT);
-        Byte theValue = new Byte("10");
+        Byte theValue = Byte.valueOf("10");
         dataObject.set(property, theValue);
         try {
             boolean value = dataObject.getBoolean(property);
@@ -332,7 +332,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
 
-        Character b = new Character('1');
+        Character b = Character.valueOf('1');
 
         dataObject.setChar(property, b.charValue());// add it to instance list
 
@@ -354,7 +354,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_DOUBLEOBJECT);
 
-        Double b = new Double(0);
+        Double b = Double.valueOf(0);
 
         dataObject.setDouble(property, b.doubleValue());// add it to instance list
 
@@ -375,7 +375,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_FLOATOBJECT);
 
-        Float b = new Float(1.20);
+        Float b = 1.20f;
 
         dataObject.setFloat(property, b.floatValue());// add it to instance list
 
@@ -397,7 +397,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_INTOBJECT);
 
-        Integer b = new Integer(0);
+        Integer b = Integer.valueOf(0);
 
         dataObject.setInt(property, b.intValue());// add it to instance list
 
@@ -419,7 +419,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         property.setType(SDOConstants.SDO_SHORTOBJECT);
 
         short s = 12;
-        Short b = new Short(s);
+        Short b = Short.valueOf(s);
 
         dataObject.setShort(property, b.shortValue());// add it to instance list
 
@@ -441,7 +441,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
 
-        Character b = new Character('t');
+        Character b = Character.valueOf('t');
 
         dataObject.setChar(property, b.charValue());// add it to instance list
 
@@ -460,7 +460,7 @@ public class SDODataObjectGetBooleanConversionTest extends SDODataObjectConversi
         SDOProperty property = ((SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
 
-        Character b = new Character('f');
+        Character b = Character.valueOf('f');
 
         dataObject.setChar(property, b.charValue());// add it to instance list
 

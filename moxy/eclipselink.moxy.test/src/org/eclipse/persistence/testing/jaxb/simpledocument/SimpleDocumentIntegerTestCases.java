@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class SimpleDocumentIntegerTestCases extends JAXBWithJSONTestCases {
 
         protected Object getControlObject() {
             JAXBElement value = new IntegerObjectFactory().createIntegerRoot();
-            value.setValue(new Integer(27));
+            value.setValue(Integer.valueOf(27));
             return value;
         }
 

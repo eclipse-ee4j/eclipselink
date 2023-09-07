@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,7 +70,7 @@ public class CompositeCollectionWithGroupingTextTestCases extends XMLMappingTest
         mailingAddress2.setPostalCode(CONTROL_MAILING_ADDRESS_2_POSTAL_CODE);
         employee.getMailingAddresses().add(mailingAddress2);
 
-        employee.getMailingAddresses().add(new Integer(5));
+        employee.getMailingAddresses().add(Integer.valueOf(5));
 
         return employee;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -364,13 +364,13 @@ final class RelationalProjectSequencingPropertiesPage extends ScrollableProperti
     }
 
     private SpinnerNumberModel buildSequencingPrealocationSizeSpinnerModel() {
-        return new NumberSpinnerModelAdapter(buildSequencingPrealocationSizeHolder(), new Integer(0), null, new Integer(1), new Integer(0));
+        return new NumberSpinnerModelAdapter(buildSequencingPrealocationSizeHolder(), Integer.valueOf(0), null, Integer.valueOf(1), Integer.valueOf(0));
     }
 
     private PropertyValueModel buildSequencingPrealocationSizeHolder() {
         return new PropertyAspectAdapter(this.sequencingPolicyHolder, MWSequencingPolicy.PREALLOCATION_SIZE_PROPERTY) {
             protected Object getValueFromSubject() {
-                return new Integer(((MWSequencingPolicy) subject).getPreallocationSize());
+                return Integer.valueOf(((MWSequencingPolicy) subject).getPreallocationSize());
             }
             protected void setValueOnSubject(Object value) {
                 ((MWSequencingPolicy) subject).setPreallocationSize(((Number) value).intValue());

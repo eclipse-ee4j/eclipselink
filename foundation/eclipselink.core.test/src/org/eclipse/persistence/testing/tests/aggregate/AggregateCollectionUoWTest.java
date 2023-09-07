@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         House house2 = (House)houses.get(houses.size()-1);
         house2.setDescriptions("do not buy it, it collapses -:)");
         Oid newInsurancePolicyId = new Oid();
-        newInsurancePolicyId.setOid(new Integer(893453));
+        newInsurancePolicyId.setOid(Integer.valueOf(893453));
         house2.setInsuranceId(newInsurancePolicyId);
         House newHouse = new House();
         newHouse.setLocation("123 Slater Street");

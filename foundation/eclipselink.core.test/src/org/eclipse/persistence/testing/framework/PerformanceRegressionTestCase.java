@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,12 +92,12 @@ public abstract class PerformanceRegressionTestCase extends PerformanceCompariso
         TestResult lastResult = (TestResult)stream.nextElement();
         double lastCount = lastResult.getTestTime();
         PerformanceComparisonTestResult testResult = (PerformanceComparisonTestResult)((TestCase)test).getTestResult();
-        testResult.getBaselineVersionResults().add(new Double(lastCount));
+        testResult.getBaselineVersionResults().add(Double.valueOf(lastCount));
         // Average last 5 runs.
         int numberOfRuns = 0;
         while (stream.hasMoreElements() && (numberOfRuns < 4)) {
             TestResult nextResult = (TestResult)stream.nextElement();
-            testResult.getBaselineVersionResults().add(new Double(nextResult.getTestTime()));
+            testResult.getBaselineVersionResults().add(Double.valueOf(nextResult.getTestTime()));
             numberOfRuns++;
         }
         stream.close();
@@ -115,11 +115,11 @@ public abstract class PerformanceRegressionTestCase extends PerformanceCompariso
         query.useCursoredStream(1, 1);
         stream = (CursoredStream)session.executeQuery(query);
         // Average last 5 runs.
-        testResult.getCurrentVersionResults().add(new Double(currentCount));
+        testResult.getCurrentVersionResults().add(Double.valueOf(currentCount));
         numberOfRuns = 0;
         while (stream.hasMoreElements() && (numberOfRuns < 4)) {
             TestResult nextResult = (TestResult)stream.nextElement();
-            testResult.getCurrentVersionResults().add(new Double(nextResult.getTestTime()));
+            testResult.getCurrentVersionResults().add(Double.valueOf(nextResult.getTestTime()));
             numberOfRuns++;
         }
         stream.close();

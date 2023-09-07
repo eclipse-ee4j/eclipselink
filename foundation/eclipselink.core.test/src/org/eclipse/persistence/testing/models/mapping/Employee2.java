@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,8 +30,8 @@ public class Employee2 implements Serializable {
     public static Employee2 example1() {
         Employee2 example = new Employee2();
 
-        example.setId(new Integer(1));
-        example.setEmployeeNumber(new Integer(2));
+        example.setId(Integer.valueOf(1));
+        example.setEmployeeNumber(Integer.valueOf(2));
         example.setEmployeeNumberB(example.getEmployeeNumber());
         example.setExtraInfo("Extra info string");
         example.setFirstName("Jan");
@@ -42,8 +42,8 @@ public class Employee2 implements Serializable {
     public static Employee2 example2() {
         Employee2 example = new Employee2();
 
-        example.setId(new Integer(4));
-        example.setEmployeeNumber(new Integer(8));
+        example.setId(Integer.valueOf(4));
+        example.setEmployeeNumber(Integer.valueOf(8));
         example.setEmployeeNumberB(example.getEmployeeNumber());
         example.setExtraInfo("Whatever");
         example.setFirstName("Ursula");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -651,7 +651,7 @@ public class TableModelAdapterUITest {
     private PropertyValueModel buildRankAdapter() {
         return new PropertyAspectAdapter(this.selectedPersonHolder, Person.RANK_PROPERTY) {
             protected Object getValueFromSubject() {
-                return new Integer(((Person) this.subject).getRank());
+                return Integer.valueOf(((Person) this.subject).getRank());
             }
             protected void setValueOnSubject(Object value) {
                 ((Person) this.subject).setRank(((Integer) value).intValue());
@@ -673,7 +673,7 @@ public class TableModelAdapterUITest {
     private PropertyValueModel buildAdventureCountAdapter() {
         return new PropertyAspectAdapter(this.selectedPersonHolder, Person.ADVENTURE_COUNT_PROPERTY) {
             protected Object getValueFromSubject() {
-                return new Integer(((Person) this.subject).getAdventureCount());
+                return Integer.valueOf(((Person) this.subject).getAdventureCount());
             }
             protected void setValueOnSubject(Object value) {
                 ((Person) this.subject).setAdventureCount(((Integer) value).intValue());

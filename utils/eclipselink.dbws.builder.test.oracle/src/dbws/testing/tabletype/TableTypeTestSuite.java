@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -441,7 +441,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
 
         // verify that 'sal' and 'c' fields were updated successfully
         XRDynamicEntity tableTypeEntity = (XRDynamicEntity) result;
-        assertTrue("Expected [sal] '112000.99' but was '" + tableTypeEntity.get("sal") + "'", Float.compare(((Float) tableTypeEntity.get("sal")), new Float(112000.99)) == 0);
+        assertTrue("Expected [sal] '112000.99' but was '" + tableTypeEntity.get("sal") + "'", Float.compare(((Float) tableTypeEntity.get("sal")), Float.valueOf(112000.99)) == 0);
 
         Character[] chars = tableTypeEntity.get("c");
         StringBuilder sb = new StringBuilder(chars.length);

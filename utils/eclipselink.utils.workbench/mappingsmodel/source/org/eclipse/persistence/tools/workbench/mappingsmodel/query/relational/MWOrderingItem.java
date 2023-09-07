@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public final class MWOrderingItem extends MWAttributeItem implements Ordering {
         return buildProblem(
                 ProblemConstants.QUERYABLE_NULL_FOR_ORDERING_ITEM,
                 getParentQuery().signature(),
-                new Integer(((MWRelationalReadAllQuery) getParentQuery()).indexOfOrderingItem(this) + 1));
+                Integer.valueOf(((MWRelationalReadAllQuery) getParentQuery()).indexOfOrderingItem(this) + 1));
     }
 
     public Problem queryableInvalidProblem(MWQueryable queryable) {

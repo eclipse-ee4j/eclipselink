@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
         theTest.setEjbqlString(ejbqlString);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = builder.get("isClone").equal(new Boolean(true));
+        Expression whereClause = builder.get("isClone").equal(Boolean.valueOf(true));
 
         theTest.setOriginalObjectExpression(whereClause);
 
@@ -48,7 +48,7 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
         theTest.setEjbqlString(ejbqlString);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = builder.get("isClone").equal(new Boolean(false));
+        Expression whereClause = builder.get("isClone").equal(Boolean.valueOf(false));
 
         theTest.setOriginalObjectExpression(whereClause);
 
@@ -65,7 +65,7 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
         theTest.setEjbqlString(ejbqlString);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = builder.get("isClone").notEqual(new Boolean(true));
+        Expression whereClause = builder.get("isClone").notEqual(Boolean.valueOf(true));
 
         theTest.setOriginalObjectExpression(whereClause);
 
@@ -82,7 +82,7 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
         theTest.setEjbqlString(ejbqlString);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = builder.get("isClone").notEqual(new Boolean(false));
+        Expression whereClause = builder.get("isClone").notEqual(Boolean.valueOf(false));
 
         theTest.setOriginalObjectExpression(whereClause);
 

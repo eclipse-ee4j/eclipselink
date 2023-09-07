@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,7 +110,7 @@ public abstract class MWAbstractQuery
     public static class LockingModel extends TopLinkOption {
 
         public LockingModel(String mwModelString, String externalString, short topLinkModelOption) {
-            super(mwModelString, externalString, new Short(topLinkModelOption));
+            super(mwModelString, externalString, Short.valueOf(topLinkModelOption));
         }
 
         public void setMWOptionOnTopLinkObject(Object query) {
@@ -134,7 +134,7 @@ public abstract class MWAbstractQuery
     public static class DistinctStateModel extends TopLinkOption {
 
         public DistinctStateModel(String mwModelString, String externalString, short topLinkModelOption) {
-            super(mwModelString, externalString, new Short(topLinkModelOption));
+            super(mwModelString, externalString, Short.valueOf(topLinkModelOption));
         }
 
         public void setMWOptionOnTopLinkObject(Object query) {
@@ -205,13 +205,13 @@ public abstract class MWAbstractQuery
         XMLDirectMapping maximumRowsMapping = new XMLDirectMapping();
         maximumRowsMapping.setAttributeName("maximumRows");
         maximumRowsMapping.setXPath("maximum-rows/text()");
-        maximumRowsMapping.setNullValue(new Integer(0));
+        maximumRowsMapping.setNullValue(Integer.valueOf(0));
         descriptor.addMapping(maximumRowsMapping);
 
         XMLDirectMapping firstResultMapping = new XMLDirectMapping();
         firstResultMapping.setAttributeName("firstResult");
         firstResultMapping.setXPath("first-result/text()");
-        firstResultMapping.setNullValue(new Integer(0));
+        firstResultMapping.setNullValue(Integer.valueOf(0));
         descriptor.addMapping(firstResultMapping);
 
         //object type mapping -  lockMode
@@ -282,7 +282,7 @@ public abstract class MWAbstractQuery
         XMLDirectMapping maximumRowsMapping = new XMLDirectMapping();
         maximumRowsMapping.setAttributeName("maximumRows");
         maximumRowsMapping.setXPath("maximum-rows/text()");
-        maximumRowsMapping.setNullValue(new Integer(0));
+        maximumRowsMapping.setNullValue(Integer.valueOf(0));
         descriptor.addMapping(maximumRowsMapping);
 
         //object type mapping -  lockMode
@@ -751,7 +751,7 @@ public abstract class MWAbstractQuery
             setQueryTimeout(QUERY_TIMEOUT_NO_TIMEOUT);
         }
         else {
-            setQueryTimeout(new Integer(runtimeQuery.getQueryTimeout()));
+            setQueryTimeout(Integer.valueOf(runtimeQuery.getQueryTimeout()));
         }
 
         setLockingFrom(runtimeQuery);

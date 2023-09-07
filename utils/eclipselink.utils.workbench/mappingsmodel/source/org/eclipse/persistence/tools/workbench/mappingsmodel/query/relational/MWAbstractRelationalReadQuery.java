@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public abstract class MWAbstractRelationalReadQuery
     public static class CacheUsageModel extends TopLinkOption {
 
         public CacheUsageModel(String mwModelString, String externalString, int topLinkModelOption) {
-            super(mwModelString, externalString, new Integer(topLinkModelOption));
+            super(mwModelString, externalString, Integer.valueOf(topLinkModelOption));
         }
 
         public void setMWOptionOnTopLinkObject(Object query) {
@@ -82,7 +82,7 @@ public abstract class MWAbstractRelationalReadQuery
     public static class InMemoryQueryIndirectionPolicyModel extends TopLinkOption {
 
         public InMemoryQueryIndirectionPolicyModel(String mwModelString, String externalString, int topLinkModelOption) {
-            super(mwModelString, externalString, new Integer(topLinkModelOption));
+            super(mwModelString, externalString, Integer.valueOf(topLinkModelOption));
         }
 
         public void setMWOptionOnTopLinkObject(Object query) {

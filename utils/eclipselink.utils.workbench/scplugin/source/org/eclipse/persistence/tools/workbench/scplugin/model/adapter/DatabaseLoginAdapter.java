@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -249,7 +249,7 @@ public final class DatabaseLoginAdapter extends LoginAdapter {
         setTrimStrings( XMLSessionConfigProject.TRIM_STRINGS_DEFAULT);
         setMaxBatchWritingSize( XMLSessionConfigProject.MAX_BATCH_WRITING_SIZE_DEFAULT);
         setJdbcBatchWriting( XMLSessionConfigProject.JDBC20_BATCH_WRITING_DEFAULT);
-        setLookupType( new Integer( XMLSessionConfigProject.DATASOURCE_LOOKUP_TYPE_DEFAULT));
+        setLookupType( Integer.valueOf( XMLSessionConfigProject.DATASOURCE_LOOKUP_TYPE_DEFAULT));
         setBindAllParameters( XMLSessionConfigProject_11_1_1.BIND_ALL_PARAMETERS_DEFAULT);
     }
 
@@ -267,7 +267,7 @@ public final class DatabaseLoginAdapter extends LoginAdapter {
         super.initializeFromModel( scConfig);
 
         if( usesBatchWriting() && ( login().getMaxBatchWritingSize() == null)) {
-            login().setMaxBatchWritingSize( new Integer( 0));
+            login().setMaxBatchWritingSize( Integer.valueOf( 0));
         }
         this.useDriverManager = ( StringTools.stringIsEmpty( getDataSourceName())) ? true : false;
 
@@ -275,7 +275,7 @@ public final class DatabaseLoginAdapter extends LoginAdapter {
         useProperties = (( properties != null) && !properties.isEmpty());
 
         if( login().getLookupType() == null) {
-            login().setLookupType( new Integer( XMLSessionConfigProject.DATASOURCE_LOOKUP_TYPE_DEFAULT));
+            login().setLookupType( Integer.valueOf( XMLSessionConfigProject.DATASOURCE_LOOKUP_TYPE_DEFAULT));
         }
 
         if (login().getStructConverterConfig() == null) {
@@ -541,7 +541,7 @@ public final class DatabaseLoginAdapter extends LoginAdapter {
 
         int old = getMaxBatchWritingSize();
 
-        this.login().setMaxBatchWritingSize( new Integer( value));
+        this.login().setMaxBatchWritingSize( Integer.valueOf( value));
         this.firePropertyChanged( MAX_BATCH_WRITING_SIZE_PROPERTY, old, value);
     }
 

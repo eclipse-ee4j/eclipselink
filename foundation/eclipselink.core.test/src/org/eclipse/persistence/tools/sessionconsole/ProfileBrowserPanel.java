@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -122,7 +122,7 @@ public class ProfileBrowserPanel extends JPanel {
                 } else {
                     newTime = oldTime.longValue() + profileTime;
                 }
-                summary.getOperationTimings().put(name, new Long(newTime));
+                summary.getOperationTimings().put(name, Long.valueOf(newTime));
             }
         }
 
@@ -173,7 +173,7 @@ public class ProfileBrowserPanel extends JPanel {
                 } else {
                     newTime = oldTime.longValue() + profileTime;
                 }
-                summary.getOperationTimings().put(name, new Long(newTime));
+                summary.getOperationTimings().put(name, Long.valueOf(newTime));
             }
         }
 
@@ -236,7 +236,7 @@ public class ProfileBrowserPanel extends JPanel {
                 } else {
                     newTime = oldTime.longValue() + profileTime;
                 }
-                summary.getOperationTimings().put(name, new Long(newTime));
+                summary.getOperationTimings().put(name, Long.valueOf(newTime));
             }
         }
 
@@ -519,11 +519,11 @@ public class ProfileBrowserPanel extends JPanel {
                             Helper.getShortClassName(profile.getDomainClass());
                 }
             }
-            items[2] = new Long(profile.getTotalTime()).toString();
-            items[3] = new Long(profile.getLocalTime()).toString();
+            items[2] = Long.valueOf(profile.getTotalTime()).toString();
+            items[3] = Long.valueOf(profile.getLocalTime()).toString();
             items[4] =
-                    new Long(profile.getNumberOfInstancesEffected()).toString();
-            items[5] = new Long(profile.getObjectsPerSecond()).toString();
+                    Long.valueOf(profile.getNumberOfInstancesEffected()).toString();
+            items[5] = Long.valueOf(profile.getObjectsPerSecond()).toString();
             if (profile.getOperationTimings().containsKey(SessionProfiler.SqlPrepare)) {
                 items[6] =
                         profile.getOperationTimings().get(SessionProfiler.SqlPrepare).toString();

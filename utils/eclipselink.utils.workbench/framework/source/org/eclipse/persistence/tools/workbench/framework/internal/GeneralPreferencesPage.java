@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -317,11 +317,11 @@ final class GeneralPreferencesPage extends AbstractPanel {
 
             public Object convertToObject(String s) {
                 if (s == null) {
-                    return new Integer(RecentFilesManager.DEFAULT_MAX_SIZE);
+                    return Integer.valueOf(RecentFilesManager.DEFAULT_MAX_SIZE);
                 }
-                Integer i = new Integer(s);
+                Integer i = Integer.valueOf(s);
                 if (i.intValue() < 0 || i.intValue() > RecentFilesManager.MAX_MAX_SIZE) {
-                    return new Integer(RecentFilesManager.DEFAULT_MAX_SIZE);
+                    return Integer.valueOf(RecentFilesManager.DEFAULT_MAX_SIZE);
                 }
                 return i;
             }

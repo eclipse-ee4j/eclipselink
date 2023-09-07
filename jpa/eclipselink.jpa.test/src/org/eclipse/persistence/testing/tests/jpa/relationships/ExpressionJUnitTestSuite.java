@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -404,7 +404,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
-            Expression expression = builder.get("name").locate("t").equal(new Integer(2));
+            Expression expression = builder.get("name").locate("t").equal(Integer.valueOf(2));
 
             ReadAllQuery r = new ReadAllQuery();
             r.setReferenceClass(Item.class);
@@ -453,7 +453,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
-            Expression expression = builder.get("name").locate("i", 2).equal(new Integer(5));
+            Expression expression = builder.get("name").locate("i", 2).equal(Integer.valueOf(5));
 
             ReadAllQuery r = new ReadAllQuery();
             r.setReferenceClass(Item.class);
@@ -503,7 +503,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
-            Expression expression = builder.get("name").locate("t", 4).equal(new Integer(0));
+            Expression expression = builder.get("name").locate("t", 4).equal(Integer.valueOf(0));
 
             ReadAllQuery r = new ReadAllQuery();
             r.setReferenceClass(Item.class);

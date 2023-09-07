@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,12 +43,12 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSON
 
     employee.choice = new java.util.Vector<Object>();
     employee.choice.add("123 Fake Street");
-    employee.choice.add(new Integer(12));
+    employee.choice.add(Integer.valueOf(12));
     Address addr = new Address();
     addr.city = "Ottawa";
     addr.street = "45 O'Connor";
     employee.choice.add(addr);
-    employee.choice.add(new Integer(14));
+    employee.choice.add(Integer.valueOf(14));
 
     employee.phone = "123-4567";
 
@@ -62,8 +62,8 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSON
 
         employee.choice = new java.util.Vector<Object>();
         employee.choice.add("123 Fake Street");
-        employee.choice.add(new Integer(12));
-        employee.choice.add(new Integer(14));
+        employee.choice.add(Integer.valueOf(12));
+        employee.choice.add(Integer.valueOf(14));
         Address addr = new Address();
         addr.city = "Ottawa";
         addr.street = "45 O'Connor";

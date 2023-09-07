@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public abstract class SequenceAdapter extends SCAdapter implements Nominative {
         super( parent);
 
         this.setName( name);
-        this.setPreallocationSize( new Integer(preallocationSize));
+        this.setPreallocationSize( Integer.valueOf(preallocationSize));
     }
     /**
      * Returns this Config Model Object.
@@ -91,7 +91,7 @@ public abstract class SequenceAdapter extends SCAdapter implements Nominative {
      */
     public void setPreallocationSize(Integer size) {
         Integer old = this.sequence().getPreallocationSize();
-        this.sequence().setPreallocationSize( new Integer( size));
+        this.sequence().setPreallocationSize( Integer.valueOf( size));
         firePropertyChanged(PREALLOCATION_SIZE_PROPERTY, old, size);
     }
 

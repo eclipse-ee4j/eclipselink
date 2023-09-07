@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -389,42 +389,42 @@ public abstract class MWAbstractProcedureArgument extends MWModel
     }
 
     public static String jdbcTypeNameFor(int value) {
-        return jdbcTypeCodes().get(new Integer(value));
+        return jdbcTypeCodes().get(Integer.valueOf(value));
     }
 
     public static HashMap<Integer, String> jdbcTypeCodes() {
         if (jdbcTypesCodes == null) {
             jdbcTypesCodes = new HashMap<Integer, String>();
-            jdbcTypesCodes.put(new Integer(2003), "ARRAY");
-            jdbcTypesCodes.put(new Integer(-5), "BIGINT");
-            jdbcTypesCodes.put(new Integer(-2), "BINARY");
-            jdbcTypesCodes.put(new Integer(-7), "BIT");
-            jdbcTypesCodes.put(new Integer(2004), "BLOB");
-            jdbcTypesCodes.put(new Integer(16), "BOOLEAN");
-            jdbcTypesCodes.put(new Integer(1), "CHAR");
-            jdbcTypesCodes.put(new Integer(2005), "CLOB");
-            jdbcTypesCodes.put(new Integer(70), "DATALINK");
-            jdbcTypesCodes.put(new Integer(91), "DATE");
-            jdbcTypesCodes.put(new Integer(3), "DECIMAL");
-            jdbcTypesCodes.put(new Integer(2001), "DISTINCT");
-            jdbcTypesCodes.put(new Integer(8), "DOUBLE");
-            jdbcTypesCodes.put(new Integer(6), "FLOAT");
-            jdbcTypesCodes.put(new Integer(4), "INTEGER");
-            jdbcTypesCodes.put(new Integer(2000), "JAVA OBJECT");
-            jdbcTypesCodes.put(new Integer(-4), "LONGVARBINARY");
-            jdbcTypesCodes.put(new Integer(-1), "LONGVARCHAR");
-            jdbcTypesCodes.put(new Integer(0), "NULL");
-            jdbcTypesCodes.put(new Integer(2), "NUMERIC");
-            jdbcTypesCodes.put(new Integer(1111), "OTHER");
-            jdbcTypesCodes.put(new Integer(7), "REAL");
-            jdbcTypesCodes.put(new Integer(2006), "REF");
-            jdbcTypesCodes.put(new Integer(5), "SMALLINT");
-            jdbcTypesCodes.put(new Integer(2002), "STRUCT");
-            jdbcTypesCodes.put(new Integer(92), "TIME");
-            jdbcTypesCodes.put(new Integer(93), "TIMESTAMP");
-            jdbcTypesCodes.put(new Integer(-6), "TINYINT");
-            jdbcTypesCodes.put(new Integer(-3), "VARBINARY");
-            jdbcTypesCodes.put(new Integer(12), "VARCHAR");
+            jdbcTypesCodes.put(Integer.valueOf(2003), "ARRAY");
+            jdbcTypesCodes.put(Integer.valueOf(-5), "BIGINT");
+            jdbcTypesCodes.put(Integer.valueOf(-2), "BINARY");
+            jdbcTypesCodes.put(Integer.valueOf(-7), "BIT");
+            jdbcTypesCodes.put(Integer.valueOf(2004), "BLOB");
+            jdbcTypesCodes.put(Integer.valueOf(16), "BOOLEAN");
+            jdbcTypesCodes.put(Integer.valueOf(1), "CHAR");
+            jdbcTypesCodes.put(Integer.valueOf(2005), "CLOB");
+            jdbcTypesCodes.put(Integer.valueOf(70), "DATALINK");
+            jdbcTypesCodes.put(Integer.valueOf(91), "DATE");
+            jdbcTypesCodes.put(Integer.valueOf(3), "DECIMAL");
+            jdbcTypesCodes.put(Integer.valueOf(2001), "DISTINCT");
+            jdbcTypesCodes.put(Integer.valueOf(8), "DOUBLE");
+            jdbcTypesCodes.put(Integer.valueOf(6), "FLOAT");
+            jdbcTypesCodes.put(Integer.valueOf(4), "INTEGER");
+            jdbcTypesCodes.put(Integer.valueOf(2000), "JAVA OBJECT");
+            jdbcTypesCodes.put(Integer.valueOf(-4), "LONGVARBINARY");
+            jdbcTypesCodes.put(Integer.valueOf(-1), "LONGVARCHAR");
+            jdbcTypesCodes.put(Integer.valueOf(0), "NULL");
+            jdbcTypesCodes.put(Integer.valueOf(2), "NUMERIC");
+            jdbcTypesCodes.put(Integer.valueOf(1111), "OTHER");
+            jdbcTypesCodes.put(Integer.valueOf(7), "REAL");
+            jdbcTypesCodes.put(Integer.valueOf(2006), "REF");
+            jdbcTypesCodes.put(Integer.valueOf(5), "SMALLINT");
+            jdbcTypesCodes.put(Integer.valueOf(2002), "STRUCT");
+            jdbcTypesCodes.put(Integer.valueOf(92), "TIME");
+            jdbcTypesCodes.put(Integer.valueOf(93), "TIMESTAMP");
+            jdbcTypesCodes.put(Integer.valueOf(-6), "TINYINT");
+            jdbcTypesCodes.put(Integer.valueOf(-3), "VARBINARY");
+            jdbcTypesCodes.put(Integer.valueOf(12), "VARCHAR");
         }
         return jdbcTypesCodes;
     }
@@ -432,36 +432,36 @@ public abstract class MWAbstractProcedureArgument extends MWModel
     private static HashMap<String, Integer> jdbcTypes() {
         if (jdbcTypes == null) {
             jdbcTypes = new HashMap<String, Integer>();
-            jdbcTypes.put("ARRAY", new Integer(2003));
-            jdbcTypes.put("BIGINT", new Integer(-5));
-            jdbcTypes.put("BINARY", new Integer(-2));
-            jdbcTypes.put("BIT", new Integer(-7));
-            jdbcTypes.put("BLOB", new Integer(2004));
-            jdbcTypes.put("BOOLEAN", new Integer(16));
-            jdbcTypes.put("CHAR", new Integer(1));
-            jdbcTypes.put("CLOB", new Integer(2005));
-            jdbcTypes.put("DATALINK", new Integer(70));
-            jdbcTypes.put("DATE", new Integer(91));
-            jdbcTypes.put("DECIMAL", new Integer(3));
-            jdbcTypes.put("DISTINCT", new Integer(2001));
-            jdbcTypes.put("DOUBLE", new Integer(8));
-            jdbcTypes.put("FLOAT", new Integer(6));
-            jdbcTypes.put("INTEGER", new Integer(4));
-            jdbcTypes.put("JAVA OBJECT", new Integer(2000));
-            jdbcTypes.put("LONGVARBINARY", new Integer(-4));
-            jdbcTypes.put("LONGVARCHAR", new Integer(-1));
-            jdbcTypes.put("NULL", new Integer(0));
-            jdbcTypes.put("NUMERIC", new Integer(2));
-            jdbcTypes.put("OTHER", new Integer(1111));
-            jdbcTypes.put("REAL", new Integer(7));
-            jdbcTypes.put("REF", new Integer(2006));
-            jdbcTypes.put("SMALLINT", new Integer(5));
-            jdbcTypes.put("STRUCT", new Integer(2002));
-            jdbcTypes.put("TIME", new Integer(92));
-            jdbcTypes.put("TIMESTAMP", new Integer(93));
-            jdbcTypes.put("TINYINT", new Integer(-6));
-            jdbcTypes.put("VARBINARY", new Integer(-3));
-            jdbcTypes.put("VARCHAR", new Integer(12));
+            jdbcTypes.put("ARRAY", Integer.valueOf(2003));
+            jdbcTypes.put("BIGINT", Integer.valueOf(-5));
+            jdbcTypes.put("BINARY", Integer.valueOf(-2));
+            jdbcTypes.put("BIT", Integer.valueOf(-7));
+            jdbcTypes.put("BLOB", Integer.valueOf(2004));
+            jdbcTypes.put("BOOLEAN", Integer.valueOf(16));
+            jdbcTypes.put("CHAR", Integer.valueOf(1));
+            jdbcTypes.put("CLOB", Integer.valueOf(2005));
+            jdbcTypes.put("DATALINK", Integer.valueOf(70));
+            jdbcTypes.put("DATE", Integer.valueOf(91));
+            jdbcTypes.put("DECIMAL", Integer.valueOf(3));
+            jdbcTypes.put("DISTINCT", Integer.valueOf(2001));
+            jdbcTypes.put("DOUBLE", Integer.valueOf(8));
+            jdbcTypes.put("FLOAT", Integer.valueOf(6));
+            jdbcTypes.put("INTEGER", Integer.valueOf(4));
+            jdbcTypes.put("JAVA OBJECT", Integer.valueOf(2000));
+            jdbcTypes.put("LONGVARBINARY", Integer.valueOf(-4));
+            jdbcTypes.put("LONGVARCHAR", Integer.valueOf(-1));
+            jdbcTypes.put("NULL", Integer.valueOf(0));
+            jdbcTypes.put("NUMERIC", Integer.valueOf(2));
+            jdbcTypes.put("OTHER", Integer.valueOf(1111));
+            jdbcTypes.put("REAL", Integer.valueOf(7));
+            jdbcTypes.put("REF", Integer.valueOf(2006));
+            jdbcTypes.put("SMALLINT", Integer.valueOf(5));
+            jdbcTypes.put("STRUCT", Integer.valueOf(2002));
+            jdbcTypes.put("TIME", Integer.valueOf(92));
+            jdbcTypes.put("TIMESTAMP", Integer.valueOf(93));
+            jdbcTypes.put("TINYINT", Integer.valueOf(-6));
+            jdbcTypes.put("VARBINARY", Integer.valueOf(-3));
+            jdbcTypes.put("VARCHAR", Integer.valueOf(12));
         }
         return jdbcTypes;
     }

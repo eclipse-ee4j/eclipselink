@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public class EmployeeServiceBean implements EmployeeService {
     }
 
     public Employee findById(int id) {
-        Employee employee = entityManager.find(Employee.class, new Integer(id));
+        Employee employee = entityManager.find(Employee.class, Integer.valueOf(id));
         if (employee != null) {
             employee.getAddress();
         }
@@ -54,7 +54,7 @@ public class EmployeeServiceBean implements EmployeeService {
         return query.getResultList();
     }
     public Employee fetchById(int id) {
-        Employee employee = entityManager.find(Employee.class, new Integer(id));
+        Employee employee = entityManager.find(Employee.class, Integer.valueOf(id));
         employee.getAddress();
         employee.getManager();
         return employee;

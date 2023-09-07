@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,12 +40,12 @@ public class ImageSimulator {
         generatedImage.setScript(initStringBase(clobSize / 100));
         generatedImage.setAudio(initByteBase(blobSize));
         generatedImage.setCommentary(initCharArrayBase(clobSize));
-        generatedImage.setCustomAttribute1(new SerializableNonEntity(new Long(Long.MAX_VALUE)));
-        generatedImage.setCustomAttribute2(new SerializableNonEntity(new Long(Long.MAX_VALUE)));
-        generatedImage.setXml1(new SerializableNonEntity(new Long(Long.MIN_VALUE)));
-        generatedImage.setXml2(new SerializableNonEntity(new Long(Long.MIN_VALUE)));
-        generatedImage.setJson1(new SerializableNonEntity(new Long(Long.MIN_VALUE)));
-        generatedImage.setJson2(new SerializableNonEntity(new Long(Long.MIN_VALUE)));
+        generatedImage.setCustomAttribute1(new SerializableNonEntity(Long.valueOf(Long.MAX_VALUE)));
+        generatedImage.setCustomAttribute2(new SerializableNonEntity(Long.valueOf(Long.MAX_VALUE)));
+        generatedImage.setXml1(new SerializableNonEntity(Long.valueOf(Long.MIN_VALUE)));
+        generatedImage.setXml2(new SerializableNonEntity(Long.valueOf(Long.MIN_VALUE)));
+        generatedImage.setJson1(new SerializableNonEntity(Long.valueOf(Long.MIN_VALUE)));
+        generatedImage.setJson2(new SerializableNonEntity(Long.valueOf(Long.MIN_VALUE)));
 
         return generatedImage;
     }
@@ -77,7 +77,7 @@ public class ImageSimulator {
         new Random().nextBytes(pictures);
         Byte[] pics = new Byte[cycle];
         for (int x = 0; x < cycle; x++) {
-            pics[x] = new Byte(pictures[x]);
+            pics[x] = Byte.valueOf(pictures[x]);
         }
         return pics;
     }

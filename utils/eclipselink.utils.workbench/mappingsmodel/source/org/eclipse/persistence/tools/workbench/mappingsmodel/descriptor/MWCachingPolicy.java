@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,7 +134,7 @@ public interface MWCachingPolicy extends MWNode, Model
     public static class CacheCoordinationOption extends TopLinkOption {
 
         public CacheCoordinationOption(String mwModelString, String externalString, int toplinkCacheSynchronizationType) {
-            super(mwModelString, externalString, new Integer(toplinkCacheSynchronizationType));
+            super(mwModelString, externalString, Integer.valueOf(toplinkCacheSynchronizationType));
         }
 
         public void setMWOptionOnTopLinkObject(Object descriptor) {
@@ -149,7 +149,7 @@ public interface MWCachingPolicy extends MWNode, Model
     public static class ExistenceCheckingOption extends TopLinkOption {
 
         public ExistenceCheckingOption(String mwModelString, String externalString, int toplinkExistenceCheckingOption) {
-            super(mwModelString, externalString, new Integer(toplinkExistenceCheckingOption));
+            super(mwModelString, externalString, Integer.valueOf(toplinkExistenceCheckingOption));
         }
 
         public void setMWOptionOnTopLinkObject(Object descriptor) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,12 +54,12 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         holder = new DirectEntityMapHolder();
         EntityMapValue value = new EntityMapValue();
         value.setId(1);
-        holder.addDirectToEntityMapItem(new Integer(11), value);
+        holder.addDirectToEntityMapItem(Integer.valueOf(11), value);
 
 
         EntityMapValue value2 = new EntityMapValue();
         value2.setId(2);
-        holder.addDirectToEntityMapItem(new Integer(22), value2);
+        holder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
         uow.registerObject(holder);
         uow.registerObject(value);
         uow.registerObject(value2);
@@ -76,9 +76,9 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         changedHolder = (DirectEntityMapHolder)uow.readObject(holder);
         EntityMapValue value = new EntityMapValue();
         value.setId(3);
-        changedHolder.addDirectToEntityMapItem(new Integer(33), value);
+        changedHolder.addDirectToEntityMapItem(Integer.valueOf(33), value);
 
-        changedHolder.getDirectToEntityMap().remove(new Integer(11));
+        changedHolder.getDirectToEntityMap().remove(Integer.valueOf(11));
         uow.commit();
         Object holderForComparison = uow.readObject(holder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -95,7 +95,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         if (holder.getDirectToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
-        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(new Integer(33));
+        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(Integer.valueOf(33));
         if (value.getId() != 3){
             throw new TestErrorException("MapEntityValue was not added properly.");
         }

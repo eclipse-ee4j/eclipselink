@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,9 +65,9 @@ public abstract class MWQueryManager extends MWModel {
     //of an Integer.  See MWQuery, it as the same problem
     private volatile Integer queryTimeout;
         public final static String QUERY_TIMEOUT_PROPERTY = "queryTimeout";
-        public final static Integer DEFAULT_QUERY_TIMEOUT = new Integer(-1);
-        public final static Integer QUERY_TIMEOUT_NO_TIMEOUT = new Integer(0);
-        public final static Integer QUERY_TIMEOUT_TIMEOUT = new Integer(1);
+        public final static Integer DEFAULT_QUERY_TIMEOUT = Integer.valueOf(-1);
+        public final static Integer QUERY_TIMEOUT_NO_TIMEOUT = Integer.valueOf(0);
+        public final static Integer QUERY_TIMEOUT_TIMEOUT = Integer.valueOf(1);
 
 
     /**

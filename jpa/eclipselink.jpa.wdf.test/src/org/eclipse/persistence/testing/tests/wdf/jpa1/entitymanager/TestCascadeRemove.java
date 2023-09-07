@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -63,7 +63,7 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(child);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
             CascadingNode parent = new CascadingNode(2, null);
             parent.addChild(child);
             verify(!em.contains(parent), "Parent not a new entity");
@@ -78,7 +78,7 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(description);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            description = em.find(CascadingNodeDescription.class, new Integer(description.getId()));
+            description = em.find(CascadingNodeDescription.class, Integer.valueOf(description.getId()));
             parent = new CascadingNode(4, null);
             parent.setDescription(description);
             description.setNode(parent);
@@ -107,7 +107,7 @@ public class TestCascadeRemove extends JPA1Base {
             env.beginTransaction(em);
             CascadingNode parent = new CascadingNode(102, null);
             em.persist(parent);
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
             parent.addChild(child);
             verify(em.contains(parent), "Parent not managed");
             verify(em.contains(child), "Child not managed");
@@ -123,7 +123,7 @@ public class TestCascadeRemove extends JPA1Base {
             env.beginTransaction(em);
             parent = new CascadingNode(104, null);
             em.persist(parent);
-            description = em.find(CascadingNodeDescription.class, new Integer(description.getId()));
+            description = em.find(CascadingNodeDescription.class, Integer.valueOf(description.getId()));
             parent.setDescription(description);
             description.setNode(parent);
             verify(em.contains(parent), "Parent not managed");
@@ -141,8 +141,8 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(child);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            parent = em.find(CascadingNode.class, new Integer(parent.getId()));
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            parent = em.find(CascadingNode.class, Integer.valueOf(parent.getId()));
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
             parent.addChild(child);
             verify(em.contains(parent), "Parent not managed");
             verify(em.contains(child), "Child not managed");
@@ -158,7 +158,7 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(parent);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            parent = em.find(CascadingNode.class, new Integer(parent.getId()));
+            parent = em.find(CascadingNode.class, Integer.valueOf(parent.getId()));
             description = parent.getDescription();
             verify(em.contains(parent), "Parent not managed");
             verify(em.contains(description), "Description not managed");
@@ -185,7 +185,7 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(child);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
             parent.addChild(child);
             verify(!em.contains(parent), "Parent not detached");
             verify(em.contains(child), "Child not managed");
@@ -222,7 +222,7 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(description);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            description = em.find(CascadingNodeDescription.class, new Integer(description.getId()));
+            description = em.find(CascadingNodeDescription.class, Integer.valueOf(description.getId()));
             parent.setDescription(description);
             verify(!em.contains(parent), "Parent not detached");
             verify(em.contains(description), "Description not managed");
@@ -262,7 +262,7 @@ public class TestCascadeRemove extends JPA1Base {
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             em.persist(existing); // status FOR_INSERT
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
             parent.addChild(child);
             verify(!em.contains(parent), "Parent not detached");
             verify(em.contains(existing), "Existing not managed");
@@ -302,7 +302,7 @@ public class TestCascadeRemove extends JPA1Base {
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             em.persist(existing); // status FOR_INSERT
-            description = em.find(CascadingNodeDescription.class, new Integer(description.getId()));
+            description = em.find(CascadingNodeDescription.class, Integer.valueOf(description.getId()));
             parent.setDescription(description);
             verify(!em.contains(parent), "Parent not detached");
             verify(em.contains(existing), "Existing not managed");
@@ -343,8 +343,8 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(child);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, new Integer(existing.getId())); // state FOR_UPADTE
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId())); // state FOR_UPADTE
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
             parent.addChild(child);
             verify(!em.contains(parent), "Parent not detached");
             verify(em.contains(existing), "Existing not managed");
@@ -384,8 +384,8 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(description);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, new Integer(existing.getId())); // state FOR_UPADTE
-            description = em.find(CascadingNodeDescription.class, new Integer(description.getId()));
+            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId())); // state FOR_UPADTE
+            description = em.find(CascadingNodeDescription.class, Integer.valueOf(description.getId()));
             parent.setDescription(description);
             verify(!em.contains(parent), "Parent not detached");
             verify(em.contains(existing), "Existing not managed");
@@ -426,9 +426,9 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(child);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, new Integer(existing.getId()));
+            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId()));
             em.remove(existing); // state FOR_REMOVE
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
             parent.addChild(child);
             verify(!em.contains(parent), "Parent not detached");
             verify(!em.contains(existing), "Existing not removed");
@@ -467,9 +467,9 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(description);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, new Integer(existing.getId()));
+            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId()));
             em.remove(existing); // state FOR_REMOVE
-            description = em.find(CascadingNodeDescription.class, new Integer(description.getId()));
+            description = em.find(CascadingNodeDescription.class, Integer.valueOf(description.getId()));
             parent.setDescription(description);
             verify(!em.contains(parent), "Parent not detached");
             verify(!em.contains(existing), "Existing not removed");
@@ -518,9 +518,9 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(child);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            parent = em.find(CascadingNode.class, new Integer(parent.getId()));
+            parent = em.find(CascadingNode.class, Integer.valueOf(parent.getId()));
             em.remove(parent);
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
             parent.addChild(child);
             verify(!em.contains(parent), "Parent not removed");
             verify(em.contains(child), "Child not managed");
@@ -536,9 +536,9 @@ public class TestCascadeRemove extends JPA1Base {
             em.persist(description);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            parent = em.find(CascadingNode.class, new Integer(parent.getId()));
+            parent = em.find(CascadingNode.class, Integer.valueOf(parent.getId()));
             em.remove(parent);
-            description = em.find(CascadingNodeDescription.class, new Integer(description.getId()));
+            description = em.find(CascadingNodeDescription.class, Integer.valueOf(description.getId()));
             parent.setDescription(description);
             verify(!em.contains(parent), "Parent not removed");
             verify(em.contains(description), "Description not managed");
@@ -567,8 +567,8 @@ public class TestCascadeRemove extends JPA1Base {
             verifyExistenceInNodeTable(node1.getId());
             verifyExistenceInNodeTable(node2.getId());
             env.beginTransaction(em);
-            node1 = em.find(CascadingNode.class, new Integer(node1.getId()));
-            node2 = em.find(CascadingNode.class, new Integer(node2.getId()));
+            node1 = em.find(CascadingNode.class, Integer.valueOf(node1.getId()));
+            node2 = em.find(CascadingNode.class, Integer.valueOf(node2.getId()));
             em.remove(node1);
             env.commitTransactionAndClear(em);
             verifyAbsenceFromNodeTable(node1.getId());

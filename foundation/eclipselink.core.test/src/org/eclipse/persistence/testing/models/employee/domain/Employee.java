@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -468,7 +468,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     }
 
     public void setSalary(int salary) {
-        propertyChange("salary", new Integer(this.salary), new Integer(salary));
+        propertyChange("salary", Integer.valueOf(this.salary), Integer.valueOf(salary));
         this.salary = salary;
     }
 

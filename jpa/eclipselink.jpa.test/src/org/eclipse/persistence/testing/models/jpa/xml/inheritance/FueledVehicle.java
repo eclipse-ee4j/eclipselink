@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,7 @@ public class FueledVehicle extends Vehicle {
     }
 
     public void change() {
-        this.setPassengerCapacity(new Integer(100));
+        this.setPassengerCapacity(Integer.valueOf(100));
         this.setFuelType("HOT AIR");
 
     }

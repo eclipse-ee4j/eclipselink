@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -60,8 +60,8 @@ public class TestCascadeRefresh extends JPA1Base {
             em.persist(parent);
             verify(em.contains(parent), "parent is not managed");
             verify(em.contains(parentDescription), "parentDescription is not managed");
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
-            childDescription = em.find(CascadingNodeDescription.class, new Integer(childDescription.getId()));
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
+            childDescription = em.find(CascadingNodeDescription.class, Integer.valueOf(childDescription.getId()));
             childDescription.setDescription("updated");
             parent.addChild(child);
             child.setChildren(null);
@@ -115,11 +115,11 @@ public class TestCascadeRefresh extends JPA1Base {
     private void verifyExistence(EntityManager em, Object entity) {
         if (entity instanceof CascadingNode) {
             CascadingNode node = (CascadingNode) entity;
-            CascadingNode found = em.find(CascadingNode.class, new Integer(node.getId()));
+            CascadingNode found = em.find(CascadingNode.class, Integer.valueOf(node.getId()));
             verify(found != null, "cascading node with id " + node.getId() + " not found");
         } else if (entity instanceof CascadingNodeDescription) {
             CascadingNodeDescription desc = (CascadingNodeDescription) entity;
-            CascadingNodeDescription found = em.find(CascadingNodeDescription.class, new Integer(desc.getId()));
+            CascadingNodeDescription found = em.find(CascadingNodeDescription.class, Integer.valueOf(desc.getId()));
             verify(found != null, "cascading node description with id " + desc.getId() + " not found");
         } else {
             throw new IllegalArgumentException("not supported");
@@ -129,11 +129,11 @@ public class TestCascadeRefresh extends JPA1Base {
     private void verifyAbsence(EntityManager em, Object entity) {
         if (entity instanceof CascadingNode) {
             CascadingNode node = (CascadingNode) entity;
-            CascadingNode found = em.find(CascadingNode.class, new Integer(node.getId()));
+            CascadingNode found = em.find(CascadingNode.class, Integer.valueOf(node.getId()));
             verify(found == null, "cascading node with id " + node.getId() + " found");
         } else if (entity instanceof CascadingNodeDescription) {
             CascadingNodeDescription desc = (CascadingNodeDescription) entity;
-            CascadingNodeDescription found = em.find(CascadingNodeDescription.class, new Integer(desc.getId()));
+            CascadingNodeDescription found = em.find(CascadingNodeDescription.class, Integer.valueOf(desc.getId()));
             verify(found == null, "cascading node description with id " + desc.getId() + " found");
         } else {
             throw new IllegalArgumentException("not supported");
@@ -141,7 +141,7 @@ public class TestCascadeRefresh extends JPA1Base {
     }
 
     private void verifyDescription(EntityManager em, CascadingNodeDescription desc, String expectedDescription) {
-        CascadingNodeDescription found = em.find(CascadingNodeDescription.class, new Integer(desc.getId()));
+        CascadingNodeDescription found = em.find(CascadingNodeDescription.class, Integer.valueOf(desc.getId()));
         verify(found != null, "cascading node description with id " + desc.getId() + " not found");
         if (found != null) {
             verify(expectedDescription.equals(found.getDescription()), "cascading node " + found.getId()

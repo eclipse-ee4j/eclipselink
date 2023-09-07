@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
         streamWriter.writeStartElement("", "root", "someNamespace");
         streamWriter.writeDefaultNamespace("someNamespace");
         Marshaller marshaller = ctx.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, new Boolean(true));
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.valueOf(true));
 
         marshaller.marshal(new JAXBElement(new QName("employee"), Employee.class, new Employee()), streamWriter);
         streamWriter.writeEndElement();
@@ -74,7 +74,7 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
 
         // Set IS_REPAIRING_NAMESPACES to true.
-        factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(true));
+        factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(true));
 
         XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
 

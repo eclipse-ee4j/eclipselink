@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,33 +86,33 @@ public class ExpressionNode {
     }
 
     public static String getOperator(int anOperator) {
-        return (String)getOperators().get(new Integer(anOperator));
+        return (String)getOperators().get(Integer.valueOf(anOperator));
     }
 
     public static Hashtable getOperators() {
         if (operators == null) {
             operators = new Hashtable();
-            operators.put(new Integer(ExpressionOperator.Equal), Equals);
-            operators.put(new Integer(ExpressionOperator.NotEqual), NotEquals);
-            operators.put(new Integer(ExpressionOperator.LessThan), LessThan);
-            operators.put(new Integer(ExpressionOperator.LessThanEqual),
+            operators.put(Integer.valueOf(ExpressionOperator.Equal), Equals);
+            operators.put(Integer.valueOf(ExpressionOperator.NotEqual), NotEquals);
+            operators.put(Integer.valueOf(ExpressionOperator.LessThan), LessThan);
+            operators.put(Integer.valueOf(ExpressionOperator.LessThanEqual),
                           LessThanEqual);
-            operators.put(new Integer(ExpressionOperator.GreaterThan),
+            operators.put(Integer.valueOf(ExpressionOperator.GreaterThan),
                           GreaterThan);
-            operators.put(new Integer(ExpressionOperator.GreaterThanEqual),
+            operators.put(Integer.valueOf(ExpressionOperator.GreaterThanEqual),
                           GreaterThanEqual);
-            operators.put(new Integer(ExpressionOperator.Like), Like);
-            operators.put(new Integer(ExpressionOperator.NotLike), NotLike);
-            operators.put(new Integer(ExpressionOperator.In), In);
-            operators.put(new Integer(ExpressionOperator.NotIn), NotIn);
-            operators.put(new Integer(ExpressionOperator.Between), Between);
-            operators.put(new Integer(ExpressionOperator.NotBetween),
+            operators.put(Integer.valueOf(ExpressionOperator.Like), Like);
+            operators.put(Integer.valueOf(ExpressionOperator.NotLike), NotLike);
+            operators.put(Integer.valueOf(ExpressionOperator.In), In);
+            operators.put(Integer.valueOf(ExpressionOperator.NotIn), NotIn);
+            operators.put(Integer.valueOf(ExpressionOperator.Between), Between);
+            operators.put(Integer.valueOf(ExpressionOperator.NotBetween),
                           NotBetween);
-            operators.put(new Integer(ExpressionOperator.Or), Or);
-            operators.put(new Integer(ExpressionOperator.And), And);
-            operators.put(new Integer(ExpressionOperator.Not), Not);
-            operators.put(new Integer(ExpressionOperator.ToLowerCase), Lower);
-            operators.put(new Integer(ExpressionOperator.ToUpperCase), Upper);
+            operators.put(Integer.valueOf(ExpressionOperator.Or), Or);
+            operators.put(Integer.valueOf(ExpressionOperator.And), And);
+            operators.put(Integer.valueOf(ExpressionOperator.Not), Not);
+            operators.put(Integer.valueOf(ExpressionOperator.ToLowerCase), Lower);
+            operators.put(Integer.valueOf(ExpressionOperator.ToUpperCase), Upper);
         }
 
         return operators;

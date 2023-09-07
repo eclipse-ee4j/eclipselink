@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -436,7 +436,7 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 
         try {
             for (int i = 0; i < Service.SERVICE_PLANS.length; i++)
-            ((MWObjectTypeConverter) servicePlanMapping.getConverter()).addValuePair(new Integer(i), Service.SERVICE_PLANS[i]);
+            ((MWObjectTypeConverter) servicePlanMapping.getConverter()).addValuePair(Integer.valueOf(i), Service.SERVICE_PLANS[i]);
         }
         catch (MWObjectTypeConverter.ConversionValueException cve) { /*** shouldn't happen ***/}
 

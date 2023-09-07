@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -279,7 +279,7 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         // SECTION: VARIABLEONETOONEMAPPING
         org.eclipse.persistence.mappings.VariableOneToOneMapping variableonetoonemapping =
             new org.eclipse.persistence.mappings.VariableOneToOneMapping();
-        variableonetoonemapping.setWeight(new Integer(3));
+        variableonetoonemapping.setWeight(Integer.valueOf(3));
         variableonetoonemapping.setAttributeName("contact");
         variableonetoonemapping.setIsReadOnly(false);
         variableonetoonemapping.setUsesIndirection(false);
@@ -664,8 +664,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         //variableonetoonemapping.addClassIndicator(Email.class, "E");
         //variableonetoonemapping.addClassIndicator(Phone.class, "P");
         variableonetoonemapping.addClassIndicator(Email.class,
-                                                  new Float(1)); // TO TEST NUMERIC TYPE INDICATOR
-        variableonetoonemapping.addClassIndicator(Phone.class, new Float(2));
+                                                  Float.valueOf(1)); // TO TEST NUMERIC TYPE INDICATOR
+        variableonetoonemapping.addClassIndicator(Phone.class, Float.valueOf(2));
         descriptor.addMapping(variableonetoonemapping);
 
         // SECTION: VARIABLEONETOONEMAPPING
@@ -681,8 +681,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         //variableonetoonemapping2.addClassIndicator(Email.class, "E");
         //variableonetoonemapping2.addClassIndicator(Phone.class, "P");
         variableonetoonemapping2.addClassIndicator(Email.class,
-                                                   new Float(1)); // TO TEST NUMERIC TYPE INDICATOR
-        variableonetoonemapping2.addClassIndicator(Phone.class, new Float(2));
+                                                   Float.valueOf(1)); // TO TEST NUMERIC TYPE INDICATOR
+        variableonetoonemapping2.addClassIndicator(Phone.class, Float.valueOf(2));
         descriptor.addMapping(variableonetoonemapping2);
 
         Employee.addToDescriptor(descriptor);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,8 +23,8 @@ public class Secretary extends AdministrativeJob {
         Secretary example = new Secretary();
 
         example.setDepartment("Finance");
-        example.setSalary(new Float(33500.00));
-        example.setMinimumSalary(new Float(31000.00));
+        example.setSalary(33500.00f);
+        example.setMinimumSalary(31000.00f);
 
         return example;
     }
@@ -33,8 +33,8 @@ public class Secretary extends AdministrativeJob {
         Secretary example = new Secretary();
 
         example.setDepartment("Employment");
-        example.setSalary(new Float(33500.00));
-        example.setMinimumSalary(new Float(31000.00));
+        example.setSalary(33500.00f);
+        example.setMinimumSalary(31000.00f);
 
         return example;
     }
@@ -43,8 +43,8 @@ public class Secretary extends AdministrativeJob {
         Secretary example = new Secretary();
 
         example.setDepartment("Public Relations");
-        example.setSalary(new Float(35000.00));
-        example.setMinimumSalary(new Float(31000.00));
+        example.setSalary(35000.00f);
+        example.setMinimumSalary(31000.00f);
 
         return example;
     }

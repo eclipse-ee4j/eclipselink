@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class CourseDeveloper extends DevelopmentJob {
         CourseDeveloper example = new CourseDeveloper();
 
         example.setCourse("Intro to Quake 2 Map Design using Qoole");
-        example.setSalary(new Float(52000.00));
+        example.setSalary(52000.00f);
 
         return example;
     }
@@ -42,7 +42,7 @@ public class CourseDeveloper extends DevelopmentJob {
         CourseDeveloper example = new CourseDeveloper();
 
         example.setCourse("Introduction to Synthesis");
-        example.setSalary(new Float(51000.00));
+        example.setSalary(51000.00f);
 
         return example;
     }
@@ -51,7 +51,7 @@ public class CourseDeveloper extends DevelopmentJob {
         CourseDeveloper example = new CourseDeveloper();
 
         example.setCourse("Welcome to Ada!");
-        example.setSalary(new Float(56000.00));
+        example.setSalary(56000.00f);
 
         return example;
     }

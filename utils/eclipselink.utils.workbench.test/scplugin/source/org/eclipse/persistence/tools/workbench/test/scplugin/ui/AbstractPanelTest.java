@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -760,7 +760,7 @@ public abstract class AbstractPanelTest extends TestCase
                 Integer mnemonic = (Integer) entry.getKey();
 
                 dump.append(StringTools.CR);
-                dump.append(new Character((char) mnemonic.intValue()));
+                dump.append(Character.valueOf((char) mnemonic.intValue()));
                 dump.append(" is used by multiple labels: ");
                 dump.append(duplicate);
             }
@@ -935,7 +935,7 @@ public abstract class AbstractPanelTest extends TestCase
         Vector vector = new Vector();
         vector.add(repository.getString(key));
 
-        table.put(new Integer(repository.getMnemonic(key)), vector);
+        table.put(Integer.valueOf(repository.getMnemonic(key)), vector);
     }
 
     /**
@@ -1478,7 +1478,7 @@ public abstract class AbstractPanelTest extends TestCase
     {
         if (mnemonic != '\0')
         {
-            Integer character = new Integer(mnemonic);
+            Integer character = Integer.valueOf(mnemonic);
 
             if (mnemonics.containsKey(character))
             {

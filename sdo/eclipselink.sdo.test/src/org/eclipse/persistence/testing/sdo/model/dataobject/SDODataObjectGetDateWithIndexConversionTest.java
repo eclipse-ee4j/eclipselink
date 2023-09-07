@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -202,7 +202,7 @@ public class SDODataObjectGetDateWithIndexConversionTest extends SDODataObjectCo
     public void testGetDateFromInteger() {
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_INTEGER);
-        dataObject.set(property, new Integer(2));
+        dataObject.set(property, Integer.valueOf(2));
         try {
             dataObject.getDate(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");

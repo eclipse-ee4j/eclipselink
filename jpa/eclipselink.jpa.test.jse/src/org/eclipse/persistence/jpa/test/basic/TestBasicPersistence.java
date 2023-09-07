@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2017 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -89,7 +89,7 @@ public class TestBasicPersistence {
         String rmiPortProp = System.getProperty("rmi.port");
         if (!(rmiPortProp == null || rmiPortProp.isEmpty())) {
             try {
-                rmiPortVal = new Integer(rmiPortProp);
+                rmiPortVal = Integer.valueOf(rmiPortProp);
             } catch (NumberFormatException nfe) {
                 // Use default value.
             }

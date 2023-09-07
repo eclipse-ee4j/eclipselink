@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,12 +84,12 @@ public class InterfaceWithTablesSystem extends TestSystem {
         Commercial eatYourWeaties = new Commercial();
         eatYourWeaties.setName("Eat Your Weaties");
         eatYourWeaties.setDescription("Mikey says that he likes it.");
-        eatYourWeaties.setDuration(new Float(0.5));
+        eatYourWeaties.setDuration(0.5);
 
         Show zena = new Show();
         zena.setName("Zena");
         zena.setDescription("Zena the worrier princess");
-        zena.setDuration(new Float(20));
+        zena.setDuration(Float.valueOf(20));
 
         schedule.segments.addElement(eatYourWeaties);
         schedule.segments.addElement(zena);

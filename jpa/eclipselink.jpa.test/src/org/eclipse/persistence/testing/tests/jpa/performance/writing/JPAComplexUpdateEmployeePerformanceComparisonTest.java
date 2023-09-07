@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,7 @@ public class JPAComplexUpdateEmployeePerformanceComparisonTest extends Performan
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Employee employee = manager.find(Employee.class, new Long(originalEmployee.getId()));
+        Employee employee = manager.find(Employee.class, Long.valueOf(originalEmployee.getId()));
         count++;
         employee.setFirstName(originalEmployee.getFirstName() + count);
         employee.setLastName(originalEmployee.getLastName() + count);
@@ -77,7 +77,7 @@ public class JPAComplexUpdateEmployeePerformanceComparisonTest extends Performan
             manager.getTransaction().commit();
         } catch (Exception exception) {
             // Cache can get stale from TopLink run, so force refresh.
-            employee = manager.getReference(Employee.class, new Long(originalEmployee.getId()));
+            employee = manager.getReference(Employee.class, Long.valueOf(originalEmployee.getId()));
             manager.refresh(employee);
             employee.getPhoneNumbers();
         }

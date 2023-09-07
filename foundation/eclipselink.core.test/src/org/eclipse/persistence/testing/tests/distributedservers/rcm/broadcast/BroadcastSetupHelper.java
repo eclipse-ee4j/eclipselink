@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -235,7 +235,7 @@ public abstract class BroadcastSetupHelper {
 
     public void startCacheSynchronization(AbstractSession session, boolean isSource) {
         try {
-            sessions.put(session, new Boolean(isSource));
+            sessions.put(session, Boolean.valueOf(isSource));
             if (sessions.size() == 1) {
                 createFactory();
                 startFactory();

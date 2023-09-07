@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -178,7 +178,7 @@ public class TestCascadeFlush extends JPA1Base {
             em.persist(existing);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, new Integer(existing.getId())); // known object in state managed
+            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId())); // known object in state managed
             em.persist(parent);
             CascadingNode child = new CascadingNode(existing.getId(), parent);
             child.setParent(null); // to avoid circular cascade
@@ -213,7 +213,7 @@ public class TestCascadeFlush extends JPA1Base {
             em.persist(existing);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, new Integer(existing.getId()));
+            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId()));
             em.remove(existing); // known object in state deleted
             em.persist(parent);
             CascadingNode child = new CascadingNode(existing.getId(), parent);
@@ -253,7 +253,7 @@ public class TestCascadeFlush extends JPA1Base {
             env.beginTransaction(em);
             CascadingNode parent = new CascadingNode(32, null);
             em.persist(parent);
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            child = em.find(CascadingNode.class, Integer.valueOf(child.getId()));
             em.remove(child);
             parent.addChild(child);
             verify(em.contains(parent), "Parent not contained in persistence context after persist");

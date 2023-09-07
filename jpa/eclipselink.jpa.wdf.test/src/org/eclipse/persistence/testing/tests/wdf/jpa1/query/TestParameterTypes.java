@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -45,7 +45,7 @@ public class TestParameterTypes extends JPA1Base {
             em.persist(obj);
             env.commitTransactionAndClear(em);
             verify(true, "no Exception");
-            obj = em.find(BasicTypesFieldAccess.class, new Integer(0));
+            obj = em.find(BasicTypesFieldAccess.class, Integer.valueOf(0));
         } finally {
             closeEntityManager(em);
         }
@@ -295,7 +295,7 @@ public class TestParameterTypes extends JPA1Base {
     public void testWrapperByte() {
         Validator validator = new Validator() {
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperByte(new Byte((byte) 17));
+                obj.setWrapperByte(Byte.valueOf((byte) 17));
             }
 
             public boolean isComparableJdbcType() {
@@ -314,7 +314,7 @@ public class TestParameterTypes extends JPA1Base {
     public void testWrapperCharacter() {
         Validator validator = new Validator() {
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperCharacter(new Character('A'));
+                obj.setWrapperCharacter(Character.valueOf('A'));
             }
 
             public boolean isComparableJdbcType() {
@@ -333,7 +333,7 @@ public class TestParameterTypes extends JPA1Base {
     public void testWrapperShort() {
         Validator validator = new Validator() {
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperShort(new Short((short) 1));
+                obj.setWrapperShort(Short.valueOf((short) 1));
             }
 
             public boolean isComparableJdbcType() {
@@ -352,7 +352,7 @@ public class TestParameterTypes extends JPA1Base {
     public void testWrapperInteger() {
         Validator validator = new Validator() {
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperInteger(new Integer(1));
+                obj.setWrapperInteger(Integer.valueOf(1));
             }
 
             public boolean isComparableJdbcType() {
@@ -371,7 +371,7 @@ public class TestParameterTypes extends JPA1Base {
     public void testWrapperLong() {
         Validator validator = new Validator() {
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperLong(new Long(1));
+                obj.setWrapperLong(Long.valueOf(1));
             }
 
             public boolean isComparableJdbcType() {
@@ -390,7 +390,7 @@ public class TestParameterTypes extends JPA1Base {
     public void testWrapperDouble() {
         Validator validator = new Validator() {
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperDouble(new Double(1));
+                obj.setWrapperDouble(Double.valueOf(1));
             }
 
             public boolean isComparableJdbcType() {
@@ -409,7 +409,7 @@ public class TestParameterTypes extends JPA1Base {
     public void testWrapperFloat() {
         Validator validator = new Validator() {
             public void set(BasicTypesFieldAccess obj) {
-                obj.setWrapperFloat(new Float(1));
+                obj.setWrapperFloat(Float.valueOf(1));
             }
 
             public boolean isComparableJdbcType() {

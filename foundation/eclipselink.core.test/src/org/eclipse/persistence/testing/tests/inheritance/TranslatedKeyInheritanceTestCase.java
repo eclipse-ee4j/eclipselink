@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,8 +34,8 @@ public class TranslatedKeyInheritanceTestCase extends org.eclipse.persistence.te
 
         // CREATE A GRASSHOPPER
         GrassHopper grassHopper = new GrassHopper();
-        grassHopper.setIn_numberOfLegs(new Integer(6));
-        grassHopper.setGh_maximumJump(new Integer(100));
+        grassHopper.setIn_numberOfLegs(Integer.valueOf(6));
+        grassHopper.setGh_maximumJump(Integer.valueOf(100));
 
         // ADD THE GRASSHOPPER TO THE DATABASE
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -53,7 +53,7 @@ public class TranslatedKeyInheritanceTestCase extends org.eclipse.persistence.te
         // MODIFY THE GRASSHOPPER
         UnitOfWork uow = getSession().acquireUnitOfWork();
         GrassHopper tempGrassHopper = (GrassHopper)uow.registerObject(grassHopper);
-        tempGrassHopper.setGh_maximumJump(new Integer(150));
+        tempGrassHopper.setGh_maximumJump(Integer.valueOf(150));
         uow.commit();
 
     }

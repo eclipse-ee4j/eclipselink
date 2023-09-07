@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
         type_c0.addDeclaredProperty(p);
         dataObject_c._setType(type_c);
 
-        //Boolean bb = new Boolean(true);
+        //Boolean bb = Boolean.valueOf(true);
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBoolean("schema:" + propertyTest + "test", true);
@@ -65,7 +65,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
         type_c0.addDeclaredProperty(p);
         dataObject_c._setType(type_c);
 
-        //Boolean bb = new Boolean(true);
+        //Boolean bb = Boolean.valueOf(true);
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBoolean("PName-a0/@alias2[number='123']/test", true);
@@ -83,8 +83,8 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
         //type_c0.addDeclaredProperty(property_c1_object);
         List objects = new ArrayList();
-        Boolean b = new Boolean(true);
-        Boolean bb = new Boolean(false);
+        Boolean b = Boolean.valueOf(true);
+        Boolean bb = Boolean.valueOf(false);
         objects.add(b);
         objects.add(bb);
 
@@ -141,7 +141,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
        // type_c0.addDeclaredProperty(property_c1_object);
 
-        Boolean b = new Boolean(true);
+        Boolean b = Boolean.valueOf(true);
 
         dataObject_a.setBoolean("PName-a0/PName-b0[number='1']/PName-c1.0", true);
 
@@ -157,7 +157,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Boolean b = new Boolean(true);
+        Boolean b = Boolean.valueOf(true);
 
         dataObject_c0.setBoolean("PName-c1.0", true);
 

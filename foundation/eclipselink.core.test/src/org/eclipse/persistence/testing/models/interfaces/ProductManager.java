@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         ProductManager example = new ProductManager();
 
         example.setProduct("Quake 2 Maps");
-        example.setSalary(new Float(88000.00));
+        example.setSalary(88000.00f);
         example.setGoldCardNumber(new BigInteger("482122381872"));
 
         Vector employees = new Vector(1);
@@ -49,7 +49,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         ProductManager example = new ProductManager();
 
         example.setProduct("Trinity Operating System");
-        example.setSalary(new Float(84000.00));
+        example.setSalary(84000.00f);
         example.setGoldCardNumber(new BigInteger("998128762878"));
 
         Vector employees = new Vector(1);
@@ -64,7 +64,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         ProductManager example = new ProductManager();
 
         example.setProduct("Ada For Dummies");
-        example.setSalary(new Float(84000.00));
+        example.setSalary(84000.00f);
         example.setGoldCardNumber(new BigInteger("144173389267"));
 
         Vector employees = new Vector(1);

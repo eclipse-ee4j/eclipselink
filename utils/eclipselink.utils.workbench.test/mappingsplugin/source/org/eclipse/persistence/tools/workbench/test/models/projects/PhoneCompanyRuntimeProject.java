@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -429,9 +429,9 @@ public class PhoneCompanyRuntimeProject {
         servicePlanMapping.setConverter(converter);
         servicePlanMapping.setAttributeName("servicePlan");
         servicePlanMapping.setFieldName("servicePlan->DIRECT");
-        converter.addConversionValue(new java.lang.Integer(0), "Platinum");
-        converter.addConversionValue(new java.lang.Integer(2), "Standard");
-        converter.addConversionValue(new java.lang.Integer(1), "Gold");
+        converter.addConversionValue(Integer.valueOf(0), "Platinum");
+        converter.addConversionValue(Integer.valueOf(2), "Standard");
+        converter.addConversionValue(Integer.valueOf(1), "Gold");
         descriptor.addMapping(servicePlanMapping);
 
         TransformationMapping rateMapping = new TransformationMapping();

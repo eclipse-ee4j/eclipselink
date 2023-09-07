@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import javax.xml.bind.Unmarshaller;
 
 public class JAXBUnmarshalListenerImpl extends Unmarshaller.Listener {
-    static Integer EMPLOYEE_BEFORE_UNMARSHAL = new Integer(0);
-    static Integer ADDRESS_BEFORE_UNMARSHAL = new Integer(1);
-    static Integer PHONE_BEFORE_UNMARSHAL = new Integer(2);
-    static Integer EMPLOYEE_AFTER_UNMARSHAL = new Integer(3);
-    static Integer ADDRESS_AFTER_UNMARSHAL = new Integer(4);
-    static Integer PHONE_AFTER_UNMARSHAL = new Integer(5);
+    static Integer EMPLOYEE_BEFORE_UNMARSHAL = Integer.valueOf(0);
+    static Integer ADDRESS_BEFORE_UNMARSHAL = Integer.valueOf(1);
+    static Integer PHONE_BEFORE_UNMARSHAL = Integer.valueOf(2);
+    static Integer EMPLOYEE_AFTER_UNMARSHAL = Integer.valueOf(3);
+    static Integer ADDRESS_AFTER_UNMARSHAL = Integer.valueOf(4);
+    static Integer PHONE_AFTER_UNMARSHAL = Integer.valueOf(5);
 
     public ArrayList events = null;
 

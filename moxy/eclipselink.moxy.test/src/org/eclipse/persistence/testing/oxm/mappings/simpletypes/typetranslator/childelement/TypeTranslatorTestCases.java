@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 public class TypeTranslatorTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/simpletypes/typetranslator/TypeTranslatorTest.xml";
     private final static String CONTROL_EMPLOYEE_NAME = "Jane Doh";
-    private final static Integer CONTROL_EMPLOYEE_PHONE = new Integer(4441234);
+    private final static Integer CONTROL_EMPLOYEE_PHONE = Integer.valueOf(4441234);
     private XMLMarshaller xmlMarshaller;
 
     public TypeTranslatorTestCases(String name) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -589,12 +589,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter(1, employee.getId());
             query.setParameter(2, employee.getFirstName());
             arrayResult = (Object[])query.getSingleResult();
-            if ((arrayResult.length != 1) || (!new Integer(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
+            if ((arrayResult.length != 1) || (!Integer.valueOf(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
             listResult = query.getResultList();
             arrayResult = (Object[])listResult.get(0);
-            if ((arrayResult.length != 1) || (!new Integer(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
+            if ((arrayResult.length != 1) || (!Integer.valueOf(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
 
@@ -604,12 +604,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter(1, employee.getId());
             query.setParameter(2, employee.getFirstName());
             Map mapResult = (Map)query.getSingleResult();
-            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(Integer.valueOf(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
             listResult = query.getResultList();
             mapResult = (Map)listResult.get(0);
-            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(Integer.valueOf(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
 
@@ -619,12 +619,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter(1, employee.getId());
             query.setParameter(2, employee.getFirstName());
             mapResult = (Map)query.getSingleResult();
-            if ((mapResult.size() != 1) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+            if ((mapResult.size() != 1) || (!(Integer.valueOf(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
             listResult = query.getResultList();
             mapResult = (Map)listResult.get(0);
-            if ((mapResult.size() != 1) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+            if ((mapResult.size() != 1) || (!(Integer.valueOf(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
 
@@ -633,12 +633,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter(1, employee.getId());
             query.setParameter(2, employee.getFirstName());
             Object valueResult = query.getSingleResult();
-            if (!(new Integer(((Number)valueResult).intValue())).equals(employee.getId())) {
+            if (!(Integer.valueOf(((Number)valueResult).intValue())).equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
             listResult = query.getResultList();
             valueResult = listResult.get(0);
-            if (!(new Integer(((Number)valueResult).intValue())).equals(employee.getId())) {
+            if (!(Integer.valueOf(((Number)valueResult).intValue())).equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
         } finally {

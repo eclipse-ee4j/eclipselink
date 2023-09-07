@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,7 +137,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
     public void testInvalidParameterTypeBadOxmXmlValue() {
         Map<String, List<Integer>> properties = new HashMap<String, List<Integer>>();
         ArrayList<Integer> ints = new ArrayList<Integer>();
-        ints.add(new Integer(666));
+        ints.add(Integer.valueOf(666));
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, ints);
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);

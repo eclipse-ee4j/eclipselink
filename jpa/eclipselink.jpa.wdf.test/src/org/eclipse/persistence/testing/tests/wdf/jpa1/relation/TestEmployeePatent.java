@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -38,8 +38,8 @@ import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.Test;
 
 public class TestEmployeePatent extends JPA1Base {
-    private static final Integer EDISON = new Integer(26);
-    private static final Integer TESLA = new Integer(32);
+    private static final Integer EDISON = Integer.valueOf(26);
+    private static final Integer TESLA = Integer.valueOf(32);
 
     @Override
     public void setup() {

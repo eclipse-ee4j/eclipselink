@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,12 +57,12 @@ public class TestReadDirectEntity1MMapMapping extends TestCase {
         DEOTMMapValue value = new DEOTMMapValue();
         value.setId(1);
         value.getHolder().setValue(initialHolder);
-        initialHolder.addDirectToEntityMapItem(new Integer(11), value);
+        initialHolder.addDirectToEntityMapItem(Integer.valueOf(11), value);
 
         DEOTMMapValue value2 = new DEOTMMapValue();
         value2.setId(2);
         value2.getHolder().setValue(initialHolder);
-        initialHolder.addDirectToEntityMapItem(new Integer(22), value2);
+        initialHolder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
         uow.registerObject(initialHolder);
         uow.registerObject(value);
         uow.registerObject(value2);
@@ -87,7 +87,7 @@ public class TestReadDirectEntity1MMapMapping extends TestCase {
         if (holder.getDirectToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
-        DEOTMMapValue value = (DEOTMMapValue)holder.getDirectToEntityMap().get(new Integer(11));
+        DEOTMMapValue value = (DEOTMMapValue)holder.getDirectToEntityMap().get(Integer.valueOf(11));
         if (value.getId() != 1){
             throw new TestErrorException("Incorrect MapEntityValues was read.");
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -222,7 +222,7 @@ public class SDODataObjectGetDoubleConversionTest extends SDODataObjectConversio
         property.setType(SDOConstants.SDO_STRING);
 
         String str = "12";
-        Double s_d = new Double(str);
+        Double s_d = Double.valueOf(str);
         double delta = 0.0;
         dataObject.setString(property, str);// add it to instance list
 

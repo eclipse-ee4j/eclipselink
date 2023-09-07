@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,29 +34,29 @@ public class EscapeCharactersTestCases extends JSONMarshalUnmarshalTestCases {
         holder.stringValue = "a\"a\\a/a\ba\fa\na\ra\t\b\u0003\u001Caaa\\TESThttp://this/is/my/test";
 
         List<Character> characters = new ArrayList<Character>();
-        characters.add(new Character('a'));
-        characters.add(new Character('"'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\\'));
-        characters.add(new Character('a'));
-        characters.add(new Character('/'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\b'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\f'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\n'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\r'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\t'));
-        characters.add(new Character('\b'));
-        characters.add(new Character('\u0003'));
-        characters.add(new Character('\u001C'));
-        characters.add(new Character('a'));
-        characters.add(new Character('a'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\\'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('"'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('\\'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('/'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('\b'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('\f'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('\n'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('\r'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('\t'));
+        characters.add(Character.valueOf('\b'));
+        characters.add(Character.valueOf('\u0003'));
+        characters.add(Character.valueOf('\u001C'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('a'));
+        characters.add(Character.valueOf('\\'));
         holder.characters = characters;
         return holder;
     }

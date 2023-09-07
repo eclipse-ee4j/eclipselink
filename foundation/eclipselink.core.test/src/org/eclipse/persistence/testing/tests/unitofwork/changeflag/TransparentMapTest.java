@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,7 +112,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
         //test update
         this.licenceType = "Alcohol License";
         this.licenceValue = (Boolean)clone.getLicenses().get(licenceType);
-        clone.getLicenses().put(licenceType, new Boolean((!(this.licenceValue).booleanValue())));
+        clone.getLicenses().put(licenceType, Boolean.valueOf((!(this.licenceValue).booleanValue())));
 
         uow.commit();
     }

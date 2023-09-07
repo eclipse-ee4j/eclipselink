@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -220,7 +220,7 @@ public class SDODataObjectGetFloatConversionTest extends SDODataObjectConversion
         property.setType(SDOConstants.SDO_STRING);
 
         String str = "12";
-        Float s_d = new Float(str);
+        Float s_d = Float.valueOf(str);
         float delta = 0;
         dataObject.setString(property, str);// add it to instance list
 
@@ -356,7 +356,7 @@ public class SDODataObjectGetFloatConversionTest extends SDODataObjectConversion
     public void testGetFloatFromCharacterObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-        dataObject.set(property, new Character('y'));
+        dataObject.set(property, Character.valueOf('y'));
         try {
             dataObject.getFloat(property);
             fail("ClassCastException should be thrown.");

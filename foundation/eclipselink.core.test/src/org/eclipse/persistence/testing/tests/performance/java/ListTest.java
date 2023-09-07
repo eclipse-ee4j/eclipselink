@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ public class ListTest extends PerformanceComparisonTestCase {
     public void test() throws Exception {
         Vector vector = new Vector(10);
         for (int index = 0; index < size; index++) {
-            vector.add(new Integer(index));
+            vector.add(Integer.valueOf(index));
         }
         for (int index = 0; index < size; index++) {
             Object result = vector.get(index);
@@ -52,7 +52,7 @@ public class ListTest extends PerformanceComparisonTestCase {
             public void test() {
                 List list = new ArrayList(10);
                 for (int index = 0; index < size; index++) {
-                    list.add(new Integer(index));
+                    list.add(Integer.valueOf(index));
                 }
                 for (int index = 0; index < size; index++) {
                     Object result = list.get(index);
@@ -72,7 +72,7 @@ public class ListTest extends PerformanceComparisonTestCase {
             public void test() {
                 List list = new LinkedList();
                 for (int index = 0; index < size; index++) {
-                    list.add(new Integer(index));
+                    list.add(Integer.valueOf(index));
                 }
                 for (int index = 0; index < size; index++) {
                     Object result = list.get(index);

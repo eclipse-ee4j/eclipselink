@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,8 +46,8 @@ public class SDODataObjectGetCharacterConversionByXPathQueryTest extends SDOData
         List objects = new ArrayList();
         char c = 'c';
         char c1 = 'a';
-        Character b = new Character(c);
-        Character bb = new Character(c1);
+        Character b = Character.valueOf(c);
+        Character bb = Character.valueOf(c1);
         objects.add(b);
         objects.add(bb);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
         SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_INT);
-        Integer bb = new Integer(12);
+        Integer bb = Integer.valueOf(12);
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -45,8 +45,8 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
 
         //type_c0.addDeclaredProperty(property_c1_object);
         List objects = new ArrayList();
-        Integer b = new Integer(12);
-        Integer bb = new Integer(2);
+        Integer b = Integer.valueOf(12);
+        Integer bb = Integer.valueOf(2);
         objects.add(b);
         objects.add(bb);
 
@@ -101,7 +101,7 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Integer b = new Integer(12);
+        Integer b = Integer.valueOf(12);
 
         dataObject_a.setInt("PName-a0/PName-b0[number='1']/PName-c1.0", b.intValue());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,9 +99,9 @@ public class EmployeeCustomSQLMWIntegrationSystem extends EmployeeCustomSQLSyste
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("StoredProcedure_InOut_Out_In");
 
-        call.addNamedInOutputArgumentValue("P_INOUT", new Integer(100), "P_INOUT_FIELD_NAME", Integer.class);
+        call.addNamedInOutputArgumentValue("P_INOUT", Integer.valueOf(100), "P_INOUT_FIELD_NAME", Integer.class);
         call.addNamedOutputArgument("P_OUT", "P_OUT_FIELD_NAME", Integer.class);
-        call.addNamedArgumentValue("P_IN", new Integer(1000));
+        call.addNamedArgumentValue("P_IN", Integer.valueOf(1000));
 
         //Set stored procedure to Named query.
         DataReadQuery dataReadQuery = new DataReadQuery();
@@ -115,9 +115,9 @@ public class EmployeeCustomSQLMWIntegrationSystem extends EmployeeCustomSQLSyste
         StoredProcedureCall unamedcall = new StoredProcedureCall();
         unamedcall.setProcedureName("StoredProcedure_InOut_Out_In");
 
-        unamedcall.addUnamedInOutputArgumentValue(new Integer(100), "P_INOUT_FIELD_NAME", Integer.class);
+        unamedcall.addUnamedInOutputArgumentValue(Integer.valueOf(100), "P_INOUT_FIELD_NAME", Integer.class);
         unamedcall.addUnamedOutputArgument("P_OUT_FIELD_NAME", Integer.class);
-        unamedcall.addUnamedArgumentValue(new Integer(1000));
+        unamedcall.addUnamedArgumentValue(Integer.valueOf(1000));
 
         //Set stored procedure to Named query
         DataReadQuery unameddataReadQuery = new DataReadQuery();

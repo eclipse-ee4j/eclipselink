@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -47,10 +47,10 @@ import org.junit.Test;
 public class TestBidirectionalManyToMany extends JPA1Base {
 
     private static final int HANS_ID_VALUE = 1;
-    private static final Integer HANS_ID = new Integer(HANS_ID_VALUE);
+    private static final Integer HANS_ID = Integer.valueOf(HANS_ID_VALUE);
     private static final Set<Pair> HANS_SET = new HashSet<Pair>();
     private static final int FRED_ID_VALUE = 2;
-    private static final Integer FRED_ID = new Integer(FRED_ID_VALUE);
+    private static final Integer FRED_ID = Integer.valueOf(FRED_ID_VALUE);
     private static final Set<Pair> FRED_SET = new HashSet<Pair>();
     private static final Set<Pair> SEED_SET = new HashSet<Pair>();
     private static final Project PUHLEN = new Project("G\u00fcrteltiere puhlen");
@@ -348,7 +348,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
     }
 
     private void verifyEmployees(EntityManager em, int id, int size) {
-        Project project = em.find(Project.class, new Integer(id));
+        Project project = em.find(Project.class, Integer.valueOf(id));
         verify(project != null, "project not found");
         Set<Employee> employees = project.getEmployees();
         verify(employees.size() == size, "wrong number of employees: " + employees.size() + " expected: " + size);
@@ -388,7 +388,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             }
             checkJoinTable(expected);
             env.beginTransaction(em);
-            paul = em.find(Employee.class, new Integer(newId));
+            paul = em.find(Employee.class, Integer.valueOf(newId));
             verify(paul.getProjects().size() == HANS_SET.size(), "Paul has wrong number of projects");
             env.rollbackTransactionAndClear(em);
         } finally {
