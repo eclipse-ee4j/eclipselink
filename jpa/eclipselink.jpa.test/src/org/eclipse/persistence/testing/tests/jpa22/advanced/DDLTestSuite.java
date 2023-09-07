@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -165,7 +165,7 @@ public class DDLTestSuite extends JUnitTestCase {
             organizer.setRace(race);
 
             Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
+            responsibility.setUniqueIdentifier(Long.valueOf(System.currentTimeMillis()));
             responsibility.setDescription("Raise funds");
 
             race.addOrganizer(organizer, responsibility);

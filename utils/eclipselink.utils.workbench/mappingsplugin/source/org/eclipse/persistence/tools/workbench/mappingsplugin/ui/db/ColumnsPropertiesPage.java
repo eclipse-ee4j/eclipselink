@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -303,11 +303,11 @@ public class ColumnsPropertiesPage extends ScrollablePropertiesPage {
     }
 
     private SpinnerTableCellRenderer buildNumberSpinnerRenderer() {
-        return new SpinnerTableCellRenderer(new NumberSpinnerModelAdapter(new SimplePropertyValueModel(), new Integer(0), null, new Integer(1), new Integer(0)));
+        return new SpinnerTableCellRenderer(new NumberSpinnerModelAdapter(new SimplePropertyValueModel(), Integer.valueOf(0), null, Integer.valueOf(1), Integer.valueOf(0)));
     }
 
     private SpinnerTableCellRenderer buildSizeRenderer() {
-        return new SpinnerTableCellRenderer(new NumberSpinnerModelAdapter(new SimplePropertyValueModel(), new Integer(0), null, new Integer(1), new Integer(0))) {
+        return new SpinnerTableCellRenderer(new NumberSpinnerModelAdapter(new SimplePropertyValueModel(), Integer.valueOf(0), null, Integer.valueOf(1), Integer.valueOf(0))) {
             public Component getTableCellRendererComponent(JTable t, Object value, boolean selected, boolean hasFocus, int row, int column) {
                 if (ColumnsPropertiesPage.this.column(row).getDatabaseType().allowsSize()) {
                     return super.getTableCellRendererComponent(t, value, selected, hasFocus, row, column);
@@ -329,7 +329,7 @@ public class ColumnsPropertiesPage extends ScrollablePropertiesPage {
     }
 
     private SpinnerTableCellRenderer buildSubSizeRenderer() {
-        return new SpinnerTableCellRenderer(new NumberSpinnerModelAdapter(new SimplePropertyValueModel(), new Integer(0), null, new Integer(1), new Integer(0))) {
+        return new SpinnerTableCellRenderer(new NumberSpinnerModelAdapter(new SimplePropertyValueModel(), Integer.valueOf(0), null, Integer.valueOf(1), Integer.valueOf(0))) {
             public Component getTableCellRendererComponent(JTable t, Object value, boolean selected, boolean hasFocus, int row, int column) {
                 if (ColumnsPropertiesPage.this.column(row).getDatabaseType().allowsSubSize()) {
                     return super.getTableCellRendererComponent(t, value, selected, hasFocus, row, column);
@@ -678,7 +678,7 @@ public class ColumnsPropertiesPage extends ScrollablePropertiesPage {
         private PropertyValueModel buildSizeAdapter(MWColumn field) {
             return new PropertyAspectAdapter(MWColumn.SIZE_PROPERTY, field) {
                 protected Object getValueFromSubject() {
-                    return new Integer(((MWColumn) this.subject).getSize());
+                    return Integer.valueOf(((MWColumn) this.subject).getSize());
                 }
                 protected void setValueOnSubject(Object value) {
                     ((MWColumn) this.subject).setSize(((Integer) value).intValue());
@@ -689,7 +689,7 @@ public class ColumnsPropertiesPage extends ScrollablePropertiesPage {
         private PropertyValueModel buildSubSizeAdapter(MWColumn field) {
             return new PropertyAspectAdapter(MWColumn.SUB_SIZE_PROPERTY, field) {
                 protected Object getValueFromSubject() {
-                    return new Integer(((MWColumn) this.subject).getSubSize());
+                    return Integer.valueOf(((MWColumn) this.subject).getSubSize());
                 }
                 protected void setValueOnSubject(Object value) {
                     ((MWColumn) this.subject).setSubSize(((Integer) value).intValue());

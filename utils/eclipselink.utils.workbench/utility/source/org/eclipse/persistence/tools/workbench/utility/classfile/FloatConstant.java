@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ public class FloatConstant extends Constant {
     }
 
     public Object value() {
-        return new Float(this.value);
+        return Float.valueOf(this.value);
     }
 
     public void accept(Visitor visitor) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         PersonnelManager example = new PersonnelManager();
 
         example.setDepartment("Division A");
-        example.setSalary(new Float(77235.00));
+        example.setSalary(77235.00f);
 
         Vector employees = new Vector(5);
         employees.addElement(CourseDeveloper.example1());
@@ -51,7 +51,7 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         PersonnelManager example = new PersonnelManager();
 
         example.setDepartment("Division B");
-        example.setSalary(new Float(97235.00));
+        example.setSalary(97235.00f);
 
         Vector employees = new Vector(5);
         employees.addElement(CourseDeveloper.example2());
@@ -69,7 +69,7 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         PersonnelManager example = new PersonnelManager();
 
         example.setDepartment("Division C");
-        example.setSalary(new Float(87265.00));
+        example.setSalary(87265.00f);
 
         Vector employees = new Vector(5);
         employees.addElement(CourseDeveloper.example3());

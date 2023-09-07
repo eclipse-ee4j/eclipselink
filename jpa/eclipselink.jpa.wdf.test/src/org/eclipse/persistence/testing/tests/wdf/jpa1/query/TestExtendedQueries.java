@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -98,7 +98,7 @@ public class TestExtendedQueries extends JPA1Base {
     protected String getRandomSurname() {
         String tmpName = SURNAMES[nameRandomizer.nextInt(SURNAMES.length)];
         if (!NUMBER_OF_SURNAMES_USED.containsKey(tmpName)) {
-            NUMBER_OF_SURNAMES_USED.put(tmpName, new Integer(1));
+            NUMBER_OF_SURNAMES_USED.put(tmpName, Integer.valueOf(1));
         } else {
             Integer tmpNum = NUMBER_OF_SURNAMES_USED.get(tmpName);
             tmpNum = Integer.valueOf(tmpNum.intValue() + 1);
@@ -110,7 +110,7 @@ public class TestExtendedQueries extends JPA1Base {
     protected String getRandomGivenName() {
         String tmpName = GIVEN_NAMES[nameRandomizer.nextInt(GIVEN_NAMES.length)];
         if (!NUMBER_OF_GIVEN_NAMES_USED.containsKey(tmpName)) {
-            NUMBER_OF_GIVEN_NAMES_USED.put(tmpName, new Integer(1));
+            NUMBER_OF_GIVEN_NAMES_USED.put(tmpName, Integer.valueOf(1));
         } else {
             Integer tmpNum = NUMBER_OF_GIVEN_NAMES_USED.get(tmpName);
             tmpNum = Integer.valueOf(tmpNum.intValue() + 1);
@@ -282,7 +282,7 @@ public class TestExtendedQueries extends JPA1Base {
         try {
             // test string-mapping of enums
             Query query = em.createQuery("Select DISTINCT Object(emp) From Employee emp WHERE emp.salary > ABS(:dbl)");
-            query.setParameter("dbl", new Double(1180D));
+            query.setParameter("dbl", Double.valueOf(1180D));
             query.getResultList();
         } finally {
             closeEntityManager(em);

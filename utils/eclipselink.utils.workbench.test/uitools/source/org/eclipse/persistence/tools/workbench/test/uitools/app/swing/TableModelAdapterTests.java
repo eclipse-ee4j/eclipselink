@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,7 +112,7 @@ public class TableModelAdapterTests extends TestCase {
             if (tableModelAdapter.getValueAt(i, PersonColumnAdapter.NAME_COLUMN).equals("Gollum")) {
                 tableModelAdapter.setValueAt(Person.EYE_COLOR_HAZEL, i, PersonColumnAdapter.EYE_COLOR_COLUMN);
                 tableModelAdapter.setValueAt(Boolean.TRUE, i, PersonColumnAdapter.EVIL_COLUMN);
-                tableModelAdapter.setValueAt(new Integer(-1), i, PersonColumnAdapter.RANK_COLUMN);
+                tableModelAdapter.setValueAt(Integer.valueOf(-1), i, PersonColumnAdapter.RANK_COLUMN);
                 break;
             }
         }
@@ -367,7 +367,7 @@ public static class PersonColumnAdapter implements ColumnAdapter {
     private PropertyValueModel buildRankAdapter(Person person) {
         return new PropertyAspectAdapter(Person.RANK_PROPERTY, person) {
             protected Object getValueFromSubject() {
-                return new Integer(((Person) this.subject).getRank());
+                return Integer.valueOf(((Person) this.subject).getRank());
             }
             protected void setValueOnSubject(Object value) {
                 ((Person) this.subject).setRank(((Integer) value).intValue());
@@ -378,7 +378,7 @@ public static class PersonColumnAdapter implements ColumnAdapter {
     private PropertyValueModel buildAdventureCountAdapter(Person person) {
         return new PropertyAspectAdapter(Person.ADVENTURE_COUNT_PROPERTY, person) {
             protected Object getValueFromSubject() {
-                return new Integer(((Person) this.subject).getAdventureCount());
+                return Integer.valueOf(((Person) this.subject).getAdventureCount());
             }
             protected void setValueOnSubject(Object value) {
                 ((Person) this.subject).setAdventureCount(((Integer) value).intValue());

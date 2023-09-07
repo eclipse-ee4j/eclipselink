@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -873,12 +873,12 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             row.addElement(summary.getLoadBuildSummary().jvm);
             row.addElement(summary.getLoadBuildSummary().machine);
             row.addElement(summary.getLoadBuildSummary().toplinkVersion);
-            row.addElement(new Integer(summary.getTotalTests()));
-            row.addElement(new Integer(summary.getSetupFailures()));
-            row.addElement(new Integer(summary.getErrors()));
-            row.addElement(new Integer(summary.getFatalErrors()));
-            row.addElement(new Integer(summary.getProblems()));
-            row.addElement(new Long(summary.getTotalTime()));
+            row.addElement(Integer.valueOf(summary.getTotalTests()));
+            row.addElement(Integer.valueOf(summary.getSetupFailures()));
+            row.addElement(Integer.valueOf(summary.getErrors()));
+            row.addElement(Integer.valueOf(summary.getFatalErrors()));
+            row.addElement(Integer.valueOf(summary.getProblems()));
+            row.addElement(Long.valueOf(summary.getTotalTime()));
             tableModel.addRow(row);
         }
         getSelectedTable().setModel(tableModel);
@@ -900,9 +900,9 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             Vector row = new Vector();
             row.addElement(result.getName());
             row.addElement(result.getOutcome());
-            row.addElement(new Long(result.getTestTime()));
-            row.addElement(new Long(result.getTotalTime()));
-            row.addElement(new Boolean(result.getException() != null));
+            row.addElement(Long.valueOf(result.getTestTime()));
+            row.addElement(Long.valueOf(result.getTotalTime()));
+            row.addElement(Boolean.valueOf(result.getException() != null));
             row.addElement(result.getLoadBuildSummary().timestamp);
             row.addElement(result.getLoadBuildSummary().loginChoice);
             row.addElement(result.getLoadBuildSummary().os);
@@ -929,14 +929,14 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
             Vector row = new Vector();
             row.addElement(summary.getName());
-            row.addElement(new Integer(summary.getTotalTests()));
-            row.addElement(new Integer(summary.getSetupFailures()));
-            row.addElement(new Integer(summary.getPassed()));
-            row.addElement(new Integer(summary.getErrors()));
-            row.addElement(new Integer(summary.getFatalErrors()));
-            row.addElement(new Integer(summary.getProblems()));
-            row.addElement(new Integer(summary.getWarnings()));
-            row.addElement(new Long(summary.getTotalTime()));
+            row.addElement(Integer.valueOf(summary.getTotalTests()));
+            row.addElement(Integer.valueOf(summary.getSetupFailures()));
+            row.addElement(Integer.valueOf(summary.getPassed()));
+            row.addElement(Integer.valueOf(summary.getErrors()));
+            row.addElement(Integer.valueOf(summary.getFatalErrors()));
+            row.addElement(Integer.valueOf(summary.getProblems()));
+            row.addElement(Integer.valueOf(summary.getWarnings()));
+            row.addElement(Long.valueOf(summary.getTotalTime()));
             tableModel.addRow(row);
         }
         getSelectedTable().setModel(tableModel);

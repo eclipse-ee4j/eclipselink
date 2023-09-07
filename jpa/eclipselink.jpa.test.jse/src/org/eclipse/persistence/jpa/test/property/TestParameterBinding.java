@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -122,9 +122,9 @@ public class TestParameterBinding {
             //3: Test COALESCE function with all arguments as parameters
             TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
                     + "WHERE ABS(COALESCE(?1, ?2)) >= ?3", GenericEntity.class);
-            query.setParameter(1, new Integer(1));
-            query.setParameter(2, new Integer(20));
-            query.setParameter(3, new Integer(300));
+            query.setParameter(1, Integer.valueOf(1));
+            query.setParameter(2, Integer.valueOf(20));
+            query.setParameter(3, Integer.valueOf(300));
             query.getResultList();
 
             DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();

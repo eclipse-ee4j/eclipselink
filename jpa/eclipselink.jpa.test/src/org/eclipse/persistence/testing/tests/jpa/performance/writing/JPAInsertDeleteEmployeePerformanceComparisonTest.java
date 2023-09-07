@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public class JPAInsertDeleteEmployeePerformanceComparisonTest extends Performanc
         Employee any = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
         // Create a query to avoid a cache hit to load emulated data.
         Query query = manager.createQuery("Select e from Employee e where e.id = :id");
-        query.setParameter("id", new Long(any.getId()));
+        query.setParameter("id", Long.valueOf(any.getId()));
         any = (Employee)query.getSingleResult();
         manager.close();
         manager = createEntityManager();
@@ -86,7 +86,7 @@ public class JPAInsertDeleteEmployeePerformanceComparisonTest extends Performanc
 
         manager = createEntityManager();
         manager.getTransaction().begin();
-        employee = manager.getReference(Employee.class, new Long(employee.getId()));
+        employee = manager.getReference(Employee.class, Long.valueOf(employee.getId()));
         manager.remove(employee);
         manager.getTransaction().commit();
         manager.close();

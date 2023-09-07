@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class BindingWithShallowInsertTest extends TestCase {
             // "NA" is the null value, so this will cause a null to be written
             headProject.setName("NA");
             headProject.setTitle("");
-            headProject.setBudget(new Integer(-1));
+            headProject.setBudget(Integer.valueOf(-1));
 
             // adding the project to both mappings will cause a shallow insert because
             // foreign keys will have to be updated on both tables

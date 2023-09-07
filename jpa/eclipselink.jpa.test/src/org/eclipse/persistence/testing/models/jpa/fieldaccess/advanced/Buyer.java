@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -131,19 +131,19 @@ public class Buyer implements Serializable {
     }
 
     public void addAmex(long number) {
-        getCreditCards().put(AMEX, new Long(number));
+        getCreditCards().put(AMEX, Long.valueOf(number));
     }
 
     public void addDinersClub(long number) {
-        getCreditCards().put(DINERS, new Long(number));
+        getCreditCards().put(DINERS, Long.valueOf(number));
     }
 
     public void addMastercard(long number) {
-        getCreditCards().put(MASTERCARD, new Long(number));
+        getCreditCards().put(MASTERCARD, Long.valueOf(number));
     }
 
     public void addVisa(long number) {
-        getCreditCards().put(VISA, new Long(number));
+        getCreditCards().put(VISA, Long.valueOf(number));
     }
 
     public boolean buysSaturdayToSunday() {

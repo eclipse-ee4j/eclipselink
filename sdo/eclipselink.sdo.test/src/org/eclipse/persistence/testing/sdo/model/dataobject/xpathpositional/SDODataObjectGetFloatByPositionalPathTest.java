@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -338,7 +338,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
         dataObject_c._setType(type_c);
 
         String str = "12";
-        Float s_d = new Float(str);
+        Float s_d = Float.valueOf(str);
         float delta = 0;
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 

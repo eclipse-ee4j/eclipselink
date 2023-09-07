@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,9 +44,9 @@ public class PredefinedInQueryReadAllTest extends ReadAllTest {
 
     protected void test() {
         Vector sals = new Vector();
-        sals.addElement(new Integer(100));
-        sals.addElement(new Integer(56232));
-        sals.addElement(new Integer(10000));
+        sals.addElement(Integer.valueOf(100));
+        sals.addElement(Integer.valueOf(56232));
+        sals.addElement(Integer.valueOf(10000));
         Vector args = new Vector();
         args.addElement(sals);
 
@@ -56,9 +56,9 @@ public class PredefinedInQueryReadAllTest extends ReadAllTest {
 
         // Also execute the query using a collection type other than vector.
         Collection collection = new HashSet();
-        collection.add(new Integer(100));
-        collection.add(new Integer(56232));
-        collection.add(new Integer(10000));
+        collection.add(Integer.valueOf(100));
+        collection.add(Integer.valueOf(56232));
+        collection.add(Integer.valueOf(10000));
         args = new Vector();
         args.addElement(collection);
 

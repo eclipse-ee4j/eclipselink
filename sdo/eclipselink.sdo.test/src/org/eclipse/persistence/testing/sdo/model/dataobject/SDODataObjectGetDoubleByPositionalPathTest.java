@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -218,7 +218,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         // dataObject's type add int property
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
         String str = "12";
-        Double s_d = new Double(str);
+        Double s_d = Double.valueOf(str);
         double delta = 0.0;
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 

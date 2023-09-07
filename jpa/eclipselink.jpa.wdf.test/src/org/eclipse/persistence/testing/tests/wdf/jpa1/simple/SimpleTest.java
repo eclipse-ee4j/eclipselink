@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -47,21 +47,21 @@ public class SimpleTest extends JPA1Base {
             em.flush();
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(8));
+            dep = em.find(Department.class, Integer.valueOf(8));
             verify(dep != null, "department is null");
-            Department dep2 = em.find(Department.class, new Integer(8));
+            Department dep2 = em.find(Department.class, Integer.valueOf(8));
             verify(dep == dep2, "department is not unique");
-            emp = em.find(Employee.class, new Integer(3));
+            emp = em.find(Employee.class, Integer.valueOf(3));
             verify(emp != null, "employee is null");
-            Employee emp2 = em.find(Employee.class, new Integer(3));
+            Employee emp2 = em.find(Employee.class, Integer.valueOf(3));
             verify(emp == emp2, "employee is not unique");
             emp.setLastName(HASTIG);
             dep.setName("88888888");
             em.flush();
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp = em.find(Employee.class, new Integer(3));
-            dep = em.find(Department.class, new Integer(8));
+            emp = em.find(Employee.class, Integer.valueOf(3));
+            dep = em.find(Department.class, Integer.valueOf(8));
             verify(emp != null, "employee is null");
             verify(HASTIG.equals(emp.getLastName()), "employee has wrong last name: " + emp.getLastName());
             em.remove(emp);

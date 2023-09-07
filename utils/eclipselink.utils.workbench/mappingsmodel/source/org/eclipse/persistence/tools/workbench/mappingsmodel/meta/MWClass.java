@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2893,7 +2893,7 @@ public final class MWClass extends MWModel
         isInterfaceMapping.setNullValue(Boolean.FALSE);
 
         XMLDirectMapping modifierMapping = (XMLDirectMapping) descriptor.addDirectMapping("modifier", "getModifierForTopLink", "setModifierForTopLink", "modifier/text()");
-        modifierMapping.setNullValue(new Integer(0));
+        modifierMapping.setNullValue(Integer.valueOf(0));
 
         XMLCompositeObjectMapping declaringTypeHandleMapping = new XMLCompositeObjectMapping();
         declaringTypeHandleMapping.setAttributeName("declaringTypeHandle");
@@ -3090,7 +3090,7 @@ public final class MWClass extends MWModel
         isInterfaceMapping.setNullValue(Boolean.FALSE);
 
         XMLDirectMapping modifierMapping = (XMLDirectMapping) descriptor.addDirectMapping("modifier", "getModifierForTopLink", "setModifierForTopLink", "modifier/text()");
-        modifierMapping.setNullValue(new Integer(0));
+        modifierMapping.setNullValue(Integer.valueOf(0));
 
         XMLCompositeObjectMapping declaringTypeHandleMapping = new XMLCompositeObjectMapping();
         declaringTypeHandleMapping.setAttributeName("declaringTypeHandle");

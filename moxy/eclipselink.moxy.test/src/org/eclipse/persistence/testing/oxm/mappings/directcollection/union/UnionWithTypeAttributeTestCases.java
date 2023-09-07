@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class UnionWithTypeAttributeTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/union/UnionWithTypeAttribute.xml";
-    protected final static Integer CONTROL_ITEM = new Integer(10);
+    protected final static Integer CONTROL_ITEM = Integer.valueOf(10);
     protected final static String CONTROL_FIRST_NAME = "Jane";
     protected final static String CONTROL_LAST_NAME = "Doe";
 

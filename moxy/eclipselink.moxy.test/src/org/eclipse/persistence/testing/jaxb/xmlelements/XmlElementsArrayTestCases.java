@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,13 +42,13 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
         EmployeeArray employee = new EmployeeArray();
         employee.id = CONTROL_ID;
         Object[] choices =new Object[5];
-        choices[0]= new Integer(12);
+        choices[0]= Integer.valueOf(12);
         choices[1]="String Value";
         Address addr = new Address();
         addr.city = "Ottawa";
         addr.street = "123 Fake Street";
         choices[2]=addr;
-        choices[3]=new Integer(5);
+        choices[3]=Integer.valueOf(5);
         choices[4] = "";
         employee.choice = choices;
         return employee;
@@ -58,8 +58,8 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
         EmployeeArray employee = new EmployeeArray();
           employee.id = CONTROL_ID;
           Object[] choices =new Object[5];
-          choices[0]= new Integer(12);
-          choices[1]=new Integer(5);
+          choices[0]= Integer.valueOf(12);
+          choices[1]=Integer.valueOf(5);
           choices[2]="String Value";
           choices[3] = "";
           Address addr = new Address();

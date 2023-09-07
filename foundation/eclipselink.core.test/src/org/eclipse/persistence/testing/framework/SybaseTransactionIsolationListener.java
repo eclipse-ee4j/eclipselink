@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,7 +91,7 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
             stmt1 = conn.createStatement();
             result = stmt1.executeQuery("select @@isolation");
             result.next();
-            isolationLevel = new Integer(result.getInt(1));
+            isolationLevel = Integer.valueOf(result.getInt(1));
             if(isolationLevel > 0) {
                 // If conn1 began transaction and updated the row (but hasn't committed the transaction yet),
                 // then conn2 should be able to read the original (not updated) state of the row.

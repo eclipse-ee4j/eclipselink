@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromString() {
         String b = "10";
-        Integer B = new Integer(b);
+        Integer B = Integer.valueOf(b);
         this.assertEquals(B, (Integer)dataHelper.convertFromStringValue(b, Integer.class, null));
     }
 
@@ -58,7 +58,7 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromString_NoQname() {
         String b = "10";
-        Integer B = new Integer(b);
+        Integer B = Integer.valueOf(b);
         this.assertEquals(B, (Integer)dataHelper.convertFromStringValue(b, Integer.class));
     }
 
@@ -82,7 +82,7 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromString_Type() {
         String b = "10";
-        Integer B = new Integer(b);
+        Integer B = Integer.valueOf(b);
         this.assertEquals(B, (Integer)dataHelper.convertFromStringValue(b, Integer.class));
     }
 

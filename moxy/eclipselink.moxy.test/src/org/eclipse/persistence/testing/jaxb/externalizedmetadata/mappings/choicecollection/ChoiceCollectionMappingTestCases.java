@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,14 +63,14 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
     public Object getWriteControlObject() {
         if(writeCtrlObject == null){
             List<Object> things = new ArrayList<Object>();
-            things.add(new Integer(INT_VAL66));
-            things.add(new Integer(INT_VAL99));
-            things.add(new Float(FLOAT_VAL));
+            things.add(Integer.valueOf(INT_VAL66));
+            things.add(Integer.valueOf(INT_VAL99));
+            things.add(Float.valueOf(FLOAT_VAL));
             List<Object> roThings = new ArrayList<Object>();
-            roThings.add(new Integer(RO_INT_VAL));
-            roThings.add(new Float(RO_FLOAT_VAL));
+            roThings.add(Integer.valueOf(RO_INT_VAL));
+            roThings.add(Float.valueOf(RO_FLOAT_VAL));
             List<Object> woThings = new ArrayList<Object>();
-            woThings.add(new Integer(WO_INT_VAL));
+            woThings.add(Integer.valueOf(WO_INT_VAL));
             Employee emp = new Employee();
             emp.things = things;
             emp.readOnlyThings = roThings;
@@ -83,12 +83,12 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
     public Object getControlObject() {
 
         List<Object> things = new ArrayList<Object>();
-        things.add(new Integer(INT_VAL66));
-        things.add(new Integer(INT_VAL99));
-        things.add(new Float(FLOAT_VAL));
+        things.add(Integer.valueOf(INT_VAL66));
+        things.add(Integer.valueOf(INT_VAL99));
+        things.add(Float.valueOf(FLOAT_VAL));
         List<Object> roThings = new ArrayList<Object>();
-        roThings.add(new Integer(RO_INT_VAL));
-        roThings.add(new Float(RO_FLOAT_VAL));
+        roThings.add(Integer.valueOf(RO_INT_VAL));
+        roThings.add(Float.valueOf(RO_FLOAT_VAL));
 
         Employee emp = new Employee();
         emp.things = things;

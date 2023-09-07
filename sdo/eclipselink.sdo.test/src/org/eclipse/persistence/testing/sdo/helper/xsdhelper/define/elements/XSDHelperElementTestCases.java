@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -241,7 +241,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         this.assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! facing same problem as attribute's test !!
-        this.assertEquals((Integer)p.getDefault(), new Integer(3));
+        this.assertEquals((Integer)p.getDefault(), Integer.valueOf(3));
 
         // check opposite Property
         this.assertNull(p.getOpposite());
@@ -488,7 +488,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         this.assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        this.assertEquals((Integer)p.getDefault(), new Integer(3));
+        this.assertEquals((Integer)p.getDefault(), Integer.valueOf(3));
 
         // check opposite Property
         this.assertNull(p.getOpposite());
@@ -534,7 +534,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         this.assertEquals(p.getContainingType().getName(), "myTestType");
 
         // check default value !! may have the problem as in attriutes' test !!
-        this.assertEquals((Integer)p.getDefault(), new Integer(3));
+        this.assertEquals((Integer)p.getDefault(), Integer.valueOf(3));
 
         // check opposite Property
         this.assertNull(p.getOpposite());

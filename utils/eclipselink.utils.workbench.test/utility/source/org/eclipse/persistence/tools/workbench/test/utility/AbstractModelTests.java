@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,8 +47,8 @@ public class AbstractModelTests
     private static final String PROPERTY_NAME = "propertyName";
     static final Object OLD_OBJECT_VALUE = new Object();
     static final Object NEW_OBJECT_VALUE = new Object();
-    static final Integer OLD_INT_VALUE = new Integer(27);
-    static final Integer NEW_INT_VALUE = new Integer(42);
+    static final Integer OLD_INT_VALUE = Integer.valueOf(27);
+    static final Integer NEW_INT_VALUE = Integer.valueOf(42);
     static final Boolean OLD_BOOLEAN_VALUE = Boolean.TRUE;
     static final Boolean NEW_BOOLEAN_VALUE = Boolean.FALSE;
 

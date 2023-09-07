@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -198,7 +198,7 @@ abstract class AttributeItemDialog extends AbstractDialog {
 
         while (selectionPath.getPathCount() > 1) {//first path component is always a descriptor, we want to quit before reaching it
             selectedNode = (QueryableTreeNode) selectionPath.getLastPathComponent();
-            allowsNull.add(new Boolean(selectedNode.isAllowsNull()));
+            allowsNull.add(Boolean.valueOf(selectedNode.isAllowsNull()));
             MWQueryable joinedQueryable = selectedNode.getQueryable();
             queryablePath.add(joinedQueryable);
             selectionPath = selectionPath.getParentPath();

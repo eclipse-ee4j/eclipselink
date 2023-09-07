@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -210,11 +210,11 @@ public class TestSimpleQuery extends JPA1Base {
         Set<Integer> actual = new HashSet<Integer>();
         for (Object object : result) {
             BasicTypesFieldAccess fa = (BasicTypesFieldAccess) object;
-            actual.add(new Integer(fa.getId()));
+            actual.add(Integer.valueOf(fa.getId()));
         }
         Set<Integer> expected = new HashSet<Integer>();
         for (int i : ids) {
-            expected.add(new Integer(i));
+            expected.add(Integer.valueOf(i));
         }
         verify(expected.equals(actual), "expecetd and actual sets are different for query >>" + txt + "<<");
     }
@@ -549,7 +549,7 @@ public class TestSimpleQuery extends JPA1Base {
             em.persist(dep10);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            Department dep = em.find(Department.class, new Integer(10));
+            Department dep = em.find(Department.class, Integer.valueOf(10));
             dep.setName("newName");
             em.flush();
             Query query = em.createQuery("select d from Department d where d.name = :name");

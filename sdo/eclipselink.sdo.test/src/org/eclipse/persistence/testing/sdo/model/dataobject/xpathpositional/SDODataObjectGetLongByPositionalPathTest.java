@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -330,7 +330,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c._setType(type_c);
 
         String str = "12";
-        Long s_d = new Long(str);
+        Long s_d = Long.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
         this.assertEquals(s_d.longValue(), dataObject_a.getLong(propertyPath_a_b_c));

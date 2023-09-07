@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,7 +91,7 @@ public class StructConverterTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
             try{
                 // trigger deploy
-                em.find(SimpleSpatial.class, new Long(1));
+                em.find(SimpleSpatial.class, Long.valueOf(1));
             } catch (Exception e){};
 
             StructConverter converter = getServerSession(STRUCT_CONVERTER_PU).getPlatform().getTypeConverters().get(JGeometry.class);
@@ -112,7 +112,7 @@ public class StructConverterTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager(XML_STRUCT_CONVERTER_PU);
             try {
                 // trigger deploy
-                em.find(SimpleXMLSpatial.class, new Long(1));
+                em.find(SimpleXMLSpatial.class, Long.valueOf(1));
             } catch (Exception e){};
 
             StructConverter converter = getServerSession(XML_STRUCT_CONVERTER_PU).getPlatform().getTypeConverters().get(JGeometry.class);
@@ -140,7 +140,7 @@ public class StructConverterTestSuite extends JUnitTestCase {
 
             em.clear();
 
-            simpleSpatial = em.find(SimpleSpatial.class, new Long(1000));
+            simpleSpatial = em.find(SimpleSpatial.class, Long.valueOf(1000));
 
             assertNotNull("JGeometry was not properly read in.", simpleSpatial.getJGeometry());
             rollbackTransaction(em);
@@ -162,7 +162,7 @@ public class StructConverterTestSuite extends JUnitTestCase {
 
             em.clear();
 
-            simpleSpatial = em.find(SimpleXMLSpatial.class, new Long(1000));
+            simpleSpatial = em.find(SimpleXMLSpatial.class, Long.valueOf(1000));
 
             assertNotNull("JGeometry was not properly read in.", simpleSpatial.getJGeometry());
             rollbackTransaction(em);

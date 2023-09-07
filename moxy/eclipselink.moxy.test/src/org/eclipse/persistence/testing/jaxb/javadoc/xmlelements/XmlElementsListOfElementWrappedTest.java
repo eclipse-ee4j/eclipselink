@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,8 +37,8 @@ public class XmlElementsListOfElementWrappedTest extends JAXBWithJSONTestCases {
     protected Object getControlObject() {
         XmlElementsListOfElementWrapped example = new XmlElementsListOfElementWrapped();
         example.items = new ArrayList();
-        example.items.add(new Integer(1));
-        example.items.add(new Float(2.5));
+        example.items.add(1);
+        example.items.add(2.5f);
         return example;
     }
 }

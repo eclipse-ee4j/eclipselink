@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,17 +64,17 @@ public class BooleanJUnitTestCase extends JUnitTestCase {
         beginTransaction(em);
         WrapperTypes[] wrapperTypes = new WrapperTypes[4];
         wrapperTypes[0] = new WrapperTypes(BigDecimal.ZERO, BigInteger.ZERO, Boolean.FALSE,
-                new Byte("0"), 'A', new Short("0"),
-                0, 0L, new Float(0.0), 0.0, "A String");
+                Byte.valueOf("0"), 'A', Short.valueOf("0"),
+                0, 0L, 0.0f, 0.0, "A String");
         wrapperTypes[1] = new WrapperTypes(BigDecimal.ONE, BigInteger.ONE, Boolean.TRUE,
-                new Byte("1"), 'B', new Short("1"),
-                1, 1L, new Float(1.0), 1.0, "B String");
+                Byte.valueOf("1"), 'B', Short.valueOf("1"),
+                1, 1L, 1.0f, 1.0, "B String");
         wrapperTypes[2] = new WrapperTypes(new BigDecimal(2), new BigInteger("2"), Boolean.FALSE,
-                new Byte("2"), 'C', new Short("2"),
-                2, 2L, new Float(2.0), 2.0, "C String");
+                Byte.valueOf("2"), 'C', Short.valueOf("2"),
+                2, 2L, 2.0f, 2.0, "C String");
         wrapperTypes[3] = new WrapperTypes(new BigDecimal(3), new BigInteger("3"), Boolean.TRUE,
-                new Byte("3"), 'D', new Short("3"),
-                3, 3L, new Float(3.0), 3.0, "D String");
+                Byte.valueOf("3"), 'D', Short.valueOf("3"),
+                3, 3L, 3.0f, 3.0, "D String");
         for (WrapperTypes wrapperType: wrapperTypes) {
             em.persist(wrapperType);
         }

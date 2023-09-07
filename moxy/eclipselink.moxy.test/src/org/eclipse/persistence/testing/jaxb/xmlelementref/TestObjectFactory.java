@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ public class TestObjectFactory {
 
     @XmlElementDecl(namespace="myns", name="integer-root")
     public JAXBElement<Integer> createIntegerRoot() {
-        return new JAXBElement<Integer>(new QName("myns", "integer-root"), Integer.class, new Integer(0));
+        return new JAXBElement<Integer>(new QName("myns", "integer-root"), Integer.class, Integer.valueOf(0));
     }
 
     public EmployeeSingle createEmployeeSingle() {

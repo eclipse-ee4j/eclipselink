@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,7 @@ class RelationalQueryComponentFactory extends QueryComponentFactory {
     private static PropertyValueModel buildProjectCacheStatementHolder(PropertyValueModel relationalOptionsHolder) {
         return new PropertyAspectAdapter(relationalOptionsHolder) {
             protected Object getValueFromSubject() {
-                return new Boolean(((MWRelationalProjectDefaultsPolicy) ((MWRelationalSpecificQueryOptions) this.subject).getProject().getDefaultsPolicy()).shouldQueriesCacheAllStatements());
+                return Boolean.valueOf(((MWRelationalProjectDefaultsPolicy) ((MWRelationalSpecificQueryOptions) this.subject).getProject().getDefaultsPolicy()).shouldQueriesCacheAllStatements());
             }
         };
     }
@@ -138,7 +138,7 @@ class RelationalQueryComponentFactory extends QueryComponentFactory {
     private static PropertyValueModel buildProjectBindParametersHolder(PropertyValueModel relationalOptionsHolder) {
         return new PropertyAspectAdapter(relationalOptionsHolder) {
             protected Object getValueFromSubject() {
-                return new Boolean(((MWRelationalProjectDefaultsPolicy) ((MWRelationalSpecificQueryOptions) this.subject).getProject().getDefaultsPolicy()).shouldQueriesBindAllParameters());
+                return Boolean.valueOf(((MWRelationalProjectDefaultsPolicy) ((MWRelationalSpecificQueryOptions) this.subject).getProject().getDefaultsPolicy()).shouldQueriesBindAllParameters());
             }
         };
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
 
         // Change a vehicle
         Vehicle aVehicle = (Vehicle)vehicles.lastElement();
-        aVehicle.setPassengerCapacity(new Integer(15));
+        aVehicle.setPassengerCapacity(Integer.valueOf(15));
 
         // Add some vehicles
         Car car = Car.example2();
@@ -113,7 +113,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
 
         // Change a vehicle
         Vehicle aVehicle = (Vehicle)vehicles.firstElement();
-        aVehicle.setPassengerCapacity(new Integer(15));
+        aVehicle.setPassengerCapacity(Integer.valueOf(15));
 
         // Add some vehicles
         Car car = Car.example2();

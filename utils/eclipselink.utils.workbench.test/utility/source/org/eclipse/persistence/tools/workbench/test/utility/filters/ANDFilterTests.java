@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public class ANDFilterTests extends TestCase {
     }
 
     private static Filter buildMinFilter(double min) {
-        return new SimpleFilter(new Double(min)) {
+        return new SimpleFilter(Double.valueOf(min)) {
             public boolean accept(Object next) {
                 double minValue = ((Number) this.criterion).doubleValue();
                 double value = ((Number) next).doubleValue();
@@ -51,7 +51,7 @@ public class ANDFilterTests extends TestCase {
     }
 
     private static Filter buildMaxFilter(double max) {
-        return new SimpleFilter(new Double(max)) {
+        return new SimpleFilter(Double.valueOf(max)) {
             public boolean accept(Object next) {
                 double maxValue = ((Number) this.criterion).doubleValue();
                 double value = ((Number) next).doubleValue();
@@ -75,35 +75,35 @@ public class ANDFilterTests extends TestCase {
     }
 
     public void testFiltering2() {
-        assertTrue(this.andFilter.accept(new Integer(7)));
-        assertTrue(this.andFilter.accept(new Integer(2)));
-        assertTrue(this.andFilter.accept(new Double(6.666)));
-        assertFalse(this.andFilter.accept(new Double(-99)));
-        assertFalse(this.andFilter.accept(new Double(-1)));
-        assertFalse(this.andFilter.accept(new Double(11)));
-        assertFalse(this.andFilter.accept(new Double(111)));
+        assertTrue(this.andFilter.accept(Integer.valueOf(7)));
+        assertTrue(this.andFilter.accept(Integer.valueOf(2)));
+        assertTrue(this.andFilter.accept(Double.valueOf(6.666)));
+        assertFalse(this.andFilter.accept(Double.valueOf(-99)));
+        assertFalse(this.andFilter.accept(Double.valueOf(-1)));
+        assertFalse(this.andFilter.accept(Double.valueOf(11)));
+        assertFalse(this.andFilter.accept(Double.valueOf(111)));
     }
 
     public void testFiltering3() {
         ANDFilter andFilter2 = new ANDFilter(this.andFilter, buildEvenFilter());
-        assertFalse(andFilter2.accept(new Integer(7)));
-        assertTrue(andFilter2.accept(new Integer(2)));
-        assertTrue(andFilter2.accept(new Double(6.1)));
-        assertFalse(andFilter2.accept(new Double(-99)));
-        assertFalse(andFilter2.accept(new Double(-1)));
-        assertFalse(andFilter2.accept(new Double(11)));
-        assertFalse(andFilter2.accept(new Double(111)));
+        assertFalse(andFilter2.accept(Integer.valueOf(7)));
+        assertTrue(andFilter2.accept(Integer.valueOf(2)));
+        assertTrue(andFilter2.accept(Double.valueOf(6.1)));
+        assertFalse(andFilter2.accept(Double.valueOf(-99)));
+        assertFalse(andFilter2.accept(Double.valueOf(-1)));
+        assertFalse(andFilter2.accept(Double.valueOf(11)));
+        assertFalse(andFilter2.accept(Double.valueOf(111)));
     }
 
     public void testFilteringComposite() {
         Filter andFilter2 = ANDFilter.and(new Filter[] {buildMinFilter(1), buildMaxFilter(10), buildEvenFilter()});
-        assertFalse(andFilter2.accept(new Integer(7)));
-        assertTrue(andFilter2.accept(new Integer(2)));
-        assertTrue(andFilter2.accept(new Double(6.1)));
-        assertFalse(andFilter2.accept(new Double(-99)));
-        assertFalse(andFilter2.accept(new Double(-1)));
-        assertFalse(andFilter2.accept(new Double(11)));
-        assertFalse(andFilter2.accept(new Double(111)));
+        assertFalse(andFilter2.accept(Integer.valueOf(7)));
+        assertTrue(andFilter2.accept(Integer.valueOf(2)));
+        assertTrue(andFilter2.accept(Double.valueOf(6.1)));
+        assertFalse(andFilter2.accept(Double.valueOf(-99)));
+        assertFalse(andFilter2.accept(Double.valueOf(-1)));
+        assertFalse(andFilter2.accept(Double.valueOf(11)));
+        assertFalse(andFilter2.accept(Double.valueOf(111)));
     }
 
     public void testClone() {

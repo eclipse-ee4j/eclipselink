@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
         SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_FLOAT);
 
-        Float bb = new Float(1.2);
+        Float bb = 1.2f;
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -44,8 +44,8 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
         SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
         property_c1_object.setType(SDOConstants.SDO_FLOAT);
         List objects = new ArrayList();
-        Float b = new Float(2);
-        Float bb = new Float(12);
+        Float b = Float.valueOf(2);
+        Float bb = Float.valueOf(12);
         objects.add(b);
         objects.add(bb);
 
@@ -100,7 +100,7 @@ public class SDODataObjectGetFloatConversionByXPathQueryTest extends SDODataObje
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Float b = new Float(12);
+        Float b = Float.valueOf(12);
 
         dataObject_a.setFloat("PName-a0/PName-b0[number='1']/PName-c1.0", b.floatValue());
 

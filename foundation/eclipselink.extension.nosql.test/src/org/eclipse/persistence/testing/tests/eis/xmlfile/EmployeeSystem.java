@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,12 +100,12 @@ public class EmployeeSystem extends TestSystem {
 
         Vector arguments = new Vector(2);
         arguments.add("EMP_SEQ");
-        arguments.add(new Integer(0));
+        arguments.add(Integer.valueOf(0));
         session.executeQuery(query, arguments);
 
         arguments = new Vector(2);
         arguments.add("PROJ_SEQ");
-        arguments.add(new Integer(0));
+        arguments.add(Integer.valueOf(0));
         session.executeQuery(query, arguments);
     }
 

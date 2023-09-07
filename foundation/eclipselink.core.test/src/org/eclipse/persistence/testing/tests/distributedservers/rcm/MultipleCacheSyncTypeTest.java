@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,12 +41,12 @@ public class MultipleCacheSyncTypeTest extends ConfigurableCacheSyncDistributedT
 
     public MultipleCacheSyncTypeTest() {
         super();
-        cacheSyncConfigValues.put(Employee.class, new Integer(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
-        cacheSyncConfigValues.put(Project.class, new Integer(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
-        cacheSyncConfigValues.put(SmallProject.class, new Integer(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
-        cacheSyncConfigValues.put(LargeProject.class, new Integer(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
-        cacheSyncConfigValues.put(Address.class, new Integer(ClassDescriptor.DO_NOT_SEND_CHANGES));
-        cacheSyncConfigValues.put(PhoneNumber.class, new Integer(ClassDescriptor.SEND_OBJECT_CHANGES));
+        cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
+        cacheSyncConfigValues.put(Project.class, Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
+        cacheSyncConfigValues.put(SmallProject.class, Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
+        cacheSyncConfigValues.put(LargeProject.class, Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
+        cacheSyncConfigValues.put(Address.class, Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
+        cacheSyncConfigValues.put(PhoneNumber.class, Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -114,7 +114,7 @@ public class QueryProject extends RelationalTestProject
         query2.setCacheUsage(MWRelationalReadQuery.CHECK_CACHE_ONLY);
         query2.setLocking(MWAbstractRelationalReadQuery.LOCK);
         query2.setDistinctState(MWAbstractRelationalReadQuery.USE_DISTINCT);
-        query2.setQueryTimeout(new Integer(2));
+        query2.setQueryTimeout(Integer.valueOf(2));
         query2.setMaximumRows(11);
 
     }
@@ -191,7 +191,7 @@ public class QueryProject extends RelationalTestProject
         query5.setCacheUsage(MWRelationalReadQuery.CHECK_CACHE_BY_EXACT_PRIMARY_KEY);
         query5.setDistinctState(MWAbstractRelationalReadQuery.USE_DISTINCT);
         query5.setInMemoryQueryIndirectionPolicy(MWRelationalReadQuery.IGNORE_EXCEPTION_RETURN_CONFORMED);
-        query5.setQueryTimeout(new Integer(2));
+        query5.setQueryTimeout(Integer.valueOf(2));
         query5.setMaximumRows(0);
         query5.setLocking(getDefaultQueryLockMode());
 
@@ -337,13 +337,13 @@ public class QueryProject extends RelationalTestProject
         List<Object> joinedQueryables = new ArrayList<Object>();
         List<Boolean> allowsNullList = new ArrayList<Boolean>();
         joinedQueryables.add(queryableObject);
-        allowsNullList.add(new Boolean(false));
+        allowsNullList.add(Boolean.valueOf(false));
         joinedQueryables.add(getPhoneNumberDescriptor().mappingNamed("owner"));
-        allowsNullList.add(new Boolean(true));
+        allowsNullList.add(Boolean.valueOf(true));
         joinedQueryables.add(getEmployeeDescriptor().mappingNamed("phoneNumbers"));
-        allowsNullList.add(new Boolean(false));
+        allowsNullList.add(Boolean.valueOf(false));
         joinedQueryables.add(getEmployeeDescriptor().mappingNamed("manager"));
-        allowsNullList.add(new Boolean(true));
+        allowsNullList.add(Boolean.valueOf(true));
         firstArgument2.setQueryableArgument(joinedQueryables.iterator(), allowsNullList.iterator());
 
 

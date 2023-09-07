@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,9 +51,9 @@ public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
         // Create a hashmap with a null in it.
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings maps = (DirectMapMappings)uow.registerObject(new DirectMapMappings());
-        maps.directHashMap.put(new Integer(1), "item1");
-        maps.directHashMap.put(new Integer(2), "item2");
-        maps.directHashMap.put(new Integer(3), null);
+        maps.directHashMap.put(Integer.valueOf(1), "item1");
+        maps.directHashMap.put(Integer.valueOf(2), "item2");
+        maps.directHashMap.put(Integer.valueOf(3), null);
 
         try {
             uow.commit();
@@ -77,7 +77,7 @@ public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
             throw new TestErrorException("Incorrect amount of items in the hashmap.");
         }
 
-        if (queryResult.directHashMap.get(new Integer(3)) != null) {
+        if (queryResult.directHashMap.get(Integer.valueOf(3)) != null) {
             throw new TestErrorException("The null value was not read back in correctly.");
         }
     }

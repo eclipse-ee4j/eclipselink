@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public final class MWTransactionalProjectCachingPolicy extends MWModel implement
 
         // Cache Size
         XMLDirectMapping cacheSizeMapping = (XMLDirectMapping) descriptor.addDirectMapping("cacheSize", "caching-size/text()");
-        cacheSizeMapping.setNullValue(new Integer(DEFAULT_CACHE_SIZE));
+        cacheSizeMapping.setNullValue(Integer.valueOf(DEFAULT_CACHE_SIZE));
 
         // Cache Type
         XMLDirectMapping cacheTypeMapping = (XMLDirectMapping) descriptor.addDirectMapping("cacheType", "cache-type/text()");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -185,10 +185,10 @@ final class ProjectCacheExpiryPanel extends AbstractSubjectPanel
         return new NumberSpinnerModelAdapter
         (
             buildTimeToLiveExpiryHolder(),
-            new Long(0),              // Minimum value
-            new Long(Long.MAX_VALUE), // Maximum value
-            new Long(1),              // Step size
-            new Long(0)               // Default value
+            Long.valueOf(0),              // Minimum value
+            Long.valueOf(Long.MAX_VALUE), // Maximum value
+            Long.valueOf(1),              // Step size
+            Long.valueOf(0)               // Default value
         );
     }
 

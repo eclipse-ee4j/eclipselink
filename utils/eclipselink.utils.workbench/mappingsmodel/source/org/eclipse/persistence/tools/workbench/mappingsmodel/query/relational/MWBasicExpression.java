@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -405,34 +405,34 @@ public final class MWBasicExpression
     static MWBasicExpression convertFromRuntime(MWCompoundExpression parent, Expression expression) {
         ExpressionOperator runtimeOperator = expression.getOperator();
         String bldrOperator = EQUAL;
-        if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.Equal))) {
+        if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Equal))) {
             bldrOperator = EQUAL;
         }
-        else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.NotEqual))) {
+        else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotEqual))) {
             bldrOperator = NOT_EQUAL;
         }
-        else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.LessThan))) {
+        else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.LessThan))) {
             bldrOperator = LESS_THAN;
         }
-        else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.LessThanEqual))) {
+        else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.LessThanEqual))) {
             bldrOperator = LESS_THAN_EQUAL;
         }
-        else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.GreaterThan))) {
+        else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.GreaterThan))) {
             bldrOperator = GREATER_THAN;
         }
-        else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.GreaterThanEqual))) {
+        else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.GreaterThanEqual))) {
             bldrOperator = GREATER_THAN_EQUAL;
         }
-        else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.Like))) {
+        else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Like))) {
             bldrOperator = LIKE;
         }
-        else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.NotLike))) {
+        else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotLike))) {
             bldrOperator = NOT_LIKE;
         }
-        else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.IsNull))) {
+        else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.IsNull))) {
             bldrOperator = IS_NULL;
         }
-        else if (runtimeOperator == ExpressionOperator.getOperator(new Integer(ExpressionOperator.NotNull))) {
+        else if (runtimeOperator == ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotNull))) {
             bldrOperator = NOT_NULL;
         }
 

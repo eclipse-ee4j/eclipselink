@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -469,7 +469,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
                 //need to cast to erase the type on the get("id") expression so it matches the type on param1
                 cq.where(qb.or( qb.greaterThan(root.<Integer>get("id" ), param1), param1.isNull()) );
 
-                em.createQuery(cq).setParameter(param1, new Integer(1)).getResultList();
+                em.createQuery(cq).setParameter(param1, Integer.valueOf(1)).getResultList();
             } finally {
                 rollbackTransaction(em);
                 closeEntityManager(em);

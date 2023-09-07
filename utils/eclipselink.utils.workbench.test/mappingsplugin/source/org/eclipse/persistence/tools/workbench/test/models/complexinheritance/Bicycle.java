@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ public class Bicycle extends NonFueledVehicle {
 @Override
 public void change()
 {
-    this.setPassengerCapacity(new Integer(100));
+    this.setPassengerCapacity(Integer.valueOf(100));
     this.addPartNumber("NEWBIKEPART 1");
      this.setDescription("This Bike is easy to handle");
 
@@ -30,7 +30,7 @@ public static Bicycle example1(Company company)
 {
     Bicycle example = new Bicycle();
 
-    example.setPassengerCapacity(new Integer(1));
+    example.setPassengerCapacity(Integer.valueOf(1));
     example.getOwner().setValue(company);
     example.setDescription("Hercules");
     example.addPartNumber("1288H8HH-f");
@@ -41,7 +41,7 @@ public static Bicycle example2(Company company)
 {
     Bicycle example = new Bicycle();
 
-    example.setPassengerCapacity(new Integer(2));
+    example.setPassengerCapacity(Integer.valueOf(2));
     example.getOwner().setValue(company);
     example.setDescription("Atlas");
     example.addPartNumber("176339GT-a");
@@ -53,7 +53,7 @@ public static Bicycle example3(Company company)
 {
     Bicycle example = new Bicycle();
 
-    example.setPassengerCapacity(new Integer(3));
+    example.setPassengerCapacity(Integer.valueOf(3));
     example.getOwner().setValue(company);
     example.setDescription("Aone");
     example.addPartNumber("188181TT-a");

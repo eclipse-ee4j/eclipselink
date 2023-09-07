@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -33,7 +33,7 @@ public class TestUpdate extends JPA1Base {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            CubiclePrimaryKeyClass cubKey = new CubiclePrimaryKeyClass(new Integer(40), new Integer(41));
+            CubiclePrimaryKeyClass cubKey = new CubiclePrimaryKeyClass(Integer.valueOf(40), Integer.valueOf(41));
             Cubicle cub = new Cubicle(cubKey, "green", null /* employee */
             );
             env.beginTransaction(em);
@@ -59,8 +59,8 @@ public class TestUpdate extends JPA1Base {
         try {
             Employee emp = new Employee(17, "first", "last", null /* department */
             );
-            CubiclePrimaryKeyClass key1 = new CubiclePrimaryKeyClass(new Integer(98), new Integer(99));
-            CubiclePrimaryKeyClass key2 = new CubiclePrimaryKeyClass(new Integer(5), new Integer(6));
+            CubiclePrimaryKeyClass key1 = new CubiclePrimaryKeyClass(Integer.valueOf(98), Integer.valueOf(99));
+            CubiclePrimaryKeyClass key2 = new CubiclePrimaryKeyClass(Integer.valueOf(5), Integer.valueOf(6));
             Cubicle cub1 = new Cubicle(key1, "orange", emp);
             env.beginTransaction(em);
             emp.setCubicle(cub1);
@@ -68,12 +68,12 @@ public class TestUpdate extends JPA1Base {
             em.persist(cub1);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp = em.find(Employee.class, new Integer(17));
+            emp = em.find(Employee.class, Integer.valueOf(17));
             Cubicle cub2 = new Cubicle(key2, "dusky pink", emp);
             emp.setCubicle(cub2);
             em.persist(cub2);
             env.commitTransactionAndClear(em);
-            emp = em.find(Employee.class, new Integer(17));
+            emp = em.find(Employee.class, Integer.valueOf(17));
             verify(emp != null, "employee lost");
             verify(emp.getCubicle() != null, "cubicle lost");
             CubiclePrimaryKeyClass key = emp.getCubicle().getId();

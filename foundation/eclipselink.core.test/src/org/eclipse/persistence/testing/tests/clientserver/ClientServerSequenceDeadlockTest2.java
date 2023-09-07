@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,7 +100,7 @@ public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadl
                             }
                             if (firstHalfDoneForAll) {
                                 for (int j = 0; j < NUM_CLIENTS; j++) {
-                                    fifoInArray[j].insertTail(new Boolean(true));
+                                    fifoInArray[j].insertTail(Boolean.valueOf(true));
                                 }
                             }
                         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -500,7 +500,7 @@ public class ChangeSupport
      * firePropertyChange method that takes Object values.
      */
     public void firePropertyChanged(String propertyName, int oldValue, int newValue) {
-//        this.firePropertyChanged(propertyName, new Integer(oldValue), new Integer(newValue));
+//        this.firePropertyChanged(propertyName, Integer.valueOf(oldValue), Integer.valueOf(newValue));
         if (oldValue == newValue) {
             return;
         }
@@ -533,7 +533,7 @@ public class ChangeSupport
                 if (stillListening) {
                     if (event == null) {
                         // here's the reason for the duplicate code...
-                        event = new PropertyChangeEvent(this.source, propertyName, new Integer(oldValue), new Integer(newValue));
+                        event = new PropertyChangeEvent(this.source, propertyName, Integer.valueOf(oldValue), Integer.valueOf(newValue));
                     }
                     this.notifier().propertyChange(target, event);
                 }

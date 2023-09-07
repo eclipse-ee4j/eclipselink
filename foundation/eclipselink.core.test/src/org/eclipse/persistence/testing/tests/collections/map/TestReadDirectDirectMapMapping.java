@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,8 +51,8 @@ public class TestReadDirectDirectMapMapping extends TestCase {
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectDirectMapHolder holder = new DirectDirectMapHolder();
-        holder.addDirectToDirectMapItem(new Integer(1), new Integer(1));
-        holder.addDirectToDirectMapItem(new Integer(2), new Integer(2));
+        holder.addDirectToDirectMapItem(Integer.valueOf(1), Integer.valueOf(1));
+        holder.addDirectToDirectMapItem(Integer.valueOf(2), Integer.valueOf(2));
         uow.registerObject(holder);
         uow.commit();
         holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());

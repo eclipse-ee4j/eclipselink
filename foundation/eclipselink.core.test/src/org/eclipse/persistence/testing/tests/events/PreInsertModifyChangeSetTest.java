@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ public class PreInsertModifyChangeSetTest extends AutoVerifyTestCase {
     protected DescriptorEventAdapter eventAdapter = new DescriptorEventAdapter() {
         public void preInsert(DescriptorEvent event) {
             if (event.getQuery().getDescriptor() != null) {
-                event.updateAttributeWithObject("salary", new Integer(callCount));
+                event.updateAttributeWithObject("salary", Integer.valueOf(callCount));
                 ++callCount;
             }
         }

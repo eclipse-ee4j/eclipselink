@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -221,7 +221,7 @@ extends ScrollablePropertiesPage
             protected Object reverseTransform(Object value)
             {
                 if (Boolean.TRUE.equals(value)) {
-                    return ((Integer) valueHolder.getValue()).intValue() > 0 ? valueHolder.getValue() : new Integer(1);
+                    return ((Integer) valueHolder.getValue()).intValue() > 0 ? valueHolder.getValue() : Integer.valueOf(1);
                 }
                 else
                 {
@@ -233,8 +233,8 @@ extends ScrollablePropertiesPage
 
     private SpinnerNumberModel buildQueryTimeoutSpinnerModel() {
         SpinnerNumberModel spinnerNumberModel = new NumberSpinnerModelAdapter(buildQueryTimeoutHolder());
-        spinnerNumberModel.setMinimum(new Integer(1));
-        spinnerNumberModel.setMaximum(new Integer(99999));
+        spinnerNumberModel.setMinimum(Integer.valueOf(1));
+        spinnerNumberModel.setMaximum(Integer.valueOf(99999));
         return spinnerNumberModel;
     }
 

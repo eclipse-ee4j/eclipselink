@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,11 +52,11 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
     protected Object getControlObject() {
         EmployeeCollection employee = new EmployeeCollection();
         ArrayList choices = new ArrayList();
-        choices.add(new JAXBElement(new QName("integer-root"), Integer.class, new Integer(21)));
+        choices.add(new JAXBElement(new QName("integer-root"), Integer.class, Integer.valueOf(21)));
         choices.add(new JAXBElement(new QName("root"), String.class, "Value1"));
         EmployeeCollection nestedEmployee = new EmployeeCollection();
         nestedEmployee.refs = new ArrayList();
-        nestedEmployee.refs.add(new JAXBElement(new QName("integer-root"), Integer.class, new Integer(29)));
+        nestedEmployee.refs.add(new JAXBElement(new QName("integer-root"), Integer.class, Integer.valueOf(29)));
         choices.add(nestedEmployee);
         choices.add(new JAXBElement(new QName("root"), String.class, "Value2"));
         employee.refs = choices;
@@ -68,13 +68,13 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
         //same as getReadControl Except order is different
         EmployeeCollection employee = new EmployeeCollection();
         ArrayList choices = new ArrayList();
-        choices.add(new JAXBElement(new QName("integer-root"), Integer.class, new Integer(21)));
+        choices.add(new JAXBElement(new QName("integer-root"), Integer.class, Integer.valueOf(21)));
         choices.add(new JAXBElement(new QName("root"), String.class, "Value1"));
         choices.add(new JAXBElement(new QName("root"), String.class, "Value2"));
 
         EmployeeCollection nestedEmployee = new EmployeeCollection();
         nestedEmployee.refs = new ArrayList();
-        nestedEmployee.refs.add(new JAXBElement(new QName("integer-root"), Integer.class, new Integer(29)));
+        nestedEmployee.refs.add(new JAXBElement(new QName("integer-root"), Integer.class, Integer.valueOf(29)));
         choices.add(nestedEmployee);
         employee.refs = choices;
         return employee;

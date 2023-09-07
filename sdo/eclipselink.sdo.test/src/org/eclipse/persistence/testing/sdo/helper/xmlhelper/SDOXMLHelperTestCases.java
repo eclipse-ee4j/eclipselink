@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ public class SDOXMLHelperTestCases extends SDOTestCase {
     protected static final String CONTROL_ROOT_URI = "http://www.example.org";
     protected static final String CONTROL_FIRST_NAME = "Jane";
     protected static final String CONTROL_LAST_NAME = "Smith";
-    protected static final Integer CONTROL_CUSTOMERID = new Integer("111");
+    protected static final Integer CONTROL_CUSTOMERID = Integer.valueOf("111");
     protected static final String CONTROL_SIN = "123 456 789";
     protected static final String SIN = "sin";
     protected static final String CUSTOMERID = "customerID";

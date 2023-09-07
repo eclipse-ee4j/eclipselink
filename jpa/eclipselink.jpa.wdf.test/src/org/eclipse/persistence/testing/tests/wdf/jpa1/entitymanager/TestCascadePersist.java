@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -80,7 +80,7 @@ public class TestCascadePersist extends JPA1Base {
             env.commitTransactionAndClear(em);
             // cascade from parent to child
             env.beginTransaction(em);
-            parent = em.find(CascadingNode.class, new Integer(parent.getId())); // parent is now managed
+            parent = em.find(CascadingNode.class, Integer.valueOf(parent.getId())); // parent is now managed
             CascadingNode child = new CascadingNode(12, parent);
             child.setParent(null); // to avoid circular cascade
             em.persist(parent);
@@ -183,7 +183,7 @@ public class TestCascadePersist extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, new Integer(existing.getId())); // known object in state managed
+            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId())); // known object in state managed
             persistFailed = false;
             immediateException = false;
             try {
@@ -221,7 +221,7 @@ public class TestCascadePersist extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            existing = em.find(CascadingNode.class, new Integer(existing.getId()));
+            existing = em.find(CascadingNode.class, Integer.valueOf(existing.getId()));
             em.remove(existing); // known object in state deleted
             persistFailed = false;
             immediateException = false;

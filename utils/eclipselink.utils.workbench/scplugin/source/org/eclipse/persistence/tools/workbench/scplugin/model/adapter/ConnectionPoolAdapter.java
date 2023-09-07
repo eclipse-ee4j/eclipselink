@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -205,7 +205,7 @@ public class ConnectionPoolAdapter extends SCAdapter implements Nominative, Logi
     public void setMaxConnections( int maxConnections) {
 
         int oldMaxConnections = getMaxConnections();
-        this.pool().setMaxConnections( new Integer(maxConnections));
+        this.pool().setMaxConnections( Integer.valueOf(maxConnections));
         firePropertyChanged( MAX_CONNECTIONS_PROPERTY, oldMaxConnections, maxConnections);
     }
 
@@ -218,7 +218,7 @@ public class ConnectionPoolAdapter extends SCAdapter implements Nominative, Logi
     public void setMinConnections( int minConnections) {
 
         int oldMinConnections = getMinConnections();
-        this.pool().setMinConnections( new Integer( minConnections));
+        this.pool().setMinConnections( Integer.valueOf( minConnections));
         firePropertyChanged( MIN_CONNECTIONS_PROPERTY, oldMinConnections, minConnections);
     }
 

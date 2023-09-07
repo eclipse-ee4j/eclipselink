@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,7 @@ public abstract class AbstractReflectiveDiffTests extends TestCase {
     }
 
     public void testClassMismatch() {
-        Object object2 = new Integer(42);
+        Object object2 = Integer.valueOf(42);
         Diff diff = this.differentiator.diff(this.employee1, object2);
         this.verifyDiffMismatch(diff, this.employee1, object2);
 
@@ -133,8 +133,8 @@ public abstract class AbstractReflectiveDiffTests extends TestCase {
         Diff leafDiff;
 
         leafDiff = (Diff) leafMismatches.get(0);        // id
-        assertEquals(new Integer(1), leafDiff.getObject1());
-        assertEquals(new Integer(77), leafDiff.getObject2());
+        assertEquals(Integer.valueOf(1), leafDiff.getObject1());
+        assertEquals(Integer.valueOf(77), leafDiff.getObject2());
 
         leafDiff = (Diff) leafMismatches.get(1);        // name
         assertEquals("Fred Flintstone", leafDiff.getObject1());
@@ -208,8 +208,8 @@ public abstract class AbstractReflectiveDiffTests extends TestCase {
         assertTrue(((Collection) leafDiff.getObject2()).contains(addedComment));
 
         leafDiff = (Diff) leafMismatches.get(1);        // id
-        assertEquals(new Integer(1), leafDiff.getObject1());
-        assertEquals(new Integer(77), leafDiff.getObject2());
+        assertEquals(Integer.valueOf(1), leafDiff.getObject1());
+        assertEquals(Integer.valueOf(77), leafDiff.getObject2());
 
         leafDiff = (Diff) leafMismatches.get(2);        // name
         assertEquals("Fred Flintstone", leafDiff.getObject1());
@@ -220,16 +220,16 @@ public abstract class AbstractReflectiveDiffTests extends TestCase {
         assertEquals("troublemaker", leafDiff.getObject2());
 
         leafDiff = (Diff) leafMismatches.get(4);        // salary
-        assertEquals(new Float(20000.20f), leafDiff.getObject1());
-        assertEquals(new Float(200000.01f), leafDiff.getObject2());
+        assertEquals(Float.valueOf(20000.20f), leafDiff.getObject1());
+        assertEquals(Float.valueOf(200000.01f), leafDiff.getObject2());
 
         diff = (CompositeDiff) this.differentiator.keyDiff(this.employee1, this.employee2);
         this.verifyDiffMismatch(diff, this.employee1, this.employee2);
         leafMismatches = DiffTestTools.differentLeafDiffList(diff);
         assertEquals(1, leafMismatches.size());
         leafDiff = (Diff) leafMismatches.get(0);        // id
-        assertEquals(new Integer(1), leafDiff.getObject1());
-        assertEquals(new Integer(77), leafDiff.getObject2());
+        assertEquals(Integer.valueOf(1), leafDiff.getObject1());
+        assertEquals(Integer.valueOf(77), leafDiff.getObject2());
     }
 
     public void testNullFieldMismatch() {

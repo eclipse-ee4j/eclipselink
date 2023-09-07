@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,14 +28,14 @@ public class ConversionDataObjectForSupportedTypes extends ConversionDataObject 
 
         example.setAPCharArray(new char[] { 'a', 'b', 'c' });
         example.setAPByteArray(new byte[] { 1, 2, 3 });
-        example.aCharacter = new Character('t');
-        example.anInteger = new Integer(1);
-        example.aFloat = new Float(1.0);
-        example.aBoolean = new Boolean(false);
-        example.aLong = new Long(1L);
-        example.aDouble = new Double(1.0);
-        example.aByte = new Byte((byte)1);
-        example.aShort = new Short((short)1);
+        example.aCharacter = 't';
+        example.anInteger = 1;
+        example.aFloat = 1.0f;
+        example.aBoolean = Boolean.FALSE;
+        example.aLong = 1L;
+        example.aDouble = 1.0;
+        example.aByte = (byte) 1;
+        example.aShort = (short)1;
         example.aBigDecimal = new java.math.BigDecimal(1.0);
         example.aBigInteger = new java.math.BigInteger("1");
         example.aNumber = example.aBigDecimal;
@@ -52,8 +52,8 @@ public class ConversionDataObjectForSupportedTypes extends ConversionDataObject 
         example.aString = new String("Conversion Managaer Test Example 1");
         example.stringToInt = new String("111");
         example.stringToTimestamp = new String("2003/11/23 23:45:56");
-        example.aByteArray = new Byte[] { new Byte("4"), new Byte("5"), new Byte("6") };
-        example.aCharacterArray = new Character[] { new Character('C'), new Character('H'), new Character('A') };
+        example.aByteArray = new Byte[] { Byte.valueOf("4"), Byte.valueOf("5"), Byte.valueOf("6") };
+        example.aCharacterArray = new Character[] { Character.valueOf('C'), Character.valueOf('H'), Character.valueOf('A') };
 
         return example;
     }

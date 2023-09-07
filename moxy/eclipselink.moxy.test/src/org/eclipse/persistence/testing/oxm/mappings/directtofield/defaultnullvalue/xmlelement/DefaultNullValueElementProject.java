@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,13 +36,13 @@ public class DefaultNullValueElementProject extends Project {
         XMLDirectMapping idMapping = new XMLDirectMapping();
         idMapping.setAttributeName("id");
         idMapping.setXPath("id/text()");
-        idMapping.setNullValue(new Integer(CONTROL_ID));
+        idMapping.setNullValue(Integer.valueOf(CONTROL_ID));
         xmlDescriptor.addMapping(idMapping);
 
         XMLDirectMapping numericNoNullValueMapping = new XMLDirectMapping();
         numericNoNullValueMapping.setAttributeName("numericNoNullValue");
         numericNoNullValueMapping.setXPath("numeric-no-null-value/text()");
-        //numericNoNullValueMapping.setNullValue(new Integer(CONTROL_ID));
+        //numericNoNullValueMapping.setNullValue(Integer.valueOf(CONTROL_ID));
         xmlDescriptor.addMapping(numericNoNullValueMapping);
 
         XMLDirectMapping firstNameMapping = new XMLDirectMapping();

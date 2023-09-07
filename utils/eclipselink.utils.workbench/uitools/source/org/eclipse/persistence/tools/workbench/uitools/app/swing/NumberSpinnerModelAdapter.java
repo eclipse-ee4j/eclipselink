@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ public class NumberSpinnerModelAdapter extends SpinnerNumberModel {
      * The step size is one.
      */
     public NumberSpinnerModelAdapter(PropertyValueModel numberHolder, int defaultValue) {
-        this(numberHolder, null, null, new Integer(1), new Integer(defaultValue));
+        this(numberHolder, null, null, Integer.valueOf(1), Integer.valueOf(defaultValue));
     }
 
     /**
@@ -84,7 +84,7 @@ public class NumberSpinnerModelAdapter extends SpinnerNumberModel {
      * Constructor - the number holder is required.
      */
     public NumberSpinnerModelAdapter(PropertyValueModel numberHolder, int minimum, int maximum, int stepSize, int defaultValue) {
-        this(numberHolder, new Integer(minimum), new Integer(maximum), new Integer(stepSize), new Integer(defaultValue));
+        this(numberHolder, Integer.valueOf(minimum), Integer.valueOf(maximum), Integer.valueOf(stepSize), Integer.valueOf(defaultValue));
     }
 
     /**
@@ -99,7 +99,7 @@ public class NumberSpinnerModelAdapter extends SpinnerNumberModel {
      * Constructor - the number holder is required.
      */
     public NumberSpinnerModelAdapter(PropertyValueModel numberHolder, double value, double minimum, double maximum, double stepSize, double defaultValue) {
-        this(numberHolder, new Double(minimum), new Double(maximum), new Double(stepSize), new Double(defaultValue));
+        this(numberHolder, Double.valueOf(minimum), Double.valueOf(maximum), Double.valueOf(stepSize), Double.valueOf(defaultValue));
     }
 
     /**

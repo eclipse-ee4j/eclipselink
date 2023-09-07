@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,13 +29,13 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
     int deleteSuccess = 1;
     String parameterNamePrefix;
     boolean shouldUseNamedArguments;
-    static final Integer menuID = new Integer(99);
-    static final Integer restaurantID = new Integer(100);
-    static final Integer dinerID = new Integer(101);
-    static final Integer personID = new Integer(102);
-    static final Integer locationID = new Integer(103);
-    static final Integer waiterID = new Integer(104);
-    static final Integer menuItemID = new Integer(105);
+    static final Integer menuID = Integer.valueOf(99);
+    static final Integer restaurantID = Integer.valueOf(100);
+    static final Integer dinerID = Integer.valueOf(101);
+    static final Integer personID = Integer.valueOf(102);
+    static final Integer locationID = Integer.valueOf(103);
+    static final Integer waiterID = Integer.valueOf(104);
+    static final Integer menuItemID = Integer.valueOf(105);
     static final String menuType = "Lunch";
     static final String menuTypeUpdate = "Dinner";
     static final String dinerFirstName = "Steve";
@@ -55,8 +55,8 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
     static final String waiterSpecialityUpdate = "Speaking Spanish and Italian";
     static final String waiterClass = "A";
     static final String menuItemName = "Roasted beef and potato";
-    static final Float menuItemPrice = new Float(20.99f);
-    static final Float menuItemPriceUpdate = new Float(22.99f);
+    static final Float menuItemPrice = Float.valueOf(20.99f);
+    static final Float menuItemPriceUpdate = Float.valueOf(22.99f);
     static final String restaurantName = "May Flower";
     static final String restaurantNameUpdate = "Great Wall Restaurant";
 

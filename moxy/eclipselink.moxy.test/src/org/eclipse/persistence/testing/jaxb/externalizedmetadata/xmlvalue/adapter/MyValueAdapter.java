@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 public class MyValueAdapter extends XmlAdapter<String, Boolean> {
 
     public Boolean unmarshal(String v) throws Exception {
-        return new Boolean(v.equals("T") ? "true" : "false");
+        return Boolean.valueOf(v.equals("T") ? "true" : "false");
     }
 
     public String marshal(Boolean v) throws Exception {

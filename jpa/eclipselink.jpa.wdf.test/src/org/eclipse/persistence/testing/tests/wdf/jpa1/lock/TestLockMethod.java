@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -256,11 +256,11 @@ public class TestLockMethod extends JPA1Base {
             env.commitTransactionAndClear(em1);
             // read first version
             env.beginTransaction(em1);
-            dep1 = em1.find(Department.class, new Integer(id));
+            dep1 = em1.find(Department.class, Integer.valueOf(id));
             verify(dep1 != null, "Department is null");
             // change entity meanwhile
             env.beginTransaction(em2);
-            Department dep2 = em2.find(Department.class, new Integer(id));
+            Department dep2 = em2.find(Department.class, Integer.valueOf(id));
             dep2.setName("dep" + id + "x");
             env.commitTransactionAndClear(em2);
             // try to lock first version

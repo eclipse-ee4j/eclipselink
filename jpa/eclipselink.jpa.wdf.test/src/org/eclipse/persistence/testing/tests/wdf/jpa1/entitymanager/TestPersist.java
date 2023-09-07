@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -141,7 +141,7 @@ public class TestPersist extends JPA1Base {
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             // find a department in the state MANAGED
-            dep = em.find(Department.class, new Integer(id1));
+            dep = em.find(Department.class, Integer.valueOf(id1));
             verify(dep != null, "department not found");
             dep.setName("CHANGED");
             if (flushBeforePersist) {
@@ -186,7 +186,7 @@ public class TestPersist extends JPA1Base {
             env.commitTransactionAndClear(em);
 
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id1));
+            dep = em.find(Department.class, Integer.valueOf(id1));
             em.remove(dep);
             // now, the entity should be REMOVED
             if (flushBeforePersist) {
@@ -197,7 +197,7 @@ public class TestPersist extends JPA1Base {
             dep.setName("REINVIGORATED");
             env.commitTransactionAndClear(em);
 
-            dep = em.find(Department.class, new Integer(id1));
+            dep = em.find(Department.class, Integer.valueOf(id1));
             verify(dep != null, "department not found");
             verify("REINVIGORATED".equals(dep.getName()), "department has wrong name: " + dep.getName());
 
@@ -214,7 +214,7 @@ public class TestPersist extends JPA1Base {
             dep.setName("REINVIGORATED");
             env.commitTransactionAndClear(em);
 
-            dep = em.find(Department.class, new Integer(id2));
+            dep = em.find(Department.class, Integer.valueOf(id2));
             verify(dep != null, "department not found");
             verify("REINVIGORATED".equals(dep.getName()), "department has wrong name: " + dep.getName());
         } finally {
@@ -315,7 +315,7 @@ public class TestPersist extends JPA1Base {
             env.commitTransactionAndClear(em);
             verifyExistenceOnDatabase(id, "TMP_DEP");
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // this is now in state managed
+            dep = em.find(Department.class, Integer.valueOf(id)); // this is now in state managed
             try {
                 em.persist(detachedDep);
             } catch (EntityExistsException e) {
@@ -343,7 +343,7 @@ public class TestPersist extends JPA1Base {
             env.commitTransactionAndClear(em);
             verifyExistenceOnDatabase(id, "TMP_DEP");
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id));
+            dep = em.find(Department.class, Integer.valueOf(id));
             em.remove(dep); // this is now in state deleted
             try {
                 em.persist(detachedDep);
@@ -388,7 +388,7 @@ public class TestPersist extends JPA1Base {
             env.commitTransactionAndClear(em);
             verifyExistenceOnDatabase(id, "TMP_DEP");
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id));
+            dep = em.find(Department.class, Integer.valueOf(id));
             em.remove(dep);
             em.flush();
             try {

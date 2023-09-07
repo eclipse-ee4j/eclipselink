@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,10 +54,10 @@ public class TestReadDirectAggregateMapMapping extends TestCase {
         DirectAggregateMapHolder holder = new DirectAggregateMapHolder();
         AggregateMapValue value = new AggregateMapValue();
         value.setValue(1);
-        holder.addDirectToAggregateMapItem(new Integer(1), value);
+        holder.addDirectToAggregateMapItem(Integer.valueOf(1), value);
         value = new AggregateMapValue();
         value.setValue(2);
-        holder.addDirectToAggregateMapItem(new Integer(2), value);
+        holder.addDirectToAggregateMapItem(Integer.valueOf(2), value);
         uow.registerObject(holder);
         uow.commit();
         holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
@@ -80,7 +80,7 @@ public class TestReadDirectAggregateMapMapping extends TestCase {
         if (holder.getDirectToAggregateMap().size() != 2){
             throw new TestErrorException("Incorrect Number of Map values was read.");
         }
-        AggregateMapValue value = (AggregateMapValue)holder.getDirectToAggregateMap().get(new Integer(1));
+        AggregateMapValue value = (AggregateMapValue)holder.getDirectToAggregateMap().get(Integer.valueOf(1));
         if (value.getValue() != 1){
             throw new TestErrorException("Incorrect map value was read.");
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class SimpleDocumentByteArrayTestCases extends JAXBWithJSONTestCases {
 
         protected Object getControlObject() {
             JAXBElement value = new ByteArrayObjectFactory().createBase64Root();
-            value.setValue(new Byte[]{new Byte((byte)1), new Byte((byte)2), new Byte((byte)3), new Byte((byte)4), new Byte((byte)5), new Byte((byte)6), new Byte((byte)7)});
+            value.setValue(new Byte[]{Byte.valueOf((byte)1), Byte.valueOf((byte)2), Byte.valueOf((byte)3), Byte.valueOf((byte)4), Byte.valueOf((byte)5), Byte.valueOf((byte)6), Byte.valueOf((byte)7)});
             return value;
         }
 

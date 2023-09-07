@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,8 +51,8 @@ public class DescriptorInitTest extends TestCase {
 
             String part1;
             String part2;
-            Character ch = new Character(className.charAt(className.length() - 2));
-            if (ch.equals(new Character('0'))) { //Class100
+            Character ch = Character.valueOf(className.charAt(className.length() - 2));
+            if (ch.equals(Character.valueOf('0'))) { //Class100
                 part1 = className.substring(6, className.length() - 3);
                 part2 = className.substring(className.length() - 3);
             } else if (Character.isDigit(ch.charValue())) { //Class##

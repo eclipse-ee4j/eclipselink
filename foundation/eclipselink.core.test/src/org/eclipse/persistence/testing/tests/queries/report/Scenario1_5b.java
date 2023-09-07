@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ public class Scenario1_5b extends ReportQueryTestCase {
             if (project.getBudget() > 4000) {
                 Object[] result = new Object[2];
                 result[0] = project.getName();
-                result[1] = new Double(project.getBudget());
+                result[1] = Double.valueOf(project.getBudget());
                 addResult(result, null);
             }
         }

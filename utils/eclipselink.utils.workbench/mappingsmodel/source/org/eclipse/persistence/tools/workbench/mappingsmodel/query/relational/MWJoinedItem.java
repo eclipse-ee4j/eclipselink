@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public final class MWJoinedItem extends MWAttributeItem {
         return buildProblem(
                 ProblemConstants.QUERYABLE_NULL_FOR_JOINED_ITEM,
                 getParentQuery().signature(),
-                new Integer(((MWAbstractRelationalReadQuery) getParentQuery()).indexOfJoinedItem(this) + 1));
+                Integer.valueOf(((MWAbstractRelationalReadQuery) getParentQuery()).indexOfJoinedItem(this) + 1));
     }
 
     public Problem queryableInvalidProblem(MWQueryable queryable) {

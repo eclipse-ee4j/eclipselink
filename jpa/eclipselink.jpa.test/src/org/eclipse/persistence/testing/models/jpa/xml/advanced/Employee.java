@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -125,11 +125,11 @@ public class Employee implements Serializable {
     }
 
     public void addAmex(long number) {
-        getCreditCards().put(AMEX, new Long(number));
+        getCreditCards().put(AMEX, Long.valueOf(number));
     }
 
     public void addCanadianImperialCreditLine(long number) {
-        getCreditLines().put(CANADIAN_IMPERIAL, new Long(number));
+        getCreditLines().put(CANADIAN_IMPERIAL, Long.valueOf(number));
     }
 
     public void addDealer(Dealer dealer) {
@@ -137,7 +137,7 @@ public class Employee implements Serializable {
     }
 
     public void addDinersClub(long number) {
-        getCreditCards().put(DINERS, new Long(number));
+        getCreditCards().put(DINERS, Long.valueOf(number));
     }
 
     public void addManagedEmployee(Employee emp) {
@@ -146,7 +146,7 @@ public class Employee implements Serializable {
     }
 
     public void addMastercard(long number) {
-        getCreditCards().put(MASTERCARD, new Long(number));
+        getCreditCards().put(MASTERCARD, Long.valueOf(number));
     }
 
     public void addPhoneNumber(PhoneNumber phone) {
@@ -163,19 +163,19 @@ public class Employee implements Serializable {
     }
 
     public void addRoyalBankCreditLine(long number) {
-        getCreditLines().put(ROYAL_BANK, new Long(number));
+        getCreditLines().put(ROYAL_BANK, Long.valueOf(number));
     }
 
     public void addScotiabankCreditLine(long number) {
-        getCreditLines().put(SCOTIABANK, new Long(number));
+        getCreditLines().put(SCOTIABANK, Long.valueOf(number));
     }
 
     public void addTorontoDominionCreditLine(long number) {
-        getCreditLines().put(TORONTO_DOMINION, new Long(number));
+        getCreditLines().put(TORONTO_DOMINION, Long.valueOf(number));
     }
 
     public void addVisa(long number) {
-        getCreditCards().put(VISA, new Long(number));
+        getCreditCards().put(VISA, Long.valueOf(number));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class XmlElementsIntegerTestCases extends JAXBWithJSONTestCases{
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.id = CONTROL_ID;
-        employee.choice = new Integer(12);
+        employee.choice = Integer.valueOf(12);
         return employee;
     }
 }

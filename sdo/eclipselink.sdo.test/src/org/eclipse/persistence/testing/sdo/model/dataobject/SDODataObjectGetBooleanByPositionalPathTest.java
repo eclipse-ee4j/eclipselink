@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
 
-        Boolean bb = new Boolean(true);
+        Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
 
         //b.add(bb);
@@ -57,7 +57,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
 
-        Boolean bb = new Boolean(true);
+        Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -74,7 +74,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
 
-        Boolean b = new Boolean(true);
+        Boolean b = Boolean.valueOf(true);
 
         dataObject_a.setBoolean(property1, true);// c dataobject's a property has value boolean 'true'
 
@@ -89,7 +89,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
     type_c.addDeclaredProperty(property_c);
     dataObject_c.setType(type_c);
 
-    Boolean bb = new Boolean(true);
+    Boolean bb = Boolean.valueOf(true);
     List b = new ArrayList();
 
     dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -225,7 +225,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
 
         String str = "true";
-        Boolean B_STR = new Boolean(str);
+        Boolean B_STR = Boolean.valueOf(str);
         dataObject_c.setString(property_c, str);// add it to instance list
 
         this.assertEquals(B_STR.booleanValue(), dataObject_a.getBoolean(property));
@@ -238,7 +238,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
 
         String str = "true";
-        Boolean bb = new Boolean(str);
+        Boolean bb = Boolean.valueOf(str);
         List b = new ArrayList();
 
         //b.add(bb);
@@ -258,7 +258,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
 
         String str = "true";
-        Boolean bb = new Boolean(str);
+        Boolean bb = Boolean.valueOf(str);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -274,7 +274,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
 
         String str = "true";
-        Boolean b = new Boolean(str);
+        Boolean b = Boolean.valueOf(str);
 
         dataObject_a.set(property1, b);// c dataobject's a property has value boolean 'true'
 
@@ -290,7 +290,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
     dataObject_c.setType(type_c);
 
     String str = "true";
-    Boolean bb = new Boolean(str);
+    Boolean bb = Boolean.valueOf(str);
     List b = new ArrayList();
 
     dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'

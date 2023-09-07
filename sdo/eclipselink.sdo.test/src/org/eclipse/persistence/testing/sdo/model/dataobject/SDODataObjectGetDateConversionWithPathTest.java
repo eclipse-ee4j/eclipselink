@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -252,7 +252,7 @@ public class SDODataObjectGetDateConversionWithPathTest extends SDODataObjectCon
         property_c.setType(SDOConstants.SDO_INTEGER);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-        Integer value = new Integer(3);
+        Integer value = Integer.valueOf(3);
         dataObject_c.set(property_c, value);
         try {
             dataObject_a.getDate(propertyPath_a_b_c);

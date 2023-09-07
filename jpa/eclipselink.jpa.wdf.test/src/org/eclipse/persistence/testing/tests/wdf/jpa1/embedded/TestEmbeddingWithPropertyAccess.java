@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -44,14 +44,14 @@ public class TestEmbeddingWithPropertyAccess extends JPA1Base {
             em.persist(obj);
             env.commitTransactionAndClear(em);
             verify(true, "no Exception");
-            obj = em.find(EmbeddingPropertyAccess.class, new Integer(0));
+            obj = em.find(EmbeddingPropertyAccess.class, Integer.valueOf(0));
         } finally {
             closeEntityManager(em);
         }
     }
 
     private EmbeddingPropertyAccess find(EntityManager em, int id) {
-        return em.find(EmbeddingPropertyAccess.class, new Integer(id));
+        return em.find(EmbeddingPropertyAccess.class, Integer.valueOf(id));
     }
 
     private void validateMutable(final int id, MutableValidator validator, String fieldName) {

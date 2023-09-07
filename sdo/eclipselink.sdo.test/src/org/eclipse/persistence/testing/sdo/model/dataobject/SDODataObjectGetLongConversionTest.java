@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -214,7 +214,7 @@ public class SDODataObjectGetLongConversionTest extends SDODataObjectConversionT
         property.setType(SDOConstants.SDO_STRING);
 
         String str = "12";
-        Long s_d = new Long(str);
+        Long s_d = Long.valueOf(str);
         dataObject.setString(property, str);// add it to instance list
 
         this.assertEquals(s_d.longValue(), dataObject.getLong(property));
@@ -360,7 +360,7 @@ public class SDODataObjectGetLongConversionTest extends SDODataObjectConversionT
     public void testGetLongFromCharacterObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_CHARACTEROBJECT);
-        dataObject.set(property, new Character('v'));
+        dataObject.set(property, Character.valueOf('v'));
         try {
             dataObject.getLong(property);
             fail("ClassCastException should be thrown.");

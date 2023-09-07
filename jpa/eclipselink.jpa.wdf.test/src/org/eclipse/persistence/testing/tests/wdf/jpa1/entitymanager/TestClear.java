@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -36,7 +36,7 @@ public class TestClear extends JPA1Base {
             em.persist(dep1);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep1 = em.find(Department.class, new Integer(dep1.getId()));
+            dep1 = em.find(Department.class, Integer.valueOf(dep1.getId()));
             em.persist(dep2);
             verify(em.contains(dep1), "entity not managed");
             verify(em.contains(dep2), "entity not managed");
@@ -45,10 +45,10 @@ public class TestClear extends JPA1Base {
             verify(!em.contains(dep1), "entity managed");
             verify(!em.contains(dep2), "entity managed");
             env.commitTransactionAndClear(em);
-            Department dep = em.find(Department.class, new Integer(dep1.getId()));
+            Department dep = em.find(Department.class, Integer.valueOf(dep1.getId()));
             verify(dep != null, "department with id " + dep1.getId() + " does not exist");
             verify("one".equals(dep.getName()), "department has wrong name: " + dep.getName());
-            dep = em.find(Department.class, new Integer(dep2.getId()));
+            dep = em.find(Department.class, Integer.valueOf(dep2.getId()));
             verify(dep == null, "department with id " + dep2.getId() + " exists");
         } finally {
             closeEntityManager(em);
@@ -66,7 +66,7 @@ public class TestClear extends JPA1Base {
             env.beginTransaction(em);
             em.persist(dep1);
             env.commitTransactionAndClear(em);
-            dep1 = em.find(Department.class, new Integer(dep1.getId()));
+            dep1 = em.find(Department.class, Integer.valueOf(dep1.getId()));
             if (extended) {
                 em.persist(dep2);
                 verify(em.contains(dep1), "entity not managed");

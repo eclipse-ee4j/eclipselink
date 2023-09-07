@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,8 +103,8 @@ public class InheritanceReflectiveDiffTests extends MultiClassReflectiveDiffTest
         Diff leafDiff;
 
         leafDiff = (Diff) leafMismatches.get(0);        // id
-        assertEquals(new Integer(1), leafDiff.getObject1());
-        assertEquals(new Integer(77), leafDiff.getObject2());
+        assertEquals(Integer.valueOf(1), leafDiff.getObject1());
+        assertEquals(Integer.valueOf(77), leafDiff.getObject2());
 
         leafDiff = (Diff) leafMismatches.get(1);        // name
         assertEquals("Fred Flintstone", leafDiff.getObject1());

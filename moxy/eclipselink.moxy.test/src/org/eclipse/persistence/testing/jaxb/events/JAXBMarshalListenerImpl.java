@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,12 +20,12 @@ import javax.xml.bind.*;
 
 
 public class JAXBMarshalListenerImpl extends Marshaller.Listener {
-    static Integer EMPLOYEE_BEFORE_MARSHAL = new Integer(0);
-    static Integer ADDRESS_BEFORE_MARSHAL = new Integer(1);
-    static Integer PHONE_BEFORE_MARSHAL = new Integer(2);
-    static Integer EMPLOYEE_AFTER_MARSHAL = new Integer(3);
-    static Integer ADDRESS_AFTER_MARSHAL = new Integer(4);
-    static Integer PHONE_AFTER_MARSHAL = new Integer(5);
+    static Integer EMPLOYEE_BEFORE_MARSHAL = Integer.valueOf(0);
+    static Integer ADDRESS_BEFORE_MARSHAL = Integer.valueOf(1);
+    static Integer PHONE_BEFORE_MARSHAL = Integer.valueOf(2);
+    static Integer EMPLOYEE_AFTER_MARSHAL = Integer.valueOf(3);
+    static Integer ADDRESS_AFTER_MARSHAL = Integer.valueOf(4);
+    static Integer PHONE_AFTER_MARSHAL = Integer.valueOf(5);
 
     public ArrayList events = null;
 

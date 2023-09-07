@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -205,9 +205,9 @@ public class MappingProject extends Project {
         objecttypemapping.setAttributeName("isMacintosh");
         objecttypemapping.setIsReadOnly(false);
         objecttypemapping.setFieldName("MAP_COM.IS_MAC");
-        objecttypeconverter.addConversionValue("No", new Boolean(false));
-        objecttypeconverter.addConversionValue("Yes", new Boolean(true));
-        objecttypemapping.setNullValue(new Boolean(false));
+        objecttypeconverter.addConversionValue("No", Boolean.valueOf(false));
+        objecttypeconverter.addConversionValue("Yes", Boolean.valueOf(true));
+        objecttypemapping.setNullValue(Boolean.valueOf(false));
         objecttypemapping.setConverter(objecttypeconverter);
         descriptor.addMapping(objecttypemapping);
 
@@ -807,8 +807,8 @@ public class MappingProject extends Project {
         validMapping.setAttributeName("valid");
         validMapping.setFieldName("MAP_PERIPHERAL.VALID");
         ObjectTypeConverter validMappingConverter = new ObjectTypeConverter();
-        validMappingConverter.addConversionValue(new Character('N'), new java.lang.Boolean("false"));
-        validMappingConverter.addConversionValue(new Character('Y'), new java.lang.Boolean("true"));
+        validMappingConverter.addConversionValue(Character.valueOf('N'), Boolean.valueOf(false));
+        validMappingConverter.addConversionValue(Character.valueOf('Y'), Boolean.valueOf(true));
         validMapping.setConverter(validMappingConverter);
         descriptor.addMapping(validMapping);
 

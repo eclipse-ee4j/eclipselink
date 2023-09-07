@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -197,7 +197,7 @@ public class DatabaseSessionWriteTest extends TestCase {
         loginConfig.setExternalTransactionController(false);
         loginConfig.setForceFieldNamesToUppercase(false);
         loginConfig.setJdbcBatchWriting(false);
-        loginConfig.setMaxBatchWritingSize(new Integer(5));
+        loginConfig.setMaxBatchWritingSize(Integer.valueOf(5));
         loginConfig.setNativeSequencing(false);
         loginConfig.setNativeSQL(false);
         loginConfig.setOptimizeDataConversion(true);
@@ -205,7 +205,7 @@ public class DatabaseSessionWriteTest extends TestCase {
         loginConfig.setPlatformClass("platform");
         loginConfig.setSequenceCounterField("SEQ_COUNT");
         loginConfig.setSequenceNameField("SEQ_NAME");
-        loginConfig.setSequencePreallocationSize(new Integer(99));
+        loginConfig.setSequencePreallocationSize(Integer.valueOf(99));
         loginConfig.setSequenceTable("SEQUENCE");
         loginConfig.setStreamsForBinding(false);
         loginConfig.setStringBinding(false);

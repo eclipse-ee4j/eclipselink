@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -160,7 +160,7 @@ public final class IPAddress
         try
         {
             for (int index = 0; index < 4; index++)
-                ipAddresses[index] = new Integer(tokenizer.nextToken()).intValue();
+                ipAddresses[index] = Integer.valueOf(tokenizer.nextToken()).intValue();
         }
         catch (Throwable throwable)
         {

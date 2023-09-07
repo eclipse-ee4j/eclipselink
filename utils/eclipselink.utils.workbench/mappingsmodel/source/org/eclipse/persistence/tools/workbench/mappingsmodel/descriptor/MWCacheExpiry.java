@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public interface MWCacheExpiry extends MWNode {
         String DAILY_EXPIRY_TIME_PROPERTY = "dailyExpiryTime";
 
     // Time to Live Expiry
-    Long DEFAULT_TIME_TO_LIVE_EXPIRY = new Long(0);
+    Long DEFAULT_TIME_TO_LIVE_EXPIRY = Long.valueOf(0);
 
     Long getTimeToLiveExpiry();
     void setTimeToLiveExpiry(Long timeToLiveExpiry);

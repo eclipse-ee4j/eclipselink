@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -168,7 +168,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
         property.setType(SDOConstants.SDO_STRING);
 
         char str = 'c';
-        Character B_STR = new Character(str);
+        Character B_STR = Character.valueOf(str);
         dataObject.setString(property, B_STR.toString());// add it to instance list
 
         this.assertEquals(str, dataObject.getChar(property));
@@ -268,7 +268,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
     public void testGetCharacterFromByteObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTEOBJECT);
-        Byte theValue = new Byte("10");
+        Byte theValue = Byte.valueOf("10");
         dataObject.set(property, theValue);
         try {
             char value = dataObject.getChar(property);
@@ -292,7 +292,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
     public void testGetCharacterFromDoubleObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_DOUBLEOBJECT);
-        Double theValue = new Double("1");
+        Double theValue = Double.valueOf("1");
         dataObject.set(property, theValue);
         try {
             char value = dataObject.getChar(property);
@@ -306,7 +306,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
     public void testGetCharacterFromFloatObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOATOBJECT);
-        Float theValue = new Float("1");
+        Float theValue = Float.valueOf("1");
         dataObject.set(property, theValue);
 
         try {
@@ -322,7 +322,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
     public void testGetCharacterFromIntObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_INTOBJECT);
-        Integer theValue = new Integer("1");
+        Integer theValue = Integer.valueOf("1");
         dataObject.set(property, theValue);
 
         try {
@@ -338,7 +338,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
     public void testGetCharacterFromLongObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_LONGOBJECT);
-        Long theValue = new Long("1");
+        Long theValue = Long.valueOf("1");
         dataObject.set(property, theValue);
 
         try {
@@ -354,7 +354,7 @@ public class SDODataObjectGetCharacterConversionTest extends SDODataObjectConver
     public void testGetCharacterFromShortObject() {
         SDOProperty property = (SDOProperty)dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_SHORTOBJECT);
-        Short theValue = new Short("1");
+        Short theValue = Short.valueOf("1");
         dataObject.set(property, theValue);
         try {
             char value = dataObject.getChar(property);

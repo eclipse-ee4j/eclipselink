@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +67,7 @@ public class InheritanceWithMultiplePackagesTestCases extends JAXBWithJSONTestCa
 
         List objectList = new ArrayList(baseTypes);
         objectList.add(new String("string test"));
-        objectList.add(new Integer(500));
+        objectList.add(Integer.valueOf(500));
         root.objectList = objectList;
 
         List anyObjectList = new ArrayList(baseTypes);
@@ -77,7 +77,7 @@ public class InheritanceWithMultiplePackagesTestCases extends JAXBWithJSONTestCa
         choiceList.add(anotherPackageSubType);
         choiceList.add(subTypeLevel2);
         choiceList.add(new String("choice string test"));
-        choiceList.add(new Integer(500));
+        choiceList.add(Integer.valueOf(500));
         root.choiceList = choiceList;
         return root;
     }

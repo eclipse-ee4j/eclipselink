@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,9 +75,9 @@ public interface MWQuery extends MWNode {
     Integer getQueryTimeout();
     void setQueryTimeout(Integer queryTimeout);
         String QUERY_TIMEOUT_PROPERTY = "queryTimeout";
-        Integer QUERY_TIMEOUT_UNDEFINED = new Integer(-1);
-        Integer QUERY_TIMEOUT_NO_TIMEOUT = new Integer(0);
-        Integer QUERY_TIMEOUT_TIMEOUT = new Integer(1);
+        Integer QUERY_TIMEOUT_UNDEFINED = Integer.valueOf(-1);
+        Integer QUERY_TIMEOUT_NO_TIMEOUT = Integer.valueOf(0);
+        Integer QUERY_TIMEOUT_TIMEOUT = Integer.valueOf(1);
 
     boolean isExclusiveConnection();
     void setExclusiveConnection(boolean exclusiveConnection);

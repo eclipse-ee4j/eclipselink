@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
 
     public void testInvalidFormatting() throws Exception {
         try {
-            Object value = new Integer(10);
+            Object value = Integer.valueOf(10);
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, value);
         } catch (PropertyException e) {
             this.assertTrue(true);
@@ -87,7 +87,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
         StringWriter writer = new StringWriter();
         Boolean originalSetting = (Boolean) marshaller.getProperty(Marshaller.JAXB_FORMATTED_OUTPUT);
 
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(isFormatted));
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.valueOf(isFormatted));
         marshaller.marshal(controlObject, writer);
 
         log("Expected:" + controlString);

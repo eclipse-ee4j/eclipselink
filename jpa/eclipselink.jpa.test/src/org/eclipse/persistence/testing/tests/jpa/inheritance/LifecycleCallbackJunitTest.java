@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -157,8 +157,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             Bus bus = new Bus();
-            bus.setPassengerCapacity(new Integer(50));
-            bus.setFuelCapacity(new Integer(175));
+            bus.setPassengerCapacity(Integer.valueOf(50));
+            bus.setFuelCapacity(Integer.valueOf(175));
             bus.setDescription("OC Transpo Bus");
             bus.setFuelType("Diesel");
             em.persist(bus);
@@ -203,8 +203,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             SportsCar sportsCar = new SportsCar();
-            sportsCar.setPassengerCapacity(new Integer(4));
-            sportsCar.setFuelCapacity(new Integer(55));
+            sportsCar.setPassengerCapacity(Integer.valueOf(4));
+            sportsCar.setFuelCapacity(Integer.valueOf(55));
             sportsCar.setDescription("Porshe");
             sportsCar.setFuelType("Gas");
             em.persist(sportsCar);
@@ -238,8 +238,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             Bus bus = new Bus();
-            bus.setPassengerCapacity(new Integer(30));
-            bus.setFuelCapacity(new Integer(100));
+            bus.setPassengerCapacity(Integer.valueOf(30));
+            bus.setFuelCapacity(Integer.valueOf(100));
             bus.setDescription("School Bus");
             bus.setFuelType("Diesel");
             em.persist(bus);
@@ -281,8 +281,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             SportsCar sportsCar = new SportsCar();
-            sportsCar.setPassengerCapacity(new Integer(2));
-            sportsCar.setFuelCapacity(new Integer(60));
+            sportsCar.setPassengerCapacity(Integer.valueOf(2));
+            sportsCar.setFuelCapacity(Integer.valueOf(60));
             sportsCar.setDescription("Corvette");
             sportsCar.setFuelType("Gas");
             em.persist(sportsCar);
@@ -314,8 +314,8 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
 
         try {
             SportsCar sportsCar = new SportsCar();
-            sportsCar.setPassengerCapacity(new Integer(2));
-            sportsCar.setFuelCapacity(new Integer(90));
+            sportsCar.setPassengerCapacity(Integer.valueOf(2));
+            sportsCar.setFuelCapacity(Integer.valueOf(90));
             sportsCar.setDescription("Viper");
             sportsCar.setFuelType("Gas");
             em.persist(sportsCar);

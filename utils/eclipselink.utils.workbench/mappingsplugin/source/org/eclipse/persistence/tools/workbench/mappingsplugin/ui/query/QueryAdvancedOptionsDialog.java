@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -264,8 +264,8 @@ public abstract class QueryAdvancedOptionsDialog extends AbstractDialog {
 
     private SpinnerNumberModel buildQueryTimeoutSpinnerModel(PropertyValueModel queryTimeoutHolder) {
         SpinnerNumberModel spinnerNumberModel = new NumberSpinnerModelAdapter(queryTimeoutHolder);
-        spinnerNumberModel.setMinimum(new Integer(1));
-        spinnerNumberModel.setMaximum(new Integer(99999));
+        spinnerNumberModel.setMinimum(Integer.valueOf(1));
+        spinnerNumberModel.setMaximum(Integer.valueOf(99999));
         return spinnerNumberModel;
     }
 
@@ -282,7 +282,7 @@ public abstract class QueryAdvancedOptionsDialog extends AbstractDialog {
 
             protected Object reverseTransform(Object value) {
                 if (Boolean.TRUE.equals(value)) {
-                    return ((Integer) this.valueHolder.getValue()).intValue() > 0 ? this.valueHolder.getValue() : new Integer(1);
+                    return ((Integer) this.valueHolder.getValue()).intValue() > 0 ? this.valueHolder.getValue() : Integer.valueOf(1);
                 }
                 else {
                     return MWAbstractReadQuery.QUERY_TIMEOUT_NO_TIMEOUT;
@@ -331,13 +331,13 @@ public abstract class QueryAdvancedOptionsDialog extends AbstractDialog {
     protected void setMaximumRows(final JCheckBox checkBox) {
         if (checkBox.isSelected()) {
             this.maximumRowsSpinner.setEnabled(false);
-            this.maximumRowsSpinnerNumberModel.setMinimum(new Integer(0));
-            this.maximumRowsSpinnerNumberModel.setValue(new Integer(0));
+            this.maximumRowsSpinnerNumberModel.setMinimum(Integer.valueOf(0));
+            this.maximumRowsSpinnerNumberModel.setValue(Integer.valueOf(0));
         } else {
             this.maximumRowsSpinner.setEnabled(true);
             this.maximumRowsSpinnerNumberModel.setValue(getMaximumRows() == 0 ?
-                    new Integer(1) : this.maximumRowsSpinnerNumberModel.getValue());
-            this.maximumRowsSpinnerNumberModel.setMinimum(new Integer(1));
+                    Integer.valueOf(1) : this.maximumRowsSpinnerNumberModel.getValue());
+            this.maximumRowsSpinnerNumberModel.setMinimum(Integer.valueOf(1));
         }
     }
 
@@ -349,13 +349,13 @@ public abstract class QueryAdvancedOptionsDialog extends AbstractDialog {
         this.maximumRowsSpinner .setMinimumSize(new Dimension(65, 23));
         this.maximumRowsSpinner .setMaximumSize(new Dimension(65, 23));
         this.maximumRowsSpinner .setModel(this.maximumRowsSpinnerNumberModel);
-        this.maximumRowsSpinner .setValue(new Integer(this.query.getMaximumRows()));
+        this.maximumRowsSpinner .setValue(Integer.valueOf(this.query.getMaximumRows()));
         return this.maximumRowsSpinner ;
     }
 
     private SpinnerNumberModel buildMaximumRowsSpinnerModel() {
         SpinnerNumberModel spinnerNumberModel = new NumberSpinnerModelAdapter(new SimplePropertyValueModel());
-        spinnerNumberModel.setMinimum(new Integer(0));
+        spinnerNumberModel.setMinimum(Integer.valueOf(0));
         spinnerNumberModel.setMaximum(null);
         return spinnerNumberModel;
     }
@@ -391,13 +391,13 @@ public abstract class QueryAdvancedOptionsDialog extends AbstractDialog {
     protected void setFirstResult(final JCheckBox checkBox) {
         if (!checkBox.isSelected()) {
             this.firstResultSpinner.setEnabled(false);
-            this.firstResultSpinnerNumberModel.setMinimum(new Integer(0));
-            this.firstResultSpinnerNumberModel.setValue(new Integer(0));
+            this.firstResultSpinnerNumberModel.setMinimum(Integer.valueOf(0));
+            this.firstResultSpinnerNumberModel.setValue(Integer.valueOf(0));
         } else {
             this.firstResultSpinner.setEnabled(true);
             this.firstResultSpinnerNumberModel.setValue(getFirstResult() == 0 ?
-                    new Integer(1) : this.firstResultSpinnerNumberModel.getValue());
-            this.firstResultSpinnerNumberModel.setMinimum(new Integer(1));
+                    Integer.valueOf(1) : this.firstResultSpinnerNumberModel.getValue());
+            this.firstResultSpinnerNumberModel.setMinimum(Integer.valueOf(1));
         }
     }
 
@@ -409,13 +409,13 @@ public abstract class QueryAdvancedOptionsDialog extends AbstractDialog {
         this.firstResultSpinner.setMinimumSize(new Dimension(65, 23));
         this.firstResultSpinner.setMaximumSize(new Dimension(65, 23));
         this.firstResultSpinner.setModel(this.firstResultSpinnerNumberModel);
-        this.firstResultSpinner.setValue(new Integer(this.query.getFirstResult()));
+        this.firstResultSpinner.setValue(Integer.valueOf(this.query.getFirstResult()));
         return this.firstResultSpinner;
     }
 
     private SpinnerNumberModel buildFirstResultSpinnerModel() {
         SpinnerNumberModel spinnerNumberModel = new NumberSpinnerModelAdapter(new SimplePropertyValueModel());
-        spinnerNumberModel.setMinimum(new Integer(0));
+        spinnerNumberModel.setMinimum(Integer.valueOf(0));
         spinnerNumberModel.setMaximum(null);
         return spinnerNumberModel;
     }

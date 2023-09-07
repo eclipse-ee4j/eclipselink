@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public class SingleInheritanceTest extends TestCase {
 
         //empty Vehicle's inheritance info
         InheritancePolicy newInheritancePolicy = (InheritancePolicy)originalInheritancePolicy.clone();
-        newInheritancePolicy.addClassIndicator(org.eclipse.persistence.testing.models.inheritance.Vehicle.class, new java.lang.Long(8));
+        newInheritancePolicy.addClassIndicator(org.eclipse.persistence.testing.models.inheritance.Vehicle.class, Long.valueOf(8));
         newInheritancePolicy.setChildDescriptors(new Vector());
         newInheritancePolicy.setClassIndicatorMapping(new Hashtable(3));
         vehicleDescriptor.setInheritancePolicy(newInheritancePolicy);

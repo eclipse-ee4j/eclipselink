@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -252,7 +252,7 @@ public class TestVariation {
                 }
 
                 if (setters[i] != null) {
-                    Object[] args = { new Boolean(required[i]) };
+                    Object[] args = { Boolean.valueOf(required[i]) };
                     setters[i].invoke(object, args);
                 } else {
                     fields[i].setBoolean(object, required[i]);
@@ -265,7 +265,7 @@ public class TestVariation {
             super.reset();
             for (int i = required.length - 1; i >= 0; i--) {
                 if (setters[i] != null) {
-                    Object[] args = { new Boolean(original[i]) };
+                    Object[] args = { Boolean.valueOf(original[i]) };
                     setters[i].invoke(object, args);
                 } else {
                     fields[i].setBoolean(object, original[i]);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ public class DirectToFieldDoubleTestCases extends XMLMappingTestCases {
   private final static int CONTROL_ID = 123;
   private final static String CONTROL_FIRST_NAME = "Jane";
   private final static String CONTROL_LAST_NAME = "Doe";
-  private final static Double CONTROL_SALARY = new Double(100000.0);
+  private final static Double CONTROL_SALARY = Double.valueOf(100000.0);
 
   public DirectToFieldDoubleTestCases(String name) throws Exception {
     super(name);

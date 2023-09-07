@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1532,8 +1532,8 @@ public class AggregateProject extends org.eclipse.persistence.sessions.Project {
         descriptor.getDescriptorInheritancePolicy().setShouldReadSubclasses(true);
         descriptor.getDescriptorInheritancePolicy().setClassIndicatorFieldName("TYPE");
         descriptor.getDescriptorInheritancePolicy().setShouldUseClassNameAsIndicator(false);
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.aggregate.Car.class, new java.lang.Integer(1));
-        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.aggregate.Bicycle.class, new java.lang.Integer(2));
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.aggregate.Car.class, Integer.valueOf(1));
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.aggregate.Bicycle.class, Integer.valueOf(2));
 
         // SECTION: COPY POLICY
         descriptor.createCopyPolicy("constructor");

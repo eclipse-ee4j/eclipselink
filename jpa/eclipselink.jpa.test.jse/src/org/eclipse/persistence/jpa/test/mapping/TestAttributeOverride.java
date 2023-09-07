@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -135,7 +135,7 @@ public class TestAttributeOverride {
 
         em = emf.createEntityManager();
         try {
-            Integer id = new Integer(41);
+            Integer id = Integer.valueOf(41);
 
             OverrideEmbeddableB emb1 = new OverrideEmbeddableB(43, 44, new OverrideNestedEmbeddableB(45, 46));
             OverrideEmbeddableB emb2 = new OverrideEmbeddableB(47, 48, new OverrideNestedEmbeddableB(49, 50));

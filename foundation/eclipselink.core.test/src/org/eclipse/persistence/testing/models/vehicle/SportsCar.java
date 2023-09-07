@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ public class SportsCar implements java.io.Serializable {
         SportsCar example = new SportsCar();
 
         example.setId(10);
-        example.setFuelCapacity(new Integer(30));
+        example.setFuelCapacity(Integer.valueOf(30));
         example.setDescription("TOYOTA");
         example.setFuelType(FuelType.example1());
         example.setEngineType(EngineType.example1());
@@ -79,7 +79,7 @@ public class SportsCar implements java.io.Serializable {
         SportsCar example = new SportsCar();
 
         example.setId(20);
-        example.setFuelCapacity(new Integer(50));
+        example.setFuelCapacity(Integer.valueOf(50));
         example.setDescription("TATA INDICA");
         example.setFuelType(FuelType.example2());
         example.setEngineType(EngineType.example2());

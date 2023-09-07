@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -222,23 +222,23 @@ public class RemoteConnectionExceptionsTest extends TestCase {
 
     public static Object getWrapperClassInstance(Class cls) {
         if (Integer.TYPE.equals(cls)) {
-            return new Integer(0);
+            return Integer.valueOf(0);
         } else if (Boolean.TYPE.equals(cls)) {
-            return new Boolean(false);
+            return Boolean.valueOf(false);
         } else if (Character.TYPE.equals(cls)) {
-            return new Character(' ');
+            return Character.valueOf(' ');
         } else if (Byte.TYPE.equals(cls)) {
             byte b = 0;
-            return new Byte(b);
+            return Byte.valueOf(b);
         } else if (Short.TYPE.equals(cls)) {
             short s = 0;
-            return new Short(s);
+            return Short.valueOf(s);
         } else if (Long.TYPE.equals(cls)) {
-            return new Long(0);
+            return Long.valueOf(0);
         } else if (Float.TYPE.equals(cls)) {
-            return new Float(0);
+            return Float.valueOf(0);
         } else if (Double.TYPE.equals(cls)) {
-            return new Double(0);
+            return Double.valueOf(0);
         } else {
             return null;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(true));
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(true));
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -128,7 +128,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
                StringWriter writer = new StringWriter();
 
                XMLOutputFactory factory = XMLOutputFactory.newInstance();
-               factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(true));
+               factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(true));
                XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
                Object objectToWrite = getWriteControlObject();

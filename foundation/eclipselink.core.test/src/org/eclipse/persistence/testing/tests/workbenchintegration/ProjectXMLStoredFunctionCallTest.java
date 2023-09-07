@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,8 +60,8 @@ public class ProjectXMLStoredFunctionCallTest extends TestCase {
 
     public void test() {
         Vector parameters = new Vector();
-        Long p_inout = new Long(99);
-        Long p_in = new Long(100);
+        Long p_inout = Long.valueOf(99);
+        Long p_in = Long.valueOf(100);
         parameters.add(p_inout);
         parameters.add(p_in);
         result = getSession().executeQuery(query, parameters);
@@ -70,17 +70,17 @@ public class ProjectXMLStoredFunctionCallTest extends TestCase {
     public void verify() {
       DatabaseRecord row = (DatabaseRecord)((Vector)result).firstElement();
       Long p_inout = (Long)row.get("P_INOUT");
-      if (!p_inout.equals(new Long(100))) {
+      if (!p_inout.equals(Long.valueOf(100))) {
         throw new TestErrorException(
           "The stored function did not execute correctly. Expected: [P_INOUT = 100]");
       }
         Long p_out = (Long)row.get("P_OUT");
-      if (!p_out.equals(new Long(99))) {
+      if (!p_out.equals(Long.valueOf(99))) {
         throw new TestErrorException(
           "The stored function did not execute correctly. Expected: [P_OUT = 99]");
       }
         Long returnValue = (Long)row.getValues().firstElement();
-      if (!returnValue.equals(new Long(99))) {
+      if (!returnValue.equals(Long.valueOf(99))) {
         throw new TestErrorException(
           "The stored function did not execute correctly. Expected: [return value = 99]");
       }

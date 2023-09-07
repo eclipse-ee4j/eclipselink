@@ -464,13 +464,13 @@ public class TreeWizard {
             tokenTypeToStreamIndexesMap = new HashMap(); // first indexing op
         }
         int tokenType = adaptor.getType(node);
-        Integer tokenTypeI = new Integer(tokenType);
+        Integer tokenTypeI = Integer.valueOf(tokenType);
         if ( !(tokenTypesToReverseIndex==INDEX_ALL ||
                tokenTypesToReverseIndex.contains(tokenTypeI)) )
         {
             return; // tokenType not of interest
         }
-        Integer streamIndexI = new Integer(streamIndex);
+        Integer streamIndexI = Integer.valueOf(streamIndex);
         ArrayList indexes = (ArrayList)tokenTypeToStreamIndexesMap.get(tokenTypeI);
         if ( indexes==null ) {
             indexes = new ArrayList(); // no list yet for this token type
@@ -495,7 +495,7 @@ public class TreeWizard {
         else if ( tokenTypesToReverseIndex==INDEX_ALL ) {
             return;
         }
-        tokenTypesToReverseIndex.add(new Integer(tokenType));
+        tokenTypesToReverseIndex.add(Integer.valueOf(tokenType));
     }
 
     /** Track the indicated token types in the reverse index. Set
@@ -516,7 +516,7 @@ public class TreeWizard {
             return getNodeIndexLinearly(node);
         }
         int tokenType = adaptor.getType(node);
-        Integer tokenTypeI = new Integer(tokenType);
+        Integer tokenTypeI = Integer.valueOf(tokenType);
         ArrayList indexes = (ArrayList)tokenTypeToStreamIndexesMap.get(tokenTypeI);
         if ( indexes==null ) {
             //System.out.println("found linearly; stream index = "+getNodeIndexLinearly(node));

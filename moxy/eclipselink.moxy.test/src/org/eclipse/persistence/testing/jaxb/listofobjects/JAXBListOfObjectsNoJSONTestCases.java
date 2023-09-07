@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -266,7 +266,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
             StringWriter writer = new StringWriter();
 
             javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             javax.xml.stream.XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -289,7 +289,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
             StringWriter writer = new StringWriter();
 
             javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             javax.xml.stream.XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
 
             Object objectToWrite = getWriteControlObject();

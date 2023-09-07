@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,14 +47,14 @@ public class MergeChangeSetWithDirectMapMappingTest extends TransactionalTestCas
         // put a new value in, will now be in the cache
         UnitOfWork uow1 = getSession().acquireUnitOfWork();
         DirectMapMappings maps = (DirectMapMappings)uow1.registerObject(new DirectMapMappings());
-        maps.directMap.put(new Integer(1), "bogus");
-        maps.directMap.put(new Integer(3), "third");
+        maps.directMap.put(Integer.valueOf(1), "bogus");
+        maps.directMap.put(Integer.valueOf(3), "third");
         uow1.commit();
 
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
         DirectMapMappings mapsClone = (DirectMapMappings)uow2.registerObject(maps);
-        mapsClone.directMap.put(new Integer(2), "axemen");
-        mapsClone.directMap.put(new Integer(1), "guy");
+        mapsClone.directMap.put(Integer.valueOf(2), "axemen");
+        mapsClone.directMap.put(Integer.valueOf(1), "guy");
 
         UnitOfWorkChangeSet changes = (UnitOfWorkChangeSet)uow2.getCurrentChanges();
         uow2.release();
@@ -79,15 +79,15 @@ public class MergeChangeSetWithDirectMapMappingTest extends TransactionalTestCas
 
         // Some checks to ensure it actually worked as expected
 
-        if (!mapsQueryResult.directMap.containsKey(new Integer(1))) {
+        if (!mapsQueryResult.directMap.containsKey(Integer.valueOf(1))) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.get(new Integer(1)).equals("guy")) {
+        } else if (!mapsQueryResult.directMap.get(Integer.valueOf(1)).equals("guy")) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.containsKey(new Integer(2))) {
+        } else if (!mapsQueryResult.directMap.containsKey(Integer.valueOf(2))) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.get(new Integer(2)).equals("axemen")) {
+        } else if (!mapsQueryResult.directMap.get(Integer.valueOf(2)).equals("axemen")) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.containsKey(new Integer(3))) {
+        } else if (!mapsQueryResult.directMap.containsKey(Integer.valueOf(3))) {
             throw new TestErrorException("Change set did not merge into cache properly");
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -88,7 +88,7 @@ public class DatasourcePlatform implements Platform {
     protected String endDelimiter = null;
 
     /** Ensures that only one thread at a time can add/remove sequences */
-    protected Object sequencesLock = new Boolean(true);
+    protected Object sequencesLock = Boolean.valueOf(true);
 
     /** If the native sequence type is not supported, if table sequencing should be used. */
     protected boolean defaultNativeSequenceToTable;

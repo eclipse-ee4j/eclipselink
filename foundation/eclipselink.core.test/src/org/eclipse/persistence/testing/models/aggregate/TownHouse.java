@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ public class TownHouse extends House {
         TownHouse example3 = new TownHouse();
 
         Oid insurancePolicyId = new Oid();
-        insurancePolicyId.setOid(new Integer(333));
+        insurancePolicyId.setOid(Integer.valueOf(333));
         example3.setInsuranceId(insurancePolicyId);
         example3.setDescriptions("renovated 3-bedroom gardon house");
         example3.setLocation("2236 Baseline Rd");
@@ -34,7 +34,7 @@ public class TownHouse extends House {
         TownHouse example4 = new TownHouse();
 
         Oid insurancePolicyId = new Oid();
-        insurancePolicyId.setOid(new Integer(4444));
+        insurancePolicyId.setOid(Integer.valueOf(4444));
         example4.setInsuranceId(insurancePolicyId);
         example4.setDescriptions("two bedroom luxury townhouse");
         example4.setLocation("790C Bank Street");

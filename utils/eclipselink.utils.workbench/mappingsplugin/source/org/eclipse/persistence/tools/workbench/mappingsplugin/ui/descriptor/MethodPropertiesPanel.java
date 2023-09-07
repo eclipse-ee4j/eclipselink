@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -219,16 +219,16 @@ final class MethodPropertiesPanel extends AbstractPanel {
     }
 
     private SpinnerModel buildDimensionalitySpinnerModel() {
-        return new NumberSpinnerModelAdapter(buildDimensionalityHolder(), new Integer(0), null, new Integer(1), new Integer(0));
+        return new NumberSpinnerModelAdapter(buildDimensionalityHolder(), Integer.valueOf(0), null, Integer.valueOf(1), Integer.valueOf(0));
     }
 
     private PropertyValueModel buildDimensionalityHolder() {
         return new PropertyAspectAdapter(this.methodHolder, MWMethod.RETURN_TYPE_DIMENSIONALITY_PROPERTY) {
             protected Object getValueFromSubject() {
                 if (((MWMethod) subject).isConstructor()) {
-                    return new Integer(0);
+                    return Integer.valueOf(0);
                 }
-                return new Integer(((MWMethod) subject).getReturnTypeDimensionality());
+                return Integer.valueOf(((MWMethod) subject).getReturnTypeDimensionality());
             }
             protected void setValueOnSubject(Object value) {
                 ((MWMethod) subject).setReturnTypeDimensionality(((Integer) value).intValue());

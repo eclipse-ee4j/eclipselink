@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,7 +103,7 @@ public final class MWTypeDeclaration extends MWModel {
     // JSpinner catches the IllegalArgumentException and beeps at you ... doh
     public void setDimensionality(int dimensionality) {
         if ((dimensionality != 0) && ( ! this.allowsDimension())) {
-            throw new IllegalArgumentException("The type declaration 'void' cannot have a dimension: " + new Integer(dimensionality));
+            throw new IllegalArgumentException("The type declaration 'void' cannot have a dimension: " + Integer.valueOf(dimensionality));
         }
         this.dimensionality = dimensionality;
     }
@@ -488,7 +488,7 @@ public final class MWTypeDeclaration extends MWModel {
         descriptor.addMapping(typeHandleMapping);
 
         XMLDirectMapping dimMapping = (XMLDirectMapping) descriptor.addDirectMapping("dimensionality", "dimensionality/text()");
-        dimMapping.setNullValue(new Integer(0));
+        dimMapping.setNullValue(Integer.valueOf(0));
 
         return descriptor;
     }
@@ -521,7 +521,7 @@ public final class MWTypeDeclaration extends MWModel {
         descriptor.addMapping(typeHandleMapping);
 
         XMLDirectMapping dimMapping = (XMLDirectMapping) descriptor.addDirectMapping("dimensionality", "dimensionality/text()");
-        dimMapping.setNullValue(new Integer(0));
+        dimMapping.setNullValue(Integer.valueOf(0));
 
         return descriptor;
     }

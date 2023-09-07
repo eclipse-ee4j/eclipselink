@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myBigDecimal");
             myProp.set("type", SDOConstants.SDO_DECIMAL);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             double db = 12;
             BigDecimal bd = new BigDecimal(db);
@@ -71,7 +71,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myBigInteger");
             myProp.set("type", SDOConstants.SDO_INTEGER);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             double db = 12;
             BigInteger bi = new BigInteger(String.valueOf((int)db));
@@ -92,9 +92,9 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myBoolean");
             myProp.set("type", SDOConstants.SDO_BOOLEAN);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
-            boolean b = new Boolean("true").booleanValue();
+            boolean b = Boolean.valueOf("true").booleanValue();
             myDO.setBoolean("myBoolean", b);
             boolean myboolean = myDO.getBoolean("myBoolean");
             assertTrue("Expected Boolean [" + b + "], but was [" + myboolean + "]", myboolean == b);
@@ -111,9 +111,9 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myByte");
             myProp.set("type", SDOConstants.SDO_BYTE);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
-            byte b = new Byte("8").byteValue();
+            byte b = Byte.valueOf("8").byteValue();
             myDO.setByte("myByte", b);
             byte mybyte = myDO.getByte("myByte");
             assertTrue("Expected byte [" + b + "], but was [" + mybyte + "]", mybyte == b);
@@ -131,10 +131,10 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myBytes");
             myProp.set("type", SDOConstants.SDO_BYTES);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
-            byte b1 = new Byte("16").byteValue();
-            byte b2 = new Byte("8").byteValue();
+            byte b1 = Byte.valueOf("16").byteValue();
+            byte b2 = Byte.valueOf("8").byteValue();
             byte[] bytes = new byte[] {b1, b2};
 
             myDO.setBytes("myBytes", bytes);
@@ -154,7 +154,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myChar");
             myProp.set("type", SDOConstants.SDO_CHARACTER);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             char c = 'x';
             myDO.setChar("myCharDO", c);
@@ -173,7 +173,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myDate");
             myProp.set("type", SDOConstants.SDO_DATE);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             Calendar controlCalendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             controlCalendar.clear();
@@ -198,7 +198,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myDouble");
             myProp.set("type", SDOConstants.SDO_DOUBLE);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             double db = 12;
             myDO.setDouble("myDouble", db);
@@ -217,7 +217,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myFloat");
             myProp.set("type", SDOConstants.SDO_FLOAT);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             float fl = 12;
             myDO.setFloat("myFloat", fl);
@@ -236,7 +236,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myInt");
             myProp.set("type", SDOConstants.SDO_INT);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             int i = 69;
             myDO.setInt("myInt", i);
@@ -257,7 +257,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myLong");
             myProp.set("type", SDOConstants.SDO_LONG);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             long l = 666L;
             myDO.setLong("myLong", l);
@@ -276,9 +276,9 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myShort");
             myProp.set("type", SDOConstants.SDO_SHORT);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
-            short s = new Short("66").shortValue();
+            short s = Short.valueOf("66").shortValue();
             myDO.setShort("myShort", s);
             short myshort = myDO.getShort("myShort");
             assertTrue("Expected short [" + s + "], but was [" + myshort + "]", myshort == s);
@@ -295,7 +295,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             DataObject myProp = myDO.createDataObject("property");
             myProp.set("name", "myString");
             myProp.set("type", SDOConstants.SDO_STRING);
-            myProp.set("many", new Boolean("true"));
+            myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             String s = new String("This is my string.");
             myDO.setString("myString", s);

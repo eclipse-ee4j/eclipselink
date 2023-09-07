@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -537,8 +537,8 @@ public final class MWColumn
         descriptor.addDirectMapping("name", "name/text()");
         descriptor.addDirectMapping("databaseTypeName", "getDatabaseTypeNameForTopLink", "setDatabaseTypeNameForTopLink", "type/text()");
 
-        ((XMLDirectMapping) descriptor.addDirectMapping("size", "size/text()")).setNullValue(new Integer(0));
-        ((XMLDirectMapping) descriptor.addDirectMapping("subSize", "sub-size/text()")).setNullValue(new Integer(0));
+        ((XMLDirectMapping) descriptor.addDirectMapping("size", "size/text()")).setNullValue(Integer.valueOf(0));
+        ((XMLDirectMapping) descriptor.addDirectMapping("subSize", "sub-size/text()")).setNullValue(Integer.valueOf(0));
 
         ((XMLDirectMapping) descriptor.addDirectMapping("allowsNull", "allows-null/text()")).setNullValue(Boolean.FALSE);
         ((XMLDirectMapping) descriptor.addDirectMapping("unique", "unique/text()")).setNullValue(Boolean.FALSE);

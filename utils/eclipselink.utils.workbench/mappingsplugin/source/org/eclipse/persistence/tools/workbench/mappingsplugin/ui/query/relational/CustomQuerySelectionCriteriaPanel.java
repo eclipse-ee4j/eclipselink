@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -174,7 +174,7 @@ final public class CustomQuerySelectionCriteriaPanel extends AbstractPanel
         // build dialog panel
         String title = this.resourceRepository().getString("QUERY_QUERY_FORMAT_TITLE");
         String message = this.resourceRepository().getString("QUERY_QUERY_FORMAT_MESSAGE");
-        PropertyValueModel dontAskAgainHolder = new SimplePropertyValueModel(new Boolean(false));
+        PropertyValueModel dontAskAgainHolder = new SimplePropertyValueModel(Boolean.valueOf(false));
         JComponent dontAskAgainPanel =
             SwingComponentFactory.buildDoNotAskAgainPanel(message, dontAskAgainHolder, this.resourceRepository());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1094,7 +1094,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         call.addNamedArgument("VERSION");
         call.addNamedArgument("START_TIME");
         call.addNamedArgument("END_TIME");
-        call.addNamedInOutputArgumentValue("OUT_VERSION", new Long(0), "EMPLOYEE.VERSION", Long.class);
+        call.addNamedInOutputArgumentValue("OUT_VERSION", Long.valueOf(0), "EMPLOYEE.VERSION", Long.class);
         insertQuery.setCall(call);
         empDescriptor.getQueryManager().setInsertQuery(insertQuery);
 
@@ -1167,7 +1167,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         // After this is fixed (m.b. in SQLAnywhere 11?) the order of the attributes should be returned to original
         // (where it does NOT follow the order of sp parameters).
         insertEmployeeCall.addNamedArgument("_VERSION", "VERSION");
-        insertEmployeeCall.addNamedInOutputArgumentValue("_OUT_VERSION", new Long(0), "EMPLOYEE.VERSION", Long.class);
+        insertEmployeeCall.addNamedInOutputArgumentValue("_OUT_VERSION", Long.valueOf(0), "EMPLOYEE.VERSION", Long.class);
         employeeDescriptor.getQueryManager().setInsertQuery(new InsertObjectQuery(insertEmployeeCall));
 
         final StoredProcedureCall updateEmployeeCall = new StoredProcedureCall();

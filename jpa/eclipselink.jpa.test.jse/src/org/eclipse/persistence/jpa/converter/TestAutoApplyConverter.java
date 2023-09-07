@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -82,14 +82,14 @@ public class TestAutoApplyConverter {
             em.getTransaction().commit();
             
             Assert.assertTrue(BooleanToStringAutoApplyConverter.convertToDatabaseTriggered);
-            Assert.assertEquals(new Boolean(valueConvert), BooleanToStringAutoApplyConverter.ctdcVal);
+            Assert.assertEquals(Boolean.valueOf(valueConvert), BooleanToStringAutoApplyConverter.ctdcVal);
             BooleanToStringAutoApplyConverter.reset();
             
             em.clear();
             
             ConvertEntityB2S findEntity = em.find(ConvertEntityB2S.class, id);
             Assert.assertTrue(BooleanToStringAutoApplyConverter.convertToEntityTriggered);
-            Assert.assertEquals(new Boolean(valueConvert).toString(), BooleanToStringAutoApplyConverter.cteaVal);
+            Assert.assertEquals(Boolean.valueOf(valueConvert).toString(), BooleanToStringAutoApplyConverter.cteaVal);
             Assert.assertNotNull(findEntity);
             Assert.assertNotNull(findEntity.getValueConvert());
             Assert.assertNotNull(findEntity.getValueNoConvert());
@@ -158,14 +158,14 @@ public class TestAutoApplyConverter {
             em.getTransaction().commit();
             
             Assert.assertTrue(ByteToStringAutoApplyConverter.convertToDatabaseTriggered);
-            Assert.assertEquals(new Byte(valueConvert), ByteToStringAutoApplyConverter.ctdcVal);
+            Assert.assertEquals(Byte.valueOf(valueConvert), ByteToStringAutoApplyConverter.ctdcVal);
             ByteToStringAutoApplyConverter.reset();
             
             em.clear();
             
             ConvertEntityBy2S findEntity = em.find(ConvertEntityBy2S.class, id);
             Assert.assertTrue(ByteToStringAutoApplyConverter.convertToEntityTriggered);
-            Assert.assertEquals(new Byte(valueConvert).toString(), ByteToStringAutoApplyConverter.cteaVal);
+            Assert.assertEquals(Byte.valueOf(valueConvert).toString(), ByteToStringAutoApplyConverter.cteaVal);
             Assert.assertNotNull(findEntity);
             Assert.assertNotNull(findEntity.getValueConvert());
             Assert.assertNotNull(findEntity.getValueNoConvert());
@@ -185,8 +185,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Byte valueConvert = new Byte((byte) 10);
-        Byte valueNoConvert = new Byte((byte) 14);
+        Byte valueConvert = Byte.valueOf((byte) 10);
+        Byte valueNoConvert = Byte.valueOf((byte) 14);
         try {
             ByteToStringAutoApplyConverter.reset();
             ConvertEntityByW2S entity = new ConvertEntityByW2S(id, valueConvert, valueNoConvert);
@@ -234,14 +234,14 @@ public class TestAutoApplyConverter {
             em.getTransaction().commit();
             
             Assert.assertTrue(CharToStringAutoApplyConverter.convertToDatabaseTriggered);
-            Assert.assertEquals(new Character(valueConvert), CharToStringAutoApplyConverter.ctdcVal);
+            Assert.assertEquals(Character.valueOf(valueConvert), CharToStringAutoApplyConverter.ctdcVal);
             CharToStringAutoApplyConverter.reset();
             
             em.clear();
             
             ConvertEntityC2S findEntity = em.find(ConvertEntityC2S.class, id);
             Assert.assertTrue(CharToStringAutoApplyConverter.convertToEntityTriggered);
-            Assert.assertEquals(new Character(valueConvert).toString(), CharToStringAutoApplyConverter.cteaVal);
+            Assert.assertEquals(Character.valueOf(valueConvert).toString(), CharToStringAutoApplyConverter.cteaVal);
             Assert.assertNotNull(findEntity);
             Assert.assertNotNull(findEntity.getValueConvert());
             Assert.assertNotNull(findEntity.getValueNoConvert());
@@ -261,8 +261,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Character valueConvert = new Character('A');
-        Character valueNoConvert = new Character('z');
+        Character valueConvert = Character.valueOf('A');
+        Character valueNoConvert = Character.valueOf('z');
         try {
             CharToStringAutoApplyConverter.reset();
             ConvertEntityCW2S entity = new ConvertEntityCW2S(id, valueConvert, valueNoConvert);
@@ -310,14 +310,14 @@ public class TestAutoApplyConverter {
             em.getTransaction().commit();
             
             Assert.assertTrue(DoubleToStringAutoApplyConverter.convertToDatabaseTriggered);
-            Assert.assertEquals(new Double(valueConvert), DoubleToStringAutoApplyConverter.ctdcVal);
+            Assert.assertEquals(Double.valueOf(valueConvert), DoubleToStringAutoApplyConverter.ctdcVal);
             DoubleToStringAutoApplyConverter.reset();
             
             em.clear();
             
             ConvertEntityD2S findEntity = em.find(ConvertEntityD2S.class, id);
             Assert.assertTrue(DoubleToStringAutoApplyConverter.convertToEntityTriggered);
-            Assert.assertEquals(new Double(valueConvert).toString(), DoubleToStringAutoApplyConverter.cteaVal);
+            Assert.assertEquals(Double.valueOf(valueConvert).toString(), DoubleToStringAutoApplyConverter.cteaVal);
             Assert.assertNotNull(findEntity);
             Assert.assertNotNull(findEntity.getValueConvert());
             Assert.assertNotNull(findEntity.getValueNoConvert());
@@ -337,8 +337,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Double valueConvert = new Double(42.0);
-        Double valueNoConvert = new Double(100.0);
+        Double valueConvert = Double.valueOf(42.0);
+        Double valueNoConvert = Double.valueOf(100.0);
         try {
             DoubleToStringAutoApplyConverter.reset();
             ConvertEntityDW2S entity = new ConvertEntityDW2S(id, valueConvert, valueNoConvert);
@@ -386,14 +386,14 @@ public class TestAutoApplyConverter {
             em.getTransaction().commit();
             
             Assert.assertTrue(FloatToStringAutoApplyConverter.convertToDatabaseTriggered);
-            Assert.assertEquals(new Float(valueConvert), FloatToStringAutoApplyConverter.ctdcVal);
+            Assert.assertEquals(Float.valueOf(valueConvert), FloatToStringAutoApplyConverter.ctdcVal);
             FloatToStringAutoApplyConverter.reset();
             
             em.clear();
             
             ConvertEntityF2S findEntity = em.find(ConvertEntityF2S.class, id);
             Assert.assertTrue(FloatToStringAutoApplyConverter.convertToEntityTriggered);
-            Assert.assertEquals(new Float(valueConvert).toString(), FloatToStringAutoApplyConverter.cteaVal);
+            Assert.assertEquals(Float.valueOf(valueConvert).toString(), FloatToStringAutoApplyConverter.cteaVal);
             Assert.assertNotNull(findEntity);
             Assert.assertNotNull(findEntity.getValueConvert());
             Assert.assertNotNull(findEntity.getValueNoConvert());
@@ -413,8 +413,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Float valueConvert = new Float(42.0f);
-        Float valueNoConvert = new Float(100.0f);
+        Float valueConvert = Float.valueOf(42.0f);
+        Float valueNoConvert = Float.valueOf(100.0f);
         try {
             FloatToStringAutoApplyConverter.reset();
             ConvertEntityFW2S entity = new ConvertEntityFW2S(id, valueConvert, valueNoConvert);
@@ -462,14 +462,14 @@ public class TestAutoApplyConverter {
             em.getTransaction().commit();
             
             Assert.assertTrue(IntToStringAutoApplyConverter.convertToDatabaseTriggered);
-            Assert.assertEquals(new Integer(valueConvert), IntToStringAutoApplyConverter.ctdcVal);
+            Assert.assertEquals(Integer.valueOf(valueConvert), IntToStringAutoApplyConverter.ctdcVal);
             IntToStringAutoApplyConverter.reset();
             
             em.clear();
             
             ConvertEntityI2S findEntity = em.find(ConvertEntityI2S.class, id);
             Assert.assertTrue(IntToStringAutoApplyConverter.convertToEntityTriggered);
-            Assert.assertEquals(new Integer(valueConvert).toString(), IntToStringAutoApplyConverter.cteaVal);
+            Assert.assertEquals(Integer.valueOf(valueConvert).toString(), IntToStringAutoApplyConverter.cteaVal);
             Assert.assertNotNull(findEntity);
             Assert.assertNotNull(findEntity.getValueConvert());
             Assert.assertNotNull(findEntity.getValueNoConvert());
@@ -489,8 +489,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Integer valueConvert = new Integer(42);
-        Integer valueNoConvert = new Integer(100);
+        Integer valueConvert = Integer.valueOf(42);
+        Integer valueNoConvert = Integer.valueOf(100);
         try {
             IntToStringAutoApplyConverter.reset();
             ConvertEntityIW2S entity = new ConvertEntityIW2S(id, valueConvert, valueNoConvert);
@@ -538,14 +538,14 @@ public class TestAutoApplyConverter {
             em.getTransaction().commit();
             
             Assert.assertTrue(LongToStringAutoApplyConverter.convertToDatabaseTriggered);
-            Assert.assertEquals(new Long(valueConvert), LongToStringAutoApplyConverter.ctdcVal);
+            Assert.assertEquals(Long.valueOf(valueConvert), LongToStringAutoApplyConverter.ctdcVal);
             LongToStringAutoApplyConverter.reset();
             
             em.clear();
             
             ConvertEntityL2S findEntity = em.find(ConvertEntityL2S.class, id);
             Assert.assertTrue(LongToStringAutoApplyConverter.convertToEntityTriggered);
-            Assert.assertEquals(new Long(valueConvert).toString(), LongToStringAutoApplyConverter.cteaVal);
+            Assert.assertEquals(Long.valueOf(valueConvert).toString(), LongToStringAutoApplyConverter.cteaVal);
             Assert.assertNotNull(findEntity);
             Assert.assertNotNull(findEntity.getValueConvert());
             Assert.assertNotNull(findEntity.getValueNoConvert());
@@ -565,8 +565,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Long valueConvert = new Long((long) 42);
-        Long valueNoConvert = new Long((long) 100);
+        Long valueConvert = Long.valueOf((long) 42);
+        Long valueNoConvert = Long.valueOf((long) 100);
         try {
             LongToStringAutoApplyConverter.reset();
             ConvertEntityLW2S entity = new ConvertEntityLW2S(id, valueConvert, valueNoConvert);
@@ -614,14 +614,14 @@ public class TestAutoApplyConverter {
             em.getTransaction().commit();
             
             Assert.assertTrue(ShortToStringAutoApplyConverter.convertToDatabaseTriggered);
-            Assert.assertEquals(new Short(valueConvert), ShortToStringAutoApplyConverter.ctdcVal);
+            Assert.assertEquals(Short.valueOf(valueConvert), ShortToStringAutoApplyConverter.ctdcVal);
             ShortToStringAutoApplyConverter.reset();
             
             em.clear();
             
             ConvertEntitySh2S findEntity = em.find(ConvertEntitySh2S.class, id);
             Assert.assertTrue(ShortToStringAutoApplyConverter.convertToEntityTriggered);
-            Assert.assertEquals(new Short(valueConvert).toString(), ShortToStringAutoApplyConverter.cteaVal);
+            Assert.assertEquals(Short.valueOf(valueConvert).toString(), ShortToStringAutoApplyConverter.cteaVal);
             Assert.assertNotNull(findEntity);
             Assert.assertNotNull(findEntity.getValueConvert());
             Assert.assertNotNull(findEntity.getValueNoConvert());
@@ -641,8 +641,8 @@ public class TestAutoApplyConverter {
         
         EntityManager em = emfAutoApplyConverters.createEntityManager();
         long id = System.currentTimeMillis();
-        Short valueConvert = new Short((short) 42);
-        Short valueNoConvert = new Short((short) 100);
+        Short valueConvert = Short.valueOf((short) 42);
+        Short valueNoConvert = Short.valueOf((short) 100);
         try {
             ShortToStringAutoApplyConverter.reset();
             ConvertEntityShW2S entity = new ConvertEntityShW2S(id, valueConvert, valueNoConvert);

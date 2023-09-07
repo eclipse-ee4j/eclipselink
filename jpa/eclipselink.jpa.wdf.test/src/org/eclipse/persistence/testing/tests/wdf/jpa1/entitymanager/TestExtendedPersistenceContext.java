@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -46,7 +46,7 @@ public class TestExtendedPersistenceContext extends JPA1Base {
             env.commitTransaction(em);
             verify(em.contains(dep), "persistence context does not contain entity");
             em.clear();
-            dep = em.find(Department.class, new Integer(dep.getId()));
+            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
             verify(dep != null, "entity not found");
         } finally {
             closeEntityManager(em);
@@ -63,14 +63,14 @@ public class TestExtendedPersistenceContext extends JPA1Base {
             env.beginTransaction(em);
             em.persist(dep);
             env.commitTransactionAndClear(em);
-            dep = em.find(Department.class, new Integer(dep.getId()));
+            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
             dep.setName("modified");
             env.beginTransaction(em);
             verify(em.contains(dep), "persistence context does not contain entity");
             env.commitTransaction(em);
             verify(em.contains(dep), "persistence context does not contain entity");
             em.clear();
-            dep = em.find(Department.class, new Integer(dep.getId()));
+            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
             verify("modified".equals(dep.getName()), "entity not updated");
         } finally {
             closeEntityManager(em);
@@ -90,7 +90,7 @@ public class TestExtendedPersistenceContext extends JPA1Base {
             em.remove(dep);
             env.beginTransaction(em);
             env.commitTransactionAndClear(em);
-            dep = em.find(Department.class, new Integer(dep.getId()));
+            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
             verify(dep == null, "entity not removed");
         } finally {
             closeEntityManager(em);
@@ -112,7 +112,7 @@ public class TestExtendedPersistenceContext extends JPA1Base {
             verify("detached".equals(dep.getName()), "entity not merged");
             env.beginTransaction(em);
             env.commitTransactionAndClear(em);
-            dep = em.find(Department.class, new Integer(dep.getId()));
+            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
             verify("detached".equals(dep.getName()), "entity not merged");
         } finally {
             closeEntityManager(em);
@@ -134,7 +134,7 @@ public class TestExtendedPersistenceContext extends JPA1Base {
             verify("test".equals(dep.getName()), "entity not refreshed");
             env.beginTransaction(em);
             env.commitTransactionAndClear(em);
-            dep = em.find(Department.class, new Integer(dep.getId()));
+            dep = em.find(Department.class, Integer.valueOf(dep.getId()));
             verify("test".equals(dep.getName()), "entity not refreshed");
         } finally {
             closeEntityManager(em);

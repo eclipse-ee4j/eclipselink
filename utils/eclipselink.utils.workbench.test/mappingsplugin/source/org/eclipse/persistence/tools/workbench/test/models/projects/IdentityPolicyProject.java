@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,7 +86,7 @@ public class IdentityPolicyProject extends RelationalTestProject
         employeeDescriptor.getCachingPolicy().setCacheType(MWCachingPolicy.CACHE_TYPE_FULL);
         employeeDescriptor.getCachingPolicy().setUseProjectDefaultCacheExpiry(false);
         employeeDescriptor.getCachingPolicy().getCacheExpiry().setExpiryType(MWCacheExpiry.CACHE_EXPIRY_TIME_TO_LIVE_EXPIRY);
-        employeeDescriptor.getCachingPolicy().getCacheExpiry().setTimeToLiveExpiry(new Long(10000));
+        employeeDescriptor.getCachingPolicy().getCacheExpiry().setTimeToLiveExpiry(Long.valueOf(10000));
 
     }
 

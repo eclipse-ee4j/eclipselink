@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,7 +90,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionMath.add(builder.get("salary"), new Integer(1000)).lessThanEqual(50000);
+        Expression whereClause = ExpressionMath.add(builder.get("salary"), Integer.valueOf(1000)).lessThanEqual(50000);
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -104,7 +104,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionMath.add(builder.get("salary"), new Integer(1000)).lessThanEqual(50000);
+        Expression whereClause = ExpressionMath.add(builder.get("salary"), Integer.valueOf(1000)).lessThanEqual(50000);
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -118,7 +118,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(new Integer(50000), builder).greaterThan(ExpressionMath.add(builder.get("salary"), new Integer(1000)));
+        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(50000), builder).greaterThan(ExpressionMath.add(builder.get("salary"), Integer.valueOf(1000)));
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -132,7 +132,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionMath.subtract(builder.get("salary"), new Integer(1000)).lessThanEqual(50000);
+        Expression whereClause = ExpressionMath.subtract(builder.get("salary"), Integer.valueOf(1000)).lessThanEqual(50000);
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -146,7 +146,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionMath.subtract(builder.get("salary"), new Integer(1000)).lessThanEqual(50000);
+        Expression whereClause = ExpressionMath.subtract(builder.get("salary"), Integer.valueOf(1000)).lessThanEqual(50000);
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -160,7 +160,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(new Integer(50000), builder).greaterThan(ExpressionMath.subtract(builder.get("salary"), new Integer(1000)));
+        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(50000), builder).greaterThan(ExpressionMath.subtract(builder.get("salary"), Integer.valueOf(1000)));
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -174,7 +174,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionMath.multiply(builder.get("salary"), new Integer(2)).lessThanEqual(100000);
+        Expression whereClause = ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)).lessThanEqual(100000);
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -188,7 +188,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionMath.multiply(builder.get("salary"), new Integer(2)).lessThanEqual(100000);
+        Expression whereClause = ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)).lessThanEqual(100000);
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -202,7 +202,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(new Integer(100000), builder).greaterThan(ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(100000), builder).greaterThan(ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -216,7 +216,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionMath.divide(builder.get("salary"), new Integer(2)).lessThanEqual(20000);
+        Expression whereClause = ExpressionMath.divide(builder.get("salary"), Integer.valueOf(2)).lessThanEqual(20000);
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -230,7 +230,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionMath.divide(builder.get("salary"), new Integer(2)).lessThanEqual(20000);
+        Expression whereClause = ExpressionMath.divide(builder.get("salary"), Integer.valueOf(2)).lessThanEqual(20000);
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;
@@ -244,7 +244,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = ExpressionBuilder.fromConstant(new Integer(20000), builder).greaterThan(ExpressionMath.divide(builder.get("salary"), new Integer(2)));
+        Expression whereClause = ExpressionBuilder.fromConstant(Integer.valueOf(20000), builder).greaterThan(ExpressionMath.divide(builder.get("salary"), Integer.valueOf(2)));
         theTest.setOriginalObjectExpression(whereClause);
 
         return theTest;

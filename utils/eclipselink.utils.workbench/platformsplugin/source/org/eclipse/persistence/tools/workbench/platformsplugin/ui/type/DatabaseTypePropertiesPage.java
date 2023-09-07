@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ import org.eclipse.persistence.tools.workbench.utility.node.AbstractNodeModel;
 final class DatabaseTypePropertiesPage
     extends TitledPropertiesPage
 {
-    static final Object DEFAULT_INITIAL_SIZE_VALUE = new Integer(0);
+    static final Object DEFAULT_INITIAL_SIZE_VALUE = Integer.valueOf(0);
 
 
     public DatabaseTypePropertiesPage(WorkbenchContext context) {
@@ -336,13 +336,13 @@ final class DatabaseTypePropertiesPage
 
     private SpinnerModel buildInitialSizeSpinnerModel() {
         PropertyValueModel model = this.buildInitialSizeAdapter();
-        return new NumberSpinnerModelAdapter(model, new Integer(0), null, new Integer(1), new Integer(0));
+        return new NumberSpinnerModelAdapter(model, Integer.valueOf(0), null, Integer.valueOf(1), Integer.valueOf(0));
     }
 
     private PropertyValueModel buildInitialSizeAdapter() {
         return new PropertyAspectAdapter(this.getSelectionHolder(), DatabaseType.INITIAL_SIZE_PROPERTY) {
             protected Object getValueFromSubject() {
-                return new Integer(((DatabaseType) this.subject).getInitialSize());
+                return Integer.valueOf(((DatabaseType) this.subject).getInitialSize());
             }
             protected void setValueOnSubject(Object value) {
                 ((DatabaseType) this.subject).setInitialSize(((Number) value).intValue());

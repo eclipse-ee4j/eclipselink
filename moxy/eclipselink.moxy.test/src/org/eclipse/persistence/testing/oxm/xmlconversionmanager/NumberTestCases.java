@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public class NumberTestCases extends OXTestCase {
     }
 
     public void testConvertWithPlusToByte() {
-        Byte controlByte = new Byte("1");
+        Byte controlByte = Byte.valueOf("1");
         Byte testByte = (Byte) xmlConversionManager.convertObject("+1", Byte.class);
         String testString = String.valueOf(testByte);
         String controlString = String.valueOf(controlByte);
@@ -44,7 +44,7 @@ public class NumberTestCases extends OXTestCase {
     }
 
     public void testConvertWithPlusToInteger() {
-        Integer controlInteger = new Integer("1");
+        Integer controlInteger = Integer.valueOf("1");
         Integer testInteger = (Integer) xmlConversionManager.convertObject("+1", Integer.class);
         String testString = String.valueOf(testInteger);
         String controlString = String.valueOf(controlInteger);
@@ -52,7 +52,7 @@ public class NumberTestCases extends OXTestCase {
     }
 
     public void testConvertWithMinuToByte() {
-        Byte controlByte = new Byte("-1");
+        Byte controlByte = Byte.valueOf("-1");
         Byte testByte = (Byte) xmlConversionManager.convertObject("-1", Byte.class);
         String testString = String.valueOf(testByte);
         String controlString = String.valueOf(controlByte);
@@ -60,7 +60,7 @@ public class NumberTestCases extends OXTestCase {
     }
 
     public void testConvertWithMinusToInteger() {
-        Integer controlInteger = new Integer("-1");
+        Integer controlInteger = Integer.valueOf("-1");
         Integer testInteger = (Integer) xmlConversionManager.convertObject("-1", Integer.class);
         String testString = String.valueOf(testInteger);
         String controlString = String.valueOf(controlInteger);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -278,7 +278,7 @@ public class FileToolsTests extends TestCase {
     }
 
     private File relativeParentFile(int len) {
-        return (File) ClassTools.invokeStaticMethod(FileTools.class, "relativeParentFile", int.class, new Integer(len));
+        return (File) ClassTools.invokeStaticMethod(FileTools.class, "relativeParentFile", int.class, Integer.valueOf(len));
     }
 
     public void testConvertToRelativeFile() {

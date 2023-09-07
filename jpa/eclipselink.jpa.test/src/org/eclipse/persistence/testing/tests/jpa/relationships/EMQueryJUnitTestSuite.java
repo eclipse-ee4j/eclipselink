@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class EMQueryJUnitTestSuite extends JUnitTestCase {
-    protected Integer nonExistingCustomerId = new Integer(999999);
+    protected Integer nonExistingCustomerId = Integer.valueOf(999999);
 
     public EMQueryJUnitTestSuite() {
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class AnotherClient extends Thread {
             raq.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Project.class);
             Vector projects = (Vector)unitOfWork.executeQuery(raq);
             org.eclipse.persistence.testing.models.employee.domain.Project project = (org.eclipse.persistence.testing.models.employee.domain.Project)projects.elementAt(this.index);
-            project.setName(new Integer(this.index).toString());
+            project.setName(Integer.valueOf(this.index).toString());
 
             this.unitOfWork.commit();
         } catch (Exception exception) {

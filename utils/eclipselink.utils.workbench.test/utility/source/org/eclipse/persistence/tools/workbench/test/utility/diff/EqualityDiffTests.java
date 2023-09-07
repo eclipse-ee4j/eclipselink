@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class EqualityDiffTests extends TestCase {
     }
 
     public void testSameObject() {
-        Object object1 = new Integer(42);
+        Object object1 = Integer.valueOf(42);
         Object object2 = object1;
         Diff diff = this.differentiator.diff(object1, object2);
         this.verifyDiff(diff, object1, object2);
@@ -56,8 +56,8 @@ public class EqualityDiffTests extends TestCase {
     }
 
     public void testDifferentObjects() {
-        Object object1 = new Integer(42);
-        Object object2 = new Integer(42);
+        Object object1 = Integer.valueOf(42);
+        Object object2 = Integer.valueOf(42);
         assertEquals(object1, object2);
         assertTrue(object1 != object2);
         Diff diff = this.differentiator.diff(object1, object2);
@@ -84,8 +84,8 @@ public class EqualityDiffTests extends TestCase {
     }
 
     public void testUnequalObjects() {
-        Object object1 = new Integer(42);
-        Object object2 = new Integer(77);
+        Object object1 = Integer.valueOf(42);
+        Object object2 = Integer.valueOf(77);
         Diff diff = this.differentiator.diff(object1, object2);
         this.verifyDiffNot(diff, object1, object2);
         diff = this.differentiator.keyDiff(object1, object2);

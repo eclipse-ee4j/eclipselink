@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,8 +24,8 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Document;
 
 public class PostBuildEventTestCases extends XMLMappingTestCases {
-    static Integer EMPLOYEE_POST_BUILD = new Integer(0);
-    static Integer ADDRESS_POST_BUILD  = new Integer(1);
+    static Integer EMPLOYEE_POST_BUILD = Integer.valueOf(0);
+    static Integer ADDRESS_POST_BUILD  = Integer.valueOf(1);
     EmployeeProject project;
 
     public PostBuildEventTestCases(String name) throws Exception {

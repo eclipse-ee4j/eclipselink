@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Boolean bb = new Boolean(true);
+        Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
 
         //b.add(bb);
@@ -63,7 +63,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Boolean bb = new Boolean(true);
+        Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -81,7 +81,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Boolean b = new Boolean(true);
+        Boolean b = Boolean.valueOf(true);
 
         dataObject_a.setBoolean(property1, true);// c dataobject's a property has value boolean 'true'
 
@@ -96,7 +96,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c.setType(type_c);
 
-        Boolean bb = new Boolean(true);
+        Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -148,7 +148,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Character bb = new Character('1');
+        Character bb = Character.valueOf('1');
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -178,7 +178,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Double bb = new Double(1);
+        Double bb = Double.valueOf(1);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -208,7 +208,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Float bb = new Float(1);
+        Float bb = Float.valueOf(1);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -239,7 +239,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         //short s = 1;
-        Integer bb = new Integer(1);
+        Integer bb = Integer.valueOf(1);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -270,7 +270,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         long s = 1;
-        Long bb = new Long(s);
+        Long bb = Long.valueOf(s);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -301,7 +301,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         short s = 1;
-        Short bb = new Short(s);
+        Short bb = Short.valueOf(s);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -331,7 +331,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         String str = "true";
-        Boolean B_STR = new Boolean(str);
+        Boolean B_STR = Boolean.valueOf(str);
         dataObject_c.setString(property_c, str);// add it to instance list
 
         this.assertEquals(B_STR.booleanValue(), dataObject_a.getBoolean(property));
@@ -348,7 +348,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         String str = "true";
-        Boolean bb = new Boolean(str);
+        Boolean bb = Boolean.valueOf(str);
         List b = new ArrayList();
 
         //b.add(bb);
@@ -370,7 +370,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         String str = "true";
-        Boolean bb = new Boolean(str);
+        Boolean bb = Boolean.valueOf(str);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
@@ -389,7 +389,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c._setType(type_c);
 
         String str = "true";
-        Boolean b = new Boolean(str);
+        Boolean b = Boolean.valueOf(str);
 
         dataObject_a.set(property1, b);// c dataobject's a property has value boolean 'true'
 
@@ -405,7 +405,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
         dataObject_c.setType(type_c);
 
         String str = "true";
-        Boolean bb = new Boolean(str);
+        Boolean bb = Boolean.valueOf(str);
         List b = new ArrayList();
 
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'

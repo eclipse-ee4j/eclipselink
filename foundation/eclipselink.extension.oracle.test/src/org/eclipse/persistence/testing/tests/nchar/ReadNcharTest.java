@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -169,10 +169,10 @@ public class ReadNcharTest extends BaseNcharTest {
 
     pstmt.setInt(1, controlObject.getId());
 
-    pstmt.setObject(2, (new Character(controlObject.getChar())).toString());
+    pstmt.setObject(2, (Character.valueOf(controlObject.getChar())).toString());
 
     pstmt.setFormOfUse(3, oracle.jdbc.OraclePreparedStatement.FORM_NCHAR);
-    pstmt.setObject(3, (new Character(controlObject.getNchar())).toString());
+    pstmt.setObject(3, (Character.valueOf(controlObject.getNchar())).toString());
 
     pstmt.setObject(4, controlObject.getStr());
 
@@ -200,10 +200,10 @@ public class ReadNcharTest extends BaseNcharTest {
 
     pstmt.setInt(1, controlObject.getId());
 
-    pstmt.setObject(2, (new Character(controlObject.getChar())).toString());
+    pstmt.setObject(2, (Character.valueOf(controlObject.getChar())).toString());
 
     pstmt.setFormOfUse(3, oracle.jdbc.OraclePreparedStatement.FORM_NCHAR);
-    pstmt.setObject(3, (new Character(controlObject.getNchar())).toString());
+    pstmt.setObject(3, (Character.valueOf(controlObject.getNchar())).toString());
 
     pstmt.setObject(4, controlObject.getStr());
 

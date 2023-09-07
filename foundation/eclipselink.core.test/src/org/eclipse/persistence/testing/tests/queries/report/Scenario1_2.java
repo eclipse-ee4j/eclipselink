@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class Scenario1_2 extends ReportQueryTestCase {
                 Object[] result = new Object[3];
                 result[0] = emp.getFirstName();
                 result[1] = emp.getLastName();
-                result[2] = new Integer(emp.getSalary());
+                result[2] = Integer.valueOf(emp.getSalary());
                 addResult(result, null);
             }
         }

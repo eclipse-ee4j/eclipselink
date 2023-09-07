@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -337,7 +337,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
 
         try {
             Blue blue = new Blue();
-            blue.setAlcoholContent(new Float(5.3));
+            blue.setAlcoholContent(5.3f);
             em.persist(blue);
             m_blueId = blue.getId();
             blue.setUniqueKey(m_blueId.toBigInteger());
@@ -1109,8 +1109,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         consumer.setName("Keith Alexander");
 
         BlueLight blueLight = new BlueLight();
-        blueLight.setAlcoholContent(new Float(4.0));
-        blueLight.setUniqueKey(new BigInteger((new Long(System.currentTimeMillis()).toString())));
+        blueLight.setAlcoholContent(4.0f);
+        blueLight.setUniqueKey(new BigInteger((Long.valueOf(System.currentTimeMillis()).toString())));
         em.persist(blueLight);
         consumer.addBlueLightBeerToConsume(blueLight);
         clone.setBeerConsumer(consumer);

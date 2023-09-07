@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -223,7 +223,7 @@ public final class ConverterPanel
     private ValueModel buildIsTypeConversionConverterHolder() {
         return new PropertyAspectAdapter(this.converterHolder) {
             protected Object getValueFromSubject() {
-                return new Boolean(this.subject instanceof MWTypeConversionConverter);
+                return Boolean.valueOf(this.subject instanceof MWTypeConversionConverter);
             }
         };
     }
@@ -263,7 +263,7 @@ public final class ConverterPanel
     private ValueModel buildIsObjectTypeConverterHolder() {
         return new PropertyAspectAdapter(this.converterHolder) {
             protected Object getValueFromSubject() {
-                return new Boolean(this.subject instanceof MWObjectTypeConverter);
+                return Boolean.valueOf(this.subject instanceof MWObjectTypeConverter);
             }
         };
     }

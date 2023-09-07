@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -148,7 +148,7 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         MudTireInfo mudTire = new MudTireInfo();
         mudTire.setName("Goodyear Mud Tracks");
         mudTire.setCode("MT-674-A4");
-        mudTire.setPressure(new Integer(100));
+        mudTire.setPressure(Integer.valueOf(100));
         mudTire.setTreadDepth(3);
 
         TireRating tireRating = new TireRating();
@@ -180,7 +180,7 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         RockTireInfo rockTire = new RockTireInfo();
         rockTire.setName("Goodyear Mud Tracks");
         rockTire.setCode("AE-678");
-        rockTire.setPressure(new Integer(100));
+        rockTire.setPressure(Integer.valueOf(100));
         rockTire.setGrip(RockTireInfo.Grip.SUPER);
 
         try {

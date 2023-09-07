@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -114,9 +114,9 @@ public class MapPopulator {
     public AggregateDirectMapHolder getAggregateDirectMapHolder(){
         AggregateDirectMapHolder holder = new AggregateDirectMapHolder();
         AggregateMapKey mapKey = getAggregateMapKey1();
-        holder.addAggregateToDirectMapItem(mapKey, new Integer(1));
+        holder.addAggregateToDirectMapItem(mapKey, Integer.valueOf(1));
         AggregateMapKey mapKey2 = getAggregateMapKey2();
-        holder.addAggregateToDirectMapItem(mapKey2, new Integer(2));
+        holder.addAggregateToDirectMapItem(mapKey2, Integer.valueOf(2));
         return holder;
     }
 
@@ -161,16 +161,16 @@ public class MapPopulator {
     public DirectAggregateMapHolder getDirectAggregateMapHolder(){
         DirectAggregateMapHolder holder = new DirectAggregateMapHolder();
         AggregateMapValue value = getAggregateMapValue1();
-        holder.addDirectToAggregateMapItem(new Integer(1), value);
+        holder.addDirectToAggregateMapItem(Integer.valueOf(1), value);
         value = getAggregateMapValue2();
-        holder.addDirectToAggregateMapItem(new Integer(2), value);
+        holder.addDirectToAggregateMapItem(Integer.valueOf(2), value);
         return holder;
     }
 
     public DirectDirectMapHolder getDirectDirectMapHolder(){
         DirectDirectMapHolder holder = new DirectDirectMapHolder();
-        holder.addDirectToDirectMapItem(new Integer(1), new Integer(1));
-        holder.addDirectToDirectMapItem(new Integer(2), new Integer(2));
+        holder.addDirectToDirectMapItem(Integer.valueOf(1), Integer.valueOf(1));
+        holder.addDirectToDirectMapItem(Integer.valueOf(2), Integer.valueOf(2));
         return holder;
     }
 
@@ -178,31 +178,31 @@ public class MapPopulator {
         DirectEntity1MMapHolder initialHolder = new DirectEntity1MMapHolder();
         DEOTMMapValue value = getDEOTMMapValue1();
         value.getHolder().setValue(initialHolder);
-        initialHolder.addDirectToEntityMapItem(new Integer(11), value);
+        initialHolder.addDirectToEntityMapItem(Integer.valueOf(11), value);
 
         DEOTMMapValue value2 = getDEOTMMapValue2();
         value2.getHolder().setValue(initialHolder);
-        initialHolder.addDirectToEntityMapItem(new Integer(22), value2);
+        initialHolder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
         return initialHolder;
     }
 
     public DirectEntityMapHolder getDirectEntityMapHolder(){
         DirectEntityMapHolder holder = new DirectEntityMapHolder();
         EntityMapValue value = getEntityMapValue1();
-        holder.addDirectToEntityMapItem(new Integer(11), value);
+        holder.addDirectToEntityMapItem(Integer.valueOf(11), value);
 
         EntityMapValue value2 = getEntityMapValue2();
-        holder.addDirectToEntityMapItem(new Integer(22), value2);
+        holder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
         return holder;
     }
 
     public DirectEntityU1MMapHolder getDirectEntityU1MMapHolder(){
         DirectEntityU1MMapHolder holder = new DirectEntityU1MMapHolder();
         EntityMapValue value = getEntityMapValue3();
-        holder.addDirectToEntityMapItem(new Integer(11), value);
+        holder.addDirectToEntityMapItem(Integer.valueOf(11), value);
 
         EntityMapValue value2 = getEntityMapValue4();
-        holder.addDirectToEntityMapItem(new Integer(22), value2);
+        holder.addDirectToEntityMapItem(Integer.valueOf(22), value2);
         return holder;
     }
 
@@ -220,9 +220,9 @@ public class MapPopulator {
     public EntityDirectMapHolder getEntityDirectMapHolder(){
         EntityDirectMapHolder holder = new EntityDirectMapHolder();
         EntityMapKey mapKey = getEntityMapKey3();
-        holder.addEntityDirectMapItem(mapKey, new Integer(1));
+        holder.addEntityDirectMapItem(mapKey, Integer.valueOf(1));
         EntityMapKey mapKey2 = getEntityMapKey4();
-        holder.addEntityDirectMapItem(mapKey2, new Integer(2));
+        holder.addEntityDirectMapItem(mapKey2, Integer.valueOf(2));
         return holder;
     }
 

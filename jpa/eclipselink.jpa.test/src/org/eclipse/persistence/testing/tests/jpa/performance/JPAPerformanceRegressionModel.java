@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -315,7 +315,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                address = manager.find(Address.class, new Long(address.getId()));
+                address = manager.find(Address.class, Long.valueOf(address.getId()));
                 if (address.getStreet().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -343,7 +343,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                address = manager.find(Address.class, new Long(address.getId()));
+                address = manager.find(Address.class, Long.valueOf(address.getId()));
                 if (address.getStreet().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -373,7 +373,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                employee = manager.getReference(Employee.class, new Long(employee.getId()));
+                employee = manager.getReference(Employee.class, Long.valueOf(employee.getId()));
                 if (employee.getLastName().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -402,7 +402,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                employee = manager.getReference(Employee.class, new Long(employee.getId()));
+                employee = manager.getReference(Employee.class, Long.valueOf(employee.getId()));
                 manager.refresh(employee);
                 if (employee.getPeriod().getStartDate().getDate() == 7) {
                     throwError("Change tracking detected the change (not used?).");

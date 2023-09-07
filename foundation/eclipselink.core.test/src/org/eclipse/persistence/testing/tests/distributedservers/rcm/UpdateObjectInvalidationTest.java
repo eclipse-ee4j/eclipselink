@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
     public UpdateObjectInvalidationTest() {
         super();
         setDescription("Ensure a remote object is invalidated when its descriptor is set to INVALIDATE_CHANGED_OBJECTS");
-        cacheSyncConfigValues.put(Employee.class, new Integer(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
+        cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
     }
 
     public void setup() {

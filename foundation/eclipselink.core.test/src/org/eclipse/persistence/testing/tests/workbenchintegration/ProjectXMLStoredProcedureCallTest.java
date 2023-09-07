@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,7 +89,7 @@ public class ProjectXMLStoredProcedureCallTest extends TestCase {
         Integer P_INOUT_FIELD_NAME = (Integer)row.get("P_INOUT_FIELD_NAME");
         Integer P_OUT_FIELD_NAME = (Integer)row.get("P_OUT_FIELD_NAME");
 
-        if (!P_INOUT_FIELD_NAME.equals(new Integer(1000)) || !P_OUT_FIELD_NAME.equals(new Integer(100))) {
+        if (!P_INOUT_FIELD_NAME.equals(Integer.valueOf(1000)) || !P_OUT_FIELD_NAME.equals(Integer.valueOf(100))) {
             throw new TestErrorException("Stored Procedure which write to or read from XML does not execute as expected.");
         }
     }
@@ -109,8 +109,8 @@ public class ProjectXMLStoredProcedureCallTest extends TestCase {
         Integer UNAMED_P_INOUT_FIELD_NAME = (Integer)unamedrow.get("P_INOUT_FIELD_NAME");
         Integer UNAMED_P_OUT_FIELD_NAME = (Integer)unamedrow.get("P_OUT_FIELD_NAME");
 
-        if (!UNAMED_P_INOUT_FIELD_NAME.equals(new Integer(1000)) ||
-            !UNAMED_P_OUT_FIELD_NAME.equals(new Integer(100))) {
+        if (!UNAMED_P_INOUT_FIELD_NAME.equals(Integer.valueOf(1000)) ||
+            !UNAMED_P_OUT_FIELD_NAME.equals(Integer.valueOf(100))) {
             throw new TestErrorException("UNnamed Stored Procedure which write to or read from XML dose not execute as expected.");
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class SDODataObjectGetListConversionByXPathQueryTest extends SDODataObjec
         prop.setType(SDOConstants.SDO_BOOLEAN);
         prop.setMany(true);
 
-        Boolean bb = new Boolean(true);
+        Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
         b.add(bb);
 
@@ -86,7 +86,7 @@ public class SDODataObjectGetListConversionByXPathQueryTest extends SDODataObjec
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Boolean b = new Boolean(true);
+        Boolean b = Boolean.valueOf(true);
 
 
         dataObject_a.setBoolean("PName-a0/PName-b0[number='1']/PName-c1.0", true);

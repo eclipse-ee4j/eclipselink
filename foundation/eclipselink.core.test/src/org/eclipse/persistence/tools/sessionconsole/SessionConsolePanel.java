@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -3418,7 +3418,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             CacheKey key = (CacheKey) cacheEnumeration.nextElement();
             String[] values = new String[4];
             values[0] = key.getKey().toString();
-            values[1] = new Integer(key.getObject().hashCode()).toString();
+            values[1] = Integer.valueOf(key.getObject().hashCode()).toString();
             values[2] = String.valueOf(key.getWriteLockValue());
             values[3] = key.getObject().toString();
             model.addRow(values);

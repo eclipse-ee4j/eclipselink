@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -153,7 +153,7 @@ public class TransformationIteratorTests extends TestCase {
         // transform each string into an integer with a value of the string's length
         return new Transformer() {
             public Object transform(Object next) {
-                return new Integer(((String) next).length());
+                return Integer.valueOf(((String) next).length());
             }
         };
     }
@@ -162,7 +162,7 @@ public class TransformationIteratorTests extends TestCase {
         // transform each string into an integer with a value of the string's length
         return new TransformationIterator(nestedIterator) {
             protected Object transform(Object next) {
-                return new Integer(((String) next).length());
+                return Integer.valueOf(((String) next).length());
             }
         };
     }

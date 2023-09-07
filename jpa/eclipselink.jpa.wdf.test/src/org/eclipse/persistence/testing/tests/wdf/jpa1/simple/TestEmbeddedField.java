@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -36,7 +36,7 @@ public class TestEmbeddedField extends JPA1Base {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            final Integer employeeId = new Integer(25);
+            final Integer employeeId = Integer.valueOf(25);
             final Department department = new Department(9, "R&D");
             final Employee employee = new Employee(employeeId.intValue(), "Emil", "Bahr", department);
             final EmploymentPeriod period = new EmploymentPeriod();
@@ -70,7 +70,7 @@ public class TestEmbeddedField extends JPA1Base {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            final Integer employeeId = new Integer(26);
+            final Integer employeeId = Integer.valueOf(26);
             final Department department = new Department(10, "R&D");
             final Employee employee = new Employee(employeeId.intValue(), "Emil", "Bahr", department);
             env.beginTransaction(em);
@@ -108,7 +108,7 @@ public class TestEmbeddedField extends JPA1Base {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            final Integer employeeId = new Integer(27);
+            final Integer employeeId = Integer.valueOf(27);
             final Department department = new Department(11, "R&D");
             final Employee employee = new Employee(employeeId.intValue(), "Emil", "Bahr", department);
             final EmploymentPeriod period = new EmploymentPeriod();

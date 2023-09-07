@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -142,7 +142,7 @@ final class ProjectCachingPolicyPanel extends AbstractSubjectPanel
         {
             protected Object getValueFromSubject()
             {
-                return new Integer(((MWCachingPolicy) subject).getCacheSize());
+                return Integer.valueOf(((MWCachingPolicy) subject).getCacheSize());
             }
 
             protected void setValueOnSubject(Object value)
@@ -157,10 +157,10 @@ final class ProjectCachingPolicyPanel extends AbstractSubjectPanel
         return new NumberSpinnerModelAdapter
         (
             buildCacheSizeHolder(),
-            new Integer(0),
-            new Integer(99999),
-            new Integer(1),
-            new Integer(MWCachingPolicy.DEFAULT_CACHE_SIZE)
+            Integer.valueOf(0),
+            Integer.valueOf(99999),
+            Integer.valueOf(1),
+            Integer.valueOf(MWCachingPolicy.DEFAULT_CACHE_SIZE)
         );
     }
 

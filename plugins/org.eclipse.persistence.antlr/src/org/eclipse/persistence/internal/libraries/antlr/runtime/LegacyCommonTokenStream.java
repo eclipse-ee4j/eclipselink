@@ -105,7 +105,7 @@ public class LegacyCommonTokenStream implements TokenStream {
                 }
             }
             if ( discardSet!=null &&
-                 discardSet.contains(new Integer(t.getType())) )
+                 discardSet.contains(Integer.valueOf(t.getType())) )
             {
                 discard = true;
             }

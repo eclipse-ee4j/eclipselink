@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,7 +111,7 @@ public class ClassToolsTests extends TestCase {
 
     public void testNewInstanceClassClassObject() {
         int initialCapacity = 200;
-        Vector v = (Vector) ClassTools.newInstance(java.util.Vector.class, int.class, new Integer(initialCapacity));
+        Vector v = (Vector) ClassTools.newInstance(java.util.Vector.class, int.class, Integer.valueOf(initialCapacity));
         assertNotNull(v);
         assertEquals(0, v.size());
         Object[] elementData = (Object[]) ClassTools.getFieldValue(v, "elementData");
@@ -123,14 +123,14 @@ public class ClassToolsTests extends TestCase {
         Class[] parmTypes = new Class[1];
         parmTypes[0] = int.class;
         Object[] parms = new Object[1];
-        parms[0] = new Integer(initialCapacity);
+        parms[0] = Integer.valueOf(initialCapacity);
         Vector v = (Vector) ClassTools.newInstance(java.util.Vector.class, parmTypes, parms);
         assertNotNull(v);
         assertEquals(0, v.size());
         Object[] elementData = (Object[]) ClassTools.getFieldValue(v, "elementData");
         assertEquals(initialCapacity, elementData.length);
 
-        parms[0] = new Integer(-1);
+        parms[0] = Integer.valueOf(-1);
         boolean exCaught = false;
         try {
             v = (Vector) ClassTools.newInstance(java.util.Vector.class, parmTypes, parms);
@@ -257,9 +257,9 @@ public class ClassToolsTests extends TestCase {
         Object[] newElementData = new Object[5];
         newElementData[0] = "foo";
         ClassTools.setFieldValue(v, "elementData", newElementData);
-        ClassTools.setFieldValue(v, "elementCount", new Integer(1));
+        ClassTools.setFieldValue(v, "elementCount", Integer.valueOf(1));
         // test inherited field
-        ClassTools.setFieldValue(v, "modCount", new Integer(1));
+        ClassTools.setFieldValue(v, "modCount", Integer.valueOf(1));
         assertTrue(v.contains("foo"));
 
         boolean exCaught = false;

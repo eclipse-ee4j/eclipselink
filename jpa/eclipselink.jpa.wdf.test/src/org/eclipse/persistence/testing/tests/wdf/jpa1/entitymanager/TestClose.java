@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -101,7 +101,7 @@ public class TestClose extends JPA1Base {
             em.close();
             verify(!em.isOpen(), "EntityManager is not closed");
             try {
-                em.find(Department.class, new Integer(1));
+                em.find(Department.class, Integer.valueOf(1));
                 flop("operation on a closed entity manager did not throw IllegalStateException");
             } catch (IllegalStateException e) {
                 // $JL-EXC$ expected behavior
@@ -118,7 +118,7 @@ public class TestClose extends JPA1Base {
             em.close();
             verify(!em.isOpen(), "EntityManager is not closed");
             try {
-                em.getReference(Department.class, new Integer(1));
+                em.getReference(Department.class, Integer.valueOf(1));
                 flop("operation on a closed entity manager did not throw IllegalStateException");
             } catch (IllegalStateException e) {
                 // $JL-EXC$ expected behavior
@@ -373,7 +373,7 @@ public class TestClose extends JPA1Base {
             em.persist(dep1);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep1 = em.find(Department.class, new Integer(dep1.getId()));
+            dep1 = em.find(Department.class, Integer.valueOf(dep1.getId()));
             em.persist(dep2);
             em.close(); // persistence context should remain active
             try {

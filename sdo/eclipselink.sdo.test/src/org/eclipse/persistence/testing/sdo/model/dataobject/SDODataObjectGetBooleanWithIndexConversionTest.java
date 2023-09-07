@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,7 +79,7 @@ public class SDODataObjectGetBooleanWithIndexConversionTest extends SDODataObjec
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_CHARACTER);
 
-        Character b = new Character('0');
+        Character b = Character.valueOf('0');
 
         dataObject.setChar(PROPERTY_INDEX, b.charValue());// add it to instance list
 
@@ -102,7 +102,7 @@ try {
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_DOUBLE);
 
-        Double b = new Double(0);
+        Double b = Double.valueOf(0);
 
         dataObject.setDouble(PROPERTY_INDEX, b.doubleValue());// add it to instance list
 
@@ -125,7 +125,7 @@ try {
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_FLOAT);
 
-        Float b = new Float(1.01);
+        Float b = 1.01f;
 
         dataObject.setFloat(PROPERTY_INDEX, b.floatValue());// add it to instance list
 
@@ -148,7 +148,7 @@ try {
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_INT);
 
-        Integer b = new Integer(1);
+        Integer b = Integer.valueOf(1);
 
         dataObject.setLong(PROPERTY_INDEX, b.intValue());// add it to instance list
 
@@ -171,7 +171,7 @@ try {
         SDOProperty property = ((SDOProperty)type.getProperty(PROPERTY_NAME));
         property.setType(SDOConstants.SDO_LONG);
 
-        Long b = new Long(1);
+        Long b = Long.valueOf(1);
 
         dataObject.setLong(PROPERTY_INDEX, b.longValue());// add it to instance list
 
@@ -211,7 +211,7 @@ try {
         property.setType(SDOConstants.SDO_STRING);
 
         String str = "true";
-        Boolean B_STR = new Boolean(str);
+        Boolean B_STR = Boolean.valueOf(str);
         dataObject.setString(PROPERTY_INDEX, str);// add it to instance list
 
         this.assertEquals(B_STR.booleanValue(), dataObject.getBoolean(PROPERTY_INDEX));

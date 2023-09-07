@@ -92,11 +92,11 @@ public class TestCompositeId {
             assertNotNull(compBFind.getId());
             assertNotNull(compBFind.getId().getCompAId());
             assertEquals(compBFind.getId().getCompAId().getEnvironment().getValue(), "1");
-            assertEquals(compBFind.getId().getCompAId().getIdentifier().getValue(), new Integer(1));
+            assertEquals(compBFind.getId().getCompAId().getIdentifier().getValue(), Integer.valueOf(1));
             assertNotNull(compBFind.getId().getClientId());
             assertEquals(compBFind.getId().getClientId().getValue(), "1");
             assertNotNull(compBFind.getId().getRN());
-            assertEquals(compBFind.getId().getRN().getValue(), new Integer(1));
+            assertEquals(compBFind.getId().getRN().getValue(), Integer.valueOf(1));
 
             CompC compC = new CompC();
             CompCId compCId = new CompCId();
@@ -118,7 +118,7 @@ public class TestCompositeId {
             assertNotSame(compC, compCFind);
             assertNotNull(compC.getId());
             assertNotNull(compC.getId().getBTI());
-            assertEquals(compC.getId().getBTI().getValue(), new Integer(3));
+            assertEquals(compC.getId().getBTI().getValue(), Integer.valueOf(3));
             assertNotNull(compC.getId().getCompBIdId());
             assertEquals(compC.getId().getUserId().getValue(), "4");
             assertNotNull(compC.getId().getUserId());
@@ -127,11 +127,11 @@ public class TestCompositeId {
             assertNotNull(compBU2);
             assertNotNull(compBU2.getCompAId());
             assertEquals(compBU2.getCompAId().getEnvironment().getValue(), "1");
-            assertEquals(compBU2.getCompAId().getIdentifier().getValue(), new Integer(1));
+            assertEquals(compBU2.getCompAId().getIdentifier().getValue(), Integer.valueOf(1));
             assertNotNull(compBU2.getClientId());
             assertEquals(compBU2.getClientId().getValue(), "1");
             assertNotNull(compBU2.getRN());
-            assertEquals(compBU2.getRN().getValue(), new Integer(1));
+            assertEquals(compBU2.getRN().getValue(), Integer.valueOf(1));
         } finally {
             if (em != null) {
                 if (transaction.isActive()) 

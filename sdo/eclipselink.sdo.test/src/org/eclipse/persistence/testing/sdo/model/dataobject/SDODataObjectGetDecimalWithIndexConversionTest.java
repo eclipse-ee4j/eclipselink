@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,7 @@ public class SDODataObjectGetDecimalWithIndexConversionTest extends SDODataObjec
         property.setName(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_FLOAT);
 
-        Float fl = new Float(12);
+        Float fl = Float.valueOf(12);
         BigDecimal bd = new BigDecimal(fl);
         dataObject.setFloat(PROPERTY_INDEX, fl);// add it to instance list
 

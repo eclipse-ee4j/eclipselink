@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,7 +134,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     public static void testDoubleSalaryForAll() {
         ExpressionBuilder builder = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
@@ -142,7 +142,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression selectionExpression = builder.get("salary").lessThan(20000);
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
@@ -150,7 +150,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         ExpressionBuilder builder = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
         updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
@@ -159,7 +159,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         Expression selectionExpression = builder.get("salary").lessThan(20000);
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
         updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
@@ -168,7 +168,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         Expression selectionExpression = builder.get("salary").lessThan(20000).and(builder.get("firstName").like("J%"));
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
         updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 

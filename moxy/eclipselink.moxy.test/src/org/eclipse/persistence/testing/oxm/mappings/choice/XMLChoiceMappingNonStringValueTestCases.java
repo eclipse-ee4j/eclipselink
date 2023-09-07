@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class XMLChoiceMappingNonStringValueTestCases extends XMLWithJSONMappingT
     Employee employee = new Employee();
     employee.name = "Jane Doe";
 
-    employee.choice = new Integer(12);
+    employee.choice = Integer.valueOf(12);
 
     employee.phone = "123-4567";
 

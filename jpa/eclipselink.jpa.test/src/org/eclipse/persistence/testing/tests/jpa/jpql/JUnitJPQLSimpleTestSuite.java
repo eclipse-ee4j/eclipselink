@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1014,10 +1014,10 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
             if (getServerSession().getPlatform().isMySQL()) {
             patternString = "234 RUBY $_Way";
-            escChar = new Character('$');
+            escChar = Character.valueOf('$');
         } else {
             patternString = "234 RUBY \\_Way";
-            escChar = new Character('\\');
+            escChar = Character.valueOf('\\');
         }
 
         List result = em.createQuery(ejbqlString).setParameter("pattern", patternString).setParameter("esc", escChar).getResultList();
@@ -1369,7 +1369,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((new Double(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt((Double.valueOf(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
 
         clearCache();
 
@@ -1422,7 +1422,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((new Double(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt((Double.valueOf(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
 
         clearCache();
 
@@ -1588,11 +1588,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         serverSession.login();
         UnitOfWork unitOfWork = serverSession.acquireUnitOfWork();
         Employee newEmployee = new Employee();
-        newEmployee.setId(new Integer(9000));
+        newEmployee.setId(Integer.valueOf(9000));
         unitOfWork.registerObject(newEmployee);
 
         Vector testV = new Vector();
-        testV.addElement(new Integer(9000));
+        testV.addElement(Integer.valueOf(9000));
 
         Employee result = (Employee)unitOfWork.executeQuery(readObjectQuery, testV);
 
@@ -2149,7 +2149,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         try {
             javax.persistence.Query query = em.createNamedQuery("findEmployeeByPK");
             query.setParameter("id", emp1.getId());
-            query.setHint("lockMode", new Short((short)1));
+            query.setHint("lockMode", Short.valueOf((short)1));
 
             emp2 = (Employee)query.getSingleResult();
         } catch (Exception e) {

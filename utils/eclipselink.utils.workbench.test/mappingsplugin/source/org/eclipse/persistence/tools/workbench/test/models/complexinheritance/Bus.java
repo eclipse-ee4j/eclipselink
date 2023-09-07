@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,8 @@ public static Bus example2(Company company)
 {
     Bus example = new Bus();
 
-    example.setPassengerCapacity(new Integer(30));
-    example.setFuelCapacity(new Integer(100));
+    example.setPassengerCapacity(Integer.valueOf(30));
+    example.setFuelCapacity(Integer.valueOf(100));
     example.setDescription("SCHOOL BUS");
     example.setFuelType("Petrol");
     example.getOwner().setValue(company);
@@ -37,8 +37,8 @@ public static Bus example3(Company company)
 {
     Bus example = new Bus();
 
-    example.setPassengerCapacity(new Integer(30));
-    example.setFuelCapacity(new Integer(100));
+    example.setPassengerCapacity(Integer.valueOf(30));
+    example.setFuelCapacity(Integer.valueOf(100));
     example.setDescription("TOUR BUS");
     example.setFuelType("Petrol");
     example.getOwner().setValue(company);
@@ -52,8 +52,8 @@ public static Bus example4(Company company)
 {
     Bus example = new Bus();
 
-    example.setPassengerCapacity(new Integer(30));
-    example.setFuelCapacity(new Integer(100));
+    example.setPassengerCapacity(Integer.valueOf(30));
+    example.setFuelCapacity(Integer.valueOf(100));
     example.setDescription("TRANSIT BUS");
     example.setFuelType("Gas");
     example.getOwner().setValue(company);

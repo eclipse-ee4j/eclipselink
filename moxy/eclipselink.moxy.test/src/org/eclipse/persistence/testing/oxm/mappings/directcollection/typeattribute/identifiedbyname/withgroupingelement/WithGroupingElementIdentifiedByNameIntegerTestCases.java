@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,9 +24,9 @@ public class WithGroupingElementIdentifiedByNameIntegerTestCases extends XMLMapp
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/typeattribute/identifiedbyname/withgroupingelement/WithGroupingElementIntegerIdentifiedByName.xml";
   private final static int CONTROL_ID = 123;
-    private final static Integer CONTROL_RESPONSIBILITY1 = new Integer(100);
-  private final static Integer CONTROL_RESPONSIBILITY2 = new Integer(200);
-  private final static Integer CONTROL_RESPONSIBILITY3 = new Integer(300);
+    private final static Integer CONTROL_RESPONSIBILITY1 = Integer.valueOf(100);
+  private final static Integer CONTROL_RESPONSIBILITY2 = Integer.valueOf(200);
+  private final static Integer CONTROL_RESPONSIBILITY3 = Integer.valueOf(300);
 
   public WithGroupingElementIdentifiedByNameIntegerTestCases(String name) throws Exception {
     super(name);

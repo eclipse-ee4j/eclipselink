@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -395,7 +395,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * PUBLIC:
      * The default value to substitute for database NULLs can be configured
      * on a per-class basis.
-     * Example: login.setDefaultNullValue(long.class, new Long(0))
+     * Example: login.setDefaultNullValue(long.class, Long.valueOf(0))
      */
     public void setDefaultNullValue(Class type, Object value) {
         getDatasourcePlatform().getConversionManager().setDefaultNullValue(type, value);

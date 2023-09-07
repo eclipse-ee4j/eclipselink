@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -225,10 +225,10 @@ public class SDODataObjectGetByXPathQueryTestCases extends SDOTestCase {
 
         List d_list0 = new ArrayList();
         List d_list1 = new ArrayList();
-        d_list0.add(new Double("1.11"));
-        d_list0.add(new Double("2.22"));
-        d_list1.add(new Double("3.33"));
-        d_list1.add(new Double("5.55"));
+        d_list0.add(Double.valueOf("1.11"));
+        d_list0.add(Double.valueOf("2.22"));
+        d_list1.add(Double.valueOf("3.33"));
+        d_list1.add(Double.valueOf("5.55"));
 
         dataObject_d0.set(property_d_number1, d_list0);// set a/b.0/c[numbet=123]
         dataObject_d1.set(property_d_number1, d_list1);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -118,7 +118,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             assassin.getNicknames().add("Clyde");
 
             Gun gun = new Gun();
-            gun.setCaliber(new Integer(50));
+            gun.setCaliber(Integer.valueOf(50));
             gun.setDescription("Sniper rifle");
             gun.setModel("9-112");
 
@@ -175,7 +175,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             // Assassin already has a gun, therefore, correct weapon already set
             // for a direct elimination.
             directElimination = new DirectElimination();
-            directElimination.setId(new Long(System.currentTimeMillis()).intValue());
+            directElimination.setId(Long.valueOf(System.currentTimeMillis()).intValue());
             directElimination.setName("Joe Smuck");
             directElimination.setDescription("Because he has a big mouth");
             directElimination.setAssassin(assassin);
@@ -226,7 +226,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             assassin.setWeapon(bomb);
 
             indirectElimination = new IndirectElimination();
-            indirectElimination.setId(new Long(System.currentTimeMillis()).intValue());
+            indirectElimination.setId(Long.valueOf(System.currentTimeMillis()).intValue());
             indirectElimination.setName("Jill Smuck");
             indirectElimination.setDescription("Because she has a big mouth");
             indirectElimination.setAssassin(assassin);
@@ -637,8 +637,8 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
                 Gun gun1 = em1.find(Gun.class, gunSerialNumber);
                 Gun gun2 = em2.find(Gun.class, gunSerialNumber);
 
-                gun1.setCaliber(new Integer(12));
-                gun2.setCaliber(new Integer(22));
+                gun1.setCaliber(Integer.valueOf(12));
+                gun2.setCaliber(Integer.valueOf(22));
 
                 em1.getTransaction().commit();
                 em2.getTransaction().commit();

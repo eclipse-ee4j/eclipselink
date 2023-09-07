@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,8 +44,8 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
         SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
         property_c1_object.setType(SDOConstants.SDO_DOUBLE);
         List objects = new ArrayList();
-        Double b = new Double(12);
-        Double bb = new Double(11);
+        Double b = Double.valueOf(12);
+        Double bb = Double.valueOf(11);
         objects.add(b);
         objects.add(bb);
         dataObject_c1.set(property_c1_object, objects);
@@ -100,7 +100,7 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
            property_c1_object.setType(SDOConstants.SDO_DOUBLE);
 
            type_c0.addDeclaredProperty(property_c1_object);*/
-        Double b = new Double(12);
+        Double b = Double.valueOf(12);
 
         dataObject_a.setDouble("PName-a0/PName-b0[number='1']/PName-c1.0", b.doubleValue());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class UpdateAllQueryRollbackTest extends TestCase {
         m_uow.executeQuery(uaq1);
 
         UpdateAllQuery uaq2 = new UpdateAllQuery(Employee.class);
-        uaq2.addUpdate(eb.getField("BAD"), new Integer(10000));
+        uaq2.addUpdate(eb.getField("BAD"), Integer.valueOf(10000));
         m_uow.executeQuery(uaq2);
 
         try {

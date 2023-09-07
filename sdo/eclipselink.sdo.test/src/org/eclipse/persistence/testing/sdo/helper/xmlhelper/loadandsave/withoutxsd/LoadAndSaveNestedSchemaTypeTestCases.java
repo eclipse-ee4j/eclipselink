@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,7 +60,7 @@ public class LoadAndSaveNestedSchemaTypeTestCases extends LoadAndSaveUnknownTest
         assertNotNull(prop);
         assertEquals(SDOConstants.SDO_INT, prop.getType());
         assertTrue(value instanceof Integer);
-        assertEquals(new Integer(10), ((Integer)value));
+        assertEquals(Integer.valueOf(10), ((Integer)value));
 
     }
 }

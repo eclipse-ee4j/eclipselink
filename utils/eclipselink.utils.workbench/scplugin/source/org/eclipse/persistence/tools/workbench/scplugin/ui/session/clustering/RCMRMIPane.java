@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,7 +110,7 @@ final class RCMRMIPane extends AbstractTransportManagerPane
             protected Object getValueFromSubject()
             {
                 RMITransportManagerAdapter adapter = (RMITransportManagerAdapter) subject;
-                return new Integer(adapter.getAnnouncementDelay());
+                return Integer.valueOf(adapter.getAnnouncementDelay());
             }
 
             protected void setValueOnSubject(Object value)
@@ -219,7 +219,7 @@ final class RCMRMIPane extends AbstractTransportManagerPane
             protected Object getValueFromSubject()
             {
                 RMITransportManagerAdapter adapter = (RMITransportManagerAdapter) subject;
-                return new Integer(adapter.getMulticastPort());
+                return Integer.valueOf(adapter.getMulticastPort());
             }
 
             protected void setValueOnSubject(Object value)
@@ -254,7 +254,7 @@ final class RCMRMIPane extends AbstractTransportManagerPane
             protected Object getValueFromSubject()
             {
                 RMITransportManagerAdapter adapter = (RMITransportManagerAdapter) subject;
-                return new Integer(adapter.getPacketTimeToLive());
+                return Integer.valueOf(adapter.getPacketTimeToLive());
             }
 
             protected void setValueOnSubject(Object value)

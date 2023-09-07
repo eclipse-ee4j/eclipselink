@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -187,7 +187,7 @@ public abstract class AbstractOrder implements Serializable {
     protected void initialize() {
         this.contacts2 = new Stack();
         this.salesReps2 = new TestHashtable();
-        this.total = new ValueHolder(new Integer(1));
+        this.total = new ValueHolder(Integer.valueOf(1));
         this.total2 = 0;
     }
 
@@ -214,7 +214,7 @@ public abstract class AbstractOrder implements Serializable {
     }
 
     public void setTotal(int total) {
-        this.total.setValue(new Integer(total));
+        this.total.setValue(Integer.valueOf(total));
     }
 
     public String toString() {
