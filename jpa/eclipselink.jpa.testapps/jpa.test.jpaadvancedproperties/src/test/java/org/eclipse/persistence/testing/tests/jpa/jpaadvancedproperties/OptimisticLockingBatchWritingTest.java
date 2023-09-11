@@ -88,6 +88,8 @@ public class OptimisticLockingBatchWritingTest extends JUnitTestCase {
         } catch (Throwable e) {
             Assert.assertTrue(e.getMessage(),
                     e.getMessage().contains("One or more objects of class"));
+            Assert.assertTrue(e.getMessage(),
+                    e.getMessage().contains("org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer"));
         }
         
     }

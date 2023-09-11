@@ -160,9 +160,9 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                     if ((Integer)rowCount != 1) {
                         Object object = null;
                         DatabaseQuery query = this.previousCall.getQuery();
-                        if (query instanceof UpdateObjectQuery) {
+                        if (query.isUpdateObjectQuery()) {
                             object = ((UpdateObjectQuery) query).getObject();
-                        } else {
+                        } else if (query.isDeleteObjectQuery()) {
                             object = ((DeleteObjectQuery) query).getObject();
                         }
                         throw OptimisticLockException.batchStatementExecutionFailureWithParametersList(object, parameters, query.getSQLString());
@@ -205,9 +205,9 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 }
                 Object object = null;
                 DatabaseQuery query = this.previousCall.getQuery();
-                if (query instanceof UpdateObjectQuery) {
+                if (query.isUpdateObjectQuery()) {
                     object = ((UpdateObjectQuery) query).getObject();
-                } else {
+                } else if (query.isDeleteObjectQuery()) {
                     object = ((DeleteObjectQuery) query).getObject();
                 }
                 throw OptimisticLockException.batchStatementExecutionFailureWithParametersList(object, failureParametersList, query.getSQLString());
