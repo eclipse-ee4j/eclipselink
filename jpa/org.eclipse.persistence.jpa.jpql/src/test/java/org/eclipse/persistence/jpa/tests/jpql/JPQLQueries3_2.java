@@ -95,4 +95,12 @@ public class JPQLQueries3_2 {
         return "SELECT c FROM Customer c WHERE RIGHT(c.firstName, 4) = 'John'";
     }
 
+    public static String query_Union01() {
+        return "Select a from Address a where a.city = 'Ottawa' " +
+                "union Select a2 from Address a2 " +
+                "union all Select a2 from Address a2 " +
+                "intersect Select a from Address a where a.city = 'Ottawa' " +
+                "except Select a from Address a where a.city = 'Ottawa'";
+    }
+
 }

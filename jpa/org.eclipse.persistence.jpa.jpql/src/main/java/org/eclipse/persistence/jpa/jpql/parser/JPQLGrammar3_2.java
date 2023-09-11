@@ -18,18 +18,30 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.CAST;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONCAT_PIPES;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.EXCEPT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.INTERSECT;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.REPLACE;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.RIGHT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.UNION;
 
 /**
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in Jakarta Persistence 3.2.
- * <pre><code>
+ * <pre><code> select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause] {union_clause}*
+ *
+ * union_clause ::= { UNION | INTERSECT | EXCEPT} [ALL] subquery
  *
  * string_expression ::= string_expression || string_term
  *
  * functions_returning_strings ::= REPLACE(string_primary, string_primary, string_primary)
+ *
+ * functions_returning_string ::= LEFT(string_primary, simple_arithmetic_expression})
+ *
+ * functions_returning_string ::= RIGHT(string_primary, simple_arithmetic_expression})
+ *
+ * cast_expression ::= CAST(scalar_expression [AS] database_type)
  *
  * </code></pre>
  */
@@ -109,12 +121,20 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         registerBNF(new InternalLeftStringExpressionBNF());
         registerBNF(new InternalRightPositionExpressionBNF());
         registerBNF(new InternalRightStringExpressionBNF());
+        registerBNF(new UnionClauseBNF());
+        registerBNF(new CastExpressionBNF());
+        registerBNF(new DatabaseTypeQueryBNF());
 
         // Extend some query BNFs
         addChildBNF(StringPrimaryBNF.ID,   SimpleStringExpressionBNF.ID);
         addChildFactory(FunctionsReturningStringsBNF.ID, ReplaceExpressionFactory.ID);
         addChildFactory(FunctionsReturningStringsBNF.ID, LeftExpressionFactory.ID);
         addChildFactory(FunctionsReturningStringsBNF.ID, RightExpressionFactory.ID);
+
+        // CAST
+        addChildBNF(FunctionsReturningDatetimeBNF.ID,    CastExpressionBNF.ID);
+        addChildBNF(FunctionsReturningNumericsBNF.ID,    CastExpressionBNF.ID);
+        addChildBNF(FunctionsReturningStringsBNF.ID,     CastExpressionBNF.ID);
     }
 
     @Override
@@ -123,6 +143,9 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         registerFactory(new ReplaceExpressionFactory());
         registerFactory(new LeftExpressionFactory());
         registerFactory(new RightExpressionFactory());
+        registerFactory(new UnionClauseFactory());
+        registerFactory(new DatabaseTypeFactory());
+        registerFactory(new CastExpressionFactory());
     }
 
     @Override
@@ -135,6 +158,14 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         registerIdentifierVersion(LEFT, JPAVersion.VERSION_3_2);
         registerIdentifierRole(RIGHT,             IdentifierRole.FUNCTION);           // REPLACE(x, y)
         registerIdentifierVersion(RIGHT, JPAVersion.VERSION_3_2);
+        registerIdentifierRole(UNION,          IdentifierRole.CLAUSE);
+        registerIdentifierVersion(UNION,       JPAVersion.VERSION_3_2);
+        registerIdentifierRole(INTERSECT,      IdentifierRole.CLAUSE);
+        registerIdentifierVersion(INTERSECT,   JPAVersion.VERSION_3_2);
+        registerIdentifierRole(EXCEPT,         IdentifierRole.CLAUSE);
+        registerIdentifierVersion(EXCEPT,      JPAVersion.VERSION_3_2);
+        registerIdentifierRole(CAST,           IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
+        registerIdentifierVersion(CAST,        JPAVersion.VERSION_3_2);
     }
 
     @Override

@@ -66,6 +66,7 @@ import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseOperandBNF;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -81,6 +82,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -168,6 +170,7 @@ import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
@@ -2658,6 +2661,51 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
+    public void visit(CastExpression expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        String identifier = expression.getIdentifier();
+
+        // Within CAST
+        if (isPositionWithin(position, identifier)) {
+            addIdentifier(identifier);
+            addIdentificationVariables();
+            addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
+        }
+        // After "CAST("
+        else if (expression.hasLeftParenthesis()) {
+            int length = identifier.length() + 1 /* '(' */;
+
+            // Right after "CAST("
+            if (position == length) {
+                addIdentificationVariables();
+                addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
+            }
+            else if (expression.hasExpression()) {
+                Expression scalarExpression = expression.getExpression();
+
+                if (isComplete(scalarExpression)) {
+                    length += scalarExpression.getLength();
+
+                    if (expression.hasSpaceAfterExpression()) {
+                        length++;
+
+                        // Right before "AS" or database type
+                        if (position == length) {
+                            addAggregateIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
+                            proposals.addIdentifier(AS);
+                        }
+                        // Within "AS"
+                        else if (isPositionWithin(position, length, AS)) {
+                            proposals.addIdentifier(AS);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void visit(CoalesceExpression expression) {
         super.visit(expression);
 
@@ -2879,6 +2927,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     public void visit(CountFunction expression) {
         super.visit(expression);
         visitAggregateFunction(expression);
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
+        super.visit(expression);
+        // Nothing to do, this is database specific
     }
 
     @Override
@@ -3847,6 +3901,58 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     public void visit(TypeExpression expression) {
         super.visit(expression);
         visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
+    public void visit(UnionClause expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        String identifier = expression.getIdentifier();
+
+        // Within <identifier>
+        if (isPositionWithin(position, identifier)) {
+            proposals.addIdentifier(EXCEPT);
+            proposals.addIdentifier(INTERSECT);
+            proposals.addIdentifier(UNION);
+        }
+        // After "<identifier> "
+        else if (expression.hasSpaceAfterIdentifier()) {
+            int length = identifier.length() + SPACE_LENGTH;
+
+            // Right after "<identifier> "
+            if (position == length) {
+                proposals.addIdentifier(ALL);
+
+                if (!expression.hasAll()) {
+                    addIdentifier(SELECT);
+                }
+            }
+            // Within "ALL"
+            else if (isPositionWithin(position, length, ALL)) {
+                addIdentifier(ALL);
+            }
+            else {
+                if ((position == length) && !expression.hasAll()) {
+                    proposals.addIdentifier(SELECT);
+                }
+                else {
+
+                    if (expression.hasAll()) {
+                        length += 3 /* ALL */;
+                    }
+
+                    // After "ALL "
+                    if (expression.hasSpaceAfterAll()) {
+                        length += SPACE_LENGTH;
+
+                        // Right after "ALL "
+                        if (position == length) {
+                            proposals.addIdentifier(SELECT);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -5535,6 +5641,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(CastExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
+        }
+
+        @Override
         public void visit(CoalesceExpression expression) {
             appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
@@ -5651,6 +5763,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         public void visit(CountFunction expression) {
             appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
+        }
+
+        @Override
+        public void visit(DatabaseType expression) {
+            // Always complete since it's a single word
         }
 
         @Override
@@ -7391,6 +7508,28 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(CastExpression expression) {
+
+            if (badExpression) {
+                return;
+            }
+
+            if (expression.hasScalarExpression() &&
+                    !expression.hasAs() &&
+                    !expression.hasDatabaseType() &&
+                    !expression.hasRightParenthesis()) {
+
+                expression.getExpression().accept(this);
+            }
+
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
+
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
+
+        @Override
         public void visit(CoalesceExpression expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
@@ -7563,6 +7702,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         @Override
         public void visit(CountFunction expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(DatabaseType expression) {
+            visitAbstractDoubleEncapsulatedExpression(expression);
         }
 
         @Override
@@ -8423,6 +8567,24 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         @Override
         public void visit(TypeExpression expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(UnionClause expression) {
+
+            if (badExpression) {
+                return;
+            }
+
+            if (expression.hasQuery()) {
+                expression.getQuery().accept(this);
+            }
+
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
+
+            queryPosition.addPosition(expression, expression.getLength() - correction);
         }
 
         @Override

@@ -39,6 +39,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -49,6 +50,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -111,6 +113,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
@@ -2830,6 +2833,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(CastExpression expression) {
+        super.visit(expression);
+        // Nothing to validate semantically
+    }
+
+    @Override
     public final void visit(CoalesceExpression expression) {
         validateCoalesceExpression(expression);
     }
@@ -2878,6 +2887,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     @Override
     public final void visit(DateTime expression) {
         validateDateTime(expression);
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
+        super.visit(expression);
+        // Nothing to validate semantically
     }
 
     @Override
@@ -3169,6 +3184,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     @Override
     public final void visit(TypeExpression expression) {
         validateTypeExpression(expression);
+    }
+
+    @Override
+    public void visit(UnionClause expression) {
+        super.visit(expression);
+        // Nothing to validate semantically
     }
 
     @Override

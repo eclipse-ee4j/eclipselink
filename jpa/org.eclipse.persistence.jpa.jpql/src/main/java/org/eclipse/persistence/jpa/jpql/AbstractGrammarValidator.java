@@ -49,6 +49,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ArithmeticTermBNF;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
@@ -63,6 +64,8 @@ import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseTypeFactory;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -135,6 +138,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
@@ -400,6 +404,79 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         };
     }
 
+    protected AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> buildDatabaseTypeHelper() {
+        return new AbstractDoubleEncapsulatedExpressionHelper<DatabaseType>(this) {
+            @Override
+            protected String firstExpressionInvalidKey() {
+                return DatabaseType_InvalidFirstExpression;
+            }
+            @Override
+            protected String firstExpressionMissingKey() {
+                return DatabaseType_MissingFirstExpression;
+            }
+            @Override
+            protected boolean hasComma(DatabaseType expression) {
+                // If the second expression is not specified, then the comma is not needed
+                return expression.hasComma() ||
+                        !expression.hasSecondExpression();
+            }
+            @Override
+            protected boolean hasFirstExpression(DatabaseType expression) {
+                return !expression.hasLeftParenthesis() ||
+                        expression.hasFirstExpression();
+            }
+            @Override
+            public boolean hasLeftParenthesis(DatabaseType expression) {
+                if (expression.hasLeftParenthesis()) {
+                    return true;
+                }
+                // The parenthesis are optional unless one the following
+                // items is specified, then '(' is required
+                return !(expression.hasFirstExpression()  ||
+                        expression.hasComma()            ||
+                        expression.hasSecondExpression() ||
+                        expression.hasRightParenthesis());
+            }
+            @Override
+            public boolean hasRightParenthesis(DatabaseType expression) {
+                if (expression.hasRightParenthesis()) {
+                    return true;
+                }
+                // The parenthesis are optional unless one the following
+                // items is specified, then ')' is required
+                return !(expression.hasLeftParenthesis()  ||
+                        expression.hasFirstExpression()  ||
+                        expression.hasComma()            ||
+                        expression.hasSecondExpression());
+            }
+            @Override
+            protected boolean hasSecondExpression(DatabaseType expression) {
+                return !expression.hasComma() ||
+                        expression.hasSecondExpression();
+            }
+            @Override
+            public String leftParenthesisMissingKey(DatabaseType expression) {
+                return DatabaseType_MissingLeftParenthesis;
+            }
+            @Override
+            protected String missingCommaKey() {
+                return DatabaseType_MissingComma;
+            }
+            @Override
+            public String rightParenthesisMissingKey(DatabaseType expression) {
+                return DatabaseType_MissingRightParenthesis;
+            }
+            @Override
+            protected String secondExpressionInvalidKey() {
+                return DatabaseType_InvalidSecondExpression;
+            }
+            @Override
+            protected String secondExpressionMissingKey() {
+                return DatabaseType_MissingSecondExpression;
+            }
+        };
+    }
+
     protected DateTimeVisitor buildDateTimeVisitor() {
         return new DateTimeVisitor();
     }
@@ -588,6 +665,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 return KeyExpression_MissingRightParenthesis;
             }
         };
+    }
+
+    protected AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> databaseTypeHelper() {
+        AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> helper = getHelper(DatabaseTypeFactory.ID);
+        if (helper == null) {
+            helper = buildDatabaseTypeHelper();
+            registerHelper(DatabaseTypeFactory.ID, helper);
+        }
+        return helper;
     }
 
     protected AbstractDoubleEncapsulatedExpressionHelper<LeftExpression> buildLeftExpressionHelper() {
@@ -866,6 +952,32 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             public String rightParenthesisMissingKey(ObjectExpression expression) {
                 return ObjectExpression_MissingRightParenthesis;
+            }
+        };
+    }
+
+    @Override
+    protected OwningClauseVisitor buildOwningClauseVisitor() {
+        return new OwningClauseVisitor();
+    }
+
+    protected AbstractSingleEncapsulatedExpressionHelper<CastExpression> buildCastExpressionHelper() {
+        return new AbstractSingleEncapsulatedExpressionHelper<CastExpression>(this) {
+            @Override
+            protected String encapsulatedExpressionInvalidKey(CastExpression expression) {
+                return CastExpression_InvalidExpression;
+            }
+            @Override
+            protected String encapsulatedExpressionMissingKey(CastExpression expression) {
+                return CastExpression_MissingExpression;
+            }
+            @Override
+            public String leftParenthesisMissingKey(CastExpression expression) {
+                return CastExpression_MissingLeftParenthesis;
+            }
+            @Override
+            public String rightParenthesisMissingKey(CastExpression expression) {
+                return CastExpression_MissingRightParenthesis;
             }
         };
     }
@@ -1422,6 +1534,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     /**
+     * Determines whether the JPA version defined by the JPQL grammar is 3.2.
+     *
+     * @return <code>true</code> if the JPQL grammar was defined for JPA 3.2; <code>false</code> if
+     * it was defined for a more recent version
+     */
+    protected boolean isJPA3_2() {
+        return getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_3_2);
+    }
+
+    /**
      * Determines whether the given subquery <code><b>SELECT</b></code> clause can return more than
      * one item or just a single. By default, only one item can be returned.
      *
@@ -1720,6 +1842,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         helpers.put(id, helper);
     }
 
+    protected AbstractSingleEncapsulatedExpressionHelper<CastExpression> castExpressionHelper() {
+        AbstractSingleEncapsulatedExpressionHelper<CastExpression> helper = getHelper(CAST);
+        if (helper == null) {
+            helper = buildCastExpressionHelper();
+            registerHelper(CAST, helper);
+        }
+        return helper;
+    }
+
     protected AbstractTripleEncapsulatedExpressionHelper<ReplaceExpression> replaceExpressionHelper() {
         AbstractTripleEncapsulatedExpressionHelper<ReplaceExpression> helper = getHelper(REPLACE);
         if (helper == null) {
@@ -1973,6 +2104,24 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
+        /**
+     * Determines whether the given {@link Expression} is a child of the <b>UNION</b> clause.
+     *
+     * @param expression The {@link Expression} to visit its parent hierarchy up to the clause
+     * @return <code>true</code> if the first parent being a clause is the <b>UNION</b> clause;
+     * <code>false</code> otherwise
+     */
+    protected boolean isOwnedByUnionClause(Expression expression) {
+        OwningClauseVisitor visitor = getOwningClauseVisitor();
+        try {
+            expression.accept(visitor);
+            return visitor.unionClause != null;
+        }
+        finally {
+            visitor.dispose();
+        }
+    }
+
     /**
      * Validates the select expression of the given <code>SELECT</code> clause. The select expression
      * will only be visited if its JPQL query BNF is part of the select item BNF.
@@ -1983,6 +2132,13 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      */
     protected void validateAbstractSelectClause(AbstractSelectClause expression,
                                                 boolean multipleSelectItemsAllowed) {
+
+        // Check id a subquery is defined in a UNION clause
+        // If the flag is false, then the SELECT clause is from a subquery
+        if (!multipleSelectItemsAllowed) {
+            Expression parent = expression.getParent();
+            multipleSelectItemsAllowed = isOwnedByUnionClause (parent);
+        }
 
         // Missing select expression
         if (!expression.hasSelectExpression()) {
@@ -2896,6 +3052,42 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
+    //TODO RFELCMAN there or DefaultGrammarValidator?
+    @Override
+    public void visit(CastExpression expression) {
+
+        // Wrong JPA version
+        if (!isJPA3_2()) {
+            addProblem(expression, CastExpression_InvalidJPAVersion);
+        }
+        else {
+
+            validateAbstractSingleEncapsulatedExpression(expression, castExpressionHelper());
+
+            // Database type
+            if (expression.hasExpression() || expression.hasAs()) {
+
+                // Missing database type
+                if (!expression.hasDatabaseType()) {
+
+                    int startPosition = position(expression) +
+                            4 /* CAST */ +
+                            (expression.hasLeftParenthesis() ? 1 : 0) +
+                            length(expression.getExpression()) +
+                            (expression.hasSpaceAfterExpression() ? 1 : 0) +
+                            (expression.hasAs() ? 2 : 0) +
+                            (expression.hasSpaceAfterAs() ? 1 : 0);
+
+                    addProblem(expression, startPosition, CastExpression_MissingDatabaseType);
+                }
+                // Validate database type
+                else {
+                    expression.getDatabaseType().accept(this);
+                }
+            }
+        }
+    }
+
     @Override
     public void visit(CoalesceExpression expression) {
 
@@ -3193,6 +3385,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     @Override
     public void visit(CountFunction expression) {
         validateAggregateFunctionLocation(expression, countFunctionHelper());
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
+        validateAbstractDoubleEncapsulatedExpression(expression, databaseTypeHelper());
     }
 
     @Override
@@ -4358,6 +4555,30 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
         else {
             validateAbstractSingleEncapsulatedExpression(expression, typeExpressionHelper());
+        }
+    }
+
+    @Override
+    public void visit(UnionClause expression) {
+
+        // Wrong JPA version
+        if (!isJPA3_2()) {
+            addProblem(expression, UnionClause_InvalidJPAVersion);
+        }
+        // Missing subquery
+        else if (!expression.hasQuery()) {
+
+            int startPosition = position(expression) +
+                    expression.getIdentifier().length() +
+                    (expression.hasSpaceAfterIdentifier() ? 1 : 0) +
+                    (expression.hasAll() ? 3 : 0) +
+                    (expression.hasSpaceAfterAll() ? 1 : 0);
+
+            addProblem(expression, startPosition, UnionClause_MissingExpression);
+        }
+        // Validate the subquery
+        else {
+            expression.getQuery().accept(this);
         }
     }
 

@@ -46,6 +46,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
@@ -237,7 +238,9 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      *
      * @return A new {@link OwningClauseVisitor}
      */
-    protected abstract OwningClauseVisitor buildOwningClauseVisitor();
+    protected OwningClauseVisitor buildOwningClauseVisitor() {
+        return new OwningClauseVisitor();
+    }
 
     /**
      * Creates the visitor that traverses the parent hierarchy of any {@link Expression} and stops at
@@ -1025,6 +1028,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         public SimpleSelectClause simpleSelectClause;
         public UpdateClause updateClause;
         public WhereClause whereClause;
+        public UnionClause unionClause;
 
         /**
          * Creates a new <code>OwningClauseVisitor</code>.
@@ -1047,6 +1051,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             simpleSelectClause = null;
             updateClause       = null;
             whereClause        = null;
+            unionClause        = null;
         }
 
         @Override
@@ -1098,6 +1103,12 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         public void visit(WhereClause expression) {
             whereClause = expression;
         }
+
+        @Override
+        public void visit(UnionClause expression) {
+            this.unionClause = expression;
+        }
+
     }
 
     /**

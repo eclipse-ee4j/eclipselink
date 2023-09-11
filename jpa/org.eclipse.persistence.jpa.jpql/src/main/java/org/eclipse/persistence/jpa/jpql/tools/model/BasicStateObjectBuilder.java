@@ -46,6 +46,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -828,6 +829,11 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 
         stateObject.setExpression(expression);
         this.stateObject = stateObject;
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
+        // TODO
     }
 
     @Override

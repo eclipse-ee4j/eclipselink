@@ -37,6 +37,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
@@ -306,6 +307,11 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     public void visit(CountFunction expression) {
         // The count function always have a return type
         this.expression = expression;
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
+        type = Object.class;
     }
 
     @Override

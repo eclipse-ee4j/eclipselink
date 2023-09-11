@@ -26,7 +26,9 @@ import org.junit.runners.Suite;
  * This test suite runs {@link JPQLParserTests3_2} using JPQL grammar written for JPA 3.2.
  */
 @Suite.SuiteClasses({
-        JPQLParserTests3_2.class
+        JPQLParserTests3_2.class,
+        CastExpressionTest.class,
+        UnionClauseTest.class
 })
 @RunWith(JPQLTestRunner.class)
 public class AllJPQLParserTests3_2 {
