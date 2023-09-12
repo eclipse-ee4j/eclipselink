@@ -23,6 +23,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.Type</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.SyntaxEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="jakarta.persistence.schema-generation.scripts.action" value="none"/>

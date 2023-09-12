@@ -72,6 +72,8 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaCriteriaBuilder;
 import org.eclipse.persistence.queries.ReportQuery;
 
+import static org.eclipse.persistence.internal.jpa.querydef.InternalSelection.currentNode;
+
 public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     public static final String CONCAT = "concat";
@@ -176,7 +178,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // TODO-API-3.2 - Nulls added to OrderImpl and ObjectLevelReadQuery in CriteriaQueryImpl, but no tests exist
     @Override
     public Order asc(Expression<?> expression, Nulls nullPrecedence) {
-        if (((InternalSelection)expression).getCurrentNode() == null){
+        if (currentNode(expression) == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         return new OrderImpl(expression, true, nullPrecedence);
@@ -190,7 +192,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // TODO-API-3.2 - Nulls added to OrderImpl and ObjectLevelReadQuery in CriteriaQueryImpl, but no tests exist
     @Override
     public Order desc(Expression<?> expression, Nulls nullPrecedence) {
-        if (((InternalSelection)expression).getCurrentNode() == null){
+        if (currentNode(expression) == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
         return new OrderImpl(expression, false, nullPrecedence);
@@ -2161,49 +2163,69 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     // TODO-API-3.2
     @Override
     public Expression<String> left(Expression<String> expression, int len) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
-    }
-
-    // TODO-API-3.2
-    @Override
-    public Expression<String> right(Expression<String> expression, int len) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new FunctionExpressionImpl<>(
+                this.metamodel, ClassConstants.STRING,
+                currentNode(expression).left(len), buildList(expression), "left");
     }
 
     // TODO-API-3.2
     @Override
     public Expression<String> left(Expression<String> expression, Expression<Integer> len) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new FunctionExpressionImpl<>(
+                this.metamodel, ClassConstants.STRING,
+                currentNode(expression).left(currentNode(len)), buildList(expression), "left");
+    }
+
+    // TODO-API-3.2
+    @Override
+    public Expression<String> right(Expression<String> expression, int len) {
+        return new FunctionExpressionImpl<>(
+                this.metamodel, ClassConstants.STRING,
+                currentNode(expression).right(len), buildList(expression), "right");
     }
 
     // TODO-API-3.2
     @Override
     public Expression<String> right(Expression<String> expression, Expression<Integer> len) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new FunctionExpressionImpl<>(
+                this.metamodel, ClassConstants.STRING,
+                currentNode(expression).right(currentNode(len)), buildList(expression), "right");
     }
 
     // TODO-API-3.2
     @Override
     public Expression<String> replace(Expression<String> expression, Expression<String> substring, Expression<String> replacement) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new FunctionExpressionImpl<>(
+                this.metamodel, ClassConstants.STRING,
+                currentNode(expression).replace(currentNode(substring), currentNode(replacement)),
+                buildList(expression), "replace");
     }
 
     // TODO-API-3.2
     @Override
     public Expression<String> replace(Expression<String> expression, String substring, Expression<String> replacement) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new FunctionExpressionImpl<>(
+                this.metamodel, ClassConstants.STRING,
+                currentNode(expression).replace(substring, currentNode(replacement)),
+                buildList(expression), "replace");
     }
 
     // TODO-API-3.2
     @Override
     public Expression<String> replace(Expression<String> expression, Expression<String> substring, String replacement) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new FunctionExpressionImpl<>(
+                this.metamodel, ClassConstants.STRING,
+                currentNode(expression).replace(currentNode(substring), replacement),
+                buildList(expression), "replace");
     }
 
     // TODO-API-3.2
     @Override
     public Expression<String> replace(Expression<String> expression, String substring, String replacement) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new FunctionExpressionImpl<>(
+                this.metamodel, ClassConstants.STRING,
+                currentNode(expression).replace(substring, replacement),
+                buildList(expression), "replace");
     }
 
     /**
@@ -2339,10 +2361,14 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new ExpressionImpl(metamodel, ClassConstants.LOCAL_TIME, new ExpressionBuilder().localTime());
     }
 
-    // TODO-API-3.2
+    // TODO-API-3.2 - not sure whether (Class<N>) temporal.getJavaType() is sufficient for result class
     @Override
+    @SuppressWarnings("unchecked")
     public <N, T extends Temporal> Expression<N> extract(TemporalField<N, T> field, Expression<T> temporal) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new FunctionExpressionImpl<>(
+                this.metamodel, (Class<N>) temporal.getJavaType(),
+                // JPA API: field.toString() returns name of the part to be extracted
+                currentNode(temporal).extract(field.toString()), buildList(temporal), "extract");
     }
 
     /**

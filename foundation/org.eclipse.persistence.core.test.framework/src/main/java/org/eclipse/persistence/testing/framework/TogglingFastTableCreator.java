@@ -351,7 +351,41 @@ public class TogglingFastTableCreator extends TableCreator {
      */
     protected static FieldDefinition createDateColumn(
             final String name) {
-        return createDateColumn(name, 23, true);
+        return createDateColumn(name, 3, true);
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance
+     * for {@link java.time.LocalTime} column with given name and size and without
+     * any additional constraints.
+     * @param name Column name.
+     * @param size Column date size.
+     * @param allowNull Allow {@code null} values for column.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createTimeColumn(
+            final String name, final int size, final boolean allowNull) {
+        final FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setTypeName("TIME");
+        field.setSize(size);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance
+     * for {@link java.time.LocalTime} column with given name size of {@code 23},
+     * with {@code null} value allowed and without any additional constraints.
+     * @param name Column name.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createTimeColumn(
+            final String name) {
+        return createDateColumn(name, 3, true);
     }
 
     protected void adjustForeignKeyFieldTypes(DatabaseSession session) {
