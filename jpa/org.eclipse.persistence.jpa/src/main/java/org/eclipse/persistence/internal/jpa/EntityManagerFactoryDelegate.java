@@ -729,7 +729,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 EntityManagerFactoryImpl.isLoaded(entity, attributeName, session));
     }
 
-    // TODO-API-3.2
     @Override
     public <E> boolean isLoaded(E entity, Attribute<? super E, ?> attribute) {
         return isLoaded(entity, attribute.getName());
@@ -853,7 +852,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         this.getAbstractSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
     }
 
-    // TODO-API-3.2
     @Override
     public void runInTransaction(Consumer<EntityManager> work) {
         try (EntityManager em = createEntityManager()) {
@@ -881,7 +879,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         }
     }
 
-    // TODO-API-3.2
     @Override
     public <R> R callInTransaction(Function<EntityManager, R> work) {
         try (EntityManager em = createEntityManager()) {

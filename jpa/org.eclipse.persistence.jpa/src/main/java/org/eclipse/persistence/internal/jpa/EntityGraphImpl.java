@@ -80,7 +80,6 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return attributeGroup.getName();
     }
 
-    // TODO-API-3.2
     @Override
     public void addAttributeNode(String attributeName) {
         if (!isMutable) {
@@ -105,7 +104,6 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         }
     }
 
-    // TODO-API-3.2
     @Override
     public void addAttributeNode(Attribute<? super X, ?> attribute) {
         if (!isMutable) {
@@ -166,7 +164,6 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return addSubgraph(attribute.getName(), type);
     }
 
-    // TODO-API-3.2
     @Override
     public <S extends X> Subgraph<S> addTreatedSubgraph(Class<S> type) {
         if (!this.isMutable) {
@@ -192,7 +189,6 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return addTreatedSubgraph((Class)type);
     }
 
-    // TODO-API-3.2
     @Override
     public <Y> Subgraph<Y> addTreatedSubgraph(Attribute<? super X, ? super Y> attribute, Class<Y> type) {
         return addSubgraph(attribute.getName(), type);

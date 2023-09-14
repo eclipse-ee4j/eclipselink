@@ -330,13 +330,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
-    /**
-     * Set the query timeout.
-     *
-     * @param timeout the timeout, or {@code null} to indicate no timeout
-     * @return the same query instance
-     * @since 4.1
-     */
     @Override
     public TypedQuery<X> setTimeout(Integer timeout) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
@@ -432,24 +425,16 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         }
     }
 
-    /**
-     * Execute a query that returns a single result.
-     *
-     * @return the result
-     * @throws jakarta.persistence.EntityNotFoundException
-     *             if there is no result
-     * @throws jakarta.persistence.NonUniqueResultException
-     *             if more than one result
-     */
     @Override
+    @SuppressWarnings("unchecked")
     public X getSingleResult() {
         return (X) super.getSingleResult();
     }
 
-    // TODO-API-3.2
     @Override
+    @SuppressWarnings("unchecked")
     public X getSingleResultOrNull() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return (X) super.getSingleResultOrNull();
     }
 
     /**

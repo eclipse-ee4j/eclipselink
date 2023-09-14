@@ -139,7 +139,6 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return having(restrictions != null ? List.of(restrictions) : null);
     }
 
-    // TODO-API-3.2
     @Override
     public AbstractQuery<T> having(List<Predicate> restrictions) {
         Predicate predicate = queryBuilder.and(restrictions);
@@ -305,7 +304,6 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return (AbstractQuery<T>) super.where(restrictions);
     }
 
-    // TODO-API-3.2
     @Override
     @SuppressWarnings("unchecked")
     public AbstractQuery<T> where(List<Predicate> restrictions) {

@@ -16,18 +16,19 @@ import java.util.Collection;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name="PERSISTENCE32_POKEMON")
 @NamedQuery(name="Pokemon.get", query="SELECT p FROM Pokemon p WHERE p.id = :id")
+@NamedNativeQuery(name="Pokemon.deleteAllTypes", query="DELETE FROM PERSISTENCE32_POKEMON_TYPE")
+@NamedNativeQuery(name="Pokemon.deleteAll", query="DELETE FROM PERSISTENCE32_POKEMON")
 public class Pokemon {
 
     // ID is assigned in tests to avoid collisions

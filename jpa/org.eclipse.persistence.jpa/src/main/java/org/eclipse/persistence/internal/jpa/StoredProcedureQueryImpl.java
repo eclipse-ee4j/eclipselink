@@ -120,7 +120,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * execute call available and therefore should not be called unless an
      * execute statement was issued by the user.
      */
-    protected List buildResultRecords(ResultSet resultSet) {
+    protected List<?> buildResultRecords(ResultSet resultSet) {
         try {
             AbstractSession session = (AbstractSession) getActiveSession();
             DatabaseAccessor accessor = (DatabaseAccessor) executeCall.getQuery().getAccessor();
@@ -621,12 +621,17 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         }
     }
 
-    /**
-     * Execute the query and return the single query result.
-     * @return a single result object.
-     */
+    @Override
+    public Object getSingleResultOrNull() {
+        return getSingleResult(false);
+    }
+
     @Override
     public Object getSingleResult() {
+        return getSingleResult(true);
+    }
+
+    private Object getSingleResult(boolean failOnEmpty) {
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
         this.entityManager.verifyOpenWithSetRollbackOnly();
@@ -644,28 +649,28 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 // If the return value is true indicating a result set then
                 // build and return the single result.
                 if (execute()) {
-                    return getSingleResult();
+                    return getSingleResult(failOnEmpty);
                 } else {
                     throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list"));
                 }
             } else {
                 if (hasMoreResults()) {
                     // Build the result records first.
-                    List results;
+                    List<?> results;
 
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
                         if (hasPositionalParameters()) {
-                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
+                            results = (List<?>) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
                         } else {
-                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                            results = (List<?>) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
                         }
 
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
                     } else {
                         // Build the result records first.
-                        List result = buildResultRecords(executeStatement.getResultSet());
+                        List<?> result = buildResultRecords(executeStatement.getResultSet());
 
                         // Move the result pointer.
                         moveResultPointer();
@@ -675,11 +680,14 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
                     if (results.size() > 1) {
                         throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));
-                    } else if (results.isEmpty()) {
+                    } else if (failOnEmpty && results.isEmpty()) {
                         throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
                     }
 
-                    // TODO: if hasMoreResults is true, we 'could' and maybe should throw an exception here.
+                    // If hasMoreResults is true, we should throw an exception here.
+                    if (results.size() > 1 || hasMoreResults) {
+                        throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));
+                    }
 
                     return results.get(0);
                 } else {
@@ -688,10 +696,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         } catch (LockTimeoutException e) {
             throw e;
-        } catch (PersistenceException e) {
-            setRollbackOnly();
-            throw e;
-        } catch (IllegalStateException e) {
+        } catch (PersistenceException | IllegalStateException e) {
             setRollbackOnly();
             throw e;
         } catch (Exception e) {
@@ -700,12 +705,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } finally {
             close(); // Close the connection once we're done.
         }
-    }
-
-    // TODO-API-3.2
-    @Override
-    public Object getSingleResultOrNull() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
     /**

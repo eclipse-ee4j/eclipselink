@@ -460,7 +460,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return and(restrictions != null ?  List.of(restrictions) : null);
     }
 
-    // TODO-API-3.2
     @Override
     public Predicate and(List<Predicate> restrictions) {
         // PERF: Build simple cases directly
@@ -492,7 +491,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return or(restrictions != null ?  List.of(restrictions) : null);
     }
 
-    // TODO-API-3.2
     @Override
     public Predicate or(List<Predicate> restrictions) {
         // PERF: Build simple cases directly
@@ -1889,7 +1887,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return this.notLike(x, this.internalLiteral(pattern), this.internalLiteral(escapeChar));
     }
 
-    // TODO-API-3.2
     @Override
     public Expression<String> concat(List<Expression<String>> expressions) {
         switch(expressions != null ? expressions.size() : 0) {
@@ -2160,7 +2157,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new FunctionExpressionImpl(metamodel, ClassConstants.INTEGER, ((InternalSelection)x).getCurrentNode().length(), buildList(x), "length");
     }
 
-    // TODO-API-3.2
     @Override
     public Expression<String> left(Expression<String> expression, int len) {
         return new FunctionExpressionImpl<>(
@@ -2168,7 +2164,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
                 currentNode(expression).left(len), buildList(expression), "left");
     }
 
-    // TODO-API-3.2
     @Override
     public Expression<String> left(Expression<String> expression, Expression<Integer> len) {
         return new FunctionExpressionImpl<>(
@@ -2176,7 +2171,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
                 currentNode(expression).left(currentNode(len)), buildList(expression), "left");
     }
 
-    // TODO-API-3.2
     @Override
     public Expression<String> right(Expression<String> expression, int len) {
         return new FunctionExpressionImpl<>(
@@ -2184,7 +2178,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
                 currentNode(expression).right(len), buildList(expression), "right");
     }
 
-    // TODO-API-3.2
     @Override
     public Expression<String> right(Expression<String> expression, Expression<Integer> len) {
         return new FunctionExpressionImpl<>(
@@ -2192,7 +2185,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
                 currentNode(expression).right(currentNode(len)), buildList(expression), "right");
     }
 
-    // TODO-API-3.2
     @Override
     public Expression<String> replace(Expression<String> expression, Expression<String> substring, Expression<String> replacement) {
         return new FunctionExpressionImpl<>(
@@ -2201,7 +2193,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
                 buildList(expression), "replace");
     }
 
-    // TODO-API-3.2
     @Override
     public Expression<String> replace(Expression<String> expression, String substring, Expression<String> replacement) {
         return new FunctionExpressionImpl<>(
@@ -2210,7 +2201,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
                 buildList(expression), "replace");
     }
 
-    // TODO-API-3.2
     @Override
     public Expression<String> replace(Expression<String> expression, Expression<String> substring, String replacement) {
         return new FunctionExpressionImpl<>(
@@ -2219,7 +2209,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
                 buildList(expression), "replace");
     }
 
-    // TODO-API-3.2
     @Override
     public Expression<String> replace(Expression<String> expression, String substring, String replacement) {
         return new FunctionExpressionImpl<>(
@@ -2361,11 +2350,11 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new ExpressionImpl(metamodel, ClassConstants.LOCAL_TIME, new ExpressionBuilder().localTime());
     }
 
-    // TODO-API-3.2 - not sure whether (Class<N>) temporal.getJavaType() is sufficient for result class
     @Override
     @SuppressWarnings("unchecked")
     public <N, T extends Temporal> Expression<N> extract(TemporalField<N, T> field, Expression<T> temporal) {
         return new FunctionExpressionImpl<>(
+                // Java type took from Expression, but not sure whether this will work for everything
                 this.metamodel, (Class<N>) temporal.getJavaType(),
                 // JPA API: field.toString() returns name of the part to be extracted
                 currentNode(temporal).extract(field.toString()), buildList(temporal), "extract");

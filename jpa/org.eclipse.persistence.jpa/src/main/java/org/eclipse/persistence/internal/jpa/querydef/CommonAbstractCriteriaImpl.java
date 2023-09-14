@@ -179,7 +179,6 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
         return new SubQueryImpl<U>(metamodel, type, queryBuilder, this);
     }
 
-    // TODO-API-3.2
     @Override
     public <U> Subquery<U> subquery(EntityType<U> type) {
         return subquery(type.getJavaType());

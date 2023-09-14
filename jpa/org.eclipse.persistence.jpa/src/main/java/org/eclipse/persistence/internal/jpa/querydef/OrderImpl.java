@@ -54,7 +54,6 @@ public class OrderImpl implements Order, Serializable{
         return this.isAscending;
     }
 
-    // TODO-API-3.2
     @Override
     public Nulls getNullPrecedence() {
         return nullPrecedence;
