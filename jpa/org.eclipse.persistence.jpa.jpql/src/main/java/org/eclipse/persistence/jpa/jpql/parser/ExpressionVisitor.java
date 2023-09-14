@@ -103,6 +103,13 @@ public interface ExpressionVisitor {
     void visit(CaseExpression expression);
 
     /**
+     * Visits the {@link CastExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(CastExpression expression);
+
+    /**
      * Visits the {@link CoalesceExpression} expression.
      *
      * @param expression The {@link Expression} to visit
@@ -171,6 +178,13 @@ public interface ExpressionVisitor {
      * @param expression The {@link Expression} to visit
      */
     void visit(CountFunction expression);
+
+    /**
+     * Visits the {@link DatabaseType} expression.
+     *
+     * @param expression The {@link DatabaseType} to visit
+     */
+    void visit(DatabaseType expression);
 
     /**
      * Visits the {@link DateTime} expression.
@@ -710,4 +724,11 @@ public interface ExpressionVisitor {
      * @param expression The {@link WhereClause} to visit
      */
     void visit(WhereClause expression);
+
+    /**
+     * Visits the {@link UnionClause} expression.
+     *
+     * @param expression The {@link UnionClause} to visit
+     */
+    void visit(UnionClause expression);
 }

@@ -79,6 +79,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(CastExpression expression) {
+    }
+
+    @Override
     public void visit(CoalesceExpression expression) {
     }
 
@@ -116,6 +120,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(CountFunction expression) {
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
     }
 
     @Override
@@ -416,6 +424,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(ValueExpression expression) {
+    }
+
+    @Override
+    public void visit(UnionClause expression) {
     }
 
     @Override

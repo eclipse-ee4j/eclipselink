@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisi
 import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
-import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
@@ -40,7 +39,6 @@ import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
-import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
@@ -107,11 +105,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     @Override
     protected LiteralVisitor buildLiteralVisitor() {
         return new EclipseLinkLiteralVisitor();
-    }
-
-    @Override
-    protected OwningClauseVisitor buildOwningClauseVisitor() {
-        return new EclipseLinkOwningClauseVisitor();
     }
 
     protected SubquerySelectItemCalculator buildSubquerySelectItemCalculator() {
@@ -392,12 +385,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     }
 
     @Override
-    public void visit(CastExpression expression) {
-        super.visit(expression);
-        // Nothing to validate semantically
-    }
-
-    @Override
     public void visit(ConnectByClause expression) {
         super.visit(expression);
         // Nothing to validate semantically
@@ -462,38 +449,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
     public void visit(TableVariableDeclaration expression) {
         super.visit(expression);
         // Nothing to validate semantically
-    }
-
-    @Override
-    public void visit(UnionClause expression) {
-        super.visit(expression);
-        // Nothing to validate semantically
-    }
-
-    // Made static final for performance reasons.
-    /**
-     * This visitor retrieves the clause owning the visited {@link Expression}.
-     */
-    public static final class EclipseLinkOwningClauseVisitor extends OwningClauseVisitor {
-
-        public UnionClause unionClause;
-
-        /**
-         * Creates a new <code>EclipseLinkOwningClauseVisitor</code>.
-         */
-        public EclipseLinkOwningClauseVisitor() {
-            super();
-        }
-
-        @Override
-        public void dispose() {
-            super.dispose();
-            unionClause = null;
-        }
-
-        public void visit(UnionClause expression) {
-            this.unionClause = expression;
-        }
     }
 
     // Made static final for performance reasons.

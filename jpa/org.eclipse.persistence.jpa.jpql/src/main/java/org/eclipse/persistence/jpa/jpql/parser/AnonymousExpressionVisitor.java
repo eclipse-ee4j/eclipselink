@@ -139,6 +139,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(DatabaseType expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
     public void visit(DateTime expression) {
         visit((Expression) expression);
     }
@@ -184,6 +189,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
      * @param expression The {@link Expression} to visit
      */
     protected void visit(Expression expression) {
+    }
+
+    @Override
+    public void visit(CastExpression expression) {
+        visit((Expression) expression);
     }
 
     @Override
@@ -528,6 +538,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(WhereClause expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(UnionClause expression) {
         visit((Expression) expression);
     }
 }

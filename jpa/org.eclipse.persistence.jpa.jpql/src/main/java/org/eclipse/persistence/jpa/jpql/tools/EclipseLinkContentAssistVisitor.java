@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.DOT;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.ALL;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.AS;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.AS_OF;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONNECT_BY;
@@ -46,11 +45,9 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
-import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
-import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
@@ -291,51 +288,6 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
     }
 
     @Override
-    public void visit(CastExpression expression) {
-        super.visit(expression);
-        int position = queryPosition.getPosition(expression) - corrections.peek();
-        String identifier = expression.getIdentifier();
-
-        // Within CAST
-        if (isPositionWithin(position, identifier)) {
-            addIdentifier(identifier);
-            addIdentificationVariables();
-            addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
-        }
-        // After "CAST("
-        else if (expression.hasLeftParenthesis()) {
-            int length = identifier.length() + 1 /* '(' */;
-
-            // Right after "CAST("
-            if (position == length) {
-                addIdentificationVariables();
-                addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
-            }
-            else if (expression.hasExpression()) {
-                Expression scalarExpression = expression.getExpression();
-
-                if (isComplete(scalarExpression)) {
-                    length += scalarExpression.getLength();
-
-                    if (expression.hasSpaceAfterExpression()) {
-                        length++;
-
-                        // Right before "AS" or database type
-                        if (position == length) {
-                            addAggregateIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
-                            proposals.addIdentifier(AS);
-                        }
-                        // Within "AS"
-                        else if (isPositionWithin(position, length, AS)) {
-                            proposals.addIdentifier(AS);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
     public void visit(ConnectByClause expression) {
         super.visit(expression);
         int position = queryPosition.getPosition(expression) - corrections.peek();
@@ -355,12 +307,6 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
                 addFunctionIdentifiers(CollectionValuedPathExpressionBNF.ID);
             }
         }
-    }
-
-    @Override
-    public void visit(DatabaseType expression) {
-        super.visit(expression);
-        // Nothing to do, this is database specific
     }
 
     @Override
@@ -648,58 +594,6 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
     }
 
     @Override
-    public void visit(UnionClause expression) {
-        super.visit(expression);
-        int position = queryPosition.getPosition(expression) - corrections.peek();
-        String identifier = expression.getIdentifier();
-
-        // Within <identifier>
-        if (isPositionWithin(position, identifier)) {
-            proposals.addIdentifier(EXCEPT);
-            proposals.addIdentifier(INTERSECT);
-            proposals.addIdentifier(UNION);
-        }
-        // After "<identifier> "
-        else if (expression.hasSpaceAfterIdentifier()) {
-            int length = identifier.length() + SPACE_LENGTH;
-
-            // Right after "<identifier> "
-            if (position == length) {
-                proposals.addIdentifier(ALL);
-
-                if (!expression.hasAll()) {
-                    addIdentifier(SELECT);
-                }
-            }
-            // Within "ALL"
-            else if (isPositionWithin(position, length, ALL)) {
-                addIdentifier(ALL);
-            }
-            else {
-                if ((position == length) && !expression.hasAll()) {
-                    proposals.addIdentifier(SELECT);
-                }
-                else {
-
-                    if (expression.hasAll()) {
-                        length += 3 /* ALL */;
-                    }
-
-                    // After "ALL "
-                    if (expression.hasSpaceAfterAll()) {
-                        length += SPACE_LENGTH;
-
-                        // Right after "ALL "
-                        if (position == length) {
-                            proposals.addIdentifier(SELECT);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
     protected void visitThirdPartyPathExpression(AbstractPathExpression expression,
                                                  String variableName) {
 
@@ -741,21 +635,10 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
         }
 
         @Override
-        public void visit(CastExpression expression) {
-            appendable = !conditionalExpression &&
-                      expression.hasRightParenthesis();
-        }
-
-        @Override
         public void visit(ConnectByClause expression) {
             if (expression.hasExpression()) {
                 expression.getExpression().accept(this);
             }
-        }
-
-        @Override
-        public void visit(DatabaseType expression) {
-            // Always complete since it's a single word
         }
 
         @Override
@@ -817,13 +700,6 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
                 expression.getIdentificationVariable().accept(this);
             }
         }
-
-        @Override
-        public void visit(UnionClause expression) {
-            if (expression.hasQuery()) {
-                expression.getQuery().accept(this);
-            }
-        }
     }
 
     // Made static final for performance reasons.
@@ -853,28 +729,6 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
         }
 
         @Override
-        public void visit(CastExpression expression) {
-
-            if (badExpression) {
-                return;
-            }
-
-            if (expression.hasScalarExpression() &&
-               !expression.hasAs() &&
-               !expression.hasDatabaseType() &&
-               !expression.hasRightParenthesis()) {
-
-                expression.getExpression().accept(this);
-            }
-
-            if (queryPosition.getExpression() == null) {
-                queryPosition.setExpression(expression);
-            }
-
-            queryPosition.addPosition(expression, expression.getLength() - correction);
-        }
-
-        @Override
         public void visit(ConnectByClause expression) {
 
             if (badExpression) {
@@ -890,11 +744,6 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
             }
 
             queryPosition.addPosition(expression, expression.getLength() - correction);
-        }
-
-        @Override
-        public void visit(DatabaseType expression) {
-            visitAbstractDoubleEncapsulatedExpression(expression);
         }
 
         @Override
@@ -990,24 +839,6 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
             }
             else if (!expression.hasAs()) {
                 expression.getTableExpression().accept(this);
-            }
-
-            if (queryPosition.getExpression() == null) {
-                queryPosition.setExpression(expression);
-            }
-
-            queryPosition.addPosition(expression, expression.getLength() - correction);
-        }
-
-        @Override
-        public void visit(UnionClause expression) {
-
-            if (badExpression) {
-                return;
-            }
-
-            if (expression.hasQuery()) {
-                expression.getQuery().accept(this);
             }
 
             if (queryPosition.getExpression() == null) {

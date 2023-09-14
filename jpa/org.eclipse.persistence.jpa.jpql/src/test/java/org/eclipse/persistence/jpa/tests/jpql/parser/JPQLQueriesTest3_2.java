@@ -18,7 +18,6 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
 
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_0.query_013;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Select01;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Select02;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Select_Chained;
@@ -36,21 +35,27 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightF
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Select02;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Select03;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_Union01;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.concatPipes;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.count;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.except;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.from;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.groupBy;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.having;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.intersect;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.left;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.leftJoin;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.numeric;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.path;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.replace;
-import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.resultVariable;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.right;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.select;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.selectStatement;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.string;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.subFrom;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.subSelect;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.union;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.unionAll;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.variable;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.where;
 
@@ -339,18 +344,39 @@ public class JPQLQueriesTest3_2 extends JPQLParserTest {
         }
     }
 
-//    @Test
-    public void test_Query_013() {
+    @Test
+    public void test_Query_Union01() {
 
-        // SELECT e.salary / 1000D n
-        // From Employee e
+        // Select a from Address a where a.city = 'Ottawa'
+        // union Select a2 from Address a2
+        // union all Select a2 from Address a2
+        // intersect Select a from Address a where a.city = 'Ottawa'
+        // except Select a from Address a where a.city = 'Ottawa'
 
-        ExpressionTester selectStatement = selectStatement(
-                select(resultVariable(path("e.salary").divide(numeric("1000D")), "n")),
-                from("Employee", "e")
+        SelectStatementTester selectStatement = selectStatement(
+                select(variable("a")),
+                from("Address", "a"),
+                where(path("a.city").equal(string("'Ottawa'"))),
+                union(
+                        subSelect(variable("a2")),
+                        subFrom("Address", "a2")
+                ),
+                unionAll(
+                        subSelect(variable("a2")),
+                        subFrom("Address", "a2")
+                ),
+                intersect(
+                        subSelect(variable("a")),
+                        subFrom("Address", "a"),
+                        where(path("a.city").equal(string("'Ottawa'")))
+                ),
+                except(
+                        subSelect(variable("a")),
+                        subFrom("Address", "a"),
+                        where(path("a.city").equal(string("'Ottawa'")))
+                )
         );
 
-        testQuery(query_013(), selectStatement);
+        testQuery(query_Union01(), selectStatement);
     }
-
 }

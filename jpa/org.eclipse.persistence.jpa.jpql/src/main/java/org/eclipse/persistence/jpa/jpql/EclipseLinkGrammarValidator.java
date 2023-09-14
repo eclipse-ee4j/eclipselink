@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,12 @@
 //
 package org.eclipse.persistence.jpa.jpql;
 
-import org.eclipse.persistence.jpa.jpql.AbstractEclipseLinkSemanticValidator.EclipseLinkOwningClauseVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
-import org.eclipse.persistence.jpa.jpql.parser.DatabaseTypeFactory;
 import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
@@ -71,100 +69,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         super(jpqlGrammar);
     }
 
-    protected AbstractSingleEncapsulatedExpressionHelper<CastExpression> buildCastExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<CastExpression>(this) {
-            @Override
-            protected String encapsulatedExpressionInvalidKey(CastExpression expression) {
-                return CastExpression_InvalidExpression;
-            }
-            @Override
-            protected String encapsulatedExpressionMissingKey(CastExpression expression) {
-                return CastExpression_MissingExpression;
-            }
-            @Override
-            public String leftParenthesisMissingKey(CastExpression expression) {
-                return CastExpression_MissingLeftParenthesis;
-            }
-            @Override
-            public String rightParenthesisMissingKey(CastExpression expression) {
-                return CastExpression_MissingRightParenthesis;
-            }
-        };
-    }
-
-    protected AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> buildDatabaseTypeHelper() {
-        return new AbstractDoubleEncapsulatedExpressionHelper<DatabaseType>(this) {
-            @Override
-            protected String firstExpressionInvalidKey() {
-                return DatabaseType_InvalidFirstExpression;
-            }
-            @Override
-            protected String firstExpressionMissingKey() {
-                return DatabaseType_MissingFirstExpression;
-            }
-            @Override
-            protected boolean hasComma(DatabaseType expression) {
-                // If the second expression is not specified, then the comma is not needed
-                return expression.hasComma() ||
-                        !expression.hasSecondExpression();
-            }
-            @Override
-            protected boolean hasFirstExpression(DatabaseType expression) {
-                return !expression.hasLeftParenthesis() ||
-                        expression.hasFirstExpression();
-            }
-            @Override
-            public boolean hasLeftParenthesis(DatabaseType expression) {
-                if (expression.hasLeftParenthesis()) {
-                    return true;
-                }
-                // The parenthesis are optional unless one the following
-                // items is specified, then '(' is required
-                return !(expression.hasFirstExpression()  ||
-                        expression.hasComma()            ||
-                        expression.hasSecondExpression() ||
-                        expression.hasRightParenthesis());
-            }
-            @Override
-            public boolean hasRightParenthesis(DatabaseType expression) {
-                if (expression.hasRightParenthesis()) {
-                    return true;
-                }
-                // The parenthesis are optional unless one the following
-                // items is specified, then ')' is required
-                return !(expression.hasLeftParenthesis()  ||
-                        expression.hasFirstExpression()  ||
-                        expression.hasComma()            ||
-                        expression.hasSecondExpression());
-            }
-            @Override
-            protected boolean hasSecondExpression(DatabaseType expression) {
-                return !expression.hasComma() ||
-                        expression.hasSecondExpression();
-            }
-            @Override
-            public String leftParenthesisMissingKey(DatabaseType expression) {
-                return DatabaseType_MissingLeftParenthesis;
-            }
-            @Override
-            protected String missingCommaKey() {
-                return DatabaseType_MissingComma;
-            }
-            @Override
-            public String rightParenthesisMissingKey(DatabaseType expression) {
-                return DatabaseType_MissingRightParenthesis;
-            }
-            @Override
-            protected String secondExpressionInvalidKey() {
-                return DatabaseType_InvalidSecondExpression;
-            }
-            @Override
-            protected String secondExpressionMissingKey() {
-                return DatabaseType_MissingSecondExpression;
-            }
-        };
-    }
-
     protected AbstractSingleEncapsulatedExpressionHelper<ExtractExpression> buildExtractExpressionHelper() {
         return new AbstractSingleEncapsulatedExpressionHelper<ExtractExpression>(this) {
             @Override
@@ -206,11 +110,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         return new EclipseLinkLiteralVisitor();
     }
 
-    @Override
-    protected OwningClauseVisitor buildOwningClauseVisitor() {
-        return new EclipseLinkOwningClauseVisitor();
-    }
-
     protected AbstractSingleEncapsulatedExpressionHelper<TableExpression> buildTableExpressionHelper() {
         return new AbstractSingleEncapsulatedExpressionHelper<TableExpression>(this) {
             @Override
@@ -241,15 +140,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         return helper;
     }
 
-    protected AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> databaseTypeHelper() {
-        AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> helper = getHelper(DatabaseTypeFactory.ID);
-        if (helper == null) {
-            helper = buildDatabaseTypeHelper();
-            registerHelper(DatabaseTypeFactory.ID, helper);
-        }
-        return helper;
-    }
-
     protected AbstractSingleEncapsulatedExpressionHelper<ExtractExpression> extractExpressionHelper() {
         AbstractSingleEncapsulatedExpressionHelper<ExtractExpression> helper = getHelper(EXTRACT);
         if (helper == null) {
@@ -271,11 +161,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
             inExpressionWithNestedArrayVisitor = buildInExpressionWithNestedArrayVisitor();
         }
         return inExpressionWithNestedArrayVisitor;
-    }
-
-    @Override
-    protected EclipseLinkOwningClauseVisitor getOwningClauseVisitor() {
-        return (EclipseLinkOwningClauseVisitor) super.getOwningClauseVisitor();
     }
 
     /**
@@ -326,24 +211,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         InExpressionVisitor visitor = getInExpressionVisitor();
         expression.accept(visitor);
         return visitor.expression != null;
-    }
-
-    /**
-     * Determines whether the given {@link Expression} is a child of the <b>UNION</b> clause.
-     *
-     * @param expression The {@link Expression} to visit its parent hierarchy up to the clause
-     * @return <code>true</code> if the first parent being a clause is the <b>UNION</b> clause;
-     * <code>false</code> otherwise
-     */
-    protected boolean isOwnedByUnionClause(Expression expression) {
-        EclipseLinkOwningClauseVisitor visitor = getOwningClauseVisitor();
-        try {
-            expression.accept(visitor);
-            return visitor.unionClause != null;
-        }
-        finally {
-            visitor.dispose();
-        }
     }
 
     @Override
