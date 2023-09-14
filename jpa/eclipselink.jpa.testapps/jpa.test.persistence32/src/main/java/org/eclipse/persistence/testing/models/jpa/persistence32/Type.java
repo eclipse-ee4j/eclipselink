@@ -16,12 +16,14 @@ import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name="PERSISTENCE32_TYPE")
 @NamedQuery(name="Type.all", query="SELECT t FROM Type t")
+@NamedNativeQuery(name="Type.deleteAll", query="DELETE FROM PERSISTENCE32_TYPE")
 public class Type {
 
     @Id

@@ -498,6 +498,29 @@ public class QueryImpl {
     /**
      * Execute a SELECT query that returns a single untyped result.
      *
+     * @return the result, or {@code null} if there is no result
+     * @throws NonUniqueResultException if more than one result
+     * @throws IllegalStateException if called for a Java Persistence query
+     *         language UPDATE or DELETE statement
+     * @throws QueryTimeoutException if the query execution exceeds the query
+     *         timeout value set and only the statement is rolled back
+     * @throws TransactionRequiredException if a lock mode other than NONE has
+     *         been been set and there is no transaction or the persistence
+     *         context has not been joined to the transaction
+     * @throws PessimisticLockException if pessimistic locking fails and the
+     *         transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and only the
+     *         statement is rolled back
+     * @throws PersistenceException if the query execution exceeds the query
+     *         timeout value set and the transaction is rolled back
+     */
+    public Object getSingleResultOrNull() {
+        return getSingleResult(false);
+    }
+
+    /**
+     * Execute a SELECT query that returns a single untyped result.
+     *
      * @return the result
      * @throws NoResultException if there is no result
      * @throws NonUniqueResultException if more than one result
@@ -516,6 +539,10 @@ public class QueryImpl {
      *         timeout value set and the transaction is rolled back
      */
     public Object getSingleResult() {
+        return getSingleResult(true);
+    }
+
+    private Object getSingleResult(boolean failOnEmpty) {
         boolean rollbackOnException = true;
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
@@ -529,18 +556,22 @@ public class QueryImpl {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_single_result"));
             }
             Object result = executeReadQuery();
-            if (result instanceof List) {
-                List results = (List) result;
+            if (result instanceof List<?> results) {
                 if (results.isEmpty()) {
-                    rollbackOnException = false;
-                    throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
+                    if (failOnEmpty) {
+                        rollbackOnException = false;
+                        throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result",
+                                                                                  null));
+                    } else {
+                        return null;
+                    }
                 } else if (results.size() > 1) {
                     rollbackOnException = false;
                     throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));
                 }
                 return results.get(0);
             } else {
-                if (result == null) {
+                if (failOnEmpty && result == null) {
                     rollbackOnException = false;
                     throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
                 }

@@ -185,7 +185,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return null;
     }
 
-    // TODO-API-3.2
     @Override
     public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
         JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());

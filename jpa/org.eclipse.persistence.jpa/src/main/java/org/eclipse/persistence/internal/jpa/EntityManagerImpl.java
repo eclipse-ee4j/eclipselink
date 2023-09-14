@@ -831,7 +831,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
 
-    // TODO-API-3.2 - FindOption not defined in EclipseLink scope, just in API.
+    // TODO-API-3.2 - Missing tests
     @Override
     public <T> T find(Class<T> entityClass, Object primaryKey, FindOption... options) {
         // Passing default find query hints, may be overwritten by options
@@ -1456,7 +1456,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
 
-    // TODO-API-3.2
     @Override
     public <C> void runWithConnection(ConnectionConsumer<C> action) {
         if (getAbstractSession().getAccessors().size() > 1) {
@@ -1474,7 +1473,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
 
-    // TODO-API-3.2
     @Override
     public <C, T> T callWithConnection(ConnectionFunction<C, T> function) {
         if (getAbstractSession().getAccessors().size() > 1) {

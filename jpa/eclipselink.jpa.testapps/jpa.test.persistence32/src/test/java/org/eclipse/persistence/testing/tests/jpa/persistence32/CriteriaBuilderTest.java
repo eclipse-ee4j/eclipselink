@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
 package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
 import java.time.LocalDate;
@@ -26,7 +38,7 @@ import org.eclipse.persistence.testing.models.jpa.persistence32.Persistence32Tab
 import org.eclipse.persistence.testing.models.jpa.persistence32.SyntaxEntity;
 import org.junit.Assert;
 
-public class CriteriaBuilderTests extends JUnitTestCase {
+public class CriteriaBuilderTest extends JUnitTestCase {
 
     // SyntaxEntity instances, array index is equal to ID
     // Values must be unique to get just single result and verify it by ID
@@ -44,38 +56,38 @@ public class CriteriaBuilderTests extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("CriteriaBuilderTests");
-        suite.addTest(new CriteriaBuilderTests("testSetup"));
-        suite.addTest(new CriteriaBuilderTests("testAndPredicateAsListOf0"));
-        suite.addTest(new CriteriaBuilderTests("testOrPredicateAsListOf0"));
-        suite.addTest(new CriteriaBuilderTests("testAndPredicateAsListOf1"));
-        suite.addTest(new CriteriaBuilderTests("testOrPredicateAsListOf1"));
-        suite.addTest(new CriteriaBuilderTests("testAndPredicateAsListOf2"));
-        suite.addTest(new CriteriaBuilderTests("testOrPredicateAsListOf2"));
-        suite.addTest(new CriteriaBuilderTests("testAndPredicateAsListOfN"));
-        suite.addTest(new CriteriaBuilderTests("testOrPredicateAsListOfN"));
-        suite.addTest(new CriteriaBuilderTests("testLeftIntLen"));
-        suite.addTest(new CriteriaBuilderTests("testLeftExprLen"));
-        suite.addTest(new CriteriaBuilderTests("testRightIntLen"));
-        suite.addTest(new CriteriaBuilderTests("testRightExprLen"));
-        suite.addTest(new CriteriaBuilderTests("testReplaceExprExpr"));
-        suite.addTest(new CriteriaBuilderTests("testReplaceExprStr"));
-        suite.addTest(new CriteriaBuilderTests("testReplaceStrExpr"));
-        suite.addTest(new CriteriaBuilderTests("testReplaceStrStr"));
-        suite.addTest(new CriteriaBuilderTests("testExtractHourFromTime"));
-        suite.addTest(new CriteriaBuilderTests("testExtractMinuteFromTime"));
-        suite.addTest(new CriteriaBuilderTests("testExtractSecondFromTime"));
-        suite.addTest(new CriteriaBuilderTests("testExtractYearFromDate"));
-        suite.addTest(new CriteriaBuilderTests("testExtractMonthFromDate"));
-        suite.addTest(new CriteriaBuilderTests("testExtractDayFromDate"));
-        suite.addTest(new CriteriaBuilderTests("testExtractQuarterFromDate"));
-        suite.addTest(new CriteriaBuilderTests("testExtractWeekFromDate"));
+        suite.addTest(new CriteriaBuilderTest("testSetup"));
+        suite.addTest(new CriteriaBuilderTest("testAndPredicateAsListOf0"));
+        suite.addTest(new CriteriaBuilderTest("testOrPredicateAsListOf0"));
+        suite.addTest(new CriteriaBuilderTest("testAndPredicateAsListOf1"));
+        suite.addTest(new CriteriaBuilderTest("testOrPredicateAsListOf1"));
+        suite.addTest(new CriteriaBuilderTest("testAndPredicateAsListOf2"));
+        suite.addTest(new CriteriaBuilderTest("testOrPredicateAsListOf2"));
+        suite.addTest(new CriteriaBuilderTest("testAndPredicateAsListOfN"));
+        suite.addTest(new CriteriaBuilderTest("testOrPredicateAsListOfN"));
+        suite.addTest(new CriteriaBuilderTest("testLeftIntLen"));
+        suite.addTest(new CriteriaBuilderTest("testLeftExprLen"));
+        suite.addTest(new CriteriaBuilderTest("testRightIntLen"));
+        suite.addTest(new CriteriaBuilderTest("testRightExprLen"));
+        suite.addTest(new CriteriaBuilderTest("testReplaceExprExpr"));
+        suite.addTest(new CriteriaBuilderTest("testReplaceExprStr"));
+        suite.addTest(new CriteriaBuilderTest("testReplaceStrExpr"));
+        suite.addTest(new CriteriaBuilderTest("testReplaceStrStr"));
+        suite.addTest(new CriteriaBuilderTest("testExtractHourFromTime"));
+        suite.addTest(new CriteriaBuilderTest("testExtractMinuteFromTime"));
+        suite.addTest(new CriteriaBuilderTest("testExtractSecondFromTime"));
+        suite.addTest(new CriteriaBuilderTest("testExtractYearFromDate"));
+        suite.addTest(new CriteriaBuilderTest("testExtractMonthFromDate"));
+        suite.addTest(new CriteriaBuilderTest("testExtractDayFromDate"));
+        suite.addTest(new CriteriaBuilderTest("testExtractQuarterFromDate"));
+        suite.addTest(new CriteriaBuilderTest("testExtractWeekFromDate"));
         return suite;
     }
 
-    public CriteriaBuilderTests() {
+    public CriteriaBuilderTest() {
     }
 
-    public CriteriaBuilderTests(String name) {
+    public CriteriaBuilderTest(String name) {
         super(name);
         setPuName(getPersistenceUnitName());
     }

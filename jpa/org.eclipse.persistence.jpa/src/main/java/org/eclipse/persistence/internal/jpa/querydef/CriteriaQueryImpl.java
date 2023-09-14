@@ -249,7 +249,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return (CriteriaQuery<T>) super.where(restrictions);
     }
 
-    // TODO-API-3.2
     @Override
     public CriteriaQuery<T> where(List<Predicate> restrictions) {
         return (CriteriaQuery<T>) super.where(restrictions);
@@ -301,7 +300,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return this;
     }
 
-    // TODO-API-3.2
     @Override
     public CriteriaQuery<T> having(List<Predicate> restrictions) {
         super.having(restrictions);

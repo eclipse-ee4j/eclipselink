@@ -454,7 +454,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return delegate.getPersistenceUnitUtil();
     }
 
-    // TODO-API-3.2
     @Override
     public PersistenceUnitTransactionType getTransactionType() {
         return delegate.getTransactionType();
@@ -603,7 +602,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return delegate.isLoaded(entity, attributeName);
     }
 
-    // TODO-API-3.2
     @Override
     public <E> boolean isLoaded(E e, Attribute<? super E, ?> attribute) {
         return delegate.isLoaded(e, attribute);
@@ -731,13 +729,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         this.getServerSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
     }
 
-    // TODO-API-3.2
     @Override
     public void runInTransaction(Consumer<EntityManager> work) {
         delegate.runInTransaction(work);
     }
 
-    // TODO-API-3.2
     @Override
     public <R> R callInTransaction(Function<EntityManager, R> work) {
         return delegate.callInTransaction(work);
