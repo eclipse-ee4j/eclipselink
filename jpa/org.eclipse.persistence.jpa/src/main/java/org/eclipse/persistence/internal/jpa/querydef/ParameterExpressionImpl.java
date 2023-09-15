@@ -90,9 +90,10 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
      * native query when the implementation does not support this
      * use.
      */
-     @Override
+    @Override
+    @SuppressWarnings("unchecked")
     public Class<T> getParameterType(){
-         return this.javaType;
+         return (Class<T>) this.javaType;
      }
 
     @Override

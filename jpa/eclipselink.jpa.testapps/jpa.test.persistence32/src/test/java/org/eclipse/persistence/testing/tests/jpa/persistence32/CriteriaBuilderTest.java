@@ -25,6 +25,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.LocalDateField;
 import jakarta.persistence.criteria.LocalTimeField;
 import jakarta.persistence.criteria.ParameterExpression;
@@ -36,7 +37,6 @@ import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Persistence32TableCreator;
 import org.eclipse.persistence.testing.models.jpa.persistence32.SyntaxEntity;
-import org.junit.Assert;
 
 public class CriteriaBuilderTest extends JUnitTestCase {
 
@@ -50,6 +50,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
             new SyntaxEntity(4L, null, null, null, LocalTime.of(10, 11, 12), null, null),
             new SyntaxEntity(5L, null, null, null, null, LocalDate.of(1918, 9, 28), null)
     };
+
+    private static final int ENTITIES_COUNT = ENTITIES.length - 1;
 
     private JpaEntityManagerFactory emf = null;
 
@@ -81,6 +83,11 @@ public class CriteriaBuilderTest extends JUnitTestCase {
         suite.addTest(new CriteriaBuilderTest("testExtractDayFromDate"));
         suite.addTest(new CriteriaBuilderTest("testExtractQuarterFromDate"));
         suite.addTest(new CriteriaBuilderTest("testExtractWeekFromDate"));
+        suite.addTest(new CriteriaBuilderTest("testExpressionEqualToExpression"));
+        suite.addTest(new CriteriaBuilderTest("testExpressionEqualToObject"));
+        suite.addTest(new CriteriaBuilderTest("testExpressionNotEqualToExpression"));
+        suite.addTest(new CriteriaBuilderTest("testExpressionNotEqualToObject"));
+        suite.addTest(new CriteriaBuilderTest("testExpressionCast"));
         return suite;
     }
 
@@ -137,7 +144,7 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 cQuery.where(cb.and(Collections.emptyList()));
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(ENTITIES.length - 1, result.size());
+                assertEquals(ENTITIES.length - 1, result.size());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -158,7 +165,7 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 cQuery.where(cb.or(Collections.emptyList()));
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(0, result.size());
+                assertEquals(0, result.size());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -182,8 +189,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter("strParam1", "LeftToken");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(3L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -207,8 +214,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter("strParam1", "LeftToken");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(3L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -234,8 +241,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 query.setParameter("strParam1", "LeftToken");
                 query.setParameter("strParam2", "TokenRight");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(3L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -261,7 +268,7 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 query.setParameter("strParam1", "Left");
                 query.setParameter("strParam2", "right");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(2, result.size());
+                assertEquals(2, result.size());
                 assertFromSet(Set.of(1L, 2L), result.stream().map(SyntaxEntity::getId).toList());
                 et.commit();
             } catch (Exception e) {
@@ -290,8 +297,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 query.setParameter("strParam1", "LeftToken");
                 query.setParameter("strParam2", "TokenRight");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(3L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -321,7 +328,7 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 query.setParameter("timeParam", LocalTime.of(10, 11, 12));
                 query.setParameter("dateParam", LocalDate.of(1918, 9, 28));
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(4, result.size());
+                assertEquals(4, result.size());
                 assertFromSet(Set.of(1L, 2L, 4L, 5L), result.stream().map(SyntaxEntity::getId).toList());
                 et.commit();
             } catch (Exception e) {
@@ -344,8 +351,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter(strParam1, "Left substring to extract");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(1L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(1L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -367,8 +374,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter(strParam1, "Left substring to extract");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(1L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(1L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -390,8 +397,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter(strParam1, "Extract substring from right");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(2L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(2L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -413,8 +420,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter(strParam1, "Extract substring from right");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(2L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(2L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -440,8 +447,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter(strParam1, "UnknownToken");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(3L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -467,8 +474,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter(strParam2, "TokenUnknown");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(3L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -494,8 +501,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter(strParam1, "UnknownToken");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(3L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -521,8 +528,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter(strParam2, "TokenUnknown");
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(3L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -545,8 +552,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter("timeParam", 10);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(4L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(4L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -569,8 +576,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter("timeParam", 11);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(4L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(4L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -593,8 +600,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter("timeParam", 12);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(4L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(4L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -617,8 +624,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter("dateParam", 1918);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(5L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(5L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -641,8 +648,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter("dateParam", 9);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(5L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(5L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -665,8 +672,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter("dateParam", 28);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(5L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(5L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -689,8 +696,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 query.setParameter("dateParam", 3);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(5L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(5L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
@@ -718,13 +725,117 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                 // Number of the week for 28th September 1918 is 39
                 query.setParameter("dateParam", 39);
                 List<SyntaxEntity> result = query.getResultList();
-                Assert.assertEquals(1, result.size());
-                Assert.assertEquals(5L, result.get(0).getId());
+                assertEquals(1, result.size());
+                assertEquals(5L, result.get(0).getId());
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
                 throw e;
             }
+        }
+    }
+
+    public void testExpressionEqualToExpression() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                CriteriaBuilder cb = em.getCriteriaBuilder();
+                CriteriaQuery<SyntaxEntity> cQuery = cb.createQuery(SyntaxEntity.class);
+                Root<SyntaxEntity> root = cQuery.from(SyntaxEntity.class);
+                cQuery.where(
+                        root.get("strVal1").equalTo(cb.parameter(Integer.class, "strParam")));
+                TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
+                query.setParameter("strParam", "LeftToken");
+                List<SyntaxEntity> result = query.getResultList();
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
+                et.commit();
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void testExpressionEqualToObject() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                CriteriaBuilder cb = em.getCriteriaBuilder();
+                CriteriaQuery<SyntaxEntity> cQuery = cb.createQuery(SyntaxEntity.class);
+                Root<SyntaxEntity> root = cQuery.from(SyntaxEntity.class);
+                cQuery.where(
+                        root.get("strVal1").equalTo("LeftToken"));
+                TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
+                List<SyntaxEntity> result = query.getResultList();
+                assertEquals(1, result.size());
+                assertEquals(3L, result.get(0).getId());
+                et.commit();
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void testExpressionNotEqualToExpression() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                CriteriaBuilder cb = em.getCriteriaBuilder();
+                CriteriaQuery<SyntaxEntity> cQuery = cb.createQuery(SyntaxEntity.class);
+                Root<SyntaxEntity> root = cQuery.from(SyntaxEntity.class);
+                cQuery.where(
+                        root.get("strVal1").notEqualTo(cb.parameter(Integer.class, "strParam")));
+                TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
+                query.setParameter("strParam", "LeftToken");
+                List<SyntaxEntity> result = query.getResultList();
+                assertEquals(2, result.size());
+                assertFromSet(Set.of(1L, 2L), result.stream().map(SyntaxEntity::getId).toList());
+                et.commit();
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void testExpressionNotEqualToObject() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                CriteriaBuilder cb = em.getCriteriaBuilder();
+                CriteriaQuery<SyntaxEntity> cQuery = cb.createQuery(SyntaxEntity.class);
+                Root<SyntaxEntity> root = cQuery.from(SyntaxEntity.class);
+                cQuery.where(
+                        root.get("strVal1").notEqualTo("LeftToken"));
+                TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
+                List<SyntaxEntity> result = query.getResultList();
+                assertEquals(2, result.size());
+                assertFromSet(Set.of(1L, 2L), result.stream().map(SyntaxEntity::getId).toList());
+                et.commit();
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void testExpressionCast() {
+        try (EntityManager em = emf.createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            // Create expression with Integer java type
+            Expression<? extends Number> source = cb.parameter(Integer.class, "intParam");
+            assertEquals(Integer.class, source.getJavaType());
+            // Cast it to Long java type
+            Expression<? extends Number> target = source.cast(Long.class);
+            assertEquals(Long.class, target.getJavaType());
+            // Cast shall not return the same instance
+            assertNotSame(source, target);
         }
     }
 
@@ -737,7 +848,7 @@ public class CriteriaBuilderTest extends JUnitTestCase {
                     if (expectedInternal.contains(value)) {
                         expectedInternal.remove(value);
                     } else {
-                        Assert.fail(String.format(
+                        fail(String.format(
                                 "Actual value %s is not from expected set of values %s",
                                 value, setToString(expected)));
                     }
@@ -745,7 +856,7 @@ public class CriteriaBuilderTest extends JUnitTestCase {
         );
         // Make sure that all values from set were checked
         if (!expectedInternal.isEmpty()) {
-            Assert.fail(String.format("Missing values %s from expected set %s",
+            fail(String.format("Missing values %s from expected set %s",
                                       setToString(expectedInternal), setToString(expected)));
         }
     }

@@ -27,6 +27,7 @@ import java.math.BigInteger;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,7 +73,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaCriteriaBuilder;
 import org.eclipse.persistence.queries.ReportQuery;
 
-import static org.eclipse.persistence.internal.jpa.querydef.InternalSelection.currentNode;
+import static org.eclipse.persistence.internal.jpa.querydef.ExpressionImpl.currentNode;
 
 public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
@@ -260,7 +261,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, x.getJavaType(),((InternalSelection)x).getCurrentNode().maximum());
+        return new ExpressionImpl<>(this.metamodel, x.getJavaType(), ((InternalSelection)x).getCurrentNode().maximum());
     }
 
     /**
@@ -276,7 +277,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl(this.metamodel, x.getJavaType(),((InternalSelection)x).getCurrentNode().minimum());
+        return new ExpressionImpl<>(this.metamodel, x.getJavaType(),((InternalSelection)x).getCurrentNode().minimum());
     }
 
     /**
@@ -883,11 +884,11 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)v).getCurrentNode().between(x, y), buildList(v, internalLiteral(x), internalLiteral(y)), "between");
     }
 
-    protected List<Expression<?>> buildList(Expression<?>... expressions){
-        List<Expression<?>> list = new ArrayList<>();
-        for(Expression<?> exp : expressions){
-            list.add(exp);
-        }
+    protected List<Expression<?>> buildList(Expression<?>... expressions) {
+        // Immutable List causes test failures.
+        // Those lists are usually small (size 1-2) and modifications are rare. Default list size is too much.
+        List<Expression<?>> list = new ArrayList<>(expressions.length + 2);
+        Collections.addAll(list, expressions);
         return list;
     }
 
@@ -1485,7 +1486,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (value == null) {
             throw new IllegalArgumentException( ExceptionLocalization.buildMessage("jpa_criteriaapi_null_literal_value", new Object[]{}));
         }
-        return new ExpressionImpl<T>(metamodel, (Class<T>) (value.getClass()), new ConstantExpression(value, new ExpressionBuilder()), value);
+        return ExpressionImpl.createLiteral(value, metamodel);
     }
 
     /**
@@ -1495,8 +1496,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return null expression literal
      */
     @Override
-    public <T> Expression<T> nullLiteral(Class<T> resultClass){
-        return new ExpressionImpl<T>(metamodel, resultClass, new ConstantExpression(null, new ExpressionBuilder()), null);
+    public <T> Expression<T> nullLiteral(Class<T> resultClass) {
+        return ExpressionImpl.createLiteral(null, metamodel, resultClass);
     }
 
     /**
@@ -1505,14 +1506,14 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return expression literal
      */
     protected <T> Expression<T> internalLiteral(T value){
-        return new ExpressionImpl<T>(metamodel, (Class<T>) (value == null? null: value.getClass()), new ConstantExpression(value, new ExpressionBuilder()), value);
+        return ExpressionImpl.createLiteral(value, metamodel);
     }
 
     // parameters:
     /**
      * Create a parameter.
-     *
      * Create a parameter expression.
+     *
      * @param paramClass parameter class
      * @return parameter expression
      */
@@ -2297,7 +2298,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public Expression<java.sql.Date> currentDate(){
-        return new ExpressionImpl(metamodel, ClassConstants.SQLDATE, new ExpressionBuilder().currentDateDate());
+        return new ExpressionImpl<>(metamodel, ClassConstants.SQLDATE, new ExpressionBuilder().currentDateDate());
     }
 
     /**
@@ -2307,7 +2308,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public Expression<java.sql.Timestamp> currentTimestamp(){
-        return new ExpressionImpl(metamodel, ClassConstants.TIMESTAMP, new ExpressionBuilder().currentTimeStamp());
+        return new ExpressionImpl<>(metamodel, ClassConstants.TIMESTAMP, new ExpressionBuilder().currentTimeStamp());
     }
 
     /**
@@ -2317,7 +2318,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public Expression<java.sql.Time> currentTime(){
-        return new ExpressionImpl(metamodel, ClassConstants.TIME, new ExpressionBuilder().currentTime());
+        return new ExpressionImpl<>(metamodel, ClassConstants.TIME, new ExpressionBuilder().currentTime());
     }
 
     /**
@@ -2327,7 +2328,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public Expression<java.time.LocalDateTime> localDateTime() {
-        return new ExpressionImpl(metamodel, ClassConstants.LOCAL_DATETIME, new ExpressionBuilder().localDateTime());
+        return new ExpressionImpl<>(metamodel, ClassConstants.LOCAL_DATETIME, new ExpressionBuilder().localDateTime());
     }
 
     /**
@@ -2337,7 +2338,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public Expression<java.time.LocalDate> localDate() {
-        return new ExpressionImpl(metamodel, ClassConstants.LOCAL_DATE, new ExpressionBuilder().localDate());
+        return new ExpressionImpl<>(metamodel, ClassConstants.LOCAL_DATE, new ExpressionBuilder().localDate());
     }
 
     /**
@@ -2347,7 +2348,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public Expression<java.time.LocalTime> localTime() {
-        return new ExpressionImpl(metamodel, ClassConstants.LOCAL_TIME, new ExpressionBuilder().localTime());
+        return new ExpressionImpl<>(metamodel, ClassConstants.LOCAL_TIME, new ExpressionBuilder().localTime());
     }
 
     @Override
