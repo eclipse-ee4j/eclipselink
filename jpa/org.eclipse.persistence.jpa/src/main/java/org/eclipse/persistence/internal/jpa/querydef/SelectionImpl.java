@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  */
 public abstract class SelectionImpl<X> implements Selection<X>, InternalSelection, Serializable{
 
-    protected Class<X> javaType;
+    protected Class<? extends X> javaType;
     protected Expression currentNode;
 
     /**
@@ -52,9 +52,16 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
 
     protected String alias;
 
-    public <T> SelectionImpl(Class<X> javaType, Expression expressionNode){
+    public SelectionImpl(Class<? extends X> javaType, Expression expressionNode){
         this.javaType = javaType;
         this.currentNode = expressionNode;
+    }
+
+    // Allows complete clone of the instance
+    protected SelectionImpl(Class<? extends X> javaType, Expression expressionNode, String alias) {
+        this.javaType = javaType;
+        this.currentNode = expressionNode;
+        this.alias = alias;
     }
 
     //SELECTION

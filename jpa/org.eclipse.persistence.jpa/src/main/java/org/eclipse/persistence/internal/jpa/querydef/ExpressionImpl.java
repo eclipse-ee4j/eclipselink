@@ -24,6 +24,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.sessions.Project;
@@ -45,66 +47,82 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     protected boolean isLiteral;
     protected Object literal;
 
-    protected ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode){
+    // Non literal value
+    protected ExpressionImpl(Metamodel metamodel, Class<? extends X> javaType, org.eclipse.persistence.expressions.Expression expressionNode){
         super(javaType, expressionNode);
         this.metamodel = metamodel;
     }
 
-    public ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode, Object value){
-        super(javaType, expressionNode);
+    // Literal value
+    public ExpressionImpl(Metamodel metamodel, Class<? extends X> javaType, org.eclipse.persistence.expressions.Expression expressionNode, Object value) {
+        this(metamodel, javaType, expressionNode, value, true, null);
+    }
+
+    // Allows complete clone of the instance
+    private ExpressionImpl(
+            Metamodel metamodel,
+            Class<? extends X> javaType,
+            org.eclipse.persistence.expressions.Expression expressionNode,
+            Object value,
+            boolean isLiteral,
+            String alias) {
+        super(javaType, expressionNode, alias);
         this.metamodel = metamodel;
         this.literal = value;
-        this.isLiteral = true;
+        this.isLiteral = isLiteral;
     }
 
     @Override
     public <T> Expression<T> as(Class<T> type) {
-        Project project = ((MetamodelImpl)metamodel).getProject();
-        if (project != null){
-            ClassDescriptor descriptor = project.getClassDescriptor(javaType);
-            if (descriptor != null && descriptor.hasInheritance()){
-                descriptor = descriptor.getInheritancePolicy().getSubclassDescriptor(type);
-                if (descriptor != null){
-                    return buildExpressionForAs(type);
-                }
-            }
-        }
-        return (Expression<T>) this;
+        // JPA spec: This shall return new instance according to spec, but historical code does only cast
+        return buildExpressionForAs(type);
     }
 
-    // TODO-API-3.2
     @Override
     public <X1> Expression<X1> cast(Class<X1> type) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        // JPA spec: New instance with provided Java type
+        return new ExpressionImpl<>(metamodel, type, currentNode, literal, isLiteral, alias);
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
         return (Expression<T>) this;
     }
 
-
-    // TODO-API-3.2
     @Override
     public Predicate equalTo(Expression<?> value) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.equal(currentNode(value)),
+                List.of(this, value),
+                "equals");
     }
 
-    // TODO-API-3.2
     @Override
     public Predicate equalTo(Object value) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.equal(value),
+                List.of(this, createLiteral(value, metamodel)),
+                "equals");
     }
 
-    // TODO-API-3.2
     @Override
     public Predicate notEqualTo(Expression<?> value) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.notEqual(currentNode(value)),
+                List.of(this, value),
+                "not equal");
     }
 
-    // TODO-API-3.2
     @Override
     public Predicate notEqualTo(Object value) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.notEqual(value),
+                List.of(this, createLiteral(value, metamodel)),
+                "not equal");
     }
 
     @Override
@@ -227,6 +245,26 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     @Override
     public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
         //no-op because an expression will have no root
+    }
+
+    // Literal Expression factory method
+    static <T> Expression<T> createLiteral(T value, Metamodel metamodel, Class<T> resultClass) {
+        return new ExpressionImpl<T>(
+                metamodel,
+                resultClass,
+                new ConstantExpression(value, new ExpressionBuilder()), value);
+
+    }
+
+    // Literal Expression factory method
+    @SuppressWarnings("unchecked")
+    static <T> Expression<T> createLiteral(T value, Metamodel metamodel) {
+        return createLiteral(value, metamodel, value == null ? null : (Class<T>) value.getClass());
+    }
+
+    // Shortcut to return current expression node
+    static org.eclipse.persistence.expressions.Expression currentNode(Expression<?> expression) {
+        return ((InternalSelection)expression).getCurrentNode();
     }
 
 }

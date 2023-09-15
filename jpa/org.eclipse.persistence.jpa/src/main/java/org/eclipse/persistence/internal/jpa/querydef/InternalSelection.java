@@ -40,9 +40,4 @@ public interface InternalSelection {
     boolean isRoot();
     boolean isConstructor();
 
-    // Shortcut to return current expression node
-    static org.eclipse.persistence.expressions.Expression currentNode(Expression<?> expression) {
-        return ((InternalSelection)expression).getCurrentNode();
-    }
-
 }
