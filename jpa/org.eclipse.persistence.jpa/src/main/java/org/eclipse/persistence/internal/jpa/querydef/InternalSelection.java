@@ -15,8 +15,6 @@
 //
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import jakarta.persistence.criteria.Expression;
-
 /**
  * <p>
  * <b>Purpose</b>: Represents a Selection in the Criteria API implementation hierarchy.
@@ -32,7 +30,7 @@ import jakarta.persistence.criteria.Expression;
  */
 public interface InternalSelection {
 
-    void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery);
+    void findRootAndParameters(CommonAbstractCriteriaImpl<?> criteriaQuery);
 
     org.eclipse.persistence.expressions.Expression getCurrentNode();
 

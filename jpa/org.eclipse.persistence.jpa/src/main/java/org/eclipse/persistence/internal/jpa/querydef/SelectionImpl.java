@@ -88,7 +88,7 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
         return this.javaType;
     }
 
-    public void setJavaType(Class<X> javaType) {
+    public void setJavaType(Class<? extends X> javaType) {
         this.javaType = javaType;
     }
 

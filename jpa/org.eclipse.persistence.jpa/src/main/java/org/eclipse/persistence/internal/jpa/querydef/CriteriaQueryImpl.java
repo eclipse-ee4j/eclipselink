@@ -19,7 +19,11 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -30,7 +34,6 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.Type.PersistenceType;
-
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -59,7 +62,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
 
-    protected SelectionImpl<?> selection;
+    protected SelectionImpl<? extends T> selection;
     protected List<Order> orderBy;
 
     protected Set<FromImpl> joins;
@@ -83,7 +86,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.queryType = (Class<T>) Tuple.class;
             } else if (((InternalSelection) selection).isConstructor()) {
                 Selection[] selectArray = selection.getCompoundSelectionItems().toArray(new Selection[selection.getCompoundSelectionItems().size()]);
-                populateAndSetConstructorSelection((ConstructorSelectionImpl)selection, this.selection.getJavaType(), selectArray);
+                populateAndSetConstructorSelection((ConstructorSelectionImpl<T>)selection, (Class<T>) this.selection.getJavaType(), selectArray);
                 this.queryType = (Class<T>) selection.getJavaType();
             } else {
                 this.queryResult = ResultType.OBJECT_ARRAY;
@@ -154,10 +157,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             ((SelectionImpl)select).findRootAndParameters(this);
         }
         if (this.queryResult == ResultType.CONSTRUCTOR) {
-            populateAndSetConstructorSelection(null, this.queryType, selections);
+            populateAndSetConstructorSelection((ConstructorSelectionImpl<T>) null, this.queryType, selections);
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
             if (selections.length == 1 && selections[0].getJavaType().equals(this.queryType)) {
-                this.selection = (SelectionImpl<?>) selections[0];
+                this.selection = (SelectionImpl<? extends T>) selections[0];
             } else {
                 try {
                     populateAndSetConstructorSelection(null, this.queryType, selections);//throws IllegalArgumentException if it doesn't exist
@@ -170,7 +173,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = new CompoundSelectionImpl(this.queryType, selections);
         } else if (this.queryResult.equals(ResultType.OTHER)) {
             if (selections.length == 1 && selections[0].getJavaType().equals(this.queryType)) {
-                this.selection = (SelectionImpl<?>) selections[0];
+                this.selection = (SelectionImpl<? extends T>) selections[0];
             } else {
                 if (!BasicTypeHelperImpl.getInstance().isDateClass(this.queryType)) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("MULTIPLE_SELECTIONS_PASSED_TO_QUERY_WITH_PRIMITIVE_RESULT"));
@@ -358,18 +361,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * Also sets the query result to ResultType.CONSTRUCTOR
      *
      */
-    public void populateAndSetConstructorSelection(ConstructorSelectionImpl constructorSelection, Class<?> class1, Selection<?>... selections) throws IllegalArgumentException{
+    public void populateAndSetConstructorSelection(ConstructorSelectionImpl<T> constructorSelection, Class<T> class1, Selection<?>... selections) throws IllegalArgumentException{
         Class<?>[] constructorArgs = new Class<?>[selections.length];
         int count = 0;
-        for (Selection select : selections) {
+        for (Selection<?> select : selections) {
             if(select instanceof ConstructorSelectionImpl) {
-                ConstructorSelectionImpl constructorSelect = (ConstructorSelectionImpl)select;
-                Selection[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[constructorSelect.getCompoundSelectionItems().size()]);
-                populateAndSetConstructorSelection(constructorSelect, constructorSelect.getJavaType(), selectArray);
+                @SuppressWarnings("unchecked")
+                ConstructorSelectionImpl<T> constructorSelect = (ConstructorSelectionImpl<T>)select;
+                @SuppressWarnings("unchecked")
+                Selection<? extends T>[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[constructorSelect.getCompoundSelectionItems().size()]);
+                populateAndSetConstructorSelection(constructorSelect, (Class<T>) constructorSelect.getJavaType(), selectArray);
             }
             constructorArgs[count++] = select.getJavaType();
         }
-        Constructor constructor = null;
+        Constructor<? extends T> constructor = null;
         try {
             // TODO: Remove AccessController.doPrivileged
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -378,7 +383,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 constructor = PrivilegedAccessHelper.getConstructorFor(class1, constructorArgs, false);
             }
             if (constructorSelection == null){
-                constructorSelection = new ConstructorSelectionImpl(class1, selections);
+                constructorSelection = new ConstructorSelectionImpl<>(class1, selections);
             }
             this.queryResult = ResultType.CONSTRUCTOR;
             constructorSelection.setConstructor(constructor);
@@ -565,7 +570,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             // unknown type so let's figure this out.
             if (selection == null) {
                 if (this.roots != null && !this.roots.isEmpty()) {
-                    this.selection = (SelectionImpl<?>) this.roots.iterator().next();
+                    this.selection = (SelectionImpl<? extends T>) this.roots.iterator().next();
                     query = new ReadAllQuery(((FromImpl) this.selection).getJavaType());
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
