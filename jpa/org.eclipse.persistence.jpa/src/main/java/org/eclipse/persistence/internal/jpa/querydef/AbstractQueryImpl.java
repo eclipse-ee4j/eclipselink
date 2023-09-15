@@ -19,7 +19,9 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serial;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +33,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
-
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 
 /**
@@ -50,6 +51,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
  */
 public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T> implements AbstractQuery<T> {
 
+    @Serial
     private static final long serialVersionUID = -5270020290752637882L;
 
     protected ResultType queryResult;
@@ -65,7 +67,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
 
     public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, CriteriaBuilderImpl queryBuilder, Class<T> resultType){
         super(metamodel, queryBuilder, resultType);
-        this.roots = new HashSet<Root<?>>();
+        this.roots = new HashSet<>();
         this.queryResult = queryResult;
         this.baseExpression = new ExpressionBuilder();
     }
@@ -98,10 +100,8 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      */
     @Override
     public AbstractQuery<T> groupBy(Expression<?>... grouping){
-        this.groupBy = new ArrayList<Expression<?>>();
-        for (Expression<?> exp : grouping){
-            this.groupBy.add(exp);
-        }
+        this.groupBy = new ArrayList<>();
+        Collections.addAll(this.groupBy, grouping);
         return this;
     }
 
@@ -147,7 +147,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return this;
     }
 
-    public abstract void addJoin(FromImpl join);
+    public abstract void addJoin(FromImpl<?, ?> join);
 
     /**
      * Specify whether duplicate query results will be eliminated. A true value
@@ -173,15 +173,15 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return getBaseExpression(null);
     }
     
-    protected org.eclipse.persistence.expressions.Expression getBaseExpression(Root root) {
+    protected org.eclipse.persistence.expressions.Expression getBaseExpression(Root<?> root) {
         if (this.roots.isEmpty()) {
             baseExpression = new ExpressionBuilder();
         } else if (this.roots.size() == 1) {
-            baseExpression = ((RootImpl) this.roots.iterator().next()).getCurrentNode();
+            baseExpression = ((RootImpl<?>) this.roots.iterator().next()).getCurrentNode();
         } else if (root != null) {
-            for (Root r : this.roots) {
+            for (Root<?> r : this.roots) {
                 if (r == root) {
-                    baseExpression = ((RootImpl) r).getCurrentNode();
+                    baseExpression = ((RootImpl<?>) r).getCurrentNode();
                 }
             }
         }
@@ -195,7 +195,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     @Override
     public List<Expression<?>> getGroupList(){
         if (this.groupBy == null){
-            this.groupBy = new ArrayList<Expression<?>>();
+            this.groupBy = new ArrayList<>();
         }
         return this.groupBy;
     }
@@ -222,10 +222,8 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     }
 
     @Override
-    protected void integrateRoot(RootImpl root) {
-        if (!this.roots.contains(root)) {
-            this.roots.add(root);
-        }
+    protected void integrateRoot(RootImpl<?> root) {
+        this.roots.add(root);
     }
 
     /**
@@ -239,7 +237,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return this.distinct;
     }
 
-    protected void findJoins(FromImpl root) {
+    protected void findJoins(FromImpl<?, ?> root) {
         root.findJoins(this);
     }
 

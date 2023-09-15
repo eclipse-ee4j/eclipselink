@@ -18,6 +18,7 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +34,6 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
-
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -54,6 +54,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  */
 public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCriteria, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -2729946665208116620L;
 
     protected Metamodel metamodel;
@@ -79,7 +80,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
         if (this.where == null) {
             return null;
         }
-        if (((ExpressionImpl)this.where).isPredicate()) {
+        if (((ExpressionImpl<?>)this.where).isPredicate()) {
             return (Predicate)this.where;
         }
         return this.queryBuilder.isTrue(this.where);
@@ -106,8 +107,13 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *            metamodel entity representing the entity of type X
      * @return query root corresponding to the given entity
      */
-    public Root internalFrom(EntityType entity) {
-        RootImpl root = new RootImpl(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
+    public <R> Root<R> internalFrom(EntityType<R> entity) {
+        RootImpl<R> root = new RootImpl<>(
+                entity,
+                this.metamodel,
+                entity.getBindableJavaType(),
+                new ExpressionBuilder(entity.getBindableJavaType()),
+                entity);
         integrateRoot(root);
         return root;
     }
@@ -120,8 +126,8 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *            the entity class
      * @return query root corresponding to the given entity
      */
-    public Root internalFrom(Class<?> entityClass) {
-        EntityType entity = this.metamodel.entity(entityClass);
+    public <R> Root<R> internalFrom(Class<R> entityClass) {
+        EntityType<R> entity = this.metamodel.entity(entityClass);
         return this.internalFrom(entity);
     }
 
@@ -176,7 +182,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      */
     @Override
     public <U> Subquery<U> subquery(Class<U> type) {
-        return new SubQueryImpl<U>(metamodel, type, queryBuilder, this);
+        return new SubQueryImpl<>(metamodel, type, queryBuilder, this);
     }
 
     @Override
@@ -187,7 +193,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     /**
      *  Used to use a root from a different query.
      */
-    protected abstract void integrateRoot(RootImpl root);
+    protected abstract void integrateRoot(RootImpl<?> root);
 
     protected void findRootAndParameters(Expression<?> predicate) {
         Objects.requireNonNull(predicate, "Predicate expression is null");
@@ -203,7 +209,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
 
     public void addParameter(ParameterExpression<?> parameter) {
         if (this.parameters == null) {
-            this.parameters = new HashSet<ParameterExpression<?>>();
+            this.parameters = new HashSet<>();
         }
         this.parameters.add(parameter);
     }
@@ -218,7 +224,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     @Override
     public Set<ParameterExpression<?>> getParameters() {
         if (this.parameters == null) {
-            this.parameters = new HashSet<ParameterExpression<?>>();
+            this.parameters = new HashSet<>();
         }
         return this.parameters;
     }
@@ -230,7 +236,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     public DatabaseQuery translate() {
         DatabaseQuery query = getDatabaseQuery();
         for (ParameterExpression<?> parameter : getParameters()) {
-            query.addArgument(((ParameterExpressionImpl)parameter).getInternalName(), parameter.getJavaType());
+            query.addArgument(((ParameterExpressionImpl<?>)parameter).getInternalName(), parameter.getJavaType());
         }
         if (this.where != null) {
             if (((InternalExpression) this.where).isJunction()) {

@@ -39,7 +39,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
 
     protected BooleanOperator booloperator;
 
-    public <T> PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> parentExpressions, BooleanOperator operator){
+    public PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> parentExpressions, BooleanOperator operator){
         super(metamodel, expressionNode, parentExpressions);
         this.booloperator = operator;
     }
@@ -56,13 +56,13 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
         return this.getOperator() == BooleanOperator.AND;
     }
 
-    @Override
     /**
      * Return the boolean operator for the predicate. If the predicate is
      * simple, this is AND.
      *
      * @return boolean operator for the predicate
      */
+    @Override
     public BooleanOperator getOperator(){
         return this.booloperator;
     }
@@ -73,8 +73,9 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      * @return list boolean expressions forming the predicate
      */
     @Override
+    @SuppressWarnings("unchecked") // Otherwise generics won't match
     public List<Expression<Boolean>> getExpressions(){
-        return this.expressions;
+        return (List<Expression<Boolean>>)(List<?>) this.expressions;
     }
 
     /**
@@ -84,7 +85,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      */
     @Override
     public Predicate not(){
-        PredicateImpl predicateImpl = null;
+        PredicateImpl predicateImpl;
         if (isJunction()) {
             if (getJunctionValue()) {
                 predicateImpl = new PredicateImpl(this.metamodel, null, null, BooleanOperator.OR);

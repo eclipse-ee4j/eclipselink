@@ -22,13 +22,9 @@ import java.util.List;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Metamodel;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
-import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p>
@@ -138,10 +134,11 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     @Override
+    @SuppressWarnings("unchecked") // (Expression<Collection<?>>), values prototype in JPA is too common
     public Predicate in(Expression<?>... values) {
         if (values != null) {
             if (values.length == 1 && ((InternalExpression) values[0]).isParameter()
-                    && Collection.class.isAssignableFrom(((ParameterExpressionImpl) values[0]).getJavaType())) {
+                    && Collection.class.isAssignableFrom(((ParameterExpressionImpl<?>) values[0]).getJavaType())) {
                 // bug 349477 - Collection from Expression<Collection> was lost during compilation
                 // and if we know that Collection is there we should help the runtime
                 // and route the execution to the right method
@@ -151,10 +148,10 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
             list.add(this);
             if (values.length == 1 && ((InternalExpression) values[0]).isSubquery()) {
                 list.add(values[0]);
-                return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((SubQueryImpl) values[0]).subQuery), list, "in");
+                return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((SubQueryImpl<?>) values[0]).subQuery), list, "in");
             } else {
-                List<Object> inValues = new ArrayList<Object>();
-                for (Expression exp : values) {
+                List<Object> inValues = new ArrayList<>();
+                for (Expression<?> exp : values) {
                     if (!((InternalExpression) exp).isLiteral() && !((InternalExpression) exp).isParameter()) {
                         Object[] params = new Object[]{exp};
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN",params));
@@ -180,7 +177,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public Predicate in(Collection<?> values) {
         List<Expression<?>> list = new ArrayList<>();
         list.add(this);
-        return new InImpl(this.metamodel, this, values, list);
+        return new InImpl<>(this.metamodel, this, values, list);
     }
     /**
      * Apply a predicate to test whether the expression is a member
@@ -193,7 +190,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         List<Expression<?>> list = new ArrayList<>();
         list.add(values);
         list.add(this);
-        return new InImpl(metamodel, this, (ExpressionImpl)values, list);
+        return new InImpl<>(metamodel, this, (ExpressionImpl<?>)values, list);
     }
 
     @Override
@@ -243,13 +240,13 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         return false;
     }
     @Override
-    public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
+    public void findRootAndParameters(CommonAbstractCriteriaImpl<?> criteriaQuery){
         //no-op because an expression will have no root
     }
 
     // Literal Expression factory method
     static <T> Expression<T> createLiteral(T value, Metamodel metamodel, Class<T> resultClass) {
-        return new ExpressionImpl<T>(
+        return new ExpressionImpl<>(
                 metamodel,
                 resultClass,
                 new ConstantExpression(value, new ExpressionBuilder()), value);

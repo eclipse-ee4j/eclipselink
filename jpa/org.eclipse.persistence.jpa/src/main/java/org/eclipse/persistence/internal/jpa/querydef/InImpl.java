@@ -26,8 +26,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.persistence.metamodel.Metamodel;
 
-import org.eclipse.persistence.internal.expressions.CollectionExpression;
 import org.eclipse.persistence.internal.expressions.CompoundExpression;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.LogicalExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
@@ -50,13 +50,13 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
 
     protected org.eclipse.persistence.expressions.Expression parentNode;
 
-    public InImpl(Metamodel metamodel, ExpressionImpl leftExpression, Collection values, List expressions) {
+    public InImpl(Metamodel metamodel, ExpressionImpl<? extends T> leftExpression, Collection<?> values, List<Expression<?>> expressions) {
         super(metamodel, ((InternalSelection)leftExpression).getCurrentNode().in(values), expressions, "in");
         this.leftExpression = leftExpression;
 
     }
 
-    public InImpl(Metamodel metamodel, ExpressionImpl leftExpression, ExpressionImpl rightExp, List expressions) {
+    public InImpl(Metamodel metamodel, ExpressionImpl<T> leftExpression, ExpressionImpl<?> rightExp, List<Expression<?>> expressions) {
         super(metamodel,
             (rightExp.isParameter()?
                 leftExpression.getCurrentNode().in(rightExp.getCurrentNode()):
@@ -66,7 +66,7 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
 
     }
 
-    protected ExpressionImpl leftExpression;
+    protected ExpressionImpl<? extends T> leftExpression;
 
     /**
      * Returns the expression to be tested against the
@@ -74,12 +74,13 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
      * @return expression
      */
     @Override
+    @SuppressWarnings("unchecked") // JPA API generics clash
     public Expression<T> getExpression(){
-        return this.leftExpression;
+        return (Expression<T>) this.leftExpression;
     }
 
     @Override
-    public void findRootAndParameters(CommonAbstractCriteriaImpl query){
+    public void findRootAndParameters(CommonAbstractCriteriaImpl<?> query) {
         super.findRootAndParameters(query);
     }
 
@@ -94,8 +95,9 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
      *  @return in predicate
      */
     @Override
+    @SuppressWarnings("unchecked") // (Collection<T>) ...
     public In<T> value(T value){
-        ((Collection)((CollectionExpression)((RelationExpression)this.currentNode).getSecondChild()).getValue()).add(value);
+        ((Collection<T>) ((ConstantExpression) ((CompoundExpression) this.currentNode).getSecondChild()).getValue()).add(value);
         return this;
     }
 
@@ -105,10 +107,11 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
      *  @return in predicate
      */
     @Override
+    @SuppressWarnings("unchecked") // (Collection<org.eclipse.persistence.expressions.Expression>) ...
     public In<T> value(Expression<? extends T> value) {
         if (!(((InternalExpression) value).isLiteral() || ((InternalExpression) value).isParameter())) {
             RelationExpression baseIn = (RelationExpression) this.currentNode;
-            this.currentNode = baseIn.getFirstChild().in(((SubQueryImpl) value).subQuery);
+            this.currentNode = baseIn.getFirstChild().in(((SubQueryImpl<?>) value).subQuery);
             if (this.parentNode != null) {
                 if (this.parentNode.isCompoundExpression()) {
                     CompoundExpression logExp = (LogicalExpression) this.parentNode;
@@ -127,7 +130,7 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
                 RelationExpression baseIn = (RelationExpression) this.currentNode;
                 org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)value).getCurrentNode();
                 resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, baseIn.getFirstChild());
-                ((Collection) ((CollectionExpression) baseIn.getSecondChild()).getValue()).add(resultExp);
+                ((Collection<org.eclipse.persistence.expressions.Expression>) ((ConstantExpression) baseIn.getSecondChild()).getValue()).add(resultExp);
 
                 // Add to the expression list for #findRootAndParameters()
                 this.expressions.add(value);
