@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -381,6 +381,7 @@
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.jar}'"/>
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.framework.jar}'"/>
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence20.jar}'"/>
+        <echo message="   '${build.dir}/${persistence20_21_diff.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${javax.validation.jar}'"/>
         <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${annotation-api.jar}'"/>
@@ -401,6 +402,7 @@
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence20.jar}"/>
+            <pathelement path="${jpatest.2.base.dir}/${build.dir}/${persistence20_21_diff.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
             <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${annotation-api.jar}"/>
