@@ -119,6 +119,7 @@
             <pathelement path="${wdf_test.2.core.test.dir}/${classes.dir}"/>
             <pathelement path="${wdf_test.2.core.test.dir}/${wdf.tests.jar}"/>
             <pathelement path="${wdf_test.2.jpa.plugins.dir}/${persistence20.jar}"/>
+            <pathelement path="${wdf_test.2.trunk.dir}/${build.dir}/${persistence20_21_diff.jar}"/>
             <pathelement path="${wdf_test.2.common.plugins.dir}/${ejb.jar}"/>
             <pathelement path="${wdf_test.2.common.plugins.dir}/${glassfish-corba-omgapi.jar}"/>
             <!-- These paths are unneeded for compile or run (from core.depend) may be needed in future -->
