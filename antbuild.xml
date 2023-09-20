@@ -424,7 +424,7 @@
     <target name="build-src" depends="build-eclipselink-jar, package-src-jar" description="build EclipseLink jar and source zip"/>
 
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
-    <target name="build" depends="build-eclipselink-jar, build-core-test, build-oracle-if-dependencies" description="build all EclipseLink distribution files except docs"/>
+    <target name="build" depends="build-eclipselink-jar, package-persistence20_21_diff-jar, build-core-test, build-oracle-if-dependencies" description="build all EclipseLink distribution files except docs"/>
 
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
     <target name="build-no-test" depends="build-eclipselink-jar, build-util, package-all" description="build all EclipseLink distribution files except docs"/>
@@ -983,63 +983,11 @@
         <echo message="&lt;/body&gt;&lt;/html&gt;" file="${trunk.build.location}/TestConfig.html" append="true"/>
     </target>
 
-    <!-- Packages the eclipselink.jar. -->
-    <target name="package-eclipselink-jar" description="build EclipseLink jar">
-        <delete file="${eclipselink.jar}"/>
-        <echo message="Implementation-Version: ${version.string}"/>
-        <delete dir="${build.dir}/javax.persistence/${classes.dir}" failonerror="false"/>
-        <mkdir dir="${build.dir}/javax.persistence/${classes.dir}"/>
-        <unzip src="${eclipselink.jpa.plugins}/${persistence22.jar}" dest="${build.dir}/javax.persistence/${classes.dir}"/>
-        <mkdir dir="${build.dir}/hermes/${classes.dir}"/>
-        <unzip src="${eclipselink.plugins}/org.eclipse.persistence.jpa.jpql_${version.string}.jar" dest="${build.dir}/hermes/${classes.dir}"/>
-        <jar jarfile="${eclipselink.jar}" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Title"    value="${eclipselink.specification.title}"/>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Title"   value="${eclipselink.implementation.title}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Release-Designation"    value="${release.designation}"/>
-                <attribute name="Premain-Class"          value="${eclipselink.premain.class}"/>
-                <attribute name="Main-Class"             value="${eclipselink.main.class}"/>
-            </manifest>
-            <!-- Include license files first to ensure the right ones are included -->
-            <fileset dir=".">
-                <include name="${about-file}"/>
-                <include name="${readme-file}"/>
-                <include name="${license-files}"/>
-            </fileset>
-            <!-- Include all non-duplicate content from bOSGi bundles -->
-            <zipgroupfileset dir="${eclipselink.plugins}">
-                <include name="org.eclipse.persistence*${version.string}.jar"/>
-                <include name="${asm.jar}"/>
-                <include name="org.eclipse.persistence.antlr*.jar"/>
-                <include name="org.eclipse.persistence.oracle_*.jar"/>
-                <exclude name="*.jpa.jpql*.jar"/>
-                <exclude name="*source*.jar"/>
-                <exclude name="*modelgen*.jar"/>
-                <exclude name="*equinox*.jar"/>
-                <exclude name="*builder*.jar"/>
-                <exclude name="*jpars*.jar"/>
-                <exclude name="*nosql*.jar"/>
-                <exclude name="*extension*.jar"/>
-            </zipgroupfileset>
-            <!-- Include hermes runtime Only -->
-            <fileset dir="${build.dir}/hermes/${classes.dir}">
-                <include name="**/*"/>
-                <exclude name="**/tools*/**"/>
-            </fileset>
-            <!-- Include Moxy Dynamicxjc classes -->
-            <fileset
-                dir="${eclipselink.moxy.dynamicxjc}/${classes.dir}"
-                includes="**/*.class,"/>
-            <!-- Include necessary JAXB classes -->
-            <fileset
-                dir="${eclipselink.util.jaxb}/${classes.dir}"
-                includes="**/*.class,"/>
-            <!-- JPA 2.0/2.2 concurrent dev solution: New classes from javax.persistence 2.0 & 2.2 -->
-            <fileset
+    <!-- Packages the persistence20_21_diff.jar. -->
+    <target name="package-persistence20_21_diff-jar" description="build javax.presistence 2.1 vs 2.0 diff jar">
+        <jar jarfile="${build.dir}/${persistence20_21_diff.jar}" duplicate="preserve">
+        <!-- JPA 2.0/2.2 concurrent dev solution: New classes from javax.persistence 2.0 & 2.2 -->
+        <fileset
                 dir="${build.dir}/javax.persistence/${classes.dir}"
                 includes="
                     javax/persistence/Access.class,
@@ -1162,8 +1110,116 @@
                     javax/persistence/criteria/CommonAbstractQuery.class,
                     javax/persistence/criteria/CriteriaDelete.class,
                     javax/persistence/criteria/CriteriaUpdate.class,
-                    javax/persistence/criteria/CommonAbstractCriteria.class
-            "/>
+                    javax/persistence/criteria/CommonAbstractCriteria.class"/>
+        </jar>
+    </target>
+
+    <!-- Packages the eclipselink.jar. -->
+    <target name="package-eclipselink-jar" description="build EclipseLink jar">
+        <delete file="${eclipselink.jar}"/>
+        <echo message="Implementation-Version: ${version.string}"/>
+        <delete dir="${build.dir}/javax.persistence/${classes.dir}" failonerror="false"/>
+        <mkdir dir="${build.dir}/javax.persistence/${classes.dir}"/>
+        <unzip src="${eclipselink.jpa.plugins}/${persistence22.jar}" dest="${build.dir}/javax.persistence/${classes.dir}"/>
+        <mkdir dir="${build.dir}/hermes/${classes.dir}"/>
+        <unzip src="${eclipselink.plugins}/org.eclipse.persistence.jpa.jpql_${version.string}.jar" dest="${build.dir}/hermes/${classes.dir}"/>
+        <jar jarfile="${eclipselink.jar}" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Title"    value="${eclipselink.specification.title}"/>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Title"   value="${eclipselink.implementation.title}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Release-Designation"    value="${release.designation}"/>
+                <attribute name="Premain-Class"          value="${eclipselink.premain.class}"/>
+                <attribute name="Main-Class"             value="${eclipselink.main.class}"/>
+            </manifest>
+            <!-- Include license files first to ensure the right ones are included -->
+            <fileset dir=".">
+                <include name="${about-file}"/>
+                <include name="${readme-file}"/>
+                <include name="${license-files}"/>
+            </fileset>
+            <!-- Include all non-duplicate content from bOSGi bundles -->
+            <zipgroupfileset dir="${eclipselink.plugins}">
+                <include name="org.eclipse.persistence*${version.string}.jar"/>
+                <include name="${asm.jar}"/>
+                <include name="org.eclipse.persistence.antlr*.jar"/>
+                <include name="org.eclipse.persistence.oracle_*.jar"/>
+                <exclude name="*.jpa.jpql*.jar"/>
+                <exclude name="*source*.jar"/>
+                <exclude name="*modelgen*.jar"/>
+                <exclude name="*equinox*.jar"/>
+                <exclude name="*builder*.jar"/>
+                <exclude name="*jpars*.jar"/>
+                <exclude name="*nosql*.jar"/>
+                <exclude name="*extension*.jar"/>
+            </zipgroupfileset>
+            <!-- Include hermes runtime Only -->
+            <fileset dir="${build.dir}/hermes/${classes.dir}">
+                <include name="**/*"/>
+                <exclude name="**/tools*/**"/>
+            </fileset>
+            <!-- Include Moxy Dynamicxjc classes -->
+            <fileset
+                dir="${eclipselink.moxy.dynamicxjc}/${classes.dir}"
+                includes="**/*.class,"/>
+            <!-- Include necessary JAXB classes -->
+            <fileset
+                dir="${eclipselink.util.jaxb}/${classes.dir}"
+                includes="**/*.class,"/>
+        </jar>
+
+        <delete dir="${build.dir}/eclipselink/${classes.dir}" failonerror="false"/>
+        <mkdir dir="${build.dir}/eclipselink/${classes.dir}"/>
+        <path id="eclipselink-jar.compile.module.path" cache="true">
+            <pathelement path="${eclipselink.plugins}/${annotation-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${antlr}"/>
+            <pathelement path="${eclipselink.plugins}/${asm.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${glassfish-corba-omgapi.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${jaxb-impl.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${jaxb-xjc.jar}"/>
+            <pathelement path="${eclipselink.jpa.plugins}/${persistence22.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${resource-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${json.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${validation-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${ejb-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${jms-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${transaction-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${servlet-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${soap-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${cdi-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${ws-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${wsdl.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${wsrs-api.jar}"/>
+            <pathelement path="${eclipselink.plugins}/${slf4j-api.jar}"/>
+        </path>
+        <path id="eclipselink-jar.compile.class.path" cache="true">
+            <pathelement path="${eclipselink.jar}"/>
+        </path>
+        <unzip src="${eclipselink.jar}" dest="${build.dir}/eclipselink/${classes.dir}"/>
+        <echo message="module-path          ='${toString:eclipselink-jar.compile.module.path}'"/>
+        <javac srcdir="${eclipselink.features.base}/bundles/eclipselink/${src.dir}"
+               destdir="${build.dir}/eclipselink/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               release="11"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               includes="module-info.java"
+               modulepathref="eclipselink-jar.compile.module.path">
+        </javac>
+        <jar jarfile="${eclipselink.jar}" update="true">
+            <!-- Include module-info.class -->
+            <fileset dir="${build.dir}/eclipselink/${classes.dir}">
+                <include name="${module-info-file}"/>
+            </fileset>
         </jar>
     </target>
 
