@@ -33,7 +33,7 @@ jobs:
 
     strategy:
       matrix:
-        java_version: [ 17, 21-ea ]
+        java_version: [ 17, 21 ]
 
     steps:
       - name: Start MySQL Database
