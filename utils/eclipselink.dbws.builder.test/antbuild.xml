@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,6 +143,7 @@
         <echo message="ddlparser.jar='${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}'"/>
         <echo message="wsdl.jar     ='${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}'"/>
         <echo message="persistence.jar ='${dbwsbldrtest.2.common.plugins.dir}/${persistence.jar}'"/>
+        <echo message="persistence20_21_diff.jar ='${dbwsbldrtest.2.base.dir}/${build.dir}/${persistence20_21_diff.jar}'"/>
         <echo message="javax.activation.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.activation.jar}"/>
         <echo message="javax.annotation.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.annotation.jar}"/>
         <echo message="javax.validation.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.validation.jar}"/>
@@ -163,6 +164,7 @@
         <property name="ddlparser.lib"    value="${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}"/>
         <property name="persistence.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${persistence.jar}"/>
+        <property name="persistence20_21_diff.lib" value ="${dbwsbldrtest.2.base.dir}/${build.dir}/${persistence20_21_diff.jar}"/>
         <property name="javax.activation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.activation.jar}"/>
         <property name="javax.annotation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.annotation.jar}"/>
         <property name="javax.validation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.validation.jar}"/>
@@ -183,6 +185,7 @@
         <available file="${junit.lib}"            property="junit.lib.exist"/>
         <available file="${eclipselink.lib}"      property="eclipselink.exist"/>
         <available file="${persistence.lib}"      property="persistence.exist"/>
+        <available file="${persistence20_21_diff.lib}"  property="persistence20_21_diff.exist"/>
         <available file="${asm.lib}"              property="asm.bundle.exist"/>
         <available file="${servlet.lib}"          property="servlet.lib.exist"/>
         <available file="${wsdl.lib}"             property="wsdl.lib.exist"/>
@@ -206,6 +209,7 @@
         <!--fail message="Cannot find: '${junit.lib}'"       unless="junit.lib.exist"/-->
         <fail message="Cannot find: '${eclipselink.lib}'" unless="eclipselink.exist"/>
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.exist"/>
+        <fail message="Cannot find: '${persistence20_21_diff.lib}'" unless="persistence20_21_diff.exist"/>
         <fail message="Cannot find: '${asm.lib}'"         unless="asm.bundle.exist"/>
         <fail message="Cannot find: '${servlet.lib}'"     unless="servlet.lib.exist"/>
         <fail message="Cannot find: '${wsdl.lib}'"        unless="wsdl.lib.exist"/>
@@ -237,6 +241,7 @@
             <pathelement path="${javax.xml.ws.lib}"/>
             <pathelement path="${eclipselink.lib}"/>
             <pathelement path="${persistence.lib}"/>
+            <pathelement path="${persistence20_21_diff.lib}"/>
             <pathelement path="${asm.lib}"/>
             <pathelement path="${servlet.lib}"/>
             <pathelement path="${dbwsbldr.lib}"/>
