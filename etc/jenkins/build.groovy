@@ -75,7 +75,6 @@ spec:
         cpu: "6"
       requests:
         memory: "12Gi"
-        cpu: "6"
         cpu: "5.5"
     image: rfelcman/el-build:2.0.3
     volumeMounts:
