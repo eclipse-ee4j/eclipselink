@@ -388,7 +388,7 @@ public class QueryHints {
      * "jakarta.persistence.query.timeout"
      * <p>Configures the default query timeout value per the JPA specification.
      * Valid values are strings containing a zero or greater integer value
-     * Defaults to use seconds as the unit of time.
+     * Defaults to use milliseconds as the unit of time.
      * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeout(int)
      */
     public static final String QUERY_TIMEOUT = "jakarta.persistence.query.timeout";
