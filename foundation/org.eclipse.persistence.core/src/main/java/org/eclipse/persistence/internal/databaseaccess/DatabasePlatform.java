@@ -279,6 +279,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /** JSON support for ResultSet data retrieval. */
     private transient volatile DatabaseJsonPlatform jsonPlatform;
 
+    /** This attribute will store the results from the batch execution */
     private int[] executeBatchRowCounts;
     /**
      * Creates an instance of default database platform.
@@ -1478,10 +1479,16 @@ public class DatabasePlatform extends DatasourcePlatform {
         return true;
     }
 
+    /**
+     * Returns the attribute containing the results from the batch execution 
+     */
     public int[] getExecuteBatchRowCounts() {
         return executeBatchRowCounts;
     }
 
+    /**
+     * Sets the attribute containing the results from the batch execution 
+     */
     public void setExecuteBatchRowCounts(int[] rowCounts) {
         executeBatchRowCounts = rowCounts;
     }

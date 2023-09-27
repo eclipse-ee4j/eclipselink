@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <!--
 
-    Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,6 @@
 <sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipse_persistence_sessions_1_0.xsd" version="1.0">
    <session xsi:type="server-session">
       <name>JPASessionXML</name>
-      <logging xsi:type="java-log"/>
-      <primary-project xsi:type="xml">META-INF/RelationshipProject.xml</primary-project>
-   </session>
-   <session xsi:type="server-session">
-      <name>BatchWritingSession</name>
       <logging xsi:type="java-log"/>
       <primary-project xsi:type="xml">META-INF/RelationshipProject.xml</primary-project>
    </session>

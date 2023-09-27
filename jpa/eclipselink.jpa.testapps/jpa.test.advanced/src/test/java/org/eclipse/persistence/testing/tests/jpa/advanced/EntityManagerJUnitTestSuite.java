@@ -1750,6 +1750,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             assertNotNull("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException);
+            if (getDatabaseSession().getPlatform().usesBatchWriting()) {
+                Assert.assertTrue(optimisticLockException.getMessage(),
+                    optimisticLockException.getMessage().contains("One or more objects of class"));
+                Assert.assertTrue(optimisticLockException.getMessage(),
+                    optimisticLockException.getMessage().contains(Employee.class.getName()));
+            }
         }
     }
 
