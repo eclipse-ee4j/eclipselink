@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -328,7 +328,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         // The following section will return false for any multiple EmbeddableId as well as multiple Ids as part of an IdClass
         // Note: there will always be at least 1 Id for an IdentifiableType
 
-        /**
+        /*
          * Since we are in IdentifiableType which involves only Entities and MappedSuperclasses,
          * we are safe to assume that there will always be an Id of some sort - we are not in
          * Basic, Embeddable or transient types.
@@ -343,7 +343,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         if(pkFields.isEmpty()) {
             return false;
         } else {
-            // Optional: Verify the mapping on the each field and whether it is an IdClass
+            // Optional: Verify the mapping on each field and whether it is an IdClass
             Class<?> pkClass = null;
             if(this.getDescriptor().hasCMPPolicy()) {
                 pkClass = this.getDescriptor().getCMPPolicy().getPKClass();
@@ -351,7 +351,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                     return false;
                 }
             } else {
-                // MappedSuperclass descriptors do not have a CMP policy yet because the are not initialized
+                // MappedSuperclass descriptors do not have a CMP policy yet because they are not initialized
                 return pkFields.size() < 2;
             }
 

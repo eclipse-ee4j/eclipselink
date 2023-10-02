@@ -31,7 +31,7 @@ import java.util.TreeSet;
  */
 public class ClassDefinition extends CodeDefinition {
     protected String packageName;
-    protected List<String> imports;
+    protected Set<String> imports;
     protected int type;
     public static final int CLASS_TYPE = 1;
     public static final int INTERFACE_TYPE = 2;
@@ -39,16 +39,16 @@ public class ClassDefinition extends CodeDefinition {
     protected List<String> interfaces;
     protected List<AttributeDefinition> attributes;
     protected List<MethodDefinition> methods;
-    protected List<ClassDefinition> innerClasses;
+    protected Set<ClassDefinition> innerClasses;
 
     public ClassDefinition() {
         this.packageName = "";
-        this.imports = new ArrayList<>(3);
+        this.imports = new TreeSet<>();
         this.type = CLASS_TYPE;
         this.interfaces = new ArrayList<>(3);
         this.attributes = new ArrayList<>();
         this.methods = new ArrayList<>();
-        this.innerClasses = new ArrayList<>(3);
+        this.innerClasses = new TreeSet<>(Comparator.comparing(CodeDefinition::getName));
     }
 
     public void addAttribute(AttributeDefinition attribute) {
@@ -60,9 +60,7 @@ public class ClassDefinition extends CodeDefinition {
      * "{packageName}.{shortName or '*'}"
      */
     public void addImport(String importStatement) {
-        if (!getImports().contains(importStatement)) {
-            getImports().add(importStatement);
-        }
+        getImports().add(importStatement);
     }
 
     private void addImports(Map<String, Set<String>> typeNameMap) {
@@ -80,11 +78,11 @@ public class ClassDefinition extends CodeDefinition {
                 }
             }
         }
-
-        sortImports();
     }
 
     public void addInnerClass(ClassDefinition classDefinition) {
+        imports.addAll(classDefinition.imports);
+        classDefinition.imports.clear();
         getInnerClasses().add(classDefinition);
     }
 
@@ -163,11 +161,11 @@ public class ClassDefinition extends CodeDefinition {
         return attributes;
     }
 
-    protected List<String> getImports() {
+    protected Set<String> getImports() {
         return imports;
     }
 
-    protected List<ClassDefinition> getInnerClasses() {
+    protected Set<ClassDefinition> getInnerClasses() {
         return innerClasses;
     }
 
@@ -203,7 +201,7 @@ public class ClassDefinition extends CodeDefinition {
         }
     }
 
-    private void setImports(List<String> imports) {
+    private void setImports(Set<String> imports) {
         this.imports = imports;
     }
 
@@ -225,10 +223,6 @@ public class ClassDefinition extends CodeDefinition {
 
     public void setType(int type) {
         this.type = type;
-    }
-
-    protected void sortImports() {
-        setImports(new ArrayList<>(new TreeSet<>(getImports())));
     }
 
     protected void sortMethods() {

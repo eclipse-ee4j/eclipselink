@@ -151,21 +151,23 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        Class<?> referenceClass = null;
-        try{
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getReferenceClassName(), true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
+        if (getReferenceClass() == null) {
+            Class<?> referenceClass = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getReferenceClassName(), true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
+                    }
+                } else {
+                    referenceClass = PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
                 }
-            } else {
-                referenceClass = PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
             }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
+            setReferenceClass(referenceClass);
         }
-        setReferenceClass(referenceClass);
     }
 
     /**

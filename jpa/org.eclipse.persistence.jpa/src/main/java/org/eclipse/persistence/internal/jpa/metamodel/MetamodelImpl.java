@@ -109,7 +109,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
     /** maintains initialization state to avoid extra work in calls to initialize **/
     private boolean isInitialized = false;
 
-    /** Default elementType Class when we the type cannot be determined for unsupported mappings such as Transformation and VariableOneToOne */
+    /** Default elementType Class when the type cannot be determined for unsupported mappings such as Transformation and VariableOneToOne */
     public static final Class<Object> DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS = Object.class;
 
     public MetamodelImpl(AbstractSession session) {
@@ -337,7 +337,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * Referenced by ManagedTypeImpl.create()
      */
     protected boolean hasMappedSuperclass(String qualifiedClassNameKeyString) {
-        /**
+        /*
          * This function is used before the metamodel has populated its Set of mappedSuperclasses -
          * therefore we go directly to the descriptor source.
          * Normally this functionality would be placed on the (core) Project class, however
@@ -417,7 +417,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      *
      * Initialize the JPA metamodel that wraps the EclipseLink JPA metadata created descriptors.<br>
      * Note: Since the types Map is lazy-loaded with key:value pairs - the designer and especially the user
-     * must realized that a particular BasicType may not be in the Map until it is referenced.
+     * must realize that a particular BasicType may not be in the Map until it is referenced.
      *
      * Also note that a transient superclass (non-entity, non-mappedSuperclass)
      * exists as a BasicType (it has no attributes), and that any inheriting Entity either
@@ -435,14 +435,14 @@ public class MetamodelImpl implements Metamodel, Serializable {
         // Assign all superType fields on all IdentifiableTypes (only after all managedType objects have been created)
         for(ManagedTypeImpl<?> potentialIdentifiableType : managedTypes.values()) {
             Class<?> aClass = potentialIdentifiableType.getJavaType(classLoader);
-            /**
+            /*
              * The superclass for top-level types is Object - however we set [null] as the supertype for root types.
              * 1) We are constrained by the fact that the spec requires that a superType be an IdentifiableType.
-             *    Since [Object] is not an Entity or MappedSuperclass - it fails this criteria - as it would be a BasicType
+             *    Since [Object] is not an Entity or MappedSuperclass - it fails these criteria - as it would be a BasicType
              *    because it has no @Entity or @MappedSuperclass annotation.<p>
              * 2) Another object space reasoning issue behind this is to separate the Java and Metamodel object spaces.
              * In Java all types inherit from Object, however in the JPA Metamodel all types DO NOT inherit from a common type.
-             * Therefore in the metamodel top-level root types have a superType of null.
+             * Therefore, in the metamodel top-level root types have a superType of null.
              * See design issue discussion:
              * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_42:_20090709:_IdentifiableType.supertype_-_what_do_top-level_types_set_it_to
              */
@@ -472,10 +472,10 @@ public class MetamodelImpl implements Metamodel, Serializable {
             }
         }
 
-        //1 - process all non-mappedSuperclass types first so we pick up attribute types
+        //1 - process all non-mappedSuperclass types first, so we pick up attribute types
         //2 - process mappedSuperclass types and lookup collection attribute types on inheriting entity types when field is not set
 
-        /**
+        /*
          * Delayed-Initialization (process all mappings) of all Managed types
          *  (This includes all IdentifiableTypes = Entity and MappedSuperclass types).
          * To avoid a ConcurrentModificationException on the types map, iterate a list instead of the Map values directly.

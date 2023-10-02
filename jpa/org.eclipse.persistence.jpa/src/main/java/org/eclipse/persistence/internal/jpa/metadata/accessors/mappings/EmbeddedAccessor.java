@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -297,7 +297,7 @@ public class EmbeddedAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      * Called when process the mapsId metadata. The id fields for this owning
-     * descriptor must have it's id fields update to those from the one to one
+     * descriptor must have its id fields updated to those from the one to one
      * accessor that maps them. We process embedded and embedded id mappings
      * first, so by default they get mapped and processed as they normally
      * would. When we go through the relationship accessors and discover a

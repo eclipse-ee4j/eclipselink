@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,7 +94,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
         MapKeyMapping keyMapping = null;
         Object policyKeyType = null;
 
-        /**
+        /*
          * Note: the (at) sign for annotations has been replaced by the & sign for javadoc processing.
          *
          * We have the following policy structure and behavior
@@ -155,7 +155,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
                 keyMapping = ((MappedKeyMapContainerPolicy)policy).getKeyMapping();
                 policyKeyType = keyMapping.getMapKeyTargetType();
             } else {
-                /**
+                /*
                  * Assume we have a MapContainerPolicy general superclass with a lazy-loaded keyType
                  *   or a DirectMapContainerPolicy using a &BasicMap
                  * See UC2, UC4, UC8, UC13 (unidirectional ManyToOne becomes ManyToMany)
@@ -167,7 +167,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
             }
         }
 
-        /**
+        /*
          * Step 2: We determine the java class from the policyKeyType (class or ClassDecriptor)
          * We also perform alternate keyType lookup for the case where
          * the name attribute is not specified in a MapKey annotation where

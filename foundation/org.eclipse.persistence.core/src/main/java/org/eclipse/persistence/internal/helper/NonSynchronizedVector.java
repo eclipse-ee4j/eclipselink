@@ -685,9 +685,6 @@ public class NonSynchronizedVector<E> extends Vector<E> {
             throw new ConcurrentModificationException();
     }
 
-    /**
-     * @throws NullPointerException {@inheritDoc}
-     */
     @Override
     public void replaceAll(UnaryOperator<E> operator) {
         Objects.requireNonNull(operator);

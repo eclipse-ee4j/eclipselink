@@ -132,7 +132,6 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -243,9 +242,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredFields;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -4043,22 +4040,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
 
         //otherwise:
-        ValidationMode validationMode = null;
         // Initialize with value in persitence.xml
-        // Using reflection to call getValidationMode to prevent blowing up while we are running in JPA 1.0 environment
-        // (This would be all JavaEE5 appservers) where PersistenceUnitInfo does not implement method getValidationMode().
-        try {
-            Method method = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                method = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getValidationMode", null));
-                validationMode = (ValidationMode) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, persitenceUnitInfo));
-            } else {
-                method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getValidationMode", null);
-                validationMode = PrivilegedAccessHelper.invokeMethod(method, persitenceUnitInfo, null);
-            }
-        } catch (Throwable exception) {
-            // We are running in JavaEE5 environment. Catch and swallow any exceptions and return null.
-        }
+        ValidationMode validationMode = persitenceUnitInfo.getValidationMode();
 
         if(validationMode == null) {
             // Default to AUTO as specified in JPA spec.

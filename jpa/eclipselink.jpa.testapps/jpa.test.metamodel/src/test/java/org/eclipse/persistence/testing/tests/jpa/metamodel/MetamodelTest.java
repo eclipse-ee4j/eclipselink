@@ -3632,7 +3632,7 @@ public class MetamodelTest extends MetamodelTestBase {
             expectedIAExceptionThrown = false;
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMap", Integer.class,  HardwareDesigner.class);
-            // verify the default key type is the not the Map key - rather that is is the managedType PK
+            // verify the default key type is not the Map key - rather that is the managedType PK
             Class<?> keyJavaType = anAttribute.getKeyJavaType();
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
             //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();

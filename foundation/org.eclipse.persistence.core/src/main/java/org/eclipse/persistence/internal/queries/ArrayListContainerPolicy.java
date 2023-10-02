@@ -91,4 +91,10 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
     public Object containerInstance(int initialCapacity) {
         return new ArrayList<>(initialCapacity);
     }
+
+    @Override
+    public Class<?> getPolicyContainerClass() {
+        return ArrayList.class;
+    }
+
 }

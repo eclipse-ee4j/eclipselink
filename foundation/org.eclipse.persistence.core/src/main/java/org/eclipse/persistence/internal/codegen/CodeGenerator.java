@@ -65,7 +65,7 @@ public class CodeGenerator {
     }
 
     public void tab() {
-        write("\t");
+        write("    ");
     }
 
     public void tab(int indent) {

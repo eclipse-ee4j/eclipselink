@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -290,7 +290,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         return getDeclaredAttribute(name, false);
     }
 
-    /**
+    /*
      * All getDeclared*(name, *) function calls require navigation up the superclass tree
      * in order to determine if the member name is declared on the current managedType.<p>
      * If the attribute is found anywhere above on the superclass tree - then throw an IAE.
@@ -299,11 +299,11 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             - attribute positioning(none, current, 1st parent, Nth parent)
             - attribute type (right, wrong type)
             - attribute classification for current and parents (Entity, MappedSuperclass, embeddable?, Basic?)
-            UC1) Attribute is not found on current attribute (regardless of what is on its' superclasses)
+            UC1) Attribute is not found on current attribute (regardless of what is on its superclasses)
                     - throw IAException
             UC2) Attribute is found on current attribute but is of the wrong type
                     - throw IAException
-            UC3) Attribute is found on on current managedType Entity/MappedSuperclass
+            UC3) Attribute is found on the current managedType Entity/MappedSuperclass
                     (but not found anywhere on the supertype hierarchy - declared above)
                     In this case we do the reverse - keep checking only when attribute is null
                     - return attribute
@@ -910,7 +910,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * This function returns whether the Object class passed in can be autoboxed
-     * (a primitive wrapped in its' object type) or the reverse - an autoboxed object
+     * (a primitive wrapped in its object type) or the reverse - an autoboxed object
      * that wraps a primitive type).
      * It answers the question of whether the two classes can be considered to be essentially the same<br>
      * This function is used by the metamodel to determine whether the
@@ -930,7 +930,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             return false;
         }
 
-        /**
+        /*
          * We return true for any of the following combinations.
          * boolean:Boolean byte:Byte short:Short char:Character int:Integer long:Long float:Float double:Double
          */
@@ -1144,7 +1144,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         for (DatabaseMapping mapping : getDescriptor().getMappings()) {
             AttributeImpl<X, ?> member = null;
 
-            /**
+            /*
              * The following section will determine the plural attribute type for each mapping on the managedType.
              * Special handling is required for differentiation of List and Collection
              * beyond their shared IndirectList ContainerPolicy,
@@ -1174,7 +1174,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     // check mapping.attributeAcessor.attributeField.type=Collection
                 } else if (collectionContainerPolicy.isListPolicy()) {
                     // This seems very over complex...
-                    /**
+                    /*
                      * Handle lazy Collections and Lists and the fact that both return an IndirectList policy.
                      * We check the type on the attributeField of the attributeAccessor on the mapping
                      */
@@ -1216,7 +1216,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     } else {
                         // handle variations of missing get/set methods - only for Collection vs List
                         if(colMapping.getAttributeAccessor() instanceof MethodAttributeAccessor) {
-                            /**
+                            /*
                              * The following call will perform a getMethod call for us.
                              * If no getMethod exists, we will secondarily check the getMethodName below.
                              */
@@ -1226,7 +1226,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                             } else if((aType != null) && Collection.class.isAssignableFrom(aType)) {
                                 member = new CollectionAttributeImpl(this, colMapping, true);
                             } else {
-                                /**
+                                /*
                                  * In this block we have the following scenario:
                                  * 1) The access type is "field"
                                  * 2) The get method is not set on the entity
@@ -1266,7 +1266,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                         member = initializePluralAttributeTypeNotFound(this, colMapping, true);
                                     }
                                 } else {
-                                    /**
+                                    /*
                                      * Field access Handling:
                                      * If a get method name exists, we check the return type on the method directly
                                      * using reflection.
@@ -1336,7 +1336,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * directly on the containing java class associated with this managedType.
      */
     protected Class<?> getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
-        /**
+        /*
          * In this block we have the following scenario:
          * 1) The access type is "method" or "field"
          * 1a) The get method is set on the entity (method access)
@@ -1378,7 +1378,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         }
 
         // 4) If method level access - perform a getDeclaredMethod call
-        /**
+        /*
          * Field access Handling:
          * If a get method name exists, we check the return type on the method directly
          * using reflection.

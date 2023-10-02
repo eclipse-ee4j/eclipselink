@@ -61,6 +61,8 @@ import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.NoIndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.factories.DirectToXMLTypeMappingHelper;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
@@ -74,6 +76,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -81,6 +84,7 @@ import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -191,6 +195,9 @@ public class ProjectClassGenerator {
             DatabaseField sourceField = mapping.getAggregateToSourceFields().get(aggregateFieldName);
             //may need to account for delimiting on the sourceField in the future
             method.addLine(mappingName + ".addFieldNameTranslation(\"" + sourceField.getQualifiedName() + "\", \"" + aggregateFieldName + "\");");
+        }
+        for (String attribute: mapping.getMapsIdMappingAttributes()) {
+            method.addLine(mappingName + ".addMapsIdMappingAttribute(\"" + attribute + "\");");
         }
     }
 
@@ -318,7 +325,7 @@ public class ProjectClassGenerator {
 
         // Isolated Session support
         if (descriptor.getCachePolicy().isIsolated()) {
-            method.addLine("descriptor.setIsIsolated(true);");
+            method.addLine("descriptor.setCacheIsolation(CacheIsolationType.ISOLATED);");
         }
 
         // Refreshing
@@ -349,17 +356,7 @@ public class ProjectClassGenerator {
         }
 
         // Instantiation
-        if (!descriptor.getInstantiationPolicy().isUsingDefaultConstructor()) {
-            if (descriptor.getInstantiationPolicy().getFactoryClassName() != null) {
-                if (descriptor.getInstantiationPolicy().getFactoryMethodName() != null) {
-                    method.addLine("descriptor.useFactoryInstantiationPolicy(" + descriptor.getInstantiationPolicy().getFactoryClassName() + ".class, \"" + descriptor.getInstantiationPolicy().getMethodName() + "\", \"" + descriptor.getInstantiationPolicy().getFactoryMethodName() + "\");");
-                } else {
-                    method.addLine("descriptor.useFactoryInstantiationPolicy(" + descriptor.getInstantiationPolicy().getFactoryClassName() + ".class, \"" + descriptor.getInstantiationPolicy().getMethodName() + "\");");
-                }
-            } else {
-                method.addLine("descriptor.useMethodInstantiationPolicy(\"" + descriptor.getInstantiationPolicy().getMethodName() + "\");");
-            }
-        }
+        addInstantiationPolicyLines(method, descriptor);
 
         // Amendment
         if (descriptor.getAmendmentClassName() != null) {
@@ -394,6 +391,21 @@ public class ProjectClassGenerator {
         }
 
         method.addLine(mappingName + ".setDirectFieldName(\"" + mapping.getDirectFieldName() + "\");");
+        if (mapping.getDirectField().getTypeName() != null) {
+            method.addLine(mappingName + ".setDirectFieldClassification(" + mapping.getDirectField().getTypeName() + ".class);");
+        } else if (mapping.getDirectField().getType() != null) {
+            method.addLine(mappingName + ".setDirectFieldClassification(" + mapping.getDirectField().getType().getName() + ".class);");
+        }
+
+        if (mapping.getAttributeClassificationName() != null) {
+            method.addLine(mappingName + ".setAttributeClassification(" + mapping.getAttributeClassificationName() + ".class);");
+        } else if (mapping.getAttributeClassification() != null) {
+            method.addLine(mappingName + ".setAttributeClassification(" + mapping.getAttributeClassification().getName() + ".class);");
+        } else if (mapping.getDirectField().getTypeName() != null) {
+            method.addLine(mappingName + ".setAttributeClassification(" + mapping.getDirectField().getTypeName() + ".class);");
+        } else if (mapping.getDirectField().getType() != null) {
+            method.addLine(mappingName + ".setAttributeClassification(" + mapping.getDirectField().getType().getName() + ".class);");
+        }
 
         Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
         Enumeration<DatabaseField> referenceKeysEnum = mapping.getReferenceKeyFields().elements();
@@ -413,9 +425,16 @@ public class ProjectClassGenerator {
     }
 
     protected void addDirectMapMappingLines(NonreflectiveMethodDefinition method, String mappingName, DirectMapMapping mapping) {
-        DatabaseField  directKeyField = mapping.getDirectKeyField();
+        DatabaseField directKeyField = mapping.getDirectKeyField();
         if(directKeyField != null) {
             method.addLine(mappingName + ".setDirectKeyFieldName(\"" + directKeyField.getQualifiedName() + "\");");
+        }
+
+        ContainerPolicy containerPolicy = mapping.getContainerPolicy();
+        if (containerPolicy.isMappedKeyMapPolicy()) {
+            method.addLine("");
+            addMappedKeyMapContainerPolicyLines(method, mappingName, (MappedKeyMapContainerPolicy) containerPolicy);
+            method.addLine("");
         }
 
         Converter converter = mapping.getKeyConverter();
@@ -423,6 +442,42 @@ public class ProjectClassGenerator {
             addConverterLines(method, mappingName + "KeyConverter", converter);
             method.addLine(mappingName + ".setKeyConverter(" + mappingName + "KeyConverter" + ");");
         }
+    }
+
+    protected void addMappedKeyMapContainerPolicyLines(NonreflectiveMethodDefinition method, String mappingName, MappedKeyMapContainerPolicy policy) {
+        MapKeyMapping keyMapping = policy.getKeyMapping();
+        String keyMappingName = mappingName + "KeyMapping";
+        String keyMappingClassName = keyMapping.getClass().getName();
+        String keyMappingPackageName = keyMappingClassName.substring(0, keyMappingClassName.lastIndexOf('.'));
+        if (keyMappingPackageName.equals("org.eclipse.persistence.mappings")) {
+            keyMappingClassName = keyMapping.getClass().getSimpleName();
+        }
+        method.addLine(keyMappingClassName + " " + keyMappingName + " = new " + keyMappingClassName + "();");
+
+        DatabaseMapping dm = (DatabaseMapping) keyMapping;
+        if (dm.isReadOnly()) {
+            method.addLine(keyMappingName + ".readOnly();");
+        }
+        if (dm.isOneToOneMapping()) {
+            addOneToOneMappingLines(method, keyMappingName, (OneToOneMapping) dm);
+        } else if (dm.isAggregateObjectMapping()) {
+            addAggregateObjectMappingLines(method, keyMappingName, (AggregateObjectMapping) dm);
+        } else if (dm.isDirectToFieldMapping()) {
+            if (dm.getDescriptor() != null && dm.getDescriptor().isAggregateDescriptor()) {
+                method.addLine(keyMappingName + ".setFieldName(\"" + dm.getField().getName() + "\");");
+            } else {
+                method.addLine(keyMappingName + ".setFieldName(\"" + dm.getField().getQualifiedName() + "\");");
+            }
+        }
+
+        method.addLine(keyMappingName + ".setDescriptor(descriptor);");
+
+        method.addLine("");
+        String policyName = mappingName + "ContainerPolicy";
+        method.addLine("MappedKeyMapContainerPolicy " + policyName + " = new MappedKeyMapContainerPolicy(" + policy.getContainerClassName() + ".class);");
+        method.addLine(policyName + ".setKeyMapping(" + keyMappingName + ");");
+        method.addLine(policyName + ".setValueMapping((MapComponentMapping) " + mappingName + ");");
+        method.addLine(mappingName + ".setContainerPolicy(" + policyName + ");");
     }
 
     protected void addFetchGroupManagerLine(NonreflectiveMethodDefinition method, ClassDescriptor descriptor) {
@@ -580,6 +635,12 @@ public class ProjectClassGenerator {
                 } else {
                     method.addLine(mappingName + ".useMapClass(" + collectionClassName + ".class, \"" + keyMethodName + "\");");
                 }
+                ContainerPolicy containerPolicy = mapping.getContainerPolicy();
+                if (containerPolicy.isMappedKeyMapPolicy()) {
+                    method.addLine("");
+                    addMappedKeyMapContainerPolicyLines(method, mappingName, (MappedKeyMapContainerPolicy) containerPolicy);
+                    method.addLine("");
+                }
             }
 
             // Ordering.
@@ -730,15 +791,7 @@ public class ProjectClassGenerator {
             mappingClassName = mapping.getClass().getSimpleName();
         }
         method.addLine(mappingClassName + " " + mappingName + " = new " + mappingClassName + "();");
-        if (!mapping.isWriteOnly()) {
-            method.addLine(mappingName + ".setAttributeName(\"" + mapping.getAttributeName() + "\");");
-            if (mapping.getGetMethodName() != null) {
-                method.addLine(mappingName + ".setGetMethodName(\"" + mapping.getGetMethodName() + "\");");
-            }
-            if (mapping.getSetMethodName() != null) {
-                method.addLine(mappingName + ".setSetMethodName(\"" + mapping.getSetMethodName() + "\");");
-            }
-        }
+        addMappingAccessorLines(method, mappingName, mapping);
         if (mapping.isAbstractDirectMapping()) {
             AbstractDirectMapping directMapping = (AbstractDirectMapping)mapping;
             if (mapping.getDescriptor().isAggregateDescriptor()) {
@@ -789,6 +842,18 @@ public class ProjectClassGenerator {
         method.addLine("descriptor.addMapping(" + mapping.getAttributeName() + "Mapping);");
     }
 
+    protected void addMappingAccessorLines(NonreflectiveMethodDefinition method, String mappingName, DatabaseMapping mapping) {
+        if (!mapping.isWriteOnly()) {
+            method.addLine(mappingName + ".setAttributeName(\"" + mapping.getAttributeName() + "\");");
+            if (mapping.getGetMethodName() != null) {
+                method.addLine(mappingName + ".setGetMethodName(\"" + mapping.getGetMethodName() + "\");");
+            }
+            if (mapping.getSetMethodName() != null) {
+                method.addLine(mappingName + ".setSetMethodName(\"" + mapping.getSetMethodName() + "\");");
+            }
+        }
+    }
+
     protected void addObjectTypeConverterLines(NonreflectiveMethodDefinition method, String converterName, ObjectTypeConverter converter) {
         if (converter.getDefaultAttributeValue() != null) {
             method.addLine(converterName + ".setDefaultAttributeValue(" + printString(converter.getDefaultAttributeValue()) + ");");
@@ -817,6 +882,7 @@ public class ProjectClassGenerator {
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     protected void addOneToOneMappingLines(NonreflectiveMethodDefinition method, String mappingName, OneToOneMapping mapping) {
         for (DatabaseField sourceField : mapping.getSourceToTargetKeyFields().keySet()) {
             DatabaseField targetField = mapping.getSourceToTargetKeyFields().get(sourceField);
@@ -826,6 +892,46 @@ public class ProjectClassGenerator {
                 method.addLine(mappingName + ".addTargetForeignKeyFieldName(\"" + targetField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
             }
         }
+
+        if (mapping.derivesId()) {
+            method.addLine(mappingName + ".setDerivesId(true);");
+        }
+        if (mapping.getMapsIdValue() != null) {
+            method.addLine(mappingName + ".setMapsIdValue(\"" + mapping.getMapsIdValue() + "\");");
+        }
+        if (mapping.getDerivedIdMapping() != null) {
+            method.addLine(mappingName + ".setDerivedIdMapping(" + mapping.getDerivedIdMapping().getAttributeName() + "Mapping);");
+        }
+
+        if (mapping.isJPAId()) {
+            method.addLine(mappingName + ".setIsJPAId();");
+        }
+
+        if (mapping.getRelationTableMechanism() != null) {
+            RelationTableMechanism mechanism = mapping.getRelationTableMechanism();
+            String mechanismName = mappingName + "RelationalTableMechanism";
+            method.addLine("RelationTableMechanism " + mechanismName + " = new RelationTableMechanism();");
+            method.addLine(mechanismName + ".setRelationTableName(\"" + mechanism.getRelationTableName() + "\");");
+
+            Iterator<String> relationKeyFieldNames = mechanism.getSourceRelationKeyFieldNames().iterator();
+            Iterator<String> keyFieldNames = mechanism.getSourceKeyFieldNames().iterator();
+            while (relationKeyFieldNames.hasNext()) {
+                String relationKeyField = relationKeyFieldNames.next();
+                String keyField = keyFieldNames.next();
+                method.addLine(mechanismName + ".addSourceRelationKeyFieldName(\"" + relationKeyField + "\", \"" + keyField +"\");");
+            }
+
+            relationKeyFieldNames = mechanism.getTargetRelationKeyFieldNames().iterator();
+            keyFieldNames = mechanism.getTargetKeyFieldNames().iterator();
+            while (relationKeyFieldNames.hasNext()) {
+                String relationKeyField = relationKeyFieldNames.next();
+                String keyField = keyFieldNames.next();
+                method.addLine(mechanismName + ".addTargetRelationKeyFieldName(\"" + relationKeyField + "\", \"" + keyField +"\");");
+            }
+
+            method.addLine(mappingName + ".setRelationTableMechanism(" + mechanismName + ");");
+        }
+
         if (!mapping.shouldVerifyDelete()) {
             method.addLine(mappingName + ".setShouldVerifyDelete(false);");
         }
@@ -1479,7 +1585,7 @@ public class ProjectClassGenerator {
 
         NonreflectiveMethodDefinition method = new NonreflectiveMethodDefinition();
 
-        method.setName("build" + getDescriptorMethodNames().get(descriptor) + "ClassDescriptor");
+        method.setName("build" + getDescriptorMethodName(descriptor) + "ClassDescriptor");
         method.setReturnType("ClassDescriptor");
 
         // ClassDescriptor
@@ -1595,10 +1701,24 @@ public class ProjectClassGenerator {
         return method;
     }
 
+    protected void addInstantiationPolicyLines(NonreflectiveMethodDefinition method, ClassDescriptor descriptor) {
+        if (!descriptor.getInstantiationPolicy().isUsingDefaultConstructor()) {
+            if (descriptor.getInstantiationPolicy().getFactoryClassName() != null) {
+                if (descriptor.getInstantiationPolicy().getFactoryMethodName() != null) {
+                    method.addLine("descriptor.useFactoryInstantiationPolicy(" + descriptor.getInstantiationPolicy().getFactoryClassName() + ".class, \"" + descriptor.getInstantiationPolicy().getMethodName() + "\", \"" + descriptor.getInstantiationPolicy().getFactoryMethodName() + "\");");
+                } else {
+                    method.addLine("descriptor.useFactoryInstantiationPolicy(" + descriptor.getInstantiationPolicy().getFactoryClassName() + ".class, \"" + descriptor.getInstantiationPolicy().getMethodName() + "\");");
+                }
+            } else {
+                method.addLine("descriptor.useMethodInstantiationPolicy(\"" + descriptor.getInstantiationPolicy().getMethodName() + "\");");
+            }
+        }
+    }
+
     /**
      *  Take an unsorted list of descriptors and sort it so that the order is maintained.
      */
-    private List<ClassDescriptor> buildSortedListOfDescriptors(List<ClassDescriptor> descriptors) {
+    protected List<ClassDescriptor> buildSortedListOfDescriptors(List<ClassDescriptor> descriptors) {
         List<ClassDescriptor> returnDescriptors = Helper.addAllUniqueToList(new ArrayList<>(descriptors.size()), descriptors);
         returnDescriptors.sort(new DescriptorCompare());
         return returnDescriptors;
@@ -1749,7 +1869,7 @@ public class ProjectClassGenerator {
     /**
      * PUBLIC:
      * Generate the project class, output the java source code to the stream or file.
-     * useUnicode determines if unicode escaped characters for non_ASCII charaters will be used.
+     * useUnicode determines if unicode escaped characters for non_ASCII characters will be used.
      */
     public void generate(boolean useUnicode) throws ValidationException {
         if (getOutputWriter() == null) {
@@ -1774,7 +1894,7 @@ public class ProjectClassGenerator {
     /**
      * PUBLIC:
      * Generate the project class, output the java source code to the stream or file.
-     * Unicode escaped characters for non_ASCII charaters will be used.
+     * Unicode escaped characters for non_ASCII characters will be used.
      */
     public void generate() throws ValidationException {
         generate(true);
@@ -1793,15 +1913,18 @@ public class ProjectClassGenerator {
         classDefinition.setSuperClass("org.eclipse.persistence.sessions.Project");
         classDefinition.setPackageName(getPackageName());
 
+        classDefinition.addImport("org.eclipse.persistence.config.*");
         classDefinition.addImport("org.eclipse.persistence.sessions.*");
         classDefinition.addImport("org.eclipse.persistence.descriptors.*");
         classDefinition.addImport("org.eclipse.persistence.descriptors.invalidation.*");
         classDefinition.addImport("org.eclipse.persistence.mappings.*");
         classDefinition.addImport("org.eclipse.persistence.mappings.converters.*");
+        classDefinition.addImport("org.eclipse.persistence.mappings.foundation.MapComponentMapping");
         classDefinition.addImport("org.eclipse.persistence.queries.*");
         classDefinition.addImport("org.eclipse.persistence.expressions.ExpressionBuilder");
         classDefinition.addImport("org.eclipse.persistence.history.HistoryPolicy");
         classDefinition.addImport("org.eclipse.persistence.sequencing.*");
+        classDefinition.addImport("org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy");
 
         classDefinition.setComment("This class was generated by the TopLink project class generator." + System.lineSeparator() + "It stores the meta-data (descriptors) that define the TopLink mappings." + System.lineSeparator() + "## " + DatasourceLogin.getVersion() + " ##" + System.lineSeparator() + "@see org.eclipse.persistence.sessions.factories.ProjectClassGenerator");
 
@@ -1834,6 +1957,10 @@ public class ProjectClassGenerator {
         return descriptorMethodNames;
     }
 
+    protected String getDescriptorMethodName(ClassDescriptor descriptor) {
+        return getDescriptorMethodNames().get(descriptor);
+
+    }
     /**
      * PUBLIC:
      * Return the file name that the generate .java file will be output to.

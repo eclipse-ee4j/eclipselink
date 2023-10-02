@@ -28,9 +28,6 @@ import java.security.PrivilegedActionException;
  */
 public class SecurableObjectHolder {
 
-    /** The JCE encryption class name */
-    private final static String JCE_ENCRYPTION_CLASS_NAME = "org.eclipse.persistence.internal.security.JCEEncryptor";
-
     /** The encryption class name **/
     private String m_securableClassName;
 
@@ -73,28 +70,29 @@ public class SecurableObjectHolder {
      */
     private void initSecurableObject() {
         boolean initPassThroughEncryptor = false;
-
-        if (m_securableClassName == null) {
-            // Since we are defaulting, hence, assuming they can initialize the JCE
-            // libraries, if the init fails, this flag tells us to assume no encryption.
-            // However, if the JCE init does work, the JCEEncryptor will need to
-            // determine that a password was not encrypted by it, therefore, assume
-            // clear text. See JCEEncryptor.
-            initPassThroughEncryptor = true;
-            m_securableClassName = JCE_ENCRYPTION_CLASS_NAME;
-        }
-
         try {
+            if (m_securableClassName == null || JCEEncryptor.class.getName().equals(m_securableClassName)) {
+                // Since we are defaulting, hence, assuming they can initialize the JCE
+                // libraries, if the init fails, this flag tells us to assume no encryption.
+                // However, if the JCE init does work, the JCEEncryptor will need to
+                // determine that a password was not encrypted by it, therefore, assume
+                // clear text. See JCEEncryptor.
+                initPassThroughEncryptor = m_securableClassName == null;
+                m_securableObject = new JCEEncryptor();
+                return;
+            }
+
             ConversionManager cm = ConversionManager.getDefaultManager();
-            Class<?> securableClass = cm.convertObject(m_securableClassName, Class.class);
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            @SuppressWarnings({"unchecked"})
+            Class<? extends Securable> securableClass = cm.convertObject(m_securableClassName, Class.class);
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    m_securableObject = (Securable)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(securableClass));
+                    m_securableObject = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(securableClass));
                 } catch (PrivilegedActionException exception) {
                     throw exception.getException();
                 }
             } else {
-                m_securableObject = (Securable)PrivilegedAccessHelper.newInstanceFromClass(securableClass);
+                m_securableObject = PrivilegedAccessHelper.newInstanceFromClass(securableClass);
             }
         } catch (Throwable e) {
             if (initPassThroughEncryptor) {// default failed, so perform no encryption.
