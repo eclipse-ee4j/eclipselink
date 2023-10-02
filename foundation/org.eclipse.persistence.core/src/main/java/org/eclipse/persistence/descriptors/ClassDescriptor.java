@@ -1475,7 +1475,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         //Class<?> redirectorClass = null;
 
-        if (getJavaClassName() != null) {
+        if (getJavaClass() == null && getJavaClassName() != null) {
             final Class<?> descriptorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
                     () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getJavaClassName(), true, classLoader),
                     (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), ex)
@@ -1483,7 +1483,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             setJavaClass(descriptorClass);
         }
 
-        if (getAmendmentClassName() != null) {
+        if (getAmendmentClass() == null && getAmendmentClassName() != null) {
             final Class<?> amendmentClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
                     () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getAmendmentClassName(), true, classLoader),
                     (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), ex)

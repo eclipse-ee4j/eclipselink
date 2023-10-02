@@ -504,46 +504,50 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public String getPlatformClassName() {
         return getDatasourcePlatform().getClass().getName();
     }
+
     /**
      * INTERNAL:
      * Set the name of the Platform to be used.
      * Creates a new instance of the specified Class.
      */
+    @SuppressWarnings({"unchecked"})
     public void setPlatformClassName(String platformClassName) throws ValidationException {
-        // Handle old Oracle platform conversion.
-        if (platformClassName.equals("org.eclipse.persistence.platform.database.oracle.OraclePlatform")) {
-            platformClassName = "org.eclipse.persistence.platform.database.OraclePlatform";
-        }
+        if (platform == null || !(platform.getClass().getName().equals(platformClassName))) {
+            // Handle old Oracle platform conversion.
+            if (platformClassName.equals("org.eclipse.persistence.platform.database.oracle.OraclePlatform")) {
+                platformClassName = "org.eclipse.persistence.platform.database.OraclePlatform";
+            }
 
-        Class<?> platformClass = null;
-        try {
-            //First try loading with the Login's class loader
-            platformClass = this.getClass().getClassLoader().loadClass(platformClassName);
-        } catch(Throwable cne) {
-            //next try using ConversionManager
+            Class<? extends Platform> platformClass = null;
             try {
-                platformClass = ConversionManager.loadClass(platformClassName);
-            } catch(Throwable cne2) {
-                //set the original exception
-                cne2.addSuppressed(cne);
-                //if still not found, throw exception
-                throw ValidationException.platformClassNotFound(cne2, platformClassName);
+                //First try loading with the Login's class loader
+                platformClass = (Class<? extends Platform>) this.getClass().getClassLoader().loadClass(platformClassName);
+            } catch (Throwable cne) {
+                //next try using ConversionManager
+                try {
+                    platformClass = ConversionManager.loadClass(platformClassName);
+                } catch (Throwable cne2) {
+                    //set the original exception
+                    cne2.addSuppressed(cne);
+                    //if still not found, throw exception
+                    throw ValidationException.platformClassNotFound(cne2, platformClassName);
+                }
             }
-        }
 
-        Platform platform = null;
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
-            } else {
-                platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+            Platform platform = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    platform = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
+                } else {
+                    platform = PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+                }
+            } catch (PrivilegedActionException exception) {
+                throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
+            } catch (Throwable cne) {
+                throw ValidationException.platformClassNotFound(cne, platformClassName);
             }
-        } catch (PrivilegedActionException exception) {
-            throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
-        } catch(Throwable cne) {
-            throw ValidationException.platformClassNotFound(cne, platformClassName);
+            usePlatform(platform);
         }
-        usePlatform(platform);
     }
     /**
      * INTERNAL:
@@ -553,31 +557,33 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * setPlatformClassName method with no classloader.
      * @see #setPlatformClassName(String platformClassName)
      */
+    @SuppressWarnings({"unchecked"})
     public void setPlatformClassName(String platformClassName, ClassLoader loader) throws ValidationException {
-        boolean exceptionCaught = false;
-        Class<?> platformClass = null;
-        try {
-            Platform platform = null;
-            if (loader != null) {
-                platformClass = loader.loadClass(platformClassName);
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                       platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
-                  } catch (PrivilegedActionException exception) {
-                      throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
-                  }
-                } else {
-                    platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+        if (platform == null || !(platform.getClass().getName().equals(platformClassName))) {
+            boolean exceptionCaught = false;
+            Class<? extends Platform> platformClass = null;
+            try {
+                Platform platform = null;
+                if (loader != null) {
+                    platformClass = (Class<? extends Platform>) loader.loadClass(platformClassName);
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        try {
+                            platform = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
+                        } catch (PrivilegedActionException exception) {
+                            throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
+                        }
+                    } else {
+                        platform = PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+                    }
                 }
+                usePlatform(platform);
+            } catch (Exception cne) {
+                exceptionCaught = true;
             }
-            usePlatform(platform);
-        } catch(Exception cne) {
-            exceptionCaught = true;
-        }
-        if (exceptionCaught || (loader == null))
-        {
-            //attempt to load with default classloader
-            this.setPlatformClassName(platformClassName);
+            if (exceptionCaught || (loader == null)) {
+                //attempt to load with default classloader
+                this.setPlatformClassName(platformClassName);
+            }
         }
     }
 

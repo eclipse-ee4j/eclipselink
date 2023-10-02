@@ -421,7 +421,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         super.convertClassNamesToClasses(classLoader);
 
         // DirectCollection mappings don't require a reference class.
-        if (getReferenceClassName() != null) {
+        if (getReferenceClass() == null && getReferenceClassName() != null) {
             Class<?> referenceClass = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){

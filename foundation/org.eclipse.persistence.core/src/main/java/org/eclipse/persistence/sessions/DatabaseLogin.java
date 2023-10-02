@@ -1205,7 +1205,8 @@ public class DatabaseLogin extends DatasourceLogin {
     public String toString() {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
-        writer.println("DatabaseLogin(");
+        writer.print(getClass().getSimpleName());
+        writer.println("(");
         writer.println("\t" + ToStringLocalization.buildMessage("platform", null) + "=>" + getDatasourcePlatform());
         writer.println("\t" + ToStringLocalization.buildMessage("user_name", null) + "=> \"" + getUserName() + "\"");
         writer.print("\t");

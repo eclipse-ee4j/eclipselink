@@ -454,12 +454,12 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return if this class is an array type.
      */
     public boolean isArray() {
-        return (getName() != null) && (getName().charAt(0) == '[');
+        return getName() != null && (getName().charAt(0) == '[' || getName().contains("[]"));
     }
 
     /**
      * INTERNAL:
-     * Return if this is extends Collection.
+     * Return if this class extends Collection.
      */
     public boolean isCollection() {
         return extendsInterface(Collection.class);
@@ -467,7 +467,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
 
     /**
      * INTERNAL:
-     * Return if this is extends Enum.
+     * Return if this class extends Enum.
      */
     public boolean isEnum() {
         return extendsClass(Enum.class);
@@ -498,7 +498,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
 
     /**
      * INTERNAL:
-     * Return if this is extends List.
+     * Return if this class extends List.
      */
     public boolean isList() {
         return extendsInterface(List.class);
@@ -506,7 +506,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
 
     /**
      * INTERNAL:
-     * Return if this is extends Map.
+     * Return if this class extends Map.
      */
     public boolean isMap() {
         return extendsInterface(Map.class);
@@ -541,7 +541,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     }
 
     /**
-     * INTENAL:
+     * INTERNAL:
      * Return true is this class is the Serializable.class interface.
      */
     public boolean isSerializableInterface() {

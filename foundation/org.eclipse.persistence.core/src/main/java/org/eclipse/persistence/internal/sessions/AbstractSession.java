@@ -136,7 +136,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of org.eclipse.persistence.sessions.Session
  * The public interface should be used.
- * @see org.eclipse.persistence.sessions.Session
  *
  * <p>
  * <b>Purpose</b>: Define the interface and common protocol of an EclipseLink compliant session.
@@ -161,6 +160,7 @@ import java.util.concurrent.TimeUnit;
  *    <li> Identity maps and caching.
  *    </ul>
  * @see DatabaseSessionImpl
+ * @see org.eclipse.persistence.sessions.Session
  */
 public abstract class AbstractSession extends CoreAbstractSession<ClassDescriptor, Login, Platform, Project, SessionEventManager> implements org.eclipse.persistence.sessions.Session, CommandProcessor, Serializable, Cloneable {
     /** ExceptionHandler handles database exceptions. */
@@ -438,7 +438,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /**
      * INTERNAL
-     * Set the query builder used to parser JPQL.
+     * Set the query builder used to parse JPQL.
      */
     public void setQueryBuilder(JPAQueryBuilder queryBuilder) {
         this.queryBuilder = queryBuilder;

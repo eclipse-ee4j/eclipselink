@@ -154,12 +154,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected List<DatabaseMapping> mapsIdMappings;
 
     /**
+     * List of map id attributes that need thir mapping to be set to read only at initialize
+     * time on their cloned aggregate mappings.
+     */
+    protected List<String> mapsIdMappingAttributes;
+
+    /**
      * Default constructor.
      */
     public AggregateObjectMapping() {
-        aggregateToSourceFields = new HashMap(5);
+        aggregateToSourceFields = new HashMap<>(5);
         nestedFieldTranslations = new HashMap<>();
         mapsIdMappings = new ArrayList<>();
+        mapsIdMappingAttributes = new ArrayList<>();
         overrideManyToManyMappings = new ArrayList<>();
         overrideUnidirectionalOneToManyMappings = new ArrayList<>();
         converters = new HashMap<>();
@@ -246,6 +253,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     public void addMapsIdMapping(DatabaseMapping mapping) {
         mapsIdMappings.add(mapping);
+        addMapsIdMappingAttribute(mapping.getAttributeName());
+    }
+
+    /**
+     * INTERNAL:
+     * In JPA users may specify a maps id attribute mapping on a shared embeddable
+     * descriptor. Mappings for these attributes need to be set to read-only
+     * at initialize time, after the reference descriptor is cloned.
+     */
+    public void addMapsIdMappingAttribute(String attribute) {
+        mapsIdMappingAttributes.add(attribute);
     }
 
     /**
@@ -1271,6 +1289,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
+     * Return the list of map id attributes that need their mapping to be set to read only
+     * at initialize time on their cloned aggregate mappings.
+     */
+    public List<String> getMapsIdMappingAttributes() {
+        return mapsIdMappingAttributes;
+    }
+
+    /**
+     * INTERNAL:
      * Return the query that is used when this mapping is part of a joined relationship
      *
      * This method is used when this mapping is used to map the key in a Map
@@ -1412,8 +1439,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
 
         // Mark any mapsId mappings as read-only.
-        for (DatabaseMapping mapsIdMapping : mapsIdMappings) {
-            DatabaseMapping mapping = clonedDescriptor.getMappingForAttributeName(mapsIdMapping.getAttributeName());
+        for (String attribute : getMapsIdMappingAttributes()) {
+            DatabaseMapping mapping = clonedDescriptor.getMappingForAttributeName(attribute);
 
             if (mapping != null) {
                 mapping.setIsReadOnly(true);

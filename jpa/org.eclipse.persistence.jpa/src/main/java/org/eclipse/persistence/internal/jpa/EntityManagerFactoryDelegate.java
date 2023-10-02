@@ -179,7 +179,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     /**
      * Create a dynamic persistence unit which does not use the persistence.xml.
-     * Instead all configuration is driven from the provided persistence unit
+     * Instead, all configuration is driven from the provided persistence unit
      * properties and descriptors.
      */
     public EntityManagerFactoryDelegate(String persistenceUnitName, Map<String, Object> properties, List<ClassDescriptor> descriptors, JpaEntityManagerFactory owner) {
@@ -289,7 +289,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         // (a reopened emf will re-populate the same metaModel)
         // (a new persistence unit will generate a new metaModel)
         if (setupImpl != null) {
-            // 260511 null check so that closing a EM
+            // 260511 null check so that closing an EM
             // created from the constructor no longer throws a NPE
             setupImpl.undeploy();
         }
@@ -297,7 +297,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     /**
-     * Indicates whether or not this factory is open. Returns <code>true</code>
+     * Indicates whether this factory is open. Returns <code>true</code>
      * until a call to {@link #close} is made.
      */
     @Override
@@ -689,7 +689,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (!this.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
         }
-        /**
+        /*
          * Login the session and initialize descriptors - if not already, subsequent calls will just return the session
          * 322585: Login the session on the first call to getMetamodel() or getCriteriaBuilder()
          * after EMF predeploy() completes.  This will do a DB login that calls

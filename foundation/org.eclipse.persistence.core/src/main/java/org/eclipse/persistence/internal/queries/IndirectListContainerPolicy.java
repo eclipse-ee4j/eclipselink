@@ -90,4 +90,10 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
     public Object containerInstance(int initialCapacity) {
         return IndirectCollectionsFactory.createIndirectList(initialCapacity);
     }
+
+    @Override
+    public Class<?> getPolicyContainerClass() {
+        return IndirectCollectionsFactory.IndirectList_Class;
+    }
+
 }

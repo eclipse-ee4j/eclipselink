@@ -58,11 +58,11 @@ public class VectorContainerPolicy extends ListContainerPolicy {
         }
 
         if (container.getClass() == Vector.class) {
-            return ((Vector) container).clone();
+            return ((Vector<?>) container).clone();
         }
 
         // Could potentially be another Collection type as well.
-        return new Vector<>((Collection) container);
+        return new Vector<>((Collection<?>) container);
     }
 
     /**
@@ -90,5 +90,10 @@ public class VectorContainerPolicy extends ListContainerPolicy {
     @Override
     public Object containerInstance(int initialCapacity) {
         return new Vector<>(initialCapacity);
+    }
+
+    @Override
+    public Class<?> getPolicyContainerClass() {
+        return Vector.class;
     }
 }

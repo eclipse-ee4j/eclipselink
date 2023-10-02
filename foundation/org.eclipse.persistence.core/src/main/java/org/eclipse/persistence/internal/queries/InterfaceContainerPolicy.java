@@ -128,7 +128,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        if (getContainerClassName() == null){
+        if (getContainerClass() != null) {
             return;
         }
         Class<?> containerClass = null;
@@ -360,7 +360,9 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     @Override
     public void setContainerClass(Class<?> containerClass) {
         this.containerClass = containerClass;
-        initializeConstructor();
+        if (getPolicyContainerClass() == null || containerClass != getPolicyContainerClass()) {
+            initializeConstructor();
+        }
     }
 
     @Override
@@ -385,4 +387,13 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     protected Object toStringInfo() {
         return getContainerClass();
     }
+
+    /**
+     * INTERNAL:
+     * Get the default {@code Collection} class used by the container policy.
+     */
+    protected Class<?> getPolicyContainerClass() {
+        return null;
+    }
+
 }
