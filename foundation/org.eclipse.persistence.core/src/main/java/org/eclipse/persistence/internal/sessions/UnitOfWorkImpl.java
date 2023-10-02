@@ -547,6 +547,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             ObjectBuilder builder = descriptor.getObjectBuilder();
             try {
                 value = builder.assignSequenceNumber(object, this);
+                getPrimaryKeyToNewObjects().putIfAbsent(value, new IdentityHashSet());
+                getPrimaryKeyToNewObjects().get(value).add(object);
             } catch (RuntimeException exception) {
                 handleException(exception);
             } finally {
