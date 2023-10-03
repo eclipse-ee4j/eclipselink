@@ -83,6 +83,7 @@
                             <includes>
                                 <include>**/JPAAdvancedTestModel</include>
                                 <include>**/advanced/*Test</include>
+                                <include>**/advanced/EntityManagerJUnitTestSuite</include>
                             </includes>
                         </configuration>
                     </execution>
