@@ -337,6 +337,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testBeginTransactionClose");
         tests.add("testClose");
         tests.add("testPersistOnNonEntity");
+        tests.add("testPersistRemoveFind");
         tests.add("testWRITELock");
         tests.add("testOPTIMISTIC_FORCE_INCREMENTLock");
         tests.add("testReadOnlyTransactionalData");
@@ -4970,6 +4971,43 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
         }
         Assert.assertTrue(testPass);
+    }
+
+    /**
+     * Test for issue 1950 Duplicate objects in UnitOfWorkImpl.primaryKeyToNewObjects
+     *
+     * Objects may potentially be added to UnitOfWorkImpl.primaryKeyToNewObjects both during
+     * the call to UnitOfWorkImpl#assignSequenceNumber and then again in UnitOfWorkImpl#registerNewObjectClone.
+     * This can cause the EntityManager to return already removed entities, as only one of the saved
+     * references is removed.
+     */
+    public void testPersistRemoveFind()
+    {
+        EntityManager em = createEntityManager();
+        Employee employee = new Employee();
+        employee.setFirstName("Employee");
+        employee.setLastName("1");
+        Employee employee2 = new Employee();
+        employee2.setFirstName("Employee");
+        employee2.setLastName("2");
+        beginTransaction(em);
+        try {
+            em.persist(employee);
+           /* In order to hit the problematic code, we have to make sure there are still objects in the cache after
+            * we remove the first one, because otherwise the call to UnitOfWorkImpl#getObjectFromNewObjects
+            * will be skipped. Therefore, we register another employee object, which we won't remove. */
+            em.persist(employee2);
+            Employee clone = em.find(Employee.class, employee.getId());
+            // remove employee 1
+            em.remove(clone);
+            // a find call should not return employee 1, since we removed it earlier
+            clone = em.find(Employee.class, employee.getId());
+            assertNull("Removed employee was returned by em.find!", clone);
+        } catch (Exception e) {
+            fail("Unexpected exception thrown during test: " + e);
+        } finally {
+            rollbackTransaction(em);
+        }
     }
 
     //detach(nonentity) throws illegalArgumentException
