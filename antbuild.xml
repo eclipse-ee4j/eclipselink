@@ -1304,6 +1304,10 @@
                 <exclude name="*jpars*.jar"/>
                 <exclude name="*nosql*.jar"/>
             </zipgroupfileset>
+            <!-- Include module-info.class -->
+            <fileset dir="${eclipselink.features.base}/bundles/eclipselink/${src.dir}">
+                <include name="${module-info-file.src}"/>
+            </fileset>
         </jar>
     </target>
 

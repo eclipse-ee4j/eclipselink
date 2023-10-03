@@ -223,6 +223,7 @@ module eclipselink {
     exports org.eclipse.persistence.internal.jpa.rs.metadata.model.v2;
     exports org.eclipse.persistence.internal.libraries.asm;
     exports org.eclipse.persistence.internal.localization;
+    exports org.eclipse.persistence.internal.localization.i18n;
     exports org.eclipse.persistence.internal.oxm;
     exports org.eclipse.persistence.internal.oxm.mappings;
     exports org.eclipse.persistence.internal.oxm.record;
@@ -289,6 +290,10 @@ module eclipselink {
     exports org.eclipse.persistence.internal.sessions.factories.model.transport.discovery;
     exports org.eclipse.persistence.internal.sessions.factories.model.transport.naming;
     exports org.eclipse.persistence.internal.xr.sxf;
+
+    opens org.eclipse.persistence.internal.helper;
+    opens org.eclipse.persistence.jaxb.xmlmodel;
+    opens org.eclipse.persistence.jpa.jpql;
 
     uses org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 
