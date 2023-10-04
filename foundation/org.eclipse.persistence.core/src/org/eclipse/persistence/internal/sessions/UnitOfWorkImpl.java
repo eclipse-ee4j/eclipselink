@@ -158,7 +158,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * Map of primary key to list of new objects. Used to speedup in-memory querying.
      */
-    protected Map<Object, List<Object>>        primaryKeyToNewObjects;
+    protected Map<Object, IdentityHashSet>        primaryKeyToNewObjects;
     /**
      * Stores a map from the clone to the original merged object, as a different instance is used as the original for merges.
      */
@@ -546,7 +546,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             try {
                 value = builder.assignSequenceNumber(object, this);
                 getPrimaryKeyToNewObjects().putIfAbsent(value,
-                    new ArrayList<>());
+                    new IdentityHashSet());
                 getPrimaryKeyToNewObjects().get(value).add(object);
             } catch (RuntimeException exception) {
                 handleException(exception);
@@ -2405,7 +2405,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The primaryKeyToNewObjects stores a list of objects for every primary key.
      * It is used to speed up in-memory-querying.
      */
-    public Map<Object, List<Object>> getPrimaryKeyToNewObjects() {
+    public Map<Object, IdentityHashSet> getPrimaryKeyToNewObjects() {
       if (primaryKeyToNewObjects == null) {
         primaryKeyToNewObjects = new HashMap<>();
       }
@@ -2562,7 +2562,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         boolean readSubclassesOrNoInheritance = (!descriptor.hasInheritance() || descriptor.getInheritancePolicy().shouldReadSubclasses());
 
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        for (Iterator newObjectsEnum = getPrimaryKeyToNewObjects().getOrDefault(selectionKey, new ArrayList<>(0)).iterator();
+        for (Iterator newObjectsEnum = getPrimaryKeyToNewObjects().getOrDefault(selectionKey, new IdentityHashSet(0)).iterator();
             newObjectsEnum.hasNext(); ) {
            Object object = newObjectsEnum.next();
            // bug 327900
@@ -5055,7 +5055,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         Object pk = objectBuilder.extractPrimaryKeyFromObject(newObject, this,
             true);
         if (pk != null) {
-          getPrimaryKeyToNewObjects().putIfAbsent(pk, new ArrayList<>());
+          getPrimaryKeyToNewObjects().putIfAbsent(pk, new IdentityHashSet());
           getPrimaryKeyToNewObjects().get(pk).add(newObject);
         }
       }
@@ -5078,9 +5078,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
        */
       protected void removeObjectFromPrimaryKeyToNewObjects(Object object,
           Object primaryKey) {
-        Map<Object, List<Object>> pkToNewObjects = getPrimaryKeyToNewObjects();
+        Map<Object, IdentityHashSet> pkToNewObjects = getPrimaryKeyToNewObjects();
         if (pkToNewObjects.containsKey(primaryKey)) {
-          List<Object> newObjects = pkToNewObjects.get(primaryKey);
+          IdentityHashSet newObjects = pkToNewObjects.get(primaryKey);
           newObjects.remove(object);
           if (newObjects.isEmpty()) {
             pkToNewObjects.remove(primaryKey);
