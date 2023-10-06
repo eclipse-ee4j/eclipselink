@@ -107,6 +107,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.UnitOfWork
@@ -709,8 +710,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         // Second calculate changes for all registered objects.
         Iterator objects = allObjects.keySet().iterator();
-        Map changedObjects = new IdentityHashMap();
-        Map visitedNodes = new IdentityHashMap();
+        int allObjectsSize = allObjects.size();
+        Map changedObjects = new IdentityHashMap(allObjectsSize);
+        Map visitedNodes = new IdentityHashMap(allObjectsSize);
         while (objects.hasNext()) {
             Object object = objects.next();
 
@@ -786,7 +788,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         if (this.shouldDiscoverNewObjects && !changedObjects.isEmpty()) {
             // Third discover any new objects from the new or changed objects.
-            Map newObjects = new IdentityHashMap();
+            Map newObjects = new IdentityHashMap(changedObjects.size());
             // Bug 294259 -  Do not replace the existingObjects list
             // Iterate over the changed objects only.
             discoverUnregisteredNewObjects(changedObjects, newObjects, getUnregisteredExistingObjects(), visitedNodes);
@@ -807,8 +809,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Remove any orphaned privately owned objects from the UnitOfWork and ChangeSets,
         // these are the objects remaining in the UnitOfWork privateOwnedObjects map
         if (hasPrivateOwnedObjects()) {
-            Map visitedObjects = new IdentityHashMap();
-            for (Set privateOwnedObjects : getPrivateOwnedObjects().values()) {
+            Collection<Set> values = getPrivateOwnedObjects().values();
+            Map visitedObjects = new IdentityHashMap(values.stream().collect(Collectors.summingInt(Set::size)));
+            for (Set privateOwnedObjects : values) {
                 for (Object objectToRemove : privateOwnedObjects) {
                     performRemovePrivateOwnedObjectFromChangeSet(objectToRemove, visitedObjects);
                 }
@@ -5027,8 +5030,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected void setupPrimaryKeyToNewObjects() {
         primaryKeyToNewObjects = null;
         if (hasNewObjects()) {
-            primaryKeyToNewObjects = new HashMap<>();
-            getNewObjectsCloneToOriginal().forEach((object, o2) -> {
+            Map newObjects = getNewObjectsCloneToOriginal();
+            primaryKeyToNewObjects = new HashMap<>(newObjects.size());
+            newObjects.forEach((object, o2) -> {
                 addNewObjectToPrimaryKeyToNewObjects(object);
             });
         }
