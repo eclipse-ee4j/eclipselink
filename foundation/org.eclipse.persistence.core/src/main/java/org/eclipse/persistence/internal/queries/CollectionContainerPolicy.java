@@ -19,6 +19,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -181,7 +182,12 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      */
     @Override
     public Object iteratorFor(Object container) {
-        return ((Collection)container).iterator();
+        if (container.getClass() == ArrayList.class) {
+            Object clonedContainer = cloneFor(container);
+            return ((Collection)clonedContainer).iterator();
+        } else {
+            return ((Collection)container).iterator();
+        }
     }
 
     /**
