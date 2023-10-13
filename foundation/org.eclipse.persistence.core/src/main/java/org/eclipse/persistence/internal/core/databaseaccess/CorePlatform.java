@@ -32,9 +32,10 @@ public interface CorePlatform<CONVERSION_MANAGER extends CoreConversionManager> 
 
     /**
      * Convert the object to the appropriate type by invoking the appropriate
-     * ConversionManager method
+     * ConversionManager method.
      * @param sourceObject the object that must be converted
      * @param javaClass the class that the object must be converted to
+     * @param session current database session
      * @exception ConversionException all exceptions will be thrown as this type.
      * @return the newly converted object
      */
