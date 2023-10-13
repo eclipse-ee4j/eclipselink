@@ -22,6 +22,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -209,7 +210,12 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
     @Override
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         try {
-            return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass());
+            if (session.isDatabaseSession()) {
+                //Should handle conversions where DB connection is needed like String -> java.sql.Clob
+                return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass(), (AbstractSession)session);
+            } else {
+                return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass());
+            }
         } catch (ConversionException e) {
             throw ConversionException.couldNotBeConverted(mapping, mapping.getDescriptor(), e);
         }
