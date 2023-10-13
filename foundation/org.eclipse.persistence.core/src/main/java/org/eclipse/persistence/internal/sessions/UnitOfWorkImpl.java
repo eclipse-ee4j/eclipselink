@@ -3163,15 +3163,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
-     * INTERNAL:
-     * Return if this session is a database session.
-     */
-    @Override
-    public boolean isDatabaseSession() {
-        return true;
-    }
-
-    /**
      * PUBLIC:
      * Return whether the session currently has a database transaction in progress.
      */

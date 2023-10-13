@@ -210,7 +210,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
     @Override
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         try {
-            if (session.isDatabaseSession()) {
+            if (session.isConnected()) {
                 //Should handle conversions where DB connection is needed like String -> java.sql.Clob
                 return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass(), (AbstractSession)session);
             } else {
