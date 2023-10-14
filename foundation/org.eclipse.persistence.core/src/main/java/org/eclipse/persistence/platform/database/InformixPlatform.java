@@ -185,7 +185,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME YEAR TO FRACTION(5)", false));
 
         return fieldTypeMapping;
-    }
+    }   
 
     /**
      * INTERNAL:
