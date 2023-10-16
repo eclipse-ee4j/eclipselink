@@ -20,6 +20,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import javax.naming.NamingException;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -1495,5 +1497,48 @@ public class SDOHelperContext implements HelperContext {
      */
     public static Map<SDOWrapperTypeId,SDOWrapperType> putWrapperTypes(Map<SDOWrapperTypeId,SDOWrapperType> wrapperTypes) {
         return SDO_WRAPPER_TYPES.put(getApplicationName(Thread.currentThread().getContextClassLoader()), wrapperTypes);
+    }
+
+    /**
+     * ADVANCED:
+     * Remove the HelperContext for the specified key and expiration time.
+     * This is mainly focused to free some JEE server memory.
+     * WARNING: Use it carefully! Application must register it's application helper context if it will be needed again after removal.
+     *
+     * @param key helperContext identifier. It's usually application classloader or custom identifier.
+     * @param expirationTime defines age of helper context records. Older one will be removed. It's compared against creation time.
+     * @return number of removed helper context records
+     */
+    public static int removeExpiredHelperContexts(Object key, Instant expirationTime) {
+        int removedCounter = 0;
+        CacheIdentityMap contextMap = helperContexts.get(key);
+        if (contextMap != null) {
+            Map<Object, CacheKey> cacheKeys = contextMap.getCacheKeys();
+            for (Object key0: cacheKeys.keySet()) {
+                CacheKey cacheKey = cacheKeys.get(key0);
+                if (cacheKey.getConcurrencyManagerCreationDate().getTime() < expirationTime.getEpochSecond() * 1000) {
+                    cacheKeys.remove(key0);
+                    removedCounter++;
+                }
+            }
+        }
+        return removedCounter;
+    }
+
+    /**
+     * ADVANCED:
+     * Remove the HelperContext for the specified expiration time. It's applied across all applications.
+     * This is mainly focused to free some JEE server memory.
+     * WARNING: Use it carefully! Applications must register it's application helper context if it will be needed again after removal.
+     *
+     * @param expirationTime defines age of helper context records. Older one will be removed. It's compared against creation time.
+     * @return number of removed helper context records
+     */
+    public static int removeAllExpiredHelperContexts(Instant expirationTime) {
+        int removedCounter = 0;
+        for (Object key: helperContexts.keySet()) {
+            removedCounter += removeExpiredHelperContexts(key, expirationTime);
+        }
+        return removedCounter;
     }
 }
