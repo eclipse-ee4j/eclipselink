@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,8 @@ public final class OptimisticLockExceptionResource extends ListResourceBundle {
                                            { "5008", "Must map the version lock field to java.sql.Timestamp when using Timestamp Locking" },
                                            { "5009", "The object of class [{1}] with primary key [{0}] cannot be unwrapped because it was deleted since it was last read." },
                                            { "5010", "The object [{0}] cannot be merged because it has changed or been deleted since it was last read. {2}Class> {1}" },
-                                           { "5011", "One or more objects cannot be updated because it has changed or been deleted since it was last read" }
+                                           { "5011", "One or more objects cannot be updated because it has changed or been deleted since it was last read" },
+                                           { "5012", "One or more objects of class {0} with parameters list {1} cannot be updated for SQL query {2} because it has changed or been deleted since it was last read" }
     };
 
     /**
