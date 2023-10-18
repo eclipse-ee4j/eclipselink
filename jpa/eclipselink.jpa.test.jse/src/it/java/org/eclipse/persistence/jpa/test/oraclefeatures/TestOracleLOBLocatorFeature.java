@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -157,12 +157,13 @@ public class TestOracleLOBLocatorFeature {
         // After Oracle 11, the lob locator is disabled by default (requiring a Session Customizer to reenable it)
         // So the test should fail because Eclipselink will try store a null value instead of an empty_blob()/empty_clob()
         // and violate the NOT NULL constraint.
+        // In Oracle23Platform case when empty String ("") is stored into CLOB column is handled by java.sql.Clob
         Set<String> notAllowedPlatforms = new HashSet<String>();
         notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle8Platform");
         notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle9Platform");
         notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle10Platform");
-        
-        
+        notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle23Platform");
+        notAllowedPlatforms.add("org.eclipse.persistence.platform.database.oracle.Oracle23Platform");
         if (!checkIsOracle() || notAllowedPlatforms.contains(getPlatform(emfNoSessionCustomizer).getClass().getName())) {
             // Skip if not testing against Oracle
             return;

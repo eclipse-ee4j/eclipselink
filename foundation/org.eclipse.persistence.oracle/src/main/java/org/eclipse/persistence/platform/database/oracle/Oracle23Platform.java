@@ -14,6 +14,19 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.platform.database.oracle;
 
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Hashtable;
+
+import static org.eclipse.persistence.internal.helper.StringHelper.EMPTY_STRING;
+
 /**
  * <p><b>Purpose:</b>
  * Supports certain new Oracle 23c data types, and usage of certain Oracle JDBC specific APIs.
@@ -29,7 +42,6 @@ public class Oracle23Platform extends Oracle21Platform {
         super();
     }
 
-
     /**
      * INTERNAL:
      * Check whether current platform is Oracle 23c or later.
@@ -39,5 +51,34 @@ public class Oracle23Platform extends Oracle21Platform {
     @Override
     public boolean isOracle23() {
         return true;
+    }
+
+    @Override
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypes = super.buildFieldTypes();
+        fieldTypes.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP", 9));
+        fieldTypes.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP", 9));
+        return fieldTypes;
+    }
+
+    /**
+     * INTERNAL:
+     * Allow for conversion from the Oracle type to the Java type. Used in cases when DB connection is needed like BLOB, CLOB.
+     */
+    @Override
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass, AbstractSession session) throws ConversionException, DatabaseException {
+        //Handle special case when empty String ("") is passed from the entity into CLOB type column
+        if (ClassConstants.CLOB.equals(javaClass) && sourceObject instanceof String && EMPTY_STRING.equals(sourceObject)) {
+            Connection connection = session.getAccessor().getConnection();
+            Clob clob = null;
+            try {
+                clob = connection.createClob();
+                clob.setString(1, (String)sourceObject);
+            } catch (SQLException e) {
+                throw ConversionException.couldNotBeConvertedToClass(sourceObject, ClassConstants.CLOB, e);
+            }
+            return (T) clob;
+        }
+        return super.convertObject(sourceObject, javaClass);
     }
 }
