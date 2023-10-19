@@ -935,6 +935,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             }
         }
 
+        // Translate deprecated properties to the current names
+        EntityManagerFactoryProvider.translateOldProperties(properties, this.databaseSession);
+
         // Get the read object query and apply the properties to it.
         // PERF: use descriptor defined query to avoid extra query creation.
         ReadObjectQuery query = descriptor.getQueryManager().getReadObjectQuery();
@@ -956,8 +959,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
         // Apply any EclipseLink defaults if they haven't been set through
         // the properties.
-        if (properties == null || ( !properties.containsKey(QueryHints.CACHE_USAGE) && !properties.containsKey(QueryHints.CACHE_RETRIEVE_MODE) && !properties.containsKey(QueryHints.CACHE_STORE_MODE)
-                && !properties.containsKey("jakarta.persistence.cacheRetrieveMode") && !properties.containsKey("jakarta.persistence.cacheStoreMode"))) {
+        if (properties == null ||
+                ( !properties.containsKey(QueryHints.CACHE_USAGE)
+                          && !properties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)
+                          && !properties.containsKey(QueryHints.CACHE_STORE_MODE))) {
             query.conformResultsInUnitOfWork();
         }
 
@@ -2911,28 +2916,24 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
 
-    // TODO-API-3.2
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return FindOptionUtils.getCacheRetrieveMode(properties);
     }
 
-    // TODO-API-3.2
     @Override
     public void setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        FindOptionUtils.setCacheRetrieveMode(properties, cacheRetrieveMode);
     }
 
-    // TODO-API-3.2
     @Override
     public CacheStoreMode getCacheStoreMode() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return FindOptionUtils.getCacheStoreMode(properties);
     }
 
-    // TODO-API-3.2
     @Override
     public void setCacheStoreMode(CacheStoreMode cacheStoreMode) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        FindOptionUtils.setCacheStoreMode(properties, cacheStoreMode);
     }
 
     /**

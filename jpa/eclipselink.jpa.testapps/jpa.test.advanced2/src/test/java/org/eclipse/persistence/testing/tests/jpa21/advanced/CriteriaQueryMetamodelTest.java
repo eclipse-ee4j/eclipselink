@@ -80,6 +80,7 @@ public class CriteriaQueryMetamodelTest extends JUnitTestCase {
         suite.addTest(new CriteriaQueryMetamodelTest("testMetamodelOnClause"));
         suite.addTest(new CriteriaQueryMetamodelTest("testMetamodelOnClauseOverCollection"));
         suite.addTest(new CriteriaQueryMetamodelTest("testMetamodelOnClauseWithLeftJoin"));
+        suite.addTest(new CriteriaQueryMetamodelTest("testMetamodelOnClauseWithLeftJoinOnClass"));
         suite.addTest(new CriteriaQueryMetamodelTest("simpleMetamodelCriteriaUpdateTest"));
         suite.addTest(new CriteriaQueryMetamodelTest("testMetamodelCriteriaUpdate"));
         suite.addTest(new CriteriaQueryMetamodelTest("testMetamodelComplexConditionCaseInCriteriaUpdate"));
@@ -178,6 +179,34 @@ public class CriteriaQueryMetamodelTest extends JUnitTestCase {
         if (baseResult.size() != testResult.size()) {
             fail("Criteria query using ON clause with a left join did not match JPQL results; "
                     +baseResult.size()+" were expected, while criteria query returned "+testResult.size());
+        }
+    }
+
+    // Join directly on Address class must return the same results as join on attribute
+    public void testMetamodelOnClauseWithLeftJoinOnClass() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e left join e.address a on a.city = 'Ottawa' " +
+                                             "where a.postalCode is not null");
+        List<?> baseResult = query.getResultList();
+
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
+        EntityType<Address> entityAddr_ = metamodel.entity(Address.class);
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee>cq = qb.createQuery(Employee.class);
+        Root<Employee> root = cq.from(entityEmp_);
+        Join<Employee, Address> address = root.join(Address.class, JoinType.LEFT);
+        address.on(qb.equal(address.get(entityAddr_.getSingularAttribute("city", String.class)), "Ottawa"));
+        cq.where(qb.isNotNull(address.get(entityAddr_.getSingularAttribute("postalCode", String.class))));
+        List<?> testResult = em.createQuery(cq).getResultList();
+
+        clearCache();
+        closeEntityManager(em);
+
+        if (baseResult.size() != testResult.size()) {
+            fail("Criteria query using ON clause with a left join did not match JPQL results; "
+                         +baseResult.size()+" were expected, while criteria query returned "+testResult.size());
         }
     }
 

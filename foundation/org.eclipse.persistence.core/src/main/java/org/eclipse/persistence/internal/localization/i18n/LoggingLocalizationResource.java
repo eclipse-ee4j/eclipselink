@@ -474,6 +474,13 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "dbws_orm_metadata_read_error", "The [{0}] ORM metadata could not be read."},
         { "dbws_oxm_metadata_read_error", "The [{0}] OXM metadata could not be read."},
         { "dbws_no_wsdl_inline_schema", "The [{0}] WSDL inline schema could not be read."},
+        // JPA 3.2
+        { "unknown_cacheRetrieveMode_type", "Unknown {0} type of jakarta.persistence.cache.retrieveMode property"},
+        { "unknown_cacheStoreMode_type", "Unknown {0} type of jakarta.persistence.cache.storeMode property"},
+        { "unknown_queryTimeoutUnit_type", "Unknown {0} type of eclipselink.query.timeout.unit property"},
+        { "unknown_queryTimeout_type", "Unknown {0} type of jakarta.persistence.query.timeout property"},
+        { "error_queryTimeoutParse", "Could not parse jakarta.persistence.query.timeout property value {0}: {1}"},
+
         { "validate_object_space", "validate object space." },
         { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
         { "corrupt_object_referenced_through_mapping", "The following corrupt object is referenced through mapping: {0}" },

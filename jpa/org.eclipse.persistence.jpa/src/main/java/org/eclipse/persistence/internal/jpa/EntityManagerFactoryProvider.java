@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl.TableCreationType;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -85,7 +86,9 @@ public class EntityManagerFactoryProvider {
         {PersistenceUnitProperties.JDBC_PASSWORD , "eclipselink.jdbc.password"},
         {PersistenceUnitProperties.WEAVING , "persistence.tools.weaving"},
         {PersistenceUnitProperties.LOGGING_LEVEL + "." + SessionLog.METAMODEL, PersistenceUnitProperties.LOGGING_LEVEL + ".jpa_" + SessionLog.METAMODEL},
-        {PersistenceUnitProperties.LOGGING_LEVEL + "." + SessionLog.METADATA, PersistenceUnitProperties.LOGGING_LEVEL + ".ejb_or_" + SessionLog.METADATA}
+        {PersistenceUnitProperties.LOGGING_LEVEL + "." + SessionLog.METADATA, PersistenceUnitProperties.LOGGING_LEVEL + ".ejb_or_" + SessionLog.METADATA},
+        {QueryHints.CACHE_RETRIEVE_MODE, "jakarta.persistence.cacheRetrieveMode"},
+        {QueryHints.CACHE_STORE_MODE, "jakarta.persistence.cacheStoreMode"}
     };
 
     /**
@@ -132,8 +135,16 @@ public class EntityManagerFactoryProvider {
      *         {@link System} property or {@code null} if property identified by {@code propertyKey} does not exist.
      */
     public static String getConfigPropertyAsString(final String propertyKey, final Map overrides) {
-        final String value = overrides != null ? (String)overrides.get(propertyKey) : null;
-        return value != null ? value : PrivilegedAccessHelper.getSystemProperty(propertyKey);
+        Object value = overrides != null ? overrides.get(propertyKey) : null;
+        if (value != null) {
+            if (value instanceof String strValue) {
+                return strValue;
+            } else {
+                return value.toString();
+            }
+        } else {
+            return PrivilegedAccessHelper.getSystemProperty(propertyKey);
+        }
     }
 
     /**
