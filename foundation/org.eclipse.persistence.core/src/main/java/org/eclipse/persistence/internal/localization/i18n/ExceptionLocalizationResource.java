@@ -254,6 +254,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "getpersistenceunitutil_called_on_closed_emf", "getPersistenceUnitUtil() was called on a closed EntityManagerFactory."},
                                            { "named_entity_graph_exists", "NamedEntityGraph with name {0} found on {1} already exists in this persistence unit."},
                                            { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." },
+                                           { "no_key_in_entity", "Cannot add join of {0} to {1} because target class is missing attribute of source type"},
+                                           { "RIGHT_JOIN_NOT_SUPPORTED", "Right join is not supported"},
                                            { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
                                            { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."},
                                            { "bean_validation_constraint_violated", "One or more Bean Validation constraints were violated while executing Automatic Bean Validation on callback event: {0} for class: {1}. Please refer to the embedded constraint violations for details."},

@@ -185,10 +185,35 @@ public class MetamodelImpl implements Metamodel, Serializable {
         }
     }
 
+    private void entityEmbeddableManagedTypeNotFound(Map typeMap, Object aType, String entityName, String metamodelType, String metamodelTypeName) {
+        // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
+        if (typeMap.isEmpty()) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING,
+                                            SessionLog.METAMODEL,
+                                            "metamodel_type_collection_empty_during_lookup",
+                                            entityName,
+                                            metamodelTypeName);
+        }
+        if (null == aType) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_class_null_type_instance",
+                    new Object[] {entityName, metamodelTypeName, metamodelType}));
+        } else {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "metamodel_class_incorrect_type_instance",
+                    new Object[] {entityName, metamodelTypeName, aType}));
+        }
+    }
+
+
     // TODO-API-3.2
     @Override
     public EntityType<?> entity(String entityName) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        EntityTypeImpl<?> aType = this.entities.get(entityName);
+        if (aType == null) {
+            entityEmbeddableManagedTypeNotFound(entities, null, entityName, "Entity", "EntityType");
+        }
+        return aType;
     }
 
     /**

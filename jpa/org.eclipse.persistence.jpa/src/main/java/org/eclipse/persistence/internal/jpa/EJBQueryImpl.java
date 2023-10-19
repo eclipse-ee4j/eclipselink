@@ -41,8 +41,10 @@ import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.Parameter;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Timeout;
 import jakarta.persistence.TypedQuery;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
@@ -54,6 +56,8 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -296,43 +300,44 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if not a Java Persistence query language SELECT query
      */
     @Override
-    public EJBQueryImpl setLockMode(LockModeType lockMode) {
-        return (EJBQueryImpl) super.setLockMode(lockMode);
+    @SuppressWarnings("unchecked")
+    public EJBQueryImpl<X> setLockMode(LockModeType lockMode) {
+        return (EJBQueryImpl<X>) super.setLockMode(lockMode);
     }
 
-    // TODO-API-3.2
+
+    // Based on EntityManagerImpl#getQueryHints(Object,OperationType)
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return FindOptionUtils.getCacheRetrieveMode(getDatabaseQuery().getProperties());
     }
 
-    // TODO-API-3.2
     @Override
     public TypedQuery<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        FindOptionUtils.setCacheRetrieveMode(getDatabaseQuery().getProperties(), cacheRetrieveMode);
+        return this;
     }
 
-    // TODO-API-3.2
     @Override
     public CacheStoreMode getCacheStoreMode() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return FindOptionUtils.getCacheStoreMode(getDatabaseQuery().getProperties());
     }
 
-    // TODO-API-3.2
     @Override
     public TypedQuery<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        FindOptionUtils.setCacheStoreMode(getDatabaseQuery().getProperties(), cacheStoreMode);
+        return this;
     }
 
-    // TODO-API-3.2
     @Override
     public Integer getTimeout() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return FindOptionUtils.getTimeout(getDatabaseQuery().getProperties());
     }
 
     @Override
     public TypedQuery<X> setTimeout(Integer timeout) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
+        return this;
     }
 
     /**

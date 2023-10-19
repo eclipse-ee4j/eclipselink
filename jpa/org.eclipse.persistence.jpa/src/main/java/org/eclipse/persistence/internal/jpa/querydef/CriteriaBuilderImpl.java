@@ -889,7 +889,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new CompoundExpressionImpl(this.metamodel, currentNode(v).between(x, y), buildList(v, internalLiteral(x), internalLiteral(y)), "between");
     }
 
-    protected List<Expression<?>> buildList(Expression<?>... expressions) {
+    protected static List<Expression<?>> buildList(Expression<?>... expressions) {
         // Immutable List causes test failures.
         // Those lists are usually small (size 1-2) and modifications are rare. Default list size is too much.
         List<Expression<?>> list = new ArrayList<>(expressions.length + 2);

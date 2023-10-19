@@ -883,37 +883,40 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     // TODO-API-3.2
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return FindOptionUtils.getCacheRetrieveMode(getDatabaseQuery().getProperties());
     }
 
     // TODO-API-3.2
     @Override
     public StoredProcedureQueryImpl setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        FindOptionUtils.setCacheRetrieveMode(getDatabaseQuery().getProperties(), cacheRetrieveMode);
+        return this;
     }
 
     // TODO-API-3.2
     @Override
     public CacheStoreMode getCacheStoreMode() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return FindOptionUtils.getCacheStoreMode(getDatabaseQuery().getProperties());
     }
 
     // TODO-API-3.2
     @Override
     public StoredProcedureQueryImpl setCacheStoreMode(CacheStoreMode cacheStoreMode) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        FindOptionUtils.setCacheStoreMode(getDatabaseQuery().getProperties(), cacheStoreMode);
+        return this;
     }
 
     // TODO-API-3.2
     @Override
     public Integer getTimeout() {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return FindOptionUtils.getTimeout(getDatabaseQuery().getProperties());
     }
 
     // TODO-API-3.2
     @Override
     public StoredProcedureQueryImpl setTimeout(Integer timeout) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
+        return this;
     }
 
     /**
