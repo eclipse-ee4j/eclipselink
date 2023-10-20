@@ -56,7 +56,7 @@ import java.util.stream.Stream;
  * @author Big Country
  * @since TOPLink/Java 2.5
  */
-public class IndirectList<E> extends Vector<E> implements CollectionChangeTracker, IndirectCollection<E, List<E>> {
+public class IndirectList<E> extends Vector<E> implements CollectionChangeTracker, IndirectCollection<E, List<E>>, IndirectSequencedCollection<E> {
 
     /** Reduce type casting. */
     protected volatile Vector<E> delegate;
@@ -874,6 +874,54 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     @Override
     public Spliterator<E> spliterator() {
         return getDelegate().spliterator();
+    }
+
+    /**
+     * @see java.util.Vector#add(int, java.lang.Object)
+     */
+    @Override
+    public void addFirst(E e) {
+        getDelegate().add(0, e);
+    }
+
+    /**
+     * @see java.util.Vector#add(int, java.lang.Object)
+     */
+    @Override
+    public void addLast(E e) {
+        getDelegate().add(getDelegate().size(), e);
+    }
+
+    /**
+     * @see java.util.Vector#firstElement()
+     */
+    @Override
+    public E getFirst() {
+        return getDelegate().firstElement();
+    }
+
+    /**
+     * @see java.util.Vector#lastElement()
+     */
+    @Override
+    public E getLast() {
+        return getDelegate().lastElement();
+    }
+
+    /**
+     * @see java.util.Vector#remove(int)
+     */
+    @Override
+    public E removeFirst() {
+        return getDelegate().remove(0);
+    }
+
+    /**
+     * @see java.util.Vector#remove(int)
+     */
+    @Override
+    public E removeLast() {
+        return getDelegate().remove(getDelegate().size() - 1);
     }
 
     @Override

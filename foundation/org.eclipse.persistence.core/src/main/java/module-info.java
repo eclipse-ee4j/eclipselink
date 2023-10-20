@@ -195,6 +195,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.internal.mappings.converters to org.eclipse.persistence.jpa;
     exports org.eclipse.persistence.internal.weaving to org.eclipse.persistence.jpa;
     exports org.eclipse.persistence.internal.cache to org.eclipse.persistence.moxy;
+    exports org.eclipse.persistence.internal.oxm.conversion to org.eclipse.persistence.dbws;
     exports org.eclipse.persistence.internal.oxm.schema to
             org.eclipse.persistence.dbws,
             org.eclipse.persistence.dbws.builder,
@@ -205,7 +206,6 @@ module org.eclipse.persistence.core {
             org.eclipse.persistence.dbws.builder,
             org.eclipse.persistence.moxy,
             org.eclipse.persistence.sdo;
-    exports org.eclipse.persistence.internal.oxm.conversion to org.eclipse.persistence.dbws;
     exports org.eclipse.persistence.internal.sessions.coordination.rmi to org.eclipse.persistence.corba;
     exports org.eclipse.persistence.internal.platform.database to org.eclipse.persistence.oracle;
     exports org.eclipse.persistence.mappings.converters.spi to

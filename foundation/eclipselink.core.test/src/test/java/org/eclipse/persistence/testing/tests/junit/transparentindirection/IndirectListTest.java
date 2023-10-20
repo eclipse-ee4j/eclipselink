@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -537,6 +537,71 @@ public class IndirectListTest {
         assertArrayEquals(list.toArray(), testList.toArray());
         assertEquals(sw1.toString(), sw2.toString());
         assertNoEvents();
+    }
+
+    @Test
+    public void testAddFirstGetFirst() {
+        String first = "foo0";
+        String[] temps = {"foo1", "foo2"};
+        list.addAll(Arrays.stream(temps).toList());
+        testList.addAll(Arrays.stream(temps).toList());
+        list.add(0, first);
+        testList.addFirst(first);
+        assertEquals(list, testList);
+        assertTrue(testList.contains(first));
+        assertEquals(first, testList.getFirst());
+        assertEquals(list.firstElement(), testList.getFirst());
+    }
+
+    @Test
+    public void testAddLastGetLast() {
+        String last = "foo0";
+        String[] temps = {"foo1", "foo2"};
+        list.addAll(Arrays.stream(temps).toList());
+        testList.addAll(Arrays.stream(temps).toList());
+        list.add(list.size(), last);
+        testList.addLast(last);
+        assertEquals(list, testList);
+        assertTrue(testList.contains(last));
+        assertEquals(last, testList.getLast());
+        assertEquals(list.lastElement(), testList.getLast());
+    }
+
+    @Test
+    public void testRemoveFirst() {
+        String first = "foo0";
+        String[] temps = {"foo1", "foo2"};
+        list.addAll(Arrays.stream(temps).toList());
+        testList.addAll(Arrays.stream(temps).toList());
+        list.add(0, first);
+        testList.addFirst(first);
+        assertEquals(list, testList);
+        assertTrue(testList.contains(first));
+        assertEquals(first, testList.getFirst());
+        assertEquals(list.firstElement(), testList.getFirst());
+        list.remove(0);
+        String removed = testList.removeFirst();
+        assertEquals(first, removed);
+        assertEquals("zero", testList.getFirst());
+        assertEquals(list.firstElement(), testList.getFirst());
+    }
+
+    @Test
+    public void testRemoveLast() {
+        String last = "foo0";
+        String[] temps = {"foo1", "foo2"};
+        list.addAll(Arrays.stream(temps).toList());
+        testList.addAll(Arrays.stream(temps).toList());
+        list.add(list.size(), last);
+        testList.addLast(last);
+        assertEquals(list, testList);
+        assertTrue(testList.contains(last));
+        assertEquals(last, testList.getLast());
+        assertEquals(list.lastElement(), testList.getLast());
+        String removed = testList.removeLast();
+        assertEquals(last, removed);
+        assertEquals(temps[temps.length - 1], testList.getLast());
+        assertEquals(temps[1], testList.getLast());
     }
 
     private void assertNoEvents() {
