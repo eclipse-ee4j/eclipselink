@@ -45,7 +45,7 @@
         <!--Log level-->
         <loglevel>${logging.level}</loglevel>
 
-        <test-skip-jpa-spring>true</test-skip-jpa-spring> <!-- Spring 4 is not supported with jakarta.persistence -->
+        <test-skip-jpa-spring>${skipTests}</test-skip-jpa-spring> <!-- Spring 4 is not supported with jakarta.persistence -->
     </properties>
 
     <dependencies>
