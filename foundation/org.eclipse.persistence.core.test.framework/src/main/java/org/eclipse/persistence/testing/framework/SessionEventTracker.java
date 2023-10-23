@@ -415,6 +415,17 @@ public class SessionEventTracker implements SessionEventListener {
     }
 
     /**
+     * PUBLIC: This event is raised on the unit of work after a flush.
+     */
+    @Override
+    public void postFlushUnitOfWork(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
      * PUBLIC:
      * This event is raised after the session connects to the database.
      * In a server session this event is raised on every new connection established.
@@ -562,6 +573,17 @@ public class SessionEventTracker implements SessionEventListener {
      */
     @Override
     public void preCommitUnitOfWork(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
+     * PUBLIC: This event is raised on the unit of work before a flush.
+     */
+    @Override
+    public void preFlushUnitOfWork(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
         }
