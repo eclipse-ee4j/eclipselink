@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class SessionEventTestCase extends TransactionalTestCase {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee emp = (Employee)uow.readObject(Employee.class);
         emp.setFirstName(emp.getFirstName() + "-modified");
+        uow.writeChanges();
         uow.commit();
     }
 
@@ -55,6 +56,12 @@ public class SessionEventTestCase extends TransactionalTestCase {
         }
         if (this.listener.postAcquireClientSession) {
             throw new TestErrorException("The post acquire event was not raised but should not have been.");
+        }
+        if(!this.listener.preFlushUnitOfWork) {
+            throw new TestErrorException("The pre UnitOfWork flush event did not fire");
+        }
+        if(!this.listener.postFlushUnitOfWork) {
+            throw new TestErrorException("The post UnitOfWork flush event did not fire");
         }
     }
 }

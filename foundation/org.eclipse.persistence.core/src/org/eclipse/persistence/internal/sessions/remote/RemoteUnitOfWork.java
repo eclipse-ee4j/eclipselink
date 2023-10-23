@@ -226,6 +226,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
             return;
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.preFlushUnitOfWork();
+        }
 
         // PERF: If this is an empty unit of work, do nothing (but still may need to commit SQL changes).
         boolean hasChanges = (this.unitOfWorkChangeSet != null) || hasCloneMapping() || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries();
@@ -239,6 +242,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         }
         if (!hasChanges) {
             log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+            if(eventManager != null) {
+                eventManager.postFlushUnitOfWork();
+            }
             return;
         }
 
@@ -269,6 +275,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         remoteUnitOfWork.commitIntoRemoteUnitOfWork();
 
         log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.postFlushUnitOfWork();
+        }
 
         resumeUnitOfWork();
         log(SessionLog.FINER, SessionLog.TRANSACTION, "resume_unit_of_work");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -125,6 +125,11 @@ public interface SessionEventListener extends CoreSessionEventListener {
     public void postCommitUnitOfWork(SessionEvent event);
 
     /**
+     * PUBLIC: This event is raised on the unit of work after a flush.
+     */
+    void postFlushUnitOfWork(SessionEvent event);
+
+    /**
      * PUBLIC:
      * This event is raised after the session connects to the database.
      * In a server session this event is raised on every new connection established.
@@ -206,6 +211,11 @@ public interface SessionEventListener extends CoreSessionEventListener {
      * This will be raised on nest units of work.
      */
     public void preCommitUnitOfWork(SessionEvent event);
+
+    /**
+     * PUBLIC: This event is raised on the unit of work before a flush.
+     */
+    void preFlushUnitOfWork(SessionEvent event);
 
     /**
      * PUBLIC:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -66,6 +66,9 @@ public abstract class SessionEventAdapter implements SessionEventListener {
     public void postCommitUnitOfWork(SessionEvent event) { }
 
     @Override
+    public void postFlushUnitOfWork(SessionEvent event) { }
+
+    @Override
     public void postDistributedMergeUnitOfWorkChangeSet(SessionEvent event) { }
 
     @Override
@@ -101,6 +104,9 @@ public abstract class SessionEventAdapter implements SessionEventListener {
 
     @Override
     public void preCommitUnitOfWork(SessionEvent event) { }
+
+    @Override
+    public void preFlushUnitOfWork(SessionEvent event) { }
 
     @Override
     public void preExecuteCall(SessionEvent event) { }
