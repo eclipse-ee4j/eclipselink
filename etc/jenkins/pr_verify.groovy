@@ -189,12 +189,12 @@ spec:
                 }
             }
         }
-        stage('JPA Modelgen, JPA JSE, WDF, JPARS, DBWS, DBWS Builder, Distribution') {
+        stage('JPA Modelgen, JPA JSE, JPA Spring, WDF, JPARS, DBWS, DBWS Builder, Distribution') {
             steps {
                 container('el-build') {
                     sh """
                                 mvn -B -V clean install -pl :eclipselink -P staging
-                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution.tests -P staging,mysql;
+                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.jpa.spring.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution.tests -P staging,mysql;
                             """
                 }
             }
