@@ -441,6 +441,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             return;
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.preFlushUnitOfWork();
+        }
 
         // 256277: stop any nested flushing - there should only be one level
         this.isWithinFlush = true; // set before calculateChanges as a PrePersist callback may contain a query that requires a pre flush()
@@ -465,6 +468,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 writesCompleted();
                 //return if there were no changes in the change set.
                 log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+                if(eventManager != null) {
+                    eventManager.postFlushUnitOfWork();
+                }
                 return;
             }
             // Write changes to the database.
@@ -485,6 +491,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             this.cumulativeUOWChangeSet.mergeUnitOfWorkChangeSet(changeSet, this, true);
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.postFlushUnitOfWork();
+        }
 
         resumeUnitOfWork();
         log(SessionLog.FINER, SessionLog.TRANSACTION, "resume_unit_of_work");

@@ -5856,10 +5856,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             throw ValidationException.writeChangesOnNestedUnitOfWork();
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
-        mergeBmpAndWsEntities();
         if (this.eventManager != null) {
-            this.eventManager.preCommitUnitOfWork();
+            this.eventManager.preFlushUnitOfWork();
         }
+        mergeBmpAndWsEntities();
+
         setLifecycle(CommitPending);
         try {
             commitToDatabaseWithChangeSet(false);
@@ -5871,6 +5872,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         setLifecycle(CommitTransactionPending);
         log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+        if (this.eventManager != null) {
+            this.eventManager.postFlushUnitOfWork();
+        }
     }
 
     /**
