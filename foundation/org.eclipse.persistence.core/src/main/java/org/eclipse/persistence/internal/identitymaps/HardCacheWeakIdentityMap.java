@@ -155,7 +155,7 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
             synchronized (referenceCache) {
                 // If reference node is null, add to start (new cache key).
                 if (this.referenceNode == null) {
-                    this.referenceNode = referenceCache.addFirst(buildReference(getObject()));
+                    this.referenceNode = referenceCache.addFirstElement(buildReference(getObject()));
                 } else {
                     // This is a fast constant time operations because of the linked list usage.
                     referenceCache.moveFirst(getReferenceCacheNode());

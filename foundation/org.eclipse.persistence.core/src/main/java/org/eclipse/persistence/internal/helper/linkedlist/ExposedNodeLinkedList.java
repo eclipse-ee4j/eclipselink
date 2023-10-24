@@ -205,7 +205,17 @@ public class ExposedNodeLinkedList implements List {
      *
      * @param o the contents to be inserted at the beginning of this list.
      */
-    public LinkedNode addFirst(Object o) {
+    public void addFirst(Object o) {
+        addAfter(o, header);
+    }
+
+    /**
+     * Inserts the given contents at the beginning of this list.
+     *
+     * @param o the contents to be inserted at the beginning of this list.
+     * @return <code>LinkedNode</code> with the specified content.
+     */
+    public LinkedNode addFirstElement(Object o) {
         return addAfter(o, header);
     }
 
@@ -215,7 +225,18 @@ public class ExposedNodeLinkedList implements List {
      *
      * @param o the contents to be inserted at the end of this list.
      */
-    public LinkedNode addLast(Object o) {
+    public void addLast(Object o) {
+        addAfter(o, header.previous);
+    }
+
+    /**
+     * Appends the given contents to the end of this list.  (Identical in
+     * function to the <code>add</code> method; included only for consistency.)
+     *
+     * @param o the contents to be inserted at the end of this list.
+     * @return <code>LinkedNode</code> with the specified content.
+     */
+    public LinkedNode addLastElement(Object o) {
         return addAfter(o, header.previous);
     }
 

@@ -25,7 +25,7 @@ queries:
 extraction:
   java:
     index:
-      java_version: 11
+      java_version: 21
       maven:
         version: 3.6.3
       build_command: "mvn -DskipTests -Denforcer.skip clean package -Pstaging"
