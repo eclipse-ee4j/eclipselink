@@ -205,8 +205,6 @@ public class MetamodelImpl implements Metamodel, Serializable {
         }
     }
 
-
-    // TODO-API-3.2
     @Override
     public EntityType<?> entity(String entityName) {
         EntityTypeImpl<?> aType = this.entities.get(entityName);

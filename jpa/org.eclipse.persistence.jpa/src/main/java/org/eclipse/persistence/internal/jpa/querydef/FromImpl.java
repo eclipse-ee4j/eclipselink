@@ -564,7 +564,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
                 Expression<Y> keyExpr = get(singularAttribute);
                 equalPredicates.add(new CompoundExpressionImpl(metamodel,
                                                                ExpressionImpl.currentNode(keyExpr)
-                                                                       .notEqual(ExpressionImpl.currentNode(join)),
+                                                                       .equal(ExpressionImpl.currentNode(join)),
                                                                CriteriaBuilderImpl.buildList(keyExpr, join)));
             }
         }

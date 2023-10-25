@@ -475,10 +475,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "dbws_oxm_metadata_read_error", "The [{0}] OXM metadata could not be read."},
         { "dbws_no_wsdl_inline_schema", "The [{0}] WSDL inline schema could not be read."},
         // JPA 3.2
-        { "unknown_cacheRetrieveMode_type", "Unknown {0} type of jakarta.persistence.cache.retrieveMode property"},
-        { "unknown_cacheStoreMode_type", "Unknown {0} type of jakarta.persistence.cache.storeMode property"},
-        { "unknown_queryTimeoutUnit_type", "Unknown {0} type of eclipselink.query.timeout.unit property"},
-        { "unknown_queryTimeout_type", "Unknown {0} type of jakarta.persistence.query.timeout property"},
+        { "unknown_property_type", "Unknown {0} type of {1} persistence property"},
         { "error_queryTimeoutParse", "Could not parse jakarta.persistence.query.timeout property value {0}: {1}"},
 
         { "validate_object_space", "validate object space." },

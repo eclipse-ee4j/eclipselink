@@ -2918,7 +2918,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
-        return FindOptionUtils.getCacheRetrieveMode(properties);
+        return FindOptionUtils.getCacheRetrieveMode(getAbstractSession(), properties);
     }
 
     @Override
@@ -2928,7 +2928,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
     @Override
     public CacheStoreMode getCacheStoreMode() {
-        return FindOptionUtils.getCacheStoreMode(properties);
+        return FindOptionUtils.getCacheStoreMode(getAbstractSession(), properties);
     }
 
     @Override

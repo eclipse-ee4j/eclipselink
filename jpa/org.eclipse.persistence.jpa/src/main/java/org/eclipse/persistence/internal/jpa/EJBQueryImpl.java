@@ -41,10 +41,7 @@ import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.Parameter;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.Timeout;
 import jakarta.persistence.TypedQuery;
-
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
@@ -56,8 +53,6 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -309,7 +304,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     // Based on EntityManagerImpl#getQueryHints(Object,OperationType)
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
-        return FindOptionUtils.getCacheRetrieveMode(getDatabaseQuery().getProperties());
+        return FindOptionUtils.getCacheRetrieveMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
     }
 
     @Override
@@ -320,7 +315,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
     @Override
     public CacheStoreMode getCacheStoreMode() {
-        return FindOptionUtils.getCacheStoreMode(getDatabaseQuery().getProperties());
+        return FindOptionUtils.getCacheStoreMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
     }
 
     @Override
@@ -331,7 +326,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
     @Override
     public Integer getTimeout() {
-        return FindOptionUtils.getTimeout(getDatabaseQuery().getProperties());
+        return FindOptionUtils.getTimeout(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
     }
 
     @Override
