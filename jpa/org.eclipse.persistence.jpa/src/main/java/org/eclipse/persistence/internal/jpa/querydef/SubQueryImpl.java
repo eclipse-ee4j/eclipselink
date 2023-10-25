@@ -494,28 +494,40 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
 
-    // TODO-API-3.2
     @Override
-    public Predicate equalTo(Expression<?> expression) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public Predicate equalTo(Expression<?> value) {
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.equal(value),
+                List.of(this, value),
+                "equals");
     }
 
-    // TODO-API-3.2
     @Override
-    public Predicate equalTo(Object o) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public Predicate equalTo(Object value) {
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.equal(value),
+                List.of(this, ExpressionImpl.createLiteral(value, metamodel)),
+                "equals");
     }
 
-    // TODO-API-3.2
     @Override
-    public Predicate notEqualTo(Expression<?> expression) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public Predicate notEqualTo(Expression<?> value) {
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.equal(value),
+                List.of(this, value),
+                "not equal");
     }
 
-    // TODO-API-3.2
     @Override
-    public Predicate notEqualTo(Object o) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public Predicate notEqualTo(Object value) {
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.equal(value),
+                List.of(this, ExpressionImpl.createLiteral(value, metamodel)),
+                "not equal");
     }
 
     @Override

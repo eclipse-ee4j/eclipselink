@@ -27,12 +27,9 @@ import jakarta.persistence.FindOption;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.PessimisticLockScope;
 import jakarta.persistence.Timeout;
-import jakarta.persistence.TypedQuery;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * {@link FindOption} processing tools.
@@ -151,16 +148,17 @@ class FindOptionUtils {
     }
 
     // Based on EntityManagerImpl#getQueryHints(Object,OperationType)
-    static CacheRetrieveMode getCacheRetrieveMode(Map<?, Object> properties) {
+    static CacheRetrieveMode getCacheRetrieveMode(AbstractSession session, Map<?, Object> properties) {
         // QueryHints property
         Object propertyValue = properties.get(QueryHints.CACHE_RETRIEVE_MODE);
         if (propertyValue instanceof CacheRetrieveMode) {
             return (CacheRetrieveMode) propertyValue;
         } else if (propertyValue != null) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING,
-                                            SessionLog.QUERY,
-                                            "unknown_cacheRetrieveMode_type",
-                                            propertyValue.getClass().getName());
+            session.log(SessionLog.WARNING,
+                        SessionLog.QUERY,
+                        "unknown_property_type",
+                        propertyValue.getClass().getName(),
+                        QueryHints.CACHE_RETRIEVE_MODE);
         }
         // Default value according to JPA spec.
         return CacheRetrieveMode.USE;
@@ -171,16 +169,17 @@ class FindOptionUtils {
         ((Map<String, Object>)properties).put(QueryHints.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
     }
 
-    static CacheStoreMode getCacheStoreMode(Map<?, Object> properties) {
+    static CacheStoreMode getCacheStoreMode(AbstractSession session, Map<?, Object> properties) {
         // QueryHints property
         Object propertyValue = properties.get(QueryHints.CACHE_STORE_MODE);
         if (propertyValue instanceof CacheStoreMode) {
             return (CacheStoreMode) propertyValue;
         } else if (propertyValue != null) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING,
-                                            SessionLog.QUERY,
-                                            "unknown_cacheStoreMode_type",
-                                            propertyValue.getClass().getName());
+            session.log(SessionLog.WARNING,
+                        SessionLog.QUERY,
+                        "unknown_property_type",
+                        propertyValue.getClass().getName(),
+                        QueryHints.CACHE_STORE_MODE);
         }
         // Default value according to JPA spec.
         return CacheStoreMode.USE;
@@ -191,17 +190,18 @@ class FindOptionUtils {
         ((Map<String, Object>)properties).put(QueryHints.CACHE_STORE_MODE, cacheStoreMode);
     }
 
-    static Integer getTimeout(Map<?, Object> properties) {
+    static Integer getTimeout(AbstractSession session, Map<?, Object> properties) {
         // QueryHints.QUERY_TIMEOUT_UNIT may contain TimeUnit
         TimeUnit timeUnit = TimeUnit.MILLISECONDS;
         Object propertyValue = properties.get(QueryHints.QUERY_TIMEOUT_UNIT);
         if (propertyValue instanceof TimeUnit) {
             timeUnit = (TimeUnit)propertyValue;
         } else if (propertyValue != null) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING,
-                                            SessionLog.QUERY,
-                                            "unknown_queryTimeoutUnit_type",
-                                            propertyValue.getClass().getName());
+            session.log(SessionLog.WARNING,
+                        SessionLog.QUERY,
+                        "unknown_property_type",
+                        propertyValue.getClass().getName(),
+                        QueryHints.QUERY_TIMEOUT_UNIT);
         }
         // QueryHints.QUERY_TIMEOUT must be converted from actual units to milliseconds
         propertyValue = properties.get(QueryHints.QUERY_TIMEOUT);
@@ -212,17 +212,17 @@ class FindOptionUtils {
                 long value = Long.parseLong(s);
                 return (int)TimeUnit.MILLISECONDS.convert(value, timeUnit);
             } catch (NumberFormatException e) {
-                AbstractSessionLog.getLog().log(SessionLog.WARNING,
-                                                SessionLog.QUERY,
-                                                "error_queryTimeoutParse",
-                                                s,
-                                                e.getLocalizedMessage());
+                session.log(SessionLog.WARNING,
+                            SessionLog.QUERY,
+                            "error_queryTimeoutParse",
+                            s, e.getLocalizedMessage());
             }
         } else {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING,
-                                            SessionLog.QUERY,
-                                            "unknown_queryTimeout_type",
-                                            propertyValue.getClass().getName());
+            session.log(SessionLog.WARNING,
+                        SessionLog.QUERY,
+                        "unknown_property_type",
+                        propertyValue.getClass().getName(),
+                        QueryHints.QUERY_TIMEOUT);
         }
         // Return default value (means no timeout was set)
         return null;

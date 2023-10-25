@@ -880,39 +880,33 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         return (StoredProcedureQueryImpl) super.setFlushMode(flushMode);
     }
 
-    // TODO-API-3.2
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
-        return FindOptionUtils.getCacheRetrieveMode(getDatabaseQuery().getProperties());
+        return FindOptionUtils.getCacheRetrieveMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
     }
 
-    // TODO-API-3.2
     @Override
     public StoredProcedureQueryImpl setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
         FindOptionUtils.setCacheRetrieveMode(getDatabaseQuery().getProperties(), cacheRetrieveMode);
         return this;
     }
 
-    // TODO-API-3.2
     @Override
     public CacheStoreMode getCacheStoreMode() {
-        return FindOptionUtils.getCacheStoreMode(getDatabaseQuery().getProperties());
+        return FindOptionUtils.getCacheStoreMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
     }
 
-    // TODO-API-3.2
     @Override
     public StoredProcedureQueryImpl setCacheStoreMode(CacheStoreMode cacheStoreMode) {
         FindOptionUtils.setCacheStoreMode(getDatabaseQuery().getProperties(), cacheStoreMode);
         return this;
     }
 
-    // TODO-API-3.2
     @Override
     public Integer getTimeout() {
-        return FindOptionUtils.getTimeout(getDatabaseQuery().getProperties());
+        return FindOptionUtils.getTimeout(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
     }
 
-    // TODO-API-3.2
     @Override
     public StoredProcedureQueryImpl setTimeout(Integer timeout) {
         FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
