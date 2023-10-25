@@ -254,4 +254,32 @@ public class TestJson implements JsonTestConverter.ConverterStatus {
         }
     }
 
+    @Test
+    public void testEscapedQuestionMarkInSQLOperator() {
+        EntityManager em = emf.createEntityManager();
+
+        if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+            JsonValue value = Json.createObjectBuilder()
+                    .add("id", "1007")
+                    .build();
+            try {
+                em.getTransaction().begin();
+                JsonEntity e = new JsonEntity(1007, value);
+                em.persist(e);
+                em.flush();
+                em.getTransaction().commit();
+                em.clear();
+
+                JsonEntity dbValue = em.createQuery(
+                    "SELECT v.value FROM JsonEntity v WHERE SQL('JSON_EXISTS(?, ''$??(@.id == 1007)'')', v.value)", JsonEntity.class)
+                    .getSingleResult();
+                Assert.assertEquals(value, dbValue.getValue());
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
 }
