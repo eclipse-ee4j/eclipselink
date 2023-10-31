@@ -425,7 +425,7 @@ public class WriteLockManager {
                                 // linked list for quick removal upon
                                 // acquiring all locks
                                 synchronized (this.prevailingQueue) {
-                                    mergeManager.setQueueNode(this.prevailingQueue.addLast(mergeManager));
+                                    mergeManager.setQueueNode(this.prevailingQueue.addLastElement(mergeManager));
                                 }
                             }
 
