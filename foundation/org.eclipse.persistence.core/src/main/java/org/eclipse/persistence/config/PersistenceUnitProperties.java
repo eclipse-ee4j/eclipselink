@@ -4170,7 +4170,7 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.internal.security.Securable} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.security.Securable} interface
      * </ul>
      *
      * @see org.eclipse.persistence.security.Securable
