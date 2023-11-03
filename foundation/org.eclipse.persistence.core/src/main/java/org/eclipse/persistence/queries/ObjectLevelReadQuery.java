@@ -26,6 +26,8 @@
 //     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
 //     3/13/2015 - Will Dazey
 //       - 458301 : Added check so that aggregate results won't attempt force version lock if locking type is set
+//     10/25/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -263,6 +265,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void union(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().union(query));
+        query.getArguments().forEach(this::addArgument);
+    }
+
+    /**
+     * PUBLIC:
+     * UnionAll the query results with the other query.
+     */
+    public void unionAll(ReportQuery query) {
+        addUnionExpression(getExpressionBuilder().unionAll(query));
+        query.getArguments().forEach(this::addArgument);
     }
 
     /**
@@ -271,6 +283,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void intersect(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().intersect(query));
+        query.getArguments().forEach(this::addArgument);
+    }
+
+    /**
+     * PUBLIC:
+     * IntersectAll the query results with the other query.
+     */
+    public void intersectAll(ReportQuery query) {
+        addUnionExpression(getExpressionBuilder().intersectAll(query));
+        query.getArguments().forEach(this::addArgument);
     }
 
     /**
@@ -279,6 +301,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void except(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().except(query));
+        query.getArguments().forEach(this::addArgument);
+    }
+
+    /**
+     * PUBLIC:
+     * ExceptAll the query results with the other query.
+     */
+    public void exceptAll(ReportQuery query) {
+        addUnionExpression(getExpressionBuilder().exceptAll(query));
+        query.getArguments().forEach(this::addArgument);
     }
 
     /**

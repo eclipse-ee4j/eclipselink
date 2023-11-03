@@ -52,7 +52,8 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * @author Chris Delahunt
  * @since EclipseLink 2.5
  */
-public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCriteria, Serializable {
+public abstract class CommonAbstractCriteriaImpl<T>
+        implements CommonAbstractCriteria, Serializable, CriteriaSelectInternal<T> {
 
     @Serial
     private static final long serialVersionUID = -2729946665208116620L;
@@ -95,7 +96,8 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      * Otherwise, the result type is Object.
      * @return result type
      */
-    public Class<T> getResultType(){
+    @Override
+    public Class<T> getResultType() {
         return this.queryType;
     }
 
@@ -232,9 +234,22 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
 
     /**
      * Translates from the criteria query to a EclipseLink Database Query.
+     *
+     * @return EclipseLink {@link DatabaseQuery}
      */
+    @Override
     public DatabaseQuery translate() {
-        DatabaseQuery query = getDatabaseQuery();
+        return translate(getDatabaseQuery());
+    }
+
+    /**
+     * Translates from the criteria query to a EclipseLink Database Query.
+     * Target {@link DatabaseQuery} instance is supplied.
+     *
+     * @param query target {@link DatabaseQuery} instance
+     * @return EclipseLink {@link DatabaseQuery}
+     */
+    protected DatabaseQuery translate(DatabaseQuery query) {
         for (ParameterExpression<?> parameter : getParameters()) {
             query.addArgument(((ParameterExpressionImpl<?>)parameter).getInternalName(), parameter.getJavaType());
         }
