@@ -58,6 +58,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import javax.sql.DataSource;
+
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.ConnectionConsumer;
@@ -84,10 +86,9 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaSelect;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.metamodel.Metamodel;
-import javax.sql.DataSource;
-
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.QueryHints;
@@ -106,6 +107,7 @@ import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaDeleteImpl;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
+import org.eclipse.persistence.internal.jpa.querydef.CriteriaSelectInternal;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaUpdateImpl;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper;
@@ -1721,17 +1723,23 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
 
-
-    /**
-     * @see EntityManager#createQuery(jakarta.persistence.criteria.CriteriaQuery)
-     * @since Java Persistence 2.0
-     */
     @Override
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
-        try{
+        try {
             verifyOpen();
             return new EJBQueryImpl<T>(((CriteriaQueryImpl<T>)criteriaQuery).translate(), this);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+
+    @Override
+    public <T> TypedQuery<T> createQuery(CriteriaSelect<T> selectQuery) {
+        try {
+            verifyOpen();
+            return new EJBQueryImpl<T>(((CriteriaSelectInternal<T>)selectQuery).translate(), this);
+        } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
         }

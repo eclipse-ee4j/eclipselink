@@ -56,7 +56,6 @@ import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
-
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -762,6 +761,11 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     @Override
     public boolean isInstance(Object entity, Class<?> entityClass) {
         throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    }
+
+    @Override
+    public String getName() {
+        return setupImpl.getPersistenceUnitUniqueName();
     }
 
     // TODO-API-3.2

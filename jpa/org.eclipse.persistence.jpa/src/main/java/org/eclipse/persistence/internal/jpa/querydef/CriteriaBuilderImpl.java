@@ -37,6 +37,7 @@ import jakarta.persistence.criteria.CollectionJoin;
 import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaSelect;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
@@ -68,6 +69,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
+import org.eclipse.persistence.internal.jpa.querydef.CriteriaMultiSelectImpl.Union;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaCriteriaBuilder;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -159,6 +161,13 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new CompoundSelectionImpl<>(Tuple.class, selections, true);
     }
 
+    @Override
+    public CompoundSelection<Tuple> tuple(List<Selection<?>> selections) {
+        return tuple(selections != null
+                             ? selections.toArray(new Selection<?>[selections.size()])
+                             : null);
+    }
+
     /**
      * Create an array-valued selection item
      * @param selections  selection items
@@ -169,6 +178,13 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     @Override
     public CompoundSelection<Object[]> array(Selection<?>... selections){
         return new CompoundSelectionImpl<>((Class<? extends Object[]>) ClassConstants.AOBJECT, selections, true);
+    }
+
+    @Override
+    public CompoundSelection<Object[]> array(List<Selection<?>> selections) {
+        return array(selections != null
+                             ? selections.toArray(new Selection<?>[selections.size()])
+                             : null);
     }
 
     @Override
@@ -3041,40 +3057,38 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new RootImpl<T>(entity, this.metamodel, type, parentRoot.currentNode.treat(type), entity);
     }
 
-    // TODO-API-3.2
     @Override
-    public <T> CriteriaQuery<T> union(CriteriaQuery<? extends T> first, CriteriaQuery<? extends T> second) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    @SuppressWarnings("unchecked")
+    public <T> CriteriaSelect<T> union(CriteriaSelect<? extends T> first, CriteriaSelect<? extends T> second) {
+        return new CriteriaMultiSelectImpl<>((CriteriaSelect<T>) first, second, Union.UNION);
     }
 
-    // TODO-API-3.2
     @Override
-    public <T> CriteriaQuery<T> unionAll(CriteriaQuery<? extends T> first, CriteriaQuery<? extends T> second) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    @SuppressWarnings("unchecked")
+    public <T> CriteriaSelect<T> unionAll(CriteriaSelect<? extends T> first, CriteriaSelect<? extends T> second) {
+        return new CriteriaMultiSelectImpl<>((CriteriaSelect<T>) first, second, Union.UNION_ALL);
     }
 
-    // TODO-API-3.2
     @Override
-    public <T> CriteriaQuery<T> intersect(CriteriaQuery<? super T> first, CriteriaQuery<? super T> second) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    @SuppressWarnings("unchecked")
+    public <T> CriteriaSelect<T> intersect(CriteriaSelect<? super T> first, CriteriaSelect<? super T> second) {
+        return new CriteriaMultiSelectImpl<>((CriteriaSelect<T>) first, second, Union.INTERSECT);
     }
 
-    // TODO-API-3.2
     @Override
-    public <T> CriteriaQuery<T> intersectAll(CriteriaQuery<? super T> first, CriteriaQuery<? super T> second) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    @SuppressWarnings("unchecked")
+    public <T> CriteriaSelect<T> intersectAll(CriteriaSelect<? super T> first, CriteriaSelect<? super T> second) {
+        return new CriteriaMultiSelectImpl<>((CriteriaSelect<T>) first, second, Union.INTERSECT_ALL);
     }
 
-    // TODO-API-3.2
     @Override
-    public <T> CriteriaQuery<T> except(CriteriaQuery<T> first, CriteriaQuery<?> second) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public <T> CriteriaSelect<T> except(CriteriaSelect<T> first, CriteriaSelect<?> second) {
+        return new CriteriaMultiSelectImpl<>(first, second, Union.EXCEPT);
     }
 
-    // TODO-API-3.2
     @Override
-    public <T> CriteriaQuery<T> exceptAll(CriteriaQuery<T> first, CriteriaQuery<?> second) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public <T> CriteriaSelect<T> exceptAll(CriteriaSelect<T> first, CriteriaSelect<?> second) {
+        return new CriteriaMultiSelectImpl<>(first, second, Union.EXCEPT_ALL);
     }
 
 }

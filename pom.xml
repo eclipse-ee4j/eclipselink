@@ -203,7 +203,7 @@
         <jersey.version>3.1.3</jersey.version>
         <jms.version>3.1.0</jms.version>
         <json.version>2.1.3</json.version>
-        <jpa.api.version>3.2.0-B01</jpa.api.version>
+        <jpa.api.version>3.2.0-SNAPSHOT</jpa.api.version>
         <mail-api.version>2.1.2</mail-api.version>
         <angus-mail.version>2.0.2</angus-mail.version>
         <oracle.ddlparser.version>3.0.1</oracle.ddlparser.version>

@@ -45,7 +45,6 @@ import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
-
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
@@ -647,6 +646,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     @Override
     public boolean isInstance(Object entity, Class<?> entityClass) {
         return delegate.isInstance(entity, entityClass);
+    }
+
+    @Override
+    public String getName() {
+        return delegate.getName();
     }
 
     // TODO-API-3.2

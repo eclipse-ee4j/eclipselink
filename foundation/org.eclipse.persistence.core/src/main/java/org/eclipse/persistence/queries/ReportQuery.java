@@ -125,6 +125,7 @@ public class ReportQuery extends ReadAllQuery {
      * The builder should be provided.
      */
     public ReportQuery() {
+        super();
         this.queryMechanism = new ExpressionQueryMechanism(this);
         this.items = new ArrayList<>();
         this.shouldRetrievePrimaryKeys = NO_PRIMARY_KEY;

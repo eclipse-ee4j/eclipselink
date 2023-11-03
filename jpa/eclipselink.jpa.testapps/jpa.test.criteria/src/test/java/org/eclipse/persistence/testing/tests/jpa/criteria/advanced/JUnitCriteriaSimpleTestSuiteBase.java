@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaBuilder.Case;
 import jakarta.persistence.criteria.CriteriaBuilder.Coalesce;
@@ -3008,7 +3009,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         CriteriaQuery<Tuple> cquery = qb.createTupleQuery();
 
         Root<Employee> emp = wrapper.from(cquery, Employee.class);
-        Selection[] s = {wrapper.get(emp, Employee_id), wrapper.get(emp, Employee_lastName), wrapper.get(emp, Employee_firstName)};
+        Selection<?>[] s = {wrapper.get(emp, Employee_id), wrapper.get(emp, Employee_lastName), wrapper.get(emp, Employee_firstName)};
         Selection<Tuple> item = qb.tuple(s);
         cquery.select(item);
 
@@ -3018,16 +3019,56 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         list.get(0);
         try {
             //verify tuple throws an exception when passed a tuple
-            Object unexpectedResult = qb.tuple(item);
-            fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.tuple(). Result returned:"+unexpectedResult);
+            CompoundSelection<Tuple> unexpectedResult = qb.tuple(item);
+            fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.tuple(). Result returned:"
+                         + unexpectedResult.toString());
         } catch (Exception iae) {
             assertEquals(iae.getClass(), IllegalArgumentException.class);
         }
 
         try {
             //verify array throws an exception when passed a tuple
-            Object unexpectedResult = qb.array(item);
-            fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.array(). Result returned:"+unexpectedResult);
+            CompoundSelection<Object[]> unexpectedResult = qb.array(item);
+            fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.array(). Result returned:"
+                         + unexpectedResult.toString());
+        } catch (Exception iae) {
+            assertEquals(iae.getClass(), IllegalArgumentException.class);
+        }
+        closeEntityManager(em);
+    }
+
+    // Verify that CriteriaBuilder.tuple(List<Selection>) does not throw IllegalArgumentException
+    public void testCriteriaBuilderTupleOfListValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cquery = qb.createTupleQuery();
+
+        Root<Employee> emp = wrapper.from(cquery, Employee.class);
+        List<Selection<?>> s = List.of(wrapper.get(emp, Employee_id),
+                                       wrapper.get(emp, Employee_lastName),
+                                       wrapper.get(emp, Employee_firstName));
+        Selection<Tuple> item = qb.tuple(s);
+        cquery.select(item);
+
+        TypedQuery<Tuple> query = em.createQuery(cquery);
+        //verify they work and can be used:
+        List<Tuple> list = query.getResultList();
+        list.get(0);
+        try {
+            //verify tuple throws an exception when passed a tuple
+            CompoundSelection<Tuple> unexpectedResult = qb.tuple(List.of(item));
+            fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.tuple(). Result returned:"
+                         + unexpectedResult.toString());
+        } catch (Exception iae) {
+            assertEquals(iae.getClass(), IllegalArgumentException.class);
+        }
+
+        try {
+            //verify array throws an exception when passed a tuple
+            CompoundSelection<Object[]> unexpectedResult = qb.array(item);
+            fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.array(). Result returned:"
+                         + unexpectedResult.toString());
         } catch (Exception iae) {
             assertEquals(iae.getClass(), IllegalArgumentException.class);
         }
