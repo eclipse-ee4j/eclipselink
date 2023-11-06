@@ -17,7 +17,7 @@ package org.eclipse.persistence.security;
 /**
  * EclipseLink encryption interface
  */
-public interface Securable extends org.eclipse.persistence.internal.security.Securable {
+public non-sealed interface Securable extends org.eclipse.persistence.internal.security.Securable {
 
     @Override
     String encryptPassword(String pswd);

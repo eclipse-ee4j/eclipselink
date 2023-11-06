@@ -35,7 +35,7 @@ import java.io.ObjectInputStream;
  *
  * @author Guy Pelletier
  */
-public class JCEEncryptor implements Securable {
+public final class JCEEncryptor implements Securable {
     
     // Legacy DES ECB cipher used for backwards compatibility decryption only.
     private static final String DES_ECB = "DES/ECB/PKCS5Padding";

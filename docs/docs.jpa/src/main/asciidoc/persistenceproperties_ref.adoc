@@ -6482,8 +6482,8 @@ link:#CHDGBEFGA[Table 5-89] describes this persistence property's values.
 
 It is used to encrypt and decrypt database password loaded from
 `jakarta.persistence.jdbc.password` property.
-Usage of this avoid limit of Session customizer which called when all
-other properties have been processed (too late when database login is configured).
+Usage of this property avoids limitation of link:#sessioncustomizer[`session.customizer`] which is called when all other
+properties have been processed (too late when database login needs to be configured).
 
 *Examples*
 

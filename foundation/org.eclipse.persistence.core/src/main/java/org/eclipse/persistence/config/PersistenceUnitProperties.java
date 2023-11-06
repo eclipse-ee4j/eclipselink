@@ -4162,10 +4162,10 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.login.encryptor</code>" property configures a custom implementation of
-     * {@link org.eclipse.persistence.security.Securable} used to encrypt and decrypt database password
+     * {@link org.eclipse.persistence.security.Securable} class used to encrypt and decrypt database password
      * loaded from "<code>jakarta.persistence.jdbc.password</code>" property.
-     * Usage of this avoid limit of Session customizer which called when all other properties have been processed
-     * (too late when database login is configured).
+     * Usage of this property avoids limitation of {@link SessionCustomizer} which is called when all other
+     * properties have been processed (too late when database login needs to be configured).
      * If this property is not specified {@link org.eclipse.persistence.internal.security.JCEEncryptor} as a default encryptor is used.
      * <p>
      * <b>Allowed Values:</b>

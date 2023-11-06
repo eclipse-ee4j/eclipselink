@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,8 @@ package org.eclipse.persistence.internal.security;
  *
  * @author Guy Pelletier
  */
-public interface Securable {
+public sealed interface Securable
+        permits JCEEncryptor, SecurableObjectHolder.PassThroughEncryptor, org.eclipse.persistence.security.Securable {
     String encryptPassword(String pswd);
 
     String decryptPassword(String encryptedPswd);
