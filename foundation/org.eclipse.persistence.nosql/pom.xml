@@ -61,7 +61,7 @@
         <!--Mongo DB-->
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
+            <artifactId>mongodb-driver-sync</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>

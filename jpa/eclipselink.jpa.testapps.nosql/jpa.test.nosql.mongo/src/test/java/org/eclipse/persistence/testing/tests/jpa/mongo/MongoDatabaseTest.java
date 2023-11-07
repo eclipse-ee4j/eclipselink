@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.mongo;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+import com.mongodb.ConnectionString;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -30,12 +31,12 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.eis.interactions.QueryStringInteraction;
-import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoDatabaseConnection;
-import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoDatabaseConnectionFactory;
+import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnection;
+import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFactory;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.nosql.adapters.mongo.Mongo3ConnectionSpec;
+import org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec;
 import org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform;
 import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
@@ -83,7 +84,7 @@ public class MongoDatabaseTest extends JUnitTestCase {
      *  data source. */
     private static final String DB_SPEC_KEY = JUnitTestCaseHelper.insertIndex(JUnitTestCaseHelper.DB_SPEC_KEY, null);
     private static final String SERVER_SELECTION_TIMEOUT_PROPERTY = PersistenceUnitProperties.NOSQL_PROPERTY
-            + Mongo3ConnectionSpec.SERVER_SELECTION_TIMEOUT;
+            + MongoConnectionSpec.SERVER_SELECTION_TIMEOUT;
     private static final String SERVER_SELECTION_TIMEOUT = "100";
 
     public static Order existingOrder;
@@ -111,7 +112,7 @@ public class MongoDatabaseTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            MongoDatabaseConnection con = ((MongoDatabaseConnection)em.unwrap(jakarta.resource.cci.Connection.class));
+            MongoConnection con = ((MongoConnection)em.unwrap(jakarta.resource.cci.Connection.class));
             String version = con.getMetaData().getEISProductVersion();
             return version.compareTo("2.6") > 0;
         } catch (Throwable e) {
@@ -178,11 +179,11 @@ public class MongoDatabaseTest extends JUnitTestCase {
         String uriUser = null;
         char[] uriPwd = null;
         if (dbUrl != null) {
-            final MongoClientURI uri = new MongoClientURI(dbUrl);
-            final List<String> hosts = uri.getHosts();
-            final String name = uri.getDatabase();
-            uriUser = uri.getUsername();
-            uriPwd = uri.getPassword();
+            ConnectionString connectionString = new ConnectionString(dbUrl);
+            final List<String> hosts = connectionString.getHosts();
+            final String name = connectionString.getDatabase();
+            uriUser = connectionString.getUsername();
+            uriPwd = connectionString.getPassword();
             if (hosts.size() > 0) {
                 final String hostPort = hosts.get(0);
                 final int splitPos = hostPort.indexOf(':');
@@ -298,7 +299,7 @@ public class MongoDatabaseTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // First clear old database.
         beginTransaction(em);
-        MongoDatabase db = ((MongoDatabaseConnection)em.unwrap(jakarta.resource.cci.Connection.class)).getDB();
+        MongoDatabase db = ((MongoConnection)em.unwrap(jakarta.resource.cci.Connection.class)).getDB();
         db.drop();
         commitTransaction(em);
         beginTransaction(em);
@@ -414,10 +415,10 @@ public class MongoDatabaseTest extends JUnitTestCase {
      * Test pass an external factory when connecting.
      */
     public void testExternalFactory() {
-        Map<String, MongoDatabaseConnectionFactory> properties = new HashMap<>();
-        MongoClient mongo = new MongoClient();
+        Map<String, MongoConnectionFactory> properties = new HashMap<>();
+        MongoClient mongo = MongoClients.create();
         MongoDatabase db = mongo.getDatabase("mydb");
-        properties.put(PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY, new MongoDatabaseConnectionFactory(db));
+        properties.put(PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY, new MongoConnectionFactory(db));
         EntityManagerFactory factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
         EntityManager em = factory.createEntityManager();
         em.close();
@@ -1012,14 +1013,16 @@ public class MongoDatabaseTest extends JUnitTestCase {
         }
 
         QueryStringInteraction mqlInteraction = new QueryStringInteraction();
-        mqlInteraction.setQueryString("db.ORDER.findOne({\"_id\":\"" + existingOrder.id + "\"})");
+        //mongosh command e.g. db.ORDER.findOne({"_id":"654364FB87F4B027C9D7EEAF"})
+        mqlInteraction.setQueryString("{find: 'ORDER', filter:{'_id':'" + existingOrder.id + "'}}");
         query = em.unwrap(JpaEntityManager.class).createQuery(mqlInteraction, Order.class);
         order = (Order)query.getSingleResult();
         if ((order == null) || (!order.id.equals(existingOrder.id))) {
             fail("Incorrect result: " + order);
         }
 
-        query = em.createNativeQuery("db.ORDER.findOne({\"_id\":\"" + existingOrder.id + "\"})", Order.class);
+        //mongosh command e.g. db.ORDER.findOne({"_id":"654364FB87F4B027C9D7EEAF"})
+        query = em.createNativeQuery("{find: 'ORDER', filter:{'_id':'" + existingOrder.id + "'}}", Order.class);
         order = (Order)query.getSingleResult();
         if ((order == null) || (!order.id.equals(existingOrder.id))) {
             fail("Incorrect result: " + order);
