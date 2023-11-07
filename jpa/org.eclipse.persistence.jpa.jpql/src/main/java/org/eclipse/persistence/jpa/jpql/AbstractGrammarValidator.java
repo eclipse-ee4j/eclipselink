@@ -3052,7 +3052,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
-    //TODO RFELCMAN there or DefaultGrammarValidator?
     @Override
     public void visit(CastExpression expression) {
 

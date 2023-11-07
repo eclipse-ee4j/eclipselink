@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,17 +12,16 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.internal.security;
-
+package org.eclipse.persistence.security;
 
 /**
- * TopLink encryption interface
- *
- * @author Guy Pelletier
+ * EclipseLink encryption interface
  */
-public sealed interface Securable
-        permits org.eclipse.persistence.security.Securable {
+public non-sealed interface Securable extends org.eclipse.persistence.internal.security.Securable {
+
+    @Override
     String encryptPassword(String pswd);
 
+    @Override
     String decryptPassword(String encryptedPswd);
 }
