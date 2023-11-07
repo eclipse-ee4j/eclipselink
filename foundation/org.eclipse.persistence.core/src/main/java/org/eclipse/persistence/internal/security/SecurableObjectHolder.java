@@ -110,7 +110,7 @@ public class SecurableObjectHolder {
      * At runtime, no encryption will be made and the passwords will be assummed to
      * be clear text.
      */
-    static final class PassThroughEncryptor implements Securable {
+    private static final class PassThroughEncryptor implements org.eclipse.persistence.security.Securable {
         @Override
         public String encryptPassword(String pswd) {
             return pswd;

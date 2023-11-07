@@ -21,7 +21,7 @@ package org.eclipse.persistence.internal.security;
  * @author Guy Pelletier
  */
 public sealed interface Securable
-        permits JCEEncryptor, SecurableObjectHolder.PassThroughEncryptor, org.eclipse.persistence.security.Securable {
+        permits org.eclipse.persistence.security.Securable {
     String encryptPassword(String pswd);
 
     String decryptPassword(String encryptedPswd);
