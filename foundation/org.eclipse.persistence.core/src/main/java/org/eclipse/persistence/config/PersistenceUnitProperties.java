@@ -4162,6 +4162,22 @@ public class PersistenceUnitProperties {
     public static final String QUERY_RESULTS_CACHE_VALIDATION = "eclipselink.query-results-cache.validation";
 
     /**
+     * The "<code>eclipselink.login.encryptor</code>" property configures a custom implementation of
+     * {@link org.eclipse.persistence.security.Securable} class used to encrypt and decrypt database password
+     * loaded from "<code>jakarta.persistence.jdbc.password</code>" property.
+     * If this property is not specified {@link org.eclipse.persistence.internal.security.JCEEncryptor} as a default encryptor is used.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.security.Securable} interface
+     * </ul>
+     *
+     * @see org.eclipse.persistence.security.Securable
+     * @see org.eclipse.persistence.internal.security.JCEEncryptor
+     */
+    public static final String LOGIN_ENCRYPTOR = "eclipselink.login.encryptor";
+
+    /**
      * INTERNAL: The following properties will not be displayed through logging
      * but instead have an alternate value shown in the log.
      */

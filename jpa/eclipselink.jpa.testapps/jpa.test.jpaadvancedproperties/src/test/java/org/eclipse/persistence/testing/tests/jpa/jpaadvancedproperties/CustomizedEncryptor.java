@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,24 +12,24 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.sessionsxml;
+package org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties;
 
 import org.eclipse.persistence.security.Securable;
 
-public class CustomEncryption implements Securable {
+public class CustomizedEncryptor implements Securable {
+
+    public static int encryptPasswordCounter = 0;
+    public static int decryptPasswordCounter = 0;
 
     @Override
     public String encryptPassword(String pswd) {
-        return "123" + pswd;
+        encryptPasswordCounter++;
+        return pswd;
     }
 
     @Override
     public String decryptPassword(String encryptedPswd) {
-        if (encryptedPswd.startsWith("123")) {
-            return encryptedPswd.substring(3);
-        } else {
-            return encryptedPswd;
-        }
+        decryptPasswordCounter++;
+        return encryptedPswd;
     }
 }
-
