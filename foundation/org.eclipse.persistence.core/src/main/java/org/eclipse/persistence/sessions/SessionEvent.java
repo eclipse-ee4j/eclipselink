@@ -69,6 +69,10 @@ public class SessionEvent extends EventObject {
     public static final int PrepareUnitOfWork = 14;
     public static final int PostResumeUnitOfWork = 15;
 
+    public static final int PreFlushUnitOfWork = 38;
+
+    public static final int PostFlushUnitOfWork = 39;
+
     // Three-tier events, only raised on server/client session.
     public static final int PostAcquireClientSession = 16;
     public static final int PreReleaseClientSession = 17;
