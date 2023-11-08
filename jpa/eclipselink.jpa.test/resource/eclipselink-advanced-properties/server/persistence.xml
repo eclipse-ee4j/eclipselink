@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@
              <property name="eclipselink.session-name" value="JPASessionXML"/>
              <property name="eclipselink.exception-handler" value="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.CustomizedExceptionHandler"/>
              <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.CustomizedSessionEventListener"/>
-
+             <property name="eclipselink.login.encryptor" value="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.CustomizedEncryptor"/>
              <property name="eclipselink.jdbc.batch-writing" value="BUFFERED"/>
              <property name="eclipselink.jdbc.native-sql" value="true"/>
              <property name="eclipselink.jdbc.cache-statements.size" value="100"/>
