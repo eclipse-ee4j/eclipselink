@@ -363,7 +363,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     }
 
     public void testLoginEncryptorProperty() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(persistenceUnitName);
         try {
             //Create new customer
             beginTransaction(em);
