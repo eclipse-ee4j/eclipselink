@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.config.ReferenceMode;
@@ -5865,10 +5864,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             throw ValidationException.writeChangesOnNestedUnitOfWork();
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
-        mergeBmpAndWsEntities();
-        if (this.eventManager != null) {
-            this.eventManager.preCommitUnitOfWork();
+        if(eventManager != null) {
+            eventManager.preFlushUnitOfWork();
         }
+        mergeBmpAndWsEntities();
         setLifecycle(CommitPending);
         try {
             commitToDatabaseWithChangeSet(false);
@@ -5880,6 +5879,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         setLifecycle(CommitTransactionPending);
         log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.postFlushUnitOfWork();
+        }
     }
 
     /**
