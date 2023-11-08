@@ -195,7 +195,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
-        writer.write("SELECT DISTINCT(DBINFO('sqlca.sqlerrd1')) FROM systables");
+        writer.write("SELECT FIRST 1 DBINFO('sqlca.sqlerrd1') FROM systables");
         selectQuery.setSQLString(writer.toString());
         return selectQuery;
     }
