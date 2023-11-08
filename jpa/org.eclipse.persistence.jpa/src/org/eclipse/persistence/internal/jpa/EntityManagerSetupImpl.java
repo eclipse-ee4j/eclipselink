@@ -2465,6 +2465,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             login.setProperty(property, value);
         }
 
+        String encryptionClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.LOGIN_ENCRYPTOR, m, this.session);
+        if (encryptionClassName != null) {
+            this.securableObjectHolder.setEncryptionClassName(encryptionClassName);
+            login.setEncryptionClassName(encryptionClassName);
+        }
         // Note: This call does not checked the stored persistenceUnitInfo or extended properties because
         // the map passed into this method should represent the full set of properties we expect to process
 
