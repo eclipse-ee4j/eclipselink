@@ -1099,6 +1099,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
                 }
 
                 queryExpression = queryExpressions.remove(0);
+                // ensure the session is set for the 'SQL' operator
+                queryExpression.getBuilder().setSession(queryContext.getSession());
 
                 // SQL
                 if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.SQL) {

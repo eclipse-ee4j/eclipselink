@@ -1994,6 +1994,14 @@ public abstract class Expression implements Serializable, Cloneable {
             v.add(sql.substring(start, sql.length()));
         }
         anOperator.printsAs(v);
+        //Postgres expects '??' as an escape mechanism for '?' in parameterized queries
+        //https://jdbc.postgresql.org/documentation/query/#using-the-statement-or-preparedstatement-interface
+        //On other platforms, replace ?? with ? in code which is passed as a part of SQL into DB
+        if (getSession() == null || !getSession().getPlatform().isPostgreSQL()) {
+            for (int i = 0; i < anOperator.getDatabaseStrings().length; i++) {
+                anOperator.getDatabaseStrings()[i] = anOperator.getDatabaseStrings()[i].replace("??", "?");
+            }
+        }
         anOperator.bePrefix();
         anOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
 
