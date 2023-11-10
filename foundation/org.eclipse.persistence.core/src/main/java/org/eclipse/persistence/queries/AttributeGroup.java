@@ -104,6 +104,14 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
     }
 
     /**
+     * Remove an attribute from the group.
+     * @param attributeNameOrPath a simple attribute, array or attributes forming a path
+     */
+    public void removeAttribute(String attributeNameOrPath) {
+        super.removeAttribute(attributeNameOrPath);
+    }
+
+    /**
      * Returns AttributeGroup corresponding to the passed (possibly nested)
      * attribute.
      */

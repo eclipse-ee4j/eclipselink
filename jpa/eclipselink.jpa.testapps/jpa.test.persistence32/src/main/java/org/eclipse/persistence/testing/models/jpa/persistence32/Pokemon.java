@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.models.jpa.persistence32;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
@@ -20,6 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
@@ -37,6 +39,10 @@ public class Pokemon {
 
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "TRAINER_ID")
+    private Trainer trainer;
+
     @ManyToMany
     @JoinTable(name = "PERSISTENCE32_POKEMON_TYPE",
                joinColumns = @JoinColumn(
@@ -52,13 +58,24 @@ public class Pokemon {
     public Pokemon() {
     }
 
-    public Pokemon(String name, Collection<Type> types) {
+    public Pokemon(String name, Trainer trainer, Collection<Type> types) {
         this.name = name;
+        this.trainer = trainer;
         this.types = types;
     }
 
+    public Pokemon(int id, String name) {
+        this(name, null, Collections.EMPTY_LIST);
+        this.id = id;
+    }
+
     public Pokemon(int id, String name, Collection<Type> types) {
-        this(name, types);
+        this(name, null, types);
+        this.id = id;
+    }
+
+    public Pokemon(int id, Trainer trainer, String name, Collection<Type> types) {
+        this(name, trainer, types);
         this.id = id;
     }
 
@@ -86,6 +103,14 @@ public class Pokemon {
         this.types = types;
     }
 
+    public Trainer getTrainer() {
+        return trainer;
+    }
+
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
@@ -93,12 +118,13 @@ public class Pokemon {
         }
         return id == ((Pokemon) obj).id
                 && Objects.equals(name, ((Pokemon) obj).name)
+                && Objects.equals(trainer, ((Pokemon) obj).trainer)
                 && Objects.deepEquals(types, ((Pokemon) obj).types);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, name);
+        int result = Objects.hash(id, name, trainer);
         for (Type type : types) {
             result = 31 * result + type.hashCode();
         }

@@ -25,9 +25,11 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import junit.framework.Test;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
+import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
 
 public class UnionCriteriaQueryTest extends AbstractPokemon {
 
@@ -35,29 +37,30 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
     // Value of ID = 0 does not exist so it's array instance is set to null.
     static final Pokemon[] POKEMONS = new Pokemon[] {
             null, // Skip array index 0
-            new Pokemon(1, "Pidgey", List.of(TYPES[1], TYPES[3])),
-            new Pokemon(2, "Beedrill", List.of(TYPES[7], TYPES[4])),
-            new Pokemon(3, "Squirtle", List.of(TYPES[11])),
-            new Pokemon(4, "Caterpie", List.of(TYPES[7])),
-            new Pokemon(5, "Charmander", List.of(TYPES[10])),
-            new Pokemon(6, "Rattata", List.of(TYPES[1])),
-            new Pokemon(7, "Rattata", List.of(TYPES[1])),
-            new Pokemon(8, "Spearow", List.of(TYPES[1], TYPES[3])),
-            new Pokemon(9, "Pikachu", List.of(TYPES[13]))
+            new Pokemon(1, TRAINERS[1], "Pidgey", List.of(TYPES[1], TYPES[3])),
+            new Pokemon(2, TRAINERS[1], "Beedrill", List.of(TYPES[7], TYPES[4])),
+            new Pokemon(3, TRAINERS[1], "Squirtle", List.of(TYPES[11])),
+            new Pokemon(4, TRAINERS[1], "Caterpie", List.of(TYPES[7])),
+            new Pokemon(5, TRAINERS[1], "Charmander", List.of(TYPES[10])),
+            new Pokemon(6, TRAINERS[2], "Rattata", List.of(TYPES[1])),
+            new Pokemon(7, TRAINERS[2], "Raticate", List.of(TYPES[1])),
+            new Pokemon(8, TRAINERS[2], "Spearow", List.of(TYPES[1], TYPES[3])),
+            new Pokemon(9, TRAINERS[1], "Pikachu", List.of(TYPES[13]))
     };
 
     public static Test suite() {
         return suite(
                 "QueryTest",
                 new UnionCriteriaQueryTest("testSetup"),
-                //new UnionCriteriaQueryTest("testSimple"),
                 new UnionCriteriaQueryTest("testUnionWithNoSelection"),
                 new UnionCriteriaQueryTest("testUnionAllWithNoSelection"),
                 new UnionCriteriaQueryTest("testIntersectWithNoSelection"),
                 new UnionCriteriaQueryTest("testIntersectAllWithNoSelection"),
                 new UnionCriteriaQueryTest("testExceptWithNoSelection"),
                 new UnionCriteriaQueryTest("testExceptAllWithNoSelection"),
-                new UnionCriteriaQueryTest("testUnionWithEntityParameterInSelection")
+                new UnionCriteriaQueryTest("testUnionWithEntityParameterInSelection"),
+                new UnionCriteriaQueryTest("testUnionWithMultiselectEntityParametersInSelection"),
+                new UnionCriteriaQueryTest("testUnionWithMultiselectEntityInSelection")
         );
     }
 
@@ -363,27 +366,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
         }
     }
 
-    public void testSimple() {
-        try (EntityManager em = emf.createEntityManager()) {
-            EntityTransaction et = em.getTransaction();
-            try {
-                et.begin();
-                CriteriaBuilder cb = em.getCriteriaBuilder();
-                CriteriaQuery<Pokemon> q1 = cb.createQuery(Pokemon.class);
-                Root<Pokemon> root1 = q1.from(Pokemon.class);
-                q1.select(root1.get("name"));
-                q1.where(cb.equal(root1.get("name"), cb.parameter(String.class, "name")));
-                TypedQuery<Pokemon> query = em.createQuery(q1);
-                query.setParameter("name", POKEMONS[1].getName());
-                List<Pokemon> pokemons = query.getResultList();
-                assertEquals(1, pokemons.size());
-            } catch (Exception e) {
-                et.rollback();
-                throw e;
-            }
-        }
-    }
-
     public void testUnionWithEntityParameterInSelection() {
         try (EntityManager em = emf.createEntityManager()) {
             EntityTransaction et = em.getTransaction();
@@ -405,6 +387,66 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
                 query.setParameter("name1", POKEMONS[1].getName());
                 query.setParameter("name2", POKEMONS[2].getName());
                 List<Pokemon> pokemons = query.getResultList();
+                assertEquals(2, pokemons.size());
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void testUnionWithMultiselectEntityParametersInSelection() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                CriteriaBuilder cb = em.getCriteriaBuilder();
+
+                CriteriaQuery<Pokemon> q1 = cb.createQuery(Pokemon.class);
+                Root<Pokemon> root1 = q1.from(Pokemon.class);
+                q1.multiselect(root1.get("id"), root1.get("name"));
+                q1.where(cb.equal(root1.get("name"), cb.parameter(String.class, "name1")));
+
+                CriteriaQuery<Pokemon> q2 = cb.createQuery(Pokemon.class);
+                Root<Pokemon> root2 = q2.from(Pokemon.class);
+                q2.multiselect(root2.get("id"), root2.get("name"));
+                q2.where(cb.equal(root2.get("name"), cb.parameter(String.class, "name2")));
+
+                TypedQuery<Pokemon> query = em.createQuery(cb.union(q1, q2));
+                query.setParameter("name1", POKEMONS[1].getName());
+                query.setParameter("name2", POKEMONS[2].getName());
+                List<Pokemon> pokemons = query.getResultList();
+                assertEquals(2, pokemons.size());
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void testUnionWithMultiselectEntityInSelection() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                CriteriaBuilder cb = em.getCriteriaBuilder();
+
+                CriteriaQuery<Trainer> q1 = cb.createQuery(Trainer.class);
+                Root<Pokemon> root1 = q1.from(Pokemon.class);
+                Join<Pokemon, Trainer> trainer1 = root1.join(Trainer.class);
+                q1.select(trainer1);
+                q1.where(cb.equal(root1.get("name"), cb.parameter(String.class, "name1")));
+
+                CriteriaQuery<Trainer> q2 = cb.createQuery(Trainer.class);
+                Root<Pokemon> root2 = q2.from(Pokemon.class);
+                Join<Pokemon, Trainer> trainer2 = root2.join(Trainer.class);
+                q2.select(trainer2);
+                q2.where(cb.equal(root2.get("name"), cb.parameter(String.class, "name2")));
+
+                TypedQuery<Trainer> query = em.createQuery(cb.union(q1, q2));
+                query.setParameter("name1", POKEMONS[8].getName());
+                query.setParameter("name2", POKEMONS[9].getName());
+                List<Trainer> pokemons = query.getResultList();
                 assertEquals(2, pokemons.size());
             } catch (Exception e) {
                 et.rollback();

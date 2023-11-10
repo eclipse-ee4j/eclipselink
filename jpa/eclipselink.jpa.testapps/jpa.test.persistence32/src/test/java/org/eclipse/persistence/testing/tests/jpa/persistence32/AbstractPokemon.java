@@ -21,12 +21,21 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Persistence32TableCreator;
+import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
 
 /**
  * Abstract jUnit test suite with Pokemon model.
  */
 public abstract class AbstractPokemon extends JUnitTestCase {
+
+    // Pokemon trainers. Array index is ID value.
+    // Value of ID = 0 does not exist so it's array instance is set to null.
+    static final Trainer[] TRAINERS = new Trainer[] {
+            null, // Skip array index 0
+            new Trainer(1, "Ash"),
+            new Trainer(2, "Brock")
+    };
 
     // Pokemon types. Array index is ID value.
     // Value of ID = 0 does not exist so it's array instance is set to null.
@@ -116,6 +125,9 @@ public abstract class AbstractPokemon extends JUnitTestCase {
         new Persistence32TableCreator().replaceTables(JUnitTestCase.getServerSession(getPersistenceUnitName()));
         clearCache();
         emf.runInTransaction(em -> {
+            for (int i = 1; i < TRAINERS.length; i++) {
+                em.persist(TRAINERS[i]);
+            }
             for (int i = 1; i < TYPES.length; i++) {
                 em.persist(TYPES[i]);
             }
@@ -131,6 +143,7 @@ public abstract class AbstractPokemon extends JUnitTestCase {
             em.createNamedQuery("Pokemon.deleteAllTypes").executeUpdate();
             em.createNamedQuery("Pokemon.deleteAll").executeUpdate();
             em.createNamedQuery("Type.deleteAll").executeUpdate();
+            em.createNamedQuery("Trainer.deleteAll").executeUpdate();
         });
     }
 

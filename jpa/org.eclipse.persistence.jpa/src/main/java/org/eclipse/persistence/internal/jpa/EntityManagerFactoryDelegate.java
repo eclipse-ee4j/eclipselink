@@ -872,7 +872,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                         et.commit();
                         return;
                     } catch (Exception e) {
-                        et.rollback();
+                        if (et.isActive()) {
+                            et.rollback();
+                        }
                         throw e;
                     }
                 // This may happen only when JPA gets new transaction type
@@ -898,7 +900,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                         et.commit();
                         return result;
                     } catch (Exception e) {
-                        et.rollback();
+                        if (et.isActive()) {
+                            et.rollback();
+                        }
                         throw e;
                     }
                 // This may happen only when JPA gets new transaction type

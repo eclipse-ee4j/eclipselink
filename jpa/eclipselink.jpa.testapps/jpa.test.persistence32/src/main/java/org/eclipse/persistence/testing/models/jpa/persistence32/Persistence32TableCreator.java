@@ -19,10 +19,19 @@ public class Persistence32TableCreator extends TogglingFastTableCreator {
 
     public Persistence32TableCreator() {
         setName("Persistence32Project");
+        addTableDefinition(buildTrainerTable());
         addTableDefinition(buildTypeTable());
         addTableDefinition(buildPokemonTable());
         addTableDefinition(buildPokemonTypeTable());
         addTableDefinition(buildSyntaxEntityTable());
+    }
+
+    public static TableDefinition buildTrainerTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("PERSISTENCE32_TRAINER");
+        table.addField(createNumericPk("ID"));
+        table.addField(createStringColumn("NAME", 64, false));
+        return table;
     }
 
     public static TableDefinition buildTypeTable() {
@@ -37,6 +46,7 @@ public class Persistence32TableCreator extends TogglingFastTableCreator {
         TableDefinition table = new TableDefinition();
         table.setName("PERSISTENCE32_POKEMON");
         table.addField(createNumericPk("ID"));
+        table.addField(createNumericFk("TRAINER_ID", 15,"PERSISTENCE32_TRAINER.ID", true));
         table.addField(createStringColumn("NAME", 64, false));
         return table;
     }

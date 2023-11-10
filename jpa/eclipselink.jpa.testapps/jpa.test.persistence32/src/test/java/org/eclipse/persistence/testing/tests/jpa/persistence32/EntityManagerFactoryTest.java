@@ -152,6 +152,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
     public void testCreateCustomEntityManagerFactory() {
         PersistenceConfiguration configuration = new PersistenceConfiguration("persistence32_custom");
         configuration.properties(emf.getProperties());
+        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Trainer.class);
         configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
         configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
         configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
@@ -182,6 +183,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
             // Create custom PU name to be in conflict with already configured one
             PersistenceConfiguration configuration = new PersistenceConfiguration("persistence32");
             configuration.properties(emf.getProperties());
+            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Trainer.class);
             configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
             configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
             configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
@@ -205,6 +207,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
             // Create custom PU name to be in conflict with later used PU name from config
             PersistenceConfiguration configuration = new PersistenceConfiguration("persistence32_custom");
             configuration.properties(emf.getProperties());
+            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Trainer.class);
             configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
             configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
             configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);

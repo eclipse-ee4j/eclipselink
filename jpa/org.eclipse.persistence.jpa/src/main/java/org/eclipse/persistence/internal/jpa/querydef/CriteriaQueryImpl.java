@@ -68,6 +68,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     protected List<Order> orderBy;
 
     protected Set<FromImpl> joins;
+    // Mark this query as part of the UNION/EXCEPT/INTERSECT, default is false
+    private boolean isUnion = false;
 
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class<T> result, CriteriaBuilderImpl queryBuilder) {
         super(metamodel, queryResult, queryBuilder, result);
@@ -630,7 +632,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 }
             }
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
-            if (this.selection != null && (!((InternalSelection) this.selection).isRoot())) {
+            boolean nonRootSelection = this.selection != null && (!((InternalSelection) this.selection).isRoot());
+            if (nonRootSelection) {
                 query = createReportQueryWithItem(this.queryType);
                 ((ReportQuery) query).setShouldReturnSingleAttribute(true);
             } else {
@@ -641,17 +644,30 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 } else {
                     query = new ReadAllQuery(this.queryType);
                 }
+            }
+            // Union query always needs proper ExpressionBuilder set
+            if (!nonRootSelection || isUnion) {
+                boolean doSetExpressionBuilder = true;
                 if (this.roots != null && !this.roots.isEmpty()) {
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl<?, ?>) this.roots.iterator().next()).findJoinFetches();
-                    if (!list.isEmpty()) {
-                        // set the builder to one of the fetches bases.
+                    // Expression builder from root selection
+                    if (selection != null && (list.isEmpty() || ((InternalSelection) this.selection).isRoot())) {
+                        // Set the builder to selection if root is missing or selection is root itself
+                        query.setExpressionBuilder(this.selection.currentNode.getBuilder());
+                        doSetExpressionBuilder = false;
+                    } else if (!list.isEmpty()) {
+                        // Set the builder to one of the fetches bases
                         query.setExpressionBuilder(list.get(0).getBuilder());
+                        doSetExpressionBuilder = false;
                     }
-                    for (org.eclipse.persistence.expressions.Expression fetch : list) {
-                        query.addJoinedAttribute(fetch);
+                    if (this.selection == null || ((InternalSelection) this.selection).isRoot()) {
+                        for (org.eclipse.persistence.expressions.Expression fetch : list) {
+                            query.addJoinedAttribute(fetch);
+                        }
                     }
                 }
-                if (selection != null) {
+                // Set the builder to non-root selection as a fallback
+                if (doSetExpressionBuilder && selection != null) {
                     query.setExpressionBuilder(this.selection.currentNode.getBuilder());
                 }
             }
@@ -822,6 +838,15 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
 
         return query;
+    }
+
+    /**
+     * Mark this query as part of the UNION/EXCEPT/INTERSECT.
+     * This will trigger ExpressionBuilder to be added to the ReportQuery during {@link #getDatabaseQuery(boolean)}
+     * execution.
+     */
+    void isUnion() {
+        isUnion = true;
     }
 
 }
