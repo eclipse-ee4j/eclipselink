@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,8 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.UpdateIt
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.UpperExpression_WrongType;
 
 import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -265,7 +267,9 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         if (validator == null) {
             try {
                 Constructor<? extends TypeValidator> constructor = validatorClass.getDeclaredConstructor(DefaultSemanticValidator.class);
-                constructor.setAccessible(true);
+                if (!constructor.isAccessible()) {
+                    AccessController.doPrivileged((PrivilegedAction<Void>) () -> {constructor.setAccessible(true); return null;});
+                }
                 validator = constructor.newInstance(this);
                 validators.put(validatorClass, validator);
             }
