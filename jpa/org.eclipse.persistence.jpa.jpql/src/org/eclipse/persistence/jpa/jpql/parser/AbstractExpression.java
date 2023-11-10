@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -245,7 +247,9 @@ public abstract class AbstractExpression implements Expression {
 
         try {
             Method visitMethod = type.getDeclaredMethod("visit", parameterType);
-            visitMethod.setAccessible(true);
+            if (!visitMethod.isAccessible()) {
+                AccessController.doPrivileged((PrivilegedAction<Void>) () -> {visitMethod.setAccessible(true); return null;});
+            }
             visitMethod.invoke(visitor, this);
         }
         catch (NoSuchMethodException e) {
