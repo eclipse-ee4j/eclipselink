@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2022 IBM Corporation.
  * Copyright (c) 2010, 2022 Dies Koper (Fujitsu).
  *
@@ -205,18 +205,20 @@ public class TogglingFastTableCreator extends TableCreator {
     /**
      * Helper method to create {@link FieldDefinition} instance for
      * numeric foreign key with given name, size and foreign key name.
-     * @param name   Column name.
-     * @param size   Column numeric type size.
+     * @param name Column name.
+     * @param size Column numeric type size.
      * @param fkName Foreign key name (e.g. {@code "MY_TABLE.ID"}.
+     * @param allowNull Allow {@code null} values for column.
      * @return Initialized {@link FieldDefinition} instance.
+     * @noinspection SameParameterValue
      */
     protected static FieldDefinition createNumericFk(
-            final String name, final int size, final String fkName) {
+            final String name, final int size, final String fkName, final boolean allowNull) {
         final FieldDefinition field = new FieldDefinition();
         field.setName(name);
         field.setTypeName("NUMERIC");
         field.setSize(size);
-        field.setShouldAllowNull(false);
+        field.setShouldAllowNull(allowNull);
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
@@ -229,11 +231,12 @@ public class TogglingFastTableCreator extends TableCreator {
      * numeric foreign key with given name, foreign key name and default size
      * of {@code 15}.
      * @param name Column name.
+     * @param fkName Foreign key name (e.g. {@code "MY_TABLE.ID"}.
      * @return Initialized {@link FieldDefinition} instance.
      */
     protected static FieldDefinition createNumericFk(
             final String name, final String fkName) {
-        return createNumericFk(name, 15, fkName);
+        return createNumericFk(name, 15, fkName, false);
     }
 
     /**

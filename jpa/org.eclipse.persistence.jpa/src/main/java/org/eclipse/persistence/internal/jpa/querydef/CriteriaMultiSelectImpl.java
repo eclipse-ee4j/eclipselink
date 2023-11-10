@@ -63,6 +63,7 @@ public class CriteriaMultiSelectImpl<T> implements CriteriaSelect<T>, CriteriaSe
 
     }
 
+    // 1st query
     private final CriteriaSelectInternal<T> first;
     // 2nd query
     private final CriteriaSelectInternal<?> second;
@@ -99,6 +100,7 @@ public class CriteriaMultiSelectImpl<T> implements CriteriaSelect<T>, CriteriaSe
         if (first instanceof CriteriaQueryImpl) {
             // Only the top level DatabaseQuery instance may not be the ReportQuery.
             // This is the lowest level of all first node path
+            ((CriteriaQueryImpl<T>) first).isUnion();
             if (haveTop.get()) {
                 firstQuery = ((CriteriaQueryImpl<T>) first).transalteToReportQuery();
             } else {
@@ -108,9 +110,13 @@ public class CriteriaMultiSelectImpl<T> implements CriteriaSelect<T>, CriteriaSe
         } else {
             firstQuery = ((CriteriaMultiSelectImpl<T>) first).translate(haveTop);
         }
-        DatabaseQuery secondQuery = (second instanceof CriteriaQueryImpl)
-                ? ((CriteriaQueryImpl<?>) second).transalteToReportQuery()
-                : ((CriteriaMultiSelectImpl<?>) second).translate(haveTop);
+        DatabaseQuery secondQuery;
+        if (second instanceof CriteriaQueryImpl) {
+            ((CriteriaQueryImpl<?>) second).isUnion();
+            secondQuery = ((CriteriaQueryImpl<?>) second).transalteToReportQuery();
+        } else {
+            secondQuery = ((CriteriaMultiSelectImpl<?>) second).translate(haveTop);
+        }
         return union.builder.apply((ReadAllQuery) firstQuery, (ReportQuery) secondQuery);
     }
 

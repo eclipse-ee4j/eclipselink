@@ -265,7 +265,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void union(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().union(query));
-        query.getArguments().forEach(this::addArgument);
+        copyQueryArguments(query);
     }
 
     /**
@@ -274,7 +274,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void unionAll(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().unionAll(query));
-        query.getArguments().forEach(this::addArgument);
+        copyQueryArguments(query);
     }
 
     /**
@@ -283,7 +283,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void intersect(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().intersect(query));
-        query.getArguments().forEach(this::addArgument);
+        copyQueryArguments(query);
     }
 
     /**
@@ -292,7 +292,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void intersectAll(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().intersectAll(query));
-        query.getArguments().forEach(this::addArgument);
+        copyQueryArguments(query);
     }
 
     /**
@@ -301,7 +301,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void except(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().except(query));
-        query.getArguments().forEach(this::addArgument);
+        copyQueryArguments(query);
     }
 
     /**
@@ -310,7 +310,35 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void exceptAll(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().exceptAll(query));
-        query.getArguments().forEach(this::addArgument);
+        copyQueryArguments(query);
+    }
+
+    // Union/intersect/except methods helper
+    // Copy arguments, argumentTypes, argumentTypeNames and nullableArguments
+    private void copyQueryArguments(ReportQuery query) {
+        List<String> arguments = query.arguments;
+        List<Class<?>> argumentTypes = query.argumentTypes;
+        // Arguments and argumentTypes Lists shall have the same size
+        int size = arguments != null ? arguments.size() : 0;
+        for (int i = 0; i < size; i++) {
+            String argument = arguments.get(i);
+            // Mark as non-nullable to avoid unnecessary DatabaseField clone
+            addArgument(argument, argumentTypes.get(i));
+            // Copy nullable information for current argument if exists
+            if (query.nullableArguments != null) {
+                List <DatabaseField> nullableArguments = query.nullableArguments;
+                DatabaseField nullable = null;
+                for (DatabaseField nullableArgument : nullableArguments) {
+                    if (nullableArgument.getQualifiedName().equals(argument)) {
+                        nullable = nullableArgument;
+                        break;
+                    }
+                }
+                if (nullable != null) {
+                    this.getNullableArguments().add(nullable);
+                }
+            }
+        }
     }
 
     /**

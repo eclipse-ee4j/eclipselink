@@ -778,7 +778,7 @@ public class ReportQuery extends ReadAllQuery {
             if ((expression != null) && (alreadyDone.get(expression.getBuilder()) != null)) {
                 expression = expression.copiedVersionFrom(alreadyDone);
             }
-            this.items.set(i, new ReportItem(item.getName(), expression));
+            this.items.set(i, (ReportItem) item.clone());
         }
         if (this.groupByExpressions != null) {
             this.groupByExpressions = new ArrayList<>(this.groupByExpressions);

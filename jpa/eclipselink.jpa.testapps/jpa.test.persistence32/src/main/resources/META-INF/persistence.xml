@@ -21,6 +21,7 @@
     <!-- This is the default persistence unit -->
     <persistence-unit name="persistence32" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.Trainer</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.Type</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.SyntaxEntity</class>
