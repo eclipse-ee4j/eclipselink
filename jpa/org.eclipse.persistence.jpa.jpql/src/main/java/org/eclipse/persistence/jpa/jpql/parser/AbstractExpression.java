@@ -17,6 +17,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -236,6 +238,7 @@ public abstract class AbstractExpression implements Expression {
      * @see #acceptUnknownVisitor(ExpressionVisitor)
      * @since 2.4
      */
+    @SuppressWarnings("removal")
     protected void acceptUnknownVisitor(ExpressionVisitor visitor,
                                         Class<?> type,
                                         Class<?> parameterType) throws NoSuchMethodException,
@@ -244,7 +247,9 @@ public abstract class AbstractExpression implements Expression {
 
         try {
             Method visitMethod = type.getDeclaredMethod("visit", parameterType);
-            visitMethod.setAccessible(true);
+            if (!visitMethod.canAccess(visitor)) {
+                AccessController.doPrivileged((PrivilegedAction<Void>) () -> {visitMethod.setAccessible(true); return null;});
+            }
             visitMethod.invoke(visitor, this);
         }
         catch (NoSuchMethodException e) {
