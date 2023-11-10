@@ -53,6 +53,8 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.UpdateIt
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.UpperExpression_WrongType;
 
 import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -263,13 +265,15 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
         return updateClauseAbstractSchemaNameFinder;
     }
-
+    @SuppressWarnings("removal")
     protected TypeValidator getValidator(Class<? extends TypeValidator> validatorClass) {
         TypeValidator validator = validators.get(validatorClass);
         if (validator == null) {
             try {
                 Constructor<? extends TypeValidator> constructor = validatorClass.getDeclaredConstructor(DefaultSemanticValidator.class);
-                constructor.setAccessible(true);
+                if (!constructor.canAccess(null)) {
+                    AccessController.doPrivileged((PrivilegedAction<Void>) () -> {constructor.setAccessible(true); return null;});
+                }
                 validator = constructor.newInstance(this);
                 validators.put(validatorClass, validator);
             }

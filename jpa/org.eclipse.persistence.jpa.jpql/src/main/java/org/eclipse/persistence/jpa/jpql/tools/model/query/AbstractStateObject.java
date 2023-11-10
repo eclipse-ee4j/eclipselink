@@ -21,6 +21,8 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.SPACE;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,6 +152,7 @@ public abstract class AbstractStateObject implements StateObject {
      * @see #acceptUnknownVisitor(StateObjectVisitor)
      * @since 2.4
      */
+    @SuppressWarnings("removal")
     protected void acceptUnknownVisitor(StateObjectVisitor visitor,
                                         Class<?> type,
                                         Class<?> parameterType) throws NoSuchMethodException,
@@ -158,7 +161,9 @@ public abstract class AbstractStateObject implements StateObject {
 
         try {
             Method visitMethod = type.getDeclaredMethod("visit", parameterType);
-            visitMethod.setAccessible(true);
+            if (!visitMethod.canAccess(visitor)) {
+                AccessController.doPrivileged((PrivilegedAction<Void>) () -> {visitMethod.setAccessible(true); return null;});
+            }
             visitMethod.invoke(visitor, this);
         }
         catch (NoSuchMethodException e) {
