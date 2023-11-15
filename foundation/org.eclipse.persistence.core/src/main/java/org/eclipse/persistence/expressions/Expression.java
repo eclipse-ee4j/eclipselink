@@ -1981,6 +1981,11 @@ public abstract class Expression implements Serializable, Cloneable {
         int start = 0;
         int index = sql.indexOf('?');
         while (index != -1) {
+            // ? can be escaped as ?? to support ? as a native SQL operator (e.g. on Postgres)
+            if (index < sql.length() - 1 && sql.charAt(index + 1) == '?') {
+                index = sql.indexOf('?', index + 2);
+                continue;
+            }
             v.add(sql.substring(start, index));
             start = index + 1;
             index = sql.indexOf('?', start);
@@ -1989,6 +1994,14 @@ public abstract class Expression implements Serializable, Cloneable {
             v.add(sql.substring(start, sql.length()));
         }
         anOperator.printsAs(v);
+        //Postgres expects '??' as an escape mechanism for '?' in parameterized queries
+        //https://jdbc.postgresql.org/documentation/query/#using-the-statement-or-preparedstatement-interface
+        //On other platforms, replace ?? with ? in code which is passed as a part of SQL into DB
+        if (getSession() == null || !getSession().getPlatform().isPostgreSQL()) {
+            for (int i = 0; i < anOperator.getDatabaseStrings().length; i++) {
+                anOperator.getDatabaseStrings()[i] = anOperator.getDatabaseStrings()[i].replace("??", "?");
+            }
+        }
         anOperator.bePrefix();
         anOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
 
