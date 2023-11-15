@@ -11,7 +11,6 @@
     SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 
 -->
-
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
@@ -21,6 +20,7 @@
     <!-- This is the default persistence unit -->
     <persistence-unit name="persistence32" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.Team</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.Trainer</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.Type</class>

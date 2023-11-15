@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import jakarta.persistence.EntityManager;
@@ -64,8 +63,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
         );
     }
 
-    Map<Integer, Pokemon> pokemons = null;
-
     public UnionCriteriaQueryTest() {
     }
 
@@ -87,9 +84,8 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
     }
 
     private static void verifyValuesOnce(Set<Pokemon> expected, List<Pokemon> queryResult) {
-        Set check = new HashSet(expected);
+        Set<Pokemon> check = new HashSet<>(expected);
         for (Pokemon pokemon : queryResult) {
-            System.out.println(String.format("Pokemon %d:%s", pokemon.getId(), pokemon.getName()));
             assertTrue(String.format("Pokemon %d:%s was not found in Set %s", pokemon.getId(), pokemon.getName(), expected),
                        check.contains(pokemon));
             check.remove(pokemon);
@@ -98,7 +94,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
 
     private static void verifyValuesMultiple(Set<Pokemon> expected, List<Pokemon> queryResult) {
         for (Pokemon pokemon : queryResult) {
-            System.out.println(String.format("Pokemon %d:%s", pokemon.getId(), pokemon.getName()));
             assertTrue(String.format("Pokemon %d:%s was not found in Set %s", pokemon.getId(), pokemon.getName(), expected),
                        expected.contains(pokemon));
         }
@@ -107,7 +102,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
     // Test UNION: Shall return distinct values from both queries: 1x Pokemon[1..3]
     // Pokemon[1] matches WHERE clause in both selects
     public void testUnionWithNoSelection() {
-        System.out.println("testUnionWithNoSelection");
         try (EntityManager em = emf.createEntityManager()) {
             EntityTransaction et = em.getTransaction();
             try {
@@ -143,7 +137,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
     // Test UNION ALL: Shall return all values from both queries: 2x Pokemon[1], 1x Pokemon[2..3]
     // Pokemon[1] matches WHERE clause in both selects
     public void testUnionAllWithNoSelection() {
-        System.out.println("testUnionAllWithNoSelection");
         try (EntityManager em = emf.createEntityManager()) {
             EntityTransaction et = em.getTransaction();
             try {
@@ -179,7 +172,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
     // Test INTERSECT: Shall return the same distinct values from both queries: 1x Pokemon[1]
     // Pokemon[1] matches WHERE clause in both selects
     public void testIntersectWithNoSelection() {
-        System.out.println("testIntersectWithNoSelection");
         try (EntityManager em = emf.createEntityManager()) {
             EntityTransaction et = em.getTransaction();
             try {
@@ -227,7 +219,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
     //   )
     // )
     public void testIntersectAllWithNoSelection() {
-        System.out.println("testIntersectAllWithNoSelection");
         try (EntityManager em = emf.createEntityManager()) {
             EntityTransaction et = em.getTransaction();
             try {
@@ -278,7 +269,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
     // Test EXCEPT: Shall return distinct values from q1 not in q2: 1x Pokemon[2..3]
     // Pokemon[1] matches WHERE clause in both selects
     public void testExceptWithNoSelection() {
-        System.out.println("testExceptAllWithNoSelection");
         try (EntityManager em = emf.createEntityManager()) {
             EntityTransaction et = em.getTransaction();
             try {
@@ -324,7 +314,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
     //   EXCEPT ALL (SELECT t2.ID, t2.NAME FROM PERSISTENCE32_POKEMON t2 WHERE ((t2.NAME = ?) OR (t2.NAME = ?)))
     // )
     public void testExceptAllWithNoSelection() {
-        System.out.println("testExceptAllWithNoSelection");
         try (EntityManager em = emf.createEntityManager()) {
             EntityTransaction et = em.getTransaction();
             try {
@@ -395,6 +384,7 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void testUnionWithMultiselectEntityParametersInSelection() {
         try (EntityManager em = emf.createEntityManager()) {
             EntityTransaction et = em.getTransaction();

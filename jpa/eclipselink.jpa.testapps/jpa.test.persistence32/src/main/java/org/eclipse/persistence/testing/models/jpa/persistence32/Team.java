@@ -11,28 +11,17 @@
  */
 package org.eclipse.persistence.testing.models.jpa.persistence32;
 
-import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedNativeQuery;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.annotations.JoinFetchType;
-import org.eclipse.persistence.annotations.Property;
-
-import static jakarta.persistence.FetchType.EAGER;
 
 @Entity
-@Table(name="PERSISTENCE32_TRAINER")
-@NamedQuery(name="Trainer.get", query="SELECT t FROM Trainer t WHERE t.id = :id")
-@NamedNativeQuery(name="Trainer.deleteAll", query="DELETE FROM PERSISTENCE32_TRAINER")
-public class Trainer {
+@Table(name="PERSISTENCE32_TEAM")
+@NamedNativeQuery(name="Team.deleteAll", query="DELETE FROM PERSISTENCE32_TEAM")
+public class Team {
 
     // ID is assigned in tests to avoid collisions
     @Id
@@ -40,19 +29,12 @@ public class Trainer {
 
     private String name;
 
-    @ManyToOne
-    private Team team;
-
-    @OneToMany(mappedBy = "trainer")
-    private List<Pokemon> pokemons;
-
-    public Trainer() {
+    public Team() {
     }
 
-    public Trainer(int id, String name, Team team) {
+    public Team(int id, String name) {
         this.id = id;
         this.name = name;
-        this.team = team;
     }
 
     public int getId() {
@@ -71,29 +53,13 @@ public class Trainer {
         this.name = name;
     }
 
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
-
-    public List<Pokemon> getPokemons() {
-        return pokemons;
-    }
-
-    public void setPokemons(List<Pokemon> pokemons) {
-        this.pokemons = pokemons;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
         }
-        return id == ((Trainer) obj).id
-                && Objects.equals(name, ((Trainer) obj).name);
+        return id == ((Team) obj).id
+                && Objects.equals(name, ((Team) obj).name);
     }
 
     @Override
@@ -101,5 +67,6 @@ public class Trainer {
         int result = Objects.hash(id, name);
         return result;
     }
+
 
 }

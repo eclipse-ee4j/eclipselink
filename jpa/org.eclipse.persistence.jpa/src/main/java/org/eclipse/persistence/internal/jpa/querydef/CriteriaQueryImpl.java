@@ -651,11 +651,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 if (this.roots != null && !this.roots.isEmpty()) {
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl<?, ?>) this.roots.iterator().next()).findJoinFetches();
                     // Expression builder from root selection
-                    if (selection != null && (list.isEmpty() || ((InternalSelection) this.selection).isRoot())) {
-                        // Set the builder to selection if root is missing or selection is root itself
-                        query.setExpressionBuilder(this.selection.currentNode.getBuilder());
-                        doSetExpressionBuilder = false;
-                    } else if (!list.isEmpty()) {
+                    if (!list.isEmpty()) {
                         // Set the builder to one of the fetches bases
                         query.setExpressionBuilder(list.get(0).getBuilder());
                         doSetExpressionBuilder = false;

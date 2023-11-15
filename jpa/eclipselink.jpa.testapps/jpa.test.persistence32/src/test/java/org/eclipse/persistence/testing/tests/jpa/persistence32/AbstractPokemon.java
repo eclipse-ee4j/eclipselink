@@ -9,7 +9,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-
 package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Persistence32TableCreator;
+import org.eclipse.persistence.testing.models.jpa.persistence32.Team;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
 
@@ -29,12 +29,18 @@ import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
  */
 public abstract class AbstractPokemon extends JUnitTestCase {
 
+    // Trainer's teams
+    static final Team[] TEAMS = new Team[] {
+            null, // Skip array index 0
+            new Team(1, "Kanto")
+    };
+
     // Pokemon trainers. Array index is ID value.
     // Value of ID = 0 does not exist so it's array instance is set to null.
     static final Trainer[] TRAINERS = new Trainer[] {
             null, // Skip array index 0
-            new Trainer(1, "Ash"),
-            new Trainer(2, "Brock")
+            new Trainer(1, "Ash", TEAMS[1]),
+            new Trainer(2, "Brock", TEAMS[1])
     };
 
     // Pokemon types. Array index is ID value.
@@ -125,6 +131,9 @@ public abstract class AbstractPokemon extends JUnitTestCase {
         new Persistence32TableCreator().replaceTables(JUnitTestCase.getServerSession(getPersistenceUnitName()));
         clearCache();
         emf.runInTransaction(em -> {
+            for (int i = 1; i < TEAMS.length; i++) {
+                em.persist(TEAMS[i]);
+            }
             for (int i = 1; i < TRAINERS.length; i++) {
                 em.persist(TRAINERS[i]);
             }
@@ -144,6 +153,7 @@ public abstract class AbstractPokemon extends JUnitTestCase {
             em.createNamedQuery("Pokemon.deleteAll").executeUpdate();
             em.createNamedQuery("Type.deleteAll").executeUpdate();
             em.createNamedQuery("Trainer.deleteAll").executeUpdate();
+            em.createNamedQuery("Team.deleteAll").executeUpdate();
         });
     }
 

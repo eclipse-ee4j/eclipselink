@@ -9,7 +9,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-
 package org.eclipse.persistence.testing.models.jpa.persistence32;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -19,6 +18,7 @@ public class Persistence32TableCreator extends TogglingFastTableCreator {
 
     public Persistence32TableCreator() {
         setName("Persistence32Project");
+        addTableDefinition(buildTeamTable());
         addTableDefinition(buildTrainerTable());
         addTableDefinition(buildTypeTable());
         addTableDefinition(buildPokemonTable());
@@ -26,11 +26,20 @@ public class Persistence32TableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSyntaxEntityTable());
     }
 
+    public static TableDefinition buildTeamTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("PERSISTENCE32_TEAM");
+        table.addField(createNumericPk("ID"));
+        table.addField(createStringColumn("NAME", 64, false));
+        return table;
+    }
+
     public static TableDefinition buildTrainerTable() {
         TableDefinition table = new TableDefinition();
         table.setName("PERSISTENCE32_TRAINER");
         table.addField(createNumericPk("ID"));
         table.addField(createStringColumn("NAME", 64, false));
+        table.addField(createNumericFk("TEAM_ID", 15,"PERSISTENCE32_TEAM.ID", false));
         return table;
     }
 

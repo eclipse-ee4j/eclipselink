@@ -125,7 +125,6 @@ public class ReportQuery extends ReadAllQuery {
      * The builder should be provided.
      */
     public ReportQuery() {
-        super();
         this.queryMechanism = new ExpressionQueryMechanism(this);
         this.items = new ArrayList<>();
         this.shouldRetrievePrimaryKeys = NO_PRIMARY_KEY;
@@ -770,15 +769,15 @@ public class ReportQuery extends ReadAllQuery {
      * Each call to copiedVersionFrom() will take O(1) time as the expression was
      * already cloned.
      */
-    public void copyReportItems(Map alreadyDone) {
+    public void copyReportItems(Map<Expression, Expression> alreadyDone) {
         this.items = new ArrayList<>(this.items);
         for (int i = this.items.size() - 1; i >= 0; i--) {
             ReportItem item = this.items.get(i);
-            Expression expression = item.getAttributeExpression();
-            if ((expression != null) && (alreadyDone.get(expression.getBuilder()) != null)) {
-                expression = expression.copiedVersionFrom(alreadyDone);
+            if (item.isConstructorItem()) {
+                this.items.set(i, copyConstructorReportItem((ConstructorReportItem) item, alreadyDone));
+            } else {
+                this.items.set(i, copyReportItem(item, alreadyDone));
             }
-            this.items.set(i, (ReportItem) item.clone());
         }
         if (this.groupByExpressions != null) {
             this.groupByExpressions = new ArrayList<>(this.groupByExpressions);
@@ -800,6 +799,39 @@ public class ReportQuery extends ReadAllQuery {
                 }
             }
         }
+    }
+
+    // copyReportItems helper
+    private static ConstructorReportItem copyConstructorReportItem(ConstructorReportItem reportItem, Map<Expression, Expression> alreadyDone) {
+        // Copy ReportItems list if exists
+        List<ReportItem> reportItems = reportItem.getReportItems();
+        List<ReportItem> newReportItems = reportItems != null ? new ArrayList<>(reportItems.size()) : null;
+        if (reportItems != null) {
+            for (ReportItem item : reportItems) {
+                newReportItems.add(copyReportItem(item, alreadyDone));
+            }
+        }
+        // Create new ConstructorReportItem
+        ConstructorReportItem newItem = new ConstructorReportItem(reportItem.getName());
+        newItem.setConstructor(reportItem.getConstructor());
+        newItem.setResultType(reportItem.getResultType());
+        newItem.setReportItems(newReportItems);
+        newItem.setAttributeExpression(copyAttributeExpression(reportItem, alreadyDone));
+        return newItem;
+    }
+
+    // copyReportItems helper
+    private static Expression copyAttributeExpression(ReportItem reportItem, Map<Expression, Expression> alreadyDone) {
+        Expression expression = reportItem.getAttributeExpression();
+        if ((expression != null) && (alreadyDone.get(expression.getBuilder()) != null)) {
+            expression = expression.copiedVersionFrom(alreadyDone);
+        }
+        return expression;
+    }
+
+    // copyReportItems helper
+    private static ReportItem copyReportItem(ReportItem reportItem, Map<Expression, Expression> alreadyDone) {
+        return new ReportItem(reportItem.getName(), copyAttributeExpression(reportItem, alreadyDone));
     }
 
     /**
