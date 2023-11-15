@@ -9,7 +9,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-
 package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
 import java.sql.Connection;
@@ -26,6 +25,7 @@ import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PersistenceUnitTransactionType;
 import junit.framework.Test;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
 
@@ -150,13 +150,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
 
     // Test Persistence.createEntityManagerFactory(PersistenceConfiguration)
     public void testCreateCustomEntityManagerFactory() {
-        PersistenceConfiguration configuration = new PersistenceConfiguration("persistence32_custom");
-        configuration.properties(emf.getProperties());
-        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Trainer.class);
-        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
-        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
-        configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
-        configuration.provider("org.eclipse.persistence.jpa.PersistenceProvider");
+        PersistenceConfiguration configuration = createPersistenceConfiguration(emf, "persistence32_custom");
         Pokemon pokemon = new Pokemon(5, "Primeape", List.of(TYPES[2]));
         try (EntityManagerFactory emfFromConfig = Persistence.createEntityManagerFactory(configuration)) {
             try (EntityManager em = emfFromConfig.createEntityManager()) {
@@ -181,13 +175,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
     public void testCreateConflictingCustomEntityManagerFactory() {
         try {
             // Create custom PU name to be in conflict with already configured one
-            PersistenceConfiguration configuration = new PersistenceConfiguration("persistence32");
-            configuration.properties(emf.getProperties());
-            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Trainer.class);
-            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
-            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
-            configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
-            configuration.provider("org.eclipse.persistence.jpa.PersistenceProvider");
+            PersistenceConfiguration configuration = createPersistenceConfiguration(emf, "persistence32");
             // Attempt to create configured PU with conflicting name to trigger validation failure
             Persistence.createEntityManagerFactory(configuration);
             fail("Persistence.createEntityManagerFactory(PersistenceConfiguration) with already existing PU name shall throw PersistenceException");
@@ -205,13 +193,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
     public void testCreateConflictingConfiguredEntityManagerFactory() {
         try {
             // Create custom PU name to be in conflict with later used PU name from config
-            PersistenceConfiguration configuration = new PersistenceConfiguration("persistence32_custom");
-            configuration.properties(emf.getProperties());
-            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Trainer.class);
-            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
-            configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
-            configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
-            configuration.provider("org.eclipse.persistence.jpa.PersistenceProvider");
+            PersistenceConfiguration configuration = createPersistenceConfiguration(emf, "persistence32_custom");
             // Make sure custom PU is cached
             Persistence.createEntityManagerFactory(configuration).close();
             // Attempt to create configured PU with the same name to trigger validation failure
@@ -225,6 +207,18 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
                     "Unexpected exception message: " + pe.getLocalizedMessage(),
                     pe.getLocalizedMessage().contains("This name was found in custom persistence units."));
         }
+    }
+
+    private static PersistenceConfiguration createPersistenceConfiguration(JpaEntityManagerFactory emf, String puName) {
+        PersistenceConfiguration configuration = new PersistenceConfiguration(puName);
+        configuration.properties(emf.getProperties());
+        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Team.class);
+        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Trainer.class);
+        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon.class);
+        configuration.managedClass(org.eclipse.persistence.testing.models.jpa.persistence32.Type.class);
+        configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
+        configuration.provider("org.eclipse.persistence.jpa.PersistenceProvider");
+        return configuration;
     }
 
 }

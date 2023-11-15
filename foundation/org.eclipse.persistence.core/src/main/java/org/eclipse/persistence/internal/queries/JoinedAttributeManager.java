@@ -845,6 +845,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         }
         objectExpression.getBuilder().setSession(session.getRootSession(null));
 
+        // Sometimes current expression builder does not support expression class mapping.
+        // Try ExpressionBuilder for the descriptor's class
+        if (objectExpression.getMapping() == null && objectExpression.getBuilder().getQueryClass() != descriptor.getJavaClass()) {
+            objectExpression = (QueryKeyExpression)objectExpression.rebuildOn(new ExpressionBuilder(descriptor.getJavaClass()));
+            objectExpression.getBuilder().setSession(session.getRootSession(null));
+        }
+
         // Can only join relationships.
         if ((objectExpression.getMapping() == null) || (!objectExpression.getMapping().isJoiningSupported())) {
             throw QueryException.mappingForExpressionDoesNotSupportJoining(objectExpression);

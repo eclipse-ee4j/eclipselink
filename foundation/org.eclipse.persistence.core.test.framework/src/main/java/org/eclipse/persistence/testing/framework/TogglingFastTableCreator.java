@@ -187,7 +187,7 @@ public class TogglingFastTableCreator extends TableCreator {
         field.setSize(size);
         field.setShouldAllowNull(false);
         field.setIsPrimaryKey(true);
-        field.setUnique(true);
+        field.setUnique(false);
         field.setIsIdentity(true);
         return field;
     }
@@ -210,7 +210,6 @@ public class TogglingFastTableCreator extends TableCreator {
      * @param fkName Foreign key name (e.g. {@code "MY_TABLE.ID"}.
      * @param allowNull Allow {@code null} values for column.
      * @return Initialized {@link FieldDefinition} instance.
-     * @noinspection SameParameterValue
      */
     protected static FieldDefinition createNumericFk(
             final String name, final int size, final String fkName, final boolean allowNull) {
