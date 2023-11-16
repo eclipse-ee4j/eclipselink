@@ -2507,8 +2507,12 @@
 
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <!--<property name="additional.jvmargs" value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/>-->
-        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-
+        <property name="additional.jvmargs" value="--add-opens java.base/java.lang=ALL-UNNAMED"/>
+        <condition property="additional.jvmargs.merged.internal"
+                   value="${additional.jvmargs} --add-opens java.base/java.math=ALL-UNNAMED"
+                   else="--add-opens java.base/java.math=ALL-UNNAMED">
+            <isset property="additional.jvmargs"/>
+        </condition>
         <junit jvm="${test.junit.jvm.exec}" printsummary="yes" haltonfailure="${test.haltonfailure}" failureproperty="junit.failed" logfailedtests="true"
                fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
             <sysproperty key="proxy.user.name" value="PAS_PROXY"/>
@@ -2517,7 +2521,7 @@
             <sysproperty key="pa.proxyuser" value="${pa.proxyuser}"/>
             <sysproperty key="pa.proxyuser2" value="${pa.proxyuser2}"/>
             <sysproperty key="javax.xml.bind.JAXBContextFactory" value="org.eclipse.persistence.jaxb.JAXBContextFactory"/>
-            <jvmarg line="${additional.jvmargs}"/>
+            <jvmarg line="${additional.jvmargs.merged.internal}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="${TEST_WEAVING_OPTION}"/>

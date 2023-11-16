@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  * 
  * This program and the accompanying materials are made available under the
@@ -48,6 +48,17 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException;
 
     /**
+     * Convert the object to the appropriate type by invoking the appropriate
+     * ConversionManager method.
+     * @param sourceObject the object that must be converted
+     * @param javaClass the class that the object must be converted to
+     * @param session current database session
+     * @exception ConversionException all exceptions will be thrown as this type.
+     * @return the newly converted object
+     */
+    public Object convertObject(Object sourceObject, Class javaClass, AbstractSession session) throws ConversionException;
+
+    /**
      * Copy the state into the new platform.
      */
     public void copyInto(Platform platform);
@@ -62,6 +73,11 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * The platform hold its own instance of conversion manager to allow customization.
      */
     public void setConversionManager(ConversionManager conversionManager);
+
+    /**
+     * Return the driver version.
+     */
+    public String getDriverVersion();
 
     /**
      * Return the qualifier for the table. Required by some
@@ -112,6 +128,8 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     public boolean isOracle();
 
     public boolean isOracle9();
+
+    public boolean isOracle23();
 
     public boolean isPointBase();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -56,6 +56,8 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -488,6 +490,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     protected void assignIndices() {
         List<PLSQLargument> inArguments = getArguments(arguments, ParameterType.IN);
         List<PLSQLargument> inOutArguments = getArguments(arguments, ParameterType.INOUT);
+        DatabasePlatform platform = this.getQuery().getSession().getPlatform();
         inArguments.addAll(inOutArguments);
         int newIndex = 1;
         List<PLSQLargument> expandedArguments = new ArrayList<PLSQLargument>();
@@ -509,6 +512,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
         for (PLSQLargument inArg : inArguments) {
             DatabaseType type = inArg.databaseType;
+            if (platform.isOracle23() && type == OraclePLSQLTypes.PLSQLBoolean && Helper.compareVersions(platform.getDriverVersion(), "23.0.0") >= 0) {
+                type = JDBCTypes.BOOLEAN_TYPE;
+                inArg.databaseType = JDBCTypes.BOOLEAN_TYPE;
+            }
             String inArgName = inArg.name;
             if (!type.isComplexDatabaseType()) {
                 // for XMLType, we need to set type name parameter (will be "XMLTYPE")
@@ -562,6 +569,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 super.useNamedCursorOutputAsResultSet(outArgName);
             } else {
                 DatabaseType type = outArg.databaseType;
+                if (platform.isOracle23() && type == OraclePLSQLTypes.PLSQLBoolean && Helper.compareVersions(platform.getDriverVersion(), "23.0.0") >= 0) {
+                    type = JDBCTypes.BOOLEAN_TYPE;
+                    outArg.databaseType = JDBCTypes.BOOLEAN_TYPE;
+                }
                 if (!type.isComplexDatabaseType()) {
                     // for XMLType, we need to set type name parameter (will be "XMLTYPE")
                     if (type == XMLType) {

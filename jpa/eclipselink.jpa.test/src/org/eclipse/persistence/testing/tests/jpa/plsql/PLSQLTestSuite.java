@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import junit.framework.*;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.platform.database.oracle.annotations.OracleArray;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLParameter;
@@ -331,9 +332,16 @@ public class PLSQLTestSuite extends JUnitTestCase {
             query.setParameter("P_POSITIVEN", 1);
             query.setParameter("P_SIGNTYPE", 1);
             query.setParameter("P_NUMBER", 1);
-            int result = (Integer)query.getSingleResult();
-            if (result != 1) {
-                fail("Incorrect result.");
+            if (getPlatform().isOracle23() &&  Helper.compareVersions(getPlatform().getDriverVersion(), "23.0.0") >= 0) {
+                boolean result = (Boolean) query.getSingleResult();
+                if (!result) {
+                    fail("Incorrect result.");
+                }
+            } else {
+                int result = (Integer) query.getSingleResult();
+                if (result != 1) {
+                    fail("Incorrect result.");
+                }
             }
         } finally {
             closeEntityManagerAndTransaction(em);

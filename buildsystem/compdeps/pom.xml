@@ -112,8 +112,8 @@
         <!-- CQ #21122 -->
         <org.jgroups.version>4.1.8.Final</org.jgroups.version>
         <!-- CQ #21154 -->
-        <oracle.jdbc.version>21.7.0.0</oracle.jdbc.version>
-        <oracle.apapi.version>21.3.0.0</oracle.apapi.version>
+        <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
+        <oracle.apapi.version>23.2.0.0</oracle.apapi.version>
         <!-- CQ #21141 -->
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
         <!-- CQ #22994 -->
