@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -207,7 +207,12 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      */
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         try {
-            return ((AbstractSession)session).getDatasourcePlatform().convertObject(attributeValue, getDataClass());
+            if (session.isConnected()) {
+                //Should handle conversions where DB connection is needed like String -> java.sql.Clob
+                return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass(), (AbstractSession)session);
+            } else {
+                return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass());
+            }
         } catch (ConversionException e) {
             throw ConversionException.couldNotBeConverted(mapping, mapping.getDescriptor(), e);
         }

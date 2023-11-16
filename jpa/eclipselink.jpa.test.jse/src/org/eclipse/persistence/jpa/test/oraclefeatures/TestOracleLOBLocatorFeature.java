@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -163,7 +163,8 @@ public class TestOracleLOBLocatorFeature {
         notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle8Platform");
         notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle9Platform");
         notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle10Platform");
-        
+        notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle23Platform");
+        notAllowedPlatforms.add("org.eclipse.persistence.platform.database.oracle.Oracle23Platform");
         
         if (!checkIsOracle() || notAllowedPlatforms.contains(getPlatform(emfNoSessionCustomizer).getClass().getName())) {
             // Skip if not testing against Oracle

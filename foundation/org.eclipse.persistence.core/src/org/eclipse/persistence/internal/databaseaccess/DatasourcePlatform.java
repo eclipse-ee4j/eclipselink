@@ -245,6 +245,20 @@ public class DatasourcePlatform implements Platform {
     }
 
     /**
+     * Convert the object to the appropriate type by invoking the appropriate
+     * ConversionManager method.
+     * @param sourceObject the object that must be converted
+     * @param javaClass the class that the object must be converted to
+     * @param session current database session
+     * @exception ConversionException all exceptions will be thrown as this type.
+     * @return the newly converted object
+     */
+    @Override
+    public Object convertObject(Object sourceObject, Class javaClass, AbstractSession session) throws ConversionException {
+        return convertObject(sourceObject, javaClass);
+    }
+
+    /**
      * Copy the state into the new platform.
      */
     @Override
@@ -284,6 +298,13 @@ public class DatasourcePlatform implements Platform {
     @Override
     public void setConversionManager(ConversionManager conversionManager) {
         this.conversionManager = conversionManager;
+    }
+
+    /**
+     * Return the driver version.
+     */
+    public String getDriverVersion() {
+        return "";
     }
 
     /**
@@ -642,6 +663,11 @@ public class DatasourcePlatform implements Platform {
 
     @Override
     public boolean isOracle9() {
+        return false;
+    }
+
+    @Override
+    public boolean isOracle23() {
         return false;
     }
 
