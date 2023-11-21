@@ -24,11 +24,13 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.security.spec.AlgorithmParameterSpec;
 
 /**
  * EclipseLink reference implementation for password encryption.
@@ -36,7 +38,7 @@ import java.io.ObjectInputStream;
  * @author Guy Pelletier
  */
 public final class JCEEncryptor implements org.eclipse.persistence.security.Securable {
-    
+
     // Legacy DES ECB cipher used for backwards compatibility decryption only.
     private static final String DES_ECB = "DES/ECB/PKCS5Padding";
     private final Cipher decryptCipherDES_ECB;
@@ -45,10 +47,15 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
     private static final String AES_ECB = "AES/ECB/PKCS5Padding";
     private final Cipher decryptCipherAES_ECB;
 
-    // All encryption is done through the AES CBC cipher.
+    // Legacy AES CBC cipher used for backwards compatibility decryption only.
     private static final String AES_CBC = "AES/CBC/PKCS5Padding";
-    private final Cipher encryptCipherAES_CBC;
     private final Cipher decryptCipherAES_CBC;
+
+    // All encryption is done through the AES GCM cipher.
+    private static final String AES_GCM = "AES/GCM/NoPadding";
+    private final Cipher encryptCipherAES_GCM;
+    private final Cipher decryptCipherAES_GCM;
+
 
     public JCEEncryptor() throws Exception {
         /**
@@ -70,11 +77,18 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
 
         SecretKey sk = Synergizer.getAESCBCMultitasker();
         IvParameterSpec iv = Synergizer.getIvSpec();
-        encryptCipherAES_CBC = Cipher.getInstance(AES_CBC);
-        encryptCipherAES_CBC.init(Cipher.ENCRYPT_MODE, sk, iv);
-
         decryptCipherAES_CBC = Cipher.getInstance(AES_CBC);
         decryptCipherAES_CBC.init(Cipher.DECRYPT_MODE, sk, iv);
+
+        SecretKey skGCM = Synergizer.getAESGCMMultitasker();
+        IvParameterSpec ivGCM = Synergizer.getIvSpec();
+        encryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
+        AlgorithmParameterSpec parameterSpecGCM = new GCMParameterSpec(128, ivGCM.getIV());
+        encryptCipherAES_GCM.init(Cipher.ENCRYPT_MODE, skGCM, parameterSpecGCM);
+
+        decryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
+        decryptCipherAES_GCM.init(Cipher.DECRYPT_MODE, skGCM, parameterSpecGCM);
+
     }
 
     /**
@@ -83,7 +97,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
     @Override
     public synchronized String encryptPassword(String password) {
         try {
-            return Helper.buildHexStringFromBytes(encryptCipherAES_CBC.doFinal(password.getBytes("UTF-8")));
+            return Helper.buildHexStringFromBytes(encryptCipherAES_GCM.doFinal(password.getBytes("UTF-8")));
         } catch (Exception e) {
             throw ValidationException.errorEncryptingPassword(e);
         }
@@ -95,54 +109,61 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
      */
     @Override
     public synchronized String decryptPassword(String encryptedPswd) {
-        if (encryptedPswd == null) { 
+        if (encryptedPswd == null) {
             return null;
         }
 
         String password = null;
         byte[] bytePassword = new byte[0];
-        
+
         try {
             bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
-            // try AES/CBC first
-            password = new String(decryptCipherAES_CBC.doFinal(bytePassword), "UTF-8");
+            // try AES/GCM first
+            password = new String(decryptCipherAES_GCM.doFinal(bytePassword), "UTF-8");
         } catch (ConversionException | IllegalBlockSizeException ce) {
             // buildBytesFromHexString failed, assume clear text
             password = encryptedPswd;
-        } catch (Exception e) {
-            ObjectInputStream oisAes = null;
+        } catch (Exception u) {
             try {
-                // try AES/ECB second
-                oisAes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherAES_ECB));
-                password = (String)oisAes.readObject();
-            } catch (Exception f) {
-                ObjectInputStream oisDes = null;
+                // try AES/CBC second
+                password = new String(decryptCipherAES_CBC.doFinal(bytePassword), "UTF-8");
+            } catch (Exception w) {
+                ObjectInputStream oisAes = null;
                 try {
-                    // try DES/ECB third
-                    oisDes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherDES_ECB));
-                    password = (String)oisDes.readObject();
-                } catch (ArrayIndexOutOfBoundsException g) {
-                    // JCE 1.2.1 couldn't decrypt it, assume clear text
-                    password = encryptedPswd;
-                } catch (Exception h) {
-                    if (h.getCause() instanceof IllegalBlockSizeException) {
-                        // JCE couldn't decrypt it, assume clear text
+                    // try AES/ECB third
+                    oisAes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherAES_ECB));
+                    password = (String) oisAes.readObject();
+                } catch (Exception x) {
+                    ObjectInputStream oisDes = null;
+                    try {
+                        // try DES/ECB fourth
+                        oisDes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherDES_ECB));
+                        password = (String) oisDes.readObject();
+                    } catch (ArrayIndexOutOfBoundsException y) {
+                        // JCE 1.2.1 couldn't decrypt it, assume clear text
                         password = encryptedPswd;
-                    } else {
-                        throw ValidationException.errorDecryptingPassword(h);
+                    } catch (Exception z) {
+                        if (z.getCause() instanceof IllegalBlockSizeException) {
+                            // JCE couldn't decrypt it, assume clear text
+                            password = encryptedPswd;
+                        } else {
+                            throw ValidationException.errorDecryptingPassword(z);
+                        }
+                    } finally {
+                        if (oisDes != null) {
+                            try {
+                                oisDes.close();
+                            } catch (IOException e2) {
+                            }
+                        }
                     }
                 } finally {
-                    if (oisDes != null) {
+                    if (oisAes != null) {
                         try {
-                            oisDes.close();
-                        } catch (IOException e2) {} 
+                            oisAes.close();
+                        } catch (IOException e1) {
+                        }
                     }
-                }
-            } finally {
-                if (oisAes != null) {
-                    try {
-                        oisAes.close();
-                    } catch (IOException e1) {} 
                 }
             }
         }
@@ -167,8 +188,12 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             return new SecretKeySpec(Helper.buildBytesFromHexString("2DB7354A48F1CA7B48ACA247540FC923"), "AES");
         }
 
+        private static SecretKey getAESGCMMultitasker() throws Exception {
+            return new SecretKeySpec(Helper.buildBytesFromHexString("64EF2D9B738ACA254A48F14754030FC2"), "AES");
+        }
+
         private static IvParameterSpec getIvSpec() {
-            byte[] b = new byte[] {
+            byte[] b = new byte[]{
                     (byte) -26, (byte) 124, (byte) -99, (byte) 32,
                     (byte) -37, (byte) -58, (byte) -93, (byte) 100,
                     (byte) 126, (byte) -55, (byte) -21, (byte) 48,
