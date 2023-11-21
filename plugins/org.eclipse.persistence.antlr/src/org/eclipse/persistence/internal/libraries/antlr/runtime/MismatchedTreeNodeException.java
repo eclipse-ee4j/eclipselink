@@ -32,18 +32,18 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.TreeNodeStr
 /**
  */
 public class MismatchedTreeNodeException extends RecognitionException {
-    public int expecting;
+	public int expecting;
 
-    public MismatchedTreeNodeException() {
-    }
+	public MismatchedTreeNodeException() {
+	}
 
-    public MismatchedTreeNodeException(int expecting, TreeNodeStream input) {
-        super(input);
-        this.expecting = expecting;
-    }
+	public MismatchedTreeNodeException(int expecting, TreeNodeStream input) {
+		super(input);
+		this.expecting = expecting;
+	}
 
-    @Override
-    public String toString() {
-        return "MismatchedTreeNodeException("+getUnexpectedType()+"!="+expecting+")";
-    }
+	@Override
+	public String toString() {
+		return "MismatchedTreeNodeException("+getUnexpectedType()+"!="+expecting+")";
+	}
 }

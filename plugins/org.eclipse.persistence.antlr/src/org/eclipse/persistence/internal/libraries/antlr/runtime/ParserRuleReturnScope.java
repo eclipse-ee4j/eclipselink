@@ -46,12 +46,12 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
  *  satisfy the superclass interface.
  */
 public class ParserRuleReturnScope extends RuleReturnScope {
-    public Token start, stop;
-    @Override
-    public Object getStart() { return start; }
-    @Override
-    public Object getStop() { return stop; }
+	public Token start, stop;
+	@Override
+	public Object getStart() { return start; }
+	@Override
+	public Object getStop() { return stop; }
 
-    @Override
-    public Object getTree() { return null; }
+	@Override
+	public Object getTree() { return null; }
 }

@@ -29,7 +29,7 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 import java.util.List;
 
-/**A stripped-down version of org.eclipse.persistence.internal.libraries.antlr.misc.BitSet that is just
+/**A stripped-down version of org.antlr.misc.BitSet that is just
  * good enough to handle runtime requirements such as FOLLOW sets
  * for automatic error recovery.
  */
@@ -57,14 +57,14 @@ public class BitSet implements Cloneable {
         bits = bits_;
     }
 
-    /** Construction from a list of integers */
-    public BitSet(List<Integer> items) {
-        this();
-        for (int i = 0; i < items.size(); i++) {
-            Integer v = items.get(i);
-            add(v);
-        }
-    }
+	/** Construction from a list of integers */
+	public BitSet(List<Integer> items) {
+		this();
+		for (int i = 0; i < items.size(); i++) {
+			Integer v = items.get(i);
+			add(v);
+		}
+	}
 
     /** Construct a bitset given the size
      * @param nbits The size of the bitset in bits
@@ -73,97 +73,97 @@ public class BitSet implements Cloneable {
         bits = new long[((nbits - 1) >> LOG_BITS) + 1];
     }
 
-    public static BitSet of(int el) {
-        BitSet s = new BitSet(el + 1);
-        s.add(el);
-        return s;
-    }
+	public static BitSet of(int el) {
+		BitSet s = new BitSet(el + 1);
+		s.add(el);
+		return s;
+	}
 
-    public static BitSet of(int a, int b) {
-        BitSet s = new BitSet(Math.max(a,b)+1);
-        s.add(a);
-        s.add(b);
-        return s;
-    }
+	public static BitSet of(int a, int b) {
+		BitSet s = new BitSet(Math.max(a,b)+1);
+		s.add(a);
+		s.add(b);
+		return s;
+	}
 
-    public static BitSet of(int a, int b, int c) {
-        BitSet s = new BitSet();
-        s.add(a);
-        s.add(b);
-        s.add(c);
-        return s;
-    }
+	public static BitSet of(int a, int b, int c) {
+		BitSet s = new BitSet();
+		s.add(a);
+		s.add(b);
+		s.add(c);
+		return s;
+	}
 
-    public static BitSet of(int a, int b, int c, int d) {
-        BitSet s = new BitSet();
-        s.add(a);
-        s.add(b);
-        s.add(c);
-        s.add(d);
-        return s;
-    }
+	public static BitSet of(int a, int b, int c, int d) {
+		BitSet s = new BitSet();
+		s.add(a);
+		s.add(b);
+		s.add(c);
+		s.add(d);
+		return s;
+	}
 
-    /** return this | a in a new set */
-    public BitSet or(BitSet a) {
-        if ( a==null ) {
-            return this;
-        }
-        BitSet s = (BitSet)this.clone();
-        s.orInPlace(a);
-        return s;
-    }
+	/** return this | a in a new set */
+	public BitSet or(BitSet a) {
+		if ( a==null ) {
+			return this;
+		}
+		BitSet s = (BitSet)this.clone();
+		s.orInPlace(a);
+		return s;
+	}
 
-    /** or this element into this set (grow as necessary to accommodate) */
-    public void add(int el) {
-        int n = wordNumber(el);
-        if (n >= bits.length) {
-            growToInclude(el);
-        }
-        bits[n] |= bitMask(el);
-    }
+	/** or this element into this set (grow as necessary to accommodate) */
+	public void add(int el) {
+		int n = wordNumber(el);
+		if (n >= bits.length) {
+			growToInclude(el);
+		}
+		bits[n] |= bitMask(el);
+	}
 
-    /**
-     * Grows the set to a larger number of bits.
-     * @param bit element that must fit in set
-     */
-    public void growToInclude(int bit) {
-        int newSize = Math.max(bits.length << 1, numWordsToHold(bit));
-        long newbits[] = new long[newSize];
-        System.arraycopy(bits, 0, newbits, 0, bits.length);
-        bits = newbits;
-    }
+	/**
+	 * Grows the set to a larger number of bits.
+	 * @param bit element that must fit in set
+	 */
+	public void growToInclude(int bit) {
+		int newSize = Math.max(bits.length << 1, numWordsToHold(bit));
+		long newbits[] = new long[newSize];
+		System.arraycopy(bits, 0, newbits, 0, bits.length);
+		bits = newbits;
+	}
 
-    public void orInPlace(BitSet a) {
-        if ( a==null ) {
-            return;
-        }
-        // If this is smaller than a, grow this first
-        if (a.bits.length > bits.length) {
-            setSize(a.bits.length);
-        }
-        int min = Math.min(bits.length, a.bits.length);
-        for (int i = min - 1; i >= 0; i--) {
-            bits[i] |= a.bits[i];
-        }
-    }
+	public void orInPlace(BitSet a) {
+		if ( a==null ) {
+			return;
+		}
+		// If this is smaller than a, grow this first
+		if (a.bits.length > bits.length) {
+			setSize(a.bits.length);
+		}
+		int min = Math.min(bits.length, a.bits.length);
+		for (int i = min - 1; i >= 0; i--) {
+			bits[i] |= a.bits[i];
+		}
+	}
 
-    /**
-     * Sets the size of a set.
-     * @param nwords how many words the new set should be
-     */
-    private void setSize(int nwords) {
-        long newbits[] = new long[nwords];
-        int n = Math.min(nwords, bits.length);
-        System.arraycopy(bits, 0, newbits, 0, n);
-        bits = newbits;
-    }
+	/**
+	 * Sets the size of a set.
+	 * @param nwords how many words the new set should be
+	 */
+	private void setSize(int nwords) {
+		long newbits[] = new long[nwords];
+		int n = Math.min(nwords, bits.length);
+		System.arraycopy(bits, 0, newbits, 0, n);
+		bits = newbits;
+	}
 
     private final static long bitMask(int bitNumber) {
         int bitPosition = bitNumber & MOD_MASK; // bitNumber mod BITS
         return 1L << bitPosition;
     }
 
-    @Override
+	@Override
     public Object clone() {
         BitSet s;
         try {
@@ -192,7 +192,7 @@ public class BitSet implements Cloneable {
         return deg;
     }
 
-    @Override
+	@Override
     public boolean equals(Object other) {
         if ( other == null || !(other instanceof BitSet) ) {
             return false;
@@ -230,21 +230,21 @@ public class BitSet implements Cloneable {
     }
 
     public boolean member(int el) {
-        if ( el<0 ) {
-            return false;
-        }
+		if ( el<0 ) {
+			return false;
+		}
         int n = wordNumber(el);
         if (n >= bits.length) return false;
         return (bits[n] & bitMask(el)) != 0;
     }
 
-    // remove this element from this set
-    public void remove(int el) {
-        int n = wordNumber(el);
-        if (n < bits.length) {
-            bits[n] &= ~bitMask(el);
-        }
-    }
+	// remove this element from this set
+	public void remove(int el) {
+		int n = wordNumber(el);
+		if (n < bits.length) {
+			bits[n] &= ~bitMask(el);
+		}
+	}
 
     public boolean isNil() {
         for (int i = bits.length - 1; i >= 0; i--) {
@@ -270,11 +270,11 @@ public class BitSet implements Cloneable {
 
     /**Is this contained within a? */
     /*
-    public boolean subset(BitSet a) {
+	public boolean subset(BitSet a) {
         if (a == null || !(a instanceof BitSet)) return false;
         return this.and(a).equals(this);
     }
-    */
+	*/
 
     public int[] toArray() {
         int[] elems = new int[size()];
@@ -291,38 +291,38 @@ public class BitSet implements Cloneable {
         return bits;
     }
 
-    private final static int wordNumber(int bit) {
-        return bit >> LOG_BITS; // bit / BITS
-    }
+	private final static int wordNumber(int bit) {
+		return bit >> LOG_BITS; // bit / BITS
+	}
 
-    @Override
-    public String toString() {
-        return toString(null);
-    }
+	@Override
+	public String toString() {
+		return toString(null);
+	}
 
-    public String toString(String[] tokenNames) {
-        StringBuilder buf = new StringBuilder();
-        String separator = ",";
-        boolean havePrintedAnElement = false;
-        buf.append('{');
+	public String toString(String[] tokenNames) {
+		StringBuilder buf = new StringBuilder();
+		String separator = ",";
+		boolean havePrintedAnElement = false;
+		buf.append('{');
 
-        for (int i = 0; i < (bits.length << LOG_BITS); i++) {
-            if (member(i)) {
-                if (i > 0 && havePrintedAnElement ) {
-                    buf.append(separator);
-                }
-                if ( tokenNames!=null ) {
-                    buf.append(tokenNames[i]);
-                }
-                else {
-                    buf.append(i);
-                }
-                havePrintedAnElement = true;
-            }
-        }
-        buf.append('}');
-        return buf.toString();
-    }
+		for (int i = 0; i < (bits.length << LOG_BITS); i++) {
+			if (member(i)) {
+				if (i > 0 && havePrintedAnElement ) {
+					buf.append(separator);
+				}
+				if ( tokenNames!=null ) {
+					buf.append(tokenNames[i]);
+				}
+				else {
+					buf.append(i);
+				}
+				havePrintedAnElement = true;
+			}
+		}
+		buf.append('}');
+		return buf.toString();
+	}
 
 
 }

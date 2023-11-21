@@ -46,7 +46,7 @@ public class FastQueue<T> {
     protected List<T> data = new ArrayList<T>();
     /** index of next element to fill */
     protected int p = 0;
-    protected int range = -1; // how deep have we gone?
+	protected int range = -1; // how deep have we gone?	
 
     public void reset() { clear(); }
     public void clear() { p = 0; data.clear(); }
@@ -67,7 +67,7 @@ public class FastQueue<T> {
 
     public int size() { return data.size() - p; }
 
-    public int range() { return range; }
+	public int range() { return range; }
 
     public T head() { return elementAt(0); }
 
@@ -77,19 +77,19 @@ public class FastQueue<T> {
      * since {@code p} defines the start of the real list.
      */
     public T elementAt(int i) {
-        int absIndex = p + i;
-        if ( absIndex >= data.size() ) {
+		int absIndex = p + i;
+		if ( absIndex >= data.size() ) {
             throw new NoSuchElementException("queue index "+ absIndex +" > last index "+(data.size()-1));
         }
         if ( absIndex < 0 ) {
             throw new NoSuchElementException("queue index "+ absIndex +" < 0");
         }
-        if ( absIndex>range ) range = absIndex;
+		if ( absIndex>range ) range = absIndex;
         return data.get(absIndex);
     }
 
     /** Return string of current buffer contents; non-destructive */
-    @Override
+	@Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         int n = size();

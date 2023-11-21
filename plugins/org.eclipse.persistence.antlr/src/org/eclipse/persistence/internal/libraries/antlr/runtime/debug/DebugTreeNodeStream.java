@@ -36,139 +36,139 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
  *  are triggered.
  */
 public class DebugTreeNodeStream implements TreeNodeStream {
-    protected DebugEventListener dbg;
-    protected TreeAdaptor adaptor;
-    protected TreeNodeStream input;
-    protected boolean initialStreamState = true;
+	protected DebugEventListener dbg;
+	protected TreeAdaptor adaptor;
+	protected TreeNodeStream input;
+	protected boolean initialStreamState = true;
 
-    /** Track the last mark() call result value for use in rewind(). */
-    protected int lastMarker;
+	/** Track the last mark() call result value for use in rewind(). */
+	protected int lastMarker;
 
-    public DebugTreeNodeStream(TreeNodeStream input,
-                               DebugEventListener dbg)
-    {
-        this.input = input;
-        this.adaptor = input.getTreeAdaptor();
-        this.input.setUniqueNavigationNodes(true);
-        setDebugListener(dbg);
-    }
+	public DebugTreeNodeStream(TreeNodeStream input,
+							   DebugEventListener dbg)
+	{
+		this.input = input;
+		this.adaptor = input.getTreeAdaptor();
+		this.input.setUniqueNavigationNodes(true);
+		setDebugListener(dbg);
+	}
 
-    public void setDebugListener(DebugEventListener dbg) {
-        this.dbg = dbg;
-    }
+	public void setDebugListener(DebugEventListener dbg) {
+		this.dbg = dbg;
+	}
 
-    @Override
-    public TreeAdaptor getTreeAdaptor() {
-        return adaptor;
-    }
+	@Override
+	public TreeAdaptor getTreeAdaptor() {
+		return adaptor;
+	}
 
-    @Override
-    public void consume() {
-        Object node = input.LT(1);
-        input.consume();
-        dbg.consumeNode(node);
-    }
+	@Override
+	public void consume() {
+		Object node = input.LT(1);
+		input.consume();
+		dbg.consumeNode(node);
+	}
 
-    @Override
-    public Object get(int i) {
-        return input.get(i);
-    }
+	@Override
+	public Object get(int i) {
+		return input.get(i);
+	}
 
-    @Override
-    public Object LT(int i) {
-        Object node = input.LT(i);
-        int ID = adaptor.getUniqueID(node);
-        String text = adaptor.getText(node);
-        int type = adaptor.getType(node);
-        dbg.LT(i, node);
-        return node;
-    }
+	@Override
+	public Object LT(int i) {
+		Object node = input.LT(i);
+		int ID = adaptor.getUniqueID(node);
+		String text = adaptor.getText(node);
+		int type = adaptor.getType(node);
+		dbg.LT(i, node);
+		return node;
+	}
 
-    @Override
-    public int LA(int i) {
-        Object node = input.LT(i);
-        int ID = adaptor.getUniqueID(node);
-        String text = adaptor.getText(node);
-        int type = adaptor.getType(node);
-        dbg.LT(i, node);
-        return type;
-    }
+	@Override
+	public int LA(int i) {
+		Object node = input.LT(i);
+		int ID = adaptor.getUniqueID(node);
+		String text = adaptor.getText(node);
+		int type = adaptor.getType(node);
+		dbg.LT(i, node);
+		return type;
+	}
 
-    @Override
-    public int mark() {
-        lastMarker = input.mark();
-        dbg.mark(lastMarker);
-        return lastMarker;
-    }
+	@Override
+	public int mark() {
+		lastMarker = input.mark();
+		dbg.mark(lastMarker);
+		return lastMarker;
+	}
 
-    @Override
-    public int index() {
-        return input.index();
-    }
+	@Override
+	public int index() {
+		return input.index();
+	}
 
-    @Override
-    public void rewind(int marker) {
-        dbg.rewind(marker);
-        input.rewind(marker);
-    }
+	@Override
+	public void rewind(int marker) {
+		dbg.rewind(marker);
+		input.rewind(marker);
+	}
 
-    @Override
-    public void rewind() {
-        dbg.rewind();
-        input.rewind(lastMarker);
-    }
+	@Override
+	public void rewind() {
+		dbg.rewind();
+		input.rewind(lastMarker);
+	}
 
-    @Override
-    public void release(int marker) {
-    }
+	@Override
+	public void release(int marker) {
+	}
 
-    @Override
-    public void seek(int index) {
-        // TODO: implement seek in dbg interface
-        // db.seek(index);
-        input.seek(index);
-    }
+	@Override
+	public void seek(int index) {
+		// TODO: implement seek in dbg interface
+		// db.seek(index);
+		input.seek(index);
+	}
 
-    @Override
-    public int size() {
-        return input.size();
-    }
+	@Override
+	public int size() {
+		return input.size();
+	}
 
-    @Override
+	@Override
     public void reset() { ; }
 
-    @Override
+	@Override
     public Object getTreeSource() {
-        return input;
-    }
+		return input;
+	}
 
-    @Override
-    public String getSourceName() {
-        return getTokenStream().getSourceName();
-    }
+	@Override
+	public String getSourceName() {
+		return getTokenStream().getSourceName();
+	}
 
-    @Override
-    public TokenStream getTokenStream() {
-        return input.getTokenStream();
-    }
+	@Override
+	public TokenStream getTokenStream() {
+		return input.getTokenStream();
+	}
 
-    /** It is normally this object that instructs the node stream to
-     *  create unique nav nodes, but to satisfy interface, we have to
-     *  define it.  It might be better to ignore the parameter but
-     *  there might be a use for it later, so I'll leave.
-     */
-    @Override
-    public void setUniqueNavigationNodes(boolean uniqueNavigationNodes) {
-        input.setUniqueNavigationNodes(uniqueNavigationNodes);
-    }
+	/** It is normally this object that instructs the node stream to
+	 *  create unique nav nodes, but to satisfy interface, we have to
+	 *  define it.  It might be better to ignore the parameter but
+	 *  there might be a use for it later, so I'll leave.
+	 */
+	@Override
+	public void setUniqueNavigationNodes(boolean uniqueNavigationNodes) {
+		input.setUniqueNavigationNodes(uniqueNavigationNodes);
+	}
 
-    @Override
-    public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
-        input.replaceChildren(parent, startChildIndex, stopChildIndex, t);
-    }
+	@Override
+	public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
+		input.replaceChildren(parent, startChildIndex, stopChildIndex, t);
+	}
 
-    @Override
-    public String toString(Object start, Object stop) {
-        return input.toString(start,stop);
-    }
+	@Override
+	public String toString(Object start, Object stop) {
+		return input.toString(start,stop);
+	}
 }

@@ -61,7 +61,7 @@ public class CommonTokenStream extends BufferedTokenStream {
     }
 
     /** Always leave p on an on-channel token. */
-    @Override
+	@Override
     public void consume() {
         if ( p == -1 ) setup();
         p++;
@@ -72,7 +72,7 @@ public class CommonTokenStream extends BufferedTokenStream {
         }
     }
 
-    @Override
+	@Override
     protected Token LB(int k) {
         if ( k==0 || (p-k)<0 ) return null;
 
@@ -88,7 +88,7 @@ public class CommonTokenStream extends BufferedTokenStream {
         return tokens.get(i);
     }
 
-    @Override
+	@Override
     public Token LT(int k) {
         //System.out.println("enter LT("+k+")");
         if ( p == -1 ) setup();
@@ -102,7 +102,7 @@ public class CommonTokenStream extends BufferedTokenStream {
             i = skipOffTokenChannels(i+1);
             n++;
         }
-        if ( i>range ) range = i;
+		if ( i>range ) range = i;
         return tokens.get(i);
     }
 
@@ -125,14 +125,14 @@ public class CommonTokenStream extends BufferedTokenStream {
         return i;
     }
 
-    @Override
-    public void reset() {
-        super.reset();
-        p = skipOffTokenChannels(0);
-    }
+	@Override
+	public void reset() {
+		super.reset();
+		p = skipOffTokenChannels(0);
+	}
 
-    @Override
-    protected void setup() {
+	@Override
+	protected void setup() {
         p = 0;
         sync(0);
         int i = 0;
@@ -143,20 +143,20 @@ public class CommonTokenStream extends BufferedTokenStream {
         p = i;
     }
 
-    /** Count EOF just once. */
-    public int getNumberOfOnChannelTokens() {
-        int n = 0;
-        fill();
-        for (int i = 0; i < tokens.size(); i++) {
-            Token t = tokens.get(i);
-            if ( t.getChannel()==channel ) n++;
-            if ( t.getType()==Token.EOF ) break;
-        }
-        return n;
-    }
+	/** Count EOF just once. */
+	public int getNumberOfOnChannelTokens() {
+		int n = 0;
+		fill();
+		for (int i = 0; i < tokens.size(); i++) {
+			Token t = tokens.get(i);
+			if ( t.getChannel()==channel ) n++;
+			if ( t.getType()==Token.EOF ) break;
+		}
+		return n;
+	}
 
     /** Reset this token stream by setting its token source. */
-    @Override
+	@Override
     public void setTokenSource(TokenSource tokenSource) {
         super.setTokenSource(tokenSource);
         channel = Token.DEFAULT_CHANNEL;

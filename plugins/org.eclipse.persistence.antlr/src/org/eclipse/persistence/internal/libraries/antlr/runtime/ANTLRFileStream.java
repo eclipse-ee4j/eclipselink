@@ -33,47 +33,47 @@ import java.io.*;
  *  all at once when you construct the object.  This looks very
  *  much like an ANTLReader or ANTLRInputStream, but it's a special case
  *  since we know the exact size of the object to load.  We can avoid lots
- *  of data copying.
+ *  of data copying. 
  */
 public class ANTLRFileStream extends ANTLRStringStream {
-    protected String fileName;
+	protected String fileName;
 
-    public ANTLRFileStream(String fileName) throws IOException {
-        this(fileName, null);
-    }
+	public ANTLRFileStream(String fileName) throws IOException {
+		this(fileName, null);
+	}
 
-    public ANTLRFileStream(String fileName, String encoding) throws IOException {
-        this.fileName = fileName;
-        load(fileName, encoding);
-    }
+	public ANTLRFileStream(String fileName, String encoding) throws IOException {
+		this.fileName = fileName;
+		load(fileName, encoding);
+	}
 
-    public void load(String fileName, String encoding)
-        throws IOException
-    {
-        if ( fileName==null ) {
-            return;
-        }
-        File f = new File(fileName);
-        int size = (int)f.length();
-        InputStreamReader isr;
-        FileInputStream fis = new FileInputStream(fileName);
-        if ( encoding!=null ) {
-            isr = new InputStreamReader(fis, encoding);
-        }
-        else {
-            isr = new InputStreamReader(fis);
-        }
-        try {
-            data = new char[size];
-            super.n = isr.read(data);
-        }
-        finally {
-            isr.close();
-        }
-    }
+	public void load(String fileName, String encoding)
+		throws IOException
+	{
+		if ( fileName==null ) {
+			return;
+		}
+		File f = new File(fileName);
+		int size = (int)f.length();
+		InputStreamReader isr;
+		FileInputStream fis = new FileInputStream(fileName);
+		if ( encoding!=null ) {
+			isr = new InputStreamReader(fis, encoding);
+		}
+		else {
+			isr = new InputStreamReader(fis);
+		}
+		try {
+			data = new char[size];
+			super.n = isr.read(data);
+		}
+		finally {
+			isr.close();
+		}
+	}
 
-    @Override
-    public String getSourceName() {
-        return fileName;
-    }
+	@Override
+	public String getSourceName() {
+		return fileName;
+	}
 }

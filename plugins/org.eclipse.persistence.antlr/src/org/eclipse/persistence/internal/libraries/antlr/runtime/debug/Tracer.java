@@ -35,31 +35,31 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
  *  that you cannot debug and trace at the same time.
  */
 public class Tracer extends BlankDebugEventListener {
-    public IntStream input;
-    protected int level = 0;
+	public IntStream input;
+	protected int level = 0;
 
-    public Tracer(IntStream input) {
-        this.input = input;
-    }
+	public Tracer(IntStream input) {
+		this.input = input;
+	}
 
-    public void enterRule(String ruleName) {
-        for (int i=1; i<=level; i++) {System.out.print(" ");}
-        System.out.println("> "+ruleName+" lookahead(1)="+getInputSymbol(1));
-        level++;
-    }
+	public void enterRule(String ruleName) {
+		for (int i=1; i<=level; i++) {System.out.print(" ");}
+		System.out.println("> "+ruleName+" lookahead(1)="+getInputSymbol(1));
+		level++;
+	}
 
-    public void exitRule(String ruleName) {
-        level--;
-        for (int i=1; i<=level; i++) {System.out.print(" ");}
-        System.out.println("< "+ruleName+" lookahead(1)="+getInputSymbol(1));
-    }
+	public void exitRule(String ruleName) {
+		level--;
+		for (int i=1; i<=level; i++) {System.out.print(" ");}
+		System.out.println("< "+ruleName+" lookahead(1)="+getInputSymbol(1));
+	}
 
-    public Object getInputSymbol(int k) {
-        if ( input instanceof TokenStream ) {
-            return ((TokenStream)input).LT(k);
-        }
-        return (char) input.LA(k);
-    }
+	public Object getInputSymbol(int k) {
+		if ( input instanceof TokenStream ) {
+			return ((TokenStream)input).LT(k);
+		}
+		return (char) input.LA(k);
+	}
 }
 
 

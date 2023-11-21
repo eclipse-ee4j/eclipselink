@@ -37,8 +37,8 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
  *  have to be {@link Object}.
  */
 public class TreeRuleReturnScope extends RuleReturnScope {
-    /** First node or root node of tree matched for this rule. */
-    public Object start;
-    @Override
-    public Object getStart() { return start; }
+	/** First node or root node of tree matched for this rule. */
+	public Object start;
+	@Override
+	public Object getStart() { return start; }	
 }

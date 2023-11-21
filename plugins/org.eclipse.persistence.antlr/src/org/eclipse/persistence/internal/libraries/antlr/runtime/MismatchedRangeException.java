@@ -28,19 +28,19 @@
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 public class MismatchedRangeException extends RecognitionException {
-    public int a,b;
+	public int a,b;
 
-    /** Used for remote debugger deserialization */
-    public MismatchedRangeException() {;}
+	/** Used for remote debugger deserialization */
+	public MismatchedRangeException() {;}
 
-    public MismatchedRangeException(int a, int b, IntStream input) {
-        super(input);
-        this.a = a;
-        this.b = b;
-    }
+	public MismatchedRangeException(int a, int b, IntStream input) {
+		super(input);
+		this.a = a;
+		this.b = b;
+	}
 
-    @Override
-    public String toString() {
-        return "MismatchedNotSetException("+getUnexpectedType()+" not in ["+a+","+b+"])";
-    }
+	@Override
+	public String toString() {
+		return "MismatchedNotSetException("+getUnexpectedType()+" not in ["+a+","+b+"])";
+	}
 }

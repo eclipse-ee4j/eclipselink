@@ -63,7 +63,7 @@ public abstract class JPQLParser extends org.eclipse.persistence.internal.librar
      * Returns the ANTLR version currently used.
      */
     public static String ANTLRVersion() throws Exception {
-        return "3.5.2";
+        return "3.5.3";
     }
 
     /**

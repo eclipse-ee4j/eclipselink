@@ -32,76 +32,76 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.TreeAdaptor
 
 /** Print out (most of) the events... Useful for debugging, testing... */
 public class TraceDebugEventListener extends BlankDebugEventListener {
-    TreeAdaptor adaptor;
+	TreeAdaptor adaptor;
 
-    public TraceDebugEventListener(TreeAdaptor adaptor) {
-        this.adaptor = adaptor;
-    }
+	public TraceDebugEventListener(TreeAdaptor adaptor) {
+		this.adaptor = adaptor;
+	}
 
-    public void enterRule(String ruleName) { System.out.println("enterRule "+ruleName); }
-    public void exitRule(String ruleName) { System.out.println("exitRule "+ruleName); }
-    @Override
-    public void enterSubRule(int decisionNumber) { System.out.println("enterSubRule"); }
-    @Override
-    public void exitSubRule(int decisionNumber) { System.out.println("exitSubRule"); }
-    @Override
-    public void location(int line, int pos) {System.out.println("location "+line+":"+pos);}
+	public void enterRule(String ruleName) { System.out.println("enterRule "+ruleName); }
+	public void exitRule(String ruleName) { System.out.println("exitRule "+ruleName); }
+	@Override
+	public void enterSubRule(int decisionNumber) { System.out.println("enterSubRule"); }
+	@Override
+	public void exitSubRule(int decisionNumber) { System.out.println("exitSubRule"); }
+	@Override
+	public void location(int line, int pos) {System.out.println("location "+line+":"+pos);}
 
-    // Tree parsing stuff
+	// Tree parsing stuff
 
-    @Override
-    public void consumeNode(Object t) {
-        int ID = adaptor.getUniqueID(t);
-        String text = adaptor.getText(t);
-        int type = adaptor.getType(t);
-        System.out.println("consumeNode "+ID+" "+text+" "+type);
-    }
+	@Override
+	public void consumeNode(Object t) {
+		int ID = adaptor.getUniqueID(t);
+		String text = adaptor.getText(t);
+		int type = adaptor.getType(t);
+		System.out.println("consumeNode "+ID+" "+text+" "+type);
+	}
 
-    @Override
-    public void LT(int i, Object t) {
-        int ID = adaptor.getUniqueID(t);
-        String text = adaptor.getText(t);
-        int type = adaptor.getType(t);
-        System.out.println("LT "+i+" "+ID+" "+text+" "+type);
-    }
+	@Override
+	public void LT(int i, Object t) {
+		int ID = adaptor.getUniqueID(t);
+		String text = adaptor.getText(t);
+		int type = adaptor.getType(t);
+		System.out.println("LT "+i+" "+ID+" "+text+" "+type);
+	}
 
 
-    // AST stuff
-    @Override
-    public void nilNode(Object t) {System.out.println("nilNode "+adaptor.getUniqueID(t));}
+	// AST stuff
+	@Override
+	public void nilNode(Object t) {System.out.println("nilNode "+adaptor.getUniqueID(t));}
 
-    @Override
-    public void createNode(Object t) {
-        int ID = adaptor.getUniqueID(t);
-        String text = adaptor.getText(t);
-        int type = adaptor.getType(t);
-        System.out.println("create "+ID+": "+text+", "+type);
-    }
+	@Override
+	public void createNode(Object t) {
+		int ID = adaptor.getUniqueID(t);
+		String text = adaptor.getText(t);
+		int type = adaptor.getType(t);
+		System.out.println("create "+ID+": "+text+", "+type);
+	}
 
-    @Override
-    public void createNode(Object node, Token token) {
-        int ID = adaptor.getUniqueID(node);
-        String text = adaptor.getText(node);
-        int tokenIndex = token.getTokenIndex();
-        System.out.println("create "+ID+": "+tokenIndex);
-    }
+	@Override
+	public void createNode(Object node, Token token) {
+		int ID = adaptor.getUniqueID(node);
+		String text = adaptor.getText(node);
+		int tokenIndex = token.getTokenIndex();
+		System.out.println("create "+ID+": "+tokenIndex);
+	}
 
-    @Override
-    public void becomeRoot(Object newRoot, Object oldRoot) {
-        System.out.println("becomeRoot "+adaptor.getUniqueID(newRoot)+", "+
-                           adaptor.getUniqueID(oldRoot));
-    }
+	@Override
+	public void becomeRoot(Object newRoot, Object oldRoot) {
+		System.out.println("becomeRoot "+adaptor.getUniqueID(newRoot)+", "+
+						   adaptor.getUniqueID(oldRoot));
+	}
 
-    @Override
-    public void addChild(Object root, Object child) {
-        System.out.println("addChild "+adaptor.getUniqueID(root)+", "+
-                           adaptor.getUniqueID(child));
-    }
+	@Override
+	public void addChild(Object root, Object child) {
+		System.out.println("addChild "+adaptor.getUniqueID(root)+", "+
+						   adaptor.getUniqueID(child));
+	}
 
-    @Override
-    public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {
-        System.out.println("setTokenBoundaries "+adaptor.getUniqueID(t)+", "+
-                           tokenStartIndex+", "+tokenStopIndex);
-    }
+	@Override
+	public void setTokenBoundaries(Object t, int tokenStartIndex, int tokenStopIndex) {
+		System.out.println("setTokenBoundaries "+adaptor.getUniqueID(t)+", "+
+						   tokenStartIndex+", "+tokenStopIndex);
+	}
 }
 

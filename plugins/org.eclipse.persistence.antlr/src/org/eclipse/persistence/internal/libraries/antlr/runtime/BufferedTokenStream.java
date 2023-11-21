@@ -66,7 +66,7 @@ public class BufferedTokenStream implements TokenStream {
      */
     protected int p = -1;
 
-    protected int range = -1; // how deep have we gone?
+	protected int range = -1; // how deep have we gone?
 
     public BufferedTokenStream() {}
 
@@ -74,33 +74,33 @@ public class BufferedTokenStream implements TokenStream {
         this.tokenSource = tokenSource;
     }
 
-    @Override
+	@Override
     public TokenSource getTokenSource() { return tokenSource; }
 
-    @Override
-    public int index() { return p; }
+	@Override
+	public int index() { return p; }
 
-    @Override
-    public int range() { return range; }
+	@Override
+	public int range() { return range; }
 
-    @Override
+	@Override
     public int mark() {
         if ( p == -1 ) setup();
-        lastMarker = index();
-        return lastMarker;
-    }
+		lastMarker = index();
+		return lastMarker;
+	}
 
-    @Override
-    public void release(int marker) {
-        // no resources to release
-    }
+	@Override
+	public void release(int marker) {
+		// no resources to release
+	}
 
-    @Override
+	@Override
     public void rewind(int marker) {
         seek(marker);
     }
 
-    @Override
+	@Override
     public void rewind() {
         seek(lastMarker);
     }
@@ -110,10 +110,10 @@ public class BufferedTokenStream implements TokenStream {
         lastMarker = 0;
     }
 
-    @Override
+	@Override
     public void seek(int index) { p = index; }
 
-    @Override
+	@Override
     public int size() { return tokens.size(); }
 
     /** Move the input pointer to the next incoming token.  The stream
@@ -123,7 +123,7 @@ public class BufferedTokenStream implements TokenStream {
      *
      *  Walk past any token not on the channel the parser is listening to.
      */
-    @Override
+	@Override
     public void consume() {
         if ( p == -1 ) setup();
         p++;
@@ -148,7 +148,7 @@ public class BufferedTokenStream implements TokenStream {
         }
     }
 
-    @Override
+	@Override
     public Token get(int i) {
         if ( i < 0 || i >= tokens.size() ) {
             throw new NoSuchElementException("token index "+i+" out of range 0.."+(tokens.size()-1));
@@ -156,41 +156,41 @@ public class BufferedTokenStream implements TokenStream {
         return tokens.get(i);
     }
 
-    /** Get all tokens from start..stop inclusively */
-    public List<? extends Token> get(int start, int stop) {
-        if ( start<0 || stop<0 ) return null;
-        if ( p == -1 ) setup();
-        List<Token> subset = new ArrayList<Token>();
-        if ( stop>=tokens.size() ) stop = tokens.size()-1;
-        for (int i = start; i <= stop; i++) {
-            Token t = tokens.get(i);
-            if ( t.getType()==Token.EOF ) break;
-            subset.add(t);
-        }
-        return subset;
-    }
+	/** Get all tokens from start..stop inclusively */
+	public List<? extends Token> get(int start, int stop) {
+		if ( start<0 || stop<0 ) return null;
+		if ( p == -1 ) setup();
+		List<Token> subset = new ArrayList<Token>();
+		if ( stop>=tokens.size() ) stop = tokens.size()-1;
+		for (int i = start; i <= stop; i++) {
+			Token t = tokens.get(i);
+			if ( t.getType()==Token.EOF ) break;
+			subset.add(t);
+		}
+		return subset;
+	}
 
-    @Override
-    public int LA(int i) { return LT(i).getType(); }
+	@Override
+	public int LA(int i) { return LT(i).getType(); }
 
     protected Token LB(int k) {
         if ( (p-k)<0 ) return null;
         return tokens.get(p-k);
     }
 
-    @Override
+	@Override
     public Token LT(int k) {
         if ( p == -1 ) setup();
         if ( k==0 ) return null;
         if ( k < 0 ) return LB(-k);
 
-        int i = p + k - 1;
-        sync(i);
+		int i = p + k - 1;
+		sync(i);
         if ( i >= tokens.size() ) { // return EOF token
             // EOF must be last token
             return tokens.get(tokens.size()-1);
         }
-        if ( i>range ) range = i;
+		if ( i>range ) range = i; 		
         return tokens.get(i);
     }
 
@@ -202,7 +202,7 @@ public class BufferedTokenStream implements TokenStream {
         tokens.clear();
         p = -1;
     }
-
+    
     public List<? extends Token> getTokens() { return tokens; }
 
     public List<? extends Token> getTokens(int start, int stop) {
@@ -241,18 +241,18 @@ public class BufferedTokenStream implements TokenStream {
         return getTokens(start,stop,BitSet.of(ttype));
     }
 
-    @Override
-    public String getSourceName() {    return tokenSource.getSourceName();    }
+	@Override
+    public String getSourceName() {	return tokenSource.getSourceName();	}
 
     /** Grab *all* tokens from stream and return string */
-    @Override
+	@Override
     public String toString() {
         if ( p == -1 ) setup();
         fill();
         return toString(0, tokens.size()-1);
     }
 
-    @Override
+	@Override
     public String toString(int start, int stop) {
         if ( start<0 || stop<0 ) return null;
         if ( p == -1 ) setup();
@@ -266,7 +266,7 @@ public class BufferedTokenStream implements TokenStream {
         return buf.toString();
     }
 
-    @Override
+	@Override
     public String toString(Token start, Token stop) {
         if ( start!=null && stop!=null ) {
             return toString(start.getTokenIndex(), stop.getTokenIndex());

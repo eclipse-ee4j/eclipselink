@@ -35,122 +35,122 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime;
  *  new strings.
  */
 public class ClassicToken implements Token {
-    protected String text;
-    protected int type;
-    protected int line;
-    protected int charPositionInLine;
-    protected int channel=DEFAULT_CHANNEL;
+	protected String text;
+	protected int type;
+	protected int line;
+	protected int charPositionInLine;
+	protected int channel=DEFAULT_CHANNEL;
 
-    /** What token number is this from 0..n-1 tokens */
-    protected int index;
+	/** What token number is this from 0..n-1 tokens */
+	protected int index;
 
-    public ClassicToken(int type) {
-        this.type = type;
-    }
+	public ClassicToken(int type) {
+		this.type = type;
+	}
 
-    public ClassicToken(Token oldToken) {
-        text = oldToken.getText();
-        type = oldToken.getType();
-        line = oldToken.getLine();
-        charPositionInLine = oldToken.getCharPositionInLine();
-        channel = oldToken.getChannel();
-    }
+	public ClassicToken(Token oldToken) {
+		text = oldToken.getText();
+		type = oldToken.getType();
+		line = oldToken.getLine();
+		charPositionInLine = oldToken.getCharPositionInLine();
+		channel = oldToken.getChannel();
+	}
 
-    public ClassicToken(int type, String text) {
-        this.type = type;
-        this.text = text;
-    }
+	public ClassicToken(int type, String text) {
+		this.type = type;
+		this.text = text;
+	}
 
-    public ClassicToken(int type, String text, int channel) {
-        this.type = type;
-        this.text = text;
-        this.channel = channel;
-    }
+	public ClassicToken(int type, String text, int channel) {
+		this.type = type;
+		this.text = text;
+		this.channel = channel;
+	}
 
-    @Override
-    public int getType() {
-        return type;
-    }
+	@Override
+	public int getType() {
+		return type;
+	}
 
-    @Override
-    public void setLine(int line) {
-        this.line = line;
-    }
+	@Override
+	public void setLine(int line) {
+		this.line = line;
+	}
 
-    @Override
-    public String getText() {
-        return text;
-    }
+	@Override
+	public String getText() {
+		return text;
+	}
 
-    @Override
-    public void setText(String text) {
-        this.text = text;
-    }
+	@Override
+	public void setText(String text) {
+		this.text = text;
+	}
 
-    @Override
-    public int getLine() {
-        return line;
-    }
+	@Override
+	public int getLine() {
+		return line;
+	}
 
-    @Override
-    public int getCharPositionInLine() {
-        return charPositionInLine;
-    }
+	@Override
+	public int getCharPositionInLine() {
+		return charPositionInLine;
+	}
 
-    @Override
-    public void setCharPositionInLine(int charPositionInLine) {
-        this.charPositionInLine = charPositionInLine;
-    }
+	@Override
+	public void setCharPositionInLine(int charPositionInLine) {
+		this.charPositionInLine = charPositionInLine;
+	}
 
-    @Override
-    public int getChannel() {
-        return channel;
-    }
+	@Override
+	public int getChannel() {
+		return channel;
+	}
 
-    @Override
-    public void setChannel(int channel) {
-        this.channel = channel;
-    }
+	@Override
+	public void setChannel(int channel) {
+		this.channel = channel;
+	}
 
-    @Override
-    public void setType(int type) {
-        this.type = type;
-    }
+	@Override
+	public void setType(int type) {
+		this.type = type;
+	}
 
-    @Override
-    public int getTokenIndex() {
-        return index;
-    }
+	@Override
+	public int getTokenIndex() {
+		return index;
+	}
 
-    @Override
-    public void setTokenIndex(int index) {
-        this.index = index;
-    }
+	@Override
+	public void setTokenIndex(int index) {
+		this.index = index;
+	}
 
-    @Override
-    public CharStream getInputStream() {
-        return null;
-    }
+	@Override
+	public CharStream getInputStream() {
+		return null;
+	}
 
-    @Override
-    public void setInputStream(CharStream input) {
-    }
-
-    @Override
-    public String toString() {
-        String channelStr = "";
-        if ( channel>0 ) {
-            channelStr=",channel="+channel;
-        }
-        String txt = getText();
-        if ( txt!=null ) {
-            txt = txt.replaceAll("\n","\\\\n");
-            txt = txt.replaceAll("\r","\\\\r");
-            txt = txt.replaceAll("\t","\\\\t");
-        }
-        else {
-            txt = "<no text>";
-        }
-        return "[@"+getTokenIndex()+",'"+txt+"',<"+type+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
-    }
+	@Override
+	public void setInputStream(CharStream input) {
+	}
+	
+	@Override
+	public String toString() {
+		String channelStr = "";
+		if ( channel>0 ) {
+			channelStr=",channel="+channel;
+		}
+		String txt = getText();
+		if ( txt!=null ) {
+			txt = txt.replaceAll("\n","\\\\n");
+			txt = txt.replaceAll("\r","\\\\r");
+			txt = txt.replaceAll("\t","\\\\t");
+		}
+		else {
+			txt = "<no text>";
+		}
+		return "[@"+getTokenIndex()+",'"+txt+"',<"+type+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
+	}
 }

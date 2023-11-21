@@ -33,46 +33,46 @@ import java.util.List;
 
 public class RewriteRuleTokenStream extends RewriteRuleElementStream {
 
-    public RewriteRuleTokenStream(TreeAdaptor adaptor, String elementDescription) {
-        super(adaptor, elementDescription);
-    }
+	public RewriteRuleTokenStream(TreeAdaptor adaptor, String elementDescription) {
+		super(adaptor, elementDescription);
+	}
 
-    /** Create a stream with one element */
-    public RewriteRuleTokenStream(TreeAdaptor adaptor,
-                                  String elementDescription,
-                                  Object oneElement)
-    {
-        super(adaptor, elementDescription, oneElement);
-    }
+	/** Create a stream with one element */
+	public RewriteRuleTokenStream(TreeAdaptor adaptor,
+								  String elementDescription,
+								  Object oneElement)
+	{
+		super(adaptor, elementDescription, oneElement);
+	}
 
-    /** Create a stream, but feed off an existing list */
-    public RewriteRuleTokenStream(TreeAdaptor adaptor,
-                                  String elementDescription,
-                                  List<Object> elements)
-    {
-        super(adaptor, elementDescription, elements);
-    }
+	/** Create a stream, but feed off an existing list */
+	public RewriteRuleTokenStream(TreeAdaptor adaptor,
+								  String elementDescription,
+								  List<Object> elements)
+	{
+		super(adaptor, elementDescription, elements);
+	}
 
-    /** Get next token from stream and make a node for it */
-    public Object nextNode() {
-        Token t = (Token)_next();
-        return adaptor.create(t);
-    }
+	/** Get next token from stream and make a node for it */
+	public Object nextNode() {
+		Token t = (Token)_next();
+		return adaptor.create(t);
+	}
 
-    public Token nextToken() {
-        return (Token)_next();
-    }
+	public Token nextToken() {
+		return (Token)_next();
+	}
 
-    /** Don't convert to a tree unless they explicitly call nextTree.
-     *  This way we can do hetero tree nodes in rewrite.
-     */
-    @Override
-    protected Object toTree(Object el) {
-        return el;
-    }
+	/** Don't convert to a tree unless they explicitly call nextTree.
+	 *  This way we can do hetero tree nodes in rewrite.
+	 */
+	@Override
+	protected Object toTree(Object el) {
+		return el;
+	}
 
-    @Override
-    protected Object dup(Object el) {
-        throw new UnsupportedOperationException("dup can't be called for a token stream.");
-    }
+	@Override
+	protected Object dup(Object el) {
+		throw new UnsupportedOperationException("dup can't be called for a token stream.");
+	}
 }
