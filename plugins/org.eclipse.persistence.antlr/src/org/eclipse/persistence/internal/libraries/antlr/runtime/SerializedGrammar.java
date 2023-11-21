@@ -38,7 +38,7 @@ import java.util.ArrayList;
 public class SerializedGrammar {
     public static final String COOKIE = "$ANTLR";
     public static final int FORMAT_VERSION = 1;
-    //public static org.eclipse.persistence.internal.libraries.antlr.tool.Grammar gr; // TESTING ONLY; remove later
+    //public static org.antlr.tool.Grammar gr; // TESTING ONLY; remove later
 
     public String name;
     public char type; // in {l, p, t, c}
@@ -51,23 +51,23 @@ public class SerializedGrammar {
             this.name = name;
             this.block = block;
         }
-        @Override
+		@Override
         public String toString() {
             return name+":"+block;
         }
     }
 
-    protected abstract class Node {
-        @Override
-        public abstract String toString();
-    }
+	protected abstract class Node {
+		@Override
+		public abstract String toString();
+	}
 
     protected class Block extends Node {
         List[] alts;
         public Block(List[] alts) {
             this.alts = alts;
         }
-        @Override
+		@Override
         public String toString() {
             StringBuilder buf = new StringBuilder();
             buf.append("(");
@@ -84,14 +84,14 @@ public class SerializedGrammar {
     protected class TokenRef extends Node {
         int ttype;
         public TokenRef(int ttype) { this.ttype = ttype; }
-        @Override
+		@Override
         public String toString() { return String.valueOf(ttype); }
     }
 
     protected class RuleRef extends Node {
         int ruleIndex;
         public RuleRef(int ruleIndex) { this.ruleIndex = ruleIndex; }
-        @Override
+		@Override
         public String toString() { return String.valueOf(ruleIndex); }
     }
 
@@ -141,7 +141,7 @@ public class SerializedGrammar {
 
     protected Block readBlock(DataInputStream in) throws IOException {
         int nalts = in.readShort();
-        @SuppressWarnings("unchecked")
+		@SuppressWarnings("unchecked")
         List<Node>[] alts = (List<Node>[])new List<?>[nalts];
         //System.out.println("enter block n="+nalts);
         for (int i=0; i<nalts; i++) {
@@ -199,7 +199,7 @@ public class SerializedGrammar {
         return buf.toString();
     }
 
-    @Override
+	@Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(type).append(" grammar ").append(name);

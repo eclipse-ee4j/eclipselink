@@ -29,11 +29,11 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
 /** No elements within a (...)+ in a rewrite rule */
 public class RewriteEarlyExitException extends RewriteCardinalityException {
-    public RewriteEarlyExitException() {
-        super(null);
-    }
-    public RewriteEarlyExitException(String elementDescription) {
-        super(elementDescription);
-    }
+	public RewriteEarlyExitException() {
+		super(null);
+	}
+	public RewriteEarlyExitException(String elementDescription) {
+		super(elementDescription);
+	}
 
 }

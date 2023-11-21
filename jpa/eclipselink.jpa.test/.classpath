@@ -10,7 +10,7 @@
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.validation-api.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.ejb-api.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.ejb/src"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.transaction-api.jar" />
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.5.2.v201711011707.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.5.2.v201711011707.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.5.3.v202311210849.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.5.3.v202311210849.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.inject.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

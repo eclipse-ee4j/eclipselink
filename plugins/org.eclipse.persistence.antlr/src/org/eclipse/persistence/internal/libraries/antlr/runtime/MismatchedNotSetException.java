@@ -28,15 +28,15 @@
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 public class MismatchedNotSetException extends MismatchedSetException {
-    /** Used for remote debugger deserialization */
-    public MismatchedNotSetException() {;}
+	/** Used for remote debugger deserialization */
+	public MismatchedNotSetException() {;}
 
-    public MismatchedNotSetException(BitSet expecting, IntStream input) {
-        super(expecting, input);
-    }
+	public MismatchedNotSetException(BitSet expecting, IntStream input) {
+		super(expecting, input);
+	}
 
-    @Override
-    public String toString() {
-        return "MismatchedNotSetException("+getUnexpectedType()+"!="+expecting+")";
-    }
+	@Override
+	public String toString() {
+		return "MismatchedNotSetException("+getUnexpectedType()+"!="+expecting+")";
+	}
 }

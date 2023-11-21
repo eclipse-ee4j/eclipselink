@@ -40,14 +40,14 @@ public class TreeRewriter extends TreeParser {
 
     protected TokenStream originalTokenStream;
     protected TreeAdaptor originalAdaptor;
-
+    
     public TreeRewriter(TreeNodeStream input) {
         this(input, new RecognizerSharedState());
     }
     public TreeRewriter(TreeNodeStream input, RecognizerSharedState state) {
         super(input, state);
         originalAdaptor = input.getTreeAdaptor();
-        originalTokenStream = input.getTokenStream();
+        originalTokenStream = input.getTokenStream();        
     }
 
     public Object applyOnce(Object t, fptr whichRule) {
@@ -89,9 +89,9 @@ public class TreeRewriter extends TreeParser {
         this.showTransformations = showTransformations;
         TreeVisitor v = new TreeVisitor(new CommonTreeAdaptor());
         TreeVisitorAction actions = new TreeVisitorAction() {
-            @Override
+			@Override
             public Object pre(Object t)  { return applyOnce(t, topdown_fptr); }
-            @Override
+			@Override
             public Object post(Object t) { return applyRepeatedly(t, bottomup_ftpr); }
         };
         t = v.visit(t, actions);
@@ -107,12 +107,12 @@ public class TreeRewriter extends TreeParser {
     }
 
     fptr topdown_fptr = new fptr() {
-        @Override
+		@Override
         public Object rule() throws RecognitionException { return topdown(); }
     };
-
+    
     fptr bottomup_ftpr = new fptr() {
-        @Override
+		@Override
         public Object rule() throws RecognitionException { return bottomup(); }
     };
 

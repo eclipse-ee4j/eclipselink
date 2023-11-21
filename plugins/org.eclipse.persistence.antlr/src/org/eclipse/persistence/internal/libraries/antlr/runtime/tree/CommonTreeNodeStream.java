@@ -34,17 +34,17 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.misc.LookaheadSt
 import org.eclipse.persistence.internal.libraries.antlr.runtime.misc.IntArray;
 
 public class CommonTreeNodeStream extends LookaheadStream<Object> implements TreeNodeStream, PositionTrackingStream<Object> {
-    public static final int DEFAULT_INITIAL_BUFFER_SIZE = 100;
-    public static final int INITIAL_CALL_STACK_SIZE = 10;
+	public static final int DEFAULT_INITIAL_BUFFER_SIZE = 100;
+	public static final int INITIAL_CALL_STACK_SIZE = 10;
 
-    /** Pull nodes from which tree? */
-    protected Object root;
+	/** Pull nodes from which tree? */
+	protected Object root;
 
-    /** If this tree (root) was created from a {@link TokenStream}, track it. */
-    protected TokenStream tokens;
+	/** If this tree (root) was created from a {@link TokenStream}, track it. */
+	protected TokenStream tokens;
 
-    /** What {@link TreeAdaptor} was used to build these trees */
-    TreeAdaptor adaptor;
+	/** What {@link TreeAdaptor} was used to build these trees */
+	TreeAdaptor adaptor;
 
     /** The {@link TreeIterator} we using. */
     protected TreeIterator it;
@@ -58,41 +58,41 @@ public class CommonTreeNodeStream extends LookaheadStream<Object> implements Tre
     /** Tracks tree depth.  Level=0 means we're at root node level. */
     protected int level = 0;
 
-    /**
-     * Tracks the last node before the start of {@link #data} which contains
-     * position information to provide information for error reporting. This is
-     * tracked in addition to {@link #prevElement} which may or may not contain
-     * position information.
-     *
-     * @see #hasPositionInformation
-     * @see RecognitionException#extractInformationFromTreeNodeStream
-     */
-    protected Object previousLocationElement;
+	/**
+	 * Tracks the last node before the start of {@link #data} which contains
+	 * position information to provide information for error reporting. This is
+	 * tracked in addition to {@link #prevElement} which may or may not contain
+	 * position information.
+	 *
+	 * @see #hasPositionInformation
+	 * @see RecognitionException#extractInformationFromTreeNodeStream
+	 */
+	protected Object previousLocationElement;
 
-    public CommonTreeNodeStream(Object tree) {
-        this(new CommonTreeAdaptor(), tree);
-    }
+	public CommonTreeNodeStream(Object tree) {
+		this(new CommonTreeAdaptor(), tree);
+	}
 
-    public CommonTreeNodeStream(TreeAdaptor adaptor, Object tree) {
-        this.root = tree;
-        this.adaptor = adaptor;
+	public CommonTreeNodeStream(TreeAdaptor adaptor, Object tree) {
+		this.root = tree;
+		this.adaptor = adaptor;
         it = new TreeIterator(adaptor,root);
-    }
+	}
 
-    @Override
+	@Override
     public void reset() {
         super.reset();
         it.reset();
         hasNilRoot = false;
         level = 0;
-        previousLocationElement = null;
+		previousLocationElement = null;
         if ( calls != null ) calls.clear();
     }
 
     /** Pull elements from tree iterator.  Track tree level 0..max_level.
      *  If nil rooted tree, don't give initial nil and DOWN nor final UP.
      */
-    @Override
+	@Override
     public Object nextElement() {
         Object t = it.next();
         //System.out.println("pulled "+adaptor.getType(t));
@@ -110,44 +110,44 @@ public class CommonTreeNodeStream extends LookaheadStream<Object> implements Tre
         return t;
     }
 
-    @Override
-    public Object remove() {
-        Object result = super.remove();
-        if (p == 0 && hasPositionInformation(prevElement)) {
-            previousLocationElement = prevElement;
-        }
+	@Override
+	public Object remove() {
+		Object result = super.remove();
+		if (p == 0 && hasPositionInformation(prevElement)) {
+			previousLocationElement = prevElement;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
+	@Override
     public boolean isEOF(Object o) { return adaptor.getType(o) == Token.EOF; }
 
-    @Override
+	@Override
     public void setUniqueNavigationNodes(boolean uniqueNavigationNodes) { }
 
-    @Override
-    public Object getTreeSource() {    return root; }
+	@Override
+	public Object getTreeSource() {	return root; }
 
-    @Override
-    public String getSourceName() { return getTokenStream().getSourceName(); }
+	@Override
+	public String getSourceName() { return getTokenStream().getSourceName(); }
 
-    @Override
-    public TokenStream getTokenStream() { return tokens; }
+	@Override
+	public TokenStream getTokenStream() { return tokens; }
 
-    public void setTokenStream(TokenStream tokens) { this.tokens = tokens; }
+	public void setTokenStream(TokenStream tokens) { this.tokens = tokens; }
 
-    @Override
-    public TreeAdaptor getTreeAdaptor() { return adaptor; }
+	@Override
+	public TreeAdaptor getTreeAdaptor() { return adaptor; }
 
-    public void setTreeAdaptor(TreeAdaptor adaptor) { this.adaptor = adaptor; }
+	public void setTreeAdaptor(TreeAdaptor adaptor) { this.adaptor = adaptor; }
 
-    @Override
+	@Override
     public Object get(int i) {
         throw new UnsupportedOperationException("Absolute node indexes are meaningless in an unbuffered stream");
     }
 
-    @Override
+	@Override
     public int LA(int i) { return adaptor.getType(LT(i)); }
 
     /** Make stream jump to a new location, saving old location.
@@ -170,68 +170,68 @@ public class CommonTreeNodeStream extends LookaheadStream<Object> implements Tre
         return ret;
     }
 
-    /**
-     * Returns an element containing position information. If {@code allowApproximateLocation} is {@code false}, then
-     * this method will return the {@code LT(1)} element if it contains position information, and otherwise return {@code null}.
-     * If {@code allowApproximateLocation} is {@code true}, then this method will return the last known element containing position information.
-     *
-     * @see #hasPositionInformation
-     */
-    @Override
-    public Object getKnownPositionElement(boolean allowApproximateLocation) {
-        Object node = data.get(p);
-        if (hasPositionInformation(node)) {
-            return node;
-        }
+	/**
+	 * Returns an element containing position information. If {@code allowApproximateLocation} is {@code false}, then
+	 * this method will return the {@code LT(1)} element if it contains position information, and otherwise return {@code null}.
+	 * If {@code allowApproximateLocation} is {@code true}, then this method will return the last known element containing position information.
+	 *
+	 * @see #hasPositionInformation
+	 */
+	@Override
+	public Object getKnownPositionElement(boolean allowApproximateLocation) {
+		Object node = data.get(p);
+		if (hasPositionInformation(node)) {
+			return node;
+		}
 
-        if (!allowApproximateLocation) {
-            return null;
-        }
+		if (!allowApproximateLocation) {
+			return null;
+		}
 
-        for (int index = p - 1; index >= 0; index--) {
-            node = data.get(index);
-            if (hasPositionInformation(node)) {
-                return node;
-            }
-        }
+		for (int index = p - 1; index >= 0; index--) {
+			node = data.get(index);
+			if (hasPositionInformation(node)) {
+				return node;
+			}
+		}
 
-        return previousLocationElement;
-    }
+		return previousLocationElement;
+	}
 
-    @Override
-    public boolean hasPositionInformation(Object node) {
-        Token token = adaptor.getToken(node);
-        if (token == null) {
-            return false;
-        }
+	@Override
+	public boolean hasPositionInformation(Object node) {
+		Token token = adaptor.getToken(node);
+		if (token == null) {
+			return false;
+		}
 
-        if (token.getLine() <= 0) {
-            return false;
-        }
+		if (token.getLine() <= 0) {
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    // TREE REWRITE INTERFACE
+	// TREE REWRITE INTERFACE
 
-    @Override
-    public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
-        if ( parent!=null ) {
-            adaptor.replaceChildren(parent, startChildIndex, stopChildIndex, t);
-        }
-    }
+	@Override
+	public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
+		if ( parent!=null ) {
+			adaptor.replaceChildren(parent, startChildIndex, stopChildIndex, t);
+		}
+	}
 
-    @Override
-    public String toString(Object start, Object stop) {
+	@Override
+	public String toString(Object start, Object stop) {
         // we'll have to walk from start to stop in tree; we're not keeping
         // a complete node stream buffer
         return "n/a";
-    }
+	}
 
     /** For debugging; destructive: moves tree iterator to end. */
     public String toTokenTypeString() {
         reset();
-        StringBuilder buf = new StringBuilder();
+		StringBuilder buf = new StringBuilder();
         Object o = LT(1);
         int type = adaptor.getType(o);
         while ( type!=Token.EOF ) {
@@ -240,7 +240,7 @@ public class CommonTreeNodeStream extends LookaheadStream<Object> implements Tre
             consume();
             o = LT(1);
             type = adaptor.getType(o);
-        }
-        return buf.toString();
+		}
+		return buf.toString();
     }
 }

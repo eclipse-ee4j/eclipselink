@@ -20,14 +20,14 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.CommonTokenStrea
 
 /*****************************************************************
  * EJBQLParserBuilder constructs the parser for EJBQL.
- * This is specific to ANTLR version 3.5.2
+ * This is specific to ANTLR version 3.5.3
  *****************************************************************
  */
 public class JPQLParserBuilder {
 
     /**
      * INTERNAL
-     * Build a parser for the passed ejbql string, for ANTLR version 3.5.2
+     * Build a parser for the passed ejbql string, for ANTLR version 3.5.3
      */
     public static JPQLParser buildParser(String queryText) {
 

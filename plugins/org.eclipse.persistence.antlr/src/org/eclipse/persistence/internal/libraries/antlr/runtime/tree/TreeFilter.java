@@ -109,23 +109,23 @@ public class TreeFilter extends TreeParser {
     public void downup(Object t) {
         TreeVisitor v = new TreeVisitor(new CommonTreeAdaptor());
         TreeVisitorAction actions = new TreeVisitorAction() {
-            @Override
+			@Override
             public Object pre(Object t)  { applyOnce(t, topdown_fptr); return t; }
-            @Override
+			@Override
             public Object post(Object t) { applyOnce(t, bottomup_fptr); return t; }
         };
         v.visit(t, actions);
     }
-
+        
     fptr topdown_fptr = new fptr() {
-        @Override
+		@Override
         public void rule() throws RecognitionException {
             topdown();
         }
     };
 
     fptr bottomup_fptr = new fptr() {
-        @Override
+		@Override
         public void rule() throws RecognitionException {
             bottomup();
         }

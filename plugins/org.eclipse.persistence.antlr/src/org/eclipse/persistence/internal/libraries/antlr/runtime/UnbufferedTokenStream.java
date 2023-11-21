@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.misc.LookaheadSt
  *
  *  You can't use this stream if you pass whitespace or other off-channel
  *  tokens to the parser. The stream can't ignore off-channel tokens.
- *
+ * 
  *  You can only look backwards 1 token: LT(-1).
  *
  *  Use this when you need to read from a socket or other infinite stream.
@@ -45,43 +45,43 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.misc.LookaheadSt
  *  @see CommonTokenStream
  */
 public class UnbufferedTokenStream extends LookaheadStream<Token> implements TokenStream {
-    protected TokenSource tokenSource;
+	protected TokenSource tokenSource;
     protected int tokenIndex = 0; // simple counter to set token index in tokens
 
     /** Skip tokens on any channel but this one; this is how we skip whitespace... */
     protected int channel = Token.DEFAULT_CHANNEL;
 
-    public UnbufferedTokenStream(TokenSource tokenSource) {
-        this.tokenSource = tokenSource;
-    }
+	public UnbufferedTokenStream(TokenSource tokenSource) {
+		this.tokenSource = tokenSource;
+	}
 
-    @Override
-    public Token nextElement() {
-        Token t = tokenSource.nextToken();
+	@Override
+	public Token nextElement() {
+		Token t = tokenSource.nextToken();
         t.setTokenIndex(tokenIndex++);
-        return t;
-    }
+		return t;
+	}
 
-    @Override
-    public boolean isEOF(Token o) { return o.getType() == Token.EOF; }
+	@Override
+    public boolean isEOF(Token o) { return o.getType() == Token.EOF; }    
 
-    @Override
-    public TokenSource getTokenSource() { return tokenSource; }
+	@Override
+	public TokenSource getTokenSource() { return tokenSource; }
 
-    @Override
-    public String toString(int start, int stop) { return "n/a"; }
+	@Override
+	public String toString(int start, int stop) { return "n/a"; }
 
-    @Override
-    public String toString(Token start, Token stop) { return "n/a"; }
+	@Override
+	public String toString(Token start, Token stop) { return "n/a"; }
 
-    @Override
+	@Override
     public int LA(int i) { return LT(i).getType(); }
 
-    @Override
+	@Override
     public Token get(int i) {
         throw new UnsupportedOperationException("Absolute token indexes are meaningless in an unbuffered stream");
     }
 
-    @Override
-    public String getSourceName() {    return tokenSource.getSourceName();    }
+	@Override
+	public String getSourceName() {	return tokenSource.getSourceName();	}
 }

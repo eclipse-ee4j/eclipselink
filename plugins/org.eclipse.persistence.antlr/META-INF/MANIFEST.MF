@@ -1,17 +1,17 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: eclipselink.antlr
-Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version="3.5.2",
- org.eclipse.persistence.internal.libraries.antlr.runtime.debug;version="3.5.2",
- org.eclipse.persistence.internal.libraries.antlr.runtime.misc;version="3.5.2",
- org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version="3.5.2"
-Implementation-Version: 3.5.2.qualifier
+Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version="3.5.3",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.debug;version="3.5.3",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.misc;version="3.5.3",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version="3.5.3"
+Implementation-Version: 3.5.3.v202311210849
 Bundle-Name: EclipseLink ANTLR
-Created-By: 1.6.0_21 (Sun Microsystems Inc.)
+Created-By: 21 (Oracle Corporation)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr
-Require-Capability: osgi.ee; filter:="(&(osgi.ee=JavaSE)(version>=1.7))"
+Require-Capability: osgi.ee; filter:="(&(osgi.ee=JavaSE)(version>=1.8))"
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 3.5.2.qualifier
+Bundle-Version: 3.5.3.v202311210849
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.antlr
 

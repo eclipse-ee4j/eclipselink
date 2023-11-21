@@ -45,237 +45,237 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.TreeAdaptor
  *  if it represents a whole tree.
  */
 public class DebugTreeAdaptor implements TreeAdaptor {
-    protected DebugEventListener dbg;
-    protected TreeAdaptor adaptor;
+	protected DebugEventListener dbg;
+	protected TreeAdaptor adaptor;
 
-    public DebugTreeAdaptor(DebugEventListener dbg, TreeAdaptor adaptor) {
-        this.dbg = dbg;
-        this.adaptor = adaptor;
-    }
+	public DebugTreeAdaptor(DebugEventListener dbg, TreeAdaptor adaptor) {
+		this.dbg = dbg;
+		this.adaptor = adaptor;
+	}
 
-    @Override
-    public Object create(Token payload) {
-        if ( payload.getTokenIndex() < 0 ) {
-            // could be token conjured up during error recovery
-            return create(payload.getType(), payload.getText());
-        }
-        Object node = adaptor.create(payload);
-        dbg.createNode(node, payload);
-        return node;
-    }
+	@Override
+	public Object create(Token payload) {
+		if ( payload.getTokenIndex() < 0 ) {
+			// could be token conjured up during error recovery
+			return create(payload.getType(), payload.getText());
+		}
+		Object node = adaptor.create(payload);
+		dbg.createNode(node, payload);
+		return node;
+	}
 
-    @Override
-    public Object errorNode(TokenStream input, Token start, Token stop,
-                            RecognitionException e)
-    {
-        Object node = adaptor.errorNode(input, start, stop, e);
-        if ( node!=null ) {
-            dbg.errorNode(node);
-        }
-        return node;
-    }
+	@Override
+	public Object errorNode(TokenStream input, Token start, Token stop,
+							RecognitionException e)
+	{
+		Object node = adaptor.errorNode(input, start, stop, e);
+		if ( node!=null ) {
+			dbg.errorNode(node);
+		}
+		return node;
+	}
 
-    @Override
-    public Object dupTree(Object tree) {
-        Object t = adaptor.dupTree(tree);
-        // walk the tree and emit create and add child events
-        // to simulate what dupTree has done. dupTree does not call this debug
-        // adapter so I must simulate.
-        simulateTreeConstruction(t);
-        return t;
-    }
+	@Override
+	public Object dupTree(Object tree) {
+		Object t = adaptor.dupTree(tree);
+		// walk the tree and emit create and add child events
+		// to simulate what dupTree has done. dupTree does not call this debug
+		// adapter so I must simulate.
+		simulateTreeConstruction(t);
+		return t;
+	}
 
-    /** ^(A B C): emit create A, create B, add child, ...*/
-    protected void simulateTreeConstruction(Object t) {
-        dbg.createNode(t);
-        int n = adaptor.getChildCount(t);
-        for (int i=0; i<n; i++) {
-            Object child = adaptor.getChild(t, i);
-            simulateTreeConstruction(child);
-            dbg.addChild(t, child);
-        }
-    }
+	/** ^(A B C): emit create A, create B, add child, ...*/
+	protected void simulateTreeConstruction(Object t) {
+		dbg.createNode(t);
+		int n = adaptor.getChildCount(t);
+		for (int i=0; i<n; i++) {
+			Object child = adaptor.getChild(t, i);
+			simulateTreeConstruction(child);
+			dbg.addChild(t, child);
+		}
+	}
 
-    @Override
-    public Object dupNode(Object treeNode) {
-        Object d = adaptor.dupNode(treeNode);
-        dbg.createNode(d);
-        return d;
-    }
+	@Override
+	public Object dupNode(Object treeNode) {
+		Object d = adaptor.dupNode(treeNode);
+		dbg.createNode(d);
+		return d;
+	}
 
-    @Override
-    public Object nil() {
-        Object node = adaptor.nil();
-        dbg.nilNode(node);
-        return node;
-    }
+	@Override
+	public Object nil() {
+		Object node = adaptor.nil();
+		dbg.nilNode(node);
+		return node;
+	}
 
-    @Override
-    public boolean isNil(Object tree) {
-        return adaptor.isNil(tree);
-    }
+	@Override
+	public boolean isNil(Object tree) {
+		return adaptor.isNil(tree);
+	}
 
-    @Override
-    public void addChild(Object t, Object child) {
-        if ( t==null || child==null ) {
-            return;
-        }
-        adaptor.addChild(t,child);
-        dbg.addChild(t, child);
-    }
+	@Override
+	public void addChild(Object t, Object child) {
+		if ( t==null || child==null ) {
+			return;
+		}
+		adaptor.addChild(t,child);
+		dbg.addChild(t, child);
+	}
 
-    @Override
-    public Object becomeRoot(Object newRoot, Object oldRoot) {
-        Object n = adaptor.becomeRoot(newRoot, oldRoot);
-        dbg.becomeRoot(newRoot, oldRoot);
-        return n;
-    }
+	@Override
+	public Object becomeRoot(Object newRoot, Object oldRoot) {
+		Object n = adaptor.becomeRoot(newRoot, oldRoot);
+		dbg.becomeRoot(newRoot, oldRoot);
+		return n;
+	}
 
-    @Override
-    public Object rulePostProcessing(Object root) {
-        return adaptor.rulePostProcessing(root);
-    }
+	@Override
+	public Object rulePostProcessing(Object root) {
+		return adaptor.rulePostProcessing(root);
+	}
 
-    public void addChild(Object t, Token child) {
-        Object n = this.create(child);
-        this.addChild(t, n);
-    }
+	public void addChild(Object t, Token child) {
+		Object n = this.create(child);
+		this.addChild(t, n);
+	}
 
-    @Override
-    public Object becomeRoot(Token newRoot, Object oldRoot) {
-        Object n = this.create(newRoot);
-        adaptor.becomeRoot(n, oldRoot);
-        dbg.becomeRoot(newRoot, oldRoot);
-        return n;
-    }
+	@Override
+	public Object becomeRoot(Token newRoot, Object oldRoot) {
+		Object n = this.create(newRoot);
+		adaptor.becomeRoot(n, oldRoot);
+		dbg.becomeRoot(newRoot, oldRoot);
+		return n;
+	}
 
-    @Override
-    public Object create(int tokenType, Token fromToken) {
-        Object node = adaptor.create(tokenType, fromToken);
-        dbg.createNode(node);
-        return node;
-    }
+	@Override
+	public Object create(int tokenType, Token fromToken) {
+		Object node = adaptor.create(tokenType, fromToken);
+		dbg.createNode(node);
+		return node;
+	}
 
-    @Override
-    public Object create(int tokenType, Token fromToken, String text) {
-        Object node = adaptor.create(tokenType, fromToken, text);
-        dbg.createNode(node);
-        return node;
-    }
+	@Override
+	public Object create(int tokenType, Token fromToken, String text) {
+		Object node = adaptor.create(tokenType, fromToken, text);
+		dbg.createNode(node);
+		return node;
+	}
 
-    @Override
-    public Object create(int tokenType, String text) {
-        Object node = adaptor.create(tokenType, text);
-        dbg.createNode(node);
-        return node;
-    }
+	@Override
+	public Object create(int tokenType, String text) {
+		Object node = adaptor.create(tokenType, text);
+		dbg.createNode(node);
+		return node;
+	}
 
-    @Override
-    public int getType(Object t) {
-        return adaptor.getType(t);
-    }
+	@Override
+	public int getType(Object t) {
+		return adaptor.getType(t);
+	}
 
-    @Override
-    public void setType(Object t, int type) {
-        adaptor.setType(t, type);
-    }
+	@Override
+	public void setType(Object t, int type) {
+		adaptor.setType(t, type);
+	}
 
-    @Override
-    public String getText(Object t) {
-        return adaptor.getText(t);
-    }
+	@Override
+	public String getText(Object t) {
+		return adaptor.getText(t);
+	}
 
-    @Override
-    public void setText(Object t, String text) {
-        adaptor.setText(t, text);
-    }
+	@Override
+	public void setText(Object t, String text) {
+		adaptor.setText(t, text);
+	}
 
-    @Override
-    public Token getToken(Object t) {
-        return adaptor.getToken(t);
-    }
+	@Override
+	public Token getToken(Object t) {
+		return adaptor.getToken(t);
+	}
 
-    @Override
-    public void setTokenBoundaries(Object t, Token startToken, Token stopToken) {
-        adaptor.setTokenBoundaries(t, startToken, stopToken);
-        if ( t!=null && startToken!=null && stopToken!=null ) {
-            dbg.setTokenBoundaries(
-                t, startToken.getTokenIndex(),
-                stopToken.getTokenIndex());
-        }
-    }
+	@Override
+	public void setTokenBoundaries(Object t, Token startToken, Token stopToken) {
+		adaptor.setTokenBoundaries(t, startToken, stopToken);
+		if ( t!=null && startToken!=null && stopToken!=null ) {
+			dbg.setTokenBoundaries(
+				t, startToken.getTokenIndex(),
+				stopToken.getTokenIndex());
+		}
+	}
 
-    @Override
-    public int getTokenStartIndex(Object t) {
-        return adaptor.getTokenStartIndex(t);
-    }
+	@Override
+	public int getTokenStartIndex(Object t) {
+		return adaptor.getTokenStartIndex(t);
+	}
 
-    @Override
-    public int getTokenStopIndex(Object t) {
-        return adaptor.getTokenStopIndex(t);
-    }
+	@Override
+	public int getTokenStopIndex(Object t) {
+		return adaptor.getTokenStopIndex(t);
+	}
 
-    @Override
-    public Object getChild(Object t, int i) {
-        return adaptor.getChild(t, i);
-    }
+	@Override
+	public Object getChild(Object t, int i) {
+		return adaptor.getChild(t, i);
+	}
 
-    @Override
-    public void setChild(Object t, int i, Object child) {
-        adaptor.setChild(t, i, child);
-    }
+	@Override
+	public void setChild(Object t, int i, Object child) {
+		adaptor.setChild(t, i, child);
+	}
 
-    @Override
-    public Object deleteChild(Object t, int i) {
-        return deleteChild(t, i);
-    }
+	@Override
+	public Object deleteChild(Object t, int i) {
+		return adaptor.deleteChild(t, i);
+	}
 
-    @Override
-    public int getChildCount(Object t) {
-        return adaptor.getChildCount(t);
-    }
+	@Override
+	public int getChildCount(Object t) {
+		return adaptor.getChildCount(t);
+	}
 
-    @Override
-    public int getUniqueID(Object node) {
-        return adaptor.getUniqueID(node);
-    }
+	@Override
+	public int getUniqueID(Object node) {
+		return adaptor.getUniqueID(node);
+	}
 
-    @Override
-    public Object getParent(Object t) {
-        return adaptor.getParent(t);
-    }
+	@Override
+	public Object getParent(Object t) {
+		return adaptor.getParent(t);
+	}
 
-    @Override
-    public int getChildIndex(Object t) {
-        return adaptor.getChildIndex(t);
-    }
+	@Override
+	public int getChildIndex(Object t) {
+		return adaptor.getChildIndex(t);
+	}
 
-    @Override
-    public void setParent(Object t, Object parent) {
-        adaptor.setParent(t, parent);
-    }
+	@Override
+	public void setParent(Object t, Object parent) {
+		adaptor.setParent(t, parent);
+	}
 
-    @Override
-    public void setChildIndex(Object t, int index) {
-        adaptor.setChildIndex(t, index);
-    }
+	@Override
+	public void setChildIndex(Object t, int index) {
+		adaptor.setChildIndex(t, index);
+	}
 
-    @Override
-    public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
-        adaptor.replaceChildren(parent, startChildIndex, stopChildIndex, t);
-    }
+	@Override
+	public void replaceChildren(Object parent, int startChildIndex, int stopChildIndex, Object t) {
+		adaptor.replaceChildren(parent, startChildIndex, stopChildIndex, t);
+	}
 
-    // support
+	// support
 
-    public DebugEventListener getDebugListener() {
-        return dbg;
-    }
+	public DebugEventListener getDebugListener() {
+		return dbg;
+	}
 
-    public void setDebugListener(DebugEventListener dbg) {
-        this.dbg = dbg;
-    }
+	public void setDebugListener(DebugEventListener dbg) {
+		this.dbg = dbg;
+	}
 
-    public TreeAdaptor getTreeAdaptor() {
-        return adaptor;
-    }
+	public TreeAdaptor getTreeAdaptor() {
+		return adaptor;
+	}
 }

@@ -32,17 +32,17 @@ package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
  *  in a subrule are different: (ID INT)+ where |ID|!=|INT|
  */
 public class RewriteCardinalityException extends RuntimeException {
-    public String elementDescription;
+	public String elementDescription;
 
-    public RewriteCardinalityException(String elementDescription) {
-        this.elementDescription = elementDescription;
-    }
+	public RewriteCardinalityException(String elementDescription) {
+		this.elementDescription = elementDescription;
+	}
 
-    @Override
-    public String getMessage() {
-        if ( elementDescription!=null ) {
-            return elementDescription;
-        }
-        return null;
-    }
+	@Override
+	public String getMessage() {
+		if ( elementDescription!=null ) {
+			return elementDescription;
+		}
+		return null;
+	}
 }

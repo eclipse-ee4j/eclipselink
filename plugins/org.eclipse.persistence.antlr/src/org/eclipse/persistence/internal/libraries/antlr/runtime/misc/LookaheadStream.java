@@ -37,7 +37,7 @@ public abstract class LookaheadStream<T> extends FastQueue<T> {
     public static final int UNINITIALIZED_EOF_ELEMENT_INDEX = Integer.MAX_VALUE;
 
     /** Absolute token index. It's the index of the symbol about to be
-     *  read via {@code LT(1)}. Goes from 0 to numtokens.
+	 *  read via {@code LT(1)}. Goes from 0 to numtokens.
      */
     protected int currentElementIndex = 0;
 
@@ -57,14 +57,14 @@ public abstract class LookaheadStream<T> extends FastQueue<T> {
     /** tracks how deep mark() calls are nested */
     protected int markDepth = 0;
 
-    @Override
+	@Override
     public void reset() {
         super.reset();
         currentElementIndex = 0;
         p = 0;
         prevElement = null;
     }
-
+    
     /** Implement nextElement to supply a stream of elements to this
      *  lookahead buffer.  Return EOF upon end of the stream we're pulling from.
      *
@@ -78,7 +78,7 @@ public abstract class LookaheadStream<T> extends FastQueue<T> {
      * Get and remove first element in queue; override
      * {@link FastQueue#remove()}; it's the same, just checks for backtracking.
      */
-    @Override
+	@Override
     public T remove() {
         T o = elementAt(0);
         p++;
@@ -117,33 +117,33 @@ public abstract class LookaheadStream<T> extends FastQueue<T> {
     }
 
     /** Size of entire stream is unknown; we only know buffer size from FastQueue. */
-    @Override
+	@Override
     public int size() { throw new UnsupportedOperationException("streams are of unknown size"); }
 
     public T LT(int k) {
-        if ( k==0 ) {
-            return null;
-        }
-        if ( k<0 ) return LB(-k);
-        //System.out.print("LT(p="+p+","+k+")=");
+		if ( k==0 ) {
+			return null;
+		}
+		if ( k<0 ) return LB(-k);
+		//System.out.print("LT(p="+p+","+k+")=");
         syncAhead(k);
         if ( (p+k-1) > data.size() ) return eof;
         return elementAt(k-1);
-    }
+	}
 
     public int index() { return currentElementIndex; }
 
-    public int mark() {
+	public int mark() {
         markDepth++;
         lastMarker = p; // track where we are in buffer not absolute token index
         return lastMarker;
-    }
+	}
 
-    public void release(int marker) {
-        // no resources to release
-    }
+	public void release(int marker) {
+		// no resources to release
+	}
 
-    public void rewind(int marker) {
+	public void rewind(int marker) {
     markDepth--;
     int delta = p - marker;
     currentElementIndex -= delta;
@@ -157,20 +157,20 @@ public abstract class LookaheadStream<T> extends FastQueue<T> {
     p = lastMarker;
   }
 
-    /**
-     * Seek to a 0-indexed absolute token index. Normally used to seek backwards
-     * in the buffer. Does not force loading of nodes.
-     * <p>
-     * To preserve backward compatibility, this method allows seeking past the
-     * end of the currently buffered data. In this case, the input pointer will
-     * be moved but the data will only actually be loaded upon the next call to
-     * {@link #consume} or {@link #LT} for {@code k>0}.</p>
-     *
-     * @throws IllegalArgumentException if {@code index} is less than 0
-     * @throws UnsupportedOperationException if {@code index} lies before the
-     * beginning of the moving window buffer
-     * ({@code index < }{@link #currentElementIndex currentElementIndex}<code> - </code>{@link #p p}).
-     */
+	/**
+	 * Seek to a 0-indexed absolute token index. Normally used to seek backwards
+	 * in the buffer. Does not force loading of nodes.
+	 * <p>
+	 * To preserve backward compatibility, this method allows seeking past the
+	 * end of the currently buffered data. In this case, the input pointer will
+	 * be moved but the data will only actually be loaded upon the next call to
+	 * {@link #consume} or {@link #LT} for {@code k>0}.</p>
+	 *
+	 * @throws IllegalArgumentException if {@code index} is less than 0
+	 * @throws UnsupportedOperationException if {@code index} lies before the
+	 * beginning of the moving window buffer
+	 * ({@code index < }{@link #currentElementIndex currentElementIndex}<code> - </code>{@link #p p}).
+	 */
     public void seek(int index) {
         if (index < 0) {
             throw new IllegalArgumentException("can't seek before the beginning of the input");

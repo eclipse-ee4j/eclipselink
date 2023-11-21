@@ -36,110 +36,110 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.Token;
  *  fields, it's easy to cut them out in your own BaseTree subclass.
  */
 public class CommonTree extends BaseTree {
-    /** A single token is the payload */
-    public Token token;
+	/** A single token is the payload */
+	public Token token;
 
-    /** What token indexes bracket all tokens associated with this node
-     *  and below?
-     */
-    protected int startIndex=-1, stopIndex=-1;
+	/** What token indexes bracket all tokens associated with this node
+	 *  and below?
+	 */
+	protected int startIndex=-1, stopIndex=-1;
 
-    /** Who is the parent node of this node; if null, implies node is root */
-    public CommonTree parent;
+	/** Who is the parent node of this node; if null, implies node is root */
+	public CommonTree parent;
 
-    /** What index is this node in the child list? Range: 0..n-1 */
-    public int childIndex = -1;
+	/** What index is this node in the child list? Range: 0..n-1 */
+	public int childIndex = -1;
 
-    public CommonTree() { }
+	public CommonTree() { }
+	
+	public CommonTree(CommonTree node) {
+		super(node);
+		this.token = node.token;
+		this.startIndex = node.startIndex;
+		this.stopIndex = node.stopIndex;
+	}
 
-    public CommonTree(CommonTree node) {
-        super(node);
-        this.token = node.token;
-        this.startIndex = node.startIndex;
-        this.stopIndex = node.stopIndex;
-    }
+	public CommonTree(Token t) {
+		this.token = t;
+	}
 
-    public CommonTree(Token t) {
-        this.token = t;
-    }
+	public Token getToken() {
+		return token;
+	}
 
-    public Token getToken() {
-        return token;
-    }
+	@Override
+	public Tree dupNode() {
+		return new CommonTree(this);
+	}
 
-    @Override
-    public Tree dupNode() {
-        return new CommonTree(this);
-    }
+	@Override
+	public boolean isNil() {
+		return token==null;
+	}
 
-    @Override
-    public boolean isNil() {
-        return token==null;
-    }
+	@Override
+	public int getType() {
+		if ( token==null ) {
+			return Token.INVALID_TOKEN_TYPE;
+		}
+		return token.getType();
+	}
 
-    @Override
-    public int getType() {
-        if ( token==null ) {
-            return Token.INVALID_TOKEN_TYPE;
-        }
-        return token.getType();
-    }
+	@Override
+	public String getText() {
+		if ( token==null ) {
+			return null;
+		}
+		return token.getText();
+	}
 
-    @Override
-    public String getText() {
-        if ( token==null ) {
-            return null;
-        }
-        return token.getText();
-    }
+	@Override
+	public int getLine() {
+		if ( token==null || token.getLine()==0 ) {
+			if ( getChildCount()>0 ) {
+				return getChild(0).getLine();
+			}
+			return 0;
+		}
+		return token.getLine();
+	}
 
-    @Override
-    public int getLine() {
-        if ( token==null || token.getLine()==0 ) {
-            if ( getChildCount()>0 ) {
-                return getChild(0).getLine();
-            }
-            return 0;
-        }
-        return token.getLine();
-    }
+	@Override
+	public int getCharPositionInLine() {
+		if ( token==null || token.getCharPositionInLine()==-1 ) {
+			if ( getChildCount()>0 ) {
+				return getChild(0).getCharPositionInLine();
+			}
+			return 0;
+		}
+		return token.getCharPositionInLine();
+	}
 
-    @Override
-    public int getCharPositionInLine() {
-        if ( token==null || token.getCharPositionInLine()==-1 ) {
-            if ( getChildCount()>0 ) {
-                return getChild(0).getCharPositionInLine();
-            }
-            return 0;
-        }
-        return token.getCharPositionInLine();
-    }
+	@Override
+	public int getTokenStartIndex() {
+		if ( startIndex==-1 && token!=null ) {
+			return token.getTokenIndex();
+		}
+		return startIndex;
+	}
 
-    @Override
-    public int getTokenStartIndex() {
-        if ( startIndex==-1 && token!=null ) {
-            return token.getTokenIndex();
-        }
-        return startIndex;
-    }
+	@Override
+	public void setTokenStartIndex(int index) {
+		startIndex = index;
+	}
 
-    @Override
-    public void setTokenStartIndex(int index) {
-        startIndex = index;
-    }
+	@Override
+	public int getTokenStopIndex() {
+		if ( stopIndex==-1 && token!=null ) {
+			return token.getTokenIndex();
+		}
+		return stopIndex;
+	}
 
-    @Override
-    public int getTokenStopIndex() {
-        if ( stopIndex==-1 && token!=null ) {
-            return token.getTokenIndex();
-        }
-        return stopIndex;
-    }
-
-    @Override
-    public void setTokenStopIndex(int index) {
-        stopIndex = index;
-    }
+	@Override
+	public void setTokenStopIndex(int index) {
+		stopIndex = index;
+	}
 
     /** For every node in this subtree, make sure it's start/stop token's
      *  are set.  Walk depth first, visit bottom up.  Only updates nodes
@@ -164,37 +164,37 @@ public class CommonTree extends BaseTree {
         }
     }
 
-    @Override
-    public int getChildIndex() {
-        return childIndex;
-    }
+	@Override
+	public int getChildIndex() {
+		return childIndex;
+	}
 
-    @Override
-    public Tree getParent() {
-        return parent;
-    }
+	@Override
+	public Tree getParent() {
+		return parent;
+	}
 
-    @Override
-    public void setParent(Tree t) {
-        this.parent = (CommonTree)t;
-    }
+	@Override
+	public void setParent(Tree t) {
+		this.parent = (CommonTree)t;
+	}
 
-    @Override
-    public void setChildIndex(int index) {
-        this.childIndex = index;
-    }
+	@Override
+	public void setChildIndex(int index) {
+		this.childIndex = index;
+	}
 
-    @Override
-    public String toString() {
-        if ( isNil() ) {
-            return "nil";
-        }
-        if ( getType()==Token.INVALID_TOKEN_TYPE ) {
-            return "<errornode>";
-        }
-        if ( token==null ) {
-            return null;
-        }
-        return token.getText();
-    }
+	@Override
+	public String toString() {
+		if ( isNil() ) {
+			return "nil";
+		}
+		if ( getType()==Token.INVALID_TOKEN_TYPE ) {
+			return "<errornode>";
+		}
+		if ( token==null ) {
+			return null;
+		}
+		return token.getText();
+	}
 }
