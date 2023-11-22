@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,8 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
-import oracle.jdbc.pool.OracleDataSource;
+import oracle.ucp.jdbc.PoolDataSource;
+import oracle.ucp.jdbc.PoolDataSourceFactory;
 
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.DatabaseLogin;
@@ -52,7 +53,7 @@ public class SessionExchanger {
     DatabaseSession originalSession;
     DatabaseSession newSession;
     boolean hasLoggedOutOriginalSession;
-    OracleDataSource dataSource;
+    PoolDataSource dataSource;
 
     // pass the original session and params for the new one:
     //   useDatabaseSession - "true" means new session is DatabaseSession; "false" - ServerSession;
@@ -157,13 +158,7 @@ public class SessionExchanger {
         } finally {
             newSession = null;
             if(dataSource != null) {
-                try {
-                    dataSource.close();
-                } catch (SQLException ex) {
-                    throw new TestProblemException("Exception thrown while closing OracleDataSource:\n", ex);
-                } finally {
-                    dataSource = null;
-                }
+                dataSource = null;
             }
         }
     }
@@ -190,21 +185,19 @@ public class SessionExchanger {
     // create a data source using the supplied connection string
     void createDataSource(String connectionString, int minConnections, int maxConnections) {
         try {
-            dataSource = new OracleDataSource();
+            dataSource = PoolDataSourceFactory.getPoolDataSource();
+            dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
             Properties props = new Properties();
             if(minConnections >= 0) {
-                props.setProperty("MinLimit", Integer.toString(minConnections));
-                props.setProperty("InitialLimit", Integer.toString(minConnections));
+                dataSource.setMinPoolSize(minConnections);
+                dataSource.setInitialPoolSize(minConnections);
             }
             if(maxConnections >= 0) {
-                props.setProperty("MaxLimit", Integer.toString(maxConnections));
+                dataSource.setMaxPoolSize(maxConnections);
             }
-            if(!props.isEmpty()) {
-                dataSource.setConnectionCacheProperties(props);
-            }
+            dataSource.setURL(connectionString);
         } catch (SQLException ex) {
             throw new TestProblemException("Failed to create OracleDataSource with " + connectionString + ".\n", ex);
         }
-        dataSource.setURL(connectionString);
     }
 }
