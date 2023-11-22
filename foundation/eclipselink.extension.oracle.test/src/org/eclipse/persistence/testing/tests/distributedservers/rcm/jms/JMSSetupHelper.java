@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,13 +101,6 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
 
     protected Object[] internalCreateFactory() throws Exception {
         updateDbSettings();
-        if (oracleDataSource != null) {
-            try {
-                oracleDataSource.close();
-            } catch (java.sql.SQLException ex) {
-                // ignore
-            }
-        }
         createInDb();
 
         oracleDataSource = new oracle.jdbc.pool.OracleDataSource();
@@ -139,12 +132,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
             destroyInDb();
         } catch (java.sql.SQLException ex) {
         } finally {
-            try {
-                oracleDataSource.close();
-            } catch (java.sql.SQLException ex) {
-            } finally {
-                oracleDataSource = null;
-            }
+            oracleDataSource = null;
         }
     }
 
