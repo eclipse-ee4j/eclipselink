@@ -30,6 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 
 /**
@@ -81,9 +82,11 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         decryptCipherAES_CBC.init(Cipher.DECRYPT_MODE, sk, iv);
 
         SecretKey skGCM = Synergizer.getAESGCMMultitasker();
-        IvParameterSpec ivGCM = Synergizer.getIvSpec();
+        byte[] ivGCM = new byte[16];
+        SecureRandom random = SecureRandom.getInstanceStrong();
+        random.nextBytes(ivGCM);
         encryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
-        AlgorithmParameterSpec parameterSpecGCM = new GCMParameterSpec(128, ivGCM.getIV());
+        AlgorithmParameterSpec parameterSpecGCM = new GCMParameterSpec(128, ivGCM);
         encryptCipherAES_GCM.init(Cipher.ENCRYPT_MODE, skGCM, parameterSpecGCM);
 
         decryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
