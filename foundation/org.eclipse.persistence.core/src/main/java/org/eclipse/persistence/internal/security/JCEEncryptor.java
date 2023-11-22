@@ -30,6 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 
@@ -82,11 +83,8 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         decryptCipherAES_CBC.init(Cipher.DECRYPT_MODE, sk, iv);
 
         SecretKey skGCM = Synergizer.getAESGCMMultitasker();
-        byte[] ivGCM = new byte[16];
-        SecureRandom random = SecureRandom.getInstanceStrong();
-        random.nextBytes(ivGCM);
         encryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
-        AlgorithmParameterSpec parameterSpecGCM = new GCMParameterSpec(128, ivGCM);
+        AlgorithmParameterSpec parameterSpecGCM = new GCMParameterSpec(128, Synergizer.getIvGCM());
         encryptCipherAES_GCM.init(Cipher.ENCRYPT_MODE, skGCM, parameterSpecGCM);
 
         decryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
@@ -178,6 +176,18 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
      * Returns multitaskers for the ciphers. :-)
      */
     private static class Synergizer {
+
+        private static byte[] ivGCM = new byte[16];
+        static {
+            SecureRandom random = null;
+            try {
+                random = SecureRandom.getInstanceStrong();
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+            random.nextBytes(ivGCM);
+        }
+
         private static SecretKey getDESMultitasker() throws Exception {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("DES");
             return factory.generateSecret(new DESKeySpec(Helper.buildBytesFromHexString("E60B80C7AEC78038")));
@@ -202,6 +212,10 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
                     (byte) 126, (byte) -55, (byte) -21, (byte) 48,
                     (byte) -86, (byte) 97, (byte) 12, (byte) 113};
             return new IvParameterSpec(b);
+        }
+
+        private static byte[] getIvGCM() {
+            return ivGCM;
         }
     }
 }
