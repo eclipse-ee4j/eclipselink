@@ -3224,7 +3224,7 @@ public class DatabasePlatform extends DatasourcePlatform {
              // By default use the JDBC isValid API unless a ping SQL has been set.
              // The ping SQL is set by most platforms, but user could set to null to used optimized JDBC check if desired.
              try {
-                 return connection.isValid(IS_VALID_TIMEOUT);
+                 return !connection.isValid(IS_VALID_TIMEOUT);
              } catch (Throwable failed) {
                  // Catch throwable as old JDBC drivers may not support isValid.
                  return false;
