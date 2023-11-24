@@ -739,28 +739,24 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 EntityManagerFactoryImpl.isLoaded(entity, session));
     }
 
-    // TODO-API-3.2
     @Override
     public void load(Object entity, String attributeName) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        EntityManagerFactoryImpl.load(entity, attributeName, session);
     }
 
-    // TODO-API-3.2
     @Override
     public <E> void load(E entity, Attribute<? super E, ?> attribute) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        EntityManagerFactoryImpl.load(entity, attribute.getName(), session);
     }
 
-    // TODO-API-3.2
     @Override
     public void load(Object entity) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        EntityManagerFactoryImpl.load(entity, session);
     }
 
-    // TODO-API-3.2
     @Override
     public boolean isInstance(Object entity, Class<?> entityClass) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return EntityManagerFactoryImpl.isInstance(entity, entityClass, session);
     }
 
     @Override
@@ -768,10 +764,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         return setupImpl.getPersistenceUnitUniqueName();
     }
 
-    // TODO-API-3.2
     @Override
     public <T> Class<? extends T> getClass(T entity) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return EntityManagerFactoryImpl.getClass(entity, session);
     }
 
     /**

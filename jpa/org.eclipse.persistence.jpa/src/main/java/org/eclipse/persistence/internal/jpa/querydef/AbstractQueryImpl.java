@@ -29,6 +29,7 @@ import java.util.Set;
 
 import jakarta.persistence.criteria.AbstractQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.EntityType;
@@ -72,13 +73,28 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         this.baseExpression = new ExpressionBuilder();
     }
 
+    // Allows complete copy of CommonAbstractCriteriaImpl. Required for cast implementation and shall remain pkg private.
+    AbstractQueryImpl(Metamodel metamodel, Expression<Boolean> where, CriteriaBuilderImpl queryBuilder,
+                      Class<T> queryType, Set<ParameterExpression<?>> parameters,
+                      ResultType queryResult, boolean distinct, Predicate havingClause,List<Expression<?>> groupBy,
+                      Set<Root<?>> roots, org.eclipse.persistence.expressions.Expression baseExpression) {
+        super(metamodel, where, queryBuilder, queryType, parameters);
+        this.queryResult = queryResult;
+        this.distinct = distinct;
+        this.havingClause = havingClause;
+        this.groupBy = groupBy;
+        this.roots = roots;
+        this.baseExpression = baseExpression;
+    }
+
     /**
      * Specify the expressions that are used to form groups over
      * the query results.
      * Replaces the previous specified grouping expressions, if any.
      * If no grouping expressions are specified, any previously
      * added grouping expressions are simply removed.
-     * @param grouping  list of zero or more grouping expressions
+     *
+     * @param grouping list of zero or more grouping expressions
      * @return the modified query
      */
     @Override

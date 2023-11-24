@@ -24,12 +24,18 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import org.eclipse.persistence.annotations.FetchAttribute;
+import org.eclipse.persistence.annotations.FetchGroup;
+import org.eclipse.persistence.annotations.FetchGroups;
 
 @Entity
 @Table(name="PERSISTENCE32_POKEMON")
 @NamedQuery(name="Pokemon.get", query="SELECT p FROM Pokemon p WHERE p.id = :id")
 @NamedNativeQuery(name="Pokemon.deleteAllTypes", query="DELETE FROM PERSISTENCE32_POKEMON_TYPE")
 @NamedNativeQuery(name="Pokemon.deleteAll", query="DELETE FROM PERSISTENCE32_POKEMON")
+@FetchGroups({
+        @FetchGroup(name = "FetchTypes", attributes = {@FetchAttribute(name = "types")})
+})
 public class Pokemon {
 
     // ID is assigned in tests to avoid collisions
@@ -63,8 +69,10 @@ public class Pokemon {
         this.types = types;
     }
 
+    // Required for testUnionWithMultiselectEntityParametersInSelection
+    // to select ResultType.CONSTRUCTOR for the query.
     public Pokemon(int id, String name) {
-        this(name, null, Collections.EMPTY_LIST);
+        this(name, null, Collections.emptyList());
         this.id = id;
     }
 

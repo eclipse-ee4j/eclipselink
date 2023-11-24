@@ -25,7 +25,6 @@
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -88,13 +87,14 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * the entity does not yet have an id
      *
      * @return id of the entity
-     * @throws IllegalArgumentException
-     *             if the entity is found not to be an entity.
+     * @throws IllegalArgumentException if the given object is not an instance
+     *         of an entity class belonging to the persistence unit
      */
     public static Object getIdentifier(Object entity, AbstractSession session) {
         ClassDescriptor descriptor = session.getDescriptor(entity);
         if (descriptor == null) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class", new Object[] { entity }));
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_non_persistent_class", new Object[] { entity }));
         }
         if (descriptor.getCMPPolicy() != null) {
             return descriptor.getCMPPolicy().createPrimaryKeyInstance(entity, session);
@@ -104,19 +104,94 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         }
     }
 
+    /**
+     * Load the persistent state of an entity belonging to the
+     * persistence unit and to an open persistence context.
+     * After this method returns, {@link #isLoaded(Object, AbstractSession)} must
+     * return true with the given entity instance.
+     *
+     * @param entity entity instance to be loaded
+     * @param session database session
+     * @throws IllegalArgumentException if the given object is not an instance
+     *         of an entity class belonging to the persistence unit
+     */
+    static void load(Object entity, AbstractSession session) {
+        ClassDescriptor descriptor = session.getDescriptor(entity);
+        if (descriptor != null) {
+            List<DatabaseMapping> mappings = descriptor.getMappings();
+            for (DatabaseMapping mapping : mappings) {
+                if (!mapping.isLazy() && !isLoaded(entity, mapping.getAttributeName(), mapping)) {
+                    load(entity, mapping.getAttributeName(), mapping);
+                }
+            }
+        } else {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_non_persistent_class", new Object[] {entity}));
+        }
+    }
 
     /**
-     * Determine the load state of an entity belonging to the persistence unit.
-     * This method can be used to determine the load state of an entity passed
-     * as a reference. An entity is considered loaded if all attributes for
-     * which FetchType EAGER has been specified have been loaded. The
-     * isLoaded(Object, String) method should be used to determine the load
-     * state of an attribute. Not doing so might lead to unintended loading of
-     * state.
+     * Load the persistent value of a given persistent attribute
+     * of an entity belonging to the persistence unit and to an
+     * open persistence context.
+     * After this method returns, {@link #isLoaded(Object, String, AbstractSession)}
+     * must return true with the given entity instance and attribute.
      *
-     * @param entity
-     *            whose load state is to be determined
-     * @return false if the entity has not been loaded, else true.
+     * @param entity entity instance to be loaded
+     * @param attributeName the name of the attribute to be loaded
+     * @param session database session
+     * @throws IllegalArgumentException if the given object is not an instance
+     *         of an entity class belonging to the persistence unit
+     */
+    static void load(Object entity, String attributeName, AbstractSession session) {
+        ClassDescriptor descriptor = session.getDescriptor(entity);
+        if (descriptor != null) {
+            DatabaseMapping mapping = descriptor.getMappingForAttributeName(attributeName);
+            if (mapping != null) {
+                load(entity, attributeName, mapping);
+            }
+        } else {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_non_persistent_class", new Object[] {entity}));
+        }
+    }
+
+    /**
+     * Load the persistent value of a given persistent attribute
+     * of an entity belonging to the persistence unit with a given mapping.
+     *
+     * @param entity entity instance to be loaded
+     * @param attributeName the name of the attribute to be loaded
+     * @param mapping database mapping metadata of the attribute
+     */
+    private static void load(Object entity, String attributeName, DatabaseMapping mapping) {
+        if (mapping.isForeignReferenceMapping()) {
+            Object value = mapping.getAttributeValueFromObject(entity);
+            IndirectionPolicy policy = ((ForeignReferenceMapping) mapping).getIndirectionPolicy();
+            if (!policy.objectIsInstantiated(value)) {
+                policy.instantiateObject(entity, value);
+            }
+        } else if (entity instanceof FetchGroupTracker tracker) {
+            if (!tracker._persistence_isAttributeFetched(attributeName)) {
+                EntityManagerImpl.processUnfetchedAttribute(tracker, attributeName);
+            }
+        }
+    }
+
+    /**
+     * Determine the load state of an entity belonging to the
+     * persistence unit. This method can be used to determine the
+     * load state of an entity passed as a reference. An entity is
+     * considered loaded if all attributes for which
+     * {@link jakarta.persistence.FetchType#EAGER} has been specified have been loaded.
+     * <p> The {@link #isLoaded(Object, String)} method should be
+     * used to determine the load state of an attribute. Not doing
+     * so might lead to unintended loading of state.
+     *
+     * @param entity entity instance whose load state is to be determined
+     * @param session database session
+     * @return Value of {@code true} if the given entity has been loaded
+     *         or {@code false} otherwise.
      */
     public static Boolean isLoaded(Object entity, AbstractSession session) {
         ClassDescriptor descriptor = session.getDescriptor(entity);
@@ -124,9 +199,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             return null;
         }
         List<DatabaseMapping> mappings = descriptor.getMappings();
-        Iterator<DatabaseMapping> i = mappings.iterator();
-        while (i.hasNext()) {
-            DatabaseMapping mapping = i.next();
+        for (DatabaseMapping mapping : mappings) {
             if (!mapping.isLazy() && !isLoaded(entity, mapping.getAttributeName(), mapping)) {
                 return false;
             }
@@ -134,17 +207,15 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return true;
     }
 
-
     /**
-     * Determine the load state of a given persistent attribute of an entity
-     * belonging to the persistence unit.
+     * Determine the load state of a given persistent attribute
+     * of an entity belonging to the persistence unit.
      *
-     * @param entity
-     *            containing the attribute
-     * @param attributeName
-     *            name of attribute whose load state is to be determined
-     * @return false if entity's state has not been loaded or if the attribute
-     *         state has not been loaded, otherwise true
+     * @param entity entity instance containing the attribute
+     * @param attributeName name of attribute whose load state is to be determined
+     * @param session database session
+     * @return Value of {@code true} if the given attribute has been loaded
+     *         or {@code false} otherwise.
      */
     public static Boolean isLoaded(Object entity, String attributeName, AbstractSession session) {
         ClassDescriptor descriptor = session.getDescriptor(entity);
@@ -166,11 +237,15 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     /**
      * Check whether a named attribute on a given entity with a given mapping
      * has been loaded.
-     *
-     * This method will check the valueholder or indirect collection for LAZY
+     * This method will check the value holder or indirect collection for LAZY
      * ForeignReferenceMappings to see if has been instantiated and otherwise
      * check the fetch group.
      *
+     * @param entity entity instance containing the attribute
+     * @param attributeName name of attribute whose load state is to be determined
+     * @param mapping database mapping metadata of the attribute
+     * @return Value of {@code true} if the given attribute has been loaded
+     *         or {@code false} otherwise.
      */
     public static boolean isLoaded(Object entity, String attributeName, DatabaseMapping mapping) {
         if (mapping.isForeignReferenceMapping()) {
@@ -186,6 +261,52 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         } else {
             return true;
         }
+    }
+
+    /**
+     * Check whether the given entity belonging to the persistence
+     * unit and to an open persistence context is an instance of the
+     * given entity class, or false otherwise.
+     * This method may, but is not required to, load the given entity
+     * by side effect.
+     *
+     * @param entity entity instance
+     * @param entityClass an entity class belonging to the persistence unit
+     * @param session database session
+     * @return Value of {@code true} if the given entity is an instance
+     *         of the given entity class or {@code false} otherwise.
+     * @throws IllegalArgumentException if the given object is not an instance
+     *         of an entity class belonging to the persistence unit
+     */
+    static boolean isInstance(Object entity, Class<?> entityClass, AbstractSession session) {
+        // Just validate that entity belongs to current PU
+        ClassDescriptor descriptor = session.getDescriptor(entity);
+        if (descriptor == null) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_non_persistent_class", new Object[] {entity}));
+        }
+        return entityClass.isInstance(entity);
+    }
+
+    /**
+     * Return the concrete entity class if the given entity belonging
+     * to the persistence unit and to an open persistence context.
+     * This method may, but is not required to, load the given entity
+     * by side effect.
+     *
+     * @param entity  entity instance
+     * @param session database session
+     * @return an entity class belonging to the persistence unit
+     * @throws IllegalArgumentException if the given object is not an instance
+     *         of an entity class belonging to the persistence unit
+     */
+    static <T> Class<? extends T> getClass(T entity, AbstractSession session) {
+        ClassDescriptor descriptor = session.getDescriptor(entity);
+        if (descriptor == null) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_non_persistent_class", new Object[] {entity}));
+        }
+        return descriptor.getJavaClass();
     }
 
     /**
@@ -624,25 +745,21 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return delegate.isLoaded(entity);
     }
 
-    // TODO-API-3.2
     @Override
     public void load(Object entity, String attributeName) {
         delegate.load(entity, attributeName);
     }
 
-    // TODO-API-3.2
     @Override
     public <E> void load(E entity, Attribute<? super E, ?> attribute) {
         delegate.load(entity, attribute);
     }
 
-    // TODO-API-3.2
     @Override
     public void load(Object entity) {
         delegate.load(entity);
     }
 
-    // TODO-API-3.2
     @Override
     public boolean isInstance(Object entity, Class<?> entityClass) {
         return delegate.isInstance(entity, entityClass);
@@ -653,7 +770,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return delegate.getName();
     }
 
-    // TODO-API-3.2
     @Override
     public <T> Class<? extends T> getClass(T entity) {
         return delegate.getClass(entity);
