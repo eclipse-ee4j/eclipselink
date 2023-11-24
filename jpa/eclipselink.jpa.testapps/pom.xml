@@ -242,7 +242,7 @@
         </dependency>
 
         <!--Test dependencies-->
-        <!--ASM Implementations-->
+        <!--ASM Implementation-->
         <!--Origin OW2-->
         <dependency>
             <groupId>org.ow2.asm</groupId>

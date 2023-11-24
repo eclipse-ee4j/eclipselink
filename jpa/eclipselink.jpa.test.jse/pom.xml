@@ -51,7 +51,7 @@
             <artifactId>weld-se-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--ASM Implementations-->
+        <!--ASM Implementation-->
         <!--Origin OW2-->
         <dependency>
             <groupId>org.ow2.asm</groupId>

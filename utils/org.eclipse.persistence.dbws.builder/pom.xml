@@ -105,7 +105,7 @@
             <artifactId>jaxws-eclipselink-plugin</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--ASM Implementations-->
+        <!--ASM Implementation-->
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>

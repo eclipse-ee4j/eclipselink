@@ -68,7 +68,7 @@
             <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--ASM Implementations-->
+        <!--ASM Implementation-->
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
