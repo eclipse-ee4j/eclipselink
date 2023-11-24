@@ -86,23 +86,6 @@
                         <id>default-test</id>
                     </execution>
                     <execution>
-                        <id>asm-eclipselink-test</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <classpathDependencyExcludes>
-                                <classpathDependencyExclude>org.ow2.asm:asm</classpathDependencyExclude>
-                                <classpathDependencyExclude>org.ow2.asm:asm-commons</classpathDependencyExclude>
-                                <classpathDependencyExclude>org.ow2.asm:asm-tree</classpathDependencyExclude>
-                                <classpathDependencyExclude>org.ow2.asm:asm-util</classpathDependencyExclude>
-                            </classpathDependencyExcludes>
-                            <systemPropertyVariables>
-                                <eclipselink.asm.service>eclipselink</eclipselink.asm.service>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>asm-ow2-test</id>
                         <goals>
                             <goal>test</goal>
@@ -111,9 +94,6 @@
                             <systemPropertyVariables>
                                 <eclipselink.asm.service>ow2</eclipselink.asm.service>
                             </systemPropertyVariables>
-                            <classpathDependencyExcludes>
-                                <classpathDependencyExclude>org.eclipse.persistence.asm</classpathDependencyExclude>
-                            </classpathDependencyExcludes>
                         </configuration>
                     </execution>
                 </executions>

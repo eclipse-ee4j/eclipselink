@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2020, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 
 <resources>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.antlr:jar}"/>
-<resource-root path="${org.eclipse.persistence:org.eclipse.persistence.asm:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.core:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}"/>

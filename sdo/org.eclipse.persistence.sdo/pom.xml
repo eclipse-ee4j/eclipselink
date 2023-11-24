@@ -69,10 +69,25 @@
         </dependency>
 
         <!--Test dependencies-->
-        <!--EclipseLink ASM Implementation-->
+        <!--ASM Implementations-->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-util</artifactId>
             <scope>test</scope>
         </dependency>
         <!--Test framework-->
@@ -277,7 +292,6 @@
                                     *
                                 </Export-Package>
                                 <Import-Package>
-                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
                                     jakarta.activation;resolution:=optional,
                                     jakarta.mail.internet;resolution:=optional,
                                     *

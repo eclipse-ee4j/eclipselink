@@ -27,27 +27,13 @@ public class ASMFactoryTest {
     public void getAsmServiceTest() {
         String asmServiceSysProperty = System.getProperty(SystemProperties.ASM_SERVICE, "");
         String asmService = ASMFactory.getAsmService();
-        switch (asmServiceSysProperty) {
-            case ASMFactory.ASM_SERVICE_OW2:
-                assertEquals(ASMFactory.ASM_SERVICE_OW2, asmService);
-                break;
-            case ASMFactory.ASM_SERVICE_ECLIPSELINK:
-            default:
-                assertEquals(ASMFactory.ASM_SERVICE_ECLIPSELINK, asmService);
-        }
+        assertEquals(ASMFactory.ASM_SERVICE_OW2, asmService);
     }
 
     @Test
     public void createClassVisitorTest() {
         String asmServiceSysProperty = System.getProperty(SystemProperties.ASM_SERVICE, "");
         ClassVisitor classVisitor = ASMFactory.createClassVisitor(ASMFactory.ASM_API_SELECTED);
-        switch (asmServiceSysProperty) {
-            case ASMFactory.ASM_SERVICE_OW2:
-                assertEquals(org.eclipse.persistence.asm.internal.platform.ow2.ClassVisitorImpl.class, classVisitor.getClass());
-                break;
-            case ASMFactory.ASM_SERVICE_ECLIPSELINK:
-            default:
-                assertEquals(org.eclipse.persistence.asm.internal.platform.eclipselink.ClassVisitorImpl.class, classVisitor.getClass());
-        }
+        assertEquals(org.eclipse.persistence.asm.internal.platform.ow2.ClassVisitorImpl.class, classVisitor.getClass());
     }
 }

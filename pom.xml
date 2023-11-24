@@ -186,7 +186,6 @@
         <docs.status>DRAFT</docs.status>
 
         <!--Eclipse Dependencies version-->
-        <eclipselink.asm.version>9.6.0</eclipselink.asm.version>
         <asm.version>9.6</asm.version>
         <activation-api.version>2.1.2</activation-api.version>
         <angus-activation.version>2.0.1</angus-activation.version>
@@ -315,17 +314,6 @@
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.parent</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.asm</artifactId>
-                <version>${eclipselink.asm.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.asm</artifactId>
-                <version>${eclipselink.asm.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>

@@ -46,12 +46,6 @@
         <!--Other modules-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
@@ -300,14 +294,12 @@
                                     *
                                 </Export-Package>
                                 <Import-Package>
-                                    org.eclipse.persistence.internal.libraries.asm*;version=!;resolution:=optional,
                                     org.objectweb.asm*;version=!;resolution:=optional,
                                     javax.rmi;version=!;resolution:=optional,
                                     javax.rmi.CORBA;version=!;resolution:=optional,
                                     org.omg.CORBA;version=!;resolution:=optional,
                                     org.omg.CORBA.portable;version=!;resolution:=optional,
                                     org.omg.CORBA_2_3.portable;version=!;resolution:=optional,
-                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
                                     org.eclipse.persistence.eis.adapters.xmlfile;resolution:=optional,
                                     org.eclipse.persistence.sessions.coordination.rmi.iiop;resolution:=optional,
                                     org.eclipse.persistence.sessions.coordination.corba.sun;resolution:=optional,

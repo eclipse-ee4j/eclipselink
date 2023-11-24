@@ -34,11 +34,6 @@
         <!--Other modules-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
         </dependency>
         <dependency>
@@ -197,7 +192,6 @@
                                     *
                                 </Export-Package>
                                 <Import-Package>
-                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
                                     org.eclipse.persistence.json;resolution:=optional,
                                     *
                                 </Import-Package>

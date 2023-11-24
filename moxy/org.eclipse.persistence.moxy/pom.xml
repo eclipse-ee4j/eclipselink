@@ -117,10 +117,25 @@
             <optional>true</optional>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink ASM Implementation-->
+        <!--ASM Implementations-->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-util</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -185,10 +200,6 @@
                                     org.eclipse.persistence.internal.jaxb.many,
                                     *
                                 </Export-Package>
-                                <Import-Package>
-                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
-                                    *
-                                </Import-Package>
                             </instructions>
                         </configuration>
                     </execution>
@@ -330,7 +341,6 @@
 
                                     <pathelement path="${org.glassfish:jakarta.json:jar}"/>
 
-                                    <pathelement path="${org.eclipse.persistence:org.eclipse.persistence.asm:jar}"/>
                                     <pathelement path="${org.eclipse.persistence:org.eclipse.persistence.core:jar}"/>
 
                                     <pathelement path="${jakarta.annotation:jakarta.annotation-api:jar}"/>

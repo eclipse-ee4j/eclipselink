@@ -105,48 +105,14 @@ public class MetadataAsmFactory extends MetadataFactory {
         } catch (IllegalArgumentException iae) {
             // class was probably compiled with some newer than officially
             // supported and tested JDK
-            // in such case log a warning and try to re-read the class
-            // without class version check
-            if (stream != null) {
-                if (markSupported) {
-                    try {
-                        stream.reset();
-                    } catch (IOException e) {
-                        try {
-                            stream.close();
-                        } catch (IOException ex) {
-                            //ignore
-                        }
-                        stream = readResource(resourceString);
-                    }
-                } else {
-                    try {
-                        stream.close();
-                    } catch (IOException ex) {
-                        //ignore
-                    }
-                    stream = readResource(resourceString);
-                }
-                try {
-                    //Second argument checkClassVersion=false means, that EclipseLink ASM implementation is used
-                    //as checkClassVersion is not visible by public constructor
-                    ClassReader reader = ASMFactory.createClassReader(stream, false);
-                    Attribute[] attributes = new Attribute[0];
-                    reader.accept(visitor, attributes, ClassReader.valueInt("SKIP_CODE") | ClassReader.valueInt("SKIP_DEBUG") | ClassReader.valueInt("SKIP_FRAMES"));
-                } catch (Exception e) {
-                    SessionLog log = getLogger().getSession() != null
-                            ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
-                    // our fall-back failed, this is severe
-                    if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
-                        SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, e);
-                        entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
-                        log.log(entry);
-                    }
-                    addMetadataClass(getVirtualMetadataClass(className));
-                }
-            } else {
-                addMetadataClass(getVirtualMetadataClass(className));
+            // in such case log a error
+            SessionLog log = getLogger().getSession() != null ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
+            if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
+                SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, iae);
+                entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className, ASMFactory.JAVA_LATEST_VERSION }));
+                log.log(entry);
             }
+            addMetadataClass(getVirtualMetadataClass(className));
         } catch (Exception exception) {
             addMetadataClass(getVirtualMetadataClass(className));
         } finally {

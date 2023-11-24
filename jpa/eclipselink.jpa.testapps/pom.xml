@@ -243,12 +243,6 @@
 
         <!--Test dependencies-->
         <!--ASM Implementations-->
-        <!--EclipseLink ASM Implementation-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--Origin OW2-->
         <dependency>
             <groupId>org.ow2.asm</groupId>
@@ -412,9 +406,24 @@
                                         <version>${project.version}</version>
                                     </path>
                                     <path>
-                                        <groupId>org.eclipse.persistence</groupId>
-                                        <artifactId>org.eclipse.persistence.asm</artifactId>
-                                        <version>${eclipselink.asm.version}</version>
+                                        <groupId>org.ow2.asm</groupId>
+                                        <artifactId>asm</artifactId>
+                                        <version>${asm.version}</version>
+                                    </path>
+                                    <path>
+                                        <groupId>org.ow2.asm</groupId>
+                                        <artifactId>asm-commons</artifactId>
+                                        <version>${asm.version}</version>
+                                    </path>
+                                    <path>
+                                        <groupId>org.ow2.asm</groupId>
+                                        <artifactId>asm-tree</artifactId>
+                                        <version>${asm.version}</version>
+                                    </path>
+                                    <path>
+                                        <groupId>org.ow2.asm</groupId>
+                                        <artifactId>asm-util</artifactId>
+                                        <version>${asm.version}</version>
                                     </path>
                                 </annotationProcessorPaths>
                                 <compilerArgs combine.children="append">

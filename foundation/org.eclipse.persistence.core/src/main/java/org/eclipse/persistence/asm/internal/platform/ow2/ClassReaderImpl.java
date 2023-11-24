@@ -72,5 +72,4 @@ public class ClassReaderImpl extends org.eclipse.persistence.asm.ClassReader {
     public <T> T unwrap() {
         return (T)this.ow2ClassReader;
     }
-
 }

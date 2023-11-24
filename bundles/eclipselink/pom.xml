@@ -228,11 +228,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -399,7 +394,6 @@
                             <includeScope>provided</includeScope>
                             <classifier>sources</classifier>
                             <includeArtifactIds>
-                                org.eclipse.persistence.asm,
                                 org.eclipse.persistence.core,
                                 org.eclipse.persistence.corba,
                                 org.eclipse.persistence.dbws,
@@ -440,7 +434,6 @@
                             <includeGroupIds>${project.groupId}</includeGroupIds>
                             <includeScope>provided</includeScope>
                             <includeArtifactIds>
-                                org.eclipse.persistence.asm,
                                 org.eclipse.persistence.core,
                                 org.eclipse.persistence.corba,
                                 org.eclipse.persistence.dbws,

@@ -91,32 +91,23 @@
         </dependency>
         <!--ASM Implementations-->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>${asm.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>${asm.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-tree</artifactId>
-            <version>${asm.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
-            <version>${asm.version}</version>
             <scope>test</scope>
         </dependency>
         <!--For Oracle DB driver see Oracle proprietary dependencies part. It's not limited to tests only-->
@@ -177,26 +168,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>asm-eclipselink-test</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <classpathDependencyExcludes>
-                                <classpathDependencyExclude>org.ow2.asm:asm</classpathDependencyExclude>
-                                <classpathDependencyExclude>org.ow2.asm:asm-commons</classpathDependencyExclude>
-                                <classpathDependencyExclude>org.ow2.asm:asm-tree</classpathDependencyExclude>
-                                <classpathDependencyExclude>org.ow2.asm:asm-util</classpathDependencyExclude>
-                            </classpathDependencyExcludes>
-                            <systemPropertyVariables>
-                                <eclipselink.asm.service>eclipselink</eclipselink.asm.service>
-                            </systemPropertyVariables>
-                            <includes>
-                                <include>org/eclipse/persistence/testing/tests/junit/asm/**/*Test</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>asm-ow2-test</id>
                         <goals>
                             <goal>test</goal>
@@ -205,9 +176,6 @@
                             <systemPropertyVariables>
                                 <eclipselink.asm.service>ow2</eclipselink.asm.service>
                             </systemPropertyVariables>
-                            <classpathDependencyExcludes>
-                                <classpathDependencyExclude>org.eclipse.persistence.asm</classpathDependencyExclude>
-                            </classpathDependencyExcludes>
                             <includes>
                                 <include>org/eclipse/persistence/testing/tests/junit/asm/**/*Test</include>
                             </includes>
