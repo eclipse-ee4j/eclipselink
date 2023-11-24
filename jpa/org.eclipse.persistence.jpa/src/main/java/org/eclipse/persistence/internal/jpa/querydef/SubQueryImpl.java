@@ -40,7 +40,6 @@ import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.Type.PersistenceType;
-
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
@@ -93,13 +92,33 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         this.parent = parent;
     }
 
-    /**
-     * Specify the item that is to be returned in the query result.
-     * Replaces the previously specified selection, if any.
-     * @param selection  selection specifying the item that
-     *        is to be returned in the query result
-     * @return the modified query
-     */
+    // Allows complete copy of CommonAbstractCriteriaImpl. Required for cast implementation and shall remain private.
+    private SubQueryImpl(Metamodel metamodel, Expression<Boolean> where, CriteriaBuilderImpl queryBuilder,
+                      Class<T> queryType, Set<ParameterExpression<?>> parameters,
+                      ResultType queryResult, boolean distinct, Predicate havingClause,List<Expression<?>> groupBy,
+                      Set<Root<?>> roots, org.eclipse.persistence.expressions.Expression baseExpression,
+                      SelectionImpl<?> selection,SubSelectExpression currentNode, String alias, ReportQuery subQuery,
+                      Set<Join<?,?>> correlatedJoins, CommonAbstractCriteria parent, Set<FromImpl> processedJoins,
+                      Set<org.eclipse.persistence.expressions.Expression> correlations) {
+        super(metamodel, where, queryBuilder, queryType, parameters,
+              queryResult, distinct, havingClause, groupBy, roots, baseExpression);
+        this.selection = selection;
+        this.currentNode = currentNode;
+        this.alias = alias;
+        this.subQuery = subQuery;
+        this.correlatedJoins = correlatedJoins;
+        this.parent = parent;
+        this.processedJoins = processedJoins;
+        this.correlations = correlations;
+    }
+
+        /**
+         * Specify the item that is to be returned in the query result.
+         * Replaces the previously specified selection, if any.
+         * @param selection  selection specifying the item that
+         *        is to be returned in the query result
+         * @return the modified query
+         */
     @Override
     public Subquery<T> select(Expression<T> selection) {
         findRootAndParameters(selection);
@@ -437,6 +456,15 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     }
 
     @Override
+    public <X> Expression<X> cast(Class<X> aClass) {
+        // JPA spec: New instance with provided Java type
+        return new SubQueryImpl<>(
+                metamodel, where, queryBuilder, aClass, parameters,
+                queryResult, distinct, havingClause, groupBy, roots, baseExpression,
+                selection, currentNode, alias, subQuery, correlatedJoins, parent, processedJoins, correlations);
+    }
+
+    @Override
     public Predicate in(Object... values) {
         List<Expression<?>> list = new ArrayList<>();
         list.add(this);
@@ -672,12 +700,6 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     @Override
     public DatabaseQuery getDatabaseQuery() {
         return this.subQuery;
-    }
-
-    // TODO-API-3.2
-    @Override
-    public <X> Expression<X> cast(Class<X> aClass) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
     }
 
 }

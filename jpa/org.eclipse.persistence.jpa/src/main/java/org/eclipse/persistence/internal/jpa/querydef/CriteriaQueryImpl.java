@@ -497,8 +497,19 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
 
         if (this.queryResult.equals(ResultType.PARTIAL)) {
+            ReadAllQuery raq;
             // TODO: allow force of ReportQuery creation for usage in UNION
-            ReadAllQuery raq = new ReadAllQuery(this.queryType);
+            // TODO: In progress, code is not working and tested !!!
+            // See testUnionWithMultiselectEntityParametersInSelection TODO in UnionCriteriaQueryTest
+            if (toReportQuery) {
+                //raq = createReportQuery(this.queryType);
+                raq = createReportQueryWithItem(this.queryType);
+            } else {
+                raq = new ReadAllQuery(this.queryType);
+            }
+            // TODO: double check whether this may be avoided
+            raq.dontMaintainCache();
+            // TODO: ROOTS?
             for (Selection selection : this.selection.getCompoundSelectionItems()) {
                 raq.addPartialAttribute(((SelectionImpl) selection).currentNode);
             }

@@ -129,7 +129,6 @@ public abstract class AbstractPokemon extends JUnitTestCase {
      */
     public void testSetup() {
         new Persistence32TableCreator().replaceTables(JUnitTestCase.getServerSession(getPersistenceUnitName()));
-        clearCache();
         emf.runInTransaction(em -> {
             for (int i = 1; i < TEAMS.length; i++) {
                 em.persist(TEAMS[i]);
@@ -141,6 +140,7 @@ public abstract class AbstractPokemon extends JUnitTestCase {
                 em.persist(TYPES[i]);
             }
         });
+        clearCache();
     }
 
     /**
@@ -155,6 +155,12 @@ public abstract class AbstractPokemon extends JUnitTestCase {
             em.createNamedQuery("Trainer.deleteAll").executeUpdate();
             em.createNamedQuery("Team.deleteAll").executeUpdate();
         });
+    }
+
+    @Override
+    public void clearCache() {
+        emf.getCache().evictAll();
+        super.clearCache();
     }
 
 }

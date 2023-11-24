@@ -71,6 +71,16 @@ public abstract class CommonAbstractCriteriaImpl<T>
         this.queryType = resultType;
     }
 
+    // Allows complete copy of CommonAbstractCriteriaImpl. Required for cast implementation and shall remain pkg private.
+    CommonAbstractCriteriaImpl(Metamodel metamodel, Expression<Boolean> where, CriteriaBuilderImpl queryBuilder,
+                                         Class<T> queryType, Set<ParameterExpression<?>> parameters) {
+        this.metamodel = metamodel;
+        this.where = where;
+        this.queryBuilder = queryBuilder;
+        this.queryType = queryType;
+        this.parameters = parameters;
+    }
+
     /**
      * Return the predicate that corresponds to the where clause restriction(s).
      *

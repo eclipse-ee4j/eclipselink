@@ -11,9 +11,11 @@
  */
 package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,9 +26,15 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PersistenceUnitTransactionType;
+import jakarta.persistence.PersistenceUnitUtil;
 import junit.framework.Test;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
+import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
+import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer_;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
 
 public class EntityManagerFactoryTest extends AbstractPokemon {
@@ -40,7 +48,15 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
                 new EntityManagerFactoryTest("testCallWithConnection"),
                 new EntityManagerFactoryTest("testCreateCustomEntityManagerFactory"),
                 new EntityManagerFactoryTest("testCreateConflictingCustomEntityManagerFactory"),
-                new EntityManagerFactoryTest("testCreateConflictingConfiguredEntityManagerFactory"));
+                new EntityManagerFactoryTest("testCreateConflictingConfiguredEntityManagerFactory"),
+                new EntityManagerFactoryTest("testIsLoadedEntityAttribute"),
+                new EntityManagerFactoryTest("testLoadEntityAttribute"),
+                new EntityManagerFactoryTest("testIsLoadedEntityNamedAttribute"),
+                new EntityManagerFactoryTest("testLoadEntityNamedAttribute"),
+                new EntityManagerFactoryTest("testVerifyPokemonFetchGroups"),
+                new EntityManagerFactoryTest("testIsLoadedEntity"),
+                new EntityManagerFactoryTest("testLoadEntity")
+        );
     }
 
     public EntityManagerFactoryTest() {
@@ -209,6 +225,113 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         }
     }
 
+    public void testIsLoadedEntityAttribute() {
+        Trainer t = emf.callInTransaction(
+                em -> em.createQuery("SELECT t FROM Trainer t WHERE t.name = :name", Trainer.class)
+                        .setParameter("name", "Ash")
+                        .getSingleResult());
+        PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+        // This mapping is lazy, so it shall not be loaded
+        assertFalse("Entity lazy attribute Trainer.team should not be loaded", util.isLoaded(t, Trainer_.team));
+    }
+
+    public void testLoadEntityAttribute() {
+        Trainer t = emf.callInTransaction(
+                em -> em.createQuery("SELECT t FROM Trainer t WHERE t.name = :name", Trainer.class)
+                        .setParameter("name", "Ash")
+                        .getSingleResult());
+        PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+        // This mapping is lazy, so it shall not be loaded
+        assertFalse("Entity lazy attribute Trainer.team should not be loaded", util.isLoaded(t, Trainer_.team));
+        util.load(t, Trainer_.team);
+        assertTrue("Entity lazy attribute Trainer.team should be loaded after load call", util.isLoaded(t, Trainer_.team));
+    }
+
+    public void testIsLoadedEntityNamedAttribute() {
+        Trainer t = emf.callInTransaction(
+                em -> em.createQuery("SELECT t FROM Trainer t WHERE t.name = :name", Trainer.class)
+                        .setParameter("name", "Ash")
+                        .getSingleResult());
+        PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+        // This mapping is lazy, so it shall not be loaded
+        assertFalse("Entity lazy attribute Trainer.team should not be loaded", util.isLoaded(t, "team"));
+    }
+
+    public void testLoadEntityNamedAttribute() {
+        Trainer t = emf.callInTransaction(
+                em -> em.createQuery("SELECT t FROM Trainer t WHERE t.name = :name", Trainer.class)
+                        .setParameter("name", "Ash")
+                        .getSingleResult());
+        PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+        // This mapping is lazy, so it shall not be loaded
+        assertFalse("Entity lazy attribute Trainer.team should not be loaded",
+                    util.isLoaded(t, "team"));
+        util.load(t, "team");
+        assertTrue("Entity lazy attribute Trainer.team should be loaded after load call",
+                   util.isLoaded(t, "team"));
+    }
+
+    public void testVerifyPokemonFetchGroups() {
+        if (isWeavingEnabled()) {
+            ClassDescriptor pokemonsDescriptor = getPersistenceUnitServerSession().getDescriptor(Pokemon.class);
+            FetchGroupManager pokemonsFetchGroupManager = pokemonsDescriptor.getFetchGroupManager();
+            assertEquals("Wrong number of fetch groups for Pokemon", 1, pokemonsFetchGroupManager.getFetchGroups().size());
+            assertNotNull("The 'FetchTypes' fetch group was not found for Pokemon", pokemonsFetchGroupManager.getFetchGroup("FetchTypes"));
+        }
+    }
+
+    public void testIsLoadedEntity() {
+        if (isWeavingEnabled()) {
+            Pokemon ekans = new Pokemon(6, TRAINERS[2], "Ekans", List.of(TYPES[4]));
+            emf.runInTransaction(em -> em.persist(ekans));
+            clearCache();
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(QueryHints.FETCH_GROUP_NAME, "FetchTypes");
+            Class<Pokemon> pokemonClass = Pokemon.class;
+            EntityManager em = createEntityManager();
+            try {
+                Pokemon pokemon = em.find(pokemonClass, ekans.getId(), properties);
+                verifyFetchedField(pokemonClass.getDeclaredField("types"), pokemon, ekans.getTypes());
+                verifyNonFetchedField(pokemonClass.getDeclaredField("name"), pokemon);
+                verifyNonFetchedField(pokemonClass.getDeclaredField("trainer"), pokemon);
+                PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
+                // This mapping is lazy, so it shall not be loaded
+                assertFalse("Pokemon lazy attributes name and trainer should not be loaded", util.isLoaded(pokemon));
+            } catch (Exception e) {
+                fail("Error verifying field content: " + e.getMessage());
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    public void testLoadEntity() {
+        if (isWeavingEnabled()) {
+            Pokemon arbok = new Pokemon(7, TRAINERS[2], "Arbok", List.of(TYPES[4]));
+            emf.runInTransaction(em -> em.persist(arbok));
+            clearCache();
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(QueryHints.FETCH_GROUP_NAME, "FetchTypes");
+            Class<Pokemon> pokemonClass = Pokemon.class;
+            EntityManager em = createEntityManager();
+            try {
+                Pokemon pokemon = em.find(pokemonClass, arbok.getId(), properties);
+                verifyFetchedField(pokemonClass.getDeclaredField("types"), pokemon, arbok.getTypes());
+                verifyNonFetchedField(pokemonClass.getDeclaredField("name"), pokemon);
+                verifyNonFetchedField(pokemonClass.getDeclaredField("trainer"), pokemon);
+                PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
+                // This mapping is lazy, so it shall not be loaded
+                assertFalse("Pokemon lazy attributes name and trainer should not be loaded", util.isLoaded(pokemon));
+                util.load(pokemon);
+                assertTrue("Pokemon lazy attributes name and trainer should be loaded after load call", util.isLoaded(pokemon));
+            } catch (Exception e) {
+                fail("Error verifying field content: " + e.getMessage());
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+
     private static PersistenceConfiguration createPersistenceConfiguration(JpaEntityManagerFactory emf, String puName) {
         PersistenceConfiguration configuration = new PersistenceConfiguration(puName);
         configuration.properties(emf.getProperties());
@@ -219,6 +342,24 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         configuration.transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
         configuration.provider("org.eclipse.persistence.jpa.PersistenceProvider");
         return configuration;
+    }
+
+    private static void verifyFetchedField(Field field, Object obj, Object value) {
+        try {
+            field.setAccessible(true);
+            assertEquals("The field [" + field.getName() + "] was not fetched", field.get(obj), value);
+        } catch (IllegalAccessException e) {
+            fail("Error verifying field content: " + e.getMessage());
+        }
+    }
+
+    private static void verifyNonFetchedField(Field field, Object obj) {
+        try {
+            field.setAccessible(true);
+            assertNull("The field [" + field.getName() + "] was fetched", field.get(obj));
+        } catch (IllegalAccessException e) {
+            fail("Error verifying field content: " + e.getMessage());
+        }
     }
 
 }

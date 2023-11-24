@@ -16,17 +16,13 @@ import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.annotations.JoinFetchType;
-import org.eclipse.persistence.annotations.Property;
 
-import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name="PERSISTENCE32_TRAINER")
@@ -40,7 +36,7 @@ public class Trainer {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     private Team team;
 
     @OneToMany(mappedBy = "trainer")
@@ -98,8 +94,7 @@ public class Trainer {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, name);
-        return result;
+        return Objects.hash(id, name);
     }
 
 }

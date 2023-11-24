@@ -384,6 +384,7 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
         }
     }
 
+    // Requires Pokemon(int id, String name) constructor to set ResultType.CONSTRUCTOR in multiselect call
     @SuppressWarnings("deprecation")
     public void testUnionWithMultiselectEntityParametersInSelection() {
         try (EntityManager em = emf.createEntityManager()) {
@@ -413,6 +414,9 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
             }
         }
     }
+
+    // TODO testUnionWithMultiselectEntityParametersInSelection without supporting constructor
+    // to validate ResultType.PARTIAL with compound query
 
     public void testUnionWithMultiselectEntityInSelection() {
         try (EntityManager em = emf.createEntityManager()) {
