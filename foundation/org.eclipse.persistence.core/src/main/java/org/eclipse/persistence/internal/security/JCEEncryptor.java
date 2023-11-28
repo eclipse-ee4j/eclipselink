@@ -44,7 +44,7 @@ import java.util.Arrays;
  */
 public final class JCEEncryptor implements org.eclipse.persistence.security.Securable {
 
-    private boolean doLog = true;
+    private SessionLog log = AbstractSessionLog.getLog();
 
     // Legacy DES ECB cipher used for backwards compatibility decryption only.
     private static final String DES_ECB = "DES/ECB/PKCS5Padding";
@@ -93,9 +93,9 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         decryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
     }
 
-    public JCEEncryptor(boolean doLog) throws Exception {
+    public JCEEncryptor(SessionLog log) throws Exception {
         this();
-        this.doLog = doLog;
+        this.log = log;
     }
 
     /**
@@ -147,8 +147,8 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             password = encryptedPswd;
         } catch (Exception u) {
             try {
-                if (doLog) {
-                    AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, SessionLog.JPA,  "encryptor_decrypt_old_algorithm", null);
+                if (log != null) {
+                    log.log(AbstractSessionLog.WARNING, SessionLog.JPA, "encryptor_decrypt_old_algorithm", null);
                 }
                 // try AES/CBC second
                 bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
