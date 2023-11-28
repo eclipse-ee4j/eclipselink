@@ -17,6 +17,8 @@ package org.eclipse.persistence.internal.security;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -33,6 +35,7 @@ import java.io.ObjectInputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
+import java.util.Arrays;
 
 /**
  * EclipseLink reference implementation for password encryption.
@@ -40,6 +43,8 @@ import java.security.spec.AlgorithmParameterSpec;
  * @author Guy Pelletier
  */
 public final class JCEEncryptor implements org.eclipse.persistence.security.Securable {
+
+    private boolean doLog = true;
 
     // Legacy DES ECB cipher used for backwards compatibility decryption only.
     private static final String DES_ECB = "DES/ECB/PKCS5Padding";
@@ -54,6 +59,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
     private final Cipher decryptCipherAES_CBC;
 
     // All encryption is done through the AES GCM cipher.
+    private static final byte IV_GCM_LENGTH = 16;
     private static final String AES_GCM = "AES/GCM/NoPadding";
     private final Cipher encryptCipherAES_GCM;
     private final Cipher decryptCipherAES_GCM;
@@ -82,14 +88,14 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         decryptCipherAES_CBC = Cipher.getInstance(AES_CBC);
         decryptCipherAES_CBC.init(Cipher.DECRYPT_MODE, sk, iv);
 
-        SecretKey skGCM = Synergizer.getAESGCMMultitasker();
         encryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
-        AlgorithmParameterSpec parameterSpecGCM = new GCMParameterSpec(128, Synergizer.getIvGCM());
-        encryptCipherAES_GCM.init(Cipher.ENCRYPT_MODE, skGCM, parameterSpecGCM);
 
         decryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
-        decryptCipherAES_GCM.init(Cipher.DECRYPT_MODE, skGCM, parameterSpecGCM);
+    }
 
+    public JCEEncryptor(boolean doLog) throws Exception {
+        this();
+        this.doLog = doLog;
     }
 
     /**
@@ -98,7 +104,14 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
     @Override
     public synchronized String encryptPassword(String password) {
         try {
-            return Helper.buildHexStringFromBytes(encryptCipherAES_GCM.doFinal(password.getBytes("UTF-8")));
+            byte[] ivGCM = Synergizer.getIvGCM();
+            AlgorithmParameterSpec parameterSpecGCM = new GCMParameterSpec(128, ivGCM);
+            SecretKey skGCM = Synergizer.getAESGCMMultitasker();
+            encryptCipherAES_GCM.init(Cipher.ENCRYPT_MODE, skGCM, parameterSpecGCM);
+            byte[] bytePassword = encryptCipherAES_GCM.doFinal(password.getBytes("UTF-8"));
+            byte[] result = Arrays.copyOf(ivGCM, IV_GCM_LENGTH + bytePassword.length);
+            System.arraycopy(bytePassword, 0, result, IV_GCM_LENGTH, bytePassword.length);
+            return Helper.buildHexStringFromBytes(result);
         } catch (Exception e) {
             throw ValidationException.errorEncryptingPassword(e);
         }
@@ -115,10 +128,18 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         }
 
         String password = null;
-        byte[] bytePassword = new byte[0];
+        byte[] input = null;
+        byte[] bytePassword = null;
 
         try {
-            bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
+            input = Helper.buildBytesFromHexString(encryptedPswd);
+            SecretKey skGCM = Synergizer.getAESGCMMultitasker();
+            byte[] ivGCM = new byte[IV_GCM_LENGTH];
+            System.arraycopy(input, 0, ivGCM, 0, IV_GCM_LENGTH);
+            AlgorithmParameterSpec parameterSpecGCM = new GCMParameterSpec(128, ivGCM);
+            bytePassword = new byte[input.length - IV_GCM_LENGTH];
+            System.arraycopy(input, IV_GCM_LENGTH, bytePassword, 0, input.length - IV_GCM_LENGTH);
+            decryptCipherAES_GCM.init(Cipher.DECRYPT_MODE, skGCM, parameterSpecGCM);
             // try AES/GCM first
             password = new String(decryptCipherAES_GCM.doFinal(bytePassword), "UTF-8");
         } catch (ConversionException | IllegalBlockSizeException ce) {
@@ -126,7 +147,11 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             password = encryptedPswd;
         } catch (Exception u) {
             try {
+                if (doLog) {
+                    AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, SessionLog.JPA,  "encryptor_decrypt_old_algorithm", null);
+                }
                 // try AES/CBC second
+                bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
                 password = new String(decryptCipherAES_CBC.doFinal(bytePassword), "UTF-8");
             } catch (Exception w) {
                 ObjectInputStream oisAes = null;
@@ -177,17 +202,6 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
      */
     private static class Synergizer {
 
-        private static byte[] ivGCM = new byte[16];
-        static {
-            SecureRandom random = null;
-            try {
-                random = SecureRandom.getInstanceStrong();
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-            random.nextBytes(ivGCM);
-        }
-
         private static SecretKey getDESMultitasker() throws Exception {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("DES");
             return factory.generateSecret(new DESKeySpec(Helper.buildBytesFromHexString("E60B80C7AEC78038")));
@@ -215,6 +229,14 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         }
 
         private static byte[] getIvGCM() {
+            byte[] ivGCM = new byte[IV_GCM_LENGTH];
+            SecureRandom random = null;
+            try {
+                random = SecureRandom.getInstanceStrong();
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+            random.nextBytes(ivGCM);
             return ivGCM;
         }
     }

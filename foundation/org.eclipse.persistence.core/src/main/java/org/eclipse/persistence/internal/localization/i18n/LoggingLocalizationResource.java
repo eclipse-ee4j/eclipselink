@@ -481,7 +481,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "validate_object_space", "validate object space." },
         { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
         { "corrupt_object_referenced_through_mapping", "The following corrupt object is referenced through mapping: {0}" },
-        { "corrupt_object", "corrupt object: {0}" }
+        { "corrupt_object", "corrupt object: {0}" },
+
+        { "encryptor_decrypt_old_algorithm", "Database password was encrypted by deprecated algorithm." +
+                "\nIt's recommended to re-encrypt it by `org.eclipse.persistence.security.JCEEncryptorCmd.`" +
+                "\nUsage is `java -cp <path to the eclipselink.jar> org.eclipse.persistence.security.JCEEncryptorCmd <arguments>`" }
     };
 
     /**
