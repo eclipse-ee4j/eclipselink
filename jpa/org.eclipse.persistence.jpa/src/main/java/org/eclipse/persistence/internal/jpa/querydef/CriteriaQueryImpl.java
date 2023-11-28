@@ -498,20 +498,21 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
         if (this.queryResult.equals(ResultType.PARTIAL)) {
             ReadAllQuery raq;
-            // TODO: allow force of ReportQuery creation for usage in UNION
-            // TODO: In progress, code is not working and tested !!!
-            // See testUnionWithMultiselectEntityParametersInSelection TODO in UnionCriteriaQueryTest
+            @SuppressWarnings("unchecked")
+            List<SelectionImpl<?>> selectionItems = (List<SelectionImpl<?>>) (List<?>) this.selection.getCompoundSelectionItems();
             if (toReportQuery) {
-                //raq = createReportQuery(this.queryType);
-                raq = createReportQueryWithItem(this.queryType);
+                raq = createReportQuery(this.queryType);
+                for (SelectionImpl<?> nested : selectionItems) {
+                    ((ReportQuery) raq).addAttribute(nested.getAlias(), nested.getCurrentNode(), nested.getJavaType());
+                }
             } else {
                 raq = new ReadAllQuery(this.queryType);
             }
-            // TODO: double check whether this may be avoided
+            // Partial object queries are not allowed to maintain the cache or be edited. Requires dontMaintainCache().
+            // See hasPartialAttributeExpressions() in ObjectLevelReadQuery#prepareQuery()
             raq.dontMaintainCache();
-            // TODO: ROOTS?
-            for (Selection selection : this.selection.getCompoundSelectionItems()) {
-                raq.addPartialAttribute(((SelectionImpl) selection).currentNode);
+            for (SelectionImpl<?> selection : selectionItems) {
+                raq.addPartialAttribute((selection).currentNode);
             }
             raq.setExpressionBuilder(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
             query = raq;
