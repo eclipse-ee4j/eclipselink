@@ -59,6 +59,7 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
                 new UnionCriteriaQueryTest("testExceptAllWithNoSelection"),
                 new UnionCriteriaQueryTest("testUnionWithEntityParameterInSelection"),
                 new UnionCriteriaQueryTest("testUnionWithMultiselectEntityParametersInSelection"),
+                new UnionCriteriaQueryTest("testUnionWithMultiselectEntityParametersInSelectionResultTypePartial"),
                 new UnionCriteriaQueryTest("testUnionWithMultiselectEntityInSelection")
         );
     }
@@ -415,8 +416,37 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
         }
     }
 
-    // TODO testUnionWithMultiselectEntityParametersInSelection without supporting constructor
-    // to validate ResultType.PARTIAL with compound query
+    // Selects partial content of existing Trainer constructor prototype
+    // This shall trigger compound query builder with ResultType.PARTIAL.
+    @SuppressWarnings("deprecation")
+    public void testUnionWithMultiselectEntityParametersInSelectionResultTypePartial() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                CriteriaBuilder cb = em.getCriteriaBuilder();
+
+                CriteriaQuery<Trainer> q1 = cb.createQuery(Trainer.class);
+                Root<Trainer> root1 = q1.from(Trainer.class);
+                q1.multiselect(root1.get("id"), root1.get("name"));
+                q1.where(cb.equal(root1.get("name"), cb.parameter(String.class, "name1")));
+
+                CriteriaQuery<Trainer> q2 = cb.createQuery(Trainer.class);
+                Root<Trainer> root2 = q2.from(Trainer.class);
+                q2.multiselect(root2.get("id"), root2.get("name"));
+                q2.where(cb.equal(root2.get("name"), cb.parameter(String.class, "name2")));
+
+                TypedQuery<Trainer> query = em.createQuery(cb.union(q1, q2));
+                query.setParameter("name1", TRAINERS[1].getName());
+                query.setParameter("name2", TRAINERS[2].getName());
+                List<Trainer> trainers = query.getResultList();
+                assertEquals(2, trainers.size());
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
 
     public void testUnionWithMultiselectEntityInSelection() {
         try (EntityManager em = emf.createEntityManager()) {
