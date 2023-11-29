@@ -37,6 +37,9 @@ import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer_;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
 
+/**
+ * Verify jakarta.persistence 3.2 API changes in {@link jakarta.persistence.EntityManagerFactory}.
+ */
 public class EntityManagerFactoryTest extends AbstractPokemon {
 
     public static Test suite() {

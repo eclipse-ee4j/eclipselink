@@ -11,11 +11,12 @@
     SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 
 -->
-<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
-    http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
-        version="2.1">
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+          https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+        version="3.0">
 
     <!-- This is the default persistence unit -->
     <persistence-unit name="persistence32" transaction-type="RESOURCE_LOCAL">
@@ -28,6 +29,25 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="jakarta.persistence.schema-generation.scripts.action" value="none"/>
+            <!-- Required for SchemaManagerValidateOnModifiedColumnTest -->
+            <property name="eclipselink.schema-validation.mode" value="full"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <!-- This is the schema-generation verify persistence unit -->
+    <persistence-unit name="persistence32_schemagen_verify" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.Team</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.Trainer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.Type</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.SyntaxEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="verify"/>
             <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
             <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>

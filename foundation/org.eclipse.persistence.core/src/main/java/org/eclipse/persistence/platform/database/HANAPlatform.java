@@ -530,7 +530,7 @@ public final class HANAPlatform extends DatabasePlatform {
     @Override
     public void writeAddColumnClause(Writer writer, AbstractSession session, TableDefinition table, FieldDefinition field) throws IOException {
         writer.write("ADD (");
-        field.appendDBString(writer, session, table);
+        field.appendDBCreateString(writer, session, table);
         writer.write(")");
     }
 

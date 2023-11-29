@@ -12,6 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -110,20 +112,55 @@ public class FieldDefinition implements Serializable, Cloneable {
         this.name = name;
         this.typeName = typeName;
     }
-
     /**
      * INTERNAL:
      * Append the database field definition string to the table creation statement.
+     *
      * @param writer  Target writer where to write field definition string.
      * @param session Current session context.
      * @param table   Database table being processed.
      * @throws ValidationException When invalid or inconsistent data were found.
      */
-    public void appendDBString(final Writer writer, final AbstractSession session,
-            final TableDefinition table) throws ValidationException {
+    public void appendDBCreateString(final Writer writer, final AbstractSession session,
+                                     final TableDefinition table) {
+        appendDBString(writer, session, table, null);
+    }
+
+    /**
+     * INTERNAL:
+     * Check whether field definition should allow {@code NULL} values.
+     *
+     * @param fieldType database platform specific field definition matching this field,
+     *                  e.g. {@code DatabaseObjectDefinition.getFieldTypeDefinition(session.getPlatform(), type, typeName)}
+     * @return Value of {@code true} when field definition should allow {@code NULL} values
+     *         or {@code false} otherwise
+     */
+    public boolean shouldPrintFieldNullClause(FieldTypeDefinition fieldType) {
+        return shouldAllowNull && fieldType.shouldAllowNull();
+    }
+
+    /**
+     * INTERNAL:
+     * Append the database field definition string to the table creation/modification statement.
+     *
+     * @param writer  Target writer where to write field definition string.
+     * @param session Current session context.
+     * @param table   Database table being processed.
+     * @param alterKeyword Field definition is part of ALTER/MODIFY COLUMN statement
+     *                and {@code alterKeyword} is appended after column name when not {@code null}
+     * @throws ValidationException When invalid or inconsistent data were found.
+     */
+    private void appendDBString(final Writer writer, final AbstractSession session,
+                                      final TableDefinition table, String alterKeyword) throws ValidationException {
         try {
-            writer.write(name);
-            writer.write(" ");
+                writer.write(name);
+                writer.write(" ");
+
+            // e.g. "ALTER TABLE assets ALTER COLUMN location TYPE VARCHAR" to add "TYPE" keyword
+            if (alterKeyword != null) {
+                writer.write(alterKeyword);
+                writer.write(" ");
+            }
 
             if (getTypeDefinition() != null) { //apply user-defined complete type definition
                 writer.write(typeDefinition);
@@ -141,7 +178,7 @@ public class FieldDefinition implements Serializable, Cloneable {
                 if (shouldPrintFieldIdentityClause) {
                     platform.printFieldIdentityClause(writer);
                 }
-                if (shouldAllowNull && fieldType.shouldAllowNull()) {
+                if (shouldPrintFieldNullClause(fieldType)) {
                     platform.printFieldNullClause(writer);
                 } else {
                     platform.printFieldNotNullClause(writer);

@@ -13,10 +13,12 @@
 // Contributors:
 //     01/19/2012-2.4 Chris Delahunt
 //       - 368490: Add support for Metadata to be refreshed through RCM
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.sessions.coordination;
 
 import java.util.Map;
 
 public interface MetadataRefreshListener {
-    void triggerMetadataRefresh(Map properties);
+    void triggerMetadataRefresh(Map<String, ?> properties);
 }

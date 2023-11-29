@@ -30,6 +30,9 @@ import junit.framework.Test;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
 
+/**
+ * Verify jakarta.persistence 3.2 API changes in {@link CriteriaBuilder} for union expressions.
+ */
 public class UnionCriteriaQueryTest extends AbstractPokemon {
 
     // Pokemons. Array index is ID value.
@@ -50,7 +53,6 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
     public static Test suite() {
         return suite(
                 "QueryTest",
-                new UnionCriteriaQueryTest("testSetup"),
                 new UnionCriteriaQueryTest("testUnionWithNoSelection"),
                 new UnionCriteriaQueryTest("testUnionAllWithNoSelection"),
                 new UnionCriteriaQueryTest("testIntersectWithNoSelection"),
@@ -72,32 +74,15 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
         setPuName(getPersistenceUnitName());
     }
 
-    /**
-     * The setup is done as a test, both to record its failure, and to allow
-     * execution in the server.
-     */
-    public void testSetup() {
+    // Initialize data
+    @Override
+    protected void suiteSetUp() {
+        super.suiteSetUp();
         emf.runInTransaction(em -> {
             for (int i = 1; i < POKEMONS.length; i++) {
                 em.persist(POKEMONS[i]);
             }
         });
-    }
-
-    private static void verifyValuesOnce(Set<Pokemon> expected, List<Pokemon> queryResult) {
-        Set<Pokemon> check = new HashSet<>(expected);
-        for (Pokemon pokemon : queryResult) {
-            assertTrue(String.format("Pokemon %d:%s was not found in Set %s", pokemon.getId(), pokemon.getName(), expected),
-                       check.contains(pokemon));
-            check.remove(pokemon);
-        }
-    }
-
-    private static void verifyValuesMultiple(Set<Pokemon> expected, List<Pokemon> queryResult) {
-        for (Pokemon pokemon : queryResult) {
-            assertTrue(String.format("Pokemon %d:%s was not found in Set %s", pokemon.getId(), pokemon.getName(), expected),
-                       expected.contains(pokemon));
-        }
     }
 
     // Test UNION: Shall return distinct values from both queries: 1x Pokemon[1..3]
@@ -476,6 +461,22 @@ public class UnionCriteriaQueryTest extends AbstractPokemon {
                 et.rollback();
                 throw e;
             }
+        }
+    }
+
+    private static void verifyValuesOnce(Set<Pokemon> expected, List<Pokemon> queryResult) {
+        Set<Pokemon> check = new HashSet<>(expected);
+        for (Pokemon pokemon : queryResult) {
+            assertTrue(String.format("Pokemon %d:%s was not found in Set %s", pokemon.getId(), pokemon.getName(), expected),
+                       check.contains(pokemon));
+            check.remove(pokemon);
+        }
+    }
+
+    private static void verifyValuesMultiple(Set<Pokemon> expected, List<Pokemon> queryResult) {
+        for (Pokemon pokemon : queryResult) {
+            assertTrue(String.format("Pokemon %d:%s was not found in Set %s", pokemon.getId(), pokemon.getName(), expected),
+                       expected.contains(pokemon));
         }
     }
 

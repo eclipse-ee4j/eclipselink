@@ -20,6 +20,9 @@ import junit.framework.Test;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
 import org.junit.Assert;
 
+/**
+ * Verify jakarta.persistence 3.2 API changes in queries.
+ */
 public class QueryTest extends AbstractPokemon {
 
     // Pokemons. Array index is ID value.
@@ -35,7 +38,6 @@ public class QueryTest extends AbstractPokemon {
     public static Test suite() {
         return suite(
                 "QueryTest",
-                new QueryTest("testSetup"),
                 new QueryTest("testGetSingleResultWithEmptyResult"),
                 new QueryTest("testGetSingleResultWithSingleResult"),
                 new QueryTest("testGetSingleResultWithMultipleResults"),
@@ -55,11 +57,10 @@ public class QueryTest extends AbstractPokemon {
         setPuName(getPersistenceUnitName());
     }
 
-    /**
-     * The setup is done as a test, both to record its failure, and to allow
-     * execution in the server.
-     */
-    public void testSetup() {
+    // Initialize data
+    @Override
+    protected void suiteSetUp() {
+        super.suiteSetUp();
         emf.runInTransaction(em -> {
             for (int i = 1; i < POKEMONS.length; i++) {
                 em.persist(POKEMONS[i]);

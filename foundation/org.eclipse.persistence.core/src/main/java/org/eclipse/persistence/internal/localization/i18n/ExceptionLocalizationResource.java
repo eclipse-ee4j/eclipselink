@@ -35,6 +35,8 @@
 //       - 454189 : Misc message cleanup.#2
 //     03/09/2016-2.6 Dalia Abo Sheasha
 //       - 489298: Wrap EclipseLink's Bean Validation calls in doPrivileged blocks when security is enabled
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
@@ -265,7 +267,13 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "json_pgsql_pgobject_conversion", "Database PGobject conversion failed."},
                                            { "json_pgsql_unknown_type", "Unknown JSON type returned from database."},
                                            { "json_ora21c_jsonvalue_to_oraclevalue", "Could not convert JsonValue to OracleJsonValue."},
-                                           { "json_ora21c_resultset_to_jsonvalue", "Could not convert JDBC ResultSet type to JsonValue."}
+                                           { "json_ora21c_resultset_to_jsonvalue", "Could not convert JDBC ResultSet type to JsonValue."},
+                                           { "schema_validation", "Schema validation"},
+                                           { "schema_validation_failed", "Schema validation failed"},
+                                           { "schema_validation_missing_table", "The {0} table vas not found in the schema"},
+                                           { "schema_validation_table_surplus_columns", "The {0} table has surplus columns in the schema"},
+                                           { "schema_validation_table_missing_columns", "The {0} table has missing columns in the schema"},
+                                           { "schema_validation_table_different_columns", "The {0} table has different columns in the schema"}
                                         };
     /**
      * Return the lookup table.

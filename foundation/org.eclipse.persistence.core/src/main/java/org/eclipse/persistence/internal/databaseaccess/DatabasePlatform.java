@@ -34,9 +34,9 @@
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 //     13/01/2022-4.0.0 Tomas Kraus
 //       - 1391: JSON support in JPA
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.databaseaccess;
-
-// javase imports
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -3802,7 +3802,34 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
      public void writeAddColumnClause(Writer writer, AbstractSession session, TableDefinition table, FieldDefinition field) throws IOException {
         writer.write("ADD ");
-        field.appendDBString(writer, session, table);
+        field.appendDBCreateString(writer, session, table);
+    }
+
+    /**
+     * INTERNAL:
+     * May need to override this method if the platform supports ALTER TABLE DROP COLUMN &lt;column&gt;
+     * and the generated sql doesn't work.
+     * Write the string that follows ALTER TABLE to create a sql statement for
+     * the platform in order to drop existing column from an existing table.
+     */
+    public void writeDropColumnClause(Writer writer, AbstractSession session, TableDefinition table, String fieldName) throws IOException {
+        writer.write("DROP COLUMN ");
+        writer.write(fieldName);
+    }
+
+    /**
+     * INTERNAL:
+     * May need to override this method if the platform supports TRUNCATE TABLE &lt;table&gt;
+     * and the generated sql doesn't work.
+     * Write the string that creates TRUNCATE TABLE sql statement for the platform in order
+     * to truncate an existing table.
+     */
+    public void writeTruncateTable(Writer writer, AbstractSession session, TableDefinition table) throws IOException {
+        String tableName = table.getTable() == null
+                ? table.getName()
+                : table.getTable().getName();
+        writer.write("TRUNCATE TABLE ");
+        writer.write(tableName);
     }
 
     /**
