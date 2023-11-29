@@ -1739,6 +1739,7 @@
             <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
             <pathelement path="${jpatest.2.oracletest.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
