@@ -51,6 +51,8 @@
 //       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 //     12/06/2018 - Will Dazey
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.config;
 
 import jakarta.persistence.EntityManager;
@@ -2358,6 +2360,14 @@ public class PersistenceUnitProperties {
     public static final String SCHEMA_GENERATION_NONE_ACTION = "none";
 
     /**
+     * The parameter value "<code>verify</code>"
+     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
+     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * <p>Specifies that database tables should be verified.</p>
+     */
+    public static final String SCHEMA_GENERATION_VERIFY_ACTION = "verify";
+
+    /**
      * The parameter value "<code>metadata</code>"
      * <p>For use with the "<code>jakarta.persistence.schema-generation.create-source</code>"
      * and "<code>jakarta.persistence.schema-generation.drop-source</code>" properties.</p>
@@ -3032,7 +3042,7 @@ public class PersistenceUnitProperties {
      * should be automatically generated for foreign key constraints. It is normally recommended to have
      * an index for a foreign key.
      * <p>
-     * By default indexes are not generated, most database also do not auto generate indexes, although some do.
+     * By default, indexes are not generated, most database also do not auto generate indexes, although some do.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
@@ -3043,6 +3053,39 @@ public class PersistenceUnitProperties {
      * @see #DDL_GENERATION
      */
     public static final String DDL_GENERATION_INDEX_FOREIGN_KEYS = "eclipselink.ddl-generation.index-foreign-keys";
+
+    /**
+     * The "<code>eclipselink.schema-validation.mode</code>" property specifies database schema validation mode.
+     * By default, the "<code>simple</code>" validation mode is selected.
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>simple</code>" (DEFAULT)
+     * <li>"<code>full</code>" (experimental feature, may not work properly)
+     * </ul>
+     *
+     * @see #SCHEMA_VALIDATION_MODE_SIMPLE
+     * @see #SCHEMA_VALIDATION_MODE_FULL
+     */
+    public static final String SCHEMA_VALIDATION_MODE = "eclipselink.schema-validation.mode";
+
+    /**
+     * The "<code>simple</code>" value of the "<code>eclipselink.schema-validation.mode</code>" property.
+     * Specifies, that simple schema validation shall be performed.
+     * Simple schema validation checks missing tables and missing or surplus columns in the existing tables.
+     *
+     * @see #SCHEMA_VALIDATION_MODE
+     */
+    public static final String SCHEMA_VALIDATION_MODE_SIMPLE = "simple";
+
+    /**
+     * The "<code>full</code>" value of the "<code>eclipselink.schema-validation.mode</code>" property.
+     * Specifies, that full schema validation shall be performed.
+     * This feature is experimental and may not work properly on all supported databases.
+     * Full schema validation also checks differences in columns definitions.
+     *
+     * @see #SCHEMA_VALIDATION_MODE
+     */
+    public static final String SCHEMA_VALIDATION_MODE_FULL = "full";
 
     /**
      * The parameter value "<code>sql-script</code>" specifies that DDL will be written to file(s).

@@ -19,6 +19,8 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 //     04/12/2013-2.5 Guy Pelletier
 //       - 405640: JPA 2.1 schema generation drop operation fails to include dropping defaulted fk constraints.
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -31,6 +33,7 @@ import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -39,8 +42,10 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Consumer;
 
 /**
  * <p>
@@ -992,7 +997,7 @@ public class SchemaManager {
             try {
                 dropObject(databaseDefinition);
             } catch (DatabaseException exception) {
-                // Ignore error
+                session.log(SessionLog.FINEST, SessionLog.DDL, "schema_drop_object_failed", exception.getLocalizedMessage());
             } finally {
                 if (shouldLogExceptionStackTrace) {
                     getSession().getSessionLog().setShouldLogExceptionStackTrace(true);
@@ -1028,8 +1033,8 @@ public class SchemaManager {
         try {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.createTables(this.session, this);
-        } catch (DatabaseException ex) {
-            // Ignore error
+        } catch (DatabaseException exception) {
+            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_create_tables_failed", exception.getLocalizedMessage());
         } finally {
             getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1074,8 +1079,8 @@ public class SchemaManager {
             // Drop all the database schemas now if set to do so. This must be
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
-        } catch (DatabaseException ex) {
-            // Ignore error
+        } catch (DatabaseException exception) {
+            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_drop_tables_failed", exception.getLocalizedMessage());
         } finally {
             getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1115,7 +1120,7 @@ public class SchemaManager {
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
         } catch (DatabaseException exception) {
-            // Ignore error
+            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_replace_tables_failed", exception.getLocalizedMessage());
         } finally {
             this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1124,6 +1129,39 @@ public class SchemaManager {
             this.session.getDatabaseEventListener().remove(this.session);
             this.session.getDatabaseEventListener().register(this.session);
         }
+    }
+
+    /**
+     * Truncate all tables in the default table schema for the project this session is associated with.
+     *
+     * @param generateFKConstraints attempt to create fk constraints when {@code true}
+     */
+    public void truncateDefaultTables(boolean generateFKConstraints) {
+        boolean shouldLogExceptionStackTrace = getSession().getSessionLog().shouldLogExceptionStackTrace();
+        session.getSessionLog().setShouldLogExceptionStackTrace(false);
+
+        try {
+            TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
+            tableCreator.truncateTables(session, this, generateFKConstraints);
+        } catch (DatabaseException exception) {
+            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_truncate_tables_failed", exception.getLocalizedMessage());
+        } finally {
+            session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
+        }
+    }
+
+    /**
+     * Validate all tables in the default table schema for the project this session is associated with.
+     * @param onFailed optional {@link Consumer} to accept {@link List} of {@link TableValidationException}
+     *                 containing validation failures. Consumer is called <b>only</b> when validation failed
+     *                 and {@code onFailed} is not null
+     * @param generateFKConstraints attempt to create fk constraints when {@code true}
+     * @param full run full validation when {@code true} or simple when {@code false)
+     * @return value of {@code true} when validation passed or @code false} otherwise
+     */
+    public boolean validateDefaultTables(Consumer<List<TableValidationException>> onFailed, boolean generateFKConstraints, boolean full) {
+        TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
+        return tableCreator.validateTables(session, this, onFailed, full);
     }
 
     public void setSession(DatabaseSessionImpl session) {
@@ -1186,7 +1224,7 @@ public class SchemaManager {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.extendTables(this.session, this);
         } catch (DatabaseException exception) {
-            // Ignore error
+            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_extend_tables_failed", exception.getLocalizedMessage());
         } finally {
             this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }

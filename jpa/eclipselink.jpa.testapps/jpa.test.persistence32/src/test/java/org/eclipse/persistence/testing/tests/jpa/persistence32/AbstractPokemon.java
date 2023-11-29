@@ -15,19 +15,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
-import junit.framework.TestSuite;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
-import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.persistence32.Persistence32TableCreator;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Team;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
 
 /**
- * Abstract jUnit test suite with Pokemon model.
+ * {@link AbstractSuite} with Pokemon model.
  */
-public abstract class AbstractPokemon extends JUnitTestCase {
+public abstract class AbstractPokemon extends AbstractSuite {
 
     // Trainer's teams
     static final Team[] TEAMS = new Team[] {
@@ -68,30 +63,17 @@ public abstract class AbstractPokemon extends JUnitTestCase {
     };
 
     /**
-     * Build test suite.
-     * Adds model test setup as first and model test cleanup as last test
-     * in the returned tests collection.
-     *
-     * @param name name of the suite
-     * @param tests tests to add to the suite
-     * @return collection of tests to execute
+     * Creates an instance of {@link AbstractPokemon}.
      */
-    static TestSuite suite(String name, AbstractPokemon... tests) {
-        TestSuite suite = new TestSuite();
-        suite.setName(name);
-        suite.addTest(new AbstractPokemon("testSetup") {});
-        for (AbstractPokemon test : tests) {
-            suite.addTest(test);
-        }
-        suite.addTest(new AbstractPokemon("testCleanup") {});
-        return suite;
-    }
-
-    JpaEntityManagerFactory emf = null;
-
     public AbstractPokemon() {
+        super();
     }
 
+    /**
+     * Creates an instance of {@link AbstractPokemon} with custom test case name.
+     *
+     * @param name name of the test case
+     */
     public AbstractPokemon(String name) {
         super(name);
         setPuName(getPersistenceUnitName());
@@ -102,33 +84,11 @@ public abstract class AbstractPokemon extends JUnitTestCase {
         return "persistence32";
     }
 
+
+    // Initialize data
     @Override
-    public void setUp() {
-        super.setUp();
-        emf = getEntityManagerFactory(getPersistenceUnitName())
-                .unwrap(EntityManagerFactoryImpl.class);
-    }
-
-    /**
-     * Return all pokemon types as ID {@link Map}.
-     *
-     * @param em {@link EntityManager} instance to execute the query
-     * @return {@link Map} with pokemon types
-     */
-    Map<Integer, Type> pokemonTypes(EntityManager em) {
-        Map<Integer, Type> types = new HashMap<>(TYPES.length);
-        em.createNamedQuery("Type.all", Type.class)
-                .getResultList()
-                .forEach(type -> types.put(type.getId(), type));
-        return types;
-    }
-
-    /**
-     * The setup is done as a test, both to record its failure, and to allow
-     * execution in the server.
-     */
-    public void testSetup() {
-        new Persistence32TableCreator().replaceTables(JUnitTestCase.getServerSession(getPersistenceUnitName()));
+    protected void suiteSetUp() {
+        super.suiteSetUp();
         emf.runInTransaction(em -> {
             for (int i = 1; i < TEAMS.length; i++) {
                 em.persist(TEAMS[i]);
@@ -144,23 +104,17 @@ public abstract class AbstractPokemon extends JUnitTestCase {
     }
 
     /**
-     * The setup is done as a test, both to record its failure, and to allow
-     * execution in the server.
+     * Return all pokemon types as ID {@link Map}.
+     *
+     * @param em {@link EntityManager} instance to execute the query
+     * @return {@link Map} with pokemon types
      */
-    public void testCleanup() {
-        emf.runInTransaction(em -> {
-            em.createNamedQuery("Pokemon.deleteAllTypes").executeUpdate();
-            em.createNamedQuery("Pokemon.deleteAll").executeUpdate();
-            em.createNamedQuery("Type.deleteAll").executeUpdate();
-            em.createNamedQuery("Trainer.deleteAll").executeUpdate();
-            em.createNamedQuery("Team.deleteAll").executeUpdate();
-        });
-    }
-
-    @Override
-    public void clearCache() {
-        emf.getCache().evictAll();
-        super.clearCache();
+    Map<Integer, Type> pokemonTypes(EntityManager em) {
+        Map<Integer, Type> types = new HashMap<>(TYPES.length);
+        em.createNamedQuery("Type.all", Type.class)
+                .getResultList()
+                .forEach(type -> types.put(type.getId(), type));
+        return types;
     }
 
 }

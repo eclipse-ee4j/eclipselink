@@ -12,9 +12,15 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * INTERNAL:
@@ -39,8 +45,10 @@ public class FieldTypeDefinition implements Serializable {
     protected int maxScale;
     protected boolean shouldAllowNull; //allow for specific types/platforms to not allow null
     protected String typesuffix;
+    // All type aliases, including primary name. Type names are converted to upper case to be case-insensitive.
+    private final Set<String> aliases;
 
-    public FieldTypeDefinition() {
+    private FieldTypeDefinition(Set<String> aliasesSet) {
         defaultSize = 10;
         isSizeRequired = false;
         isSizeAllowed = true;
@@ -49,19 +57,33 @@ public class FieldTypeDefinition implements Serializable {
         maxScale = 0;
         shouldAllowNull = true;
         typesuffix = null;
+        aliases = aliasesSet;
     }
 
-   /**
-    * Return a new field type.
-    * @see #setName(String)
-    */
+    /**
+     * Creates a new instance of {@link FieldTypeDefinition}
+     */
+    public FieldTypeDefinition() {
+        this(Collections.emptySet());
+    }
+
+    /**
+     * Creates a new instance of {@link FieldTypeDefinition} with database type name,
+     * see {@link #setName(String)}.
+     *
+     * @param databaseTypeName database type name
+     */
     public FieldTypeDefinition(String databaseTypeName) {
         this();
         name = databaseTypeName;
     }
 
     /**
-     * Return a new field type with a required size defaulting to the defaultSize.
+     * Creates a new instance of {@link FieldTypeDefinition} with database type name
+     * and default required size.
+     *
+     * @param databaseTypeName database type name
+     * @param defaultSize default required size
      */
     public FieldTypeDefinition(String databaseTypeName, int defaultSize) {
         this();
@@ -72,7 +94,12 @@ public class FieldTypeDefinition implements Serializable {
     }
 
     /**
-     * Return a new field type with a required size defaulting to the defaultSize.
+     * Creates a new instance of {@link FieldTypeDefinition} with database type name
+     * and default required size and sub-size.
+     *
+     * @param databaseTypeName database type name
+     * @param defaultSize default required size
+     * @param defaultSubSize default required sub-size
      */
     public FieldTypeDefinition(String databaseTypeName, int defaultSize, int defaultSubSize) {
         this();
@@ -84,14 +111,25 @@ public class FieldTypeDefinition implements Serializable {
         setMaxScale(defaultSubSize);
     }
 
-    public FieldTypeDefinition(String databaseTypeName, int defaultSize, String aTypesuffix) {
+    /**
+     * Creates a new instance of {@link FieldTypeDefinition} with database type name,
+     * default required size and type suffix.
+     *
+     * @param databaseTypeName database type name
+     * @param defaultSize default required size
+     * @param typeSuffix type suffix
+     */
+    public FieldTypeDefinition(String databaseTypeName, int defaultSize, String typeSuffix) {
         this(databaseTypeName, defaultSize);
-        this.typesuffix = aTypesuffix;
+        this.typesuffix = typeSuffix;
         this.isSizeAllowed = true;
     }
 
     /**
-     * Return a new field type with a required size defaulting to the defaultSize.
+     * Creates a new instance of {@link FieldTypeDefinition} with database type name.
+     *
+     * @param databaseTypeName database type name
+     * @param allowsSize whether database type allows size definition (e.g. {@code VARCHAR(8)}, {@code DECIMAL(15)})
      */
     public FieldTypeDefinition(String databaseTypeName, boolean allowsSize) {
         this();
@@ -99,8 +137,27 @@ public class FieldTypeDefinition implements Serializable {
         this.isSizeAllowed = allowsSize;
     }
 
-    /** Return a new field type with a required size defaulting to the defaultSize and
-     *  shouldAllowNull set to allowsNull.
+    /**
+     * Creates a new instance of {@link FieldTypeDefinition} with database type name
+     * and allowable size definition.
+     *
+     * @param databaseTypeName database type name
+     * @param allowsSize whether database type allows size definition (e.g. {@code VARCHAR(8)}, {@code DECIMAL(15)})
+     * @param typeNameAliases database type name aliases (used to match type name provided by the database in schema validation)
+     */
+    public FieldTypeDefinition(String databaseTypeName, boolean allowsSize, String... typeNameAliases) {
+        this(createAliasesSet(typeNameAliases));
+        this.name = databaseTypeName;
+        this.isSizeAllowed = allowsSize;
+    }
+
+    /**
+     * Creates a new instance of {@link FieldTypeDefinition} with database type name
+     * and allowable size definition and {@code NULL} values.
+     *
+     * @param databaseTypeName database type name
+     * @param allowsSize whether database type allows size definition (e.g. {@code VARCHAR(8)}, {@code DECIMAL(15)})
+     * @param allowsNull whether database type allows @code NULL} values.
      */
     public FieldTypeDefinition(String databaseTypeName, boolean allowsSize, boolean allowsNull) {
         this(databaseTypeName, allowsSize);
@@ -285,6 +342,19 @@ public class FieldTypeDefinition implements Serializable {
     }
 
     /**
+     * Check whether provided type name matches any known type alias.
+     * Check is case-insensitive. Provided type name shall not be null.
+     *
+     * @param nameAlias type name to check, not {@code null}
+     * @return Value of {@code true} when provided name matches type name
+     *         or any of its name aliases or {@code false} otherwise.
+     */
+    public boolean isTypeName(String nameAlias) {
+        Objects.requireNonNull(nameAlias, "Checked type name is null.");
+        return nameAlias.equalsIgnoreCase(name) || aliases.contains(nameAlias.toUpperCase());
+    }
+
+    /**
     * Set this type to not allow a size specification.
     */
     public void setSizeDisallowed() {
@@ -310,4 +380,18 @@ public class FieldTypeDefinition implements Serializable {
     public String toString() {
         return getClass().getSimpleName() + "(" + getName() + ")";
     }
+
+    // Constructor helper to build database type name aliases set
+    // Type name aliases are converted to upper case.
+    private static Set<String> createAliasesSet(String... typeNameAliases) {
+        if (typeNameAliases == null || typeNameAliases.length == 0) {
+            return Collections.emptySet();
+        }
+        Set<String> aliasesSet = new HashSet<>(typeNameAliases.length);
+        for (String typeNameAlias : typeNameAliases) {
+            aliasesSet.add(typeNameAlias.toUpperCase());
+        }
+        return Set.copyOf(aliasesSet);
+    }
+
 }

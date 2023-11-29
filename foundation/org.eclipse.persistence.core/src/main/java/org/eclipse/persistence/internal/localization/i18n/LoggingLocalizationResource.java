@@ -53,6 +53,8 @@
 //       - 526957 : Split the logging and trace messages
 //     11/14/2017 - Dalia Abo Sheasha
 //       - 527273 : Minor message improvements
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
@@ -477,7 +479,13 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         // JPA 3.2
         { "unknown_property_type", "Unknown {0} type of {1} persistence property"},
         { "error_queryTimeoutParse", "Could not parse jakarta.persistence.query.timeout property value {0}: {1}"},
+        { "schema_default_truncate_tables_failed", "Failed to truncate tables in the default table schema: {0}"},
 
+        { "schema_default_create_tables_failed", "Failed to create tables in the default table schema: {0}"},
+        { "schema_default_drop_tables_failed", "Failed to drop tables in the default table schema: {0}"},
+        { "schema_default_replace_tables_failed", "Failed to replace tables in the default table schema: {0}"},
+        { "schema_default_extend_tables_failed", "Failed to extend tables in the default table schema: {0}"},
+        { "schema_drop_object_failed", "Failed to drop object in the default table schema: {0}"},
         { "validate_object_space", "validate object space." },
         { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
         { "corrupt_object_referenced_through_mapping", "The following corrupt object is referenced through mapping: {0}" },

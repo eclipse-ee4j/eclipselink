@@ -87,7 +87,9 @@
 //     12/06/2018 - Will Dazey
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 //     09/02/2019-3.0 Alexandre Jacob
-//        - 527415: Fix code when locale is tr, az or lt
+//       - 527415: Fix code when locale is tr, az or lt
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
@@ -110,6 +112,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GE
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_THEN_METADATA_SOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_VERIFY_ACTION;
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.generateDefaultTables;
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigProperty;
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsString;
@@ -157,6 +160,7 @@ import java.util.concurrent.TimeUnit;
 
 import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.SchemaValidationException;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.metamodel.Attribute;
@@ -297,6 +301,7 @@ import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.TableValidationException;
 import org.eclipse.persistence.tools.tuning.SafeModeTuner;
 import org.eclipse.persistence.tools.tuning.SessionTuner;
 import org.eclipse.persistence.tools.tuning.StandardTuner;
@@ -458,10 +463,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * will no longer be associated with new EntityManagerFactories
      */
     protected boolean isMetadataExpired = false;
-    /*
-     * Used to distinguish the various DDL options
+
+    /**
+     * Used to distinguish the various DDL options.
+     * Verification option is not included, because it does not modify the database content.
      */
-    protected enum TableCreationType {NONE, CREATE, DROP, DROP_AND_CREATE, EXTEND};
+    protected enum TableCreationType {
+        /** Specifies that database tables should not be created or dropped. */
+        NONE,
+        /** Specifies that database tables should be created. */
+        CREATE,
+        /** Specifies that database tables should be dropped. */
+        DROP,
+        /** Specifies that database tables should be dropped, then created. */
+        DROP_AND_CREATE,
+        /** Specifies that database tables should be created and if existing, missing columns will be added. */
+        EXTEND;
+    };
 
     /*
      * PersistenceException responsible for the invalid state.
@@ -4485,14 +4503,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * This call will mean any users of this EntityManagerSetupImpl will get the new version the next time
      * they look it up (for instance and EntityManager creation time)
      */
-    public EntityManagerSetupImpl refreshMetadata(Map properties){
+    public EntityManagerSetupImpl refreshMetadata(Map<String, ?> properties){
         String sessionName = getSessionName();
         String uniqueName = getPersistenceUnitUniqueName();
         EntityManagerSetupImpl newSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
         newSetupImpl.setIsInContainerMode(isInContainerMode);
         newSetupImpl.enableWeaving = enableWeaving;
-        Map<Object, Object> refreshProperties = new HashMap<>();
-        refreshProperties.putAll(getSession().getProperties());
+        Map<Object, Object> refreshProperties = new HashMap<>(getSession().getProperties());
         if (properties != null){
             refreshProperties.putAll(properties);
         }
@@ -4520,10 +4537,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * due to the EntityManagerSetupImpl return value.  This method satisfies the MetedataRefreshListener implementation
      * and is called by incoming RCM refresh commands
      *
-     * @see refreshMetadata
+     * @see #refreshMetadata(Map)
      */
     @Override
-    public void triggerMetadataRefresh(Map properties){
+    public void triggerMetadataRefresh(Map<String, ?> properties){
         refreshMetadata(properties);
     }
 
@@ -4531,7 +4548,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * INTERNAL:
      * Generate the DDL per the properties specified.
      */
-    public void writeDDL(Map props, DatabaseSessionImpl session, ClassLoader classLoader) {
+    public void writeDDL(Map<String, ?> props, DatabaseSessionImpl session, ClassLoader classLoader) {
         if (this.compositeMemberEmSetupImpls == null) {
             // Generate the DDL if we find either EclipseLink or JPA DDL generation properties.
             // Note, we do one or the other, that is, we do not mix the properties by default
@@ -4551,41 +4568,52 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 // Schema generation for the database.
                 if (hasConfigProperty(SCHEMA_GENERATION_DATABASE_ACTION, props)) {
                     String databaseGenerationAction = getConfigPropertyAsString(SCHEMA_GENERATION_DATABASE_ACTION, props).toLowerCase(Locale.ROOT);
-
-                    if (! databaseGenerationAction.equals(SCHEMA_GENERATION_NONE_ACTION)) {
-                        if (databaseGenerationAction.equals(SCHEMA_GENERATION_CREATE_ACTION)) {
+                    switch (databaseGenerationAction) {
+                        case SCHEMA_GENERATION_NONE_ACTION:
+                            break;
+                        case SCHEMA_GENERATION_CREATE_ACTION:
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.CREATE, props, session, classLoader);
-                        } else if (databaseGenerationAction.equals(PersistenceUnitProperties.CREATE_OR_EXTEND)) {
+                            break;
+                        case PersistenceUnitProperties.CREATE_OR_EXTEND:
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.EXTEND, props, session, classLoader);
-                        } else if (databaseGenerationAction.equals(SCHEMA_GENERATION_DROP_ACTION)) {
+                            break;
+                        case SCHEMA_GENERATION_DROP_ACTION:
                             writeDDL(SCHEMA_GENERATION_DROP_SOURCE, SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, TableCreationType.DROP, props, session, classLoader);
-                        } else if (databaseGenerationAction.equals(SCHEMA_GENERATION_DROP_AND_CREATE_ACTION)) {
+                            break;
+                        case SCHEMA_GENERATION_DROP_AND_CREATE_ACTION:
                             writeDDL(SCHEMA_GENERATION_DROP_SOURCE, SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, TableCreationType.DROP, props, session, classLoader);
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.CREATE, props, session, classLoader);
-                        } else {
+                            break;
+                        case SCHEMA_GENERATION_VERIFY_ACTION:
+                            verifySchema(session, props);
+                            break;
+                        default:
                             String validOptions = SCHEMA_GENERATION_CREATE_ACTION + ", " + SCHEMA_GENERATION_DROP_ACTION + ", " +  SCHEMA_GENERATION_DROP_AND_CREATE_ACTION + ", " + PersistenceUnitProperties.CREATE_OR_EXTEND;
                             session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {SCHEMA_GENERATION_DATABASE_ACTION, databaseGenerationAction, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
-                        }
                     }
                 }
 
                 // Schema generation for target scripts.
                 if (hasConfigProperty(SCHEMA_GENERATION_SCRIPTS_ACTION, props)) {
                     String scriptsGenerationAction = getConfigPropertyAsString(SCHEMA_GENERATION_SCRIPTS_ACTION, props).toLowerCase(Locale.ROOT);
-
-                    if (! scriptsGenerationAction.equals(SCHEMA_GENERATION_NONE_ACTION)) {
-                        if (scriptsGenerationAction.equals(SCHEMA_GENERATION_CREATE_ACTION)) {
+                    switch (scriptsGenerationAction) {
+                        case SCHEMA_GENERATION_NONE_ACTION:
+                            break;
+                        case SCHEMA_GENERATION_CREATE_ACTION:
                             writeMetadataDDLToScript(TableCreationType.CREATE, props, session, classLoader);
-                        } else if (scriptsGenerationAction.equals(PersistenceUnitProperties.CREATE_OR_EXTEND)) {
+                            break;
+                        case PersistenceUnitProperties.CREATE_OR_EXTEND:
                             writeMetadataDDLToScript(TableCreationType.EXTEND, props, session, classLoader);
-                        } else if (scriptsGenerationAction.equals(SCHEMA_GENERATION_DROP_ACTION)) {
+                            break;
+                        case SCHEMA_GENERATION_DROP_ACTION:
                             writeMetadataDDLToScript(TableCreationType.DROP, props, session, classLoader);
-                        } else if (scriptsGenerationAction.equals(SCHEMA_GENERATION_DROP_AND_CREATE_ACTION)) {
+                            break;
+                        case SCHEMA_GENERATION_DROP_AND_CREATE_ACTION:
                             writeMetadataDDLToScript(TableCreationType.DROP_AND_CREATE, props, session, classLoader);
-                        } else {
-                            String validOptions = SCHEMA_GENERATION_CREATE_ACTION + ", " + SCHEMA_GENERATION_DROP_ACTION + ", " +  SCHEMA_GENERATION_DROP_AND_CREATE_ACTION;
-                            session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {SCHEMA_GENERATION_SCRIPTS_ACTION, scriptsGenerationAction, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
-                        }
+                            break;
+                        default:
+                                String validOptions = SCHEMA_GENERATION_CREATE_ACTION + ", " + SCHEMA_GENERATION_DROP_ACTION + ", " + SCHEMA_GENERATION_DROP_AND_CREATE_ACTION;
+                                session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {SCHEMA_GENERATION_SCRIPTS_ACTION, scriptsGenerationAction, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
                     }
                 }
 
@@ -4594,10 +4622,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } else {
             // composite
-            Map compositeMemberMapOfProperties = (Map)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, props);
+            @SuppressWarnings("unchecked")
+            Map<String, ?> compositeMemberMapOfProperties = (Map<String, ?>)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, props);
             for(EntityManagerSetupImpl compositeMemberEmSetupImpl : this.compositeMemberEmSetupImpls) {
                 // the properties guaranteed to be non-null after updateCompositeMemberProperties call
-                Map compositeMemberProperties = (Map)compositeMemberMapOfProperties.get(compositeMemberEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitName());
+                @SuppressWarnings("unchecked")
+                Map<String, ?> compositeMemberProperties = (Map<String, ?>)compositeMemberMapOfProperties.get(compositeMemberEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitName());
                 compositeMemberEmSetupImpl.writeDDL(compositeMemberProperties, session, classLoader);
             }
         }
@@ -4608,26 +4638,31 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Generate the DDL from the persistence unit metadata. This DDL generation
      * utilizes the EclipseLink DDL properties.
      */
-    protected void writeDDL(String ddlGeneration, Map props, DatabaseSessionImpl session, ClassLoader classLoader) {
-        // By default the table creation type will be 'none'.
+    protected void writeDDL(String ddlGeneration, Map<String, ?> props, DatabaseSessionImpl session, ClassLoader classLoader) {
+        // By default, the table creation type will be 'none'.
         TableCreationType ddlType = TableCreationType.NONE;
 
-        if (ddlGeneration.equals(PersistenceUnitProperties.CREATE_ONLY)) {
-            ddlType = TableCreationType.CREATE;
-        } else if (ddlGeneration.equals(PersistenceUnitProperties.DROP_ONLY)) {
-            ddlType = TableCreationType.DROP;
-        } else if (ddlGeneration.equals(PersistenceUnitProperties.DROP_AND_CREATE)) {
-            ddlType = TableCreationType.DROP_AND_CREATE;
-        } else if (ddlGeneration.equals(PersistenceUnitProperties.CREATE_OR_EXTEND)) {
-            ddlType = TableCreationType.EXTEND;
-        } else {
-            // Log a warning if we have an unknown ddl generation.
-            String validOptions = PersistenceUnitProperties.NONE + ", " +
-                                  PersistenceUnitProperties.CREATE_ONLY + ", " +
-                                  PersistenceUnitProperties.DROP_ONLY + ", " +
-                                  PersistenceUnitProperties.DROP_AND_CREATE + ", " +
-                                  PersistenceUnitProperties.CREATE_OR_EXTEND;
-            session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {PersistenceUnitProperties.DDL_GENERATION, ddlGeneration, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
+        switch (ddlGeneration) {
+            case PersistenceUnitProperties.CREATE_ONLY:
+                ddlType = TableCreationType.CREATE;
+                break;
+            case PersistenceUnitProperties.DROP_ONLY:
+                ddlType = TableCreationType.DROP;
+                break;
+            case PersistenceUnitProperties.DROP_AND_CREATE:
+                ddlType = TableCreationType.DROP_AND_CREATE;
+                break;
+            case PersistenceUnitProperties.CREATE_OR_EXTEND:
+                ddlType = TableCreationType.EXTEND;
+                break;
+            default:
+                // Log a warning if we have an unknown ddl generation.
+                String validOptions = PersistenceUnitProperties.NONE + ", " +
+                        PersistenceUnitProperties.CREATE_ONLY + ", " +
+                        PersistenceUnitProperties.DROP_ONLY + ", " +
+                        PersistenceUnitProperties.DROP_AND_CREATE + ", " +
+                        PersistenceUnitProperties.CREATE_OR_EXTEND;
+                session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {PersistenceUnitProperties.DDL_GENERATION, ddlGeneration, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
         }
 
         if (ddlType != TableCreationType.NONE) {
@@ -4731,7 +4766,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * Write the DDL to the files provided.
      */
-    protected void writeDDLToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc, TableCreationType ddlType, Map props) {
+    protected void writeDDLToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc, TableCreationType ddlType, Map<String, ?> props) {
         // Ensure that the appLocation string ends with File.separator if
         // specified. In JPA there is no default for app location, however, if
         // the user did specify one, we'll use it.
@@ -4775,7 +4810,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * INTERNAL:
      * Generate and write DDL from the persistence unit metadata to the database.
      */
-    protected void writeMetadataDDLToDatabase(TableCreationType tableCreationType, Map props, DatabaseSessionImpl session, ClassLoader classLoader) {
+    protected void writeMetadataDDLToDatabase(TableCreationType tableCreationType, Map<String, ?> props, DatabaseSessionImpl session, ClassLoader classLoader) {
         SchemaManager mgr = new SchemaManager(session);
 
         // Set the create database schemas flag on the schema manager.
@@ -4789,7 +4824,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * INTERNAL:
      * Generate and write DDL from the persistence unit metadata to scripts.
      */
-    protected void writeMetadataDDLToScript(TableCreationType tableCreationType, Map props, DatabaseSessionImpl session, ClassLoader classLoader) {
+    protected void writeMetadataDDLToScript(TableCreationType tableCreationType, Map<String, ?> props, DatabaseSessionImpl session, ClassLoader classLoader) {
         SchemaManager mgr = new SchemaManager(session);
 
         // Set the create database schemas flag on the schema manager.
@@ -4797,6 +4832,32 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         mgr.setCreateDatabaseSchemas(createSchemas != null && createSchemas.equalsIgnoreCase("true"));
 
         writeDDLToFiles(mgr, getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props),  getConfigProperty(SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, props),  getConfigProperty(SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, props), tableCreationType, props);
+    }
+
+    /**
+     * INTERNAL:
+     * Verify database schema against the persistence unit metadata.
+     *
+     * @param session current database session
+     * @param props persistence unit properties
+     * @throws PersistenceException when validation fails. {@link SchemaValidationException}
+     *         with failures description is stored as a cause.
+     */
+    private void verifySchema(DatabaseSessionImpl session, Map<String, ?> props) {
+        SchemaManager schemaManager = new SchemaManager(session);
+        ValidationFailure failures = new ValidationFailure();
+        String mode = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_VALIDATION_MODE,
+                                                                    props,
+                                                                    PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE)
+                .toLowerCase(Locale.ROOT);
+        boolean full = PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL.equals(mode);
+        if (!schemaManager.validateDefaultTables(failures, true, full)) {
+            throw new PersistenceException(
+                    ExceptionLocalization.buildMessage("schema_validation"),
+                    new SchemaValidationException(
+                            ExceptionLocalization.buildMessage("schema_validation_failed"),
+                            failures.result().toArray(new TableValidationException[failures.result().size()])));
+        }
     }
 
     /**
@@ -4831,43 +4892,41 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-invalid-source-script-type", new Object[]{ source , source.getClass()}));
                 }
 
-                if (reader != null) {
-                    StringBuffer sqlBuffer;
-                    int data = reader.read();
+                StringBuffer sqlBuffer;
+                int data = reader.read();
 
-                    // While there is still data to read, read line by line.
-                    while (data != -1) {
-                        sqlBuffer = new StringBuffer();
-                        char aChar = (char) data;
+                // While there is still data to read, read line by line.
+                while (data != -1) {
+                    sqlBuffer = new StringBuffer();
+                    char aChar = (char) data;
 
-                        // Read till the end of the line or maybe even file.
-                        while (aChar != '\n' && data != -1) {
-                            sqlBuffer.append(aChar);
+                    // Read till the end of the line or maybe even file.
+                    while (aChar != '\n' && data != -1) {
+                        sqlBuffer.append(aChar);
 
-                            // Read next character.
-                            data = reader.read();
-                            aChar = (char) data;
-                        }
-
-                        // Remove trailing and leading white space characters.
-                        String sqlString = sqlBuffer.toString().trim();
-
-                        // If the string isn't empty, then fire it.
-                        if ((! sqlString.equals("")) && (! sqlString.startsWith("#"))) {
-                            try {
-                                session.executeNonSelectingSQL(sqlString);
-                            } catch (DatabaseException e) {
-                                // Swallow any database exceptions as these could
-                                // be drop failures of a table that doesn't exist etc.
-                                // SQLExceptions will be thrown to the user.
-                            }
-                        }
-
+                        // Read next character.
                         data = reader.read();
+                        aChar = (char) data;
                     }
 
-                    reader.close();
+                    // Remove trailing and leading white space characters.
+                    String sqlString = sqlBuffer.toString().trim();
+
+                    // If the string isn't empty, then fire it.
+                    if ((! sqlString.equals("")) && (! sqlString.startsWith("#"))) {
+                        try {
+                            session.executeNonSelectingSQL(sqlString);
+                        } catch (DatabaseException e) {
+                            // Swallow any database exceptions as these could
+                            // be drop failures of a table that doesn't exist etc.
+                            // SQLExceptions will be thrown to the user.
+                        }
+                    }
+
+                    data = reader.read();
                 }
+
+                reader.close();
             } catch (IOException e) {
                 throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-io-exception", new Object[]{source}), e);
             } finally {

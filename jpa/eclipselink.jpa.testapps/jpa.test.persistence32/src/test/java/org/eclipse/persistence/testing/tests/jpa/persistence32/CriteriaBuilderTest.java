@@ -30,14 +30,12 @@ import jakarta.persistence.criteria.LocalTimeField;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Root;
 import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
-import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.persistence32.Persistence32TableCreator;
 import org.eclipse.persistence.testing.models.jpa.persistence32.SyntaxEntity;
 
-public class CriteriaBuilderTest extends JUnitTestCase {
+/**
+ * Verify jakarta.persistence 3.2 API changes in {@link CriteriaBuilder}.
+ */
+public class CriteriaBuilderTest extends AbstractSuite {
 
     // SyntaxEntity instances, array index is equal to ID
     // Values must be unique to get just single result and verify it by ID
@@ -50,47 +48,43 @@ public class CriteriaBuilderTest extends JUnitTestCase {
             new SyntaxEntity(5L, null, null, null, null, LocalDate.of(1918, 9, 28), null)
     };
 
-    private static final int ENTITIES_COUNT = ENTITIES.length - 1;
-
-    private JpaEntityManagerFactory emf = null;
-
     public static Test suite() {
-        TestSuite suite = new TestSuite();
-        suite.setName("CriteriaBuilderTests");
-        suite.addTest(new CriteriaBuilderTest("testSetup"));
-        suite.addTest(new CriteriaBuilderTest("testAndPredicateAsListOf0"));
-        suite.addTest(new CriteriaBuilderTest("testOrPredicateAsListOf0"));
-        suite.addTest(new CriteriaBuilderTest("testAndPredicateAsListOf1"));
-        suite.addTest(new CriteriaBuilderTest("testOrPredicateAsListOf1"));
-        suite.addTest(new CriteriaBuilderTest("testAndPredicateAsListOf2"));
-        suite.addTest(new CriteriaBuilderTest("testOrPredicateAsListOf2"));
-        suite.addTest(new CriteriaBuilderTest("testAndPredicateAsListOfN"));
-        suite.addTest(new CriteriaBuilderTest("testOrPredicateAsListOfN"));
-        suite.addTest(new CriteriaBuilderTest("testLeftIntLen"));
-        suite.addTest(new CriteriaBuilderTest("testLeftExprLen"));
-        suite.addTest(new CriteriaBuilderTest("testRightIntLen"));
-        suite.addTest(new CriteriaBuilderTest("testRightExprLen"));
-        suite.addTest(new CriteriaBuilderTest("testReplaceExprExpr"));
-        suite.addTest(new CriteriaBuilderTest("testReplaceExprStr"));
-        suite.addTest(new CriteriaBuilderTest("testReplaceStrExpr"));
-        suite.addTest(new CriteriaBuilderTest("testReplaceStrStr"));
-        suite.addTest(new CriteriaBuilderTest("testExtractHourFromTime"));
-        suite.addTest(new CriteriaBuilderTest("testExtractMinuteFromTime"));
-        suite.addTest(new CriteriaBuilderTest("testExtractSecondFromTime"));
-        suite.addTest(new CriteriaBuilderTest("testExtractYearFromDate"));
-        suite.addTest(new CriteriaBuilderTest("testExtractMonthFromDate"));
-        suite.addTest(new CriteriaBuilderTest("testExtractDayFromDate"));
-        suite.addTest(new CriteriaBuilderTest("testExtractQuarterFromDate"));
-        suite.addTest(new CriteriaBuilderTest("testExtractWeekFromDate"));
-        suite.addTest(new CriteriaBuilderTest("testExpressionEqualToExpression"));
-        suite.addTest(new CriteriaBuilderTest("testExpressionEqualToObject"));
-        suite.addTest(new CriteriaBuilderTest("testExpressionNotEqualToExpression"));
-        suite.addTest(new CriteriaBuilderTest("testExpressionNotEqualToObject"));
-        suite.addTest(new CriteriaBuilderTest("testExpressionCast"));
-        return suite;
+        return suite(
+                "CriteriaBuilderTests",
+                new CriteriaBuilderTest("testAndPredicateAsListOf0"),
+                new CriteriaBuilderTest("testOrPredicateAsListOf0"),
+                new CriteriaBuilderTest("testAndPredicateAsListOf1"),
+                new CriteriaBuilderTest("testOrPredicateAsListOf1"),
+                new CriteriaBuilderTest("testAndPredicateAsListOf2"),
+                new CriteriaBuilderTest("testOrPredicateAsListOf2"),
+                new CriteriaBuilderTest("testAndPredicateAsListOfN"),
+                new CriteriaBuilderTest("testOrPredicateAsListOfN"),
+                new CriteriaBuilderTest("testLeftIntLen"),
+                new CriteriaBuilderTest("testLeftExprLen"),
+                new CriteriaBuilderTest("testRightIntLen"),
+                new CriteriaBuilderTest("testRightExprLen"),
+                new CriteriaBuilderTest("testReplaceExprExpr"),
+                new CriteriaBuilderTest("testReplaceExprStr"),
+                new CriteriaBuilderTest("testReplaceStrExpr"),
+                new CriteriaBuilderTest("testReplaceStrStr"),
+                new CriteriaBuilderTest("testExtractHourFromTime"),
+                new CriteriaBuilderTest("testExtractMinuteFromTime"),
+                new CriteriaBuilderTest("testExtractSecondFromTime"),
+                new CriteriaBuilderTest("testExtractYearFromDate"),
+                new CriteriaBuilderTest("testExtractMonthFromDate"),
+                new CriteriaBuilderTest("testExtractDayFromDate"),
+                new CriteriaBuilderTest("testExtractQuarterFromDate"),
+                new CriteriaBuilderTest("testExtractWeekFromDate"),
+                new CriteriaBuilderTest("testExpressionEqualToExpression"),
+                new CriteriaBuilderTest("testExpressionEqualToObject"),
+                new CriteriaBuilderTest("testExpressionNotEqualToExpression"),
+                new CriteriaBuilderTest("testExpressionNotEqualToObject"),
+                new CriteriaBuilderTest("testExpressionCast")
+        );
     }
 
     public CriteriaBuilderTest() {
+        super();
     }
 
     public CriteriaBuilderTest(String name) {
@@ -104,18 +98,8 @@ public class CriteriaBuilderTest extends JUnitTestCase {
     }
 
     @Override
-    public void setUp() {
-        super.setUp();
-        emf = getEntityManagerFactory(getPersistenceUnitName()).unwrap(EntityManagerFactoryImpl.class);
-    }
-
-    /**
-     * The setup is done as a test, both to record its failure, and to allow
-     * execution in the server.
-     */
-    public void testSetup() {
-        new Persistence32TableCreator().replaceTables(JUnitTestCase.getServerSession(getPersistenceUnitName()));
-        clearCache();
+    protected void suiteSetUp() {
+        super.suiteSetUp();
         try (EntityManager em = emf.createEntityManager()) {
             EntityTransaction et = em.getTransaction();
             try {

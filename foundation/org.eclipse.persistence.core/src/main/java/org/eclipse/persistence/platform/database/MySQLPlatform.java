@@ -24,6 +24,8 @@
 //       - 440278: Support fractional seconds in time values
 //     02/19/2015 - Rick Curtis
 //       - 458877 : Add national character support
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -179,7 +181,7 @@ public class MySQLPlatform extends DatabasePlatform {
         Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("TINYINT(1) default 0", false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
+        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false, "INT"));
         fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
         fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
         fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));

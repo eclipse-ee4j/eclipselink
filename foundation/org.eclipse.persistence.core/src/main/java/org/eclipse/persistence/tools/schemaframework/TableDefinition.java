@@ -22,6 +22,8 @@
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 //     02/04/2013-2.5 Guy Pelletier
 //       - 389090: JPA 2.1 DDL Generation Support
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -138,6 +140,37 @@ public class TableDefinition extends DatabaseObjectDefinition {
         try {
             writer.write("ALTER TABLE " + getFullName() + " ");
             session.getPlatform().writeAddColumnClause(writer, session, this, field);
+            writer.write(" ");
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+        return writer;
+    }
+
+    /**
+     * INTERNAL:
+     * Execute the SQL alter table to drop the field from the table.
+     *
+     * @param session current database session
+     * @param fieldName name of the field to drop
+     */
+    public void dropFieldOnDatabase(final AbstractSession session, String fieldName) {
+        session.priviledgedExecuteNonSelectingCall(
+                new SQLCall(buildDropFieldWriter(session, fieldName, new StringWriter()).toString()));
+    }
+
+    /**
+     * INTERNAL:
+     * Return the alter table statement to drop the field from the table.
+     *
+     * @param session current database session
+     * @param fieldName name of the field to drop
+     * @param writer target character stream writer
+     */
+    public Writer buildDropFieldWriter(AbstractSession session, String fieldName, Writer writer) throws ValidationException {
+        try {
+            writer.write("ALTER TABLE " + getFullName() + " ");
+            session.getPlatform().writeDropColumnClause(writer, session, this, fieldName);
             writer.write(" ");
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
@@ -411,7 +444,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
             writer.write(getCreationPrefix() + getFullName() + " (");
             for (Iterator<FieldDefinition> itetrator = getFields().iterator(); itetrator.hasNext();) {
                 FieldDefinition field = itetrator.next();
-                field.appendDBString(writer, session, this);
+                field.appendDBCreateString(writer, session, this);
                 if (itetrator.hasNext()) {
                     writer.write(", ");
                 }
