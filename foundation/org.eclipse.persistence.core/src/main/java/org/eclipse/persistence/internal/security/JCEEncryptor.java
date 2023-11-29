@@ -148,7 +148,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         } catch (Exception u) {
             try {
                 if (log != null) {
-                    log.log(AbstractSessionLog.WARNING, SessionLog.JPA, "encryptor_decrypt_old_algorithm", null);
+                    log.log(SessionLog.WARNING, SessionLog.JPA, "encryptor_decrypt_old_algorithm", null);
                 }
                 // try AES/CBC second
                 bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
