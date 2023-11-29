@@ -242,7 +242,7 @@
         <mssql.version>12.4.1.jre11</mssql.version>
         <pgsql.version>42.6.0</pgsql.version>
         <!-- CQ #21139, 21140 -->
-        <logback.version>1.4.11</logback.version>
+        <logback.version>1.4.12</logback.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
         <!-- CQ #2437 -->
         <oracle.aqapi.version>23.2.1.0</oracle.aqapi.version>
