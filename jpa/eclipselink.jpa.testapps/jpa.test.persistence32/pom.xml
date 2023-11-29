@@ -82,31 +82,18 @@
             </plugin>
             <!-- Static metamodel is used in tests -->
             <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
-                <version>4.5</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>eclipselink-jpa-metamodel</id>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <processors>
-                                <processor>org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor</processor>
-                            </processors>
-                            <outputDirectory>${project.build.directory}/generated-sources/meta-model</outputDirectory>
-                        </configuration>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>compile-with-processor</id>
+                        <phase>compile</phase>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.eclipse.persistence</groupId>
-                        <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
