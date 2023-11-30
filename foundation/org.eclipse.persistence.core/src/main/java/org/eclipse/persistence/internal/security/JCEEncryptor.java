@@ -17,8 +17,6 @@ package org.eclipse.persistence.internal.security;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -44,7 +42,7 @@ import java.util.Arrays;
  */
 public final class JCEEncryptor implements org.eclipse.persistence.security.Securable {
 
-    private SessionLog log = AbstractSessionLog.getLog();
+    private boolean throwFallBackException = true;
 
     // Legacy DES ECB cipher used for backwards compatibility decryption only.
     private static final String DES_ECB = "DES/ECB/PKCS5Padding";
@@ -93,9 +91,9 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         decryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
     }
 
-    public JCEEncryptor(SessionLog log) throws Exception {
+    public JCEEncryptor(boolean throwFallBackException) throws Exception {
         this();
-        this.log = log;
+        this.throwFallBackException = throwFallBackException;
     }
 
     /**
@@ -146,10 +144,10 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             // buildBytesFromHexString failed, assume clear text
             password = encryptedPswd;
         } catch (Exception u) {
+            if (throwFallBackException) {
+                throw ValidationException.errorDecryptingPasswordOldAlgorithm(u);
+            }
             try {
-                if (log != null) {
-                    log.log(SessionLog.WARNING, SessionLog.JPA, "encryptor_decrypt_old_algorithm", null);
-                }
                 // try AES/CBC second
                 bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
                 password = new String(decryptCipherAES_CBC.doFinal(bytePassword), "UTF-8");

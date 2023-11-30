@@ -47,7 +47,7 @@ public class SecurableBackwardsCompatibilityTest {
         String testString = encryptString_DES_ECB(plainTextString);
         Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
 
-        Securable securable = new JCEEncryptor();
+        Securable securable = new JCEEncryptor(false);
         String decryptedString = securable.decryptPassword(testString);
         Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
     }
@@ -77,7 +77,7 @@ public class SecurableBackwardsCompatibilityTest {
         String testString = encryptString_AES_CBC(plainTextString);
         Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
 
-        Securable securable = new JCEEncryptor();
+        Securable securable = new JCEEncryptor(false);
         String decryptedString = securable.decryptPassword(testString);
         Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
     }
@@ -92,7 +92,7 @@ public class SecurableBackwardsCompatibilityTest {
         String testString = encryptString_AES_ECB(plainTextString);
         Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
 
-        Securable securable = new JCEEncryptor();
+        Securable securable = new JCEEncryptor(false);
         String decryptedString = securable.decryptPassword(testString);
         Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
     }
@@ -132,6 +132,25 @@ public class SecurableBackwardsCompatibilityTest {
             expectedException = ve;
         }
         Assert.assertNotNull("A ValidationException should be thrown when encrypting a null value", expectedException);
+    }
+
+    /**
+     * Test the decryption of a String encrypted with AES ECB and let JCEEncryptor throw Exception
+     */
+    @Test
+    public void testStringDecryptionDeprecatedAlgorithmWithException() throws Exception {
+        ValidationException expectedException = ValidationException.errorDecryptingPasswordOldAlgorithm(null);
+        String plainTextString = "welcome123_aes_ecb";
+
+        String testString = encryptString_AES_ECB(plainTextString);
+        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
+
+        Securable securable = new JCEEncryptor();
+        try {
+            String decryptedString = securable.decryptPassword(testString);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains(expectedException.getMessage()));
+        }
     }
 
     /*

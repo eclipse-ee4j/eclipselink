@@ -483,8 +483,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "corrupt_object_referenced_through_mapping", "The following corrupt object is referenced through mapping: {0}" },
         { "corrupt_object", "corrupt object: {0}" },
 
-        { "encryptor_decrypt_old_algorithm", "Database password was encrypted by deprecated algorithm." +
-                "\nIt's recommended to re-encrypt it by `passwordUpdate.sh` from eclipselink.zip bundle"},
         { "encryptor_script_usage", "Usage is `passwordUpdate.sh|.cmd -ip <old encrypted password>`"},
         { "encryptor_script_description", "This application internally decrypt old encrypted password used by some previous version EclipseLink and encrypt it by latest algorithm."},
         { "encryptor_script_output", "Re-encrypted password is: {0}"}

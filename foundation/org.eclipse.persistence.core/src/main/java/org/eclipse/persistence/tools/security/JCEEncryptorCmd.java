@@ -34,7 +34,7 @@ public final class JCEEncryptorCmd {
             System.out.println(LoggingLocalization.buildMessage("encryptor_script_usage", null) +
                     "\n" + LoggingLocalization.buildMessage("encryptor_script_description", null));
         } else {
-            JCEEncryptor jceEncryptor = new JCEEncryptor(null);
+            JCEEncryptor jceEncryptor = new JCEEncryptor(false);
             System.out.println(LoggingLocalization.buildMessage("encryptor_script_output", new Object[]{jceEncryptor.encryptPassword(jceEncryptor.decryptPassword(args[1]))}));
         }
     }
