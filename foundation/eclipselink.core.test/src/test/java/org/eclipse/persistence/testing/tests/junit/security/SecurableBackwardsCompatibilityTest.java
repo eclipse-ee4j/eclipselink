@@ -110,6 +110,16 @@ public class SecurableBackwardsCompatibilityTest {
     }
 
     /**
+     * Test the decryption/processing of an empty String "".
+     */
+    @Test
+    public void testEmptyStringParameterDecryption() throws Exception {
+        Securable securable = new JCEEncryptor();
+        String returnValue = securable.decryptPassword("");
+        Assert.assertEquals("Empty string \"\" should be returned when decrypting a \"\" (empty string) value", "", returnValue);
+    }
+
+    /**
      * Test the decryption/processing of a null parameter.
      */
     @Test

@@ -140,7 +140,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             decryptCipherAES_GCM.init(Cipher.DECRYPT_MODE, skGCM, parameterSpecGCM);
             // try AES/GCM first
             password = new String(decryptCipherAES_GCM.doFinal(bytePassword), "UTF-8");
-        } catch (ConversionException | IllegalBlockSizeException ce) {
+        } catch (ArrayIndexOutOfBoundsException | ConversionException | IllegalBlockSizeException ce) {
             // buildBytesFromHexString failed, assume clear text
             password = encryptedPswd;
         } catch (Exception u) {
