@@ -28,6 +28,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.JCEEncryptor;
 import org.eclipse.persistence.internal.security.Securable;
+import org.eclipse.persistence.tools.security.JCEEncryptorCmd;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -47,8 +48,8 @@ public class SecurableBackwardsCompatibilityTest {
         String testString = encryptString_DES_ECB(plainTextString);
         Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
 
-        Securable securable = new JCEEncryptor(false);
-        String decryptedString = securable.decryptPassword(testString);
+        JCEEncryptorCmd jceEncryptorCmd = new JCEEncryptorCmd();
+        String decryptedString = jceEncryptorCmd.decryptPassword(testString);
         Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
     }
 
@@ -68,6 +69,23 @@ public class SecurableBackwardsCompatibilityTest {
     }
 
     /**
+     * Test the decryption of a String encrypted with AES GCM via JCEEncryptorCmd.
+     */
+    @Test
+    public void testStringDecryption_AES_GCM_via_jceEncryptorCmd() throws Exception {
+        String plainTextString = "welcome123_aes_gcm";
+
+        Securable securable = new JCEEncryptor();
+        String testString = securable.encryptPassword(plainTextString);
+        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
+
+        JCEEncryptorCmd jceEncryptorCmd = new JCEEncryptorCmd();
+        String decryptedString = jceEncryptorCmd.decryptPassword(testString);
+
+        Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
+    }
+
+    /**
      * Test the decryption of a String encrypted with AES CBC.
      */
     @Test
@@ -77,8 +95,8 @@ public class SecurableBackwardsCompatibilityTest {
         String testString = encryptString_AES_CBC(plainTextString);
         Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
 
-        Securable securable = new JCEEncryptor(false);
-        String decryptedString = securable.decryptPassword(testString);
+        JCEEncryptorCmd jceEncryptorCmd = new JCEEncryptorCmd();
+        String decryptedString = jceEncryptorCmd.decryptPassword(testString);
         Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
     }
 
@@ -92,8 +110,8 @@ public class SecurableBackwardsCompatibilityTest {
         String testString = encryptString_AES_ECB(plainTextString);
         Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
 
-        Securable securable = new JCEEncryptor(false);
-        String decryptedString = securable.decryptPassword(testString);
+        JCEEncryptorCmd jceEncryptorCmd = new JCEEncryptorCmd();
+        String decryptedString = jceEncryptorCmd.decryptPassword(testString);
         Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
     }
 

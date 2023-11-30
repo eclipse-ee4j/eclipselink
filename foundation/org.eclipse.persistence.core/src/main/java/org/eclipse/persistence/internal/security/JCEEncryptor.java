@@ -42,20 +42,6 @@ import java.util.Arrays;
  */
 public final class JCEEncryptor implements org.eclipse.persistence.security.Securable {
 
-    private boolean throwFallBackException = true;
-
-    // Legacy DES ECB cipher used for backwards compatibility decryption only.
-    private static final String DES_ECB = "DES/ECB/PKCS5Padding";
-    private final Cipher decryptCipherDES_ECB;
-
-    // Legacy AES ECB cipher used for backwards compatibility decryption only.
-    private static final String AES_ECB = "AES/ECB/PKCS5Padding";
-    private final Cipher decryptCipherAES_ECB;
-
-    // Legacy AES CBC cipher used for backwards compatibility decryption only.
-    private static final String AES_CBC = "AES/CBC/PKCS5Padding";
-    private final Cipher decryptCipherAES_CBC;
-
     // All encryption is done through the AES GCM cipher.
     private static final byte IV_GCM_LENGTH = 16;
     private static final String AES_GCM = "AES/GCM/NoPadding";
@@ -75,25 +61,9 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
          *
          * Confusing??? Well, don't move this code before talking to Guy first!
          */
-        decryptCipherDES_ECB = Cipher.getInstance(DES_ECB);
-        decryptCipherDES_ECB.init(Cipher.DECRYPT_MODE, Synergizer.getDESMultitasker());
-
-        decryptCipherAES_ECB = Cipher.getInstance(AES_ECB);
-        decryptCipherAES_ECB.init(Cipher.DECRYPT_MODE, Synergizer.getAESMultitasker());
-
-        SecretKey sk = Synergizer.getAESCBCMultitasker();
-        IvParameterSpec iv = Synergizer.getIvSpec();
-        decryptCipherAES_CBC = Cipher.getInstance(AES_CBC);
-        decryptCipherAES_CBC.init(Cipher.DECRYPT_MODE, sk, iv);
-
         encryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
 
         decryptCipherAES_GCM = Cipher.getInstance(AES_GCM);
-    }
-
-    public JCEEncryptor(boolean throwFallBackException) throws Exception {
-        this();
-        this.throwFallBackException = throwFallBackException;
     }
 
     /**
@@ -144,54 +114,8 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             // buildBytesFromHexString failed, assume clear text
             password = encryptedPswd;
         } catch (Exception u) {
-            if (throwFallBackException) {
                 throw ValidationException.errorDecryptingPasswordOldAlgorithm(u);
-            }
-            try {
-                // try AES/CBC second
-                bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
-                password = new String(decryptCipherAES_CBC.doFinal(bytePassword), "UTF-8");
-            } catch (Exception w) {
-                ObjectInputStream oisAes = null;
-                try {
-                    // try AES/ECB third
-                    oisAes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherAES_ECB));
-                    password = (String) oisAes.readObject();
-                } catch (Exception x) {
-                    ObjectInputStream oisDes = null;
-                    try {
-                        // try DES/ECB fourth
-                        oisDes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherDES_ECB));
-                        password = (String) oisDes.readObject();
-                    } catch (ArrayIndexOutOfBoundsException y) {
-                        // JCE 1.2.1 couldn't decrypt it, assume clear text
-                        password = encryptedPswd;
-                    } catch (Exception z) {
-                        if (z.getCause() instanceof IllegalBlockSizeException) {
-                            // JCE couldn't decrypt it, assume clear text
-                            password = encryptedPswd;
-                        } else {
-                            throw ValidationException.errorDecryptingPassword(z);
-                        }
-                    } finally {
-                        if (oisDes != null) {
-                            try {
-                                oisDes.close();
-                            } catch (IOException e2) {
-                            }
-                        }
-                    }
-                } finally {
-                    if (oisAes != null) {
-                        try {
-                            oisAes.close();
-                        } catch (IOException e1) {
-                        }
-                    }
-                }
-            }
         }
-
         return password;
     }
 
@@ -200,30 +124,8 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
      */
     private static class Synergizer {
 
-        private static SecretKey getDESMultitasker() throws Exception {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("DES");
-            return factory.generateSecret(new DESKeySpec(Helper.buildBytesFromHexString("E60B80C7AEC78038")));
-        }
-
-        private static SecretKey getAESMultitasker() throws Exception {
-            return new SecretKeySpec(Helper.buildBytesFromHexString("3E7CFEF156E712906E1F603B59463C67"), "AES");
-        }
-
-        private static SecretKey getAESCBCMultitasker() throws Exception {
-            return new SecretKeySpec(Helper.buildBytesFromHexString("2DB7354A48F1CA7B48ACA247540FC923"), "AES");
-        }
-
         private static SecretKey getAESGCMMultitasker() throws Exception {
             return new SecretKeySpec(Helper.buildBytesFromHexString("64EF2D9B738ACA254A48F14754030FC2"), "AES");
-        }
-
-        private static IvParameterSpec getIvSpec() {
-            byte[] b = new byte[]{
-                    (byte) -26, (byte) 124, (byte) -99, (byte) 32,
-                    (byte) -37, (byte) -58, (byte) -93, (byte) 100,
-                    (byte) 126, (byte) -55, (byte) -21, (byte) 48,
-                    (byte) -86, (byte) 97, (byte) 12, (byte) 113};
-            return new IvParameterSpec(b);
         }
 
         private static byte[] getIvGCM() {
