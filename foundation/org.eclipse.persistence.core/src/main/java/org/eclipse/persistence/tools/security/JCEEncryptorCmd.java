@@ -18,8 +18,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.security.JCEEncryptor;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -35,10 +33,7 @@ import java.io.ObjectInputStream;
 
 public final class JCEEncryptorCmd {
 
-    /** Logger. */
-    private static final SessionLog LOG = AbstractSessionLog.getLog();
-
-    JCEEncryptor jceEncryptor;
+    private JCEEncryptor jceEncryptor = new JCEEncryptor();
 
     // Legacy DES ECB cipher used for backwards compatibility decryption only.
     private static final String DES_ECB = "DES/ECB/PKCS5Padding";
@@ -70,7 +65,7 @@ public final class JCEEncryptorCmd {
         encryptorCmd.start(args);
     }
 
-    public void start(String[] args) throws Exception {
+    private void start(String[] args) throws Exception {
         if (args.length < 2 || !args[0].equals("-ip")) {
             System.out.println(LoggingLocalization.buildMessage("encryptor_script_usage", null) +
                     "\n" + LoggingLocalization.buildMessage("encryptor_script_description", null));
@@ -84,7 +79,6 @@ public final class JCEEncryptorCmd {
         byte[] bytePassword = null;
         // try default AES/GCM algorithm first
         try {
-            jceEncryptor = new JCEEncryptor();
             password = jceEncryptor.decryptPassword(encryptedPswd);
         }  catch (Exception u) {
             try {
