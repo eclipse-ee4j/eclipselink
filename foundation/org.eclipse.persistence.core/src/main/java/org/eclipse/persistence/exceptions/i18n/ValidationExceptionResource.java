@@ -137,6 +137,7 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7105", "Error encountered converting encrypting class: [{0}]" },
                                            { "7106", "Error encountered during string encryption." },
                                            { "7107", "Error encountered during string decryption." },
+                                           { "7360", "Database password was encrypted by deprecated algorithm.\nIt's recommended to re-encrypt it by `passwordUpdate.sh` from eclipselink.zip bundle"},
                                            { "7108", "This operation is not supported for non-relational platforms." },
                                            { "7109", "The login in the project used to create the session is null, it must be a valid login." },
                                            { "7110", "At present HistoricalSession only works with Oracle 9R2 or later databases, as it uses Oracle''s Flashback feature." },
