@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -150,6 +150,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int ERROR_DECRYPTING_PASSWORD = 7107;
     public static final int NOT_SUPPORTED_FOR_DATASOURCE = 7108;
     public static final int PROJECT_LOGIN_IS_NULL = 7109;
+    public static final int ENCRYPTION_OLD_ALGORITHM = 7360;
 
     // for flashback:
     public static final int HISTORICAL_SESSION_ONLY_SUPPORTED_ON_ORACLE = 7110;
@@ -902,6 +903,13 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = {  };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ERROR_DECRYPTING_PASSWORD, args), exception);
         validationException.setErrorCode(ERROR_DECRYPTING_PASSWORD);
+        return validationException;
+    }
+
+    public static ValidationException errorDecryptingPasswordOldAlgorithm(Exception exception) {
+        Object[] args = {  };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ENCRYPTION_OLD_ALGORITHM, args), exception);
+        validationException.setErrorCode(ENCRYPTION_OLD_ALGORITHM);
         return validationException;
     }
 
