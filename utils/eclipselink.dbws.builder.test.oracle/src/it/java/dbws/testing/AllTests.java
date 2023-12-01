@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ import dbws.testing.ordescriptor.ORDescriptorTestSuite;
 import dbws.testing.oxdescriptor.OXDescriptorTestSuite;
 import dbws.testing.plsqlcollection.PLSQLCollectionTestSuite;
 import dbws.testing.plsqlrecord.PLSQLRecordTestSuite;
+import dbws.testing.plsqlrecord.PLSQLTypeReturnTestSuite;
 import dbws.testing.plsqlrecord2.PLSQLRecord2TestSuite;
 import dbws.testing.prependedpackage.PrependedPackageTestSuite;
 import dbws.testing.prependedschema.PrependedSchemaTestSuite;
@@ -89,6 +90,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     OXDescriptorTestSuite.class,
     PLSQLCollectionTestSuite.class,
     PLSQLRecordTestSuite.class,
+    PLSQLTypeReturnTestSuite.class,
     PLSQLRecord2TestSuite.class,
     PrependedPackageTestSuite.class,
     PrependedSchemaTestSuite.class,

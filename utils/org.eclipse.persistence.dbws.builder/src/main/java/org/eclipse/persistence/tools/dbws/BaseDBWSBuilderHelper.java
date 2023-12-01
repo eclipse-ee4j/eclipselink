@@ -76,7 +76,7 @@ import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs;
 import static org.eclipse.persistence.tools.dbws.Util.isNullStream;
 import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
-
+import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseTypeCompositeTestable;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -1312,6 +1312,15 @@ public abstract class BaseDBWSBuilderHelper {
                 plsqlCollection.setJavaTypeName(javaTypeName + COLLECTION_WRAPPER_SUFFIX);
                 plsqlCollection.setNestedType(buildDatabaseTypeFromMetadataType(((PLSQLCollectionType) dType).getEnclosedType(), catalog));
                 return plsqlCollection;
+            }
+            
+            if(dType.isTYPEType()) {
+                OracleArrayType typeType = new OracleArrayType();
+                typeType.setTypeName(typeName);
+                typeType.setCompatibleType(compatibleType);
+                typeType.setJavaTypeName(getGeneratedWrapperClassName(javaTypeName, dbwsBuilder.getProjectName()));
+                typeType.setNestedType(buildDatabaseTypeFromMetadataType(((TYPEType) dType).getEnclosedType(), null));
+                return typeType;
             }
             // handle advanced Oracle types
             if (dType.isVArrayType()) {

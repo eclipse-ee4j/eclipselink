@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -459,6 +459,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     rargJdbcType = STRUCT;
                 } else if (rargDataType.isVArrayType() || rargDataType.isObjectTableType()) {
                     rargJdbcType = ARRAY;
+                } else if (rargDataType.isTYPEType()) {
+                    rargJdbcType = Util.getJDBCTypeFromTypeName(returnArgument.getTypeName());
                 }
             } else {
                 rargJdbcType = Util.getJDBCTypeFromTypeName(returnArgument.getTypeName());
@@ -1306,6 +1308,23 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     DatabaseType dataType = returnArg.getEnclosedType();
                     if (dataType.isVArrayType() || dataType.isObjectTableType()) {
                         call = new StoredFunctionCall(Types.ARRAY, returnArg.getTypeName(), javaTypeName, buildFieldForNestedType(dataType));
+                    } else if (dataType.isTYPEType()) {
+                        String javaType = dataType.getTypeName();
+                        int resultType = Util.getJDBCTypeFromTypeName(javaType);
+                        call = new StoredFunctionCall();
+                        // need special handling for Date types
+                        if (resultType == Types.DATE || resultType == Types.TIME || resultType == Types.TIMESTAMP) {
+                            ((StoredFunctionCall) call).setResult(null, ClassConstants.TIMESTAMP);
+                        } else if (returnArg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
+                            // special handling for XMLType types
+                            ((StoredFunctionCall) call).setResult(getJDBCTypeForTypeName(XMLTYPE_STR), XMLTYPE_STR,
+                                    ClassConstants.OBJECT);
+                        } else if (resultType == Types.OTHER || resultType == Types.CLOB) {
+                            // default to OBJECT for OTHER, CLOB and LONG types
+                            ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
+                        } else {
+                            ((StoredFunctionCall) call).setResult(null, resultType);
+                        }
                     } else {
                         // assumes ObjectType
                         call = new StoredFunctionCall(Types.STRUCT, returnArg.getTypeName(), javaTypeName);
@@ -1422,6 +1441,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
                         if (argType.isVArrayType() || argType.isObjectTableType()) {
                             call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.ARRAY, argType.getTypeName(), wrapperClass, buildFieldForNestedType(argType));
+                        } else if (argType.isTYPEType()) {
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Util.getJDBCTypeFromTypeName(argType.getTypeName()));
                         } else {
                             // assumes ObjectType
                             call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.STRUCT, argType.getTypeName(), wrapperClass);
