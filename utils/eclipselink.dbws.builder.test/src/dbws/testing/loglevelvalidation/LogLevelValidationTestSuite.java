@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverterAdapter;
+import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.tools.dbws.BaseDBWSBuilderHelper;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
@@ -221,6 +222,8 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
      * Positive test.
      */
     public void testInvalidLogLevel() {
+        XMLComparer comparer = new XMLComparer();
+        comparer.setIgnoreElementName("password");
         Document testDoc = xmlParser.parse(new StringReader(DBWS_SESSION_STREAM.toString()));
         removeEmptyTextNodes(testDoc);
         Document controlDoc = xmlParser.parse(new StringReader(SESSIONS_XML));

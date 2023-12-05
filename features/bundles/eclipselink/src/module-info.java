@@ -108,6 +108,7 @@ module eclipselink {
     exports org.eclipse.persistence.platform.server.wls;
     exports org.eclipse.persistence.platform.xml;
     exports org.eclipse.persistence.queries;
+    exports org.eclipse.persistence.security;
     exports org.eclipse.persistence.sequencing;
     exports org.eclipse.persistence.services;
     exports org.eclipse.persistence.services.glassfish;

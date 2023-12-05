@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,9 @@ import org.w3c.dom.Text;
 public class XMLComparer {
 
     private boolean ignoreOrder;
+    //Useful e.g. for password element where is content encrypted by AES/GCM/NoPadding where is randomly generated input vector for every encrypt(.) call.
+    //Control document and test document is not same in this part.
+    private String ignoreElementName = null;
 
     public XMLComparer() {
         super();
@@ -143,6 +146,9 @@ public class XMLComparer {
     }
 
     private boolean isElementEqual(Element control, Element test) {
+        if (ignoreElementName != null && isStringEqual(ignoreElementName, test.getTagName())) {
+            return true;
+        }
         if (!isStringEqual(control.getNamespaceURI(), test.getNamespaceURI())) {
             return false;
         }
@@ -252,5 +258,13 @@ public class XMLComparer {
 
     public void setIgnoreOrder(boolean ignoreOrder) {
         this.ignoreOrder = ignoreOrder;
+    }
+
+    public String getIgnoreElementName() {
+        return ignoreElementName;
+    }
+
+    public void setIgnoreElementName(String ignoreElementName) {
+        this.ignoreElementName = ignoreElementName;
     }
 }

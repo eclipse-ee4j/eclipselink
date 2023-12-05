@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,8 @@ public class SecurableObjectHolder {
     /** The actual encryption object **/
     private Securable m_securableObject;
 
+    private String sessionName;
+
     public SecurableObjectHolder() {
         this(null);
     }
@@ -62,6 +64,14 @@ public class SecurableObjectHolder {
         }
 
         return m_securableObject;
+    }
+
+    public String getSessionName() {
+        return sessionName;
+    }
+
+    public void setSessionName(String sessionName) {
+        this.sessionName = sessionName;
     }
 
     public boolean hasSecurableObject() {
@@ -97,6 +107,9 @@ public class SecurableObjectHolder {
                 }
             } else {
                 m_securableObject = (Securable)PrivilegedAccessHelper.newInstanceFromClass(securableClass);
+            }
+            if (m_securableObject instanceof JCEEncryptor) {
+                ((JCEEncryptor)m_securableObject).setSessionName(sessionName);
             }
         } catch (Throwable e) {
             if (initPassThroughEncryptor) {// default failed, so perform no encryption.
