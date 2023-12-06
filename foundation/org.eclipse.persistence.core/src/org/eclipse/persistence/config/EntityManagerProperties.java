@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -313,7 +313,7 @@ public class EntityManagerProperties {
      *  &nbsp;("memberPu2" {@literal ->} (<br>
      *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.user" {@literal ->} "user2",<br>
      *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.password" {@literal ->} "password2"<br>
-     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.driver" {@literal ->} "com.mysql.jdbc.Driver",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.driver" {@literal ->} "com.mysql.cj.jdbc.Driver",<br>
      *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.url" {@literal ->} "jdbc:mysql://my_sql_db_url:3306/user2",<br>
      *  &nbsp;&nbsp;)<br>
      * )

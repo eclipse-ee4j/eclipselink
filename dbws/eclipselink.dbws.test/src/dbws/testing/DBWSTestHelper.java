@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class DBWSTestHelper {
     public final static String DEFAULT_DATABASE_PASSWORD = "password";
     public final static String DEFAULT_DATABASE_URL = "jdbc:mysql://localhost:3306/test" +
         DEFAULT_DATABASE_USERNAME;
-    public final static String DEFAULT_DATABASE_DRIVER = "com.mysql.jdbc.Driver";
+    public final static String DEFAULT_DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
     public final static String DEFAULT_DATABASE_PLATFORM =
         "org.eclipse.persistence.platform.database.MySQLPlatform";
     public final static String DATABASE_DDL_CREATE_KEY = "db.ddl.create";

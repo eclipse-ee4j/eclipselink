@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -192,7 +192,7 @@ public final class MWLoginSpec
         specs.add(new DriverSpec("COM.ibm.db2.jdbc.app.DB2Driver", "jdbc:db2:"));
         specs.add(new DriverSpec("COM.ibm.db2.jdbc.net.DB2Driver", "jdbc:db2:"));
         specs.add(new DriverSpec("com.ibm.db2.jcc.DB2Driver", "jdbc:db2://"));
-        specs.add(new DriverSpec("com.mysql.jdbc.Driver", "jdbc:mysql://"));
+        specs.add(new DriverSpec("com.mysql.cj.jdbc.Driver", "jdbc:mysql://"));
         specs.add(new DriverSpec("borland.jdbc.Bridge.LocalDriver", "jdbc:BorlandBridge:"));
         specs.add(new DriverSpec("borland.jdbc.Broker.RemoteDriver", "jdbc:BorlandBridge:"));
         specs.add(new DriverSpec("intersolv.jdbc.sequelink.SequeLinkDriver", "jdbc:sequelink:"));

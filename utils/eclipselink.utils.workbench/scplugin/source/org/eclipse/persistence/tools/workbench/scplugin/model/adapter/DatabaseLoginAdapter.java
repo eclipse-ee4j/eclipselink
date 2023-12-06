@@ -659,7 +659,7 @@ public final class DatabaseLoginAdapter extends LoginAdapter {
         table.put("COM.ibm.db2.jdbc.app.DB2Driver",                new String[] { "jdbc:db2:" });
         table.put("COM.ibm.db2.jdbc.net.DB2Driver",                new String[] { "jdbc:db2:" });
         table.put("com.ibm.db2.jcc.DB2Driver",                     new String[] { "jdbc:db2://" });
-        table.put("com.mysql.jdbc.Driver",                     new String[] { "jdbc:mysql://" });
+        table.put("com.mysql.cj.jdbc.Driver",                     new String[] { "jdbc:mysql://" });
         table.put("borland.jdbc.Bridge.LocalDriver",               new String[] { "jdbc:BorlandBridge:" });
         table.put("borland.jdbc.Broker.RemoteDriver",              new String[] { "jdbc:BorlandBridge:" });
         table.put("intersolv.jdbc.sequelink.SequeLinkDriver",      new String[] { "jdbc:sequelink:" });

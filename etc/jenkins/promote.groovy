@@ -102,6 +102,9 @@ spec:
 """
         }
     }
+    environment {
+        bind_address='0.0.0.0'
+    }
     tools {
         jdk 'adoptopenjdk-hotspot-jdk11-latest'
     }

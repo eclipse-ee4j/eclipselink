@@ -144,6 +144,7 @@
         <echo message="wsdl.jar     ='${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}'"/>
         <echo message="persistence.jar ='${dbwsbldrtest.2.common.plugins.dir}/${persistence.jar}'"/>
         <echo message="persistence20_21_diff.jar ='${dbwsbldrtest.2.base.dir}/${build.dir}/${persistence20_21_diff.jar}'"/>
+        <echo message="gmbal.lib =${dbwsbldrtest.2.common.plugins.dir}/${gmbal.jar}"/>
         <echo message="javax.activation.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.activation.jar}"/>
         <echo message="javax.annotation.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.annotation.jar}"/>
         <echo message="javax.validation.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.validation.jar}"/>
@@ -165,6 +166,7 @@
         <property name="wsdl.lib"         value="${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}"/>
         <property name="persistence.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${persistence.jar}"/>
         <property name="persistence20_21_diff.lib" value ="${dbwsbldrtest.2.base.dir}/${build.dir}/${persistence20_21_diff.jar}"/>
+        <property name="gmbal.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${gmbal.jar}"/>
         <property name="javax.activation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.activation.jar}"/>
         <property name="javax.annotation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.annotation.jar}"/>
         <property name="javax.validation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.validation.jar}"/>
@@ -191,6 +193,7 @@
         <available file="${wsdl.lib}"             property="wsdl.lib.exist"/>
         <available file="${ddlparser.lib}"        property="ddlparser.lib.exist"/>
         <available file="${dbwsbldr.lib}"         property="dbwsbldr.lib.exist"/>
+        <available file="${gmbal.lib}"         property="gmbal.lib.exist"/>
         <available file="${javax.activation.lib}" property="javax.activation.lib.exist"/>
         <available file="${javax.annotation.lib}" property="javax.annotation.lib.exist"/>
         <available file="${javax.validation.lib}" property="javax.validation.lib.exist"/>
@@ -215,6 +218,7 @@
         <fail message="Cannot find: '${wsdl.lib}'"        unless="wsdl.lib.exist"/>
         <fail message="Cannot find: '${ddlparser.lib}'"   unless="ddlparser.lib.exist"/>
         <fail message="Cannot find: '${dbwsbldr.lib}'"    unless="dbwsbldr.lib.exist"/>
+        <fail message="Cannot find: '${gmbal.lib}'"    unless="gmbal.lib.exist"/>
         <fail message="Cannot find: '${javax.activation.lib}'"    unless="javax.activation.lib.exist"/>
         <fail message="Cannot find: '${javax.annotation.lib}'"    unless="javax.annotation.lib.exist"/>
         <fail message="Cannot find: '${javax.validation.lib}'"    unless="javax.validation.lib.exist"/>
@@ -270,6 +274,7 @@
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="./${dbwsbldrtest.jar}"/>
             <pathelement path="${mail.lib}"/>
+            <pathelement path="${gmbal.lib}"/>
             <pathelement path="${javax.validation.lib}"/>
             <pathelement path="${jaxb-impl.lib}"/>
             <pathelement path="${jws-api.lib}"/>
