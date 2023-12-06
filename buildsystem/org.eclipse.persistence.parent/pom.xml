@@ -38,7 +38,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>8</maven.compiler.release>
         <tycho.version>3.0.4</tycho.version>
-        <junit4-version>4.12</junit4-version>
+        <junit4-version>4.13.2</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
         <release.version>2.7.14</release.version>
