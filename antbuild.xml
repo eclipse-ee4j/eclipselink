@@ -1699,6 +1699,10 @@
             <zipfileset dir="${eclipselink.util.rename}" prefix="eclipselink/utils/rename" filemode="755">
                 <include name="${package-rename-scripts}"/>
             </zipfileset>
+            <!-- password updater scripts -->
+            <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/utils/security" filemode="755">
+                <include name="${security-scripts}"/>
+            </zipfileset>
 
             <!-- jaxb-compiler scripts -->
             <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="eclipselink/bin" filemode="755"/>

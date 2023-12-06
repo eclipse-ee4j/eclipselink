@@ -102,6 +102,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
+                        export bind_address=0.0.0.0
                         /opt/bin/mysql-start.sh
                         mkdir $HOME/extension.lib.external
                         wget -nc https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar -O $HOME/extension.lib.external/junit-4.12.jar

@@ -473,6 +473,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         this.persistenceUnitUniqueName = persistenceUnitUniqueName;
         this.sessionName = sessionName;
         this.requiresConnection = true;
+        this.securableObjectHolder.setSessionName(sessionName);
     }
 
     public EntityManagerSetupImpl() {
