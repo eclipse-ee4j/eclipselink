@@ -1,4 +1,4 @@
-//  Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+//  Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
 //
 //  This program and the accompanying materials are made available under the
 //  terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,6 +91,7 @@ spec:
     }
     environment {
         ANT_HOME="${env.HOME}/apache-ant-1.10.7"
+        bind_address='0.0.0.0'
     }
     tools {
         maven 'apache-maven-latest'
@@ -102,19 +103,18 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                        export bind_address=0.0.0.0
                         /opt/bin/mysql-start.sh
                         mkdir $HOME/extension.lib.external
-                        wget -nc https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar -O $HOME/extension.lib.external/junit-4.12.jar
+                        wget -nc https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar -O $HOME/extension.lib.external/junit-4.13.2.jar
                         wget -nc https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar -O $HOME/extension.lib.external/hamcrest-core-1.3.jar
                         wget -nc https://repo1.maven.org/maven2/org/jmockit/jmockit/1.35/jmockit-1.35.jar -O $HOME/extension.lib.external/jmockit-1.35.jar
-                        wget -nc https://repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.4.1.Final/jboss-logging-3.4.1.Final.jar -O $HOME/extension.lib.external/jboss-logging-3.4.1.Final.jar
-                        wget -nc https://repo1.maven.org/maven2/org/glassfish/javax.el/3.0.1-b08/javax.el-3.0.1-b08.jar -O $HOME/extension.lib.external/javax.el-3.0.1-b08.jar
-                        wget -nc https://repo1.maven.org/maven2/com/fasterxml/classmate/1.5.1/classmate-1.5.1.jar -O $HOME/extension.lib.external/classmate-1.5.1.jar
-                        wget -nc https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.7-bin.tar.gz -O $HOME/extension.lib.external/apache-ant-1.10.7-bin.tar.gz
+                        wget -nc https://repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.4.3.Final/jboss-logging-3.4.3.Final.jar -O $HOME/extension.lib.external/jboss-logging-3.4.3.Final.jar
+                        wget -nc https://repo1.maven.org/maven2/org/glassfish/javax.el/3.0.1-b12/javax.el-3.0.1-b12.jar -O $HOME/extension.lib.external/javax.el-3.0.1-b12.jar
+                        wget -nc https://repo1.maven.org/maven2/com/fasterxml/classmate/1.6.0/classmate-1.6.0.jar -O $HOME/extension.lib.external/classmate-1.6.0.jar
+                        wget -nc https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.9-bin.tar.gz -O $HOME/extension.lib.external/apache-ant-1.10.9-bin.tar.gz
                         wget -nc https://download.eclipse.org/eclipse/downloads/drops4/R-4.10-201812060815/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz -O $HOME/extension.lib.external/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz
-                        wget -nc https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar -O $HOME/extension.lib.external/mysql-connector-java.jar
-                        tar -x -z -C $HOME -f $HOME/extension.lib.external/apache-ant-1.10.7-bin.tar.gz
+                        wget -nc https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.2.0/mysql-connector-j-8.2.0.jar -O $HOME/extension.lib.external/mysql-connector-java.jar
+                        tar -x -z -C $HOME -f $HOME/extension.lib.external/apache-ant-1.10.9-bin.tar.gz
                         tar -x -z -C $HOME/extension.lib.external -f $HOME/extension.lib.external/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz
                     """
                     withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
@@ -127,7 +127,7 @@ spec:
                     }
                     sh """
                         echo "extensions.depend.dir=$HOME/extension.lib.external" >> $HOME/build.properties
-                        echo "junit.lib=$HOME/extension.lib.external/junit-4.12.jar:$HOME/extension.lib.external/hamcrest-core-1.3.jar" >> $HOME/build.properties
+                        echo "junit.lib=$HOME/extension.lib.external/junit-4.13.2.jar:$HOME/extension.lib.external/hamcrest-core-1.3.jar" >> $HOME/build.properties
                         echo "jdbc.driver.jar=$HOME/extension.lib.external/mysql-connector-java.jar" >> $HOME/build.properties
                         echo 'db.driver=com.mysql.cj.jdbc.Driver' >> $HOME/build.properties
                         echo 'db.url=jdbc:mysql://localhost/ecltests?allowPublicKeyRetrieval=true' >> $HOME/build.properties

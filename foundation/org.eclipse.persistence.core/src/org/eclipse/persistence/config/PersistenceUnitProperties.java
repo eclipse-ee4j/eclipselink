@@ -178,7 +178,7 @@ public class PersistenceUnitProperties {
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
-     * {@code <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />}</pre>
+     * {@code <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />}</pre>
      * <p>
      * The previous value for this property "<code>eclipselink.jdbc.driver</code>" is now deprecated
      * and should be replaced with this new name.
@@ -3771,7 +3771,7 @@ public class PersistenceUnitProperties {
      *    ("memberPu2" -> (
      *       "javax.persistence.jdbc.user" -> "user2",
      *       "javax.persistence.jdbc.password" -> "password2",
-     *       "javax.persistence.jdbc.driver" -> "com.mysql.jdbc.Driver",
+     *       "javax.persistence.jdbc.driver" -> "com.mysql.cj.jdbc.Driver",
      *       "javax.persistence.jdbc.url" -> "jdbc:mysql://my_sql_db_url:3306/user2"
      *    )
      *  )}</pre>

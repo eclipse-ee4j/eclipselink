@@ -3031,7 +3031,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         getDriverChoice().addItem("com.oracle.ias.jdbc.sqlserver.SQLServerDriver");
         getDriverChoice().addItem("com.microsoft.jdbc.sqlserver.SQLServerDriver");
         getDriverChoice().addItem("weblogic.jdbc.mssqlserver4.Driver");
-        getDriverChoice().addItem("com.mysql.jdbc.Driver");
+        getDriverChoice().addItem("com.mysql.cj.jdbc.Driver");
         getDriverChoice().addItem("sun.jdbc.odbc.JdbcOdbcDriver");
         getDriverChoice().addItem("com.fujitsu.symfoware.jdbc.SYMDriver");
 

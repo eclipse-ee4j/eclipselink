@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
     // DB connection defaults
     public final static String DFLT_PERFDB_USER = "root";
     public final static String DFLT_PERFDB_PWD = "password";
-    public final static String DFLT_PERFDB_DRIVER = "com.mysql.jdbc.Driver";
+    public final static String DFLT_PERFDB_DRIVER = "com.mysql.cj.jdbc.Driver";
     public final static String DFLT_PERFDB_URI = "jdbc:mysql://localhost:3306/perfdb";
     public final static String DFLT_PERFDB_PLATFORM = "org.eclipse.persistence.platform.database.MySQLPlatform";
 

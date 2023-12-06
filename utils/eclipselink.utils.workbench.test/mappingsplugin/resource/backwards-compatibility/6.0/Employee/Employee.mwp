@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@
       <login-infos>
          <login-info>
             <name>MySQL</name>
-            <driver-class>com.mysql.jdbc.Driver</driver-class>
+            <driver-class>com.mysql.cj.jdbc.Driver</driver-class>
             <url>jdbc:mysql://tlsvrdb4.ca.oracle.com/COREDEV1</url>
             <user-name>mwdev1</user-name>
             <password>BB742416276274A46959A54867978929</password>

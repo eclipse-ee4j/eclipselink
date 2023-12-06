@@ -674,7 +674,7 @@
 
         eclipselink.perfdb.user         - performance DB user name (ex. root)
         eclipselink.perfdb.pwd          - performance DB user password (ex. password)
-        eclipselink.perfdb.driver       - database driver (ex. com.mysql.jdbc.Driver)
+        eclipselink.perfdb.driver       - database driver (ex. com.mysql.cj.jdbc.Driver)
         eclipselink.perfdb.uri          - database URI (ex. jdbc:mysql://localhost:3306/perfdb)
         eclipselink.perfdb.platform     - database platform (ex. org.eclipse.persistence.platform.database.MySQLPlatform)
         eclipselink.perfdb.driver.jar   - database driver jar location (ex. /opt/jdk/mysql-connector-java-5.1.30-bin.jar)
