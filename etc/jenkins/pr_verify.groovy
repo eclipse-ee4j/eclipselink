@@ -103,6 +103,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
+                        export bind_address='0.0.0.0'
                         /opt/bin/mysql-start.sh
                         mkdir $HOME/extension.lib.external
                         wget -nc https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar -O $HOME/extension.lib.external/junit-4.13.2.jar
@@ -158,6 +159,7 @@ spec:
                         container('el-build') {
                             sh """
                                 echo '-[ EclipseLink Core LRG ]-----------------------------------------------------------'
+                                export bind_address='0.0.0.0'
                                 $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true test-core
                             """
                         }
@@ -179,6 +181,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
+                        export bind_address='0.0.0.0'
                         $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true test-jpa22
                     """
                 }
@@ -188,6 +191,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
+                        export bind_address='0.0.0.0'
                         $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true test-sdo
                     """
                 }
@@ -197,6 +201,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
+                        export bind_address='0.0.0.0'
                         $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true test-jpa-jse test-ext test-jpql test-wdf test-jpars test-dbws test-dbws-builder test-osgi
                     """
                 }
