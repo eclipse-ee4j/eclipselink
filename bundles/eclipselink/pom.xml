@@ -144,28 +144,25 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>commonj.sdo</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-tree</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>

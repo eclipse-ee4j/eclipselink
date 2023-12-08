@@ -47,6 +47,17 @@
         </dependencySet>
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>eclipselink/jlib/asm/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>org.ow2.asm:asm</include>
+                <include>org.ow2.asm:asm-commons</include>
+                <include>org.ow2.asm:asm-tree</include>
+                <include>org.ow2.asm:asm-util</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
             <scope>provided</scope>
             <outputDirectory>eclipselink/jlib/extension/</outputDirectory>
             <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
@@ -94,7 +105,7 @@
         </dependencySet>
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
-            <scope>provided</scope>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <outputDirectory>eclipselink/jlib/sdo/</outputDirectory>
             <includes>
                 <include>${project.groupId}:commonj.sdo</include>
