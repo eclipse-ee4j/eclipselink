@@ -45,6 +45,11 @@ module eclipselink {
 
     requires static com.sun.xml.bind.core;
 
+    requires static org.objectweb.asm;
+    requires static org.objectweb.asm.commons;
+    requires static org.objectweb.asm.tree;
+    requires static org.objectweb.asm.util;
+
     exports org.eclipse.persistence.jpa.jpql;
     exports org.eclipse.persistence.jpa.jpql.parser;
     exports org.eclipse.persistence.jpa.jpql.utility.iterable;

@@ -144,11 +144,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>commonj.sdo</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
         </dependency>

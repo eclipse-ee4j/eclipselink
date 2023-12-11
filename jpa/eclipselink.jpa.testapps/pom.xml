@@ -242,23 +242,6 @@
         </dependency>
 
         <!--Test dependencies-->
-        <!--ASM Implementation-->
-        <!--Origin OW2-->
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-commons</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-tree</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -404,26 +387,6 @@
                                         <groupId>org.eclipse.persistence</groupId>
                                         <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
                                         <version>${project.version}</version>
-                                    </path>
-                                    <path>
-                                        <groupId>org.ow2.asm</groupId>
-                                        <artifactId>asm</artifactId>
-                                        <version>${asm.version}</version>
-                                    </path>
-                                    <path>
-                                        <groupId>org.ow2.asm</groupId>
-                                        <artifactId>asm-commons</artifactId>
-                                        <version>${asm.version}</version>
-                                    </path>
-                                    <path>
-                                        <groupId>org.ow2.asm</groupId>
-                                        <artifactId>asm-tree</artifactId>
-                                        <version>${asm.version}</version>
-                                    </path>
-                                    <path>
-                                        <groupId>org.ow2.asm</groupId>
-                                        <artifactId>asm-util</artifactId>
-                                        <version>${asm.version}</version>
                                     </path>
                                 </annotationProcessorPaths>
                                 <compilerArgs combine.children="append">

@@ -89,27 +89,6 @@
             <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--ASM Implementation-->
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-commons</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-tree</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-util</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--For Oracle DB driver see Oracle proprietary dependencies part. It's not limited to tests only-->
         <!--JDBC driver (test dependency)-->
         <dependency>
