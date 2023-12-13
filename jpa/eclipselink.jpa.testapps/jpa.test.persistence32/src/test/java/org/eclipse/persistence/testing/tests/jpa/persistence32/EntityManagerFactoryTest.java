@@ -33,9 +33,11 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
+import org.eclipse.persistence.testing.models.jpa.persistence32.Team;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer_;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
+import org.eclipse.persistence.testing.models.jpa.persistence32.VersionEntity;
 
 /**
  * Verify jakarta.persistence 3.2 API changes in {@link jakarta.persistence.EntityManagerFactory}.
@@ -58,7 +60,9 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
                 new EntityManagerFactoryTest("testLoadEntityNamedAttribute"),
                 new EntityManagerFactoryTest("testVerifyPokemonFetchGroups"),
                 new EntityManagerFactoryTest("testIsLoadedEntity"),
-                new EntityManagerFactoryTest("testLoadEntity")
+                new EntityManagerFactoryTest("testLoadEntity"),
+                new EntityManagerFactoryTest("testGetVersionOnEntityWithVersion"),
+                new EntityManagerFactoryTest("testGetVersionOnEntityWithoutVersion")
         );
     }
 
@@ -228,6 +232,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         }
     }
 
+    // Test <E> boolean PersistenceUnitUtil#isLoaded(E, Attribute<? super E, ?>) on lazy entity reference
     public void testIsLoadedEntityAttribute() {
         Trainer t = emf.callInTransaction(
                 em -> em.createQuery("SELECT t FROM Trainer t WHERE t.name = :name", Trainer.class)
@@ -238,6 +243,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         assertFalse("Entity lazy attribute Trainer.team should not be loaded", util.isLoaded(t, Trainer_.team));
     }
 
+    // Test <E> void PersistenceUnitUtil#load(E, Attribute<? super E, ?>) on lazy entity reference
     public void testLoadEntityAttribute() {
         Trainer t = emf.callInTransaction(
                 em -> em.createQuery("SELECT t FROM Trainer t WHERE t.name = :name", Trainer.class)
@@ -250,6 +256,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         assertTrue("Entity lazy attribute Trainer.team should be loaded after load call", util.isLoaded(t, Trainer_.team));
     }
 
+    // Test <E> boolean PersistenceUnitUtil#isLoaded(Object, String) on lazy entity reference
     public void testIsLoadedEntityNamedAttribute() {
         Trainer t = emf.callInTransaction(
                 em -> em.createQuery("SELECT t FROM Trainer t WHERE t.name = :name", Trainer.class)
@@ -260,6 +267,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         assertFalse("Entity lazy attribute Trainer.team should not be loaded", util.isLoaded(t, "team"));
     }
 
+    // Test <E> void PersistenceUnitUtil#load(Object, String) on lazy entity reference
     public void testLoadEntityNamedAttribute() {
         Trainer t = emf.callInTransaction(
                 em -> em.createQuery("SELECT t FROM Trainer t WHERE t.name = :name", Trainer.class)
@@ -274,6 +282,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
                    util.isLoaded(t, "team"));
     }
 
+    // Verify Pokemon entity fetch groups: custom FetchTypes FetchGroup must be defined
     public void testVerifyPokemonFetchGroups() {
         if (isWeavingEnabled()) {
             ClassDescriptor pokemonsDescriptor = getPersistenceUnitServerSession().getDescriptor(Pokemon.class);
@@ -283,6 +292,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         }
     }
 
+    // Test boolean PersistenceUnitUtil#isLoaded(Object) on non fully loaded entity using FetchTypes FetchGroup
     public void testIsLoadedEntity() {
         if (isWeavingEnabled()) {
             Pokemon ekans = new Pokemon(6, TRAINERS[2], "Ekans", List.of(TYPES[4]));
@@ -308,6 +318,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         }
     }
 
+    // Test boolean PersistenceUnitUtil#load(Object) on non fully loaded entity using FetchTypes FetchGroup
     public void testLoadEntity() {
         if (isWeavingEnabled()) {
             Pokemon arbok = new Pokemon(7, TRAINERS[2], "Arbok", List.of(TYPES[4]));
@@ -332,6 +343,30 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
             } finally {
                 closeEntityManager(em);
             }
+        }
+    }
+
+    // Test Object PersistenceUnitUtil#getVersion(Object) on entity with version attribute
+    public void testGetVersionOnEntityWithVersion() {
+        VersionEntity entity = new VersionEntity(1, 1, "Entity");
+        emf.runInTransaction(em -> em.persist(entity));
+        Integer version = (Integer) emf.getPersistenceUnitUtil().getVersion(entity);
+        assertNotNull(version);
+        assertEquals(entity.getVersion(), version.intValue());
+    }
+
+    // Test Object PersistenceUnitUtil#getVersion(Object) on entity without version attribute
+    // Shall throw IllegalArgumentException
+    public void testGetVersionOnEntityWithoutVersion() {
+        Team entity = new Team(100, "Team");
+        emf.runInTransaction(em -> em.persist(entity));
+        try {
+            emf.getPersistenceUnitUtil().getVersion(entity);
+            fail("PersistenceUnitUtil#getVersion(Entity) on entity without version shall throw IllegalArgumentException");
+        } catch (IllegalArgumentException iae) {
+            assertTrue(
+                    "Unexpected exception message: " + iae.getLocalizedMessage(),
+                    iae.getMessage().contains("which has no version attribute"));
         }
     }
 

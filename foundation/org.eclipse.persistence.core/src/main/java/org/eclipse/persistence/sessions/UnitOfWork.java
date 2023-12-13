@@ -689,12 +689,28 @@ public interface UnitOfWork extends Session {
     void writeChanges();
 
     /**
-     * Get an instance, whose state may be lazily fetched.
+     * Get an entity instance, whose state may be lazily fetched.
      * If the requested instance does not exist in the database, null is returned, or the object will fail when accessed.
      * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
-     * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
+     *
+     * @param theClass instance class
+     * @param primaryKey the primary key of the object, either as a List, singleton, IdClass or an instance of the object
+     * @param <T> the entity type
+     *
+     * @return a reference to the entity instance
      */
-    Object getReference(Class<?> theClass, Object primaryKey);
+    <T> T getReference(Class<T> theClass, Object primaryKey);
+
+    /**
+     * Get an entity instance, whose state may be lazily fetched.
+     * If the requested instance does not exist in the database, null is returned, or the object will fail when accessed.
+     * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
+     *
+     * @param entity persistent or detached entity instance
+     * @param <T> the entity type
+     * @return a reference to the entity instance
+     */
+    <T> T getReference(T entity);
 
     /**
      * ADVANCED:

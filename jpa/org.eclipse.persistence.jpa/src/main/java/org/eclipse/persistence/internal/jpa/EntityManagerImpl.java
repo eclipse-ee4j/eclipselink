@@ -1570,23 +1570,33 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         try {
             verifyOpen();
             UnitOfWork session = (UnitOfWork) getActiveSession();
-            Object reference = session.getReference(entityClass, primaryKey);
+            T reference = session.getReference(entityClass, primaryKey);
             if (reference == null) {
                 Object[] args = { primaryKey };
                 String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
                 throw new jakarta.persistence.EntityNotFoundException(message);
             }
-            return (T) reference;
+            return reference;
         } catch (RuntimeException exception) {
             setRollbackOnly();
             throw exception;
         }
     }
-
-    // TODO-API-3.2
     @Override
-    public <T> T getReference(T t) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+    public <T> T getReference(T entity) {
+        try {
+            verifyOpen();
+            UnitOfWork session = (UnitOfWork) getActiveSession();
+            T reference = session.getReference(entity);
+            if (reference == null) {
+                throw new jakarta.persistence.EntityNotFoundException(
+                        ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", new Object[] {entity}));
+            }
+            return reference;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw exception;
+        }
     }
 
     /**

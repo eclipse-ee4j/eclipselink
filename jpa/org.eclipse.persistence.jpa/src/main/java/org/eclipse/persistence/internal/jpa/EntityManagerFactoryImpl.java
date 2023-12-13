@@ -46,7 +46,10 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -102,6 +105,20 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             // 308950: Alternatively, CacheImpl.getId(entity) handles a null CMPPolicy case for weaved and unweaved domain object
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class", new Object[] { entity }));
         }
+    }
+
+    public static Object getVersion(Object entity, AbstractSession session) {
+        ClassDescriptor descriptor = session.getDescriptor(entity);
+        if (descriptor == null) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_get_version_non_persistent_class", new Object[] { entity }));
+        }
+        OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
+        if (lockingPolicy instanceof VersionLockingPolicy versionLockingPolicy) {
+            return versionLockingPolicy.lockValueFromObject(entity);
+        }
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                "jpa_persistence_util_get_version_no_version_in_class", new Object[] { entity }));
     }
 
     /**
@@ -789,7 +806,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return delegate.getIdentifier(entity);
     }
 
-    // TODO-API-3.2
     @Override
     public Object getVersion(Object entity) {
         return delegate.getVersion(entity);
