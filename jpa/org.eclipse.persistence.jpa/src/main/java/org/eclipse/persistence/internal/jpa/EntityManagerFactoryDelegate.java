@@ -796,10 +796,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         }
     }
 
-    // TODO-API-3.2
     @Override
     public Object getVersion(Object entity) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        return EntityManagerFactoryImpl.getVersion(entity, session);
     }
 
     /**

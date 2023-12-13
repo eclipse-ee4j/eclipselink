@@ -6153,6 +6153,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return this.changeTrackedHardList;
     }
 
+    @Override
+    public <T> T getReference(T entity) {
+        ClassDescriptor descriptor = getDescriptor(entity);
+        return getReferenceInternal(descriptor.getJavaClass(),
+                                    descriptor.getObjectBuilder()
+                                            .extractPrimaryKeyFromObject(entity, this),
+                                    descriptor);
+    }
+
     /**
      * Get an instance, whose state may be lazily fetched.
      * If the requested instance does not exist in the database, null is returned, or the object will fail when accessed.
@@ -6160,25 +6169,29 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @param id The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
     @Override
-    public Object getReference(Class<?> theClass, Object id) {
-        ClassDescriptor descriptor = getDescriptor(theClass);
+    public <T> T getReference(Class<T> theClass, Object id) {
+        return getReferenceInternal(theClass, id, getDescriptor(theClass));
+    }
+
+    // Get an instance, whose state may be lazily fetched.
+    public <T> T getReferenceInternal(Class<T> theClass, Object id, ClassDescriptor descriptor) {
         if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { theClass }));
         }
-        Object reference;
         if (id == null) { //gf721 - check for null PK
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_pk"));
         }
+        Object reference;
         Object primaryKey;
         if (id instanceof List) {
             if (descriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.ID_VALUE) {
-                if (((List)id).isEmpty()) {
+                if (((List<?>)id).isEmpty()) {
                     primaryKey = null;
                 } else {
-                    primaryKey = ((List)id).get(0);
+                    primaryKey = ((List<?>)id).get(0);
                 }
             } else {
-                primaryKey = new CacheId(((List)id).toArray());
+                primaryKey = new CacheId(((List<?>)id).toArray());
             }
         } else if (id instanceof CacheId) {
             primaryKey = id;
@@ -6217,7 +6230,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             query.setIsExecutionClone(true);
             reference = executeQuery(query);
         }
-        return reference;
+        return theClass.cast(reference);
     }
 
     /**

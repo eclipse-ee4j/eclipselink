@@ -57,6 +57,7 @@ public class SchemaManagerValidateOnMissingSchemaTest extends AbstractSchemaMana
                     "PERSISTENCE32_POKEMON",
                     "PERSISTENCE32_POKEMON_TYPE",
                     "PERSISTENCE32_SYNTAX_ENTITY",
+                    "PERSISTENCE32_VERSION_ENTITY",
                     "PERSISTENCE32_SE_COLTABLE"
             };
             Set<String> missingTablesSet = new HashSet<>(Arrays.asList(missingTables));
