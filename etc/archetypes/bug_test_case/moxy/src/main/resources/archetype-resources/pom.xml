@@ -24,8 +24,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
+        <!-- Minimum required JDK version -->
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.testRelease>17</maven.compiler.testRelease>
 
         <eclipselink.bug.version>${project.version}</eclipselink.bug.version>
         <jaxb.bug.version>${jaxb.version}</jaxb.bug.version>
