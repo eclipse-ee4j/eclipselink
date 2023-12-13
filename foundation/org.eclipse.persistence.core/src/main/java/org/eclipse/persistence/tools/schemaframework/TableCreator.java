@@ -791,7 +791,7 @@ public class TableCreator {
                 String dbTypeName = (String) dbRecord.get("TYPE_NAME");
                 if (dbTypeName != null) {
                     // Type mismatch. DB typeName may be an alias, e.g. INT/INTEGER!
-                    if (!expectedDbType.isTypeName(dbTypeName)) {
+                    if (!expectedDbType.isTypeName(dbTypeName, false)) {
                         existingColumnsDiff.add(
                                 new TableValidationException.DifferentColumns.TypeDifference(databaseField.getName(),
                                                                                              expectedDbType.getName(),
