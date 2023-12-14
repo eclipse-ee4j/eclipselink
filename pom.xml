@@ -139,6 +139,7 @@
         <installation.checksum.md5>56e2dd6f54e65603ada5659a06ad782b</installation.checksum.md5>
 
         <!--Test DB property file names-->
+        <test.h2.properties.file>el-test.h2.properties</test.h2.properties.file>
         <test.mysql.properties.file>el-test.mysql.properties</test.mysql.properties.file>
         <test.mariadb.properties.file>el-test.mariadb.properties</test.mariadb.properties.file>
         <test.oracle.properties.file>el-test.oracle.properties</test.oracle.properties.file>
@@ -225,6 +226,7 @@
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.17.1.0</derby.version>
         <db2.version>11.5.8.0</db2.version>
+        <h2.version>2.2.224</h2.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
         <exam.version>4.13.4</exam.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -982,6 +984,11 @@
                 <version>${springframework.version}</version>
             </dependency>
             <!--JDBC drivers-->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
@@ -1853,6 +1860,18 @@
                 <db.driver.groupId>com.ibm.db2</db.driver.groupId>
                 <db.driver.artifactId>jcc</db.driver.artifactId>
                 <db.driver.version>${db2.version}</db.driver.version>
+                <test.skip.in-memory.db>true</test.skip.in-memory.db>
+            </properties>
+        </profile>
+        <profile>
+            <id>h2</id>
+            <properties>
+                <test.properties.file>${user.home}/${test.h2.properties.file}</test.properties.file>
+                <test.properties.fileName>${test.h2.properties.file}</test.properties.fileName>
+                <!--Used by sql-maven-plugin-->
+                <db.driver.groupId>com.h2database</db.driver.groupId>
+                <db.driver.artifactId>h2</db.driver.artifactId>
+                <db.driver.version>${h2.version}</db.driver.version>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>
