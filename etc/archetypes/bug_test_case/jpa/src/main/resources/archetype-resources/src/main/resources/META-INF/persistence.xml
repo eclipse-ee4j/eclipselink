@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd" version="2.0">
+    <persistence-unit name="test-jpa-pu" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+
+            <!--DERBY-->
+            <!--
+                        <property name="jakarta.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+                        <property name="jakarta.persistence.jdbc.url" value="jdbc:derby://localhost/memory:ecltests;create=true"/>
+                        <property name="jakarta.persistence.jdbc.user" value="root"/>
+                        <property name="jakarta.persistence.jdbc.password" value="root"/>
+            -->
+            <!--H2-->
+            <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:~/h2/ecltests"/>
+            <!--MS SQL-->
+            <!--
+                        <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+                        <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlserver://docker.localhost:1433;database=ecltests"/>
+                        <property name="jakarta.persistence.jdbc.user" value="SA"/>
+                        <property name="jakarta.persistence.jdbc.password" value="SAPwd"/>
+            -->
+            <!--POSTGRESQL-->
+            <!--
+                        <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+                        <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/ecltests"/>
+                        <property name="jakarta.persistence.jdbc.user" value="scott"/>
+                        <property name="jakarta.persistence.jdbc.password" value="tiger"/>
+            -->
+            <!--MYSQL-->
+            <!--
+                        <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+                        <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/ecltests?allowPublicKeyRetrieval=true"/>
+                        <property name="jakarta.persistence.jdbc.user" value="Tester"/>
+                        <property name="jakarta.persistence.jdbc.password" value="TestPwd"/>
+            -->
+            <!--ORACLE-->
+            <!--
+            <property name="jakarta.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:oracle:thin:@localhost:1521/XEPDB1"/>
+            <property name="jakarta.persistence.jdbc.user" value="scott1"/>
+            <property name="jakarta.persistence.jdbc.password" value="tiger"/>
+            -->
+
+            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+            <property name="jakarta.persistence.sql-load-script-source" value="META-INF/sql/init.sql"/>
+        </properties>
+    </persistence-unit>
+</persistence>
