@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,6 +56,8 @@ public class ClearDatabaseSchemaTest extends TestCase {
             resetDerby(session);
         } else if (platform.isSQLServer()) {
             resetMSSQL(session);
+        } else if (platform.isH2()) {
+            resetH2(session);
         } else if (platform.isHSQL()) {
             resetHsql(session);
         } else if (platform.isPostgreSQL()) {
@@ -192,6 +194,10 @@ public class ClearDatabaseSchemaTest extends TestCase {
                 + "FROM pg_tables WHERE schemaname = current_schema();");
         List<String> toRetry = execStatements(session, result);
         assertTrue(toRetry + " statements failed", toRetry.isEmpty());
+    }
+
+    private void resetH2(AbstractSession session) {
+        session.executeNonSelectingSQL("DROP ALL OBJECTS;");
     }
 
     private List<String> execStatements(AbstractSession session, Vector<ArrayRecord> records) {

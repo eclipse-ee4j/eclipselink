@@ -35,7 +35,7 @@
         <junit.bug.version>${junit.version}</junit.bug.version>
 
         <derby.bug.version>${derby.version}</derby.bug.version>
-        <h2.bug.version>2.2.224</h2.bug.version>
+        <h2.bug.version>${h2.version}</h2.bug.version>
         <mssql.bug.version>${mssql.version}</mssql.bug.version>
         <mysql.bug.version>${mysql.version}</mysql.bug.version>
         <oracle.jdbc.bug.version>${oracle.jdbc.version}</oracle.jdbc.bug.version>
