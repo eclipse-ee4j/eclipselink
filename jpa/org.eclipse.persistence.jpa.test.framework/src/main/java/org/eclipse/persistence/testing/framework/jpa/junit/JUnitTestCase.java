@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.JNDIConnector;
@@ -1031,7 +1032,8 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public static boolean isSelectForUpateNoWaitSupported(Platform platform) {
-        if (platform.isOracle() || platform.isSQLServer() || platform.isMariaDB()) {
+        if (platform.isOracle() || platform.isSQLServer() || platform.isMariaDB()
+                || (platform.isMySQL() && ((MySQLPlatform)platform).supportsForUpdateNoWait())) {
             return true;
         }
         warning("This database does not support NOWAIT.");

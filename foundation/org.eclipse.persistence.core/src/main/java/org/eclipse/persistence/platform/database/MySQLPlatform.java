@@ -87,6 +87,7 @@ public class MySQLPlatform extends DatabasePlatform {
     /** Support fractional seconds in time values since MySQL v. 5.6.4. */
     private boolean isFractionalTimeSupported;
     private boolean isConnectionDataInitialized;
+    private boolean supportsForUpdateNoWait;
 
     public MySQLPlatform(){
         super();
@@ -94,6 +95,7 @@ public class MySQLPlatform extends DatabasePlatform {
         this.startDelimiter = "`";
         this.endDelimiter = "`";
         this.supportsReturnGeneratedKeys = true;
+        this.supportsForUpdateNoWait = false;
     }
 
     @Override
@@ -106,11 +108,24 @@ public class MySQLPlatform extends DatabasePlatform {
         this.isFractionalTimeSupported = Helper.compareVersions(databaseVersion, "5.6.4") >= 0;
         // Driver 5.1 supports NVARCHAR
         this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "5.1.0") >= 0;
+        // Database supports NOWAIT since 8.0.1
+        this.supportsForUpdateNoWait = Helper.compareVersions(databaseVersion, "8.0.1") >= 0;
         this.isConnectionDataInitialized = true;
     }
 
     public boolean isFractionalTimeSupported() {
         return isFractionalTimeSupported;
+    }
+
+    /**
+     * Whether locking read concurrency with {@code NOWAIT} is supported.
+     * Requires MySQL 8.0.1 or later.
+     *
+     * @return value of {@code true} when locking read concurrency with {@code NOWAIT}
+     *         is supported or {@code false} otherwise
+     */
+    public boolean supportsForUpdateNoWait() {
+        return supportsForUpdateNoWait;
     }
 
     /**

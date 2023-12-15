@@ -12,10 +12,15 @@
 package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockOption;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Timeout;
 import junit.framework.Test;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
@@ -30,13 +35,18 @@ public class EntityManagerTest extends AbstractPokemon {
     static final Pokemon[] POKEMONS = new Pokemon[] {
             null, // Skip array index 0
             new Pokemon(1, "Pidgey", List.of(TYPES[1], TYPES[3])),
+            null, // Array index 2 is reserved for testGetReferenceForNotExistingEntity
+            new Pokemon(3, "Squirtle", List.of(TYPES[11])),
+            new Pokemon(4, "Caterpie", List.of(TYPES[7]))
     };
 
     public static Test suite() {
         return suite(
                 "EntityManagerTest",
                 new EntityManagerTest("testGetReferenceForExistingEntity"),
-                new EntityManagerTest("testGetReferenceForNotExistingEntity")
+                new EntityManagerTest("testGetReferenceForNotExistingEntity"),
+                new EntityManagerTest("testLockOptionUtilsUnknownClass"),
+                new EntityManagerTest("testLockPessimisticWriteWithTimeout")
         );
     }
 
@@ -54,7 +64,9 @@ public class EntityManagerTest extends AbstractPokemon {
         super.suiteSetUp();
         emf.runInTransaction(em -> {
             for (int i = 1; i < POKEMONS.length; i++) {
-                em.persist(POKEMONS[i]);
+                if (POKEMONS[i] != null) {
+                    em.persist(POKEMONS[i]);
+                }
             }
         });
     }
@@ -68,6 +80,7 @@ public class EntityManagerTest extends AbstractPokemon {
                 Pokemon pokemon = new Pokemon(1, "Pidgey", List.of(TYPES[1], TYPES[3]));
                 Pokemon reference = em.getReference(pokemon);
                 assertTrue(reference instanceof PersistenceEntity);
+                // Verify that access to entity attribute works
                 reference.getName();
                 et.commit();
             } catch (Exception e) {
@@ -87,18 +100,72 @@ public class EntityManagerTest extends AbstractPokemon {
                 Pokemon reference = em.getReference(pokemon);
                 assertTrue(reference instanceof PersistenceEntity);
                 try {
+                    // Verify that access to entity attribute fails
                     reference.getName();
                     fail("Accessing non-existing entity shall throw EntityNotFoundException");
                 // EntityNotFoundException shall be thrown on non-existing entity access
                 } catch (EntityNotFoundException enfe) {
-                    assertTrue("Unexpected exception message: " + enfe.getLocalizedMessage(),
-                               enfe.getLocalizedMessage().contains("Could not find Entity"));
+                    assertTrue("Unexpected exception message: " + enfe.getMessage(),
+                               enfe.getMessage().contains("Could not find Entity"));
                 }
                 et.commit();
             } catch (Exception e) {
                 et.rollback();
                 throw e;
             }
+        }
+    }
+
+    // Call lock(Object, LockModeType, LockOption...) with unsupported LockOption instance
+    // Shall throw PersistenceException
+    public void testLockOptionUtilsUnknownClass() {
+        emf.runInTransaction(em -> {
+            Pokemon pokemon = em.find(Pokemon.class, POKEMONS[4].getId());
+            try {
+                em.lock(pokemon, LockModeType.PESSIMISTIC_WRITE, new LockOption() { });
+                fail("Calling lock(Object, LockModeType, LockOption...) with unsupported LockOption shall throw PersistenceException");
+            } catch (PersistenceException pe) {
+                assertTrue("Unexpected exception message: " + pe.getMessage(),
+                           pe.getMessage().contains("The LockOption implementing class"));
+                assertTrue("Unexpected exception message: " + pe.getMessage(),
+                           pe.getMessage().contains("is not supported"));
+            }
+        });
+    }
+
+    // Test lock(Object, LockModeType, LockOption...) with LockModeType.PESSIMISTIC_WRITE and specific timeout
+    // Parallel attempt to lock the entity shall fail.
+    public void testLockPessimisticWriteWithTimeout() {
+        if (isSelectForUpateNoWaitSupported()) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    emf.runInTransaction(em -> {
+                        Pokemon pokemon = em.find(Pokemon.class, POKEMONS[3].getId());
+                        em.lock(pokemon, LockModeType.PESSIMISTIC_WRITE, Timeout.ms(0));
+                    });
+                }
+            });
+            AtomicBoolean hanging = new AtomicBoolean(true);
+            emf.runInTransaction(em -> {
+                Pokemon pokemon = em.find(Pokemon.class, POKEMONS[3].getId());
+                em.lock(pokemon, LockModeType.PESSIMISTIC_WRITE, Timeout.s(60));
+                thread.start();
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                // Thread should have failed to get a lock with NOWAIT and hence should have finished by now
+                hanging.set(thread.isAlive());
+                if (hanging.get()) {
+                    thread.interrupt();
+                }
+            });
+            assertFalse("Pessimistic lock with NOWAIT on entity causes concurrent thread to wait", hanging.get());
+        } else {
+            warning("Skipping testLockPessimisticWriteWithTimeout because SELECT FOR UPDATE NO WAIT is not supported on "
+                            + getPlatform().getClass().getSimpleName());
         }
     }
 
