@@ -841,11 +841,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         return find(entityClass, primaryKey, parsedOptions.lockModeType(), parsedOptions.properties());
     }
 
-    // TODO-API-3.2
+    // TODO-API-3.2 - Missing tests
     @Override
     public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {
-        FindOptionUtils.Options parsedOptions = FindOptionUtils.parse(options);
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        Class<T> entityClass = ((EntityGraphImpl<T>)entityGraph).getClassType();
+        Map<String, Object> properties = getQueryHints(entityClass, OperationType.FIND);
+        properties.put(QueryHints.JPA_FETCH_GRAPH, entityGraph);
+        FindOptionUtils.Options parsedOptions = FindOptionUtils.parse(getQueryHints(entityClass, OperationType.FIND), options);
+        return find(entityClass, primaryKey, parsedOptions.lockModeType(), parsedOptions.properties());
     }
 
     /**
@@ -1179,10 +1182,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
 
-    // TODO-API-3.2
+    // TODO-API-3.2 - Missing tests
     @Override
     public void refresh(Object entity, RefreshOption... options) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        RefreshOptionUtils.Options parsedOptions = RefreshOptionUtils.parse(options);
+        refresh(entity, parsedOptions.lockModeType(), parsedOptions.properties());
     }
 
     /**
@@ -2128,10 +2132,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
 
-    // TODO-API-3.2
+    // EntityManager#lock(Object,LockModeType,LockOption...) has LockModeType as standalone parameter
+    // and LockModeType does not implement LockOption. This is probably bug in the jakarta.persistence API.
+    // TODO-API-3.2 - Missing tests
     @Override
     public void lock(Object entity, LockModeType lockMode, LockOption... options) {
-        throw new UnsupportedOperationException("Jakarta Persistence 3.2 API was not implemented yet");
+        LockOptionUtils.Options parsedOptions = LockOptionUtils.parse(lockMode, options);
+        refresh(entity, parsedOptions.lockModeType(), parsedOptions.properties());
     }
 
     public void verifyOpen() {

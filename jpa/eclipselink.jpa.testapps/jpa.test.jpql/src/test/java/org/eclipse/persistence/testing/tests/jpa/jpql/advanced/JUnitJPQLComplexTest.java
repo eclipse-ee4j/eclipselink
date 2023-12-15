@@ -341,6 +341,10 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         func.setName("StoredFunction_In");
         func.addArgument("P_IN", Long.class);
         func.setReturnType(Long.class);
+        // Works for Oracle and MySQL, MS SQL should use SCHEMABINDING keyword.
+        if (getPlatform().isOracle() || getPlatform().isMySQL()) {
+            func.addCharacteristic("DETERMINISTIC");
+        }
         func.addStatement("RETURN P_IN * 1000");
         return func;
     }

@@ -204,11 +204,11 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
             fail("Persistence.createEntityManagerFactory(PersistenceConfiguration) with already existing PU name shall throw PersistenceException");
         } catch (PersistenceException pe) {
             assertTrue(
-                    "Unexpected exception message: " + pe.getLocalizedMessage(),
-                    pe.getLocalizedMessage().contains("Cannot create custom persistence unit with name"));
+                    "Unexpected exception message: " + pe.getMessage(),
+                    pe.getMessage().contains("Cannot create custom persistence unit with name"));
             assertTrue(
-                    "Unexpected exception message: " + pe.getLocalizedMessage(),
-                    pe.getLocalizedMessage().contains("This name was found in xml configuration."));
+                    "Unexpected exception message: " + pe.getMessage(),
+                    pe.getMessage().contains("This name was found in xml configuration."));
         }
     }
 
@@ -224,11 +224,11 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
             fail("Persistence.createEntityManagerFactory(String, Map) with already existing PU name shall throw PersistenceException");
         } catch (PersistenceException pe) {
             assertTrue(
-                    "Unexpected exception message: " + pe.getLocalizedMessage(),
-                    pe.getLocalizedMessage().contains("Cannot create configured persistence unit with name"));
+                    "Unexpected exception message: " + pe.getMessage(),
+                    pe.getMessage().contains("Cannot create configured persistence unit with name"));
             assertTrue(
-                    "Unexpected exception message: " + pe.getLocalizedMessage(),
-                    pe.getLocalizedMessage().contains("This name was found in custom persistence units."));
+                    "Unexpected exception message: " + pe.getMessage(),
+                    pe.getMessage().contains("This name was found in custom persistence units."));
         }
     }
 
@@ -365,7 +365,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
             fail("PersistenceUnitUtil#getVersion(Entity) on entity without version shall throw IllegalArgumentException");
         } catch (IllegalArgumentException iae) {
             assertTrue(
-                    "Unexpected exception message: " + iae.getLocalizedMessage(),
+                    "Unexpected exception message: " + iae.getMessage(),
                     iae.getMessage().contains("which has no version attribute"));
         }
     }

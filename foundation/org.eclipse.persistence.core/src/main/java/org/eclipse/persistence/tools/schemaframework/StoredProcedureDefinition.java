@@ -14,6 +14,8 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 //     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
+//     12/14/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -23,14 +25,16 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Allow a semi-generic way of creating stored procedures.
  */
 public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     protected List<FieldDefinition> variables;
+    // Function/procedure characteristic, e.g. DETERMINISTIC, NO SQL, ...
+    protected List<String> characteristics;
     protected List<String> statements;
     protected List<FieldDefinition> arguments;
     protected List<Integer> argumentTypes;
@@ -39,10 +43,11 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     protected static final Integer INOUT = 3;
 
     public StoredProcedureDefinition() {
-        this.statements = new Vector<>();
-        this.variables = new Vector<>();
-        this.arguments = new Vector<>();
-        this.argumentTypes = new Vector<>();
+        this.statements = new LinkedList<>();
+        this.variables = new LinkedList<>();
+        this.characteristics = new LinkedList<>();
+        this.arguments = new LinkedList<>();
+        this.argumentTypes = new LinkedList<>();
     }
 
     /**
@@ -126,6 +131,15 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     }
 
     /**
+     * Add characteristic into the characteristics section of function/procedure.
+     *
+     * @param characteristic the function/procedure characteristic
+     */
+    public void addCharacteristic(String characteristic) {
+        getCharacteristics().add(characteristic);
+    }
+
+    /**
      * The variables are the names of the declared variables used in the procedure.
      */
     public void addVariable(String variableName, String typeName) {
@@ -171,6 +185,13 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             }
 
             printReturn(writer, session);
+
+            // Function characteristics, e.g. DETERMINISTIC, NO SQL, ...
+            for (String characteristic : getCharacteristics()) {
+                writer.write(characteristic);
+                writer.write("\n");
+            }
+
             writer.write(platform.getProcedureAsString());
             writer.write("\n");
 
@@ -265,6 +286,14 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      */
     public List<String> getStatements() {
         return statements;
+    }
+
+    /**
+     * The characteristic section in procedure.
+     * E.g. {@code COMMENT <string>}, {@code DETERMINISTIC}, {@code MODIFIES SQL DATA}, {@code NO SQL}, ... .
+     */
+    public List<String> getCharacteristics() {
+        return characteristics;
     }
 
     /**
