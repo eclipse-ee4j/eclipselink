@@ -3163,26 +3163,26 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (descriptor == null || descriptor.isAggregateDescriptor()){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[]{rootType.getName()}));
         }
-        return new EntityGraphImpl<>(new AttributeGroup(null, rootType, true), descriptor);
+        return new EntityGraphImpl<>(new AttributeGroup(null, rootType, true), factory.getMetamodel(), descriptor);
     }
 
     @Override
-    public EntityGraph createEntityGraph(String graphName) {
+    public EntityGraph<?> createEntityGraph(String graphName) {
         AttributeGroup group = this.getAbstractSession().getAttributeGroups().get(graphName);
         if (group == null){
             return null;
         }
         ClassDescriptor descriptor = this.getAbstractSession().getDescriptor(group.getType());
-        return new EntityGraphImpl(group.clone(), descriptor);
+        return new EntityGraphImpl<>(group.clone(), factory.getMetamodel(), descriptor);
     }
 
     @Override
-    public EntityGraph getEntityGraph(String graphName) {
+    public EntityGraph<?> getEntityGraph(String graphName) {
         AttributeGroup group = this.getAbstractSession().getAttributeGroups().get(graphName);
         if (group == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{graphName}));
         }
-        return new EntityGraphImpl(group);
+        return new EntityGraphImpl<>(group, factory.getMetamodel());
     }
 
     @Override
@@ -3193,13 +3193,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
         List<EntityGraph<? super T>> result = new ArrayList<>();
         for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-            result.add(new EntityGraphImpl<>(group));
+            result.add(new EntityGraphImpl<>(group, factory.getMetamodel()));
         }
         if (descriptor.hasInheritance()){
             while(descriptor.getInheritancePolicy().getParentDescriptor() != null){
                 descriptor = descriptor.getInheritancePolicy().getParentDescriptor();
                 for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-                    result.add(new EntityGraphImpl<>(group));
+                    result.add(new EntityGraphImpl<>(group, factory.getMetamodel()));
                 }
             }
         }
