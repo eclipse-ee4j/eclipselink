@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,13 +43,13 @@ public class RestDynamicClassWriter extends MetadataDynamicClassWriter {
     protected void addFields(ClassWriter cw, String parentClassType) {
         super.addFields(cw, parentClassType);
         // protected transient List<RelationshipInfo> _persistence_relationshipInfo;
-        FieldVisitor fv = cw.visitField(Opcodes.valueInt("ACC_PROTECTED") | Opcodes.valueInt("ACC_TRANSIENT"), PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
+        FieldVisitor fv = cw.visitField(Opcodes.ACC_PROTECTED | Opcodes.ACC_TRANSIENT, PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
         fv.visitEnd();
         // protected transient Link _persistence_href;
-        fv = cw.visitField(Opcodes.valueInt("ACC_PROTECTED") | Opcodes.valueInt("ACC_TRANSIENT"), PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE, null, null);
+        fv = cw.visitField(Opcodes.ACC_PROTECTED | Opcodes.ACC_TRANSIENT, PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE, null, null);
         fv.visitEnd();
         // protected transient ItemLinks _persistence_links;
-        fv = cw.visitField(Opcodes.valueInt("ACC_PROTECTED") | Opcodes.valueInt("ACC_TRANSIENT"), PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE, null, null);
+        fv = cw.visitField(Opcodes.ACC_PROTECTED | Opcodes.ACC_TRANSIENT, PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE, null, null);
         fv.visitEnd();
     }
 
@@ -61,63 +61,63 @@ public class RestDynamicClassWriter extends MetadataDynamicClassWriter {
         // public List<RelationshipInfo> _persistence_getRelationships() {
         //   return this._persistence_relationshipInfo;
         // }
-        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "getRelationships", "()" + LIST_RELATIONSHIP_INFO_SIGNATURE, "()" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitFieldInsn(Opcodes.valueInt("GETFIELD"), clsName, PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
-        mv.visitInsn(Opcodes.valueInt("ARETURN"));
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "getRelationships", "()" + LIST_RELATIONSHIP_INFO_SIGNATURE, "()" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, clsName, PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
+        mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
         // public void _persistence_setRelationships(List<RelationshipInfo> paramList) {
         //   this._persistence_relationshipInfo = paramList;
         // }
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "setRelationships", "(" + LIST_RELATIONSHIP_INFO_SIGNATURE + ")V", "(" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE + ")V", null);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        mv.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), clsName, PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "setRelationships", "(" + LIST_RELATIONSHIP_INFO_SIGNATURE + ")V", "(" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE + ")V", null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, clsName, PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
 
         // public Link _persistence_getHref() {
         //   return this._persistence_href;
         // }
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "getHref", "()" + LINK_SIGNATURE, null, null);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitFieldInsn(Opcodes.valueInt("GETFIELD"), clsName, PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
-        mv.visitInsn(Opcodes.valueInt("ARETURN"));
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "getHref", "()" + LINK_SIGNATURE, null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, clsName, PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
+        mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
         // public void _persistence_setHref(Link paramLink)
         //   this._persistence_href = paramLink;
         // }
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "setHref", "(" + LINK_SIGNATURE + ")V", null, null);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        mv.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), clsName, PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "setHref", "(" + LINK_SIGNATURE + ")V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, clsName, PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
 
         // public ItemLinks _persistence_getLinks() {
         //   return this._persistence_links;
         // }
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "getLinks", "()" + ITEM_LINKS_SIGNATURE, null, null);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitFieldInsn(Opcodes.valueInt("GETFIELD"), clsName, PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
-        mv.visitInsn(Opcodes.valueInt("ARETURN"));
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "getLinks", "()" + ITEM_LINKS_SIGNATURE, null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, clsName, PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
+        mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
         // public void _persistence_setLinks(ItemLinks paramItemLinks) {
         //   this._persistence_links = paramItemLinks;
         // }
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "setLinks", "(" + ITEM_LINKS_SIGNATURE + ")V", null, null);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        mv.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), clsName, PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "setLinks", "(" + ITEM_LINKS_SIGNATURE + ")V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, clsName, PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
     }

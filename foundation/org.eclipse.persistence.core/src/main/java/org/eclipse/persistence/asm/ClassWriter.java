@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023,2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import org.eclipse.persistence.asm.internal.Util;
 
 public abstract class ClassWriter extends ClassVisitor {
 
+    //This block must be first - begin
     private final static String ASM_CLASSWRITER_ECLIPSELINK = "org.eclipse.persistence.internal.libraries.asm.ClassWriter";
     private final static String ASM_CLASSWRITER_OW2 = "org.objectweb.asm.ClassWriter";
 
@@ -30,7 +31,9 @@ public abstract class ClassWriter extends ClassVisitor {
         ASM_CLASSWRITER_MAP.put(ASMFactory.ASM_SERVICE_OW2, ASM_CLASSWRITER_OW2);
         ASM_CLASSWRITER_MAP.put(ASMFactory.ASM_SERVICE_ECLIPSELINK, ASM_CLASSWRITER_ECLIPSELINK);
     }
+    //This block must be first - end
 
+    public static final int COMPUTE_FRAMES = valueInt("COMPUTE_FRAMES");
     private ClassWriter cw;
     protected ClassWriter customClassWriter;
 
@@ -42,7 +45,7 @@ public abstract class ClassWriter extends ClassVisitor {
     }
 
     public ClassWriter(final ClassReader classReader, final int flags) {
-        super(ASMFactory.ASM_API_SELECTED);
+        super(Opcodes.ASM_API_SELECTED);
         cw = ASMFactory.createClassWriter(flags);
     }
 
@@ -58,7 +61,7 @@ public abstract class ClassWriter extends ClassVisitor {
         return cw;
     }
 
-    public static int valueInt(String fieldName) {
+    private static int valueInt(String fieldName) {
         return ((int) Util.getFieldValue(ASM_CLASSWRITER_MAP, fieldName, Integer.TYPE));
     }
 

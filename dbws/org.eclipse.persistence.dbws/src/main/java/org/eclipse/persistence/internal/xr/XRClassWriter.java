@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,44 +67,44 @@ public class XRClassWriter extends DynamicClassWriter {
 
         // special-case: build sub-class of XRDynamicEntityCollection
         if (className.endsWith(COLLECTION_WRAPPER_SUFFIX)) {
-            cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), INIT, "()V", null, null);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, INIT, "()V", false);
-            mv.visitInsn(Opcodes.valueInt("RETURN"));
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, INIT, "()V", null, null);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, INIT, "()V", false);
+            mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(0, 0);
             mv.visitEnd();
         } else {
             // public class Foo extends XRDynamicEntity {
-            cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
 
             // public static XRDynamicPropertiesManager DPM = new
             // XRDynamicPropertiesManager();
-            cw.visitField(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_STATIC"), PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
+            cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
 
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_STATIC"), CLINIT, "()V", null, null);
-            mv.visitTypeInsn(Opcodes.valueInt("NEW"), XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES);
-            mv.visitInsn(Opcodes.valueInt("DUP"));
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES, INIT, "()V", false);
-            mv.visitFieldInsn(Opcodes.valueInt("PUTSTATIC"), classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
-            mv.visitInsn(Opcodes.valueInt("RETURN"));
+            mv = cw.visitMethod(Opcodes.ACC_STATIC, CLINIT, "()V", null, null);
+            mv.visitTypeInsn(Opcodes.NEW, XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES);
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES, INIT, "()V", false);
+            mv.visitFieldInsn(Opcodes.PUTSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
+            mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(0, 0);
             mv.visitEnd();
 
             // public Foo() {
             // super();
             // }
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), INIT, "()V", null, null);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, INIT, "()V", false);
-            mv.visitInsn(Opcodes.valueInt("RETURN"));
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, INIT, "()V", null, null);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, INIT, "()V", false);
+            mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(0, 0);
             mv.visitEnd();
 
             // public XRDynamicPropertiesManager fetchPropertiesManager() {
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "fetchPropertiesManager", "()L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
-            mv.visitFieldInsn(Opcodes.valueInt("GETSTATIC"), classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
-            mv.visitInsn(Opcodes.valueInt("ARETURN"));
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "fetchPropertiesManager", "()L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
+            mv.visitFieldInsn(Opcodes.GETSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
+            mv.visitInsn(Opcodes.ARETURN);
             mv.visitMaxs(0, 0);
             mv.visitEnd();
         }

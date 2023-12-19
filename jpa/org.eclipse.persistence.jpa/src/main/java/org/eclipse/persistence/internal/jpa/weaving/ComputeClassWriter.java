@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2000, 2015 -2011 INRIA, France Telecom
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,14 +64,14 @@ class ComputeClassWriter extends ClassWriter {
         try {
             ClassReader info1 = typeInfo(type1);
             ClassReader info2 = typeInfo(type2);
-            if ((info1.getAccess() & Opcodes.valueInt("ACC_INTERFACE")) != 0) {
+            if ((info1.getAccess() & Opcodes.ACC_INTERFACE) != 0) {
                 if (typeImplements(type2, info2, type1)) {
                     return type1;
                 } else {
                     return "java/lang/Object";
                 }
             }
-            if ((info2.getAccess() & Opcodes.valueInt("ACC_INTERFACE")) != 0) {
+            if ((info2.getAccess() & Opcodes.ACC_INTERFACE) != 0) {
                 if (typeImplements(type1, info1, type2)) {
                     return type2;
                 } else {

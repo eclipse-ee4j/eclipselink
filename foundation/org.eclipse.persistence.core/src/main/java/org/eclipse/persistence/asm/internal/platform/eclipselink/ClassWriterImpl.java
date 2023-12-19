@@ -18,6 +18,7 @@ import org.eclipse.persistence.asm.ASMFactory;
 import org.eclipse.persistence.asm.AnnotationVisitor;
 import org.eclipse.persistence.asm.FieldVisitor;
 import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 
@@ -94,7 +95,7 @@ public class ClassWriterImpl extends org.eclipse.persistence.asm.ClassWriter {
 
     @Override
     public void visit(final int access, final String name, final String signature, final String superName, final String[] interfaces) {
-        this.visit(ASMFactory.JAVA_CLASS_VERSION, access, name, signature, superName, interfaces);
+        this.visit(Opcodes.JAVA_CLASS_VERSION, access, name, signature, superName, interfaces);
     }
 
     @Override
