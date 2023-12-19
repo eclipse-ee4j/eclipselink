@@ -1034,7 +1034,7 @@ public class SchemaManager {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.createTables(this.session, this);
         } catch (DatabaseException exception) {
-            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_create_tables_failed", exception.getLocalizedMessage());
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_create_tables_failed", exception.getLocalizedMessage());
         } finally {
             getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1080,7 +1080,7 @@ public class SchemaManager {
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
         } catch (DatabaseException exception) {
-            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_drop_tables_failed", exception.getLocalizedMessage());
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_drop_tables_failed", exception.getLocalizedMessage());
         } finally {
             getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1120,7 +1120,7 @@ public class SchemaManager {
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
         } catch (DatabaseException exception) {
-            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_replace_tables_failed", exception.getLocalizedMessage());
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_replace_tables_failed", exception.getLocalizedMessage());
         } finally {
             this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1144,7 +1144,7 @@ public class SchemaManager {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.truncateTables(session, this, generateFKConstraints);
         } catch (DatabaseException exception) {
-            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_truncate_tables_failed", exception.getLocalizedMessage());
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_truncate_tables_failed", exception.getLocalizedMessage());
         } finally {
             session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1224,7 +1224,7 @@ public class SchemaManager {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.extendTables(this.session, this);
         } catch (DatabaseException exception) {
-            session.log(SessionLog.WARNING, SessionLog.DDL, "schema_default_extend_tables_failed", exception.getLocalizedMessage());
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_extend_tables_failed", exception.getLocalizedMessage());
         } finally {
             this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }

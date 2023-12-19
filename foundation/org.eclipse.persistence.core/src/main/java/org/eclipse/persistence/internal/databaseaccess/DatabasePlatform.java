@@ -3807,7 +3807,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
-     * May need to override this method if the platform supports ALTER TABLE DROP COLUMN &lt;column&gt;
+     * May need to override this method if the platform supports ALTER TABLE DROP COLUMN {@code column}
      * and the generated sql doesn't work.
      * Write the string that follows ALTER TABLE to create a sql statement for
      * the platform in order to drop existing column from an existing table.
@@ -3819,7 +3819,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
-     * May need to override this method if the platform supports TRUNCATE TABLE &lt;table&gt;
+     * May need to override this method if the platform supports TRUNCATE TABLE {@code column}
      * and the generated sql doesn't work.
      * Write the string that creates TRUNCATE TABLE sql statement for the platform in order
      * to truncate an existing table.
