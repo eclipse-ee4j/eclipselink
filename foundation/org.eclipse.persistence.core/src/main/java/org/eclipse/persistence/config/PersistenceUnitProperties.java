@@ -3060,7 +3060,7 @@ public class PersistenceUnitProperties {
      * <b>Allowed Values:</b>
      * <ul>
      * <li>"<code>simple</code>" (DEFAULT)
-     * <li>"<code>full</code>" (experimental feature, may not work properly)
+     * <li>"<code>full</code>" (experimental feature)
      * </ul>
      *
      * @see #SCHEMA_VALIDATION_MODE_SIMPLE
@@ -3079,9 +3079,8 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>full</code>" value of the "<code>eclipselink.schema-validation.mode</code>" property.
-     * Specifies, that full schema validation shall be performed.
-     * This feature is experimental and may not work properly on all supported databases.
-     * Full schema validation also checks differences in columns definitions.
+     * Specifies, that full schema validation shall be performed. Full schema validation also checks differences
+     * in columns definitions. This feature is experimental.
      *
      * @see #SCHEMA_VALIDATION_MODE
      */

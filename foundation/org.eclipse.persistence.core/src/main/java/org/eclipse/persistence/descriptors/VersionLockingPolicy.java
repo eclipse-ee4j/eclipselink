@@ -547,13 +547,25 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Retrieves the lock value from the object.
      */
-    public Object lockValueFromObject(Object domainObject) {
+    protected Object lockValueFromObject(Object domainObject) {
         // PERF: If mapping with a direct mapping get from cached mapping.
         if (this.lockMapping != null) {
             return this.lockMapping.getAttributeValueFromObject(domainObject);
         } else {
             return this.descriptor.getObjectBuilder().getBaseValueForField(this.writeLockField, domainObject);
         }
+    }
+
+    /**
+     * Returns the version of provided entity instance.
+     *
+     * @param entity the entity instance
+     * @param <T> type of the version
+     * @return version of the entity instance
+     */
+    @SuppressWarnings({"unchecked"})
+    public <T> T getVersion(Object entity) {
+        return (T) lockValueFromObject(entity);
     }
 
     /**

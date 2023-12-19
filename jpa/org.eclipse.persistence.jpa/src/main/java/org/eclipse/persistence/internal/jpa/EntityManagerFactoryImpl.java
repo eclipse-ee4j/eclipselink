@@ -107,7 +107,15 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         }
     }
 
-    public static Object getVersion(Object entity, AbstractSession session) {
+    /**
+     * Returns the version of provided entity instance.
+     *
+     * @param entity the entity instance
+     * @param session database session
+     * @param <T> type of the version
+     * @return version of the entity instance
+     */
+    static <T> T getVersion(Object entity, AbstractSession session) {
         ClassDescriptor descriptor = session.getDescriptor(entity);
         if (descriptor == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
@@ -115,7 +123,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         }
         OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
         if (lockingPolicy instanceof VersionLockingPolicy versionLockingPolicy) {
-            return versionLockingPolicy.lockValueFromObject(entity);
+            return versionLockingPolicy.getVersion(entity);
         }
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                 "jpa_persistence_util_get_version_no_version_in_class", new Object[] { entity }));
