@@ -24,6 +24,7 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
@@ -844,6 +846,32 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         this.getServerSession().addQuery(name, unwrapped, true);
     }
 
+    // addNamedQuery was implemented without calling the delegate so repeating the same pattern
+    @Override
+    public <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType) {
+        return getNamedQueries(resultType, getServerSession());
+    }
+
+    static <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType, AbstractSession session) {
+        Map<String, List<DatabaseQuery>> queries = session.getQueries();
+        Map<String, TypedQueryReference<R>> result = new HashMap<>(queries.size());
+        queries.forEach((queryName, queriesList) -> {
+            if (!result.containsKey(queryName)) {
+                for (DatabaseQuery query : queriesList) {
+                    if (query.getReferenceClass() != null && resultType.isAssignableFrom(query.getReferenceClass())) {
+                        Map<String, Object> hints = QueryHintsHandler.get(query);
+                        result.put(queryName,
+                                   new TypedQueryReferenceImpl<>(queryName,
+                                                               (Class<? extends R>) query.getReferenceClass(),
+                                                               hints != null ? hints : Collections.emptyMap()));
+                        break;
+                    }
+                }
+            }
+        });
+        return result;
+    }
+
     @Override
     public <T> T unwrap(Class<T> cls) {
         if (cls.equals(JpaEntityManagerFactory.class) || cls.equals(EntityManagerFactoryImpl.class)) {
@@ -864,10 +892,25 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
+        addNamedEntityGraph(graphName, entityGraph, getServerSession());
+    }
+
+    static <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph, AbstractSession session) {
         AttributeGroup group = ((EntityGraphImpl)entityGraph).getAttributeGroup().clone();
         group.setName(graphName);
-        this.getServerSession().getAttributeGroups().put(graphName, group);
-        this.getServerSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
+        session.getAttributeGroups().put(graphName, group);
+        session.getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
+    }
+
+    // addNamedEntityGraph was implemented without calling the delegate so repeating the same pattern
+    @Override
+    public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
+        return getNamedEntityGraphs(entityType, getServerSession());
+    }
+
+    // TODO-API-3.2
+    static <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType, AbstractSession session) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override

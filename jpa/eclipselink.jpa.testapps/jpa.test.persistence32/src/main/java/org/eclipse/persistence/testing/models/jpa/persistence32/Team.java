@@ -16,10 +16,20 @@ import java.util.Objects;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.QueryHint;
 import jakarta.persistence.Table;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
 
 @Entity
 @Table(name="PERSISTENCE32_TEAM")
+@NamedQuery(name="Team.get",
+            query="SELECT t FROM Team t WHERE t.id = :id",
+            hints = {
+                    @QueryHint(name=QueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly),
+                    @QueryHint(name=QueryHints.QUERY_TIMEOUT, value="1000")
+            })
 @NamedNativeQuery(name="Team.deleteAll", query="DELETE FROM PERSISTENCE32_TEAM")
 public class Team {
 
@@ -64,9 +74,7 @@ public class Team {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, name);
-        return result;
+        return Objects.hash(id, name);
     }
-
 
 }

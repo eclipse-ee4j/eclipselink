@@ -282,7 +282,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "truncate_tables_failed", "Tables truncation failed"},
                                            { "find_option_class_unknown", "The FindOption implementing class {0} is not supported"},
                                            { "refresh_option_class_unknown", "The RefreshOption implementing class {0} is not supported"},
-                                           { "lock_option_class_unknown", "The LockOption implementing class {0} is not supported"}
+                                           { "lock_option_class_unknown", "The LockOption implementing class {0} is not supported"},
+                                           { "typed_query_reference_is_null", "Reference to a named query is null"}
                                         };
     /**
      * Return the lookup table.
