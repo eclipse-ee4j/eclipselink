@@ -25,7 +25,6 @@ import org.eclipse.persistence.eis.EISException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFactory;
-import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoDatabaseConnectionFactory;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoJCAConnectionSpec;
 
 import com.mongodb.ReadPreference;
@@ -142,20 +141,22 @@ public class MongoConnectionSpec extends EISConnectionSpec {
                 spec.setWriteConcern((WriteConcern)concern);
             } else if (concern instanceof String) {
                 String constant = (String)concern;
-                if (constant.equals("FSYNC_SAFE")) {
-                    spec.setWriteConcern(WriteConcern.FSYNC_SAFE);
-                } else if (constant.equals("JOURNAL_SAFE")) {
-                    spec.setWriteConcern(WriteConcern.JOURNAL_SAFE);
+                if (constant.equals("ACKNOWLEDGED")) {
+                    spec.setWriteConcern(WriteConcern.ACKNOWLEDGED);
+                } else if (constant.equals("JOURNALED")) {
+                    spec.setWriteConcern(WriteConcern.JOURNALED);
                 } else if (constant.equals("MAJORITY")) {
                     spec.setWriteConcern(WriteConcern.MAJORITY);
                 } else if (constant.equals("NONE")) {
                     spec.setWriteConcern(/*FIXME: WriteConcern.NONE*/ new WriteConcern("none"));
-                } else if (constant.equals("NORMAL")) {
-                    spec.setWriteConcern(WriteConcern.NORMAL);
-                } else if (constant.equals("REPLICAS_SAFE")) {
-                    spec.setWriteConcern(WriteConcern.REPLICAS_SAFE);
-                } else if (constant.equals("SAFE")) {
-                    spec.setWriteConcern(WriteConcern.SAFE);
+                } else if (constant.equals("UNACKNOWLEDGED")) {
+                    spec.setWriteConcern(WriteConcern.UNACKNOWLEDGED);
+                } else if (constant.equals("W1")) {
+                    spec.setWriteConcern(WriteConcern.W1);
+                } else if (constant.equals("W2")) {
+                    spec.setWriteConcern(WriteConcern.W2);
+                } else if (constant.equals("W2")) {
+                    spec.setWriteConcern(WriteConcern.W2);
                 } else {
                     throw new EISException("Invalid read preference property value: " + constant);
                 }
@@ -182,12 +183,6 @@ public class MongoConnectionSpec extends EISConnectionSpec {
     }
 
     protected ConnectionFactory createMongoConnectionFactory() {
-        try {
-            Class.forName("com.mongodb.client.MongoDatabase");
-            return new MongoDatabaseConnectionFactory();
-        } catch (ClassNotFoundException e) {
             return new MongoConnectionFactory();
-        }
     }
-
 }

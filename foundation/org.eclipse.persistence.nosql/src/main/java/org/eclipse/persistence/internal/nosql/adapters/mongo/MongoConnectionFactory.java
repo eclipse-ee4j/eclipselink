@@ -18,8 +18,10 @@ package org.eclipse.persistence.internal.nosql.adapters.mongo;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.naming.Reference;
+
 import jakarta.resource.ResourceException;
 import jakarta.resource.cci.Connection;
 import jakarta.resource.cci.ConnectionFactory;
@@ -27,9 +29,14 @@ import jakarta.resource.cci.ConnectionSpec;
 import jakarta.resource.cci.RecordFactory;
 import jakarta.resource.cci.ResourceAdapterMetaData;
 
-import com.mongodb.DB;
-import com.mongodb.Mongo;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoClient;
+import org.bson.Document;
 
 /**
  * Connection factory for Mongo JCA adapter.
@@ -38,8 +45,8 @@ import com.mongodb.ServerAddress;
  * @since EclipseLink 2.4
  */
 public class MongoConnectionFactory implements ConnectionFactory {
-    protected transient Mongo mongo;
-    protected transient DB db;
+    protected transient MongoClient mongo;
+    protected transient MongoDatabase db;
 
     /**
      * Default constructor.
@@ -50,14 +57,14 @@ public class MongoConnectionFactory implements ConnectionFactory {
     /**
      * Create a factory from an external mongo instance.
      */
-    public MongoConnectionFactory(Mongo mongo) {
+    public MongoConnectionFactory(MongoClient mongo) {
         this.mongo = mongo;
     }
 
     /**
      * Create a factory from an external mongo instance.
      */
-    public MongoConnectionFactory(DB db) {
+    public MongoConnectionFactory(MongoDatabase db) {
         this.db = db;
     }
 
@@ -69,11 +76,11 @@ public class MongoConnectionFactory implements ConnectionFactory {
     @Override
     public Connection getConnection(ConnectionSpec spec) throws ResourceException {
         MongoJCAConnectionSpec connectionSpec = (MongoJCAConnectionSpec)spec;
-        DB db = this.db;
+        MongoDatabase db = this.db;
         boolean isExternal = true;
         if (db == null) {
             try {
-                List<ServerAddress> servers = new ArrayList<ServerAddress>();
+                List<ServerAddress> servers = new ArrayList<>();
                 for (int index = 0; index < connectionSpec.getHosts().size(); index++) {
                     String host = connectionSpec.getHosts().get(index);
                     int port = ServerAddress.defaultPort();
@@ -87,19 +94,52 @@ public class MongoConnectionFactory implements ConnectionFactory {
                     ServerAddress server = new ServerAddress("localhost", ServerAddress.defaultPort());
                     servers.add(server);
                 }
-                Mongo mongo = this.mongo;
+                MongoClient mongo = this.mongo;
                 if (mongo == null) {
                     isExternal = false;
-                    if (servers.isEmpty()) {
-                        mongo = new Mongo();
-                    } else {
-                        mongo = new Mongo(servers);
+                    MongoCredential credential = null;
+                    if ((connectionSpec.getUser() != null) && (connectionSpec.getUser().length() > 0)) {
+                        if ( connectionSpec.getAuthSource() != null ) {
+                            credential = MongoCredential.createCredential(connectionSpec.getUser(), connectionSpec.getAuthSource(), connectionSpec.getPassword());
+                        }
+                        else {
+                            credential = MongoCredential.createCredential(connectionSpec.getUser(), connectionSpec.getDB(), connectionSpec.getPassword());
+                        }
                     }
+                    MongoClientSettings.Builder settingsBuilder = MongoClientSettings.builder();
+                    settingsBuilder.applyToClusterSettings(builder ->
+                            builder.serverSelectionTimeout(connectionSpec.getServerSelectionTimeout(), TimeUnit.MILLISECONDS));
+                    if (connectionSpec.getReadPreference() != null) {
+                        settingsBuilder.readPreference(connectionSpec.getReadPreference());
+                    }
+                    if (connectionSpec.getWriteConcern() != null) {
+                        settingsBuilder.writeConcern(connectionSpec.getWriteConcern());
+                    }
+                    settingsBuilder.codecRegistry(MongoCodecs.codecRegistry());
+                    MongoClientSettings settings = null;
+                    if (credential != null) {
+                        settingsBuilder.credential(credential);
+                    }
+                    if (servers.isEmpty()) {
+                        ServerAddress serverAddress = new ServerAddress();
+                        settings = settingsBuilder
+                                .applyConnectionString(new ConnectionString("mongodb+srv://" + serverAddress.getHost() + ":" + serverAddress.getPort()))
+                                .build();
+                        mongo = MongoClients.create(settings);
+                    } else {
+                        settings = settingsBuilder
+                                .applyToClusterSettings(builder ->
+                                        builder.hosts(servers))
+                                .build();
+                        mongo = MongoClients.create(settings);
+                    }
+                    this.mongo = mongo;
                 }
-                db = mongo.getDB(connectionSpec.getDB());
+                db = mongo.getDatabase(connectionSpec.getDB());
+                db.runCommand(new Document("ping", 1)); // check connection
                 if ((connectionSpec.getUser() != null) && (connectionSpec.getUser().length() > 0)) {
                     try {
-                        Method method = DB.class.getMethod("authenticate", String.class, char[].class);
+                        Method method = MongoDatabase.class.getMethod("authenticate", String.class, char[].class);
                         if (!(Boolean) method.invoke(db, connectionSpec.getUser(), connectionSpec.getPassword())) {
                             throw new ResourceException("authenticate failed for user: " + connectionSpec.getUser());
                         }
@@ -107,23 +147,13 @@ public class MongoConnectionFactory implements ConnectionFactory {
                         throw new ResourceException("authenticate method not supported: " + e.getMessage(), e);
                     }
                 }
-                if (connectionSpec.getOptions() > 0) {
-                    db.setOptions(connectionSpec.getOptions());
-                }
-                if (connectionSpec.getReadPreference() != null) {
-                    db.setReadPreference(connectionSpec.getReadPreference());
-                }
-                if (connectionSpec.getWriteConcern() != null) {
-                    db.setWriteConcern(connectionSpec.getWriteConcern());
-                }
             } catch (/*UnknownHost*/Exception exception) {
                 ResourceException resourceException = new ResourceException(exception.toString());
                 resourceException.initCause(exception);
                 throw resourceException;
             }
         }
-
-        return new MongoConnection(db, isExternal, connectionSpec);
+        return new MongoConnection(mongo, connectionSpec.getDB(), isExternal, connectionSpec);
     }
 
     @Override
@@ -145,19 +175,19 @@ public class MongoConnectionFactory implements ConnectionFactory {
     public void setReference(Reference reference) {
     }
 
-    public Mongo getMongo() {
+    public MongoClient getMongo() {
         return mongo;
     }
 
-    public void setMongo(Mongo mongo) {
+    public void setMongo(MongoClient mongo) {
         this.mongo = mongo;
     }
 
-    public DB getDb() {
+    public MongoDatabase getDb() {
         return db;
     }
 
-    public void setDb(DB db) {
+    public void setDb(MongoDatabase db) {
         this.db = db;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,9 +52,6 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -168,20 +165,22 @@ public class MongoPlatform extends EISPlatform {
                 mongoSpec.setWriteConcern((WriteConcern)concern);
             } else if (concern instanceof String) {
                 String constant = (String)concern;
-                if (constant.equals("FSYNC_SAFE")) {
-                    mongoSpec.setWriteConcern(WriteConcern.FSYNC_SAFE);
-                } else if (constant.equals("JOURNAL_SAFE")) {
-                    mongoSpec.setWriteConcern(WriteConcern.JOURNAL_SAFE);
+                if (constant.equals("ACKNOWLEDGED")) {
+                    mongoSpec.setWriteConcern(WriteConcern.ACKNOWLEDGED);
+                } else if (constant.equals("JOURNALED")) {
+                    mongoSpec.setWriteConcern(WriteConcern.JOURNALED);
                 } else if (constant.equals("MAJORITY")) {
                     mongoSpec.setWriteConcern(WriteConcern.MAJORITY);
                 } else if (constant.equals("NONE")) {
-                    mongoSpec.setWriteConcern(/* WriteConcern.NONE */ new WriteConcern("none"));
-                } else if (constant.equals("NORMAL")) {
-                    mongoSpec.setWriteConcern(WriteConcern.NORMAL);
-                } else if (constant.equals("REPLICAS_SAFE")) {
-                    mongoSpec.setWriteConcern(WriteConcern.REPLICAS_SAFE);
-                } else if (constant.equals("SAFE")) {
-                    mongoSpec.setWriteConcern(WriteConcern.SAFE);
+                    mongoSpec.setWriteConcern(/*FIXME: WriteConcern.NONE*/ new WriteConcern("none"));
+                } else if (constant.equals("UNACKNOWLEDGED")) {
+                    mongoSpec.setWriteConcern(WriteConcern.UNACKNOWLEDGED);
+                } else if (constant.equals("W1")) {
+                    mongoSpec.setWriteConcern(WriteConcern.W1);
+                } else if (constant.equals("W2")) {
+                    mongoSpec.setWriteConcern(WriteConcern.W2);
+                } else if (constant.equals("W2")) {
+                    mongoSpec.setWriteConcern(WriteConcern.W2);
                 } else {
                     throw new EISException("Invalid read preference property value: " + constant);
                 }

@@ -30,13 +30,23 @@
     <dependencies>
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <properties>
-        <mongo.server.version>3.4.24</mongo.server.version>
+        <mongo.server.version>7.0.0</mongo.server.version>
         <argLine/>
     </properties>
 
@@ -54,14 +64,14 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.github.joelittlejohn.embedmongo</groupId>
-                <artifactId>embedmongo-maven-plugin</artifactId>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>eclipselink-testbuild-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>start-mongo</id>
                         <phase>process-test-classes</phase>
                         <goals>
-                            <goal>start</goal>
+                            <goal>start-mongo</goal>
                         </goals>
                         <configuration>
                             <version>${mongo.server.version}</version>
@@ -73,7 +83,7 @@
                         <id>stop-mongo</id>
                         <phase>prepare-package</phase>
                         <goals>
-                            <goal>stop</goal>
+                            <goal>stop-mongo</goal>
                         </goals>
                     </execution>
                 </executions>

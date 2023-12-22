@@ -238,7 +238,7 @@
         <jmh.version>1.37</jmh.version>
         <junit.version>4.13.2</junit.version>
         <!-- CQ #24079 -->
-        <mongodb.version>3.12.14</mongodb.version>
+        <mongodb.version>4.11.0</mongodb.version>
         <mysql.version>8.1.0</mysql.version>
         <mariadb.version>3.2.0</mariadb.version>
         <mssql.version>12.4.1.jre11</mssql.version>
@@ -859,7 +859,7 @@
             <!--Mongo DB-->
             <dependency>
                 <groupId>org.mongodb</groupId>
-                <artifactId>mongo-java-driver</artifactId>
+                <artifactId>mongodb-driver-sync</artifactId>
                 <version>${mongodb.version}</version>
             </dependency>
             <!--Oracle proprietary dependencies-->
@@ -1275,7 +1275,7 @@
                     <!-- see https://github.com/eclipse-ee4j/eclipselink-build-support -->
                     <groupId>org.eclipse.persistence</groupId>
                     <artifactId>eclipselink-testbuild-plugin</artifactId>
-                    <version>1.0.0</version>
+                    <version>1.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.carlspring.maven</groupId>
@@ -1298,11 +1298,6 @@
                             <version>${derby.version}</version>
                         </dependency>
                     </dependencies>
-                </plugin>
-                <plugin>
-                    <groupId>com.github.joelittlejohn.embedmongo</groupId>
-                    <artifactId>embedmongo-maven-plugin</artifactId>
-                    <version>0.4.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

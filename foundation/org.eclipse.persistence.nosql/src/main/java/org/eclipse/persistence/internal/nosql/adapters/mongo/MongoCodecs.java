@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 
 /**
  * Provides java.sql.Timestamp, java.sql.Date and java.sql.Time codecs.
@@ -64,7 +64,7 @@ public class MongoCodecs {
                                     new DateCodec(),
                                     new TimeCodec()),
                             CodecRegistries.fromProviders(documentCodecProvider),
-                            MongoClient.getDefaultCodecRegistry());
+                            MongoClientSettings.getDefaultCodecRegistry());
                 }
             }
         }
