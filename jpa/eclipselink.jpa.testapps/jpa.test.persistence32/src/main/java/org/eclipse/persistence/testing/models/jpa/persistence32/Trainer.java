@@ -17,8 +17,11 @@ import java.util.Objects;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -28,6 +31,14 @@ import static jakarta.persistence.FetchType.LAZY;
 @Table(name="PERSISTENCE32_TRAINER")
 @NamedQuery(name="Trainer.get", query="SELECT t FROM Trainer t WHERE t.id = :id")
 @NamedNativeQuery(name="Trainer.deleteAll", query="DELETE FROM PERSISTENCE32_TRAINER")
+@NamedEntityGraph(name = "Trainer.fetchGraph",
+                  attributeNodes = {
+                          @NamedAttributeNode("name"),
+                          @NamedAttributeNode(value = "team", subgraph = "team")
+                  },
+                  subgraphs = @NamedSubgraph(name = "team",
+                                             attributeNodes = @NamedAttributeNode("name"))
+)
 public class Trainer {
 
     // ID is assigned in tests to avoid collisions

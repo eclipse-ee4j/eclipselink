@@ -905,12 +905,25 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     // addNamedEntityGraph was implemented without calling the delegate so repeating the same pattern
     @Override
     public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
-        return getNamedEntityGraphs(entityType, getServerSession());
+        return getNamedEntityGraphs(entityType, getServerSession(), getMetamodel());
     }
 
     // TODO-API-3.2
-    static <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType, AbstractSession session) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    static <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType, AbstractSession session, Metamodel metamodel) {
+        Map<String, AttributeGroup> attributeGroups = session.getAttributeGroups();
+        Map<String, EntityGraph<? extends E>> result = new HashMap<>(attributeGroups.size());
+        attributeGroups.forEach((name, attributeGroup) -> {
+            if (attributeGroup.getType() != null && entityType.isAssignableFrom(attributeGroup.getType())) {
+                ClassDescriptor descriptor = session.getDescriptor(attributeGroup.getType());
+                if (descriptor == null) {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                            "jpa_non_persistent_class", new String[] {entityType.getName()}));
+                }
+                session.getDescriptor(entityType);
+                result.put(name, new EntityGraphImpl<>(attributeGroup, metamodel, descriptor));
+            }
+        });
+        return result;
     }
 
     @Override

@@ -862,7 +862,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     @Override
     public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
-        return EntityManagerFactoryImpl.getNamedEntityGraphs(entityType, getAbstractSession());
+        return EntityManagerFactoryImpl.getNamedEntityGraphs(entityType, getAbstractSession(), getMetamodel());
     }
 
     @Override

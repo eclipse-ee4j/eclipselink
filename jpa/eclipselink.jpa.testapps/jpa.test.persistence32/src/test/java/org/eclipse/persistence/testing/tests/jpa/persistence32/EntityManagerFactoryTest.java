@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -32,6 +33,7 @@ import junit.framework.Test;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.internal.jpa.EntityGraphImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Team;
@@ -65,7 +67,9 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
                 new EntityManagerFactoryTest("testGetVersionOnEntityWithVersion"),
                 new EntityManagerFactoryTest("testGetVersionOnEntityWithoutVersion"),
                 new EntityManagerFactoryTest("testGetNamedPokemonQueries"),
-                new EntityManagerFactoryTest("testGetNamedAllQueries")
+                new EntityManagerFactoryTest("testGetNamedAllQueries"),
+                new EntityManagerFactoryTest("testGetNamedPokemonEntityGraphs"),
+                new EntityManagerFactoryTest("testGetNamedAllEntityGraphs")
         );
     }
 
@@ -409,6 +413,32 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
                     break;
                 default:
                     fail(String.format("Unknown named query %s found", query.getName()));
+            }
+        }
+    }
+
+    // All EntityGraphs for Pokemon entity in current PU
+    public void testGetNamedPokemonEntityGraphs() {
+        Map<String, EntityGraph<? extends Pokemon>> entityGraphs = emf.getNamedEntityGraphs(Pokemon.class);
+        assertEquals(1, entityGraphs.size());
+        EntityGraph<? extends Pokemon> pokemonGraph = entityGraphs.get("Pokemon.fetchGraph");
+        assertNotNull(pokemonGraph);
+    }
+
+    // All EntityGraphs in current PU
+    public void testGetNamedAllEntityGraphs() {
+        Map<String, EntityGraph<?>> entityGraphs = emf.getNamedEntityGraphs(Object.class);
+        assertEquals(2, entityGraphs.size());
+        for (EntityGraph<?> entityGraph : entityGraphs.values()) {
+            switch (entityGraph.getName()) {
+            case "Pokemon.fetchGraph":
+                assertEquals(Pokemon.class, ((EntityGraphImpl<?>)entityGraph).getClassType());
+                break;
+            case "Trainer.fetchGraph":
+                assertEquals(Trainer.class, ((EntityGraphImpl<?>)entityGraph).getClassType());
+                break;
+            default:
+                fail(String.format("Unknown EntityGraph %s found", entityGraph.getName()));
             }
         }
     }
