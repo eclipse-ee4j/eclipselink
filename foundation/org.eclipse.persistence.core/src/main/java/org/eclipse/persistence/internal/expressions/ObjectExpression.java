@@ -593,7 +593,7 @@ public abstract class ObjectExpression extends DataExpression {
             }
         } else if (descriptor.isAggregateDescriptor()) {
             return null;
-        } else if ((descriptor.getHistoryPolicy() != null) && (getAsOfClause().getValue() != null)) {
+        } else if (descriptor.getHistoryPolicy() != null && getAsOfClause() != null && getAsOfClause().getValue() != null) {
             tables = descriptor.getHistoryPolicy().getHistoricalTables();
         } else if (isUsingOuterJoinForMultitableInheritance()) {
             tables = descriptor.getInheritancePolicy().getAllTables();

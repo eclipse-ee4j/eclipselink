@@ -85,13 +85,15 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * @param tableIndex not null indicates that only expression for a single table should be returned.
      */
     public Expression additionalHistoryExpression(Expression context, Expression base, Integer tableIndex) {
-        //
-        AsOfClause clause = base.getAsOfClause();
-        Object value = clause.getValue();
         Expression join = null;
         Expression subJoin = null;
         Expression start = null;
         Expression end = null;
+        AsOfClause clause = base.getAsOfClause();
+        if (clause == null) {
+            return null;
+        }
+        Object value = clause.getValue();
         if (value == null) {
             return null;
             // for now nothing as assume mirroring historical tables.
