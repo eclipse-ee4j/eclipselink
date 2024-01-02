@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.server.ServerPlatformUtils;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.JNDIConnector;
@@ -51,6 +52,7 @@ import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.server.JEEPlatform;
 import org.eclipse.persistence.testing.framework.server.ServerPlatform;
+import org.eclipse.persistence.testing.framework.server.WebLogicPlatform;
 import org.eclipse.persistence.testing.framework.server.TestRunner;
 import org.eclipse.persistence.testing.framework.server.TestRunner1;
 import org.eclipse.persistence.testing.framework.server.TestRunner2;
@@ -298,7 +300,12 @@ public abstract class JUnitTestCase extends TestCase {
         if (serverPlatform == null) {
             String platformClass = System.getProperty("TEST_SERVER_PLATFORM");
             if (platformClass == null) {
-                serverPlatform = new JEEPlatform();
+                String detectedServerPlatform = ServerPlatformUtils.detectServerPlatform(null);
+                if (detectedServerPlatform != null && detectedServerPlatform.contains("WebLogic")) {
+                    serverPlatform = new WebLogicPlatform();
+                } else {
+                    serverPlatform = new JEEPlatform();
+                }
             } else {
                 try {
                     serverPlatform = (ServerPlatform)Class.forName(platformClass).newInstance();

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -526,24 +526,28 @@
         </path>
         <echo message="Configuring 'compile.server.path' to:"/>
         <echo message="   'compile.path'"/>
+        <echo message="   '${oracle.extensions.depend.dir}/${oracle.ucp.jar}'"/>
         <echo message="   '${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}'"/>
         <echo message="   '../../../extension.lib.external/mongo.jar'"/>
         <echo message="  "/>
         <path id="compile.server.path">
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
         <path id="compile.jpa21.server.path">
             <path refid="jpa21.compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
         <path id="compile.jpa22.server.path">
             <path refid="jpa22.compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
