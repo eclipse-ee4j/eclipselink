@@ -3187,7 +3187,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (descriptor == null || descriptor.isAggregateDescriptor()){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[]{rootType.getName()}));
         }
-        return new EntityGraphImpl<>(new AttributeGroup(null, rootType, true), factory.getMetamodel(), descriptor);
+        return new EntityGraphImpl<>(new AttributeGroup(null, rootType, true), descriptor);
     }
 
     @Override
@@ -3197,7 +3197,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             return null;
         }
         ClassDescriptor descriptor = this.getAbstractSession().getDescriptor(group.getType());
-        return new EntityGraphImpl<>(group.clone(), factory.getMetamodel(), descriptor);
+        return new EntityGraphImpl<>(group.clone(), descriptor);
     }
 
     @Override
@@ -3206,7 +3206,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (group == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{graphName}));
         }
-        return new EntityGraphImpl<>(group, factory.getMetamodel());
+        return new EntityGraphImpl<>(group);
     }
 
     @Override
@@ -3217,13 +3217,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
         List<EntityGraph<? super T>> result = new ArrayList<>();
         for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-            result.add(new EntityGraphImpl<>(group, factory.getMetamodel()));
+            result.add(new EntityGraphImpl<>(group));
         }
         if (descriptor.hasInheritance()){
             while(descriptor.getInheritancePolicy().getParentDescriptor() != null){
                 descriptor = descriptor.getInheritancePolicy().getParentDescriptor();
                 for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-                    result.add(new EntityGraphImpl<>(group, factory.getMetamodel()));
+                    result.add(new EntityGraphImpl<>(group));
                 }
             }
         }

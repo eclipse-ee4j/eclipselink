@@ -27,10 +27,10 @@ import jakarta.persistence.EntityGraph;
 import jakarta.persistence.Subgraph;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.MapAttribute;
-import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.PluralAttribute;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
@@ -53,30 +53,26 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
 
     protected Map<String, AttributeNodeImpl<?>> attributeNodes;
 
-    private final Metamodel metamodel;
-
-    protected EntityGraphImpl(AttributeGroup group, Metamodel metamodel, ClassDescriptor descriptor) {
+    protected EntityGraphImpl(AttributeGroup group, ClassDescriptor descriptor) {
         super();
         this.attributeGroup = group;
         this.classType = descriptor.getJavaClass();
         this.isMutable = true;
         this.descriptor = descriptor;
-        this.metamodel = metamodel;
     }
 
     @SuppressWarnings("unchecked")
-    public EntityGraphImpl(AttributeGroup group, Metamodel metamodel) {
+    public EntityGraphImpl(AttributeGroup group) {
         super();
         this.attributeGroup = group;
         this.classType = (Class<X>) group.getType();
         if (this.classType == null){
             this.classType = (Class<X>) CoreClassConstants.OBJECT;
         }
-        this.metamodel = metamodel;
     }
 
-    protected EntityGraphImpl(AttributeGroup group, Metamodel metamodel, ClassDescriptor descriptor, String attribute) {
-        this(group, metamodel, descriptor);
+    protected EntityGraphImpl(AttributeGroup group, ClassDescriptor descriptor, String attribute) {
+        this(group, descriptor);
         this.currentAttribute = attribute;
     }
 
@@ -146,9 +142,6 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
 
     @Override
     public void removeAttributeNode(String attributeName) {
-        if (!isMutable) {
-            throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
-        }
         removeAttributeNodeImpl(attributeName);
     }
 
@@ -159,15 +152,18 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
 
     @Override
     public void removeAttributeNodes(Attribute.PersistentAttributeType nodeTypes) {
-         for (Attribute<? super X, ?> attribute : metamodel.managedType(classType).getAttributes()) {
-             if (attribute.getPersistentAttributeType() == nodeTypes) {
-                 removeAttributeNode(attribute);
-             }
-         }
+        for (DatabaseMapping mapping : descriptor.getMappings()) {
+            if (AttributeImpl.getPersistentAttributeType(mapping) == nodeTypes) {
+                removeAttributeNodeImpl(mapping.getAttributeName());
+            }
+        }
     }
 
     // Add an attribute node of given name to the entity graph.
     private <Y> AttributeNode<Y> addAttributeNodeImpl(String attributeName) {
+        if (!isMutable) {
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
+        }
         if (descriptor.getMappingForAttributeName(attributeName) == null) {
             throw new IllegalArgumentException(
                     ExceptionLocalization.buildMessage(
@@ -219,7 +215,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         this.attributeGroup.getSubClassGroups().put(type, subGroup);
         subGroup.setAllSubclasses(this.attributeGroup.getSubClassGroups());
         this.attributeGroup.insertSubClass(subGroup);
-        return new EntityGraphImpl<>(subGroup, metamodel, targetDesc);
+        return new EntityGraphImpl<>(subGroup, targetDesc);
     }
 
     @Override
@@ -272,7 +268,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("type_unkown_for_this_attribute", new Object[] { type.getName(), attributeName }));
             }
         }
-        EntityGraphImpl<T> entityGraph = new EntityGraphImpl<>(localGroup, metamodel, targetDesc, attributeName);
+        EntityGraphImpl<T> entityGraph = new EntityGraphImpl<>(localGroup, targetDesc, attributeName);
         node.addSubgraph(entityGraph);
         //order is important here, must add entity graph to node list before adding to group or it will appear in node list twice.
         this.attributeGroup.addAttribute(attributeName, localGroup);
@@ -364,7 +360,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("type_unkown_for_this_attribute", new Object[] { type.getName(), attributeName }));
             }
         }
-        EntityGraphImpl<T> entityGraph = new EntityGraphImpl<>(localGroup, metamodel, targetDesc, attributeName);
+        EntityGraphImpl<T> entityGraph = new EntityGraphImpl<>(localGroup, targetDesc, attributeName);
         node.addKeySubgraph(entityGraph);
         //order is important here, must add entity graph to node list before adding to group or it will appear in node list twice.
         this.attributeGroup.addAttributeKey(attributeName, localGroup);
@@ -416,9 +412,9 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                         if (!type.equals(CoreClassConstants.OBJECT) && localDescriptor.hasInheritance()) {
                             localDescriptor = localDescriptor.getInheritancePolicy().getDescriptor(type);
                         }
-                        node.addSubgraph(new EntityGraphImpl<>(subGroup, metamodel, localDescriptor));
+                        node.addSubgraph(new EntityGraphImpl<>(subGroup, localDescriptor));
                     } else {
-                        node.addSubgraph(new EntityGraphImpl<>(subGroup, metamodel));
+                        node.addSubgraph(new EntityGraphImpl<>(subGroup));
                     }
 
                 }
@@ -433,9 +429,9 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                         if (!type.equals(CoreClassConstants.OBJECT) && localDescriptor.hasInheritance()) {
                             localDescriptor = localDescriptor.getInheritancePolicy().getDescriptor(type);
                         }
-                        node.addKeySubgraph(new EntityGraphImpl<>(subGroup, metamodel, localDescriptor));
+                        node.addKeySubgraph(new EntityGraphImpl<>(subGroup, localDescriptor));
                     } else {
-                        node.addKeySubgraph(new EntityGraphImpl<>(subGroup, metamodel));
+                        node.addKeySubgraph(new EntityGraphImpl<>(subGroup));
                     }
                 }
             }

@@ -229,11 +229,12 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
     }
 
     /**
-     *  Return the persistent attribute type for the attribute.
-     *  @return persistent attribute type
+     * Return the persistent attribute type for provided attribute mapping.
+     *
+     * @param mapping attribute database mapping
+     * @return persistent attribute type
      */
-    @Override
-    public Attribute.PersistentAttributeType getPersistentAttributeType() {
+    public static Attribute.PersistentAttributeType getPersistentAttributeType(DatabaseMapping mapping) {
         /*
          * process the following mappings by referencing the Core API Mapping.
          * MANY_TO_ONE (ONE_TO_ONE internally)
@@ -276,6 +277,15 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
         }
         // Test coverage required
         return PersistentAttributeType.ELEMENT_COLLECTION;
+    }
+
+    /**
+     *  Return the persistent attribute type for the attribute.
+     *  @return persistent attribute type
+     */
+    @Override
+    public Attribute.PersistentAttributeType getPersistentAttributeType() {
+        return getPersistentAttributeType(mapping);
     }
 
     /**

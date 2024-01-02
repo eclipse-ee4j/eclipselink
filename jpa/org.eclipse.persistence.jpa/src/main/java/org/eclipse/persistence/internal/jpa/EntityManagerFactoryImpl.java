@@ -920,7 +920,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                             "jpa_non_persistent_class", new String[] {entityType.getName()}));
                 }
                 session.getDescriptor(entityType);
-                result.put(name, new EntityGraphImpl<>(attributeGroup, metamodel, descriptor));
+                result.put(name, new EntityGraphImpl<>(attributeGroup, descriptor));
             }
         });
         return result;
