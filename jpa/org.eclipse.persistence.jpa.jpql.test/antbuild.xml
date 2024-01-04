@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,6 +135,8 @@
     <target name="clean" description="Clean the build" depends="">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${hermes.test.basedir}/${classes.dir}"/>
+            <fileset dir="${hermes.test.basedir}/${report.dir}"/>
+            <fileset dir="${hermes.test.basedir}/${run.dir}"/>
             <fileset file="${hermes.test.basedir}/${hermes.test.jar}"/>
         </delete>
     </target>

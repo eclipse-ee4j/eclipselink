@@ -560,6 +560,8 @@
             <fileset dir="${jpatest.basedir}/classes22"/>
             <fileset dir="${jpatest.basedir}/${build.dir}"/>
             <fileset dir="${jpatest.basedir}/temp"/>
+            <fileset dir="${jpatest.basedir}/${report.dir}"/>
+            <fileset dir="${jpatest.basedir}/${run.dir}"/>
             <fileset file="${jpatest.basedir}/${jpa.test.jar}"/>
             <fileset file="${jpatest.basedir}/${jpa21.test.jar}"/>
             <fileset file="${jpatest.basedir}/${jpa22.test.jar}"/>
