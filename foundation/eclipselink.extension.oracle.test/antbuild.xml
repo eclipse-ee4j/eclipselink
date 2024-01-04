@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,6 +100,8 @@
         <echo message="    ${oracle_test.build.location}/eclipselink-struct-converter-model.jar"/>
         <echo message="    ${oracle_test.build.location}/eclipselink-customfeatures-model.jar"/>
         <echo message="    ${oracle_test.build.location}/eclipselink-dcn-model.jar"/>
+        <echo message="    ${oracle_test.build.location}/eclipselink-proxyauthentication-model.jar"/>
+        <echo message="    ${oracle_test.build.location}/eclipselink-timestamptz-model.jar"/>
         <echo message="    ${oracle_test.build.location}/${oracle.jpa.test.jar}"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${oracle_test.classes.dir}"/>
@@ -109,6 +111,8 @@
             <fileset dir="${oracle_test.build.location}" includes="eclipselink-struct-converter-model.jar"/>
             <fileset dir="${oracle_test.build.location}" includes="eclipselink-customfeatures-model.jar"/>
             <fileset dir="${oracle_test.build.location}" includes="eclipselink-dcn-model.jar"/>
+            <fileset dir="${oracle_test.build.location}" includes="eclipselink-proxyauthentication-model.jar"/>
+            <fileset dir="${oracle_test.build.location}" includes="eclipselink-timestamptz-model.jar"/>
             <fileset dir="${oracle_test.build.location}" includes="${oracle.jpa.test.jar}"/>
         </delete>
     </target>

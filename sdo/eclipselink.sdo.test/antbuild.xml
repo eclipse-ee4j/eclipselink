@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -154,8 +154,10 @@
     <target name="clean" description="clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
+            <fileset dir="${report.dir}"/>
         </delete>
-        <mkdir dir="${classes.dir}"/>
+        <!-- Clean up generated files -->
+        <clean_up_generated_files/>
     </target>
 
     <!-- Build targets -->
@@ -300,8 +302,8 @@
             <delete dir="${resource.dir}/invalidtypename"/>
             <delete dir="${resource.dir}/list"/>
             <delete dir="${resource.dir}/nestedBaseTypes"/>
-            <delete dir="${resource.dir}/poJavaDocs"/>
-            <delete dir="${resource.dir}/poJavaDocsListener"/>
+            <delete dir="${resource.dir}/poJavadocs"/>
+            <delete dir="${resource.dir}/poJavadocsListener"/>
             <delete dir="${resource.dir}/schemaTypes"/>
             <delete dir="${resource.dir}/srcImports"/>
             <delete dir="${resource.dir}/srcImportsDontProcess"/>
@@ -315,6 +317,7 @@
     <macrodef name="compile_sdo_tests">
         <attribute name="compilepathref"/>
         <sequential>
+            <mkdir dir="${classes.dir}"/>
             <javac
                 srcdir="${src.dir}"
                 destdir="${classes.dir}"

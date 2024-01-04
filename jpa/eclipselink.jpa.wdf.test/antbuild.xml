@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,6 +105,8 @@
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${wdf_test.build.location}/${classes.dir}"/>
+            <fileset dir="${wdf_test.build.location}/${report.dir}"/>
+            <fileset dir="${wdf_test.build.location}/${run.dir}"/>
             <fileset file="${wdf_test.build.location}/${wdf.tests.jar}"/>
             <fileset file="${wdf_test.build.location}/${eclipselink.wdf.jpa1.model}.jar"/>
             <fileset file="${wdf_test.build.location}/${eclipselink.wdf.jpa2.model}.jar"/>
