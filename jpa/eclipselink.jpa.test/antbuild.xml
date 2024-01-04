@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -559,6 +559,7 @@
             <fileset dir="${jpatest.basedir}/classes21"/>
             <fileset dir="${jpatest.basedir}/classes22"/>
             <fileset dir="${jpatest.basedir}/${build.dir}"/>
+            <fileset dir="${jpatest.basedir}/temp"/>
             <fileset file="${jpatest.basedir}/${jpa.test.jar}"/>
             <fileset file="${jpatest.basedir}/${jpa21.test.jar}"/>
             <fileset file="${jpatest.basedir}/${jpa22.test.jar}"/>
@@ -602,6 +603,24 @@
             <fileset file="${jpatest.basedir}/${eclipselink.xml.extended.composite.advanced.model.member_3}.jar"/>
             <fileset file="${jpatest.basedir}/eclipselink-remote.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
+            <!--Server test generated files-->
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-delimited-model/server/orm.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-extensibility-model/server/extension.properties"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-extensibility-model/server/extension.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-extensibility-model/server/extension2.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/advanced-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/advanced-multitenant-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/cacheable-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/incomplete-nonowning-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/incomplete-owning-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/inherited-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/metadata-complete-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/orm-annotation-merge-advanced-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/orm-annotation-merge-relationships-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/orm.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/relationships-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/unidirectional-relationships-entity-mappings.xml"/>
+            <fileset file="${jpatest.basedir}/${resource.dir}/eclipselink-xml-servertest-model/server/xml-mapping-metadata-complete-mappings.xml"/>
         </delete>
     </target>
 
