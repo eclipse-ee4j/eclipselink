@@ -1102,7 +1102,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public int getJDBCType(Class<?> javaType) {
         if (javaType == null) {
-            return Types.VARCHAR;// Best guess, sometimes we cannot determine type from mapping, this may fail on some drivers, other dont care what type it is.
+            return Types.OTHER;// Best guess, sometimes we cannot determine type from mapping, this may fail on some drivers, other dont care what type it is.
         } else if (javaType == ClassConstants.STRING) {
             return Types.VARCHAR;
         } else if (javaType == ClassConstants.BIGDECIMAL) {
@@ -1157,7 +1157,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (javaType == ClassConstants.CLOB) {
             return Types.CLOB;
         } else {
-            return Types.VARCHAR;// Best guess, sometimes we cannot determine type from mapping, this may fail on some drivers, other dont care what type it is.
+            return Types.OTHER;// Best guess, sometimes we cannot determine type from mapping, this may fail on some drivers, other dont care what type it is.
         }
     }
 

@@ -41,7 +41,10 @@ public class UUIDConverter implements Converter {
     @Override
     public Object convertObjectValueToDataValue(Object uuidValue, Session session) {
         if (uuidValue instanceof UUID) {
-            return uuidValue.toString();
+            return uuidValue;
+        }
+        if (uuidValue == null) {
+            return null;
         }
         throw new IllegalArgumentException("Source object is not an instance of java.util.UUID");
     }
@@ -55,7 +58,14 @@ public class UUIDConverter implements Converter {
      */
     @Override
     public Object convertDataValueToObjectValue(Object jdbcValue, Session session) {
-        return UUID.fromString(jdbcValue.toString());
+        if (jdbcValue == null) {
+            return (UUID) null;
+        }
+        if (jdbcValue instanceof UUID) {
+            return jdbcValue;
+        } else {
+            return UUID.fromString(jdbcValue.toString());
+        }
     }
 
     /**
