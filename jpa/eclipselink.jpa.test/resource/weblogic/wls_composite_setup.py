@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ set('PasswordEncrypted','@DBPWD@')
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCConnectionPoolParams/EclipseLinkDS')
 cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
+cmo.setWrapTypes(false)
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS')
 cmo.createProperty('user')

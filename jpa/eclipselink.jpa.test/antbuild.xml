@@ -526,24 +526,28 @@
         </path>
         <echo message="Configuring 'compile.server.path' to:"/>
         <echo message="   'compile.path'"/>
+        <echo message="   '${oracle.extensions.depend.dir}/${oracle.ucp.jar}'"/>
         <echo message="   '${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}'"/>
         <echo message="   '../../../extension.lib.external/mongo.jar'"/>
         <echo message="  "/>
         <path id="compile.server.path">
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
         <path id="compile.jpa21.server.path">
             <path refid="jpa21.compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
         <path id="compile.jpa22.server.path">
             <path refid="jpa22.compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
