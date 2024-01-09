@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,6 +30,7 @@ public class ConversionException extends EclipseLinkException {
     public final static int COULD_NOT_BE_CONVERTED = 3001;
     public final static int COULD_NOT_BE_CONVERTED_EXTENDED = 3002;
     public final static int INCORRECT_DATE_FORMAT = 3003;
+    public final static int INCORRECT_DATE_VALUE = 3010;
     public final static int INCORRECT_TIME_FORMAT = 3004;
     public final static int INCORRECT_TIMESTAMP_FORMAT = 3005;
     public final static int COULD_NOT_CONVERT_TO_BYTE_ARRAY = 3006;
@@ -126,6 +127,14 @@ public class ConversionException extends EclipseLinkException {
         String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, INCORRECT_DATE_FORMAT, args);
         ConversionException conversionException = new ConversionException(message, dateString, java.sql.Date.class, null);
         conversionException.setErrorCode(INCORRECT_DATE_FORMAT);
+        return conversionException;
+    }
+
+    public static ConversionException incorrectDateValue(String dateString) {
+        Object[] args = { dateString };
+        String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, INCORRECT_DATE_VALUE, args);
+        ConversionException conversionException = new ConversionException(message, dateString, java.sql.Date.class, null);
+        conversionException.setErrorCode(INCORRECT_DATE_VALUE);
         return conversionException;
     }
 
