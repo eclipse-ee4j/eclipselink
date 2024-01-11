@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 Sei Syvalta. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -441,7 +441,7 @@ public class DefaultTableGenerator {
      * Build field definitions and foreign key constraints for all many-to-many relation table.
      */
     protected void buildRelationTableFields(ForeignReferenceMapping mapping, TableDefinition table, List<DatabaseField> fkFields, List<DatabaseField> targetFields) {
-        assert fkFields.size() > 0 && fkFields.size() == targetFields.size();
+        assert !fkFields.isEmpty() && fkFields.size() == targetFields.size();
 
         DatabaseField fkField = null;
         DatabaseField targetField = null;
@@ -702,7 +702,7 @@ public class DefaultTableGenerator {
     protected void addForeignMappingFkConstraint(final Map<DatabaseField, DatabaseField> srcFields, boolean cascadeOnDelete) {
         // srcFields map from the foreign key field to the target key field
 
-        if(srcFields.size() == 0) {
+        if(srcFields.isEmpty()) {
             return;
         }
 
@@ -783,7 +783,7 @@ public class DefaultTableGenerator {
         resolvedDatabaseField.setNameForComparisons(childField.getNameForComparisons());
 
         String columnDef = childField.getColumnDefinition();
-        if(columnDef == null || columnDef.trim().equals("")) {
+        if(columnDef == null || columnDef.trim().isEmpty()) {
             // if childField has no column definition, follow the definition of the parent field
             if(resolvedParentField != null) {
                 resolvedDatabaseField.setColumnDefinition(resolvedParentField.getColumnDefinition());
@@ -808,7 +808,7 @@ public class DefaultTableGenerator {
             //added for extending tables where the field needs to be looked up
             fieldDef.setDatabaseField(dbField);
 
-            if (dbField.getColumnDefinition() != null && dbField.getColumnDefinition().length() > 0) {
+            if (dbField.getColumnDefinition() != null && !dbField.getColumnDefinition().isEmpty()) {
                 // This column definition would include the complete definition of the
                 // column like type, size,  "NULL/NOT NULL" clause, unique key clause
                 fieldDef.setTypeDefinition(dbField.getColumnDefinition());
@@ -875,7 +875,7 @@ public class DefaultTableGenerator {
         while (dbTblIter.hasNext()) {
             databaseTable = dbTblIter.next();
             Map<DatabaseField, DatabaseField> srcFields = descriptor.getAdditionalTablePrimaryKeyFields().get(databaseTable);
-            if ((null != srcFields) && srcFields.size() > 0) {
+            if ((null != srcFields) && !srcFields.isEmpty()) {
                 // srcFields is from the secondary field to the primary key field
                 // Let's make fk constraint from the secondary field to the primary key field
                 List<DatabaseField> fkFields = new ArrayList<>();
@@ -893,7 +893,7 @@ public class DefaultTableGenerator {
     protected void addJoinColumnsFkConstraint(List<DatabaseField> fkFields, List<DatabaseField> targetFields, boolean cascadeOnDelete) {
         assert fkFields.size() == targetFields.size();
 
-        if (fkFields.size() == 0) {
+        if (fkFields.isEmpty()) {
             return;
         }
 
@@ -924,7 +924,7 @@ public class DefaultTableGenerator {
                 }
 
                 // Set the fkFieldDef type definition to the that of the target if one is not set.
-                if (fkFieldDef.getTypeDefinition() == null || fkFieldDef.getTypeDefinition().trim().equals("")) {
+                if (fkFieldDef.getTypeDefinition() == null || fkFieldDef.getTypeDefinition().trim().isEmpty()) {
                     fkFieldDef.setTypeDefinition(targetFieldDef.getTypeDefinition());
                 }
 
@@ -953,7 +953,7 @@ public class DefaultTableGenerator {
         if (! this.generateFKConstraints){
             return;
         }
-        assert fkFields.size() > 0 && fkFields.size() == targetFields.size();
+        assert !fkFields.isEmpty() && fkFields.size() == targetFields.size();
 
         // target keys could be primary keys or candidate(unique) keys of the target table
 
@@ -1050,7 +1050,7 @@ public class DefaultTableGenerator {
                 if (uniqueConstraint != null) {
                     // To keep the serialNumber consecutive, increment it only
                     // if the name is not specified.
-                    if (name == null || name.equals("")) {
+                    if (name == null || name.isEmpty()) {
                         serialNumber++;
                     }
 

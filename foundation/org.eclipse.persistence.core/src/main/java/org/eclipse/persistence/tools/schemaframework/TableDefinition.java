@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -605,7 +605,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Build a foreign key constraint.
      */
     protected ForeignKeyConstraint buildForeignKeyConstraint(List<String> fkFieldNames, List<String> pkFieldNames, TableDefinition targetTable, DatabasePlatform platform) {
-        assert fkFieldNames.size() > 0 && fkFieldNames.size() == pkFieldNames.size();
+        assert !fkFieldNames.isEmpty() && fkFieldNames.size() == pkFieldNames.size();
 
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         for(int i=0; i<fkFieldNames.size(); i++) {
@@ -632,7 +632,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     protected String buildForeignKeyConstraintName(String tableName, String fieldName, int maximumNameLength, DatabasePlatform platform) {
         String startDelimiter = "";
         String endDelimiter = "";
-        boolean useDelimiters = !platform.getStartDelimiter().equals("") && (tableName.startsWith(platform.getStartDelimiter()) || fieldName.startsWith(platform.getStartDelimiter()));
+        boolean useDelimiters = !platform.getStartDelimiter().isEmpty() && (tableName.startsWith(platform.getStartDelimiter()) || fieldName.startsWith(platform.getStartDelimiter()));
         // we will only delimit our generated constraints if either of the names that composes them is already delimited
         if (useDelimiters){
             startDelimiter = platform.getStartDelimiter();
@@ -688,7 +688,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     protected UniqueKeyConstraint buildUniqueKeyConstraint(String name, List<String> fieldNames, int serialNumber, DatabasePlatform platform) {
-        assert fieldNames.size() > 0;
+        assert !fieldNames.isEmpty();
 
         UniqueKeyConstraint unqConstraint = new UniqueKeyConstraint();
 
@@ -697,7 +697,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
 
         // If the name was not provided, default one, otherwise use the name provided.
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             unqConstraint.setName(buildUniqueKeyConstraintName(getName(), serialNumber, platform.getMaxUniqueKeyNameSize()));
         } else {
             // Hack if off if it exceeds the max size.
@@ -758,7 +758,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     protected String buildIndexName(String tableName, String key, String indexPrefix, int maximumNameLength, DatabasePlatform platform) {
         String startDelimiter = "";
         String endDelimiter = "";
-        boolean useDelimiters = !platform.getStartDelimiter().equals("") && (tableName.startsWith(platform.getStartDelimiter()) || key.startsWith(platform.getStartDelimiter()));
+        boolean useDelimiters = !platform.getStartDelimiter().isEmpty() && (tableName.startsWith(platform.getStartDelimiter()) || key.startsWith(platform.getStartDelimiter()));
         // we will only delimit our generated indices if either of the names that composes them is already delimited
         if (useDelimiters){
             startDelimiter = platform.getStartDelimiter();

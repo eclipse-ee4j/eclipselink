@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -293,7 +293,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * This means whenever the database object is referenced, it must be qualified.
      */
     public String getFullName() {
-        if (getQualifier().equals("")) {
+        if (getQualifier().isEmpty()) {
             return getName();
         } else {
             return getQualifier() + "." + getName();
@@ -323,7 +323,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * Return true is this database object definition has a schema definition.
      */
     protected boolean hasDatabaseSchema() {
-        return getDatabaseSchema() != null && ! getDatabaseSchema().equals("");
+        return getDatabaseSchema() != null && !getDatabaseSchema().isEmpty();
     }
 
     /**
