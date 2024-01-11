@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import java.util.Collection;
 
 /**
  * Extended SchemaManager to handle the creation of tables for dynamic types.
- *
+ * <p>
  * TODO: Handle the case where the provided session uses an external transaction
  * controller or is from an external connection pool. In these cases a custom
  * direct connection must be created cloning the minimal state needed from the
@@ -48,7 +48,7 @@ public class DynamicSchemaManager extends SchemaManager {
 
     /**
      * Create the database tables for one or more entityTypes.
-     *
+     * <p>
      * TODO: At present this method will create all tables that do not exist. It
      * needs to be made specific to the entityTypes.
      *

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,7 +70,7 @@ public class PackageDefinition extends DatabaseObjectDefinition {
             for (StoredProcedureDefinition procedure: procedures) {
                 writer.write("\n");
                 String procedureString = procedure.buildCreationWriter(session, writer).toString();
-                writer.write(procedureString.substring(7, procedureString.length()));
+                writer.write(procedureString.substring(7));
                 writer.write("\n");
             }
             writer.write(platform.getBatchEndString());

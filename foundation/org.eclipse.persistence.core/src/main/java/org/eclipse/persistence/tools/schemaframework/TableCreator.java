@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -666,12 +666,12 @@ public class TableCreator {
         boolean schemaMatchFound = false;
         // Determine the probable schema for the table, this is a heuristic, so should not cause issues if wrong.
         String qualifier = table.getQualifier();
-        if ((qualifier == null) || (qualifier.length() == 0)) {
+        if ((qualifier == null) || (qualifier.isEmpty())) {
             qualifier = session.getDatasourcePlatform().getTableQualifier();
-            if ((qualifier == null) || (qualifier.length() == 0)) {
+            if ((qualifier == null) || (qualifier.isEmpty())) {
                 qualifier = session.getLogin().getUserName();
                 // Oracle DB DS defined in WLS does not contain username, so it's stored in platform.
-                if ((qualifier == null) || (qualifier.length() == 0)) {
+                if ((qualifier == null) || (qualifier.isEmpty())) {
                     final DatabasePlatform platform = session.getPlatform();
                     if (platform.supportsConnectionUserName()) {
                         qualifier = platform.getConnectionUserName();
@@ -679,10 +679,10 @@ public class TableCreator {
                 }
             }
         }
-        final boolean checkSchema = (qualifier != null) && (qualifier.length() > 0);
+        final boolean checkSchema = (qualifier != null) && (!qualifier.isEmpty());
         for (final AbstractRecord record : columnInfo) {
             final String fieldName = (String)record.get(columnNameLookupField);
-            if (fieldName != null && fieldName.length() > 0) {
+            if (fieldName != null && !fieldName.isEmpty()) {
                 final DatabaseField column = new DatabaseField(fieldName);
                 if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
                     column.useUpperCaseForComparisons(true);

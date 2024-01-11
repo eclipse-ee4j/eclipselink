@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -547,7 +547,7 @@ public class StoredProcedureGenerator {
         definition.setStatements(statementVector);
         DatabaseField databaseField;
         AbstractRecord dataRow;
-        Hashtable fieldNames = new Hashtable();
+        Hashtable<String, AbstractRecord> fieldNames = new Hashtable<>();
         List<DatabaseField> primaryKeyFields = fields;
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             databaseField = primaryKeyFields.get(index);
@@ -555,7 +555,7 @@ public class StoredProcedureGenerator {
         }
 
         definition.setName(Helper.truncate(name, MAX_NAME_SIZE));
-        Enumeration fieldsEnum = fieldNames.keys();
+        Enumeration<String> fieldsEnum = fieldNames.keys();
         String prefixArgToken;
         if (getSession().getPlatform().isOracle()) {
             prefixArgToken = getSession().getPlatform().getStoredProcedureParameterPrefix();
@@ -564,11 +564,11 @@ public class StoredProcedureGenerator {
         }
         while (fieldsEnum.hasMoreElements()) {
             Number dataType;
-            dataRow = (AbstractRecord)fieldNames.get(fieldsEnum.nextElement());
+            dataRow = fieldNames.get(fieldsEnum.nextElement());
             dataType = (Number)dataRow.get("DATA_TYPE");
             Class<?> type = this.getFieldType(dataType);
             String typeName = (String)dataRow.get("TYPE_NAME");
-            if ((type != null) || (typeName == null) || (typeName.length() == 0)) {
+            if ((type != null) || (typeName == null) || (typeName.isEmpty())) {
                 definition.addArgument(prefixArgToken + dataRow.get("COLUMN_NAME"), type, ((Number)dataRow.get("COLUMN_SIZE")).intValue());
             } else {
                 definition.addArgument(prefixArgToken + dataRow.get("COLUMN_NAME"), typeName);

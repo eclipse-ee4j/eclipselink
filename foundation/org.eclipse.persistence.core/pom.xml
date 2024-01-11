@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -202,25 +202,20 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-testCompile</id>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.documentpreservation=org.eclipse.persistence.core.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.record.deferred=org.eclipse.persistence.core.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.core.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.core.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.core.test</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <compilerArgs combine.children="append">
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.documentpreservation=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.record.deferred=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.core.test</arg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
             <!--Generate OSGi bundle/manifest-->
             <plugin>

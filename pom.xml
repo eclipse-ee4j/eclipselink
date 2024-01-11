@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -1468,7 +1468,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>org.eclipse.persistence</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>common-license</classifier>
@@ -1487,7 +1487,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>org.eclipse.persistence</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-defaults</classifier>
@@ -1506,7 +1506,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>org.eclipse.persistence</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-report</classifier>
@@ -1525,7 +1525,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>org.eclipse.persistence</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>spotbugs-filter</classifier>
