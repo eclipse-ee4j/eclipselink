@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
 
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -313,6 +314,25 @@ public class HelperTest {
 
         } finally {
             Helper.setShouldOptimizeDates(optimizedDatesState);
+        }
+    }
+
+    @Test
+    public void dateFromYearMonthDateTest() {
+        //1950-02-20 //valid month is 0-11 0-January
+        java.sql.Date date = Helper.dateFromYearMonthDate(1950, 1, 20);
+        Assert.assertEquals("1950-02-20", date.toString());
+    }
+
+    @Test
+    public void dateFromYearMonthDateInvalidValueTest() {
+        //1950-02-30 //valid month is 0-11 0-January
+        //Invalid day value 30
+        try {
+            java.sql.Date date = Helper.dateFromYearMonthDate(1950, 1, 30);
+            Assert.assertEquals("1950-02-30", date.toString());
+        } catch (ConversionException e) {
+            Assert.assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.INCORRECT_DATE_VALUE);
         }
     }
 }

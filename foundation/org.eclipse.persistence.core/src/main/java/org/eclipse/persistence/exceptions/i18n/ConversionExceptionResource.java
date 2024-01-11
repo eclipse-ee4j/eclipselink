@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -36,7 +36,8 @@ public final class ConversionExceptionResource extends ListResourceBundle {
                                            { "3006", "[{0}] must be of even length to be converted to a byte array." },
                                            { "3007", "The object [{0}], of class [{1}], could not be converted to [{2}].  Ensure that the class [{2}] is on the CLASSPATH.  You may need to use alternate API passing in the appropriate class loader as required, or setting it on the default ConversionManager" },
                                            { "3008", "Incorrect date-time format: [{0}] (expected [YYYY-MM-DD''T''HH:MM:SS])" },
-                                           { "3009", "Unable to set {0} properties [{1}] into [{2}]." }
+                                           { "3009", "Unable to set {0} properties [{1}] into [{2}]." },
+                                           { "3010", "Incorrect date value [YYYY-MM-DD]: [{0}]." }
     };
 
     /**

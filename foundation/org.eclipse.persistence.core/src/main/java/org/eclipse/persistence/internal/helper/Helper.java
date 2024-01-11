@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -48,6 +48,8 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -882,13 +884,12 @@ public class Helper extends CoreHelper implements Serializable {
      * i.e. year is from 0, month is 0-11, date is 1-31.
      */
     public static java.sql.Date dateFromYearMonthDate(int year, int month, int day) {
-        // Use a calendar to compute the correct millis for the date.
-        Calendar localCalendar = allocateCalendar();
-        localCalendar.clear();
-        localCalendar.set(year, month, day, 0, 0, 0);
-        long millis = localCalendar.getTimeInMillis();
-        java.sql.Date date = new java.sql.Date(millis);
-        releaseCalendar(localCalendar);
+        java.sql.Date date = null;
+        try {
+            date = java.sql.Date.valueOf(LocalDate.of(year, month + 1, day));
+        } catch (DateTimeException exception) {
+            throw ConversionException.incorrectDateValue(year + "-" + (month + 1) + "-" + day);
+        }
         return date;
     }
 

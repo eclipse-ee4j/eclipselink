@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -347,7 +347,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
 
             Record record2 = new Record();
             record2.setDescription("Most beers consumed in a second - 5");
-            record2.setDate(Helper.dateFromYearMonthDate(2005, 12, 12));
+            record2.setDate(Helper.dateFromYearMonthDate(2005, 11, 12));
             record2.setLocation(new Location("Miami", "USA"));
             beerConsumer.getRecords().add(record2);
 

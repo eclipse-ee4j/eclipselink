@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -546,7 +546,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
 
             Record record3 = new Record();
             record3.setDescription("Most beers consumed in a second - 5");
-            record3.setDate(Helper.dateFromYearMonthDate(2005, 12, 12));
+            record3.setDate(Helper.dateFromYearMonthDate(2005, 11, 12));
             record3.setLocation(new Location("Miami", "USA"));
             Venue venue3 = new Venue();
             venue3.setAttendance(63000);
