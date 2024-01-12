@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -87,6 +87,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "argument_collection_was_null", "Argument collection was null" },
                                            { "entity_manager_with_connection_failed", "Execution of user code failed: {0}"},
                                            { "custom_pu_name_conflict", "Cannot create custom persistence unit with name {0}. This name was found in xml configuration."},
+                                           { "custom_pu_create_error", "Cannot create custom persistence unit with name {0}."},
+                                           { "custom_pu_create_error_no_caller", "Cannot create custom persistence unit with name {0}. No caller method was found in stack."},
+                                           { "custom_pu_create_error_no_caller_class_url", "Cannot create custom persistence unit with name {0}. No caller class {1} URL was found."},
                                            { "configured_pu_name_conflict", "Cannot create configured persistence unit with name {0}. This name was found in custom persistence units."},
                                            { "no_entities_retrieved_for_get_single_result", "getSingleResult() did not retrieve any entities." },
                                            { "no_entities_retrieved_for_get_reference", "Could not find Entity for id: {0}" },

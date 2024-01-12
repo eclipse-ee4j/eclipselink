@@ -22,19 +22,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
+
+import javax.sql.DataSource;
 
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.PersistenceUnitTransactionType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
-
-import javax.sql.DataSource;
 
 /**
  * Internal implementation of the PersistenceUnitInfo detailed in the EJB 3.0 specification
@@ -58,7 +59,11 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     private final Collection<String> jarFiles = new ArrayList<>();
     protected List<URL> jarFileUrls;
     protected List<String> managedClassNames;
+    // persistence.xml root URL
     protected URL persistenceUnitRootUrl;
+    // PersistenceConfiguration hash of programmatically defined PU, value is null for PU defined in persistence.xml
+    private String customHash;
+
     protected boolean excludeUnlistedClasses = true;
 
     // Persistence.xml loaded from the canonical model processor will
@@ -84,8 +89,9 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
      * from {@link PersistenceConfiguration} content.
      *
      * @param configuration configuration of a persistence unit
+     * @param rootURL root {@link URL} of the persistence unit
      */
-    public SEPersistenceUnitInfo(PersistenceConfiguration configuration) {
+    public SEPersistenceUnitInfo(PersistenceConfiguration configuration, URL rootURL) {
         persistenceUnitName = configuration.name();
         persistenceProviderClassName = configuration.provider();
         if (configuration.jtaDataSource() != null && !configuration.jtaDataSource().isEmpty()) {
@@ -109,6 +115,22 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         } else {
             realClassLoader = Thread.currentThread().getContextClassLoader();
         }
+        persistenceUnitRootUrl = rootURL;
+        customHash = Integer.toString(persistenceConfigurationHashCode(configuration));
+    }
+
+    // TODO: Remove when fixed by implementing hashCode in jakarta.persistence API
+    private static int persistenceConfigurationHashCode(PersistenceConfiguration configuration) {
+        return Objects.hash(configuration.name(),
+                                configuration.provider(),
+                                configuration.jtaDataSource(),
+                                configuration.nonJtaDataSource(),
+                                configuration.sharedCacheMode(),
+                                configuration.validationMode(),
+                                configuration.transactionType(),
+                                configuration.managedClasses(),
+                                configuration.mappingFiles(),
+                                configuration.properties());
     }
 
     /**
@@ -293,6 +315,15 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
 
     public void setPersistenceUnitRootUrl(URL persistenceUnitRootUrl){
         this.persistenceUnitRootUrl = persistenceUnitRootUrl;
+    }
+
+    /**
+     * Get programmatically defined persistence unit hash.
+     *
+     * @return persistence unit hash or {@code null} if this unit was not defined programmatically
+     */
+    public String getCustomHash() {
+        return customHash;
     }
 
     /**

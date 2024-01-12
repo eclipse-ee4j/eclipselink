@@ -710,16 +710,34 @@ public class PersistenceUnitProcessor {
         ARCHIVE_FACTORY = factory;
     }
 
+    private static final String PU_NAME_SEPARATOR = "_";
+    private static final String PU_HASH_SEPARATOR = "?";
+
     /**
      * Build the unique persistence name by concatenating the decoded URL with the persistence unit name.
      * A decoded URL is required while persisting on a multi-bytes OS.
-     * @return String
+     *
+     * @param rootURL root {@link URL} of the persistence unit
+     * @param hash programmatically defined persistence unit hash
+     *             or {@code null} when {@code persistence.xml} is source of the persistence unit
+     * @param puName name of the persistence unit
+     * @return unique persistence unit name
      */
-   public static String buildPersistenceUnitName(URL url, String puName){
-       String fullPuName = null;
-       // append the persistence unit name to the decoded URL
-       fullPuName = URLDecoder.decode(url.toString(), StandardCharsets.UTF_8)+"_"+puName;
-       return fullPuName;
+   public static String buildPersistenceUnitName(URL rootURL, String hash, String puName) {
+       String urlPrefix = URLDecoder.decode(rootURL.toString(), StandardCharsets.UTF_8);
+       StringBuilder fullPuName = new StringBuilder(
+               urlPrefix.length()
+                       + PU_NAME_SEPARATOR.length()
+                       + puName.length()
+                       + (hash != null ? (PU_HASH_SEPARATOR.length() + hash.length()) : 0))
+               .append(urlPrefix)
+               .append(PU_NAME_SEPARATOR)
+               .append(puName);
+       if (hash != null) {
+           fullPuName.append(PU_HASH_SEPARATOR)
+                   .append(hash);
+       }
+       return fullPuName.toString();
    }
 
     /**
