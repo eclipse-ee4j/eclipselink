@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,11 @@ module eclipselink {
     requires static jakarta.resource;
 
     requires static com.sun.xml.bind.core;
+
+    requires static org.objectweb.asm;
+    requires static org.objectweb.asm.commons;
+    requires static org.objectweb.asm.tree;
+    requires static org.objectweb.asm.util;
 
     exports org.eclipse.persistence.jpa.jpql;
     exports org.eclipse.persistence.jpa.jpql.parser;
@@ -221,7 +226,6 @@ module eclipselink {
     exports org.eclipse.persistence.internal.jpa.metadata.xml;
     exports org.eclipse.persistence.internal.jpa.rs.metadata.model;
     exports org.eclipse.persistence.internal.jpa.rs.metadata.model.v2;
-    exports org.eclipse.persistence.internal.libraries.asm;
     exports org.eclipse.persistence.internal.localization;
     exports org.eclipse.persistence.internal.oxm;
     exports org.eclipse.persistence.internal.oxm.mappings;

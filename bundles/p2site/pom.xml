@@ -39,10 +39,6 @@
         <!--Other modules-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
         </dependency>
         <dependency>
@@ -275,11 +271,6 @@
         <!--Sources main dependencies-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
             <classifier>sources</classifier>
         </dependency>
@@ -389,10 +380,6 @@
                                 <!-- specify your depencies here -->
                                 <!-- groupId:artifactId:version -->
                                 <artifact>
-                                    <id>org.eclipse.persistence:org.eclipse.persistence.asm:${project.version}</id>
-                                    <source>true</source>
-                                </artifact>
-                                <artifact>
                                     <id>org.eclipse.persistence:org.eclipse.persistence.core:${project.version}</id>
                                     <source>true</source>
                                     <excludes>
@@ -447,10 +434,6 @@
                                         <artifact>
                                             <id>jakarta.servlet:jakarta.servlet-api:${servlet.version}</id>
                                             <transitive>false</transitive>
-                                            <source>true</source>
-                                        </artifact>
-                                        <artifact>
-                                            <id>org.eclipse.persistence:org.eclipse.persistence.asm:${project.version}</id>
                                             <source>true</source>
                                         </artifact>
                                         <artifact>

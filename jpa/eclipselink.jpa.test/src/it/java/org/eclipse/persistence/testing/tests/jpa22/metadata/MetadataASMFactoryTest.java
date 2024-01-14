@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
         suite.addTest(new MetadataASMFactoryTest("testMetadataAnnotations"));
         suite.addTest(new MetadataASMFactoryTest("testAnnotationsWithCycle"));
         suite.addTest(new MetadataASMFactoryTest("testAnnotationsWithPrimitiveCycle"));
-        suite.addTest(new MetadataASMFactoryTest("testReadFallback"));
+        suite.addTest(new MetadataASMFactoryTest("testReadClassBuildByUknownJDK"));
         return suite;
     }
 
@@ -97,7 +97,7 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
         }
     }
 
-    public void testReadFallback() {
+    public void testReadClassBuildByUknownJDK() {
         SessionLog log = AbstractSessionLog.getLog();
         try {
             LW tracker = new LW();
@@ -105,8 +105,12 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
             ClassLoader cl = new EmployeeLoader(MetadataASMFactoryTest.class.getClassLoader());
             MetadataAsmFactory maf = new MetadataAsmFactory(new MetadataLogger(null), cl);
             MetadataClass employee = maf.getMetadataClass("org.eclipse.persistence.testing.tests.jpa22.metadata.Employee");
-            Assert.assertNull(tracker.msg);
-            Assert.assertNotNull(employee.getAnnotation("jakarta.persistence.Entity"));
+            //Check existence of the log message
+            Assert.assertNotNull(tracker.msg);
+            //Check, that at least some metadata are available
+            Assert.assertNotNull(employee);
+            //jakarta.persistence.Entity annotation can't be read as class is build by unknown JDK
+            Assert.assertNull(employee.getAnnotation("jakarta.persistence.Entity"));
         } finally {
             AbstractSessionLog.setLog(log);
         }

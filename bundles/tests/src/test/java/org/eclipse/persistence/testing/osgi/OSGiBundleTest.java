@@ -65,12 +65,6 @@ public class OSGiBundleTest {
     }
 
     @Test
-    public void testAsmELVersion() {
-        Class<?> c = loadClass(CORE_BUNDLE_NAME, "org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor");
-        assertClassLoadedByBundle(c, ASM_BUNDLE_NAME);
-    }
-
-    @Test
     public void testAsmCoreVersion() {
         Class<?> c = loadClass(CORE_BUNDLE_NAME, "org.eclipse.persistence.asm.AnnotationVisitor");
         assertClassLoadedByBundle(c, CORE_BUNDLE_NAME);

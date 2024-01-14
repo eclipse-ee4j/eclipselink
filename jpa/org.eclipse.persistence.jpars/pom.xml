@@ -91,12 +91,6 @@
             <artifactId>jersey-common</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink ASM Implementation-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--JDBC driver (test dependency)-->
         <dependency>
             <groupId>${db.driver.groupId}</groupId>

@@ -34,11 +34,6 @@
         <!--Other modules-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
         </dependency>
         <dependency>
@@ -101,24 +96,6 @@
             <optional>true</optional>
         </dependency>
         <!--Other libraries dependencies-->
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-commons</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-tree</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
@@ -192,7 +169,6 @@
                                     *
                                 </Export-Package>
                                 <Import-Package>
-                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
                                     org.eclipse.persistence.json;resolution:=optional,
                                     *
                                 </Import-Package>

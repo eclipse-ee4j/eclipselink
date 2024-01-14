@@ -22,14 +22,12 @@ import java.util.Map;
 
 public class Opcodes {
 
-    private final static String ASM_OPCCODES_ECLIPSELINK = "org.eclipse.persistence.internal.libraries.asm.Opcodes";
     private final static String ASM_OPCCODES_OW2 = "org.objectweb.asm.Opcodes";
 
     private final static Map<String, String> ASM_OPCCODES_MAP = new HashMap<>();
 
     static {
         ASM_OPCCODES_MAP.put(ASMFactory.ASM_SERVICE_OW2, ASM_OPCCODES_OW2);
-        ASM_OPCCODES_MAP.put(ASMFactory.ASM_SERVICE_ECLIPSELINK, ASM_OPCCODES_ECLIPSELINK);
     }
 
     public static int valueInt(String fieldName) {

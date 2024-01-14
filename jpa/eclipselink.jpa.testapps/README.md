@@ -261,7 +261,6 @@ echo '<module name="org.eclipse.persistence" xmlns="urn:jboss:module:1.9">
 
     <resources>
         <resource-root path="jipijapa-eclipselink-jakarta-27.0.0.Alpha4.jar"/>
-        <resource-root path="org.eclipse.persistence.asm.jar"/>
         <resource-root path="org.eclipse.persistence.core.jar"/>
         <resource-root path="org.eclipse.persistence.jpa.jar" />
         <resource-root path="org.eclipse.persistence.jpa.jpql.jar"/>
