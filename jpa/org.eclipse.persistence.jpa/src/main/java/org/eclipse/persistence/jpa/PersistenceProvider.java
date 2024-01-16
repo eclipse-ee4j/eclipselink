@@ -32,6 +32,9 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.jpa;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,7 +47,6 @@ import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.LoadState;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
@@ -55,6 +57,8 @@ import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 
 /**
@@ -185,11 +189,50 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return null;
     }
 
+    // Never call this method from this class because of stack frames removal.
     @Override
     public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
         JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
+        // Root URL from method caller
+        StackWalker stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+        StackWalker.StackFrame frame = stackWalker.walk(stream -> stream
+                .dropWhile(f -> PersistenceProvider.class.getName().equals(f.getClassName()))
+                .dropWhile(f -> f.getClassName().startsWith("jakarta.persistence"))
+                .findFirst()
+                .orElse(null));
+        URL rootURL;
+        if (frame != null) {
+            // getProtectionDomain() may be restricted by SecurityManager
+            try {
+                rootURL = PrivilegedAccessHelper.callDoPrivileged(
+                        () -> frame.getDeclaringClass().getProtectionDomain().getCodeSource().getLocation()
+                );
+            // fallback Root URL retrieval (unreliable and worse performance), remove when SecurityManager is no longer in Java
+            } catch (SecurityException e) {
+                Class<?> callerClass = frame.getDeclaringClass();
+                rootURL = callerClass.getResource(callerClass.getSimpleName() + ".class");
+                if (rootURL == null) {
+                    throw new PersistenceException(
+                            ExceptionLocalization.buildMessage("custom_pu_create_error_no_caller_class_url",
+                                                               new String[] {configuration.name(), callerClass.getName()}));
+                }
+                String classSuffix = callerClass.getName().replaceAll("\\.", "/")+".class";
+                try {
+                    rootURL = PersistenceUnitProcessor.computePURootURL(rootURL, classSuffix);
+                } catch (IOException | URISyntaxException ex) {
+                    throw new PersistenceException(
+                            ExceptionLocalization.buildMessage("custom_pu_create_error",
+                                                               new String[] {configuration.name()}),
+                            ex);
+                }
+            }
+        } else {
+            throw new PersistenceException(
+                    ExceptionLocalization.buildMessage("custom_pu_create_error_no_caller",
+                                                       new String[] {configuration.name()}));
+        }
         return createEntityManagerFactoryImpl(
-                initializer.customPersistenceUnitInfo(configuration),
+                initializer.customPersistenceUnitInfo(configuration, rootURL),
                 Collections.emptyMap(),
                 true);
     }
@@ -273,7 +316,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return JavaSECMPInitializer.getJavaSECMPInitializer(classLoader);
     }
 
-
     /**
      * Need to check that the provider property is null or set for EclipseLink
      */
@@ -334,7 +376,9 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         } else {
             boolean isNew = false;
             ClassTransformer transformer = null;
-            String uniqueName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(), info.getPersistenceUnitName());
+            String uniqueName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(),
+                                                                                  info.getPersistenceUnitName(),
+                                                                                  null);
             String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, info, uniqueName);
             synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                 emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);

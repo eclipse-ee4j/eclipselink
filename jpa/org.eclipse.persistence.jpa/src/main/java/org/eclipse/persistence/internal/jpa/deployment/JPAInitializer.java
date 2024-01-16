@@ -21,6 +21,7 @@ package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +36,6 @@ import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
@@ -166,15 +166,16 @@ public abstract class JPAInitializer {
      * If no cached instance exists, create and cache a new one.
      *
      * @param configuration configuration of the persistence unit
+     * @param rootURL root {@link URL} of the persistence unit
      * @return {@link PersistenceUnitInfo} matching provided configuration
      */
-    public SEPersistenceUnitInfo customPersistenceUnitInfo(PersistenceConfiguration configuration) {
+    public SEPersistenceUnitInfo customPersistenceUnitInfo(PersistenceConfiguration configuration, URL rootURL) {
         validateCustomPersistenceUnitName(configuration);
         SEPersistenceUnitInfo persistenceUnitInfo = customPuInfos.get(configuration.name());
         if (persistenceUnitInfo != null) {
             return persistenceUnitInfo;
         }
-        persistenceUnitInfo = new SEPersistenceUnitInfo(configuration);
+        persistenceUnitInfo = new SEPersistenceUnitInfo(configuration, rootURL);
         customPuInfos.put(configuration.name(), persistenceUnitInfo);
         return persistenceUnitInfo;
     }
@@ -284,7 +285,14 @@ public abstract class JPAInitializer {
      * this method is called to generate a unique name.
      */
     public String createUniquePersistenceUnitName(PersistenceUnitInfo puInfo) {
-        return PersistenceUnitProcessor.buildPersistenceUnitName(puInfo.getPersistenceUnitRootUrl(), puInfo.getPersistenceUnitName());
+        if (puInfo instanceof SEPersistenceUnitInfo sePUInfo) {
+            return PersistenceUnitProcessor.buildPersistenceUnitName(sePUInfo.getPersistenceUnitRootUrl(),
+                                                                     sePUInfo.getPersistenceUnitName(),
+                                                                     sePUInfo.getConfigHash());
+        }
+        return PersistenceUnitProcessor.buildPersistenceUnitName(puInfo.getPersistenceUnitRootUrl(),
+                                                                 puInfo.getPersistenceUnitName(),
+                                                                 null);
     }
 
     public EntityManagerSetupImpl extractInitialEmSetupImpl(String puName) {
