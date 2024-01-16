@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 /**
  * Object to hold onto primary key metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -57,7 +57,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 public class PrimaryKeyMetadata extends ORMetadata {
     private String m_validation;
     private String m_cacheKeyType;
-    private List<ColumnMetadata> m_columns = new ArrayList<ColumnMetadata>();
+    private List<ColumnMetadata> m_columns = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -160,7 +160,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
 
         if (hasColumns()) {
             for (ColumnMetadata column : m_columns) {
-                if (column.getName().equals("")) {
+                if (column.getName().isEmpty()) {
                     throw ValidationException.primaryKeyColumnNameNotSpecified(descriptor.getJavaClass());
                 } else {
                     descriptor.addPrimaryKeyField(column.getDatabaseField());

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 
@@ -198,7 +199,7 @@ public class XMLEntityMappingsReader {
         java.net.URLConnection cnx1 = url.openConnection();
         //set to false to prevent locking of jar files on Windows. EclipseLink issue 249664
         cnx1.setUseCaches(false);
-        return new InputStreamReader(cnx1.getInputStream(), "UTF-8");
+        return new InputStreamReader(cnx1.getInputStream(), StandardCharsets.UTF_8);
     }
 
     /**
@@ -374,15 +375,12 @@ public class XMLEntityMappingsReader {
      */
     protected static Schema loadLocalSchema(String schemaName) throws IOException, SAXException {
         URL url = XMLEntityMappingsReader.class.getClassLoader().getResource(schemaName);
-        InputStream schemaStream = url.openStream();
 
-        try {
-            StreamSource source = new StreamSource(url.openStream());
+        try (InputStream schemaStream = url.openStream()) {
+            StreamSource source = new StreamSource(schemaStream);
             SchemaFactory schemaFactory = XMLHelper.createSchemaFactory(XMLConstants.SCHEMA_URL, false);
             Schema schema = schemaFactory.newSchema(source);
             return schema;
-        } finally {
-            schemaStream.close();
         }
     }
 

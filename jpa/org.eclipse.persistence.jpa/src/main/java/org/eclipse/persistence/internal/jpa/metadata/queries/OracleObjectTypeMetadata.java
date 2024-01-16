@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 /**
  * INTERNAL:
  * Object to hold onto Oracle object type meta-data.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -44,7 +44,7 @@ import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
  * @since EclipseLink 2.5
  */
 public class OracleObjectTypeMetadata extends OracleComplexTypeMetadata {
-    private List<PLSQLParameterMetadata> fields = new ArrayList<PLSQLParameterMetadata>();
+    private List<PLSQLParameterMetadata> fields = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -111,7 +111,7 @@ public class OracleObjectTypeMetadata extends OracleComplexTypeMetadata {
         OracleObjectType objectType = new OracleObjectType();
         super.process(objectType);
 
-        Map<String, DatabaseType> typeFields = new HashMap<String, DatabaseType>();
+        Map<String, DatabaseType> typeFields = new HashMap<>();
         for (PLSQLParameterMetadata field : this.fields) {
             typeFields.put(field.getName(), getDatabaseTypeEnum(field.getDatabaseType()));
         }

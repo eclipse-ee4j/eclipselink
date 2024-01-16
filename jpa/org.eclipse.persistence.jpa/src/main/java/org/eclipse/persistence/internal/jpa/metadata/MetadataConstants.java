@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,9 +30,9 @@ package org.eclipse.persistence.internal.jpa.metadata;
  * to release, we refer to all JPA annotations and enums with string names. We
  * also do this to be consistent (and alleviate any thought process as to which
  * annotations can and can not be referenced by class).
- *
+ * <p>
  * NOTE: Internal EclipseLink annotations can always be referred to by class.
- *
+ * <p>
  * 2.1 OR/Metadata annotations will not be added to the eclipselink jar as
  * the 2.0 annotations were. With this solution in place many of the 2.0
  * annotations can also be removed from the jar.

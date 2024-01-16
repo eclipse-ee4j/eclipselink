@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,7 @@ import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 /**
  * INTERNAL:
  * Object to hold onto an object type converter metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -59,7 +59,7 @@ import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
  * @since TopLink 11g
  */
 public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
-    private List<ConversionValueMetadata> m_conversionValues = new ArrayList<ConversionValueMetadata>();
+    private List<ConversionValueMetadata> m_conversionValues = new ArrayList<>();
     private String m_defaultObjectValue;
 
     /**
@@ -164,10 +164,10 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
 
         // Process the conversion values.
         // Hold two-way mappings from the database to the object.
-        Map<String, String> dataToObjectValues = new HashMap<String, String>();
+        Map<String, String> dataToObjectValues = new HashMap<>();
         // If a member from m_dataToObjectValues is not in m_objectToDataValues
         // then it will be assumed that it is a one-way mapping.
-        Map<String, String> objectToDataValues = new HashMap<String, String>();
+        Map<String, String> objectToDataValues = new HashMap<>();
 
         if (hasConversionValues()) {
             for (ConversionValueMetadata conversionValue: getConversionValues()) {
@@ -203,7 +203,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         }
 
         // Process the defaultObjectValue if one is specified.
-        if (m_defaultObjectValue != null && ! m_defaultObjectValue.equals("")) {
+        if (m_defaultObjectValue != null && !m_defaultObjectValue.isEmpty()) {
             converter.setDefaultAttributeValueString(m_defaultObjectValue);
         }
 

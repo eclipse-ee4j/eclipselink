@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -441,7 +441,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     @Override
     public void addJoin(FromImpl join){
         if (this.processedJoins == null ) {
-            this.processedJoins = new HashSet<FromImpl>();
+            this.processedJoins = new HashSet<>();
         }
         if (! this.processedJoins.contains(join)){
             this.processedJoins.add(join);

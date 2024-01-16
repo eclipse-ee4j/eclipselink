@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,39 +49,6 @@ import org.eclipse.persistence.internal.jpa.config.queries.SqlResultSetMappingIm
 import org.eclipse.persistence.internal.jpa.config.sequencing.SequenceGeneratorImpl;
 import org.eclipse.persistence.internal.jpa.config.sequencing.TableGeneratorImpl;
 import org.eclipse.persistence.internal.jpa.config.sequencing.UuidGeneratorImpl;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ConverterAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.MixedConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.HashPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.PartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.PinnedPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.RangePartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.ReplicationPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.RoundRobinPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.UnionPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.ValuePartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.OracleArrayTypeMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.OracleObjectTypeMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.jpa.config.AccessMethods;
 import org.eclipse.persistence.jpa.config.Converter;
@@ -129,39 +96,39 @@ public class MappingsImpl extends MetadataImpl<XMLEntityMappings> implements Map
     public MappingsImpl() {
         super(new XMLEntityMappings());
 
-        getMetadata().setConverters(new ArrayList<ConverterMetadata>());
-        getMetadata().setConverterAccessors(new ArrayList<ConverterAccessor>());
-        getMetadata().setEmbeddables(new ArrayList<EmbeddableAccessor>());
-        getMetadata().setEntities(new ArrayList<EntityAccessor>());
-        getMetadata().setHashPartitioning(new ArrayList<HashPartitioningMetadata>());
-        getMetadata().setMappedSuperclasses(new ArrayList<MappedSuperclassAccessor>());
-        getMetadata().setMixedConverters(new ArrayList<MixedConverterMetadata>());
-        getMetadata().setNamedQueries(new ArrayList<NamedQueryMetadata>());
-        getMetadata().setNamedStoredFunctionQueries(new ArrayList<NamedStoredFunctionQueryMetadata>());
-        getMetadata().setNamedNativeQueries(new ArrayList<NamedNativeQueryMetadata>());
-        getMetadata().setNamedPLSQLStoredFunctionQueries(new ArrayList<NamedPLSQLStoredFunctionQueryMetadata>());
-        getMetadata().setNamedPLSQLStoredProcedureQueries(new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>());
-        getMetadata().setNamedStoredProcedureQueries(new ArrayList<NamedStoredProcedureQueryMetadata>());
-        getMetadata().setObjectTypeConverters(new ArrayList<ObjectTypeConverterMetadata>());
-        getMetadata().setOracleArrayTypes(new ArrayList<OracleArrayTypeMetadata>());
-        getMetadata().setOracleObjectTypes(new ArrayList<OracleObjectTypeMetadata>());
-        getMetadata().setPartitioning(new ArrayList<PartitioningMetadata>());
-        getMetadata().setPinnedPartitioning(new ArrayList<PinnedPartitioningMetadata>());
-        getMetadata().setPLSQLRecords(new ArrayList<PLSQLRecordMetadata>());
-        getMetadata().setPLSQLTables(new ArrayList<PLSQLTableMetadata>());
-        getMetadata().setRangePartitioning(new ArrayList<RangePartitioningMetadata>());
-        getMetadata().setReplicationPartitioning(new ArrayList<ReplicationPartitioningMetadata>());
-        getMetadata().setRoundRobinPartitioning(new ArrayList<RoundRobinPartitioningMetadata>());
-        getMetadata().setSequenceGenerators(new ArrayList<SequenceGeneratorMetadata>());
-        getMetadata().setSerializedConverters(new ArrayList<SerializedConverterMetadata>()); // TODO: add to config
-        getMetadata().setSqlResultSetMappings(new ArrayList<SQLResultSetMappingMetadata>());
-        getMetadata().setStructConverters(new ArrayList<StructConverterMetadata>());
-        getMetadata().setTableGenerators(new ArrayList<TableGeneratorMetadata>());
-        getMetadata().setTenantDiscriminatorColumns(new ArrayList<TenantDiscriminatorColumnMetadata>());
-        getMetadata().setTypeConverters(new ArrayList<TypeConverterMetadata>());
-        getMetadata().setUnionPartitioning(new ArrayList<UnionPartitioningMetadata>());
-        getMetadata().setUuidGenerators(new ArrayList<UuidGeneratorMetadata>());
-        getMetadata().setValuePartitioning(new ArrayList<ValuePartitioningMetadata>());
+        getMetadata().setConverters(new ArrayList<>());
+        getMetadata().setConverterAccessors(new ArrayList<>());
+        getMetadata().setEmbeddables(new ArrayList<>());
+        getMetadata().setEntities(new ArrayList<>());
+        getMetadata().setHashPartitioning(new ArrayList<>());
+        getMetadata().setMappedSuperclasses(new ArrayList<>());
+        getMetadata().setMixedConverters(new ArrayList<>());
+        getMetadata().setNamedQueries(new ArrayList<>());
+        getMetadata().setNamedStoredFunctionQueries(new ArrayList<>());
+        getMetadata().setNamedNativeQueries(new ArrayList<>());
+        getMetadata().setNamedPLSQLStoredFunctionQueries(new ArrayList<>());
+        getMetadata().setNamedPLSQLStoredProcedureQueries(new ArrayList<>());
+        getMetadata().setNamedStoredProcedureQueries(new ArrayList<>());
+        getMetadata().setObjectTypeConverters(new ArrayList<>());
+        getMetadata().setOracleArrayTypes(new ArrayList<>());
+        getMetadata().setOracleObjectTypes(new ArrayList<>());
+        getMetadata().setPartitioning(new ArrayList<>());
+        getMetadata().setPinnedPartitioning(new ArrayList<>());
+        getMetadata().setPLSQLRecords(new ArrayList<>());
+        getMetadata().setPLSQLTables(new ArrayList<>());
+        getMetadata().setRangePartitioning(new ArrayList<>());
+        getMetadata().setReplicationPartitioning(new ArrayList<>());
+        getMetadata().setRoundRobinPartitioning(new ArrayList<>());
+        getMetadata().setSequenceGenerators(new ArrayList<>());
+        getMetadata().setSerializedConverters(new ArrayList<>()); // TODO: add to config
+        getMetadata().setSqlResultSetMappings(new ArrayList<>());
+        getMetadata().setStructConverters(new ArrayList<>());
+        getMetadata().setTableGenerators(new ArrayList<>());
+        getMetadata().setTenantDiscriminatorColumns(new ArrayList<>());
+        getMetadata().setTypeConverters(new ArrayList<>());
+        getMetadata().setUnionPartitioning(new ArrayList<>());
+        getMetadata().setUuidGenerators(new ArrayList<>());
+        getMetadata().setValuePartitioning(new ArrayList<>());
     }
 
     @Override

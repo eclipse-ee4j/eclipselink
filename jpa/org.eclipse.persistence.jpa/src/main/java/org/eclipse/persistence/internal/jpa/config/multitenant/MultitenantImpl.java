@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.config.MetadataImpl;
 import org.eclipse.persistence.internal.jpa.config.columns.TenantDiscriminatorColumnImpl;
-import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.multitenant.MultitenantMetadata;
 import org.eclipse.persistence.jpa.config.Multitenant;
 import org.eclipse.persistence.jpa.config.TenantDiscriminatorColumn;
@@ -35,7 +34,7 @@ public class MultitenantImpl extends MetadataImpl<MultitenantMetadata> implement
     public MultitenantImpl() {
         super(new MultitenantMetadata());
 
-        getMetadata().setTenantDiscriminatorColumns(new ArrayList<TenantDiscriminatorColumnMetadata>());
+        getMetadata().setTenantDiscriminatorColumns(new ArrayList<>());
     }
 
     @Override

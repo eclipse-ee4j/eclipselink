@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -467,7 +467,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * Re-bootstrap this factory.  This method will rebuild the EntityManagerFactory.  It should be used
      * in conjunction with a MetadataSource to allow mappings to be changed in a running system.  All existing
      * EntityMangers will continue to function with the old metadata, but new factories will use the new metadata.
-     *
+     * <p>
      * This call will throw an exception when called on EntityManagerFactoryImplDelegate
      */
     @Override

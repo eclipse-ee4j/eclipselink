@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
 /**
  * Defines the metadata for the @Struct annotation for mapping
  * ObjectRelationshipDataTypeDescriptor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -45,7 +45,7 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
  */
 public class StructMetadata extends ORMetadata {
     private String name;
-    private List<String> fields = new ArrayList<String>();
+    private List<String> fields = new ArrayList<>();
 
     /**
      * INTERNAL:

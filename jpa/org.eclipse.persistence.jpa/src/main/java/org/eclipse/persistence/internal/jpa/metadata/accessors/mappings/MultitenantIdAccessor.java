@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import org.eclipse.persistence.mappings.MultitenantPrimaryKeyMapping;
  * that it is not mapped in the object and this mapping accessor is not
  * mapped through annotations and/or XML. They are created on the fly when
  * tenant discrimator columns are found that specify primaryKey=true.
- *
+ * <p>
  * Key notes:
  * - methods should be preserved in alphabetical order.
  *

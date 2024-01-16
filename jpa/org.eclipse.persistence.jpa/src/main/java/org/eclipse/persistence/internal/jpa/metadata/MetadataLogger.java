@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,27 +80,27 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class MetadataLogger {
-    /*************************************************************************/
-    /*           OVERRIDE MESSSAGES FOR ANNOTATIONS AND XML                  */
-    /*************************************************************************/
+    /* *********************************************************************** */
+    /*            OVERRIDE MESSSAGES FOR ANNOTATIONS AND XML                   */
+    /* *********************************************************************** */
     public static final String OVERRIDE_ANNOTATION_WITH_XML = "metadata_warning_override_annotation_with_xml";
     public static final String OVERRIDE_NAMED_ANNOTATION_WITH_XML = "metadata_warning_override_named_annotation_with_xml";
 
     public static final String OVERRIDE_XML_WITH_ECLIPSELINK_XML = "metadata_warning_override_xml_with_eclipselink_xml";
     public static final String OVERRIDE_NAMED_XML_WITH_ECLIPSELINK_XML = "metadata_warning_override_named_xml_with_eclipselink_xml";
 
-    /*************************************************************************/
-    /*              ANNOTATION SPECIFIC IGNORE MESSSAGES                     */
-    /*************************************************************************/
+    /* *********************************************************************** */
+    /*               ANNOTATION SPECIFIC IGNORE MESSSAGES                      */
+    /* *********************************************************************** */
     public static final String IGNORE_ANNOTATION = "annotation_warning_ignore_annotation";
     public static final String IGNORE_PRIVATE_OWNED_ANNOTATION = "annotation_warning_ignore_private_owned";
 
     public static final String IGNORE_RETURN_INSERT_ANNOTATION = "annotation_warning_ignore_return_insert";
     public static final String IGNORE_RETURN_UPDATE_ANNOTATION = "annotation_warning_ignore_return_update";
 
-    /*************************************************************************/
-    /*                       GENERIC IGNORE MESSSAGES                        */
-    /*************************************************************************/
+    /* *********************************************************************** */
+    /*                        GENERIC IGNORE MESSSAGES                         */
+    /* *********************************************************************** */
     public static final String IGNORE_LOB = "metadata_warning_ignore_lob";
     public static final String IGNORE_ENUMERATED = "metadata_warning_ignore_enumerated";
     public static final String IGNORE_SERIALIZED = "metadata_warning_ignore_serialized";
@@ -145,9 +145,9 @@ public class MetadataLogger {
     public static final String IGNORE_FETCH_GROUP = "metadata_warning_ignore_fetch_group";
     public static final String IGNORE_MAPPING_METADATA = "metadata_warning_ignore_mapping_metadata";
 
-    /*************************************************************************/
-    /*                       GENERIC DEFAULT MESSSAGES                       */
-    /*************************************************************************/
+    /* *********************************************************************** */
+    /*                        GENERIC DEFAULT MESSSAGES                        */
+    /* *********************************************************************** */
     public static final String ACCESS_TYPE = "metadata_access_type";
 
     public static final String ALIAS = "metadata_default_alias";
@@ -215,9 +215,9 @@ public class MetadataLogger {
     public static final String VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS = "metadata_default_variable_one_to_one_reference_class";
     public static final String ELEMENT_COLLECTION_MAPPING_REFERENCE_CLASS = "metadata_default_element_collection_reference_class";
 
-    /*************************************************************************/
-    /*                       OTHER WARNING MESSSAGES                         */
-    /*************************************************************************/
+    /* *********************************************************************** */
+    /*                        OTHER WARNING MESSSAGES                          */
+    /* *********************************************************************** */
     public static final String WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION = "non_jpa_allowed_type_used_for_collection_using_lazy_access";
     public static final String WARNING_INCORRECT_DISCRIMINATOR_FORMAT = "metadata_warning_integer_discriminator_could_not_be_built";
     public static final String WARNING_PARTIONED_NOT_SET = "metadata_warning_partitioned_not_set";

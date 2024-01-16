@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -175,7 +175,7 @@ import org.eclipse.persistence.sessions.Project;
  * INTERNAL:
  * A MetadataProject stores metadata and also helps to facilitate the metadata
  * processing.
- *
+ * <p>
  * Key notes:
  * - Care should be taken when using Sets to hold metadata and checking their
  *   equality. In most cases you should be able to us a List or Map since most
@@ -341,39 +341,39 @@ public class MetadataProject {
         m_multitenantSharedEmf = multitenantSharedEmf;
         m_multitenantSharedCache = multitenantSharedCache;
 
-        m_owningRelationshipAccessors = new ArrayList<RelationshipAccessor>();
-        m_nonOwningRelationshipAccessors = new ArrayList<RelationshipAccessor>();
-        m_embeddableMappingAccessors = new ArrayList<MappingAccessor>();
-        m_directCollectionAccessors = new ArrayList<DirectCollectionAccessor>();
-        m_accessorsWithCustomizer = new ArrayList<ClassAccessor>();
+        m_owningRelationshipAccessors = new ArrayList<>();
+        m_nonOwningRelationshipAccessors = new ArrayList<>();
+        m_embeddableMappingAccessors = new ArrayList<>();
+        m_directCollectionAccessors = new ArrayList<>();
+        m_accessorsWithCustomizer = new ArrayList<>();
 
         // Using linked collections since their ordering needs to be preserved.
-        m_entityMappings = new LinkedHashMap<String, XMLEntityMappings>();
-        m_defaultListeners = new LinkedHashSet<EntityListenerMetadata>();
+        m_entityMappings = new LinkedHashMap<>();
+        m_defaultListeners = new LinkedHashSet<>();
 
-        m_queries = new HashMap<String, NamedQueryMetadata>();
-        m_sqlResultSetMappings = new HashMap<String, SQLResultSetMappingMetadata>();
-        m_allAccessors = new HashMap<String, ClassAccessor>();
-        m_entityAccessors = new HashMap<String, EntityAccessor>();
-        m_embeddableAccessors = new HashMap<String, EmbeddableAccessor>();
-        m_rootEmbeddableAccessors = new HashMap<String, EmbeddableAccessor>();
-        m_interfaceAccessors = new HashMap<String, InterfaceAccessor>();
-        m_mappedSuperclasseAccessors = new HashMap<String, MappedSuperclassAccessor>();
-        m_generatedValues = new HashMap<MetadataClass, GeneratedValueMetadata>();
-        m_tableGenerators = new HashMap<String, TableGeneratorMetadata>();
-        m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
-        m_uuidGenerators = new HashMap<String, UuidGeneratorMetadata>();
-        m_converters = new HashMap<String, AbstractConverterMetadata>();
-        m_converterAccessors = new HashMap<String, ConverterAccessor>();
-        m_autoApplyConvertAccessors = new HashMap<String, ConverterAccessor>();
-        m_partitioningPolicies = new HashMap<String, AbstractPartitioningMetadata>();
-        m_complexMetadataTypes = new HashMap<String, ComplexTypeMetadata>();
-        m_metamodelMappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
-        m_virtualClasses = new HashMap<String, ClassAccessor>();
-        m_accessorsWithDerivedId = new HashMap<String, ClassAccessor>();
+        m_queries = new HashMap<>();
+        m_sqlResultSetMappings = new HashMap<>();
+        m_allAccessors = new HashMap<>();
+        m_entityAccessors = new HashMap<>();
+        m_embeddableAccessors = new HashMap<>();
+        m_rootEmbeddableAccessors = new HashMap<>();
+        m_interfaceAccessors = new HashMap<>();
+        m_mappedSuperclasseAccessors = new HashMap<>();
+        m_generatedValues = new HashMap<>();
+        m_tableGenerators = new HashMap<>();
+        m_sequenceGenerators = new HashMap<>();
+        m_uuidGenerators = new HashMap<>();
+        m_converters = new HashMap<>();
+        m_converterAccessors = new HashMap<>();
+        m_autoApplyConvertAccessors = new HashMap<>();
+        m_partitioningPolicies = new HashMap<>();
+        m_complexMetadataTypes = new HashMap<>();
+        m_metamodelMappedSuperclasses = new HashMap<>();
+        m_virtualClasses = new HashMap<>();
+        m_accessorsWithDerivedId = new HashMap<>();
 
-        m_idClasses = new HashSet<String>();
-        m_interfacesImplementedByEntities = new HashSet<String>();
+        m_idClasses = new HashSet<>();
+        m_interfacesImplementedByEntities = new HashSet<>();
     }
 
     /**
@@ -741,7 +741,7 @@ public class MetadataProject {
         for (TableGeneratorMetadata otherTableGenerator : m_tableGenerators.values()) {
             if ((tableGenerator != otherTableGenerator) && (otherTableGenerator.getPkColumnValue() != null) && otherTableGenerator.getPkColumnValue().equals(sequenceGenerator.getSequenceName())) {                // generator name will be used instead of an empty sequence name / pk column name
                 // generator name will be used instead of an empty sequence name / pk column name
-                if (otherTableGenerator.getPkColumnValue().length() > 0) {
+                if (!otherTableGenerator.getPkColumnValue().isEmpty()) {
                     throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), otherTableGenerator.getLocation());
                 }
             }
@@ -826,7 +826,7 @@ public class MetadataProject {
         for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators.values()) {
             if ((otherSequenceGenerator != sequenceGenerator) && (sequenceGenerator.getSequenceName() != null) && sequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
                 // generator name will be used instead of an empty sequence name / pk column name
-                if (sequenceGenerator.getSequenceName().length() > 0) {
+                if (!sequenceGenerator.getSequenceName().isEmpty()) {
                     throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), tableGenerator.getLocation());
                 }
             }
@@ -887,13 +887,13 @@ public class MetadataProject {
                 DynamicClassLoader dcl = (DynamicClassLoader) loader;
 
                 // Create the dynamic classes.
-                Map<String, MetadataDescriptor> dynamicClasses = new HashMap<String, MetadataDescriptor>();
+                Map<String, MetadataDescriptor> dynamicClasses = new HashMap<>();
                 for (ClassAccessor accessor : m_virtualClasses.values()) {
                     createDynamicClass(accessor.getDescriptor(), dynamicClasses, dcl);
                 }
 
                 // Create the dynamic types.
-                Map<String, DynamicType> dynamicTypes = new HashMap<String, DynamicType>();
+                Map<String, DynamicType> dynamicTypes = new HashMap<>();
                 for (MetadataDescriptor descriptor : dynamicClasses.values()) {
                     createDynamicType(descriptor, dynamicTypes, dcl);
                 }
@@ -1294,7 +1294,7 @@ public class MetadataProject {
      * INTERNAL:
      * Add a root level embeddable accessor. Nested embeddables will be
      * pre-processed from their roots down.
-     * @see processStage1()
+     * @see #processStage1()
      */
     public Collection<EmbeddableAccessor> getRootEmbeddableAccessors() {
         return m_rootEmbeddableAccessors.values();
@@ -1321,7 +1321,7 @@ public class MetadataProject {
 
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     method = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null));
-                    m_sharedCacheMode = AccessController.doPrivileged(new PrivilegedMethodInvoker<SharedCacheMode>(method, m_persistenceUnitInfo));
+                    m_sharedCacheMode = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, m_persistenceUnitInfo));
                 } else {
                     method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null);
                     m_sharedCacheMode = PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
@@ -1359,7 +1359,7 @@ public class MetadataProject {
      * INTERNAL:
      */
     public List<StructConverterMetadata> getStructConverters(){
-        List<StructConverterMetadata> structConverters = new ArrayList<StructConverterMetadata>();
+        List<StructConverterMetadata> structConverters = new ArrayList<>();
 
         for (AbstractConverterMetadata converter : m_converters.values()) {
             if (converter.isStructConverter()) {
@@ -1377,7 +1377,7 @@ public class MetadataProject {
      * and mappedsuperclass with no children classes.
      */
     public Collection<String> getWeavableClassNames() {
-        Set<String> weavableClassNames = new HashSet<String>(m_allAccessors.keySet());
+        Set<String> weavableClassNames = new HashSet<>(m_allAccessors.keySet());
         weavableClassNames.addAll(m_mappedSuperclasseAccessors.keySet());
         return Collections.unmodifiableCollection(weavableClassNames);
     }
@@ -1719,12 +1719,13 @@ public class MetadataProject {
      *   3 - you can't have both a sequence generator and a table generator with
      *       the same DEFAULT_AUTO_GENERATOR name.
      *
-     * @see addTableGenerator and addSequenceGenerator.
+     * @see #addTableGenerator(TableGeneratorMetadata, String, String)
+     * @see #addSequenceGenerator(SequenceGeneratorMetadata, String, String)
      */
     protected void processSequencingAccessors() {
         if (! m_generatedValues.isEmpty()) {
             // 1 - Build our map of sequences keyed on generator names.
-            Hashtable<String, Sequence> sequences = new Hashtable<String, Sequence>();
+            Hashtable<String, Sequence> sequences = new Hashtable<>();
 
             for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators.values()) {
                 sequences.put(sequenceGenerator.getName(), sequenceGenerator.process(m_logger));
@@ -1802,11 +1803,11 @@ public class MetadataProject {
      *  - gather a list of mapping accessors for all entities and embeddables.
      *  - discover all global converter specifications.
      *  - discover mapped superclasses and inheritance parents.
-     *
+     * <p>
      * NOTE: This method should only perform any preparatory work like, class
      * discovery, flag settings etc. Hard processing will begin in stage 2.
      *
-     * @see processStage2
+     * @see #processStage2()
      */
     public void processStage1() {
         // 1 - Pre-process the entities first. This will also pre-process
@@ -1856,7 +1857,7 @@ public class MetadataProject {
      * - gather a list of relationship accessors and any other special interest
      *   accessors to be processed in stage 3.
      *
-     * @see processStage3
+     * @see #processStage3(PersistenceUnitProcessor.Mode)
      */
     public void processStage2() {
         // process metamodel mappedSuperclasses separately from entity descriptors
@@ -1963,12 +1964,12 @@ public class MetadataProject {
         // Build a fully qualified name and set it on the table.
         // schema, attach it if specified
         String tableName = name;
-        if (! schema.equals("")) {
+        if (!schema.isEmpty()) {
             tableName = schema + "." + tableName;
         }
 
         // catalog, attach it if specified
-        if (! catalog.equals("")) {
+        if (!catalog.isEmpty()) {
             tableName = catalog + "." + tableName;
         }
 

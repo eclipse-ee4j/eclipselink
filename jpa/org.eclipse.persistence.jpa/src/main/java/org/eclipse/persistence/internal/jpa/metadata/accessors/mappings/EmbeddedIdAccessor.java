@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ import org.eclipse.persistence.mappings.EmbeddableMapping;
 
 /**
  * An embedded id relationship accessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -83,8 +83,8 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     // We store map of fields that are the primary key and add them only at the
     // end of processing since they may change when processing attribute
     // overrides. They are mapped by attribute name.
-    protected HashMap<String, DatabaseField> m_idFields = new HashMap<String, DatabaseField>();
-    protected HashMap<DatabaseField, MappingAccessor> m_idAccessors = new HashMap<DatabaseField, MappingAccessor>();
+    protected HashMap<String, DatabaseField> m_idFields = new HashMap<>();
+    protected HashMap<DatabaseField, MappingAccessor> m_idAccessors = new HashMap<>();
 
     /**
      * INTERNAL:
@@ -218,7 +218,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
                         // can be re-used we must deal with clones and not change
                         // the original fields.
                         DatabaseField clone = field.clone();
-                        if (clone.getTableName().equals("")) {
+                        if (clone.getTableName().isEmpty()) {
                             clone.setTable(owningDescriptor.getPrimaryTable());
                         }
 

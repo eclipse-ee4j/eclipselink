@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,7 +108,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 /**
  * INTERNAL:
  * A single object relationship accessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -124,7 +124,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 public abstract class ObjectAccessor extends RelationshipAccessor {
     private Boolean m_id;
     private Boolean m_optional;
-    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
+    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<>();
     private PrimaryKeyForeignKeyMetadata m_primaryKeyForeignKey;
     private String m_mapsId;
 
@@ -551,7 +551,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 // Case #6: Both parent and dependent use same embedded id class.
                 processMapsIdFields(oneToOneMapping, embeddedIdAccessor, embeddedIdAccessor);
             } else {
-                if (m_mapsId.equals("")) {
+                if (m_mapsId.isEmpty()) {
                     // User didn't specify a mapsId value. By default the attribute name from this object accessor is used.
                     m_mapsId = getAttributeName();
                 }
@@ -626,7 +626,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                     // The reference primary key accessor will tell us which attribute
                     // accessor we need to map a field name translation for.
                     final Set<MappingAccessor> mappingAccessors = findAllFieldAccessors(mapsIdAccessor.getReferenceDescriptor());
-                    final List<MappingAccessor> accessorsWithTargetAttributeName = new ArrayList<MappingAccessor>();
+                    final List<MappingAccessor> accessorsWithTargetAttributeName = new ArrayList<>();
                     for (MappingAccessor ma : mappingAccessors) {
                         if (referencePKAccessor.getAttributeName().equals(ma.getAttributeName())) {
                             accessorsWithTargetAttributeName.add(ma);
@@ -648,7 +648,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     }
     
     private Set<MappingAccessor> findAllFieldAccessors(MetadataDescriptor md) {
-        final HashSet<MappingAccessor> retSet = new HashSet<MappingAccessor>();
+        final HashSet<MappingAccessor> retSet = new HashSet<>();
         final Collection<MappingAccessor> mappingAccessors = md.getMappingAccessors();
         for (MappingAccessor ma : mappingAccessors) {
             if (ma instanceof EmbeddedAccessor) {

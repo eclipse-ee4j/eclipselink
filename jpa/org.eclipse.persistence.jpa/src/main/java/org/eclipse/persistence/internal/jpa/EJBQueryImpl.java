@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -227,7 +227,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * Build a DataReadQuery from a sql string.
      */
     public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, ClassLoader classLoader, AbstractSession session) {
-        return buildSQLDatabaseQuery(sqlString, new HashMap<String, Object>(), classLoader, session);
+        return buildSQLDatabaseQuery(sqlString, new HashMap<>(), classLoader, session);
     }
 
     /**
@@ -371,10 +371,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             return (Collection) executeReadQuery();
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (PersistenceException exception) {
-            setRollbackOnly();
-            throw exception;
-        } catch (IllegalStateException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
         } catch (RuntimeException exception) {
@@ -413,10 +410,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             return (Cursor) result;
         } catch (LockTimeoutException e) {
             throw e;
-        } catch (PersistenceException exception) {
-            setRollbackOnly();
-            throw exception;
-        } catch (IllegalStateException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
         } catch (RuntimeException exception) {

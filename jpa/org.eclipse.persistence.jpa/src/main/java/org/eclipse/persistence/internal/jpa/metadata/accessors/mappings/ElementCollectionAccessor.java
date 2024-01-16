@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,9 +121,9 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
  * An element collection accessor.
- *
+ * <p>
  * Used to support DirectCollection, DirectMap, AggregateCollection.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -146,11 +146,11 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     private ForeignKeyMetadata m_mapKeyForeignKey;
 
     private List<ConvertMetadata> m_mapKeyConverts;
-    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
-    private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
-    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-    private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-    private List<JoinColumnMetadata> m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>();
+    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<>();
+    private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<>();
+    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<>();
+    private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<>();
+    private List<JoinColumnMetadata> m_mapKeyJoinColumns = new ArrayList<>();
 
     private MapKeyMetadata m_mapKey;
     private MetadataClass m_targetClass;
@@ -337,7 +337,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     @Override
     public void addMapKeyConvert(ConvertMetadata convert) {
         if (m_mapKeyConverts == null) {
-            m_mapKeyConverts = new ArrayList<ConvertMetadata>();
+            m_mapKeyConverts = new ArrayList<>();
         }
 
         m_mapKeyConverts.add(convert);
@@ -1000,7 +1000,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
 
                 // Figure out what our override name is to ensure we find and
                 // apply the correct override metadata.
-                String overrideName = (dotNotationName.equals("")) ? mapping.getAttributeName() : dotNotationName + "." + mapping.getAttributeName();
+                String overrideName = (dotNotationName.isEmpty()) ? mapping.getAttributeName() : dotNotationName + "." + mapping.getAttributeName();
 
                 if (mapping.isDirectToFieldMapping()) {
                     // Regardless if we have an attribute override or not we

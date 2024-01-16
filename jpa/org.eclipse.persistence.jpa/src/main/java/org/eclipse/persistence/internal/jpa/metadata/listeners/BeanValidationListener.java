@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,7 +117,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         boolean shouldValidate = noOptimization || isBeanConstrained;
         if (shouldValidate) {
             Set<ConstraintViolation<Object>> constraintViolations = validate(source, validationGroup, validator);
-            if (constraintViolations.size() > 0) {
+            if (!constraintViolations.isEmpty()) {
                 // There were errors while call to validate above.
                 // Throw a ConstrainViolationException as required by the spec.
                 // The transaction would be rolled back automatically
@@ -154,7 +154,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private boolean isBeanConstrained(final Object source, final Validator validator) {
         // If Java Security is enabled, surround this call with a doPrivileged block.
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Boolean run() {
                     return validator.getConstraintsForClass(source.getClass()).isBeanConstrained();
@@ -169,7 +169,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private Set<ConstraintViolation<Object>> validate(final Object source, final Class<?>[] validationGroup, final Validator validator) {
         // If Java Security is enabled, surround this call with a doPrivileged block.
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<Set<ConstraintViolation<Object>>>() {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Set<ConstraintViolation<Object>> run() {
                     return validator.validate(source, validationGroup);

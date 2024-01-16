@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,7 +93,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      */
     protected void initializeIdAttributes() {
         // initialize the set of id attributes directly from the mapping
-        idAttributes = new HashSet<SingularAttribute<? super X, ?>>();
+        idAttributes = new HashSet<>();
         for(Attribute attribute : this.getAttributes()) {
             if(!((AttributeImpl)attribute).isPlural()) {
                 if(((SingularAttribute)attribute).isId()) {
@@ -114,7 +114,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      */
     @Override
     public <Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type) {
-        /**
+        /*
          * We throw an IAE in 3 cases
          * 1) If the type is different from the javaType of the attribute
          * 2) If the id is not declared on (this) type
@@ -140,7 +140,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      */
     @Override
     public <Y> SingularAttribute<X, Y> getDeclaredVersion(Class<Y> type) {
-        /**
+        /*
          * We throw an IAE in 3 cases
          * 1) If the type is different from the javaType of the attribute
          * 2) If the version is not declared on (this) type

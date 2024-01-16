@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,11 +35,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * get into full interface support etc. this class will handle much more and
  * will map directly to an interface schema element from the eclipselink orm
  * schema.
- *
+ * <p>
  * Things that should or could be mapped on this interface are:
  *  - alias
  *  - query keys
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -60,7 +60,7 @@ public class InterfaceAccessor extends ClassAccessor {
      */
     public InterfaceAccessor(MetadataAnnotation annotation, MetadataClass cls, MetadataProject project) {
         super(annotation, cls, project);
-        m_variableOneToOneAccessors = new HashSet<VariableOneToOneAccessor>();
+        m_variableOneToOneAccessors = new HashSet<>();
     }
 
     /**

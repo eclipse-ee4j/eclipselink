@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -342,7 +342,7 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * Cache the bean's primary key fields so speed up creating of primary key
      * objects and initialization of beans.
-     *
+     * <p>
      * Note, we have to re-look up the fields for the bean class since
      * these fields may have been loaded with the wrong loader (thank you Kirk).
      * If the key is compound, we also have to look up the fields for the key.
@@ -351,7 +351,7 @@ public class CMP3Policy extends CMPPolicy {
         KeyElementAccessor[] pkAttributes = null;
         ClassDescriptor aDescriptor = this.getDescriptor();
 
-        fieldToAccessorMap = new HashMap<DatabaseField,KeyElementAccessor>();
+        fieldToAccessorMap = new HashMap<>();
         int numberOfIDFields = aDescriptor.getPrimaryKeyFields().size();
         pkAttributes = new KeyElementAccessor[numberOfIDFields];
         Iterator<DatabaseField> attributesIter = aDescriptor.getPrimaryKeyFields().iterator();

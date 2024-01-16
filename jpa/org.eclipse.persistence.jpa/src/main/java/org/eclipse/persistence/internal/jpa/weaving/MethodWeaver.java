@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,9 +31,9 @@ import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 /**
  * Processes all the methods of a class to weave in persistence code such as,
  * lazy value holder, change tracking and fetch groups.
- *
+ * <p>
  * For FIELD access, changes references to GETFIELD and PUTFIELD to call weaved get/set methods.
- *
+ * <p>
  * For Property access, modifies the getters and setters.
  *
  */
@@ -142,7 +142,7 @@ public class MethodWeaver extends EclipseLinkMethodVisitor {
     }
 
     @Override
-    public void visitLookupSwitchInsn (final Label dflt, final int keys[], final Label labels[]) {
+    public void visitLookupSwitchInsn (final Label dflt, final int[] keys, final Label[] labels) {
         weaveBeginningOfMethodIfRequired();
         super.visitLookupSwitchInsnSuper(dflt, keys, labels);
     }
@@ -195,13 +195,13 @@ public class MethodWeaver extends EclipseLinkMethodVisitor {
 
     /**
      * Change GETFIELD and PUTFIELD for fields that use attribute access to make use of new convenience methods.
-     *
+     * <p>
      * A GETFIELD for an attribute named 'variableName' will be replaced by a call to:
-     *
+     * <p>
      * _persistence_get_variableName()
-     *
+     * <p>
      * A PUTFIELD for an attribute named 'variableName' will be replaced by a call to:
-     *
+     * <p>
      * _persistence_set_variableName(variableName)
      */
     public void weaveAttributesIfRequired(int opcode, String owner, String name, String desc) {
@@ -229,11 +229,11 @@ public class MethodWeaver extends EclipseLinkMethodVisitor {
 
     /**
      * Makes modifications to the beginning of a method.
-     *
+     * <p>
      * 1. Modifies getter method for attributes using property access
-     *
+     * <p>
      * In a getter method for 'attributeName', the following lines are added at the beginning of the method
-     *
+     * <p>
      *  _persistence_checkFetched("attributeName");
      *  _persistence_initialize_attributeName_vh();
      *  if (!_persistence_attributeName_vh.isInstantiated()) {
@@ -242,10 +242,10 @@ public class MethodWeaver extends EclipseLinkMethodVisitor {
      *      setAttributeName((AttributeType)_persistence_attributeName_vh.getValue());
      *      _persistence_listener = temp_persistence_listener;
      *  }
-     *
+     * <p>
      *  2. Modifies setter methods to store old value of attribute
      *  If weaving for fetch groups:
-     *
+     * <p>
      *  // if weaving for change tracking:
      *  if(_persistence_listener != null)
      *      // for Objects
@@ -256,27 +256,27 @@ public class MethodWeaver extends EclipseLinkMethodVisitor {
      *  else
      *      _persistence_checkFetchedForSet("attributeName");
      *  _persistence_propertyChange("attributeName", oldAttribute, argument);
-     *
+     * <p>
      *  otherwise (not weaving for fetch groups):
-     *
+     * <p>
      *      // for Objects
      *      AttributeType oldAttribute = getAttribute()
      *      // for primitives
      *      AttributeWrapperType oldAttribute = new AttributeWrapperType(getAttribute());
      *          e.g. Double oldAttribute = Double.valueOf(getAttribute());
      *  _persistence_propertyChange("attributeName", oldAttribute, argument);
-     *
+     * <p>
      *  // if not weaving for change tracking, but for fetch groups only:
      *  _persistence_checkFetchedForSet("attributeName");
-     *
+     * <p>
      *  3. Modifies getter Method for attributes using virtual access
-     *
+     * <p>
      *  add: _persistence_checkFetched(name);
-     *
+     * <p>
      *  4. Modifies setter Method for attributes using virtual access
-     *
+     * <p>
      *  add code of the following form:
-     *
+     * <p>
      *   Object obj = null;
      *   if(_persistence_listener != null){
      *      obj = get(name);
@@ -284,9 +284,9 @@ public class MethodWeaver extends EclipseLinkMethodVisitor {
      *       _persistence_checkFetchedForSet(name);
      *   }
      *   _persistence_propertyChange(name, obj, value);
-     *
+     * <p>
      *   _persistence_checkFetchedForSet(name) call will be excluded if weaving of fetch groups is not enabled
-     *
+     * <p>
      *   _persistence_propertyChange(name, obj, value); will be excluded if weaving of change tracking is not enabled
      */
     public void weaveBeginningOfMethodIfRequired() {
@@ -423,7 +423,7 @@ public class MethodWeaver extends EclipseLinkMethodVisitor {
                         Label l0 = ASMFactory.createLabel();
                         methodVisitor.visitJumpInsn(Opcodes.valueInt("IFNULL"), l0);
 
-                        /**
+                        /*
                          * The code below constructs the following code
                          *
                          * AttributeType oldAttribute = getAttribute() // for Objects
@@ -493,7 +493,7 @@ public class MethodWeaver extends EclipseLinkMethodVisitor {
                         methodVisitor.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", false);
                     } else {
                         // tcw.classDetails.shouldWeaveFetchGroups()
-                        /**
+                        /*
                          * The code below constructs the following code
                          *
                          * AttributeType oldAttribute = getAttribute() // for Objects
@@ -570,17 +570,17 @@ public class MethodWeaver extends EclipseLinkMethodVisitor {
 
     /**
      * Modifies methods just before the return.
-     *
+     * <p>
      * In a setter method for a LAZY mapping, for 'attributeName', the following lines are added at the end of the method.
-     *
+     * <p>
      *  _persistence_initialize_attributeName_vh();
      *  _persistence_attributeName_vh.setValue(argument);
      *  _persistence_attributeName_vh.setIsCoordinatedWithProperty(true);
-     *
+     * <p>
      * In a setter method for a non-LAZY mapping, the followings lines are added if change tracking is activated:
-     *
+     * <p>
      *  _persistence_propertyChange("attributeName", oldAttribute, argument);
-     *
+     * <p>
      *  Note: This code will wrap primitives by adding a call to the primitive constructor.
      */
     public void weaveEndOfMethodIfRequired() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 /**
  * INTERNAL:
  * Object to hold onto table metadata in a TopLink database table.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -57,8 +57,8 @@ import org.eclipse.persistence.internal.helper.Helper;
 public class TableMetadata extends ORMetadata {
     private DatabaseTable m_databaseTable = new DatabaseTable();
 
-    private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
-    private List<UniqueConstraintMetadata> m_uniqueConstraints = new ArrayList<UniqueConstraintMetadata>();
+    private List<IndexMetadata> m_indexes = new ArrayList<>();
+    private List<UniqueConstraintMetadata> m_uniqueConstraints = new ArrayList<>();
 
     private String m_name;
     private String m_schema;

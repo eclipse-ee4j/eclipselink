@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,7 +101,7 @@ import org.eclipse.persistence.mappings.RelationTableMechanism;
 /**
  * INTERNAL:
  * A relational accessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -127,8 +127,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     protected MetadataClass m_referenceClass;
     private MetadataClass m_targetEntity;
 
-    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
-    private List<JoinFieldMetadata> m_joinFields = new ArrayList<JoinFieldMetadata>();
+    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<>();
+    private List<JoinFieldMetadata> m_joinFields = new ArrayList<>();
 
     private String m_fetch;
     private String m_mappedBy;
@@ -220,7 +220,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Add the relation key fields to a many to many mapping.
      */
     protected void addJoinTableRelationKeyFields(List<JoinColumnMetadata> joinColumns, RelationTableMechanism mechanism, String defaultFieldName, MetadataDescriptor descriptor, boolean isSource) {
@@ -611,7 +611,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * that is, has a mapped by value.
      */
     public boolean hasMappedBy() {
-        return getMappedBy() != null && ! getMappedBy().equals("");
+        return getMappedBy() != null && !getMappedBy().isEmpty();
     }
 
     /**
@@ -778,7 +778,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // keys before setting them to mapping's source key fields.
         if (getDescriptor().usesTablePerClassInheritanceStrategy()) {
             // Update the target key fields.
-            Vector<DatabaseField> targetKeyFields = new Vector<DatabaseField>();
+            Vector<DatabaseField> targetKeyFields = new Vector<>();
             for (DatabaseField targetKeyField : ownerMechanism.getTargetKeyFields()) {
                 DatabaseField newTargetKeyField = targetKeyField.clone();
                 newTargetKeyField.setTable(getDescriptor().getPrimaryTable());
@@ -805,7 +805,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * not support. The reason is that we want to log a message for those
      * mappings that try to employ a private owned setting when it is not
      * supported on their mapping.
-     *
+     * <p>
      * Order of checking is as follows:
      *  1 - check for orphanRemoval first. Through meta data, this can only
      *      be true for 1-1, 1-M and V1-1

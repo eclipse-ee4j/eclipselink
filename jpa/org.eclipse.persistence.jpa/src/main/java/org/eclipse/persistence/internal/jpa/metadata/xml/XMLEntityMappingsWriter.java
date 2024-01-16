@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -37,7 +38,7 @@ public class XMLEntityMappingsWriter {
     public static void write(XMLEntityMappings entityMappings, OutputStream outputStream) {
         Writer writer;
         try {
-            writer = new OutputStreamWriter(outputStream, "UTF-8");
+            writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             write(entityMappings, writer);
             writer.close();
         } catch (IOException exception) {

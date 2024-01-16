@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,7 +137,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 /**
  * INTERNAL:
  * Common metadata accessor level for mappings and classes.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -153,12 +153,12 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 public abstract class MetadataAccessor extends ORMetadata {
     private AccessMethodsMetadata m_accessMethods;
 
-    private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
-    private List<ObjectTypeConverterMetadata> m_objectTypeConverters = new ArrayList<ObjectTypeConverterMetadata>();
-    private List<StructConverterMetadata> m_structConverters = new ArrayList<StructConverterMetadata>();
-    private List<TypeConverterMetadata> m_typeConverters = new ArrayList<TypeConverterMetadata>();
-    private List<SerializedConverterMetadata> m_serializedConverters = new ArrayList<SerializedConverterMetadata>();
-    private List<PropertyMetadata> m_properties = new ArrayList<PropertyMetadata>();
+    private List<ConverterMetadata> m_converters = new ArrayList<>();
+    private List<ObjectTypeConverterMetadata> m_objectTypeConverters = new ArrayList<>();
+    private List<StructConverterMetadata> m_structConverters = new ArrayList<>();
+    private List<TypeConverterMetadata> m_typeConverters = new ArrayList<>();
+    private List<SerializedConverterMetadata> m_serializedConverters = new ArrayList<>();
+    private List<PropertyMetadata> m_properties = new ArrayList<>();
 
     private MetadataDescriptor m_descriptor;
 
@@ -297,7 +297,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Return the annotation if it exists. This method should only be called
      * for non JPA annotations as loading those annotations classes is ok (and
      * available).
-     *
+     * <p>
      * JPA annotations should be referenced only by name as to not introduce a
      * compile dependency.
      */
@@ -458,7 +458,7 @@ public abstract class MetadataAccessor extends ORMetadata {
     protected DatabaseField getReferencedField(String referencedColumnName, MetadataDescriptor referenceDescriptor, String context, boolean isForAggregateCollection) {
         DatabaseField referenceField;
 
-        if (referencedColumnName == null || referencedColumnName.equals("")) {
+        if (referencedColumnName == null || referencedColumnName.isEmpty()) {
             referenceField = referenceDescriptor.getPrimaryKeyField();
 
             // <hack> If we are an inheritance subclass in a joined strategy,
@@ -691,7 +691,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Return true if the annotation exists. This method should only be called
      * for non native annotations (i.e. JPA) as loading native annotations
      * classes is ok since we know they are available from the jar.
-     *
+     * <p>
      * JPA annotations should be referenced only by name as to not introduce a
      * compile dependency.
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
 /**
  * INTERNAL:
  * A basic collection accessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -152,7 +152,7 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
      */
     @Override
     protected String getDefaultCollectionTableName() {
-        if (m_valueColumn != null && m_valueColumn.getTable() != null && !m_valueColumn.getTable().equals("")) {
+        if (m_valueColumn != null && m_valueColumn.getTable() != null && !m_valueColumn.getTable().isEmpty()) {
             return m_valueColumn.getTable();
         } else {
             return super.getDefaultCollectionTableName();

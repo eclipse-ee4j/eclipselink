@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class RoundRobinPartitioningImpl extends MetadataImpl<RoundRobinPartition
     public RoundRobinPartitioningImpl() {
         super(new RoundRobinPartitioningMetadata());
 
-        getMetadata().setConnectionPools(new ArrayList<String>());
+        getMetadata().setConnectionPools(new ArrayList<>());
     }
 
     @Override

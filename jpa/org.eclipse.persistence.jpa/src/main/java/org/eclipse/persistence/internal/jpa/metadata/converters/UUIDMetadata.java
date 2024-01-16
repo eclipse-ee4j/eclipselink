@@ -26,7 +26,7 @@ import org.eclipse.persistence.mappings.converters.UUIDConverter;
  * INTERNAL:
  * Abstract converter class that parents both the JPA and Eclipselink
  * converters.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.

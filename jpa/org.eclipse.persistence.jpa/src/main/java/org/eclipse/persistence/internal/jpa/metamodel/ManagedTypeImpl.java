@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -161,7 +161,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     @Override
     public Set<Attribute<? super X, ?>> getAttributes() {
         // We return a new Set instead of directly returning the Collection of values from the members HashMap
-        return new LinkedHashSet<Attribute<? super X, ?>>(this.members.values());
+        return new LinkedHashSet<>(this.members.values());
     }
 
 
@@ -226,7 +226,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Get all attributes and filter only for PluralAttributes
         Set<Attribute<? super X, ?>> allAttributes = this.getAttributes();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = new LinkedHashSet<PluralAttribute<? super X, ?, ?>>();
+        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = new LinkedHashSet<>();
         for(Attribute<? super X, ?> anAttribute : allAttributes) {
             // Add only CollectionType attributes
             if(anAttribute.isCollection()) {
@@ -326,9 +326,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     public Set<Attribute<X, ?>> getDeclaredAttributes() {
         // return only the set of attributes declared on this class - not via inheritance
         // Get all attributes and filter only for declared attributes
-        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<Attribute<X, ?>>(this.members.values());;
+        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<>(this.members.values());
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<Attribute<X, ?>> declaredAttributes = new LinkedHashSet<Attribute<X, ?>>();
+        Set<Attribute<X, ?>> declaredAttributes = new LinkedHashSet<>();
         for(Attribute<X, ?> anAttribute : allAttributes) {
             // Check the inheritance hierarchy for higher declarations
             if(this.isAttributeDeclaredOnlyInLeafType(anAttribute.getName())) {
@@ -394,7 +394,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Get all collection attribute and filter only on declared ones
         Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = this.getPluralAttributes();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<PluralAttribute<X, ?, ?>> declaredAttributes = new LinkedHashSet<PluralAttribute<X, ?, ?>>();
+        Set<PluralAttribute<X, ?, ?>> declaredAttributes = new LinkedHashSet<>();
         // The set is a copy of the underlying metamodel attribute set - we will remove all SingularAttribute(s)
         for(PluralAttribute<? super X, ?, ?>  anAttribute :pluralAttributes) {
                 // check for declarations in the hierarchy and don't add if declared above
@@ -641,9 +641,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
         // return the set of SingularAttributes declared on this class - not via inheritance
         // Get all attributes and filter only for declared attributes
-        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<Attribute<X, ?>>(this.members.values());;
+        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<>(this.members.values());
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<SingularAttribute<X, ?>> declaredAttributes = new LinkedHashSet<SingularAttribute<X, ?>>();
+        Set<SingularAttribute<X, ?>> declaredAttributes = new LinkedHashSet<>();
         for(Attribute<X, ?> anAttribute : allAttributes) {
             if(!anAttribute.isCollection()) {
                 declaredAttributes.add((SingularAttribute<X, ?>)anAttribute);
@@ -1139,7 +1139,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             return;
         }
 
-        this.members = new HashMap<String, Attribute<X, ?>>();
+        this.members = new HashMap<>();
         // Get and process all mappings on the relationalDescriptor
         for (DatabaseMapping mapping : getDescriptor().getMappings()) {
             AttributeImpl<X, ?> member = null;
@@ -1372,8 +1372,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     aField = PrivilegedAccessHelper.getDeclaredField(
                         this.getJavaType(), mapping.getAttributeName(), false);
                 }
-            } catch (PrivilegedActionException pae) {
-            } catch (NoSuchFieldException nsfe) {
+            } catch (PrivilegedActionException | NoSuchFieldException pae) {
             }
         }
 
@@ -1394,8 +1393,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     aMethod = PrivilegedAccessHelper.getDeclaredMethod(
                             this.getJavaType(), getMethodName, null);
                 }
-            } catch (PrivilegedActionException pae) {
-            } catch (NoSuchMethodException nsfe) {
+            } catch (PrivilegedActionException | NoSuchMethodException pae) {
             } catch (NullPointerException npe) {
                 // case: null name arg to Class.searchMethods from getDeclaredMethod if getMethodName is null
                 // because we do not know the javaType on the Type (descriptor.javaClass was null)

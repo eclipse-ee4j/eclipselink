@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
  * A variable one to one relationship accessor. A VariableOneToOne annotation
  * currently is not required to be defined on the accessible object, that is,
  * a v1-1 can default if the raw class is an interface.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -99,7 +99,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         super(variableOneToOne, annotatedElement, classAccessor);
 
         // Initialiaze the discriminator classes list.
-        m_discriminatorClasses = new ArrayList<DiscriminatorClassMetadata>();
+        m_discriminatorClasses = new ArrayList<>();
 
         // We must check because VariableOneToOne's can default.
         if (variableOneToOne != null) {
@@ -307,7 +307,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             DatabaseField fkField = joinColumn.getForeignKeyField(null);
             setFieldName(fkField, getDefaultAttributeName() + "_ID", MetadataLogger.FK_COLUMN);
             // Set the table name if one is not already set.
-            if (fkField.getTableName().equals("")) {
+            if (fkField.getTableName().isEmpty()) {
                 fkField.setTable(getDescriptor().getPrimaryTable());
             }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 /**
  * INTERNAL:
  * Object to hold onto join table metadata in a EclipseLink database table.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -61,7 +61,7 @@ public class JoinTableMetadata extends RelationalTableMetadata {
     // mirror which was unfortunately not followed with JPA 2.1.
     private ForeignKeyMetadata m_inverseForeignKey;
 
-    private List<JoinColumnMetadata> m_inverseJoinColumns = new ArrayList<JoinColumnMetadata>();
+    private List<JoinColumnMetadata> m_inverseJoinColumns = new ArrayList<>();
 
     /**
      * INTERNAL:

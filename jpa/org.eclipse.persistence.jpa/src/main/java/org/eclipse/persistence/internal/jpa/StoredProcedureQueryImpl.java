@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,7 +147,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
-     *
+     * <p>
      * This is called from a named stored procedure that employs result set
      * mapping name(s) which should be available from the session.
      */
@@ -163,7 +163,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
-     *
+     * <p>
      * This is called from a named stored procedure that employs result set
      * mapping name(s) which should be available from the session.
      */
@@ -180,7 +180,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ResultSetMappingQuery from the sql result set mappings given
      *  a stored procedure call.
-     *
+     * <p>
      * This is called from a named stored procedure query that employs result
      * class name(s). The resultSetMappings are build from these class name(s)
      * and are not available from the session.
@@ -197,7 +197,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ResultSetMappingQuery from the sql result set mappings given
      *  a stored procedure call.
-     *
+     * <p>
      * This is called from a named stored procedure query that employs result
      * class name(s). The resultSetMappings are build from these class name(s)
      * and are not available from the session.
@@ -348,12 +348,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             return hasMoreResults;
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (PersistenceException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
-        } catch (IllegalStateException e){
-            setRollbackOnly();
-            throw e;
         } catch (RuntimeException exception) {
             setRollbackOnly();
             throw new PersistenceException(exception);
@@ -393,10 +390,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (PersistenceException e) {
-            setRollbackOnly();
-            throw e;
-        } catch (IllegalStateException e){
+        } catch (PersistenceException | IllegalStateException e) {
             setRollbackOnly();
             throw e;
         } catch (RuntimeException exception) {
@@ -429,7 +423,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     protected Map<String, Parameter<?>> getInternalParameters() {
         if (parameters == null) {
-            parameters = new HashMap<String, Parameter<?>>();
+            parameters = new HashMap<>();
 
             int index = 0;
 
@@ -597,10 +591,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         } catch (LockTimeoutException e) {
             throw e;
-        } catch (PersistenceException e) {
-            setRollbackOnly();
-            throw e;
-        } catch (IllegalStateException e) {
+        } catch (PersistenceException | IllegalStateException e) {
             setRollbackOnly();
             throw e;
         } catch (Exception e) {

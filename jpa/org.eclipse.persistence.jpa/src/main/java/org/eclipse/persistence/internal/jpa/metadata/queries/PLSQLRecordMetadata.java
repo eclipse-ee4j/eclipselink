@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 /**
  * INTERNAL:
  * Object to hold onto a PLSQL record meta-data.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -44,7 +44,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
  * @since EclipseLink 2.3
  */
 public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
-    private List<PLSQLParameterMetadata> fields = new ArrayList<PLSQLParameterMetadata>();
+    private List<PLSQLParameterMetadata> fields = new ArrayList<>();
 
     /**
      * INTERNAL:

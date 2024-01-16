@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 /**
  * INTERNAL:
  * Metadata for ReadTransformer.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -146,7 +146,7 @@ public class ReadTransformerMetadata extends ORMetadata {
      * should have been set.
      */
     public void process(TransformationMapping mapping, String annotatedElementName) {
-        if (m_method == null || m_method.equals("")) {
+        if (m_method == null || m_method.isEmpty()) {
             if (m_transformerClass.isVoid()) {
                 throw ValidationException.readTransformerHasNeitherClassNorMethod(annotatedElementName);
             } else {

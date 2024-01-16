@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,9 +59,9 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 
 /**
  * A direct accessor.
- *
+ * <p>
  * Subclasses: BasicAccessor, BasicCollectionAccessor, BasicMapAccessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -188,7 +188,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      */
     public List<ConvertMetadata> getConverts() {
         if (m_converts == null) {
-            m_converts = new ArrayList<ConvertMetadata>();
+            m_converts = new ArrayList<>();
         }
         return m_converts;
     }

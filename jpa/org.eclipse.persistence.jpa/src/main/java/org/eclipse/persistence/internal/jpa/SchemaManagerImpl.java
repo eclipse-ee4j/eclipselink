@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ class SchemaManagerImpl implements SchemaManager {
         if (!schemaManager.validateDefaultTables(failures, true, full)) {
             throw new SchemaValidationException(
                     ExceptionLocalization.buildMessage("schema_validation_failed"),
-                    failures.result().toArray(new TableValidationException[failures.result().size()]));
+                    failures.result().toArray(new TableValidationException[0]));
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * Object to hold onto multi-tenant metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -74,7 +74,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  */
 public class MultitenantMetadata extends ORMetadata {
     private Boolean m_includeCriteria;
-    private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<TenantDiscriminatorColumnMetadata>();
+    private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<>();
     private String m_type;
     private TenantTableDiscriminatorMetadata m_tenantTableDiscriminator;
 

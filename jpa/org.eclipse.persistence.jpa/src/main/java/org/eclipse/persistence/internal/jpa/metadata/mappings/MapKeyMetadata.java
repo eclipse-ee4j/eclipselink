@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * Object to hold onto map key metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -98,7 +98,7 @@ public class MapKeyMetadata extends ORMetadata {
      * Return true if a name has been specified.
      */
     public boolean hasName() {
-        return m_name != null && ! m_name.equals("");
+        return m_name != null && !m_name.isEmpty();
     }
 
     /**

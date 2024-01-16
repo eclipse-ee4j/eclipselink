@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -109,7 +109,7 @@ public class QueryImpl {
      * Base constructor for EJBQueryImpl. Initializes basic variables.
      */
     protected QueryImpl(EntityManagerImpl entityManager) {
-        this.parameterValues = new HashMap<String, Object>();
+        this.parameterValues = new HashMap<>();
         this.entityManager = entityManager;
         this.isShared = true;
     }
@@ -302,13 +302,10 @@ public class QueryImpl {
             }
             Integer changedRows = (Integer) getActiveSession().executeQuery(databaseQuery, parameterValues);
             return changedRows;
-        } catch (PersistenceException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
-        } catch (IllegalStateException exception) {
-            setRollbackOnly();
-            throw exception;
-        }catch (RuntimeException exception) {
+        } catch (RuntimeException exception) {
             setRollbackOnly();
             throw new PersistenceException(exception);
         }
@@ -405,7 +402,7 @@ public class QueryImpl {
      */
     protected Map<String, Parameter<?>> getInternalParameters() {
         if (this.parameters == null) {
-            this.parameters = new HashMap<String, Parameter<?>>();
+            this.parameters = new HashMap<>();
             DatabaseQuery query = getDatabaseQueryInternal(); // Retrieve named
                                                               // query
             int count = 0;
@@ -483,10 +480,7 @@ public class QueryImpl {
             return (List) executeReadQuery();
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (PersistenceException exception) {
-            setRollbackOnly();
-            throw exception;
-        } catch (IllegalStateException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
         } catch (RuntimeException exception) {
@@ -611,7 +605,7 @@ public class QueryImpl {
         }
         // now create parameterValues in the same order as the argument list
         int size = arguments.size();
-        List<Object> parameterValues = new ArrayList<Object>(size);
+        List<Object> parameterValues = new ArrayList<>(size);
         for (int index = 0; index < size; index++) {
             String name = arguments.get(index);
             Object parameter = this.parameterValues.get(name);

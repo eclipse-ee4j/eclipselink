@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 
 /**
  * Implementation of JTA Transaction manager class.
- *
+ * <p>
  * Currently support is limited to enlisting a single tx data source
  */
 @Deprecated
@@ -29,9 +29,9 @@ public class TransactionManagerImpl implements TransactionManager, UserTransacti
     // Not null when a transaction is active
     TransactionImpl tx;
 
-    /************************/
-    /***** Internal API *****/
-    /************************/
+    /* ********************** */
+    /* **** Internal API **** */
+    /* ********************** */
     private void debug(String s) {
         System.out.println(s);
     }
@@ -57,9 +57,9 @@ public class TransactionManagerImpl implements TransactionManager, UserTransacti
         return (tx == null) ? null : tx.getConnection(ds, user, password);
     }
 
-    /************************************************************/
-    /***** Supported TransactionManager/UserTransaction API *****/
-    /************************************************************/
+    /* ********************************************************** */
+    /* **** Supported TransactionManager/UserTransaction API **** */
+    /* ********************************************************** */
     @Override
     public void begin() throws NotSupportedException, SystemException {
         debug("Tx - begin");
@@ -121,9 +121,9 @@ public class TransactionManagerImpl implements TransactionManager, UserTransacti
         tx.setRollbackOnly();
     }
 
-    /****************************************************************/
-    /***** NOT supported TransactionManager/UserTransaction API *****/
-    /****************************************************************/
+    /* ************************************************************** */
+    /* **** NOT supported TransactionManager/UserTransaction API **** */
+    /* ************************************************************** */
     @Override
     public Transaction suspend() throws SystemException {
         return null;

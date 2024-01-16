@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,7 +116,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 /**
  * INTERNAL:
  * A relational collection mapping accessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -137,9 +137,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     private ForeignKeyMetadata m_mapKeyForeignKey;
 
     private List<ConvertMetadata> m_mapKeyConverts;
-    private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
-    private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-    private List<JoinColumnMetadata> m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>();
+    private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<>();
+    private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<>();
+    private List<JoinColumnMetadata> m_mapKeyJoinColumns = new ArrayList<>();
 
     private MapKeyMetadata m_mapKey;
     private MetadataClass m_mapKeyClass;
@@ -300,7 +300,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     @Override
     public void addMapKeyConvert(ConvertMetadata convert) {
         if (m_mapKeyConverts == null) {
-            m_mapKeyConverts = new ArrayList<ConvertMetadata>();
+            m_mapKeyConverts = new ArrayList<>();
         }
 
         m_mapKeyConverts.add(convert);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,4 +66,6 @@ module org.eclipse.persistence.jpa {
 
     opens org.eclipse.persistence.internal.jpa.deployment to org.eclipse.persistence.core;
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
+
+    uses org.eclipse.persistence.mappings.converters.spi.ConverterProvider;
 }

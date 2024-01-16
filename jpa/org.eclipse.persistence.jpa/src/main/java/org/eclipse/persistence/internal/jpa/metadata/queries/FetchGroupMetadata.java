@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.queries.FetchGroup;
 /**
  * INTERNAL:
  * Object to hold onto a named fetch group metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -47,7 +47,7 @@ import org.eclipse.persistence.queries.FetchGroup;
  * @since EclipseLink 2.1
  */
 public class FetchGroupMetadata extends ORMetadata {
-    private List<FetchAttributeMetadata> m_fetchAttributes = new ArrayList<FetchAttributeMetadata>();
+    private List<FetchAttributeMetadata> m_fetchAttributes = new ArrayList<>();
     private String m_name;
     private Boolean m_load;
 

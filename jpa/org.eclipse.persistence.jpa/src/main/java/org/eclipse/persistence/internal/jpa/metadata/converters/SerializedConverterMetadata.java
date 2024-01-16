@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 /**
  * INTERNAL:
  * Abstract metadata serializer.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -131,12 +131,12 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
     @Override
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         SerializedObjectConverter converter = null;
-        if ((m_className == null) || (m_className.length() == 0)) {
+        if ((m_className == null) || (m_className.isEmpty())) {
             converter = new SerializedObjectConverter(mapping);
         } else {
             converter = new SerializedObjectConverter(mapping, getClassName());
         }
-        if ((m_serializerPackage != null) && (m_serializerPackage.length() > 0)) {
+        if ((m_serializerPackage != null) && (!m_serializerPackage.isEmpty())) {
             converter.setSerializerPackage(m_serializerPackage);
         } else {
             // Default package to target classes package.

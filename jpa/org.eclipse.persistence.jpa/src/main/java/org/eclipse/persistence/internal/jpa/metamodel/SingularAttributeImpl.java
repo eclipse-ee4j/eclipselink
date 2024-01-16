@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,7 +75,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         super(managedType, mapping);
         // Case: Handle primitive or java lang type (non-Entity) targets
         Class<?> attributeClass = mapping.getAttributeClassification();
-        /**
+        /*
          * Case: Handle Entity targets
          * Process supported mappings by assigning their elementType.
          * For unsupported mappings we default to MetamodelImpl.DEFAULT_ELEMENT_TYPE.

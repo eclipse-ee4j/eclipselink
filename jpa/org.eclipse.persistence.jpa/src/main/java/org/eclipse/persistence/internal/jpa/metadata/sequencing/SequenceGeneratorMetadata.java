@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.sequencing.NativeSequence;
 /**
  * A wrapper class to the MetadataSequenceGenerator that holds onto a
  * &#064;SequenceGenerator for its metadata values.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -225,7 +225,7 @@ public class SequenceGeneratorMetadata extends ORMetadata {
         NativeSequence sequence = new NativeSequence();
 
         // Process the sequence name.
-        if (m_sequenceName == null || m_sequenceName.equals("")) {
+        if (m_sequenceName == null || m_sequenceName.isEmpty()) {
             logger.logConfigMessage(MetadataLogger.SEQUENCE_GENERATOR_SEQUENCE_NAME, m_name, getAccessibleObject(), getLocation());
             sequence.setName(m_name);
         } else {
@@ -254,13 +254,13 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     public String processQualifier() {
         String qualifier = "";
 
-        if (m_schema != null && ! m_schema.equals("")) {
+        if (m_schema != null && !m_schema.isEmpty()) {
             qualifier = m_schema;
         }
 
-        if (m_catalog != null && ! m_catalog.equals("")) {
+        if (m_catalog != null && !m_catalog.isEmpty()) {
             // We didn't append a schema, so don't add a dot.
-            if (qualifier.equals("")) {
+            if (qualifier.isEmpty()) {
                 qualifier = m_catalog;
             } else {
                 qualifier = m_catalog + "." + qualifier;

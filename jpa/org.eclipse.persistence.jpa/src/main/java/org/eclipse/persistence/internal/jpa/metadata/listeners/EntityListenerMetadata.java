@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -69,7 +70,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * A MetadataEntityListener and is placed on the owning entity's descriptor.
  * Callback methods from an EntityListener require a signature on the method.
  * Namely, they must have an Object parameter.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -206,9 +207,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
 
         // Add all the declared methods ...
         Method[] declaredMethods = getDeclaredMethods(listenerClass);
-        for (int i = 0; i < declaredMethods.length; i++) {
-            candidateMethods.add(declaredMethods[i]);
-        }
+        Collections.addAll(candidateMethods, declaredMethods);
 
         // Now add any public methods from superclasses ...
         Method[] methods = getMethods(listenerClass);
@@ -220,7 +219,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             candidateMethods.add(methods[i]);
         }
 
-        return candidateMethods.toArray(new Method[candidateMethods.size()]);
+        return candidateMethods.toArray(new Method[0]);
     }
 
     /**
@@ -289,9 +288,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             } else {
                 return PrivilegedAccessHelper.newInstanceFromClass(cls);
             }
-        } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(cls, exception);
-        } catch (InstantiationException exception) {
+        } catch (IllegalAccessException | InstantiationException exception) {
             throw ValidationException.errorInstantiatingClass(cls, exception);
         }
     }

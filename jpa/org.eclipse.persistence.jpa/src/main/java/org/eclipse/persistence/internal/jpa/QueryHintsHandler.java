@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,9 +101,9 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * The class processes query hints.
- *
+ * <p>
  * EclipseLink query hints and their values defined in org.eclipse.persistence.config package.
- *
+ * <p>
  * To add a new query hint:
  *   Define a new hint in QueryHints;
  *   Add a class containing hint's values if required to config package (like CacheUsage);
@@ -129,7 +129,7 @@ public class QueryHintsHandler {
 
     /**
      * Verifies the hints.
-     *
+     * <p>
      * If session != null then logs a FINEST message for each hint.
      * queryName parameter used only for identifying the query in messages,
      * if it's null then "null" will be used.
@@ -149,7 +149,7 @@ public class QueryHintsHandler {
 
     /**
      * Verifies the hint.
-     *
+     * <p>
      * If session != null then logs a FINEST message.
      * queryName parameter used only for identifying the query in messages,
      * if it's null then "null" will be used.
@@ -224,7 +224,7 @@ public class QueryHintsHandler {
      * should be used.
      */
     protected static boolean shouldUseDefault(Object hintValue) {
-        return (hintValue != null) &&  (hintValue instanceof String) && (((String)hintValue).length() == 0);
+        return (hintValue != null) &&  (hintValue instanceof String) && (((String) hintValue).isEmpty());
     }
 
     public static Set<String> getSupportedHints(){
@@ -364,7 +364,7 @@ public class QueryHintsHandler {
 
             Map<String, Object> existingHints = (Map<String, Object>)query.getProperty(QUERY_HINT_PROPERTY);
             if (existingHints == null){
-                existingHints = new HashMap<String, Object>();
+                existingHints = new HashMap<>();
                 query.setProperty(QUERY_HINT_PROPERTY, existingHints);
             }
             existingHints.put(hintName, hintValue);
@@ -429,7 +429,7 @@ public class QueryHintsHandler {
         static <T> T newInstance(Class<T> theClass, DatabaseQuery query, String hint) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<T>(theClass));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(theClass));
                 } else {
                     return PrivilegedAccessHelper.newInstanceFromClass(theClass);
                 }

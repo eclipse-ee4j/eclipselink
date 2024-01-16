@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,7 @@ public class FileBasedProjectCache implements ProjectCache {
         String fileName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.PROJECT_CACHE_FILE,
                 properties, log);
-        if (fileName != null && fileName.length() > 0) {
+        if (fileName != null && !fileName.isEmpty()) {
             try {
                 java.io.File file = new java.io.File(fileName);
                 java.io.FileInputStream fis = new java.io.FileInputStream(file);
@@ -75,7 +75,7 @@ public class FileBasedProjectCache implements ProjectCache {
         String fileName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.PROJECT_CACHE_FILE,
                 properties, log);
-        if (fileName != null && fileName.length() > 0) {
+        if (fileName != null && !fileName.isEmpty()) {
             FileOutputStream fos = null;
             ObjectOutputStream out = null;
             try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,11 +30,9 @@ import org.eclipse.persistence.asm.ClassReader;
 import org.eclipse.persistence.asm.ClassVisitor;
 import org.eclipse.persistence.asm.ClassWriter;
 import org.eclipse.persistence.asm.EclipseLinkClassReader;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.logging.SessionLogEntry;
 
 /**
  * INTERNAL:
@@ -145,7 +143,7 @@ public class PersistenceWeaver implements ClassTransformer {
                     final String outputPath =
                             PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
 
-                    if (!outputPath.equals("")) {
+                    if (!outputPath.isEmpty()) {
                         Helper.outputClassFile(className, bytes, outputPath);
                     }
                     // PERF: Don't execute this set of if statements with logging turned off.

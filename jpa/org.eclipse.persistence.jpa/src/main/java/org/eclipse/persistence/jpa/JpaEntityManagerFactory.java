@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,7 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
     /**
      * Returns the SessionBroker that the Factory will be using and
      * initializes it if it is not available.
-     *
+     * <p>
      * Calls to this method should only be made on entity managers
      * representing composite persistence units.
      */
