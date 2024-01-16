@@ -39,6 +39,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
@@ -194,7 +196,18 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
         // Root URL from method caller
         StackWalker stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-        StackWalker.StackFrame frame = stackWalker.walk(stream -> stream.skip(2)
+        // Stack drop evaluation: drop max. 2 frames from jakarta.persistence / EclipseLink JPA
+        Function<StackWalker.StackFrame, Boolean> check = new Function<StackWalker.StackFrame, Boolean>() {
+            private static int count = 0;
+            @Override
+            public Boolean apply(StackWalker.StackFrame frame) {
+                return count++ < 2
+                        && (frame.getClassName().startsWith("jakarta.persistence")
+                                    || frame.getClassName().startsWith("org.eclipse.persistence.jpa"));
+            }
+        };
+        StackWalker.StackFrame frame = stackWalker.walk(stream -> stream
+                .dropWhile(check::apply)
                 .findFirst()
                 .orElse(null));
         URL rootURL;
@@ -374,8 +387,8 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
             boolean isNew = false;
             ClassTransformer transformer = null;
             String uniqueName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(),
-                                                                                  null,
-                                                                                  info.getPersistenceUnitName());
+                                                                                  info.getPersistenceUnitName(),
+                                                                                  null);
             String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, info, uniqueName);
             synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                 emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);

@@ -62,7 +62,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     // persistence.xml root URL
     protected URL persistenceUnitRootUrl;
     // PersistenceConfiguration hash of programmatically defined PU, value is null for PU defined in persistence.xml
-    private String customHash;
+    private String configHash;
 
     protected boolean excludeUnlistedClasses = true;
 
@@ -116,7 +116,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
             realClassLoader = Thread.currentThread().getContextClassLoader();
         }
         persistenceUnitRootUrl = rootURL;
-        customHash = Integer.toString(persistenceConfigurationHashCode(configuration));
+        configHash = Integer.toString(persistenceConfigurationHashCode(configuration));
     }
 
     // TODO: Remove when fixed by implementing hashCode in jakarta.persistence API
@@ -322,8 +322,8 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
      *
      * @return persistence unit hash or {@code null} if this unit was not defined programmatically
      */
-    public String getCustomHash() {
-        return customHash;
+    public String getConfigHash() {
+        return configHash;
     }
 
     /**

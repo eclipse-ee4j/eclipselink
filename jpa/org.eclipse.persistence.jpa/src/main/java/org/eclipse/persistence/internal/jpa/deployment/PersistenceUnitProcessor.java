@@ -718,12 +718,12 @@ public class PersistenceUnitProcessor {
      * A decoded URL is required while persisting on a multi-bytes OS.
      *
      * @param rootURL root {@link URL} of the persistence unit
+     * @param puName name of the persistence unit
      * @param hash programmatically defined persistence unit hash
      *             or {@code null} when {@code persistence.xml} is source of the persistence unit
-     * @param puName name of the persistence unit
      * @return unique persistence unit name
      */
-   public static String buildPersistenceUnitName(URL rootURL, String hash, String puName) {
+   public static String buildPersistenceUnitName(URL rootURL, String puName, String hash) {
        String urlPrefix = URLDecoder.decode(rootURL.toString(), StandardCharsets.UTF_8);
        StringBuilder fullPuName = new StringBuilder(
                urlPrefix.length()

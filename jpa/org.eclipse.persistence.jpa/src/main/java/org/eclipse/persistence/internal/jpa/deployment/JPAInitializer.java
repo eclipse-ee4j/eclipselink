@@ -287,12 +287,12 @@ public abstract class JPAInitializer {
     public String createUniquePersistenceUnitName(PersistenceUnitInfo puInfo) {
         if (puInfo instanceof SEPersistenceUnitInfo sePUInfo) {
             return PersistenceUnitProcessor.buildPersistenceUnitName(sePUInfo.getPersistenceUnitRootUrl(),
-                                                                     sePUInfo.getCustomHash(),
-                                                                     sePUInfo.getPersistenceUnitName());
+                                                                     sePUInfo.getPersistenceUnitName(),
+                                                                     sePUInfo.getConfigHash());
         }
         return PersistenceUnitProcessor.buildPersistenceUnitName(puInfo.getPersistenceUnitRootUrl(),
-                                                                 null,
-                                                                 puInfo.getPersistenceUnitName());
+                                                                 puInfo.getPersistenceUnitName(),
+                                                                 null);
     }
 
     public EntityManagerSetupImpl extractInitialEmSetupImpl(String puName) {
