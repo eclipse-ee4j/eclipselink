@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import org.eclipse.persistence.internal.jpa.config.columns.DiscriminatorClassImpl;
 import org.eclipse.persistence.internal.jpa.config.columns.DiscriminatorColumnImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorClassMetadata;
 import org.eclipse.persistence.jpa.config.DiscriminatorClass;
 import org.eclipse.persistence.jpa.config.DiscriminatorColumn;
 import org.eclipse.persistence.jpa.config.VariableOneToOne;
@@ -35,7 +34,7 @@ public class VariableOneToOneImpl extends AbstractObjectMappingImpl<VariableOneT
     public VariableOneToOneImpl() {
         super(new VariableOneToOneAccessor());
 
-        getMetadata().setDiscriminatorClasses(new ArrayList<DiscriminatorClassMetadata>());
+        getMetadata().setDiscriminatorClasses(new ArrayList<>());
     }
 
     @Override

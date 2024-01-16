@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -223,7 +223,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 /**
  * INTERNAL:
  * EclipseLink ORM mapping file OX mapping project.
- *
+ * <p>
  * Key notes:
  * - Elements mappings (per descriptor) must remain in order of definition in
  *   XML. This ensure on any write out the elements will be written in a valid

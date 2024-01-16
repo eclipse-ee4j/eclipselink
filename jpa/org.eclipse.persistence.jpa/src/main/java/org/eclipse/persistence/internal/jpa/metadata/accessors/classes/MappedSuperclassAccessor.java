@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -166,12 +166,12 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 /**
  * INTERNAL:
  * A mapped superclass accessor.
- *
+ * <p>
  * When adding new metadata objects, be sure to include their initialization in
  * initXMLObject. This sets the accessible object and the location of the
  * ORMetadata which is used when merging. Also new member metadata variables
  * need to be added to the merge method.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -195,17 +195,17 @@ public class MappedSuperclassAccessor extends ClassAccessor {
 
     private CacheMetadata m_cache;
     private CacheInterceptorMetadata m_cacheInterceptor;
-    private List<CacheIndexMetadata> m_cacheIndexes = new ArrayList<CacheIndexMetadata>();
+    private List<CacheIndexMetadata> m_cacheIndexes = new ArrayList<>();
 
-    private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
-    private List<FetchGroupMetadata> m_fetchGroups = new ArrayList<FetchGroupMetadata>();
-    private List<NamedQueryMetadata> m_namedQueries = new ArrayList<NamedQueryMetadata>();
-    private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<NamedNativeQueryMetadata>();
-    private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries = new ArrayList<NamedStoredFunctionQueryMetadata>();
-    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQueryMetadata>();
-    private List<NamedPLSQLStoredFunctionQueryMetadata> m_namedPLSQLStoredFunctionQueries = new ArrayList<NamedPLSQLStoredFunctionQueryMetadata>();
-    private List<NamedPLSQLStoredProcedureQueryMetadata> m_namedPLSQLStoredProcedureQueries = new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>();
-    private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
+    private List<EntityListenerMetadata> m_entityListeners = new ArrayList<>();
+    private List<FetchGroupMetadata> m_fetchGroups = new ArrayList<>();
+    private List<NamedQueryMetadata> m_namedQueries = new ArrayList<>();
+    private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<>();
+    private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries = new ArrayList<>();
+    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<>();
+    private List<NamedPLSQLStoredFunctionQueryMetadata> m_namedPLSQLStoredFunctionQueries = new ArrayList<>();
+    private List<NamedPLSQLStoredProcedureQueryMetadata> m_namedPLSQLStoredProcedureQueries = new ArrayList<>();
+    private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<>();
 
     private MetadataClass m_idClass;
     private MultitenantMetadata m_multitenant;
@@ -560,7 +560,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * specify a lifecycle annotation on a field so we don't need to check as we
      * do when checking the methods.
      *
-     * @see processAccessType()
+     * @see #processAccessType()
      */
     protected boolean hasObjectRelationalFieldMappingAnnotationsDefined() {
         Collection<MetadataField> fields = getJavaClass().getFields().values();
@@ -581,7 +581,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * of this accessor. Note: life cycle annotations are NOT object relational
      * mappings therefore should not influence the decision.
      *
-     * @see processAccessType()
+     * @see #processAccessType()
      */
     protected boolean hasObjectRelationalMethodMappingAnnotationsDefined() {
         Collection<MetadataMethod> methods = getJavaClass().getMethods().values();
@@ -729,7 +729,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * The pre-process method is called during regular deployment and metadata
      * processing.
-     *
+     * <p>
      * This method will pre-process the items of interest on this mapped
      * superclass for each entity class that inherits from it. The order of
      * processing is important, care must be taken if changes must be made.
@@ -1143,13 +1143,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * same named fetch groups within XML and annotations and XML named fetch
      * groups must override a similar named fetch group defined within an
      * annotation.
-     *
+     * <p>
      * This method will be called from both Entity And MappedSuperclass. The
      * fetch groups from the entity are added first followed by those from its
      * mapped superclass(es).
      */
     protected void processFetchGroups() {
-        Map<String, FetchGroupMetadata> fetchGroups = new HashMap<String, FetchGroupMetadata>();
+        Map<String, FetchGroupMetadata> fetchGroups = new HashMap<>();
 
         // Process the XML fetch groups first.
         for (FetchGroupMetadata fetchGroup : m_fetchGroups) {

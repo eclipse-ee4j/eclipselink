@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetad
 
 /**
  * Object to hold onto the XML persistence unit defaults.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -59,8 +59,8 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
     private Boolean m_cascadePersist;
     private Boolean m_delimitedIdentifiers;
 
-    private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
-    private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<TenantDiscriminatorColumnMetadata>();
+    private List<EntityListenerMetadata> m_entityListeners = new ArrayList<>();
+    private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<>();
 
     private String m_access;
     private String m_catalog;

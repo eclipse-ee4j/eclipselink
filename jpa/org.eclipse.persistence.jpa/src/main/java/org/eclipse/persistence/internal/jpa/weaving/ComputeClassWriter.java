@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2000, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2000, 2015 -2011 INRIA, France Telecom
+ * Copyright (c) 2000, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2024 -2011 INRIA, France Telecom
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -190,11 +190,8 @@ class ComputeClassWriter extends ClassWriter {
      * @throws IOException if the bytecode of 'type' cannot be loaded.
      */
     private ClassReader typeInfo(final String type) throws IOException {
-        InputStream is = l.getResourceAsStream(type + ".class");
-        try {
+        try (InputStream is = l.getResourceAsStream(type + ".class")) {
             return ASMFactory.createClassReader(is);
-        } finally {
-            is.close();
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.eclipse.persistence.queries.EntityResult;
 /**
  * INTERNAL:
  * Object to hold onto an entity result metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -56,7 +56,7 @@ import org.eclipse.persistence.queries.EntityResult;
  */
 public class EntityResultMetadata extends ORMetadata {
     private MetadataClass m_entityClass; // Required in both XML and annotations.
-    private List<FieldResultMetadata> m_fieldResults = new ArrayList<FieldResultMetadata>();
+    private List<FieldResultMetadata> m_fieldResults = new ArrayList<>();
     private String m_discriminatorColumn;
     private String m_entityClassName;
 

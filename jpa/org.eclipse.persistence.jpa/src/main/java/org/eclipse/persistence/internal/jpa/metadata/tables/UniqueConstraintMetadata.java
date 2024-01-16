@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 /**
  * INTERNAL:
  * Object to hold onto a unique constraint metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -63,7 +63,7 @@ public class UniqueConstraintMetadata extends ORMetadata {
 
         m_name = uniqueConstraint.getAttributeString("name");
 
-        m_columnNames = new ArrayList<String>();
+        m_columnNames = new ArrayList<>();
 
         for (Object columnName : uniqueConstraint.getAttributeArray("columnNames")) {
             m_columnNames.add((String) columnName);
@@ -116,7 +116,7 @@ public class UniqueConstraintMetadata extends ORMetadata {
      * Return true if a name has been specified for this unique constraint.
      */
     public boolean hasName() {
-        return m_name != null && !m_name.equals("");
+        return m_name != null && !m_name.isEmpty();
     }
 
     /**

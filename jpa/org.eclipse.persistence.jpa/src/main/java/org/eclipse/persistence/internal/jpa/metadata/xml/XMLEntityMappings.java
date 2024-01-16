@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -165,8 +165,8 @@ public class XMLEntityMappings extends ORMetadata {
         m_isEclipseLinkORMFile = false;
         m_loadedForCanonicalModel = false;
 
-        m_converters = new ArrayList<ConverterMetadata>();
-        m_converterAccessors = new ArrayList<ConverterAccessor>();
+        m_converters = new ArrayList<>();
+        m_converterAccessors = new ArrayList<>();
     }
 
     /**
@@ -294,7 +294,7 @@ public class XMLEntityMappings extends ORMetadata {
     public String getPackageQualifiedClassName(String className) {
         // If there is no global package defined or the class name is qualified,
         // return className
-        if (m_package == null || m_package.equals("")) {
+        if (m_package == null || m_package.isEmpty()) {
             return className;
         } else if (className.indexOf('.') > -1) {
             return className;
@@ -726,7 +726,7 @@ public class XMLEntityMappings extends ORMetadata {
      * the necessary metadata and log messages to the user. A validation
      * exception could also be thrown. See the related processing methods for
      * more details.
-     *
+     * <p>
      * Any XML metadata of the types processed below should call these methods.
      * That is, as an example, a converter can be found at the entity-mappings
      * and entity level. Therefore you must ensure that those from levels other

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 /**
  * INTERNAL:
  * Define JPA meta-data for partitioning policy.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -60,7 +60,7 @@ public class HashPartitioningMetadata extends FieldPartitioningMetadata {
      */
     public HashPartitioningMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
         super(annotation, accessor);
-        this.connectionPools = new ArrayList<String>();
+        this.connectionPools = new ArrayList<>();
         this.connectionPools.addAll((List)Arrays.asList(annotation.getAttributeArray("connectionPools")));
     }
 

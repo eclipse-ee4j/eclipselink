@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,6 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -370,8 +369,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         }
         String sessionName = setupImpl.getSessionName();
         Map<String, Object> existingProperties = delegate.getProperties();
-        Map<String, Object> deployProperties = new HashMap<>();
-        deployProperties.putAll(existingProperties);
+        Map<String, Object> deployProperties = new HashMap<>(existingProperties);
         if (properties != null){
             deployProperties.putAll(properties);
         }

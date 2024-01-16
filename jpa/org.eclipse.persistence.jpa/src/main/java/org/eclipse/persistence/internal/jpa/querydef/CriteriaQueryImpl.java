@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,7 +89,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.queryResult = ResultType.TUPLE;
                 this.queryType = (Class<T>) Tuple.class;
             } else if (((InternalSelection) selection).isConstructor()) {
-                Selection[] selectArray = selection.getCompoundSelectionItems().toArray(new Selection[selection.getCompoundSelectionItems().size()]);
+                Selection[] selectArray = selection.getCompoundSelectionItems().toArray(new Selection[0]);
                 populateAndSetConstructorSelection((ConstructorSelectionImpl<T>)selection, (Class<T>) this.selection.getJavaType(), selectArray);
                 this.queryType = (Class<T>) selection.getJavaType();
             } else {
@@ -115,32 +115,32 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Specify the items that are to be returned in the query result. Replaces
      * the previously specified selection(s), if any.
-     *
+     * <p>
      * The type of the result of the query execution depends on the
      * specification of the criteria query object as well as the arguments to
      * the multiselect method as follows:
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Tuple&gt;, a Tuple object
      * corresponding to the arguments of the multiselect method will be
      * instantiated and returned for each row that results from the query
      * execution.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;X&gt; for some
      * user-defined class X, then the arguments to the multiselect method will
      * be passed to the X constructor and an instance of type X will be returned
      * for each row. The IllegalStateException will be thrown if a constructor
      * for the given argument types does not exist.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;X[]&gt; for some class X,
      * an instance of type X[] will be returned for each row. The elements of
      * the array will correspond to the arguments of the multiselect method. The
      * IllegalStateException will be thrown if the arguments to the multiselect
      * method are not of type X.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and only a
      * single argument is passed to the multiselect method, an instance of type
      * Object will be returned for each row.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and more than
      * one argument is passed to the multiselect method, an instance of type
      * Object[] will be instantiated and returned for each row. The elements of
@@ -198,33 +198,33 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Specify the items that are to be returned in the query result. Replaces
      * the previously specified selection(s), if any.
-     *
+     * <p>
      * The type of the result of the query execution depends on the
      * specification of the criteria query object as well as the arguments to
      * the multiselect method as follows:
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Tuple&gt;, a Tuple object
      * corresponding to the items in the selection list passed to the
      * multiselect method will be instantiated and returned for each row that
      * results from the query execution.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;X&gt; for some
      * user-defined class X, then the items in the selection list passed to the
      * multiselect method will be passed to the X constructor and an instance of
      * type X will be returned for each row. The IllegalStateException will be
      * thrown if a constructor for the given argument types does not exist.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;X[]&gt; for some class X,
      * an instance of type X[] will be returned for each row. The elements of
      * the array will correspond to the items in the selection list passed to
      * the multiselect method. The IllegalStateException will be thrown if the
      * elements in the selection list passed to the multiselect method are not
      * of type X.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and the
      * selection list passed to the multiselect method contains only a single
      * item, an instance of type Object will be returned for each row.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and the
      * selection list passed to the multiselect method contains more than one
      * item, an instance of type Object[] will be instantiated and returned for
@@ -242,7 +242,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = null;
             return this;
         }
-        return this.multiselect(selectionList.toArray(new Selection[selectionList.size()]));
+        return this.multiselect(selectionList.toArray(new Selection[0]));
     }
 
     // override the return type only:
@@ -361,7 +361,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * instance or populating the one passed in as necessary.
      * Throws IllegalArgumentException if a constructor taking arguments represented
      * by the selections array doesn't exist for the given class.
-     *
+     * <p>
      * Also sets the query result to ResultType.CONSTRUCTOR
      *
      */
@@ -373,7 +373,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 @SuppressWarnings("unchecked")
                 ConstructorSelectionImpl<T> constructorSelect = (ConstructorSelectionImpl<T>)select;
                 @SuppressWarnings("unchecked")
-                Selection<? extends T>[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[constructorSelect.getCompoundSelectionItems().size()]);
+                Selection<? extends T>[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[0]);
                 populateAndSetConstructorSelection(constructorSelect, (Class<T>) constructorSelect.getJavaType(), selectArray);
             }
             constructorArgs[count++] = select.getJavaType();
@@ -423,7 +423,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     @Override
     public void addJoin(FromImpl from) {
         if (this.joins == null) {
-            this.joins = new LinkedHashSet<FromImpl>();
+            this.joins = new LinkedHashSet<>();
         }
         this.joins.add(from);
     }

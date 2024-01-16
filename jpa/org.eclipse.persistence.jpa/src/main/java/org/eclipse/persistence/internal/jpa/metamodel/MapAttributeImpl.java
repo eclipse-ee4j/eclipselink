@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -208,7 +208,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
      * Prerequisites: policy on the mapping is of type MappedKeyMapPolicy
      */
     private Class<?> getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
-        Class<?> javaClass = null;;
+        Class<?> javaClass = null;
         MapKeyMapping mapKeyMapping = policy.getKeyMapping();
         ClassDescriptor descriptor = ((DatabaseMapping)mapKeyMapping).getDescriptor();
         // If the reference descriptor is null then we are on a direct mapping

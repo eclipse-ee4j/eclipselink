@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -165,7 +165,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * An entity accessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -185,11 +185,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private DiscriminatorColumnMetadata m_discriminatorColumn;
     private PrimaryKeyForeignKeyMetadata m_primaryKeyForeignKey;
 
-    private List<ConvertMetadata> m_converts = new ArrayList<ConvertMetadata>();
-    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-    private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
-    private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
-    private List<NamedEntityGraphMetadata> m_namedEntityGraphs = new ArrayList<NamedEntityGraphMetadata>();
+    private List<ConvertMetadata> m_converts = new ArrayList<>();
+    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<>();
+    private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<>();
+    private List<IndexMetadata> m_indexes = new ArrayList<>();
+    private List<NamedEntityGraphMetadata> m_namedEntityGraphs = new ArrayList<>();
 
     private MetadataClass m_classExtractor;
 
@@ -238,7 +238,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Build a list of classes that are decorated with a MappedSuperclass
      * annotation or that are tagged as a mapped-superclass in an XML document.
-     *
+     * <p>
      * This method will also do a couple other things as well since we are
      * traversing the parent classes:
      *  - Build a map of generic types specified and will be used to resolve
@@ -247,7 +247,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      *    if this entity is part of an inheritance hierarchy.
      *  - save mapped-superclass descriptors on the project for later use
      *    by the Metamodel API
-     *
+     * <p>
      * Note: The list is rebuilt every time this method is called since
      * it is called both during pre-deploy and deploy where the class loader
      * dependencies change.
@@ -262,7 +262,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
 
         // We keep a list of potential subclass accessors to ensure they
         // have their root parent descriptor set correctly.
-        List<EntityAccessor> subclassEntityAccessors = new ArrayList<EntityAccessor>();
+        List<EntityAccessor> subclassEntityAccessors = new ArrayList<>();
         subclassEntityAccessors.add(currentEntityAccessor);
 
         if (! parentClass.isObject()) {
@@ -440,7 +440,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * This method is a little involved since a class extractor is mutually
      * exclusive with a discriminator column.
-     *
+     * <p>
      * Within one xml file it is impossible to have both specified since they
      * are within a choice tag. However, if one is specified in the orm.xml
      * and the other in the eclipselink-orm.xml, after the merge both will be
@@ -567,7 +567,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * The pre-process method is called during regular deployment and metadata
      * processing and will pre-process the items of interest on an entity class.
-     *
+     * <p>
      * The order of processing is important, care must be taken if changes must
      * be made.
      */
@@ -620,7 +620,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * during the canonical model generation. The use of this pre-process allows
      * us to remove some items from the regular pre-process that do not apply
      * to the canonical model generation.
-     *
+     * <p>
      * The order of processing is important, care must be taken if changes must
      * be made.
      */
@@ -1021,7 +1021,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Process a discriminator value to set the class indicator on the root
      * descriptor of the inheritance hierarchy.
-     *
+     * <p>
      * If there is no discriminator value, the class indicator defaults to
      * the class name.
      */
@@ -1057,7 +1057,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             m_entityName = (getAnnotation(JPA_ENTITY) == null) ? "" : getAnnotation(JPA_ENTITY).getAttributeString("name");
         }
 
-        if (m_entityName == null || m_entityName.equals("")) {
+        if (m_entityName == null || m_entityName.isEmpty()) {
             m_entityName = Helper.getShortClassName(getJavaClassName());
             getLogger().logConfigMessage(MetadataLogger.ALIAS, getDescriptor(), m_entityName);
         }

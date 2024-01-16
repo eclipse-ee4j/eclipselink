@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,7 @@ public class PersistenceContentHandler implements ContentHandler {
     public PersistenceContentHandler() {
         super();
         stringBuffer = new StringBuffer();
-        persistenceUnits = new Vector();
+        persistenceUnits = new Vector<>();
     }
 
    public Vector<SEPersistenceUnitInfo> getPersistenceUnits() {
@@ -159,7 +159,7 @@ public class PersistenceContentHandler implements ContentHandler {
                 persistenceUnitInfo.getManagedClassNames().add(string);
                 return;
             } else if (ELEMENT_EXCLUDE_UNLISTED_CLASSES.equals(localName)) {
-                if (string.equals("true") || string.equals("1") || string.equals("")){
+                if (string.equals("true") || string.equals("1") || string.isEmpty()){
                     // default <exclude-unlisted-classes/>  to true as well (an empty string)
                     persistenceUnitInfo.setExcludeUnlistedClasses(true);
                 } else {

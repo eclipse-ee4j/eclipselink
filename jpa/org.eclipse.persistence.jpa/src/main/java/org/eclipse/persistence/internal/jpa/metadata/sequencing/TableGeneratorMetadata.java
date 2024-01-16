@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.sequencing.TableSequence;
 
 /**
  * A wrapper class to a table generator metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -220,7 +220,7 @@ public class TableGeneratorMetadata extends TableMetadata {
         TableSequence sequence = new TableSequence();
 
         // Process the sequence name.
-        if (m_pkColumnValue == null || m_pkColumnValue.equals("")) {
+        if (m_pkColumnValue == null || m_pkColumnValue.isEmpty()) {
             logger.logConfigMessage(MetadataLogger.TABLE_GENERATOR_PK_COLUMN_VALUE, m_generatorName, getAccessibleObject(), getLocation());
             sequence.setName(m_generatorName);
         } else {
@@ -240,12 +240,12 @@ public class TableGeneratorMetadata extends TableMetadata {
         //sequence.setQualifier(getDatabaseTable().getTableQualifier());
 
         // Process the pk column name
-        if (m_pkColumnName != null && ! m_pkColumnName.equals("")) {
+        if (m_pkColumnName != null && !m_pkColumnName.isEmpty()) {
             sequence.setNameFieldName(m_pkColumnName);
         }
 
         // Process the pk volumn column name
-        if (m_valueColumnName != null && ! m_valueColumnName.equals("")) {
+        if (m_valueColumnName != null && !m_valueColumnName.isEmpty()) {
             sequence.setCounterFieldName(m_valueColumnName);
         }
 

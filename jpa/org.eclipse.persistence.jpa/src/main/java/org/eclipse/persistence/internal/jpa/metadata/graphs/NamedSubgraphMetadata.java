@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -32,7 +31,7 @@ import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
  * Object to hold onto named sub graph metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -52,7 +51,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
     protected MetadataClass m_type;
     protected String m_typeName;
 
-    protected List<NamedAttributeNodeMetadata> m_namedAttributeNodes = new ArrayList<NamedAttributeNodeMetadata>();
+    protected List<NamedAttributeNodeMetadata> m_namedAttributeNodes = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -159,7 +158,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
         initXMLObjects(m_namedAttributeNodes, accessibleObject);
 
         // Initialize simple class objects.
-        if (m_typeName != null && ! m_typeName.equals("")) {
+        if (m_typeName != null && !m_typeName.isEmpty()) {
             m_type = initXMLClassName(m_typeName);
         } else {
             m_type = getMetadataClass(CoreClassConstants.OBJECT);
@@ -174,7 +173,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
         AttributeGroup attributeGraph = new AttributeGroup(getName(), getTypeClassName(), true);
 
         if (! attributeGraphs.containsKey(getName())) {
-            attributeGraphs.put(getName(), new HashMap<String, AttributeGroup>());
+            attributeGraphs.put(getName(), new HashMap<>());
         }
 
         attributeGraphs.get(getName()).put(getTypeClassName(), attributeGraph);

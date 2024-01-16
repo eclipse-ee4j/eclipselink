@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public interface ProjectCache {
      * PUBLIC: This method is responsible for returning the cached metadata as represented
      * by a Project instance.  This instance will have limited processing performed to turn
      * string instances into classes during deployment.
-     *
+     * <p>
      * The classloader provided is the application loader.  Please note that using it to load
      * application classes (Entities) may prevent them from being dynamically woven.
      *

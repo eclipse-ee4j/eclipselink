@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public class ClassDetails {
 
 
     public ClassDetails() {
-        virtualAccessMethods = new ArrayList<VirtualAttributeMethodInfo>();
+        virtualAccessMethods = new ArrayList<>();
     }
 
     public MetadataClass getDescribedClass(){
@@ -256,7 +256,7 @@ public class ClassDetails {
     /**
      * If one attribute of this class uses attribute access, by the JPA specification, all
      * attributes must use attribute access
-     *
+     * <p>
      * This method assumes it is called when this class details is completely initialized.
      */
     public boolean usesAttributeAccess() {
@@ -309,7 +309,7 @@ public class ClassDetails {
      * Returns true if the given class name represents this class, or any
      * superclass that can be navigated to by recursively navigating up the
      * structure of superClassDetails stored in this class.
-     *
+     * <p>
      * Assume java.lang.Object is in the hierarchy
      *
      */
@@ -330,7 +330,7 @@ public class ClassDetails {
      * Returns true if the given class name represents this class, or any
      * superclass that can be navigated to by recursively navigating up the
      * structure of superClassDetails stored in this class.
-     *
+     * <p>
      * Assume java.lang.Object is in the hierarchy
      *
      */

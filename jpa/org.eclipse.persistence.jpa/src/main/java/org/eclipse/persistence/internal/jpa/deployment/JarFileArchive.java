@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +67,7 @@ public class JarFileArchive extends ArchiveBase implements Archive {
     @Override
     public Iterator<String> getEntries() {
         Enumeration<JarEntry> jarEntries = jarFile.entries();
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         while (jarEntries.hasMoreElements()) {
             final JarEntry jarEntry = jarEntries.nextElement();
             if(!jarEntry.isDirectory()) { // exclude directory entries

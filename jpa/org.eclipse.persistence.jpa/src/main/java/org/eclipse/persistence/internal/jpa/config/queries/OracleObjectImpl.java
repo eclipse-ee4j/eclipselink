@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.config.MetadataImpl;
 import org.eclipse.persistence.internal.jpa.metadata.queries.OracleObjectTypeMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLParameterMetadata;
 import org.eclipse.persistence.jpa.config.OracleObject;
 import org.eclipse.persistence.jpa.config.PlsqlParameter;
 
@@ -33,7 +32,7 @@ public class OracleObjectImpl extends MetadataImpl<OracleObjectTypeMetadata> imp
     public OracleObjectImpl() {
         super(new OracleObjectTypeMetadata());
 
-        getMetadata().setFields(new ArrayList<PLSQLParameterMetadata>());
+        getMetadata().setFields(new ArrayList<>());
     }
 
     @Override

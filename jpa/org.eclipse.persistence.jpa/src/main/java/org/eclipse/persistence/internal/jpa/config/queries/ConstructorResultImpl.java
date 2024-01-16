@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.internal.jpa.config.queries;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.config.MetadataImpl;
-import org.eclipse.persistence.internal.jpa.metadata.queries.ColumnResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.ConstructorResultMetadata;
 import org.eclipse.persistence.jpa.config.ColumnResult;
 import org.eclipse.persistence.jpa.config.ConstructorResult;
@@ -33,7 +32,7 @@ public class ConstructorResultImpl extends MetadataImpl<ConstructorResultMetadat
     public ConstructorResultImpl() {
         super(new ConstructorResultMetadata());
 
-        getMetadata().setColumnResults(new ArrayList<ColumnResultMetadata>());
+        getMetadata().setColumnResults(new ArrayList<>());
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -192,7 +192,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * INTERNAL:
  * A abstract class accessor. Holds common metadata for entities, embeddables
  * and mapped superclasses.
- *
+ * <p>
  * Key notes:
  * - all metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -222,17 +222,17 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private CustomCopyPolicyMetadata m_customCopyPolicy;
     private InstantiationCopyPolicyMetadata m_instantiationCopyPolicy;
 
-    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
-    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-    private List<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
-    private List<OracleObjectTypeMetadata> m_oracleObjectTypes = new ArrayList<OracleObjectTypeMetadata>();
-    private List<OracleArrayTypeMetadata> m_oracleArrayTypes = new ArrayList<OracleArrayTypeMetadata>();
-    private List<PLSQLRecordMetadata> m_plsqlRecords = new ArrayList<PLSQLRecordMetadata>();
-    private List<PLSQLTableMetadata> m_plsqlTables = new ArrayList<PLSQLTableMetadata>();
+    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<>();
+    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<>();
+    private List<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<>();
+    private List<OracleObjectTypeMetadata> m_oracleObjectTypes = new ArrayList<>();
+    private List<OracleArrayTypeMetadata> m_oracleArrayTypes = new ArrayList<>();
+    private List<PLSQLRecordMetadata> m_plsqlRecords = new ArrayList<>();
+    private List<PLSQLTableMetadata> m_plsqlTables = new ArrayList<>();
 
     // In the normal case owning descriptors is a single list. Could only be
     // multiples when dealing with embeddable accessors.
-    private List<MetadataDescriptor> m_owningDescriptors = new ArrayList<MetadataDescriptor>();
+    private List<MetadataDescriptor> m_owningDescriptors = new ArrayList<>();
 
     private MetadataClass m_customizerClass;
     private MetadataClass m_parentClass;
@@ -333,7 +333,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * tied to this class accessor. This method is called for every class
      * accessor and is also called from parent class accessors to each of its
      * subclasses of a TABLE_PER_CLASS inheritance strategy.
-     *
+     * <p>
      * Add accessors is called in the preProcess stage and must not be called
      * until its owning class accessor has processed its access type.
      */
@@ -932,7 +932,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * Return the mapped superclasses associated with this entity accessor.
      * A call to discoverMappedSuperclassesAndInheritanceParents() should be
      * made before calling this method.
-     * @see preProcess()
+     * @see #preProcess()
      */
     public List<MappedSuperclassAccessor> getMappedSuperclasses() {
         return m_mappedSuperclasses;
@@ -1663,7 +1663,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * INTERNAL:
      * Check for and process a NoSql annotation and configure the correct
      * descriptor type.
-     *
+     * <p>
      * NOTE: NoSql metadata is supported only on Entity and Embeddable.
      */
     protected void processNoSql() {
@@ -1724,7 +1724,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
     /**
      * Check for and process a Struct annotation and configure the correct
      * descriptor type.
-     *
+     * <p>
      * NOTE: Struct metadata is supported only on Entity and Embeddable.
      */
     protected void processStruct() {

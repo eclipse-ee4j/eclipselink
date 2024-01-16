@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
 
     protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, ClassDescriptor relationalDescriptor) {
         super(metamodel, relationalDescriptor);
-        inheritingIdentifiableTypes = new HashMap<Class<?>, IdentifiableTypeImpl>();
+        inheritingIdentifiableTypes = new HashMap<>();
         // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
     }
 
@@ -120,7 +120,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
 
     @Override
     protected void initialize(){
-        /**
+        /*
          * Set the javaClass on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass).
          * This will ensure the class is both set and is in the right classLoader - even if the class is already set.
          * Perform this conversion only for our custom pseudo descriptors for MappedSuperclasses.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle, IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle, IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 
 /**
  * Metadata object to hold generated value information.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -135,7 +135,7 @@ public class GeneratedValueMetadata extends ORMetadata {
                 final MetadataField mf = (getAccessibleObject() != null && getAccessibleObject() instanceof MetadataField) ?  (MetadataField) getAccessibleObject(): null;
                 if (mf != null && "java.util.UUID".equals(mf.getType())) {
                     // JPA Spec says to treat AUTO on java.util.UUID types as UUIDGenerator.
-                    if (m_generator.equals("")) {
+                    if (m_generator.isEmpty()) {
                         sequence = sequences.get(MetadataProject.DEFAULT_UUID_GENERATOR);
                     } else {
                         sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_UUID_GENERATOR).clone();
@@ -145,28 +145,28 @@ public class GeneratedValueMetadata extends ORMetadata {
                     login.setDefaultSequence(sequences.get(MetadataProject.DEFAULT_AUTO_GENERATOR));
                 }
             } else if (m_strategy.equals(JPA_GENERATION_TABLE)) {
-                if (m_generator.equals("")) {
+                if (m_generator.isEmpty()) {
                     sequence = sequences.get(MetadataProject.DEFAULT_TABLE_GENERATOR);
                 } else {
                     sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_TABLE_GENERATOR).clone();
                     sequence.setName(m_generator);
                 }
             } else if (m_strategy.equals(JPA_GENERATION_SEQUENCE)) {
-                if (m_generator.equals("")) {
+                if (m_generator.isEmpty()) {
                     sequence = sequences.get(MetadataProject.DEFAULT_SEQUENCE_GENERATOR);
                 } else {
                     sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_SEQUENCE_GENERATOR).clone();
                     sequence.setName(m_generator);
                 }
             } else if (m_strategy.equals(JPA_GENERATION_IDENTITY)) {
-                if (m_generator.equals("")) {
+                if (m_generator.isEmpty()) {
                     sequence = sequences.get(MetadataProject.DEFAULT_IDENTITY_GENERATOR);
                 } else {
                     sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_IDENTITY_GENERATOR).clone();
                     sequence.setName(m_generator);
                 }
             } else if (m_strategy.equals(JPA_GENERATION_UUID)) {
-                if (m_generator.equals("")) {
+                if (m_generator.isEmpty()) {
                     sequence = sequences.get(MetadataProject.DEFAULT_UUID_GENERATOR);
                 } else {
                     sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_UUID_GENERATOR).clone();
@@ -181,7 +181,7 @@ public class GeneratedValueMetadata extends ORMetadata {
        } else {
            String seqName;
 
-           if (m_generator.equals("")) {
+           if (m_generator.isEmpty()) {
                if (sequences.containsKey(MetadataProject.DEFAULT_AUTO_GENERATOR)) {
                    seqName = sequences.get(MetadataProject.DEFAULT_AUTO_GENERATOR).getName();
                } else {

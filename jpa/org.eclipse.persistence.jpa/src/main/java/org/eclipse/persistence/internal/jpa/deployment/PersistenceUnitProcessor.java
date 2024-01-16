@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -134,8 +135,7 @@ public class PersistenceUnitProcessor {
      * @return a Set of class name strings
      */
     public static Set<String> buildClassSet(PersistenceUnitInfo persistenceUnitInfo, Map properties){
-        Set<String> set = new HashSet<String>();
-        set.addAll(persistenceUnitInfo.getManagedClassNames());
+        Set<String> set = new HashSet<>(persistenceUnitInfo.getManagedClassNames());
         ClassLoader loader = persistenceUnitInfo.getClassLoader();
         Iterator<URL> i = persistenceUnitInfo.getJarFileUrls().iterator();
         while (i.hasNext()) {
@@ -158,7 +158,7 @@ public class PersistenceUnitProcessor {
      * to weave.
      */
     public static Collection<MetadataClass> buildEntityList(MetadataProcessor processor, ClassLoader loader) {
-        ArrayList<MetadataClass> entityList = new ArrayList<MetadataClass>();
+        ArrayList<MetadataClass> entityList = new ArrayList<>();
         for (String className : processor.getProject().getWeavableClassNames()) {
             entityList.add(processor.getMetadataFactory().getMetadataClass(className));
         }
@@ -280,7 +280,7 @@ public class PersistenceUnitProcessor {
             // the former is true, if the classpath is set as a directory with UNC,
             // the latter is true.
             String prefix = "";
-            if (authority.length() > 0) {
+            if (!authority.isEmpty()) {
                 prefix = "////";
             } else if (file.startsWith("//")) {
                 prefix = "//";
@@ -331,7 +331,7 @@ public class PersistenceUnitProcessor {
     public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath){
         Archive archive = null;
 
-        Set<Archive> archives = new HashSet<Archive>();
+        Set<Archive> archives = new HashSet<>();
 
         // See if we are talking about an embedded descriptor
         int splitPosition = descriptorPath.indexOf("!/");
@@ -384,7 +384,7 @@ public class PersistenceUnitProcessor {
     public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath, List<URL> jarFileUrls, Map properties) {
         Archive archive = null;
 
-        Set<Archive> archives = new HashSet<Archive>();
+        Set<Archive> archives = new HashSet<>();
 
         // See if we are talking about an embedded descriptor
         // If not embedded descriptor then just use the regular descriptor path
@@ -471,12 +471,8 @@ public class PersistenceUnitProcessor {
                         factory = (ArchiveFactory)PrivilegedAccessHelper.newInstanceFromClass(archiveClass);
                     }
                 }
-            } catch (ClassNotFoundException cnfe) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException cnfe) {
                 throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, cnfe);
-            } catch (IllegalAccessException iae) {
-                throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, iae);
-            } catch (InstantiationException ie) {
-                throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, ie);
             }
         }
 
@@ -484,7 +480,7 @@ public class PersistenceUnitProcessor {
     }
 
     public static Set<String> getClassNamesFromURL(URL url, ClassLoader loader, Map properties) {
-        Set<String> classNames = new HashSet<String>();
+        Set<String> classNames = new HashSet<>();
         Archive archive = null;
         try {
             archive = PersistenceUnitProcessor.getArchiveFactory(loader, properties).createArchive(url, properties);
@@ -497,9 +493,7 @@ public class PersistenceUnitProcessor {
                     }
                 }
             }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("url = [" + url + "]", e);  // NOI18N
-        } catch (IOException e) {
+        } catch (URISyntaxException | IOException e) {
             throw new RuntimeException("url = [" + url + "]", e);  // NOI18N
         } finally {
             if (archive != null) {
@@ -723,12 +717,8 @@ public class PersistenceUnitProcessor {
      */
    public static String buildPersistenceUnitName(URL url, String puName){
        String fullPuName = null;
-       try {
-           // append the persistence unit name to the decoded URL
-           fullPuName = URLDecoder.decode(url.toString(), "UTF8")+"_"+puName;
-       } catch (UnsupportedEncodingException e) {
-           throw PersistenceUnitLoadingException.couldNotBuildPersistenceUntiName(e,url.toString(),puName);
-       }
+       // append the persistence unit name to the decoded URL
+       fullPuName = URLDecoder.decode(url.toString(), StandardCharsets.UTF_8)+"_"+puName;
        return fullPuName;
    }
 

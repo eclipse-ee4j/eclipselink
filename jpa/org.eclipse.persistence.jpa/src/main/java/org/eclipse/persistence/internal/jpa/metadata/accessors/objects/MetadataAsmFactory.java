@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,6 @@ import org.eclipse.persistence.asm.Attribute;
 import org.eclipse.persistence.asm.ClassReader;
 import org.eclipse.persistence.asm.EclipseLinkClassVisitor;
 import org.eclipse.persistence.asm.EclipseLinkFieldVisitor;
-import org.eclipse.persistence.asm.EclipseLinkClassReader;
 import org.eclipse.persistence.asm.FieldVisitor;
 import org.eclipse.persistence.asm.EclipseLinkMethodVisitor;
 import org.eclipse.persistence.asm.MethodVisitor;
@@ -246,7 +245,7 @@ public class MetadataAsmFactory extends MetadataFactory {
 
     private InputStream readResource(String name) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public InputStream run() {
                     return m_loader.getResourceAsStream(name);
@@ -302,7 +301,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
             this.processedMemeber = true;
-            if (this.classMetadata.isLazy() || name.indexOf("init>") != -1) {
+            if (this.classMetadata.isLazy() || name.contains("init>")) {
                 return null;
             }
             return new MetadataMethodVisitor(this.classMetadata, access, name, signature, desc, exceptions);
@@ -442,7 +441,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             super.setCustomAnnotationVisitor(this);
             this.annotation = annotation;
             this.attributeName = name;
-            this.values = new ArrayList<Object>();
+            this.values = new ArrayList<>();
         }
 
         @Override
@@ -612,7 +611,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         if (desc == null) {
             return null;
         }
-        List<String> arguments = new ArrayList<String>();
+        List<String> arguments = new ArrayList<>();
         int index = 0;
         int length = desc.length();
         boolean isGenericTyped=false;

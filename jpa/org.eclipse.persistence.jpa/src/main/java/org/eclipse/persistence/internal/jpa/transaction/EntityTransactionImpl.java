@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,7 +60,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
         }
     }
 
-    /**
+    /*
      * Within a transaction track any open queries that will need to be closed
      * on commit or rollback.
      */
@@ -72,7 +72,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
      */
     public void addOpenQuery(QueryImpl query) {
         if (openQueriesMap == null) {
-            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
+            openQueriesMap = new WeakHashMap<>();
         }
 
         openQueriesMap.put(query, query);
@@ -220,7 +220,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
      */
     protected Map<QueryImpl, QueryImpl> getOpenQueriesMap() {
         if (openQueriesMap == null) {
-            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
+            openQueriesMap = new WeakHashMap<>();
         }
 
         return openQueriesMap;

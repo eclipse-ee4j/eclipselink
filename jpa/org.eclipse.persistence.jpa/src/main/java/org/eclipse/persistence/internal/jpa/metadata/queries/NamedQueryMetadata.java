@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * INTERNAL:
  * Object to hold onto a named query metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -58,7 +58,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class NamedQueryMetadata extends ORMetadata {
-    private List<QueryHintMetadata> m_hints = new ArrayList<QueryHintMetadata>();
+    private List<QueryHintMetadata> m_hints = new ArrayList<>();
 
     private String m_lockMode;
     private String m_name;
@@ -209,7 +209,7 @@ public class NamedQueryMetadata extends ORMetadata {
      * INTERNAL:
      */
     protected Map<String, Object> processQueryHints(AbstractSession session) {
-        Map<String, Object> hints = new HashMap<String, Object>();
+        Map<String, Object> hints = new HashMap<>();
 
         for (QueryHintMetadata hint : getHints()) {
             QueryHintsHandler.verify(hint.getName(), hint.getValue(), getName(), session);

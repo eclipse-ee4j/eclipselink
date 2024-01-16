@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -96,7 +96,7 @@ public class TransformerFactory {
         this.session = session;
         this.entityClasses = entityClasses;
         this.classLoader = classLoader;
-        this.classDetailsMap = new HashMap<String, ClassDetails>();
+        this.classDetailsMap = new HashMap<>();
         this.weaveLazy = weaveLazy;
         this.weaveChangeTracking = weaveChangeTracking;
         this.weaveFetchGroups = weaveFetchGroups;
@@ -108,7 +108,7 @@ public class TransformerFactory {
     /**
      * INTERNAL:
      * Look higher in the hierarchy for the mappings listed in the unMappedAttribute list.
-     *
+     * <p>
      * We assume that if a mapping exists, the attribute must either be mapped from the owning
      * class or from a superclass.
      */
@@ -128,7 +128,7 @@ public class TransformerFactory {
 
         // If the superclass declares more mappings than there are unmapped mappings still to process, this superclass has shadowed attributes
         if(mappedSuperclassDescriptor != null && unMappedAttributes.size() < mappedSuperclassDescriptor.getMappings().size()) {
-            List<DatabaseMapping> hiddenMappings = new ArrayList<DatabaseMapping>();
+            List<DatabaseMapping> hiddenMappings = new ArrayList<>();
             for(DatabaseMapping mapping : mappedSuperclassDescriptor.getMappings()) {
                 boolean contains = false;
                 String name = mapping.getAttributeName();
@@ -174,7 +174,7 @@ public class TransformerFactory {
      * in our entities list.
      */
     public void buildClassDetailsAndModifyProject() {
-        if (entityClasses != null && entityClasses.size() > 0) {
+        if (entityClasses != null && !entityClasses.isEmpty()) {
             // scan thru list building details of persistent classes
             for (MetadataClass metaClass : entityClasses) {
                 // check to ensure that class is present in project
@@ -387,9 +387,9 @@ public class TransformerFactory {
      */
     protected List<DatabaseMapping> storeAttributeMappings(MetadataClass metadataClass, ClassDetails classDetails, List<DatabaseMapping> mappings, boolean weaveValueHolders) {
         List<DatabaseMapping> unMappedAttributes = new ArrayList<>();
-        Map<String, AttributeDetails> attributesMap = new HashMap<String, AttributeDetails>();
-        Map<String, AttributeDetails> settersMap = new HashMap<String, AttributeDetails>();
-        Map<String, AttributeDetails> gettersMap = new HashMap<String, AttributeDetails>();
+        Map<String, AttributeDetails> attributesMap = new HashMap<>();
+        Map<String, AttributeDetails> settersMap = new HashMap<>();
+        Map<String, AttributeDetails> gettersMap = new HashMap<>();
 
         for (Iterator<DatabaseMapping> iterator = mappings.iterator(); iterator.hasNext();) {
             DatabaseMapping mapping = iterator.next();

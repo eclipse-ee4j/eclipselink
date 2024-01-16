@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
 
 /**
  * Object to hold onto order by metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -102,24 +102,24 @@ public class OrderByMetadata extends ORMetadata {
      * Process an order by value (if specified) for the given collection
      * mapping. Order by specifies the ordering of the elements of a collection
      * valued association at the point when the association is retrieved.
-     *
+     * <p>
      * The syntax of the value ordering element is an orderby_list, as follows:
-     *
+     * <p>
      * orderby_list ::= orderby_item [, orderby_item]*
      * orderby_item ::= property_or_field_name [ASC | DESC]
-     *
+     * <p>
      * When ASC or DESC is not specified, ASC is assumed.
-     *
+     * <p>
      * If the ordering element is not specified, ordering by the primary key
      * of the associated entity is assumed.
-     *
+     * <p>
      * The property or field name must correspond to that of a persistent
      * property or field of the associated class. The properties or fields
      * used in the ordering must correspond to columns for which comparison
      * operators are supported.
      */
     public void process(CollectionMapping mapping, MetadataDescriptor referenceDescriptor, MetadataClass javaClass) {
-        if (m_value != null && ! m_value.equals("")) {
+        if (m_value != null && !m_value.isEmpty()) {
             StringTokenizer commaTokenizer = new StringTokenizer(m_value, ",");
 
             while (commaTokenizer.hasMoreTokens()) {

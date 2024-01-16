@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * Object to hold onto a relational table metadata in an EclipseLink
  * database table. By relational we mean one that has join columns and a
  * foreign key specification.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -48,7 +48,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  */
 public class RelationalTableMetadata extends TableMetadata {
     private ForeignKeyMetadata m_foreignKey;
-    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
+    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<>();
 
     /**
      * INTERNAL:

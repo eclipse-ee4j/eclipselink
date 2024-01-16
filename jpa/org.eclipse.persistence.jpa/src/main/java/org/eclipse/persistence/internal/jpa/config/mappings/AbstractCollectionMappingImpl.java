@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,9 +26,6 @@ import org.eclipse.persistence.internal.jpa.config.converters.ConvertImpl;
 import org.eclipse.persistence.internal.jpa.config.converters.EnumeratedImpl;
 import org.eclipse.persistence.internal.jpa.config.converters.TemporalImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CollectionAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.OrderByMetadata;
 import org.eclipse.persistence.jpa.config.AssociationOverride;
@@ -54,10 +51,10 @@ public class AbstractCollectionMappingImpl<T extends CollectionAccessor, R> exte
     public AbstractCollectionMappingImpl(T t) {
         super(t);
 
-        getMetadata().setMapKeyAssociationOverrides(new ArrayList<AssociationOverrideMetadata>());
-        getMetadata().setMapKeyAttributeOverrides(new ArrayList<AttributeOverrideMetadata>());
-        getMetadata().setMapKeyConverts(new ArrayList<ConvertMetadata>());
-        getMetadata().setMapKeyJoinColumns(new ArrayList<JoinColumnMetadata>());
+        getMetadata().setMapKeyAssociationOverrides(new ArrayList<>());
+        getMetadata().setMapKeyAttributeOverrides(new ArrayList<>());
+        getMetadata().setMapKeyConverts(new ArrayList<>());
+        getMetadata().setMapKeyJoinColumns(new ArrayList<>());
     }
 
     public AssociationOverride addMapKeyAssociationOverride() {

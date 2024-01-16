@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * INTERNAL:
  * Object to hold onto named native query metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -135,7 +135,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * Return true is a result set mapping has been specified.
      */
     protected boolean hasResultSetMapping(AbstractSession session) {
-        if (m_resultSetMapping != null && ! m_resultSetMapping.equals("")) {
+        if (m_resultSetMapping != null && !m_resultSetMapping.isEmpty()) {
             // User has specified a result set mapping. Since all the result
             // set mappings are processed and placed on the session before named
             // queries, let's validate that the sql result set mapping specified

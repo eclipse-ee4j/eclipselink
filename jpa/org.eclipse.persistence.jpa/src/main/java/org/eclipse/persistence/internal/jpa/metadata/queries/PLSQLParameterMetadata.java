@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import org.eclipse.persistence.annotations.Direction;
-import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
@@ -31,7 +30,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedu
 /**
  * INTERNAL:
  * Object to hold onto a PLSQL parameter meta-data.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -217,7 +216,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
         // argument field name.
         // TODO: Log a message when defaulting.
         String procedureParameterName = m_name;
-        if (m_name == null || m_name.equals("")) {
+        if (m_name == null || m_name.isEmpty()) {
             procedureParameterName = m_queryParameter;
         }
 

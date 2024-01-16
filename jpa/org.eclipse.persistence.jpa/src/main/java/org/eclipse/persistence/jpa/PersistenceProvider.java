@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,7 @@ import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 
 /**
  * This is the EclipseLink EJB 3.0 provider
- *
+ * <p>
  * This provider should be used by JavaEE and JavaSE users.
  */
 public class PersistenceProvider implements jakarta.persistence.spi.PersistenceProvider, ProviderUtil {

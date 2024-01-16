@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -164,7 +164,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * @since TopLink Essentials - JPA 1.0
  */
 public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityManager {
-    protected enum OperationType {FIND, REFRESH, LOCK};
+    protected enum OperationType {FIND, REFRESH, LOCK}
 
     /** Allows transparent transactions across JTA and local transactions. */
     private TransactionWrapperImpl transaction;
@@ -423,7 +423,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     protected Map<QueryImpl, QueryImpl> getOpenQueriesMap() {
         if (openQueriesMap == null) {
-            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
+            openQueriesMap = new WeakHashMap<>();
         }
 
         return openQueriesMap;
@@ -1741,7 +1741,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
         try {
             verifyOpen();
-            return new EJBQueryImpl<T>(((CriteriaQueryImpl<T>)criteriaQuery).translate(), this);
+            return new EJBQueryImpl<>(((CriteriaQueryImpl<T>) criteriaQuery).translate(), this);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -1752,7 +1752,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public <T> TypedQuery<T> createQuery(CriteriaSelect<T> selectQuery) {
         try {
             verifyOpen();
-            return new EJBQueryImpl<T>(((CriteriaSelectInternal<T>)selectQuery).translate(), this);
+            return new EJBQueryImpl<>(((CriteriaSelectInternal<T>) selectQuery).translate(), this);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -1875,7 +1875,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             verifyOpen();
             StoredProcedureCall call = new StoredProcedureCall();
             call.setProcedureName(procedureName);
-            return new StoredProcedureQueryImpl(StoredProcedureQueryImpl.buildResultSetMappingQuery(new ArrayList<SQLResultSetMapping>(), call), this);
+            return new StoredProcedureQueryImpl(StoredProcedureQueryImpl.buildResultSetMappingQuery(new ArrayList<>(), call), this);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -1908,7 +1908,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             call.setProcedureName(procedureName);
             call.setHasMultipleResultSets(resultClasses.length > 1);
 
-            List<SQLResultSetMapping> sqlResultSetMappings = new ArrayList<SQLResultSetMapping>();
+            List<SQLResultSetMapping> sqlResultSetMappings = new ArrayList<>();
             for (Class<?> resultClass : resultClasses) {
                 sqlResultSetMappings.add(new SQLResultSetMapping(resultClass));
             }
@@ -1947,10 +1947,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             call.setProcedureName(procedureName);
             call.setHasMultipleResultSets(resultSetMappings.length > 1);
 
-            List<String> sqlResultSetMappingNames = new ArrayList<String>();
-            for (String resultSetMapping : resultSetMappings) {
-                sqlResultSetMappingNames.add(resultSetMapping);
-            }
+            List<String> sqlResultSetMappingNames = new ArrayList<>();
+            Collections.addAll(sqlResultSetMappingNames, resultSetMappings);
 
             return new StoredProcedureQueryImpl(StoredProcedureQueryImpl.buildResultSetMappingNameQuery(sqlResultSetMappingNames, call), this);
         } catch (RuntimeException e) {
@@ -2563,7 +2561,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     if(password != null) {
                         // can't compare the passed (un-encrypted) password with the existing encrypted one, therefore
                         // use the new password if it's not an empty string.
-                        isNewPasswordRequired = password.length() > 0;
+                        isNewPasswordRequired = !password.isEmpty();
                     }
                 } else {
                     // user should be removed -> remove password as well
@@ -2699,11 +2697,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Property value is to be added if it's non null and not an empty string.
      */
     protected static boolean isPropertyToBeAdded(String value) {
-        return value != null && value.length() > 0;
+        return value != null && !value.isEmpty();
     }
 
     protected static boolean isPropertyToBeAdded(DataSource ds, String dsName) {
-        return ds != null || (dsName != null && dsName.length() > 0);
+        return ds != null || (dsName != null && !dsName.isEmpty());
     }
 
     /**
@@ -2711,7 +2709,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * should be removed.
      */
     protected static boolean isPropertyToBeRemoved(String value) {
-        return value != null && value.length() == 0;
+        return value != null && value.isEmpty();
     }
 
     /**
@@ -2724,7 +2722,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             return null;
         } else {
             // new value is a non empty string
-            if (newValue.length() > 0) {
+            if (!newValue.isEmpty()) {
                 if (oldValue != null) {
                     if (newValue.equals(oldValue)) {
                         // new and old values are equal - no change.
@@ -2809,7 +2807,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         // Individual methods will handle the entity = null case, although we
         // could likely do it here as well.
         if (entity != null && properties != null) {
-            queryHints = new HashMap<String, Object>();
+            queryHints = new HashMap<>();
 
             if (properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
                 queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
@@ -3165,7 +3163,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (descriptor == null || descriptor.isAggregateDescriptor()){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[]{rootType.getName()}));
         }
-        return new EntityGraphImpl<T>(new AttributeGroup(null, rootType, true), descriptor);
+        return new EntityGraphImpl<>(new AttributeGroup(null, rootType, true), descriptor);
     }
 
     @Override
@@ -3193,7 +3191,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (descriptor == null || descriptor.isAggregateDescriptor()){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[]{entityClass.getName()}));
         }
-        List<EntityGraph<? super T>> result = new ArrayList<EntityGraph<? super T>>();
+        List<EntityGraph<? super T>> result = new ArrayList<>();
         for (AttributeGroup group : descriptor.getAttributeGroups().values()){
             result.add(new EntityGraphImpl<>(group));
         }

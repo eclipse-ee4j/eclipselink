@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,7 +77,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
  * it. For consistency, and ease of future work, all metadata objects added
  * should extend this class even though they may not currently have a need for
  * merging and overriding.
- *
+ * <p>
  * Subclasses that care about merging need to concern themselves with the
  * following methods:
  * - getIdentifier() used to compare two named objects.
@@ -141,7 +141,7 @@ public abstract class ORMetadata {
      * INTERNAL:
      * For merging and overriding to work properly, all ORMetadata must be able
      * to compare themselves for metadata equality.
-     *
+     * <p>
      * equals plays a big role in the shouldOverride() method from this class.
      */
     @Override
@@ -213,7 +213,7 @@ public abstract class ORMetadata {
     /**
      * INTERNAL:
      * This is a value is that is used when logging messages for overriding.
-     * @see shouldOverride
+     * @see #shouldOverride(ORMetadata)
      */
     public MetadataAnnotation getAnnotation() {
         return m_annotation;
@@ -423,10 +423,10 @@ public abstract class ORMetadata {
      * INTERNAL:
      * Helper method to return a field name from a candidate field name and a
      * default field name.
-     *
+     * <p>
      * Requires the context from where this method is called to output the
      * correct logging message when defaulting the field name.
-     *
+     * <p>
      * In some cases, both the name and defaultName could be "" or null,
      * therefore, don't log a message and return name.
      */
@@ -471,7 +471,7 @@ public abstract class ORMetadata {
      * INTERNAL:
      */
     protected boolean hasIdentifier() {
-        return ! getIdentifier().equals("");
+        return !getIdentifier().isEmpty();
     }
 
     /**
@@ -480,7 +480,7 @@ public abstract class ORMetadata {
      * metadata should override this method.
      */
     protected boolean hasText() {
-        return getText() != null && ! getText().equals("");
+        return getText() != null && !getText().isEmpty();
     }
 
     /**
@@ -903,14 +903,14 @@ public abstract class ORMetadata {
         mappings.put("int", int.class);
         mappings.put("long", long.class);
         mappings.put("short", short.class);
-        mappings.put("byte[]", new byte[0].getClass());
-        mappings.put("char[]", new char[0].getClass());
-        mappings.put("boolean[]", new boolean[0].getClass());
-        mappings.put("double[]", new double[0].getClass());
-        mappings.put("float[]", new float[0].getClass());
-        mappings.put("int[]", new int[0].getClass());
-        mappings.put("long[]", new long[0].getClass());
-        mappings.put("short[]", new short[0].getClass());
+        mappings.put("byte[]", byte[].class);
+        mappings.put("char[]", char[].class);
+        mappings.put("boolean[]", boolean[].class);
+        mappings.put("double[]", double[].class);
+        mappings.put("float[]", float[].class);
+        mappings.put("int[]", int[].class);
+        mappings.put("long[]", long[].class);
+        mappings.put("short[]", short[].class);
         return mappings;
     }
 
@@ -925,14 +925,14 @@ public abstract class ORMetadata {
         mappings.put("int", Integer.class.getName());
         mappings.put("long", Long.class.getName());
         mappings.put("short", Short.class.getName());
-        mappings.put("byte[]", new Byte[0].getClass().getName());
-        mappings.put("char[]", new Character[0].getClass().getName());
-        mappings.put("boolean[]", new Boolean[0].getClass().getName());
-        mappings.put("double[]", new Double[0].getClass().getName());
-        mappings.put("float[]", new Float[0].getClass().getName());
-        mappings.put("int[]", new Integer[0].getClass().getName());
-        mappings.put("long[]", new Long[0].getClass().getName());
-        mappings.put("short[]", new Short[0].getClass().getName());
+        mappings.put("byte[]", Byte[].class.getName());
+        mappings.put("char[]", Character[].class.getName());
+        mappings.put("boolean[]", Boolean[].class.getName());
+        mappings.put("double[]", Double[].class.getName());
+        mappings.put("float[]", Float[].class.getName());
+        mappings.put("int[]", Integer[].class.getName());
+        mappings.put("long[]", Long[].class.getName());
+        mappings.put("short[]", Short[].class.getName());
         return mappings;
     }
 

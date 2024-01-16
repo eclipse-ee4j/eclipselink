@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.eclipse.persistence.queries.SQLResultSetMapping;
 /**
  * INTERNAL:
  * Object to hold onto an sql result mapping metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -55,9 +55,9 @@ import org.eclipse.persistence.queries.SQLResultSetMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class SQLResultSetMappingMetadata extends ORMetadata {
-    private List<ColumnResultMetadata> m_columnResults = new ArrayList<ColumnResultMetadata>();
-    private List<ConstructorResultMetadata> m_constructorResults = new ArrayList<ConstructorResultMetadata>();
-    private List<EntityResultMetadata> m_entityResults = new ArrayList<EntityResultMetadata>();
+    private List<ColumnResultMetadata> m_columnResults = new ArrayList<>();
+    private List<ConstructorResultMetadata> m_constructorResults = new ArrayList<>();
+    private List<EntityResultMetadata> m_entityResults = new ArrayList<>();
     private String m_name;
 
     /**

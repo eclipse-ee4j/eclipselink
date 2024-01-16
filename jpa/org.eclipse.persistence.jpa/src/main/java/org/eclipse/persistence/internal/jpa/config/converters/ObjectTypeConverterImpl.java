@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.internal.jpa.config.converters;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.config.MetadataImpl;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ConversionValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
 import org.eclipse.persistence.jpa.config.ConversionValue;
 import org.eclipse.persistence.jpa.config.ObjectTypeConverter;
@@ -32,7 +31,7 @@ public class ObjectTypeConverterImpl extends MetadataImpl<ObjectTypeConverterMet
 
     public ObjectTypeConverterImpl() {
         super(new ObjectTypeConverterMetadata());
-        getMetadata().setConversionValues(new ArrayList<ConversionValueMetadata>());
+        getMetadata().setConversionValues(new ArrayList<>());
     }
 
     @Override

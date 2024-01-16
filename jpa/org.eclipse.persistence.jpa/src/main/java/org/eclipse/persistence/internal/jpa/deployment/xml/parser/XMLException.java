@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XMLException extends RuntimeException {
-    private List m_nestedExceptions;
+    private List<Exception> m_nestedExceptions;
 
     public XMLException() {
         super();
@@ -31,10 +31,10 @@ public class XMLException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         Exception nestedException;
         for (int x=0; x<m_nestedExceptions.size(); x++) {
-            nestedException = (Exception) m_nestedExceptions.get(x);
+            nestedException = m_nestedExceptions.get(x);
             buffer.append(System.lineSeparator());
             buffer.append('(');
             buffer.append(x + 1);

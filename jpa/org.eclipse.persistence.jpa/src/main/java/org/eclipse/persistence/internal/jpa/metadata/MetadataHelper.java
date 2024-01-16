@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,9 +134,7 @@ public class MetadataHelper {
             } else {
                 return PrivilegedAccessHelper.newInstanceFromClass(cls);
             }
-        } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(cls, exception);
-        } catch (InstantiationException exception) {
+        } catch (IllegalAccessException | InstantiationException exception) {
             throw ValidationException.errorInstantiatingClass(cls, exception);
         }
     }
@@ -153,18 +151,18 @@ public class MetadataHelper {
      * INTERNAL:
      * Helper method to return a field name from a candidate field name and a
      * default field name.
-     *
+     * <p>
      * Requires the context from where this method is called to output the
      * correct logging message when defaulting the field name.
-     *
+     * <p>
      * In some cases, both the name and defaultName could be "" or null,
      * therefore, don't log a message and return name.
      */
     public static String getName(String name, String defaultName, String context, MetadataLogger logger, Object location) {
         // Check if a candidate was specified otherwise use the default.
-        if (name != null && ! name.equals("")) {
+        if (name != null && !name.isEmpty()) {
             return name;
-        } else if (defaultName == null || defaultName.equals("")) {
+        } else if (defaultName == null || defaultName.isEmpty()) {
             return "";
         } else {
             // Log the defaulting field name based on the given context.
@@ -237,7 +235,7 @@ public class MetadataHelper {
      */
     public static String getValue(String value, String defaultValue) {
         // Check if a candidate was specified otherwise use the default.
-        if (value != null && ! value.equals("")) {
+        if (value != null && !value.isEmpty()) {
             return value;
         } else {
             // TODO: log a defaulting message

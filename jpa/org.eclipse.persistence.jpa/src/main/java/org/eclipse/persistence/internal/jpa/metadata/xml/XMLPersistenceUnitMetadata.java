@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * INTERNAL:
      */
     public List<EntityListenerMetadata> getDefaultListeners() {
-        return (m_persistenceUnitDefaults == null) ? new ArrayList<EntityListenerMetadata>(): m_persistenceUnitDefaults.getEntityListeners();
+        return (m_persistenceUnitDefaults == null) ? new ArrayList<>(): m_persistenceUnitDefaults.getEntityListeners();
     }
 
     /**

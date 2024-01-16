@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,7 +121,7 @@ public interface BeanValidationInitializationHelper {
          */
         private Class<?>[] translateValidationGroups(String validationGroups, ClassLoader appClassLoader) {
             Class<?>[] validationGroupsClasses = null;
-            if(validationGroups != null && validationGroups.length() != 0 ) {
+            if(validationGroups != null && !validationGroups.isEmpty()) {
                 String[] validationGroupClassNames = validationGroups.split(",");
                 validationGroupsClasses = new Class<?>[validationGroupClassNames.length];
                 for(int i = 0; i < validationGroupClassNames.length; i++) {

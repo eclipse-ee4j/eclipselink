@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
 
     // names of jars specified in persistence.xml. they are later on used
     // to build jar-file URL.
-    private final Collection<String> jarFiles = new ArrayList<String>();
+    private final Collection<String> jarFiles = new ArrayList<>();
     protected List<URL> jarFileUrls;
     protected List<String> managedClassNames;
     protected URL persistenceUnitRootUrl;
@@ -63,7 +63,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
 
     // Persistence.xml loaded from the canonical model processor will
     // populate the properties into this collection.
-    protected List<SEPersistenceUnitProperty> persistenceUnitProperties = new ArrayList<SEPersistenceUnitProperty>();
+    protected List<SEPersistenceUnitProperty> persistenceUnitProperties = new ArrayList<>();
     // Persistence.xml loaded from the metadata processor will populate the
     // properties into this properties map.
     protected Properties properties;
@@ -72,8 +72,8 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     protected ClassLoader realClassLoader;
 
     public SEPersistenceUnitInfo(){
-        mappingFiles = new ArrayList<String>();
-        managedClassNames = new ArrayList<String>();
+        mappingFiles = new ArrayList<>();
+        managedClassNames = new ArrayList<>();
         properties = new Properties();
         persistenceUnitTransactionType = PersistenceUnitTransactionType.RESOURCE_LOCAL;
         // don't initialize jarFileUrls as it is lazily initialized
@@ -259,7 +259,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     @Override
     public List<URL> getJarFileUrls(){
         if (jarFileUrls == null) { // lazy initialization
-            List<URL> jarFileUrls = new ArrayList<URL>(jarFiles.size());
+            List<URL> jarFileUrls = new ArrayList<>(jarFiles.size());
             for (String jarFile : jarFiles) {
                 try {
                     // build a URL relative to the PU Root

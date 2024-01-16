@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 /**
  * Object to hold onto optimistic locking metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -52,7 +52,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
  */
 public class OptimisticLockingMetadata extends ORMetadata {
     private Boolean m_cascade;
-    private List<ColumnMetadata> m_selectedColumns = new ArrayList<ColumnMetadata>();
+    private List<ColumnMetadata> m_selectedColumns = new ArrayList<>();
     private String m_type;
 
     /**
@@ -160,7 +160,7 @@ public class OptimisticLockingMetadata extends ORMetadata {
 
                 // Process the selectedColumns
                 for (ColumnMetadata selectedColumn : m_selectedColumns) {
-                    if (selectedColumn.getName().equals("")) {
+                    if (selectedColumn.getName().isEmpty()) {
                         throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(descriptor.getJavaClass());
                     } else {
                         policy.addLockFieldName(selectedColumn.getName());

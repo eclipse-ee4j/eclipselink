@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class ORMContentHandler implements ContentHandler {
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (ENTITY_MAPPINGS.equals(localName)) {
             this.version = atts.getValue(VERSION);
-            this.isEclipseLink = namespaceURI.indexOf(ECLIPSELINK) != -1;
+            this.isEclipseLink = namespaceURI.contains(ECLIPSELINK);
         }
     }
 

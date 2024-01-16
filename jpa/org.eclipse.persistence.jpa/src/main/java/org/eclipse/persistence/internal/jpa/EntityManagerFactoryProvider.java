@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -60,7 +60,7 @@ public class EntityManagerFactoryProvider {
     // TEMPORARY - WILL BE REMOVED.
     // Used to warn users about deprecated property name and suggest the valid name.
     // TEMPORARY the old property names will be translated to the new ones and processed.
-    protected static final String oldPropertyNames[][] = {
+    protected static final String[][] oldPropertyNames = {
         {PersistenceUnitProperties.CONNECTION_POOL_MAX, "eclipselink.max-write-connections"},
         {PersistenceUnitProperties.CONNECTION_POOL_MIN, "eclipselink.min-write-connections"},
         {PersistenceUnitProperties.CONNECTION_POOL_MAX, "eclipselink.max-read-connections"},
@@ -194,7 +194,7 @@ public class EntityManagerFactoryProvider {
         }
         if ((value != null) && (session !=  null)) {
             if (session.shouldLog(SessionLog.FINEST, SessionLog.PROPERTIES)) {
-                String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);;
+                String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);
                 Object logValue = (overrideValue == null) ? value : overrideValue;
                 session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyKey, logValue});
             }

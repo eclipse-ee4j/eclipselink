@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -291,6 +291,7 @@ module eclipselink {
     exports org.eclipse.persistence.internal.xr.sxf;
 
     uses org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
+    uses org.eclipse.persistence.mappings.converters.spi.ConverterProvider;
     uses org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider;
 
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;

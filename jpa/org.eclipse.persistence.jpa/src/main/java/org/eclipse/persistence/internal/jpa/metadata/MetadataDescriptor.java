@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -264,26 +264,26 @@ public class MetadataDescriptor {
 
         m_defaultAccessMethods = new AccessMethodsMetadata();
 
-        m_idAttributeNames = new ArrayList<String>();
-        m_orderByAttributeNames = new ArrayList<String>();
-        m_idOrderByAttributeNames = new ArrayList<String>();
-        m_embeddableDescriptors = new ArrayList<MetadataDescriptor>();
-        m_derivedIdAccessors = new ArrayList<ObjectAccessor>();
-        m_defaultTenantDiscriminatorColumns = new ArrayList<TenantDiscriminatorColumnMetadata>();
+        m_idAttributeNames = new ArrayList<>();
+        m_orderByAttributeNames = new ArrayList<>();
+        m_idOrderByAttributeNames = new ArrayList<>();
+        m_embeddableDescriptors = new ArrayList<>();
+        m_derivedIdAccessors = new ArrayList<>();
+        m_defaultTenantDiscriminatorColumns = new ArrayList<>();
 
-        m_pkClassIDs = new HashMap<String, String>();
-        m_genericTypes = new HashMap<String, String>();
-        m_mappingAccessors = new HashMap<String, MappingAccessor>();
-        m_idAccessors = new HashMap<String, IdAccessor>();
-        m_fields = new HashMap<String, DatabaseField>();
-        m_primaryKeyAccessors = new HashMap<DatabaseField, MappingAccessor>();
-        m_properties = new HashMap<String, PropertyMetadata>();
-        m_pkJoinColumnAssociations = new HashMap<DatabaseField, DatabaseField>();
-        m_attributeOverrides = new HashMap<String, AttributeOverrideMetadata>();
-        m_associationOverrides = new HashMap<String, AssociationOverrideMetadata>();
-        m_biDirectionalManyToManyAccessors = new HashMap<String, Map<String, MetadataAccessor>>();
-        m_converts = new HashMap<String, List<ConvertMetadata>>();
-        m_mapKeyConverts = new HashMap<String, List<ConvertMetadata>>();
+        m_pkClassIDs = new HashMap<>();
+        m_genericTypes = new HashMap<>();
+        m_mappingAccessors = new HashMap<>();
+        m_idAccessors = new HashMap<>();
+        m_fields = new HashMap<>();
+        m_primaryKeyAccessors = new HashMap<>();
+        m_properties = new HashMap<>();
+        m_pkJoinColumnAssociations = new HashMap<>();
+        m_attributeOverrides = new HashMap<>();
+        m_associationOverrides = new HashMap<>();
+        m_biDirectionalManyToManyAccessors = new HashMap<>();
+        m_converts = new HashMap<>();
+        m_mapKeyConverts = new HashMap<>();
 
         m_descriptor = new RelationalDescriptor();
         m_descriptor.setAlias("");
@@ -326,7 +326,7 @@ public class MetadataDescriptor {
             addMapKeyConvert(attributeName, convert);
         } else {
             if (! m_converts.containsKey(attributeName)) {
-                m_converts.put(attributeName, new ArrayList<ConvertMetadata>());
+                m_converts.put(attributeName, new ArrayList<>());
             }
 
             m_converts.get(attributeName).add(convert);
@@ -414,7 +414,7 @@ public class MetadataDescriptor {
      */
     public void addMapKeyConvert(String attributeName, ConvertMetadata convert) {
         if (! m_mapKeyConverts.containsKey(attributeName)) {
-            m_mapKeyConverts.put(attributeName, new ArrayList<ConvertMetadata>());
+            m_mapKeyConverts.put(attributeName, new ArrayList<>());
         }
 
         m_mapKeyConverts.get(attributeName).add(convert);
@@ -467,8 +467,8 @@ public class MetadataDescriptor {
      * applicable). Validation should therefore always be done against boxed
      * types.
      *
-     * @see validateDerivedPKClassId
-     * @see validatePKClassId
+     * @see #validateDerivedPKClassId(String, String, String) 
+     * @see #validatePKClassId(String, String) 
      */
     public void addPKClassId(String attributeName, String type) {
         m_pkClassIDs.put(attributeName, type);
@@ -535,7 +535,7 @@ public class MetadataDescriptor {
 
                 // Initialize the map of bi-directional mappings for this class.
                 if (! m_biDirectionalManyToManyAccessors.containsKey(referenceClassName)) {
-                    m_biDirectionalManyToManyAccessors.put(referenceClassName, new HashMap<String, MetadataAccessor>());
+                    m_biDirectionalManyToManyAccessors.put(referenceClassName, new HashMap<>());
                 }
 
                 m_biDirectionalManyToManyAccessors.get(referenceClassName).put(accessor.getMappedBy(), accessor);
@@ -556,7 +556,7 @@ public class MetadataDescriptor {
      * pre-processing stage. Canonical model generation needs to rebuild its
      * accessor list from one compile round to another within Eclipse. This
      * should not be called otherwise.
-     *
+     * <p>
      * Anything that is set in the addAccessor(MappingAccessor) method should
      * be cleared here.
      */
@@ -1364,7 +1364,7 @@ public class MetadataDescriptor {
      * Return true is the descriptor has primary key fields set.
      */
     public boolean hasPrimaryKeyFields() {
-        return m_descriptor.getPrimaryKeyFields().size() > 0;
+        return !m_descriptor.getPrimaryKeyFields().isEmpty();
     }
 
     /**
@@ -1630,7 +1630,7 @@ public class MetadataDescriptor {
      * - entity-mappings
      * - entity
      * - embeddable
-     *
+     * <p>
      * Be default, the default access methods are set to use "get" and "set"
      * unless they are overridden by discovering access methods specified at
      * one of the locations above.

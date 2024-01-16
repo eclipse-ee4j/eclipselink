@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 /**
  * INTERNAL:
  * Object to hold onto a stored procedure parameter metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -271,7 +271,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      * INTERNAL:
      */
     protected boolean hasJdbcTypeName() {
-        return m_jdbcTypeName != null && ! m_jdbcTypeName.equals("");
+        return m_jdbcTypeName != null && !m_jdbcTypeName.isEmpty();
     }
 
     /**
@@ -285,7 +285,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      * INTERNAL:
      */
     protected boolean hasTypeName() {
-        return m_typeName != null && ! m_typeName.equals("");
+        return m_typeName != null && !m_typeName.isEmpty();
     }
 
     /**
@@ -316,8 +316,8 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         boolean shouldCallByIndex = false;
 
         // Process the procedure parameter name, defaults to the argument field name.
-        if (m_name == null || m_name.equals("")) {
-            if (m_queryParameter == null || m_queryParameter.equals("")) {
+        if (m_name == null || m_name.isEmpty()) {
+            if (m_queryParameter == null || m_queryParameter.isEmpty()) {
                 // JPA 2.1 make the query parameter positional
                 shouldCallByIndex = true;
                 m_queryParameter = String.valueOf(index);
@@ -329,7 +329,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         }
 
         // There is no such thing as queryParameter in JPA's version.
-        if (m_queryParameter == null || m_queryParameter.equals("")) {
+        if (m_queryParameter == null || m_queryParameter.isEmpty()) {
             m_queryParameter = m_name;
         }
 

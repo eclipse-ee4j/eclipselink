@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,10 +47,10 @@ import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
- *
+ * <p>
  * JavaSECMPInitializer is used to bootstrap the deployment of EntityBeans in EJB 3.0
  * when deployed in a non-managed setting
- *
+ * <p>
  * It is called internally by our Provider
  *
  * @see org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
@@ -304,15 +304,15 @@ public class JavaSECMPInitializer extends JPAInitializer {
         return usesAgent;
     }
 
-    /*********************************/
-    /***** Temporary Classloader *****/
-    /*********************************/
+    /* ******************************* */
+    /* **** Temporary Classloader **** */
+    /* ******************************* */
     /**
      * This class loader is provided at initialization time to allow us to temporarily load
      * domain classes so we can examine them for annotations.  After they are loaded we will throw this
      * class loader away.  Transformers can then be registered on the real class loader to allow
      * weaving to occur.
-     *
+     * <p>
      * It selectively loads classes based on the list of classnames it is instantiated with.  Classes
      * not on that list are allowed to be loaded by the parent.
      */

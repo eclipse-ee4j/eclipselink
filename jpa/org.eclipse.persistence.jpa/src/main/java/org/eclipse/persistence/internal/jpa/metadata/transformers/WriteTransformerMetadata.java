@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 /**
  * INTERNAL:
  * Matadata for WriteTransformer.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -105,7 +105,7 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
      * Indicates whether there is a column name.
      */
     public boolean hasFieldName() {
-        return m_column != null && m_column.getName() != null && m_column.getName().length() > 0;
+        return m_column != null && m_column.getName() != null && !m_column.getName().isEmpty();
     }
 
     /**
@@ -124,7 +124,7 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
     @Override
     public void process(TransformationMapping mapping, String annotatedElementName) {
         if (hasFieldName()) {
-            if (getMethod() == null || getMethod().equals("")) {
+            if (getMethod() == null || getMethod().isEmpty()) {
                 if (getTransformerClass().isVoid()) {
                     throw ValidationException.writeTransformerHasNeitherClassNorMethod(annotatedElementName, m_column.getName());
                 } else {

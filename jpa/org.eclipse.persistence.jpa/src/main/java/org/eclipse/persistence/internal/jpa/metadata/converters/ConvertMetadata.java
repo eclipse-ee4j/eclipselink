@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * Object to hold onto convert metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -168,7 +168,7 @@ public class ConvertMetadata extends ORMetadata {
      * INTERNAL:
      */
     public boolean hasAttributeName() {
-        return m_attributeName != null && ! m_attributeName.equals("");
+        return m_attributeName != null && !m_attributeName.isEmpty();
     }
 
     /**
@@ -198,7 +198,7 @@ public class ConvertMetadata extends ORMetadata {
      * INTERNAL:
      * Return true if this convert metadata is for a map key. Way to tell is
      * if there is an attribute name that begins with "key".
-     *
+     * <p>
      * Calling this method will also update the attribute name on the first call
      * to it. This call is made when sorting convert annotations. Unlike XML,
      * where the user can sort through &lt;convert&gt; and &lt;map-key-convert&gt; elements,
@@ -243,7 +243,7 @@ public class ConvertMetadata extends ORMetadata {
                 attributeName = getAttributeName();
             // Coming from @ElementCollection mapping with value.<name> attributeName.
             } else if (mapping.isAggregateCollectionMapping() && embeddedAttributeName != null
-                    && embeddedAttributeName.length() > 0) {
+                    && !embeddedAttributeName.isEmpty()) {
                 attributeName = embeddedAttributeName;
             // Unsupported mapping, throw an exception
             } else {

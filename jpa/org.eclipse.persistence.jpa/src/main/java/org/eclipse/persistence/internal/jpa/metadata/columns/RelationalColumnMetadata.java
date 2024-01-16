@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 /**
  * INTERNAL:
  * Object to process JPA relational type colummns into EclipseLink database fields.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -165,14 +165,14 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
      * INTERNAL:
      */
     public boolean isForeignKeyFieldNotSpecified() {
-        return getName() == null || getName().equals("");
+        return getName() == null || getName().isEmpty();
     }
 
     /**
      * INTERNAL:
      */
     public boolean isPrimaryKeyFieldNotSpecified() {
-        return m_referencedColumnName == null || m_referencedColumnName.equals("");
+        return m_referencedColumnName == null || m_referencedColumnName.isEmpty();
     }
 
     /**

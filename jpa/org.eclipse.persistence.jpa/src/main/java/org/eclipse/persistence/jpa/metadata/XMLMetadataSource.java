@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         String mappingURLName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.METADATA_SOURCE_XML_URL,
                 properties, log);
-        if (mappingURLName !=null && mappingURLName.length()!=0) {
+        if (mappingURLName !=null && !mappingURLName.isEmpty()) {
             try {
                 URL url = new URL(mappingURLName);
                 reader = new InputStreamReader(url.openStream());
@@ -83,7 +83,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
             String mappingFileName = (String)getConfigPropertyLogDebug(
                     PersistenceUnitProperties.METADATA_SOURCE_XML_FILE,
                     properties, log);
-            if (mappingFileName != null && mappingFileName.length() > 0) {
+            if (mappingFileName != null && !mappingFileName.isEmpty()) {
                 try {
                     URL fileURL = getFileURL(mappingFileName, classLoader, log);
                     if (fileURL != null) {
@@ -149,7 +149,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
      * configurations are supplied. As an example; overriding an application to
      * use RESOURCE_LOCAL when it was coded to use JTA would result in changes
      * not be written to the database.
-     *
+     * <p>
      * PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE property will be used to get a file
      * resource from the classloader. Properties are read from the file.
      * If the property either not specified or contains an empty string then returns null.
@@ -161,7 +161,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         String propertiesFileName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE,
                 properties, log);
-        if (propertiesFileName == null || propertiesFileName.length() == 0) {
+        if (propertiesFileName == null || propertiesFileName.isEmpty()) {
             return null;
         }
 

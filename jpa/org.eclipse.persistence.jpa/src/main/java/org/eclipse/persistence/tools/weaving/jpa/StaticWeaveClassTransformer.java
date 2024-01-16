@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,7 @@ public class StaticWeaveClassTransformer {
             newClassBytes=transformer.transform(aClassLoader, originalClassName, originalClass, null, originalClassBytes);
             if(newClassBytes!=null) {
                 break;
-            };
+            }
         }
         return newClassBytes;
     }
@@ -100,7 +100,7 @@ public class StaticWeaveClassTransformer {
         if (classTransformers!=null) {
             return ;
         } else {
-            classTransformers = new ArrayList<ClassTransformer>();
+            classTransformers = new ArrayList<>();
         }
         Archive archive = null;
         try {

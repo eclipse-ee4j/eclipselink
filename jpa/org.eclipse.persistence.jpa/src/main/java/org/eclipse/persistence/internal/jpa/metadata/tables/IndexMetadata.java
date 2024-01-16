@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 /**
  * INTERNAL:
  * Object to hold onto database index metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -216,7 +216,7 @@ public class IndexMetadata extends ORMetadata {
      * Return true is a name has been specified for this index.
      */
     protected boolean hasName() {
-        return m_name != null && ! m_name.equals("");
+        return m_name != null && !m_name.isEmpty();
     }
 
     /**
@@ -272,16 +272,16 @@ public class IndexMetadata extends ORMetadata {
         indexDefinition.setName(processName(primaryTable, indexDefinition));
 
         // Process the schema value.
-        if (m_schema != null && m_schema.length() != 0) {
+        if (m_schema != null && !m_schema.isEmpty()) {
             indexDefinition.setQualifier(m_schema);
-        } else if (descriptor.getDefaultSchema() != null && descriptor.getDefaultSchema().length() != 0) {
+        } else if (descriptor.getDefaultSchema() != null && !descriptor.getDefaultSchema().isEmpty()) {
             indexDefinition.setQualifier(descriptor.getDefaultSchema());
         }
 
         // Process the catalog value.
-        if (m_catalog != null && m_catalog.length() != 0) {
+        if (m_catalog != null && !m_catalog.isEmpty()) {
             indexDefinition.setQualifier(m_catalog);
-        } else if (descriptor.getDefaultCatalog() != null && descriptor.getDefaultCatalog().length() != 0) {
+        } else if (descriptor.getDefaultCatalog() != null && !descriptor.getDefaultCatalog().isEmpty()) {
             indexDefinition.setQualifier(descriptor.getDefaultCatalog());
         }
 
@@ -289,7 +289,7 @@ public class IndexMetadata extends ORMetadata {
         indexDefinition.setIsUnique(isUnique());
 
         // Process table value.
-        if (m_table == null || m_table.length() == 0) {
+        if (m_table == null || m_table.isEmpty()) {
             indexDefinition.setTargetTable(primaryTable.getQualifiedName());
             primaryTable.addIndex(indexDefinition);
         } else if (m_table.equals(primaryTable.getQualifiedName()) || m_table.equals(primaryTable.getName())) {

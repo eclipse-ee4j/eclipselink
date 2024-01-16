@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -234,7 +234,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      */
     @Override
     public Attribute.PersistentAttributeType getPersistentAttributeType() {
-        /**
+        /*
          * process the following mappings by referencing the Core API Mapping.
          * MANY_TO_ONE (ONE_TO_ONE internally)
          * ONE_TO_ONE (May originally be a MANY_TO_ONE)
@@ -254,7 +254,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
             return PersistentAttributeType.ONE_TO_MANY;
         }
 
-        /**
+        /*
          * EclipseLink internally processes a ONE_TO_MANY on a MappedSuperclass as a MANY_TO_MANY
          * because the relationship is unidirectional.
          */

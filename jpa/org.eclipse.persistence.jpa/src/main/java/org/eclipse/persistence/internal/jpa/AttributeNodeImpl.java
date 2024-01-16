@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
     @Override
     public Map<Class, Subgraph> getSubgraphs() {
         if (this.subgraphs == null){
-            this.subgraphs = new HashMap<Class, Subgraph>();
+            this.subgraphs = new HashMap<>();
         }
         return this.subgraphs;
     }
@@ -59,21 +59,21 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
     @Override
     public Map<Class, Subgraph> getKeySubgraphs() {
         if (this.keySubgraphs == null){
-            this.keySubgraphs = new HashMap<Class, Subgraph>();
+            this.keySubgraphs = new HashMap<>();
         }
         return this.keySubgraphs;
     }
 
     public void addSubgraph(EntityGraphImpl entityGraphImpl) {
         if (this.subgraphs == null){
-            this.subgraphs = new HashMap<Class, Subgraph>();
+            this.subgraphs = new HashMap<>();
         }
         this.subgraphs.put(entityGraphImpl.getClassType(), entityGraphImpl);
     }
 
     public void addKeySubgraph(EntityGraphImpl entityGraphImpl) {
         if (this.keySubgraphs == null){
-            this.keySubgraphs = new HashMap<Class, Subgraph>();
+            this.keySubgraphs = new HashMap<>();
         }
         this.keySubgraphs.put(entityGraphImpl.getClassType(), entityGraphImpl);
     }

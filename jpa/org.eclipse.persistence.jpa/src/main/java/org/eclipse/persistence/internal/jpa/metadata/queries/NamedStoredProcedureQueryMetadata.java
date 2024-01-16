@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 /**
  * INTERNAL:
  * Object to hold onto a named stored procedure query.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -62,10 +62,10 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     private Boolean m_returnsResultSet;
     private Boolean m_callByIndex;
 
-    private List<MetadataClass> m_resultClasses = new ArrayList<MetadataClass>();
-    private List<String> m_resultClassNames = new ArrayList<String>();
-    private List<String> m_resultSetMappings = new ArrayList<String>();
-    private List<StoredProcedureParameterMetadata> m_parameters = new ArrayList<StoredProcedureParameterMetadata>();
+    private List<MetadataClass> m_resultClasses = new ArrayList<>();
+    private List<String> m_resultClassNames = new ArrayList<>();
+    private List<String> m_resultSetMappings = new ArrayList<>();
+    private List<StoredProcedureParameterMetadata> m_parameters = new ArrayList<>();
 
     private String m_procedureName;
 

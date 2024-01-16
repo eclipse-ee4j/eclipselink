@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * Object to hold onto an association override meta data.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -53,7 +53,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 public class AssociationOverrideMetadata extends OverrideMetadata {
     private ForeignKeyMetadata m_foreignKey;
     private JoinTableMetadata m_joinTable;
-    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
+    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<>();
 
     /**
      * INTERNAL:

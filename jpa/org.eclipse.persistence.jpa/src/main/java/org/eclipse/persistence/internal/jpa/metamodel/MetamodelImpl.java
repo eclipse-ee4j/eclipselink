@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -160,7 +160,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * Java SE (unmanaged) persistence unit.
      * This may occur on certain configurations of Spring or on Java EE 6 Web Profile implementations that are not in compliance
      * with the specification.
-     * See http://bugs.eclipse.org/338837
+     * @see <a href="https://bugs.eclipse.org/338837">Bug #338837</a>
      */
     private void entityEmbeddableManagedTypeNotFound(Map typeMap, Object aType, Class<?> clazz, String metamodelType, String metamodelTypeName) {
         // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
@@ -235,7 +235,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * Return a List of all attributes for all ManagedTypes.
      */
     public List<Attribute> getAllManagedTypeAttributes() {
-        List<Attribute> attributeList = new ArrayList<Attribute>();
+        List<Attribute> attributeList = new ArrayList<>();
         for(ManagedType managedType : this.managedTypes.values()) {
             attributeList.addAll(managedType.getAttributes());
         }
@@ -248,7 +248,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     @Override
     public Set<EmbeddableType<?>> getEmbeddables() {
-        return new LinkedHashSet<EmbeddableType<?>>(this.embeddables.values());
+        return new LinkedHashSet<>(this.embeddables.values());
     }
 
     /**
@@ -257,7 +257,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     @Override
     public Set<EntityType<?>> getEntities() {
-        return new LinkedHashSet<EntityType<?>>(this.entities.values());
+        return new LinkedHashSet<>(this.entities.values());
     }
 
     /**
@@ -273,7 +273,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     @Override
     public Set<ManagedType<?>> getManagedTypes() {
-        return new LinkedHashSet<ManagedType<?>>(this.managedTypes.values());
+        return new LinkedHashSet<>(this.managedTypes.values());
     }
 
     /**
@@ -281,7 +281,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * Return the Set of MappedSuperclassType objects
      */
     public Set<MappedSuperclassTypeImpl<?>> getMappedSuperclasses() {
-        return new LinkedHashSet<MappedSuperclassTypeImpl<?>>(this.mappedSuperclasses);
+        return new LinkedHashSet<>(this.mappedSuperclasses);
     }
 
     /**
@@ -336,7 +336,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
                 type = this.types.get(key);
                 // If a type is not found (not created during metamodel.initialize() - it is usually a Basic type
                 if(null == type) {
-                    type = new BasicTypeImpl<X>(javaClass);
+                    type = new BasicTypeImpl<>(javaClass);
                     // add the type to the types map keyed on Java class
                     putType(key, type);
                 }
@@ -381,11 +381,11 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     private void preInitialize(){
         // Design Note: Use LinkedHashMap and LinkedHashSet to preserve ordering
-        this.types = new LinkedHashMap<String, TypeImpl<?>>();
-        this.entities = new LinkedHashMap<String, EntityTypeImpl<?>>();
-        this.embeddables = new LinkedHashMap<String, EmbeddableTypeImpl<?>>();
-        this.managedTypes = new LinkedHashMap<String, ManagedTypeImpl<?>>();
-        this.mappedSuperclasses = new LinkedHashSet<MappedSuperclassTypeImpl<?>>();
+        this.types = new LinkedHashMap<>();
+        this.entities = new LinkedHashMap<>();
+        this.embeddables = new LinkedHashMap<>();
+        this.managedTypes = new LinkedHashMap<>();
+        this.mappedSuperclasses = new LinkedHashSet<>();
 
         // Process all Entity and Embeddable types (MappedSuperclasses are handled later)
         for (ClassDescriptor descriptor : this.getSession().getProject().getOrderedDescriptors()) {
@@ -437,18 +437,18 @@ public class MetamodelImpl implements Metamodel, Serializable {
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Initialize the JPA metamodel that wraps the EclipseLink JPA metadata created descriptors.<br>
      * Note: Since the types Map is lazy-loaded with key:value pairs - the designer and especially the user
      * must realize that a particular BasicType may not be in the Map until it is referenced.
-     *
+     * <p>
      * Also note that a transient superclass (non-entity, non-mappedSuperclass)
      * exists as a BasicType (it has no attributes), and that any inheriting Entity either
      * directly subclassing or indirectly subclassing via a MappedSuperclass inheritance chain
      * - does not pick up non-persistence fields that normally would be inherited.
      * (The fields exist in Java but not in ORM:Metamodel)
      * The transient class will have no JPA annotations.
-     *
+     * <p>
      * This is the second phase of metamodel initialization.  It causes preindexed classes to have their
      * attributes populated.
      */
@@ -504,7 +504,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
          * To avoid a ConcurrentModificationException on the types map, iterate a list instead of the Map values directly.
          * The following code section may add BasicTypes to the types map.
          */
-        for(ManagedTypeImpl<?> managedType : new ArrayList<ManagedTypeImpl<?>>(managedTypes.values())) {
+        for(ManagedTypeImpl<?> managedType : new ArrayList<>(managedTypes.values())) {
             managedType.initialize();
         }
 

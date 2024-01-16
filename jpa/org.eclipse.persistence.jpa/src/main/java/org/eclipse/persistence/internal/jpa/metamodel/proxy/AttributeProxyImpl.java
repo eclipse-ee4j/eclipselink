@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 public class AttributeProxyImpl<X, T> implements Attribute<X, T>, Serializable {
 
     protected Attribute<X, T> attribute = null;
-    protected transient Set<WeakReference<EntityManagerFactoryImpl>> factories = new HashSet<WeakReference<EntityManagerFactoryImpl>>();
+    protected transient Set<WeakReference<EntityManagerFactoryImpl>> factories = new HashSet<>();
 
     public synchronized Attribute<X, T> getAttribute(){
         if (attribute == null){
@@ -67,7 +67,7 @@ public class AttributeProxyImpl<X, T> implements Attribute<X, T>, Serializable {
                 return;
             }
         }
-        factories.add(new WeakReference<EntityManagerFactoryImpl>(factory));
+        factories.add(new WeakReference<>(factory));
     }
 
     @Override
