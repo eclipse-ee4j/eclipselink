@@ -322,7 +322,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
      *
      * @return persistence unit hash or {@code null} if this unit was not defined programmatically
      */
-    public String getConfigHash() {
+    String getConfigHash() {
         return configHash;
     }
 

@@ -39,8 +39,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
@@ -191,23 +189,15 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return null;
     }
 
+    // Never call this method from this class because of stack frames removal.
     @Override
     public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
         JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
         // Root URL from method caller
         StackWalker stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-        // Stack drop evaluation: drop max. 2 frames from jakarta.persistence / EclipseLink JPA
-        Function<StackWalker.StackFrame, Boolean> check = new Function<StackWalker.StackFrame, Boolean>() {
-            private static int count = 0;
-            @Override
-            public Boolean apply(StackWalker.StackFrame frame) {
-                return count++ < 2
-                        && (frame.getClassName().startsWith("jakarta.persistence")
-                                    || frame.getClassName().startsWith("org.eclipse.persistence.jpa"));
-            }
-        };
         StackWalker.StackFrame frame = stackWalker.walk(stream -> stream
-                .dropWhile(check::apply)
+                .dropWhile(f -> PersistenceProvider.class.getName().equals(f.getClassName()))
+                .dropWhile(f -> f.getClassName().startsWith("jakarta.persistence"))
                 .findFirst()
                 .orElse(null));
         URL rootURL;
