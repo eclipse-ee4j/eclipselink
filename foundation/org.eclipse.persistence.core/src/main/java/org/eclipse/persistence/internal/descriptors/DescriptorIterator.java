@@ -54,7 +54,7 @@ public abstract class DescriptorIterator {
     public static final int CascadePrivateParts = 2;
     public static final int CascadeAllParts = 3;
     protected Map visitedObjects;
-    protected Map visitedMappings;
+    protected Map<Integer, DatabaseMapping> visitedMappings;
     protected Stack visitedStack;
     protected AbstractSession session;
     protected DatabaseMapping currentMapping;
@@ -94,7 +94,7 @@ public abstract class DescriptorIterator {
     protected DescriptorIterator() {
         // 2612538 - the default size of Map (32) is appropriate
         this.visitedObjects = new IdentityHashMap();
-        this.visitedMappings = new HashMap();
+        this.visitedMappings = new HashMap<>();
         this.visitedStack = new Stack();
         this.cascadeDepth = CascadeAllParts;
         this.shouldIterateOverIndirectionObjects = true;// process the objects contained by ValueHolders...
@@ -455,7 +455,7 @@ public abstract class DescriptorIterator {
             this.currentItem = currentItemOriginal;
         } else {
             for (DatabaseMapping mapping : mappings) {
-                if (!this.cascadeCondition.shouldNotCascade(mapping)) {
+                if (this.cascadeCondition.shouldCascade(mapping)) {
                     mapping.iterate(this);
                 }
             }
@@ -705,6 +705,10 @@ public abstract class DescriptorIterator {
          * Default constructor.
          */
         public CascadeCondition() {
+        }
+
+        public boolean shouldCascade(DatabaseMapping mapping){
+            return !shouldNotCascade(mapping);
         }
 
         public boolean shouldNotCascade(DatabaseMapping mapping){
