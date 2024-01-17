@@ -708,7 +708,7 @@ public abstract class DescriptorIterator {
         }
 
         public boolean shouldCascade(DatabaseMapping mapping){
-            return !shouldNotCascade(mapping);
+            return shouldCascadeAllParts() || (shouldCascadePrivateParts() && mapping.isPrivateOwned());
         }
 
         public boolean shouldNotCascade(DatabaseMapping mapping){

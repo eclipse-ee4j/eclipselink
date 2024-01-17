@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -5684,6 +5684,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         iterator.setForDetach(forDetach);
         if (forDetach){
             CascadeCondition detached = iterator.new CascadeCondition(){
+                @Override
+                public boolean shouldCascade(DatabaseMapping mapping){
+                    return mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach();
+                }
+
                 @Override
                 public boolean shouldNotCascade(DatabaseMapping mapping){
                     return ! (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach());
