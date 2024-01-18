@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,11 @@
 //     James Sutherland - initial implementation
 package org.eclipse.persistence.annotations;
 
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-
 /**
- * Enum used with the BatchFetch annotation, or "eclipselink.batch.type" query hint.
+ * Enum used with the BatchFetch annotation, or {@code eclipselink.batch.type} query hint.
  * This can be specified on a mapping or query to configure the type of batch reading to be used.
  *
  * @see BatchFetch
- * @see ForeignReferenceMapping#setBatchFetchType(BatchFetchType)
  * @author James Sutherland
  * @since EclipseLink 2.1
  */

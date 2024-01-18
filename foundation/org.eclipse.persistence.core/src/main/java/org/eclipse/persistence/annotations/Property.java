@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,28 +31,28 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * A single Property may be specified directly on a mapped attribute or its
  * get/set method. Multiple Properties should be wrapped into Properties
  * annotation.
- *
+ * <p>
  * Property may be assigned to either a mapped attribute (or its get/set method)
  * within Entity, MappedSuperclass and Embeddable class;
  * or to Entity, MappedSuperclass and Embeddable class.
- *
+ * <p>
  * In case orm xml is used Property an Properties annotations specified on
  * mapped attributes are ignored, specified on a class are merged with the ones
  * specified in orm xml with the latter taking precedence in case of conflicts.
- *
+ * <p>
  * Properties defined in MappedSuperclass are passed to all inheriting Entities
  * and MappedSuperclasses. In case of a conflict property value defined directly
  * on a class always overrides the value passed from class's parent.
  *
- * @see jakarta.persistence.Embeddable
- * @see jakarta.persistence.Entity
- * @see jakarta.persistence.Id
- * @see jakarta.persistence.Basic
- * @see jakarta.persistence.ManyToMany
- * @see jakarta.persistence.ManyToOne
- * @see jakarta.persistence.MappedSuperclass
- * @see jakarta.persistence.OneToMany
- * @see jakarta.persistence.OneToOne
+ * @see "jakarta.persistence.Embeddable"
+ * @see "jakarta.persistence.Entity"
+ * @see "jakarta.persistence.Id"
+ * @see "jakarta.persistence.Basic"
+ * @see "jakarta.persistence.ManyToMany"
+ * @see "jakarta.persistence.ManyToOne"
+ * @see "jakarta.persistence.MappedSuperclass"
+ * @see "jakarta.persistence.OneToMany"
+ * @see "jakarta.persistence.OneToOne"
  * @see org.eclipse.persistence.annotations.BasicCollection
  * @see org.eclipse.persistence.annotations.BasicMap
  * @see org.eclipse.persistence.annotations.Properties

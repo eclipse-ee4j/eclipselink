@@ -19,10 +19,11 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
-import jakarta.persistence.PersistenceException;
+import org.eclipse.persistence.exceptions.CommunicationException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -381,10 +382,12 @@ public class TableCreator {
                             .priviledgedExecuteNonSelectingCall(
                                     new org.eclipse.persistence.queries.SQLCall(stmtWriter.toString()));
                 } catch (DatabaseException ex) {
-                    //Ignore database exception. eg. If there is no table to delete, it gives database exception.
-                    throw ex;
+                    if (!shouldIgnoreDatabaseException()) {
+                        throw ex;
+                    }
+                // stmtWriter is StringWriter so this is not expected to happen
                 } catch (IOException ex) {
-                    throw new PersistenceException(ex);
+                    throw CommunicationException.tablesTruncationFailed(ex);
                 }
             }
         }

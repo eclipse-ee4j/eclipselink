@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1048,15 +1048,16 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * INTERNAL:
-     * Sets a jakarta.persistence.LockModeType to used with this queries execution.
-     * The valid types are:
-     *  - WRITE
-     *  - READ
-     *  - OPTIMISTIC
-     *  - OPTIMISTIC_FORCE_INCREMENT
-     *  - PESSIMISTIC
-     *  - PESSIMISTIC_FORCE_INCREMENT
-     *  - NONE
+     * Sets a {@code jakarta.persistence.LockModeType} to used with this queries execution.
+     * <p><br>
+     * The valid types are:<ul>
+     * <li>{@code WRITE}</li>
+     * <li>{@code READ}</li>
+     * <li>{@code OPTIMISTIC}</li>
+     * <li>{@code OPTIMISTIC_FORCE_INCREMENT}</li>
+     * <li>{@code PESSIMISTIC}</li>
+     * <li>{@code PESSIMISTIC_FORCE_INCREMENT}</li>
+     * <li>{@code NONE}</li></ul>
      * Setting a null type will do nothing.
      * @return returns a failure flag indicating that we were UNABLE to set the
      * lock mode because of validation. Callers to this method should check the

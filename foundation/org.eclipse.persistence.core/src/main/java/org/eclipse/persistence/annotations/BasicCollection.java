@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,25 +31,23 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * of simple types (String, Number, Date, etc.). It is used in conjunction with
  * a CollectionTable which stores the value and a foreign key to the source
  * object.
- *
- * @see org.eclipse.persistence.annotations.CollectionTable
- *
+ * <p>
  * Converters may be used if the desired object type and the data type do not
  * match.
+ * <p>
+ * A BasicCollection can be specified on within an Entity, MappedSuperclass
+ * and Embeddable class.
  *
+ * @see "jakarta.persistence.ElementCollection"
+ * @see org.eclipse.persistence.annotations.CollectionTable
  * @see org.eclipse.persistence.annotations.Convert
  * @see org.eclipse.persistence.annotations.Converter
  * @see org.eclipse.persistence.annotations.ObjectTypeConverter
  * @see org.eclipse.persistence.annotations.TypeConverter
  *
- * A BasicCollection can be specified on within an Entity, MappedSuperclass
- * and Embeddable class.
- *
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
- *
  * @deprecated
- * @see jakarta.persistence.ElementCollection
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)

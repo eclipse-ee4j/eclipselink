@@ -279,6 +279,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "schema_validation_table_surplus_columns", "The {0} table has surplus columns in the schema"},
                                            { "schema_validation_table_missing_columns", "The {0} table has missing columns in the schema"},
                                            { "schema_validation_table_different_columns", "The {0} table has different columns in the schema"},
+                                           { "truncate_tables_failed", "Tables truncation failed"},
                                            { "find_option_class_unknown", "The FindOption implementing class {0} is not supported"},
                                            { "refresh_option_class_unknown", "The RefreshOption implementing class {0} is not supported"},
                                            { "lock_option_class_unknown", "The LockOption implementing class {0} is not supported"}
