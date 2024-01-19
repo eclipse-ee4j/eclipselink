@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.exceptions;
 
+import java.io.IOException;
+
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * <p>
@@ -32,6 +35,7 @@ public class CommunicationException extends EclipseLinkException {
     public static final int UNABLE_TO_PROPAGATE_CHANGES = 12002;
     public static final int ERROR_IN_INVOCATION = 12003;
     public static final int ERROR_SENDING_MESSAGE = 12004;
+    public static final int STMT_WRITER_ERROR = 12005;
 
     public CommunicationException(String theMessage) {
         super(theMessage);
@@ -86,4 +90,13 @@ public class CommunicationException extends EclipseLinkException {
         communicationException.setErrorCode(ERROR_SENDING_MESSAGE);
         return communicationException;
     }
+
+    public static CommunicationException tablesTruncationFailed(IOException ex) {
+        CommunicationException communicationException = new CommunicationException(
+                ExceptionLocalization.buildMessage("truncate_tables_failed"),
+                ex);
+        communicationException.setErrorCode(STMT_WRITER_ERROR);
+        return communicationException;
+    }
+
 }

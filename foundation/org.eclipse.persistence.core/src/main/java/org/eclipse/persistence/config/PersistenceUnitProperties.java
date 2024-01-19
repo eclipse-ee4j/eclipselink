@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -55,11 +55,6 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.config;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.FlushModeType;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Persistence;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.annotations.PrimaryKey;
@@ -107,7 +102,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * The class defines EclipseLink persistence unit property names. These values
  * are used to assist in the configuration of properties passed to
- * {@link Persistence#createEntityManagerFactory(String, Map)} which override
+ * {@code Persistence#createEntityManagerFactory(String, Map)} which override
  * the values specified in the persistence.xml file.
  * <p>
  * <b>Usage Example:</b>
@@ -121,25 +116,25 @@ import java.util.concurrent.TimeUnit;
  * Property values are usually case-insensitive with some common sense
  * exceptions, for instance class names.
  *
- * @see Persistence#createEntityManagerFactory(String, Map)
+ * @see "Persistence#createEntityManagerFactory(String, Map)"
  */
 public class PersistenceUnitProperties {
 
     /**
-     * The "<code>jakarta.persistence.transactionType</code>" property specifies the
+     * The {@code jakarta.persistence.transactionType} property specifies the
      * transaction type for the persistence unit. This property overrides the
      * value specified in the persistence.xml.
      * <p>
      * <b>Allowed Values</b> (case sensitive string)<b>:</b>
      * <ul>
-     * <li>"<code>JTA</code>"
-     * <li>"<code>RESOURCE_LOCAL</code>"
+     * <li>{@code JTA}
+     * <li>{@code RESOURCE_LOCAL}
      * </ul>
      */
     public static final String TRANSACTION_TYPE = "jakarta.persistence.transactionType";
 
     /**
-     * The "<code>jakarta.persistence.jtaDataSource</code>" property specifies the JTA data
+     * The {@code jakarta.persistence.jtaDataSource} property specifies the JTA data
      * source name that will look up a valid {@link javax.sql.DataSource}. This
      * property is used to override the value specified in the persistence.xml.
      * <p>
@@ -152,7 +147,7 @@ public class PersistenceUnitProperties {
     public static final String JTA_DATASOURCE = "jakarta.persistence.jtaDataSource";
 
     /**
-     * The "<code>jakarta.persistence.nonJtaDataSource</code>" property specifies the
+     * The {@code jakarta.persistence.nonJtaDataSource</code>} property specifies the
      * non-JTA data source name that will look up a valid
      * {@link javax.sql.DataSource}. This can be used to override the value
      * specified in the persistence.xml.
@@ -169,7 +164,7 @@ public class PersistenceUnitProperties {
     // JDBC Properties for internal connection pooling
 
     /**
-     * The "<code>jakarta.persistence.jdbc.driver</code>" property specifies the JDBC
+     * The {@code jakarta.persistence.jdbc.driver} property specifies the JDBC
      * {@link DriverManager} class name used for internal connection pooling when a data
      * source is not being used.
      * <p>
@@ -181,14 +176,14 @@ public class PersistenceUnitProperties {
      * <b>Persistence XML example:</b><pre>
      * {@code <property name="jakarta.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />}</pre>
      * <p>
-     * The previous value for this property "<code>eclipselink.jdbc.driver</code>" is now deprecated
+     * The previous value for this property {@code eclipselink.jdbc.driver} is now deprecated
      * and should be replaced with this new name.
      * </p>
      */
     public static final String JDBC_DRIVER = "jakarta.persistence.jdbc.driver";
 
     /**
-     * The "<code>jakarta.persistence.jdbc.url</code>" property specifies the JDBC URL used
+     * The {@code jakarta.persistence.jdbc.url} property specifies the JDBC URL used
      * for internal connection pooling when a data source is not being used.
      * <p>
      * <b>Allowed Values:</b>
@@ -199,46 +194,46 @@ public class PersistenceUnitProperties {
      * <b>Persistence XML example:</b><pre>
      * {@code <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost/mysql" />}</pre>
      * <p>
-     * The previous value for this property "<code>eclipselink.jdbc.url</code>" is now deprecated
+     * The previous value for this property {@code eclipselink.jdbc.url} is now deprecated
      * and should be replaced with this new name.
      * </p>
      */
     public static final String JDBC_URL = "jakarta.persistence.jdbc.url";
 
     /**
-     * The "<code>jakarta.persistence.jdbc.user</code>" property specifies the data source
+     * The {@code jakarta.persistence.jdbc.user} property specifies the data source
      * or JDBC user name.
      * <p>
      * <b>Persistence XML example:</b><pre>
      * {@code <property name="jakarta.persistence.jdbc.user" value="user-name" />}</pre>
      * <p>
-     * The previous value for this property "<code>eclipselink.jdbc.user</code>" is now deprecated and should
+     * The previous value for this property {@code eclipselink.jdbc.user} is now deprecated and should
      * be replaced with this new name.
      */
     public static final String JDBC_USER = "jakarta.persistence.jdbc.user";
 
     /**
-     * The "<code>jakarta.persistence.jdbc.password</code>" property specifies the data
+     * The {@code jakarta.persistence.jdbc.password} property specifies the data
      * source or JDBC password.
      * <p>
      * <b>Persistence XML example:</b><pre>
      * {@code <property name="jakarta.persistence.jdbc.password" value="password" />}</pre>
      * <p>
-     * The previous value for this property "<code>eclipselink.jdbc.password</code>" is now deprecated
+     * The previous value for this property {@code eclipselink.jdbc.password} is now deprecated
      * and should be replaced with this new name.
      */
     public static final String JDBC_PASSWORD = "jakarta.persistence.jdbc.password";
 
     /**
-     * The "<code>eclipselink.jdbc.native-sql</code>" property specifies whether
+     * The {@code eclipselink.jdbc.native-sql} property specifies whether
      * generic SQL should be used or platform specific 'native' SQL. The
      * platform specific SQL customizes join syntax, date operators, sequencing,
      * ...
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT) - use generic SQL
-     * <li>"<code>true</code>" - use database specific SQL
+     * <li>{@code false} (DEFAULT) - use generic SQL
+     * <li>{@code true} - use database specific SQL
      * </ul>
      *
      * @see DatabaseLogin#setUsesNativeSQL(boolean)
@@ -246,14 +241,14 @@ public class PersistenceUnitProperties {
     public static final String NATIVE_SQL = "eclipselink.jdbc.native-sql";
 
     /**
-     * The "<code>eclipselink.jdbc.sql-cast</code>" property specifies if
+     * The {@code eclipselink.jdbc.sql-cast} property specifies if
      * platform specific CAST SQL operations should be used. Casting is normally
      * not required, and can cause issues when used.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT) - disable platform specific cast
-     * <li>"<code>true</code>" - enable platform specific cast
+     * <li>{@code false} (DEFAULT) - disable platform specific cast
+     * <li>{@code true} - enable platform specific cast
      * </ul>
      *
      * @see DatabasePlatform#setIsCastRequired(boolean)
@@ -261,14 +256,14 @@ public class PersistenceUnitProperties {
     public static final String SQL_CAST = "eclipselink.jdbc.sql-cast";
 
     /**
-     * The "<code>eclipselink.jpql.parser</code>" property allows the
+     * The {@code eclipselink.jpql.parser} property allows the
      * JPQL parser to be configured.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>org.eclipse.persistence.internal.jpa.jpql.HermesParser</code>" (DEFAULT) - new parser
+     * <li>{@code org.eclipse.persistence.internal.jpa.jpql.HermesParser} (DEFAULT) - new parser
      * as of EclipseLink 2.4, provides extended JPQL support.
-     * <li>"<code>org.eclipse.persistence.queries.ANTLRQueryBuilder</code>" - old parser used previous
+     * <li>{@code org.eclipse.persistence.queries.ANTLRQueryBuilder} - old parser used previous
      * to EclipseLink 2.4, can be used for backward compatibility.
      * </ul>
      *
@@ -278,18 +273,18 @@ public class PersistenceUnitProperties {
     public static final String JPQL_PARSER = "eclipselink.jpql.parser";
 
     /**
-     * The "<code>eclipselink.jpql.validation</code>" property allows the
+     * The {@code eclipselink.jpql.validation} property allows the
      * JPQL parser validation level to be configured.
      * <p>
      * This setting is only supported in the Hermes parser.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>EclipseLink</code>" (DEFAULT) - allows EclipseLink JPQL extensions.
-     * <li>"<code>JPA 1.0</code>" - only allows valid JPA 1.0 JPQL.
-     * <li>"<code>JPA 2.0</code>" - only allows valid JPA 2.0 JPQL.
-     * <li>"<code>JPA 2.1</code>" - only allows valid JPA 2.1 JPQL.
-     * <li>"<code>None</code>" - no JPQL validation is done.
+     * <li>{@code EclipseLink} (DEFAULT) - allows EclipseLink JPQL extensions.
+     * <li>{@code JPA 1.0} - only allows valid JPA 1.0 JPQL.
+     * <li>{@code JPA 2.0} - only allows valid JPA 2.0 JPQL.
+     * <li>{@code JPA 2.1} - only allows valid JPA 2.1 JPQL.
+     * <li>{@code None} - no JPQL validation is done.
      * </ul>
      *
      * @see #JPQL_PARSER
@@ -298,9 +293,9 @@ public class PersistenceUnitProperties {
     public static final String JPQL_VALIDATION = "eclipselink.jpql.validation";
 
     /**
-     * The "<code>wait</code>" property.<br>
+     * The {@code wait} property.<br>
      * This can be append to any connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.default.wait</code>"
+     * i.e. {@code eclipselink.jdbc.connection_pool.default.wait}
      * which specifies the timeout time in milliseconds (ms) that will be waited
      * for an available connection before an exception is thrown.
      * <p>
@@ -318,9 +313,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_WAIT = "wait";
 
     /**
-     * The "<code>max</code>" property.<br>
+     * The {@code max} property.<br>
      * This can be append to any connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.default.max</code>".<br>
+     * i.e. {@code eclipselink.jdbc.connection_pool.default.max}.<br>
      * Specifies the maximum number of read connection in the internal connection pool. If
      * the maximum size is reached, threads requiring a connection will wait
      * until one is released back to the pool. By default a single shared
@@ -339,9 +334,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_MAX = "max";
 
     /**
-     * The "<code>min</code>" property.<br>
+     * The {@code min} property.<br>
      * This can be append to any connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.default.min</code>".<br>
+     * i.e. {@code eclipselink.jdbc.connection_pool.default.min}.<br>
      * Specifies the minimum number of connections in EclipseLink connection pool.
      * Connections beyond the minimum will be disconnected when returned to the pool,
      * so this should normally be equal to the number of active threads, or server's
@@ -360,9 +355,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_MIN = "min";
 
     /**
-     * The "<code>initial</code>" property.<br>
+     * The {@code initial} property.<br>
      * This can be append to any connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.default.initial</code>"
+     * i.e. {@code eclipselink.jdbc.connection_pool.default.initial}
      * EclipseLink JDBC (internal) connection pools properties. Initial number
      * of connections in EclipseLink connection pool. This is the number of
      * connections connected at startup. By default a single shared (exclusive)
@@ -380,9 +375,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_INITIAL = "initial";
 
     /**
-     * The "<code>shared</code>" property.<br>
+     * The {@code shared} property.<br>
      * This can be append to the read connection pool,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.read.shared</code>".<br>
+     * i.e. {@code eclipselink.jdbc.connection_pool.read.shared}.<br>
      * Configures whether connections in EclipseLink read connection pool should
      * be shared (not exclusive). Connection sharing means the same JDBC
      * connection will be used concurrently for multiple reading threads.
@@ -391,8 +386,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT) - indicates read connections will not be shared
-     * <li>"<code>true</code>" - indicates read connections can be shared
+     * <li>{@code false} (DEFAULT) - indicates read connections will not be shared
+     * <li>{@code true} - indicates read connections can be shared
      * </ul>
      *
      * @see #CONNECTION_POOL_READ
@@ -400,9 +395,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_SHARED = "shared";
 
     /**
-     * The "<code>url</code>" property.<br>
+     * The {@code url} property.<br>
      * This can be append to a connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.node1.url</code>".<br>
+     * i.e. {@code eclipselink.jdbc.connection_pool.node1.url}.<br>
      * Configures the JDBC url to use for the connection pool.
      * Only required if different than the default.
      *
@@ -411,9 +406,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_URL = "url";
 
     /**
-     * The "<code>jtaDataSource</code>" property.<br>
+     * The {@code jtaDataSource} property.<br>
      * This can be append to a connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.node1.jtaDataSource</code>".<br>
+     * i.e. {@code eclipselink.jdbc.connection_pool.node1.jtaDataSource}.<br>
      * Configures the JTA DataSource name to use for the connection pool.
      * Only required if different than the default.
      * @see #CONNECTION_POOL
@@ -421,9 +416,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_JTA_DATA_SOURCE = "jtaDataSource";
 
     /**
-     * The "<code>nonJtaDataSource</code>" property.<br>
+     * The {@code nonJtaDataSource} property.<br>
      * This can be append to a connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.node1.nonJtaDataSource</code>".<br>
+     * i.e. {@code eclipselink.jdbc.connection_pool.node1.nonJtaDataSource}.<br>
      * Configures the non JTA DataSource name to use for the connection pool.
      * Only required if different than the default.
      * @see #CONNECTION_POOL
@@ -431,9 +426,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_NON_JTA_DATA_SOURCE = "nonJtaDataSource";
 
     /**
-     * The "<code>user</code>" property.<br>
+     * The {@code user} property.<br>
      * This can be append to a connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.node1.user</code>".<br>
+     * i.e. {@code eclipselink.jdbc.connection_pool.node1.user}.<br>
      * Configures the user name to use for the connection pool.
      * Only required if different than the default.
      * @see #CONNECTION_POOL
@@ -441,9 +436,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_USER = "user";
 
     /**
-     * The "<code>password</code>" property.<br>
+     * The {@code password} property.<br>
      * This can be append to a connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.node1.password</code>".<br>
+     * i.e. {@code eclipselink.jdbc.connection_pool.node1.password}.<br>
      * Configures the password to use for the connection pool.
      * Only required if different than the default.
      * @see #CONNECTION_POOL
@@ -451,9 +446,9 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_PASSWORD = "password";
 
     /**
-     * The "<code>failover</code>" property.<br>
+     * The {@code failover} property.<br>
      * This can be append to a connection pool property,
-     * i.e. "<code>eclipselink.jdbc.connection_pool.node1.failover</code>".<br>
+     * i.e. {@code eclipselink.jdbc.connection_pool.node1.failover}.<br>
      * Configures the connection pool(s) to fail-over to if this connection pool fails.
      * A comma separate list is allowed if multiple failover pools are required.
      * @see #CONNECTION_POOL
@@ -461,16 +456,16 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_FAILOVER = "failover";
 
     /**
-     * Allow configuring a "<code>eclipselink.connection-pool.</code>" properties.
+     * Allow configuring a {@code eclipselink.connection-pool.} properties.
      * The name of the connection pool must be appended to configure the pool,
      * if no name is appended the default (write) pool is configured.
      * The name of the property to configure must also be appended.
      * <p>
      * A user defined connection pool can be configured or one of the following system pools:
      * <ul>
-     * <li> "<code>read</code>" - pool used for non-transactional read queries, (defaults to default pool if not specified).
-     * <li> "<code>default</code>", "<code>write</code>", "" - default pool used for writing and reads if no read pool configured.
-     * <li> "<code>sequence</code>" - pool used for sequencing, (default pool/write connection used if not specified).
+     * <li> {@code read} - pool used for non-transactional read queries, (defaults to default pool if not specified).
+     * <li> {@code default}, {@code write}, {@code ""} - default pool used for writing and reads if no read pool configured.
+     * <li> {@code sequence} - pool used for sequencing, (default pool/write connection used if not specified).
      * </ul>
      * <p>
      * A user defined pool is only used if specified in the EntityManager properties or ClientSession ConnectionPolicy,
@@ -478,16 +473,16 @@ public class PersistenceUnitProperties {
      * <p>
      * The following connection pool properties can be configured:
      * <ul>
-     * <li> "<code>initial</code>" - number of initial connections.
-     * <li> "<code>min</code>" - minimum number of connections.
-     * <li> "<code>max</code>" - maximum number of connections.
-     * <li> "<code>wait</code>" - amount of time to wait for a connection from the pool.
-     * <li> "<code>url</code>" - JDBC URL for the connection.
-     * <li> "<code>shared</code>" - only for the read connection pool, shares read connections across threads.
-     * <li> "<code>jtaDataSource</code>" - JTA DataSource name to use for the connection, if different than the default.
-     * <li> "<code>nonJtaDataSource</code>" - non JTA DataSource name to use for the connection, if different than the default.
-     * <li> "<code>user</code>" - user to use for the connection, if different than the default.
-     * <li> "<code>password</code>" - password to use for the connection, if different than the default.
+     * <li> {@code initial} - number of initial connections.
+     * <li> {@code min} - minimum number of connections.
+     * <li> {@code max} - maximum number of connections.
+     * <li> {@code wait} - amount of time to wait for a connection from the pool.
+     * <li> {@code url} - JDBC URL for the connection.
+     * <li> {@code shared} - only for the read connection pool, shares read connections across threads.
+     * <li> {@code jtaDataSource} - JTA DataSource name to use for the connection, if different than the default.
+     * <li> {@code nonJtaDataSource} - non JTA DataSource name to use for the connection, if different than the default.
+     * <li> {@code user} - user to use for the connection, if different than the default.
+     * <li> {@code password} - password to use for the connection, if different than the default.
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
@@ -512,23 +507,23 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL = "eclipselink.connection-pool.";
 
     /**
-     * Allow configuring the "<code>eclipselink.connection-pool.read.</code>" properties.
+     * Allow configuring the {@code eclipselink.connection-pool.read.} properties.
      * The read connection pool is used for non-transaction read queries.
      * By default a separate read connection pool is not used,
      * and the default pool is used for read queries.
      * <p>
      * One of the following connection pool properties must be appended.
      * <ul>
-     * <li> "<code>initial</code>" - number of initial connections.
-     * <li> "<code>min</code>" - minimum number of connections.
-     * <li> "<code>max</code>" - maximum number of connections.
-     * <li> "<code>wait</code>" - amount of time to wait for a connection from the pool.
-     * <li> "<code>url</code>" - JDBC URL for the connection.
-     * <li> "<code>shared</code>" - only for the read connection pool, shares read connections across threads.
-     * <li> "<code>jtaDataSource</code>" - JTA DataSource name to use for the connection, if different than the default.
-     * <li> "<code>nonJtaDataSource</code>" - non JTA DataSource name to use for the connection, if different than the default.
-     * <li> "<code>user</code>" - user to use for the connection, if different than the default.
-     * <li> "<code>password</code>" - password to use for the connection, if different than the default.
+     * <li> {@code initial} - number of initial connections.
+     * <li> {@code min} - minimum number of connections.
+     * <li> {@code max} - maximum number of connections.
+     * <li> {@code wait} - amount of time to wait for a connection from the pool.
+     * <li> {@code url} - JDBC URL for the connection.
+     * <li> {@code shared} - only for the read connection pool, shares read connections across threads.
+     * <li> {@code jtaDataSource} - JTA DataSource name to use for the connection, if different than the default.
+     * <li> {@code nonJtaDataSource} - non JTA DataSource name to use for the connection, if different than the default.
+     * <li> {@code user} - user to use for the connection, if different than the default.
+     * <li> {@code password} - password to use for the connection, if different than the default.
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
@@ -551,7 +546,7 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_READ = "eclipselink.connection-pool.read.";
 
     /**
-     * Allow configuring the "<code>eclipselink.connection-pool.sequence.</code>" properties.
+     * Allow configuring the {@code eclipselink.connection-pool.sequence.} properties.
      * The sequence connection pool is used to allocate generated Ids.
      * This is only required for TABLE sequencing.
      * <p>
@@ -560,15 +555,15 @@ public class PersistenceUnitProperties {
      * <p>
      * One of the following connection pool properties must be appended.
      * <ul>
-     * <li> "<code>initial</code>" - number of initial connections.
-     * <li> "<code>min</code>" - minimum number of connections.
-     * <li> "<code>max</code>" - maximum number of connections.
-     * <li> "<code>wait</code>" - amount of time to wait for a connection from the pool.
-     * <li> "<code>url</code>" - JDBC URL for the connection.
-     * <li> "<code>jtaDataSource</code>" - JTA DataSource name to use for the connection, if different than the default.
-     * <li> "<code>nonJtaDataSource</code>" - non JTA DataSource name to use for the connection, if different than the default.
-     * <li> "<code>user</code>" - user to use for the connection, if different than the default.
-     * <li> "<code>password</code>" - password to use for the connection, if different than the default.
+     * <li> {@code initial} - number of initial connections.
+     * <li> {@code min} - minimum number of connections.
+     * <li> {@code max} - maximum number of connections.
+     * <li> {@code wait} - amount of time to wait for a connection from the pool.
+     * <li> {@code url} - JDBC URL for the connection.
+     * <li> {@code jtaDataSource} - JTA DataSource name to use for the connection, if different than the default.
+     * <li> {@code nonJtaDataSource} - non JTA DataSource name to use for the connection, if different than the default.
+     * <li> {@code user} - user to use for the connection, if different than the default.
+     * <li> {@code password} - password to use for the connection, if different than the default.
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
@@ -597,14 +592,14 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE = "eclipselink.connection-pool.force-internal-pool";
 
     /**
-     * The "<code>eclipselink.jdbc.connections.wait-timeout</code>" property
+     * The {@code eclipselink.jdbc.connections.wait-timeout} property
      * which specifies the timeout time in milliseconds (ms) that will be waited
      * for an available connection before an exception is thrown.
      * <p>
@@ -624,7 +619,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_CONNECTIONS_WAIT = "eclipselink.jdbc.connections.wait-timeout";
 
     /**
-     * The "<code>eclipselink.jdbc.connections.max</code>" property specifies
+     * The {@code eclipselink.jdbc.connections.max} property specifies
      * the maximum number of read connection in the internal connection pool. If
      * the maximum size is reached, threads requiring a connection will wait
      * until one is released back to the pool. By default a single shared
@@ -645,7 +640,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_CONNECTIONS_MAX = "eclipselink.jdbc.connections.max";
 
     /**
-     * The "<code>eclipselink.jdbc.connections.min</code>" property specifies
+     * The {@code eclipselink.jdbc.connections.min} property specifies
      * the minimum number of connections in EclipseLink connection pool.
      * Connections beyond the minimum will be disconnected when returned to the pool,
      * so this should normally be equal to the number of active threads, or server's
@@ -666,7 +661,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_CONNECTIONS_MIN = "eclipselink.jdbc.connections.min";
 
     /**
-     * The "<code>eclipselink.jdbc.connections.initial</code>" property
+     * The {@code eclipselink.jdbc.connections.initial} property
      * EclipseLink JDBC (internal) connection pools properties. Initial number
      * of connections in EclipseLink connection pool. This is the number of
      * connections connected at startup. By default a single shared (exclusive)
@@ -686,7 +681,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_CONNECTIONS_INITIAL = "eclipselink.jdbc.connections.initial";
 
     /**
-     * The "<code>eclipselink.jdbc.write-connections.max</code>" property
+     * The {@code eclipselink.jdbc.write-connections.max} property
      * specifies the maximum number of connections supported in the internal
      * write connection pool. Maximum number of connections in EclipseLink write
      * connection pool. If the maximum size is reached, threads requiring a
@@ -708,7 +703,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_WRITE_CONNECTIONS_MAX = "eclipselink.jdbc.write-connections.max";
 
     /**
-     * The "<code>eclipselink.jdbc.write-connections.min</code>" property
+     * The {@code eclipselink.jdbc.write-connections.min} property
      * specifies the minimum number of connections in the internal write
      * connection pool. Connections beyond the minimum will be disconnected when
      * returned to the pool, so this should normally be equal to the number of
@@ -730,7 +725,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_WRITE_CONNECTIONS_MIN = "eclipselink.jdbc.write-connections.min";
 
     /**
-     * The "<code>eclipselink.jdbc.write-connections.initial</code>" property
+     * The {@code eclipselink.jdbc.write-connections.initial} property
      * configures the number of connections connected at created at startup in
      * the write connection pool. By default a single shared (exclusive)
      * read/write pool is used with min/max 32 connections and 1 initial.
@@ -749,7 +744,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_WRITE_CONNECTIONS_INITIAL = "eclipselink.jdbc.write-connections.initial";
 
     /**
-     * The "<code>eclipselink.jdbc.read-connections.max</code>" property
+     * The {@code eclipselink.jdbc.read-connections.max} property
      * configures the maximum number of connections in the read connection pool.
      * If the maximum size is reached, threads requiring a connection will wait
      * until one is released back to the pool (unless shared). By default a
@@ -777,7 +772,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_READ_CONNECTIONS_MAX = "eclipselink.jdbc.read-connections.max";
 
     /**
-     * The "<code>eclipselink.jdbc.read-connections.min</code>" property
+     * The {@code eclipselink.jdbc.read-connections.min} property
      * configures the minimum number of connections in read connection pool.
      * Connections beyond the minimum will be disconnected when returned to the
      * pool, so this should normally be equal to the number of active threads,
@@ -799,7 +794,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_READ_CONNECTIONS_MIN = "eclipselink.jdbc.read-connections.min";
 
     /**
-     * The "<code>eclipselink.jdbc.read-connections.initial</code>" property
+     * The {@code eclipselink.jdbc.read-connections.initial} property
      * configures the number of connections connected at created at startup in
      * the read connection pool. By default a single shared (exclusive)
      * read/write pool is used with min/max 32 connections and 1 initial.
@@ -818,7 +813,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_READ_CONNECTIONS_INITIAL = "eclipselink.jdbc.read-connections.initial";
 
     /**
-     * The "<code>eclipselink.jdbc.read-connections.shared</code>" property
+     * The {@code eclipselink.jdbc.read-connections.shared} property
      * configures whether connections in EclipseLink read connection pool should
      * be shared (not exclusive). Connection sharing means the same JDBC
      * connection will be used concurrently for multiple reading threads.
@@ -827,8 +822,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT) - indicates read connections will not be shared
-     * <li>"<code>true</code>" - indicates read connections can be shared
+     * <li>{@code false} (DEFAULT) - indicates read connections will not be shared
+     * <li>{@code true} - indicates read connections can be shared
      * </ul>
      *
      * @see #CONNECTION_POOL_SHARED
@@ -838,7 +833,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_READ_CONNECTIONS_SHARED = "eclipselink.jdbc.read-connections.shared";
 
     /**
-     * The "<code>eclipselink.jdbc.sequence-connection-pool.max</code>" property
+     * The {@code eclipselink.jdbc.sequence-connection-pool.max} property
      * configures the maximum number of connections in the sequence connection
      * pool. If the maximum size is reached, threads requiring a connection will
      * wait until one is released back to the pool.
@@ -871,7 +866,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_MAX = "eclipselink.jdbc.sequence-connection-pool.max";
 
     /**
-     * The "<code>eclipselink.jdbc.sequence-connection-pool.min</code>" property
+     * The {@code eclipselink.jdbc.sequence-connection-pool.min} property
      * configures the minimum number of connections in sequence connection pool.
      * Connections beyond the minimum will be disconnected when returned to the
      * pool, so this should normally be equal to the maximum to avoid
@@ -903,7 +898,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_MIN = "eclipselink.jdbc.sequence-connection-pool.min";
 
     /**
-     * The "<code>eclipselink.jdbc.sequence-connection-pool.initial</code> property configures the initial number of connections in
+     * The {@code eclipselink.jdbc.sequence-connection-pool.initial} property configures the initial number of connections in
      * sequence connection pool. This is the number of connections connected at
      * startup.
      * <p>
@@ -933,7 +928,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_INITIAL = "eclipselink.jdbc.sequence-connection-pool.initial";
 
     /**
-     * The "<code>eclipselink.jdbc.sequence-connection-pool</code>" property
+     * The {@code eclipselink.jdbc.sequence-connection-pool} property
      * configures a separate connection pool should used for sequencing to
      * retrieve new value(s). This improves sequence allocation by allocating
      * sequencing outside the current transaction. This can be used with
@@ -945,8 +940,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values</b> (case-insensitive)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      * <p>
      * See:
@@ -972,7 +967,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_SEQUENCE_CONNECTION_POOL = "eclipselink.jdbc.sequence-connection-pool";
 
     /**
-     * The "<code>eclipselink.jdbc.sequence-connection-pool.non-jta-data-source</code> property configures the name of the non-JTA data source that
+     * The {@code eclipselink.jdbc.sequence-connection-pool.non-jta-data-source} property configures the name of the non-JTA data source that
      * will be used for sequencing calls.
      *
      * @see #JDBC_SEQUENCE_CONNECTION_POOL
@@ -983,7 +978,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_DATASOURCE = "eclipselink.jdbc.sequence-connection-pool.non-jta-data-source";
 
     /**
-     * The "<code>eclipselink.partitioning</code>" property specifies the default {@link PartitioningPolicy} for a persistence unit.<br>
+     * The {@code eclipselink.partitioning} property specifies the default {@link PartitioningPolicy} for a persistence unit.<br>
      * A PartitioningPolicy is used to partition the data for a class across multiple difference databases
      * or across a database cluster such as Oracle RAC.<br>
      * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
@@ -1001,13 +996,13 @@ public class PersistenceUnitProperties {
     public static final String PARTITIONING = "eclipselink.partitioning";
 
     /**
-     * The "<code>eclipselink.partitioning.callback</code>" is used to integrate with an external
+     * The {@code eclipselink.partitioning.callback} is used to integrate with an external
      * DataSource's data affinity support, such as UCP.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
      * <li>the fully qualified name for a class that implements {@link DataPartitioningCallback} interface
-     * i.e. "<code>org.eclipse.persistence.platform.database.oracle.ucp.UCPDataPartitioningCallback</code>"
+     * i.e. {@code org.eclipse.persistence.platform.database.oracle.ucp.UCPDataPartitioningCallback}
      * </ul>
      *
      * @see org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback
@@ -1017,7 +1012,7 @@ public class PersistenceUnitProperties {
     public static final String PARTITIONING_CALLBACK = "eclipselink.partitioning.callback";
 
     /**
-     * Property "<code>eclipselink.jdbc.bind-parameters</code>" configures whether parameter binding 
+     * Property {@code eclipselink.jdbc.bind-parameters} configures whether parameter binding 
      * should be used in the creation of JDBC prepared statements.
      * <p>
      * Usage of parameter binding is generally a performance optimization; 
@@ -1025,14 +1020,14 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" - all values will be written literally into the generated SQL
-     * <li>"<code>true</code>" (DEFAULT) - all values will be bound as parameters in the generated SQL
+     * <li>{@code false} - all values will be written literally into the generated SQL
+     * <li>{@code true} (DEFAULT) - all values will be bound as parameters in the generated SQL
      * </ul>
      */
     public static final String JDBC_BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
 
     /**
-     * Property "<code>eclipselink.jdbc.allow-partial-bind-parameters</code>" configures whether 
+     * Property {@code eclipselink.jdbc.allow-partial-bind-parameters} configures whether 
      * partial parameter binding should be allowed in the creation of JDBC prepared statements.
      * <p>
      * EclipseLink determines binding behavior based on the database platform's support for binding.
@@ -1045,22 +1040,22 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>true</code>" - EclipseLink binds parameters per SQL function/expression. Requires Platform support if enabled.
-     * <li>"<code>false</code>" (DEFAULT) - EclipseLink either binds all parameters or no parameters; depending on database support
+     * <li>{@code true} - EclipseLink binds parameters per SQL function/expression. Requires Platform support if enabled.
+     * <li>{@code false} (DEFAULT) - EclipseLink either binds all parameters or no parameters; depending on database support
      * </ul>
      */
     public static final String JDBC_ALLOW_PARTIAL_PARAMETERS = "eclipselink.jdbc.allow-partial-bind-parameters";
 
     /**
-     * Property "<code>eclipselink.jdbc.force-bind-parameters</code>" enables parameter binding
+     * Property {@code eclipselink.jdbc.force-bind-parameters} enables parameter binding
      * in the creation of JDBC prepared statements. Some database platforms disable parameter binding
      * on certain functions and relations. This property allows the user to force parameter binding
      * to be enabled regardless.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT) - values will default to platform specific logic
-     * <li>"<code>true</code>" - bindings will use platform default
+     * <li>{@code false} (DEFAULT) - values will default to platform specific logic
+     * <li>{@code true} - bindings will use platform default
      * </ul>
      *
      * @see #JDBC_BIND_PARAMETERS
@@ -1068,7 +1063,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_FORCE_BIND_PARAMETERS = "eclipselink.jdbc.force-bind-parameters";
 
     /**
-     * The "<code>eclipselink.jdbc.exclusive-connection.mode</code>" property
+     * The {@code eclipselink.jdbc.exclusive-connection.mode} property
      * specifies when reads are performed through the write connection.<br>
      * You can set this property while creating either an EntityManagerFactory (either
      * in the map passed to the createEntityManagerFactory method, or in the
@@ -1077,9 +1072,9 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>Transactional</code>" (DEFAULT) - {@link ExclusiveConnectionMode#Transactional}
-     * <li>"<code>Isolated</code>" - {@link ExclusiveConnectionMode#Isolated}
-     * <li>"<code>Always</code>" - {@link ExclusiveConnectionMode#Always}
+     * <li>{@code Transactional} (DEFAULT) - {@link ExclusiveConnectionMode#Transactional}
+     * <li>{@code Isolated} - {@link ExclusiveConnectionMode#Isolated}
+     * <li>{@code Always} - {@link ExclusiveConnectionMode#Always}
      * </ul>
      *
      * @see ExclusiveConnectionMode
@@ -1087,19 +1082,19 @@ public class PersistenceUnitProperties {
     public static final String EXCLUSIVE_CONNECTION_MODE = "eclipselink.jdbc.exclusive-connection.mode";
 
     /**
-     * The "<code>eclipselink.jdbc.exclusive-connection.is-lazy</code>" property
+     * The {@code eclipselink.jdbc.exclusive-connection.is-lazy} property
      * specifies when write connection is acquired lazily.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      */
     public static final String EXCLUSIVE_CONNECTION_IS_LAZY = "eclipselink.jdbc.exclusive-connection.is-lazy";
 
     /**
-     * The "<code>eclipselink.jdbc.cache-statements.size</code>" property
+     * The {@code eclipselink.jdbc.cache-statements.size} property
      * specifies the number of statements held when using internal statement
      * caching.
      * <p>
@@ -1113,14 +1108,14 @@ public class PersistenceUnitProperties {
     public static final String CACHE_STATEMENTS_SIZE = "eclipselink.jdbc.cache-statements.size";
 
     /**
-     * The "<code>eclipselink.jdbc.cache-statements</code>" property specifies
+     * The {@code eclipselink.jdbc.cache-statements} property specifies
      * whether JDBC statements should be cached. This is recommended when using
      * EclipseLink's internal connection pooling.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT) - disable internal statement caching.
-     * <li>"<code>true</code>" - enable internal statement caching.
+     * <li>{@code false} (DEFAULT) - disable internal statement caching.
+     * <li>{@code true} - enable internal statement caching.
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
@@ -1135,34 +1130,34 @@ public class PersistenceUnitProperties {
     // Bean Validation properties
 
     /**
-     * The "<code>jakarta.persistence.validation.factory</code>" property
+     * The {@code jakarta.persistence.validation.factory} property
      * specifies an instance of <a href =
      * http://docs.oracle.com/javaee/6/api/jakarta.validation/ValidatorFactory.html>jakarta.validation.ValidatorFactory</a> used by
      * EclipseLink to perform Automatic Validation upon Lifecycle Events. If the
      * property is not specified, and if Bean Validation API is visible to
      * EclipseLink, it will try to instantiate an instance of
-     * <code>jakarta.validation.ValidationFactory</code> by calling
-     * <code>Validation.buildDefaultValidatorFactory()</code>.
+     * {@code jakarta.validation.ValidationFactory} by calling
+     * {@code Validation.buildDefaultValidatorFactory()}.
      */
     public static final String VALIDATOR_FACTORY = "jakarta.persistence.validation.factory";
 
     /**
-     * The "<code>jakarta.persistence.validation.mode</code>" property specifies
+     * The {@code jakarta.persistence.validation.mode} property specifies
      * whether the automatic lifecycle event validation is in effect.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>AUTO</code>"
-     * <li>"<code>CALLBACK</code>"
-     * <li>"<code>NONE</code>"
+     * <li>{@code AUTO}
+     * <li>{@code CALLBACK}
+     * <li>{@code NONE}
      * </ul>
      */
     public static final String VALIDATION_MODE = "jakarta.persistence.validation.mode";
 
     /**
-     * The "<code>jakarta.persistence.validation.group.pre-persist</code>"
+     * The {@code jakarta.persistence.validation.group.pre-persist}
      * property specifies the name of the validator groups to execute for
-     * <code>preUpdate</code> event. The value should be a string with fully qualified
+     * {@code preUpdate} event. The value should be a string with fully qualified
      * classnames separated by a comma (','). If this value is not specified in
      * both persistence.xml or using this property, the default Bean Validation
      * group (the group Default) will be validated
@@ -1170,8 +1165,8 @@ public class PersistenceUnitProperties {
     public static final String VALIDATION_GROUP_PRE_PERSIST = "jakarta.persistence.validation.group.pre-persist";
 
     /**
-     * The "<code>jakarta.persistence.validation.group.pre-update</code>" property
-     * specifies the name of the validator groups to execute for <code>preUpdate</code>
+     * The {@code jakarta.persistence.validation.group.pre-update} property
+     * specifies the name of the validator groups to execute for {@code preUpdate}
      * event. The value should be a string with fully qualified classnames
      * separated by a comma (','). If this value is not specified in both
      * persistence.xml or using this property, the default Bean Validation group
@@ -1180,8 +1175,8 @@ public class PersistenceUnitProperties {
     public static final String VALIDATION_GROUP_PRE_UPDATE = "jakarta.persistence.validation.group.pre-update";
 
     /**
-     * The "<code>jakarta.persistence.validation.group.pre-remove</code>" property
-     * specifies the name of the validator groups to execute for <code>preRemove</code>
+     * The {@code jakarta.persistence.validation.group.pre-remove} property
+     * specifies the name of the validator groups to execute for {@code preRemove}
      * event. The value should be a string with fully qualified classnames
      * separated by a comma (','). If this value is not specified in both
      * persistence.xml or using this property, no validation will occur on
@@ -1214,7 +1209,7 @@ public class PersistenceUnitProperties {
     public static final String DEFAULT = "default";
 
     /**
-     * Property prefix "<code>eclipselink.cache.size.</code>" is used to specify the cache size
+     * Property prefix {@code eclipselink.cache.size.} is used to specify the cache size
      * for a specific entity type. The prefix must be followed by a valid entity type name.
      * <p>
      * Property names formed out of these prefixes by appending either entity
@@ -1232,7 +1227,7 @@ public class PersistenceUnitProperties {
     public static final String CACHE_SIZE_ = "eclipselink.cache.size.";
 
     /**
-     * Property prefix "<code>eclipselink.cache.type.</code>" sets the type of cache
+     * Property prefix {@code eclipselink.cache.type.} sets the type of cache
      * for a specific entity type. The prefix must be followed by a valid entity type name.
      * <p>
      * Property names formed out of these prefixes by appending either entity
@@ -1244,7 +1239,7 @@ public class PersistenceUnitProperties {
      * class. The default cache type is {@link CacheType#SoftWeak}.
      * <p>
      * If you do not wish to cache entities at all, then set {@link PersistenceUnitProperties#CACHE_SHARED_}
-     * to "<code>false</code>".
+     * to {@code false}.
      *
      * @see #CACHE_SHARED_
      * @see CacheType
@@ -1253,7 +1248,7 @@ public class PersistenceUnitProperties {
     public static final String CACHE_TYPE_ = "eclipselink.cache.type.";
 
     /**
-     * Property prefix "<code>eclipselink.cache.shared.</code>" indicates whether entity's cache
+     * Property prefix {@code eclipselink.cache.shared.} indicates whether entity's cache
      * should be shared (non-isolated) for a specific entity type. The prefix must be followed
      * by a valid entity type name.
      * <p>
@@ -1262,12 +1257,12 @@ public class PersistenceUnitProperties {
      * a particular entity) or {@link #DEFAULT} suffix (indicating that the property
      * value applies to all entities).
      * <p>
-     * If you do not wish to cache your entities, set this to "<code>false</code>".
+     * If you do not wish to cache your entities, set this to {@code false}.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      *
      * @see #CACHE_SHARED_DEFAULT
@@ -1275,20 +1270,20 @@ public class PersistenceUnitProperties {
     public static final String CACHE_SHARED_ = "eclipselink.cache.shared.";
 
     /**
-     * The "<code>jakarta.persistence.sharedCache.mode</code>" property determines whether
+     * The {@code jakarta.persistence.sharedCache.mode} property determines whether
      * second-level caching is in effect for the persistence unit. This property overrides the value
      * specified by the &lt;shared-cache-mode&gt; element in the persistence.xml.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>ALL</code>"
-     * <li>"<code>NONE</code>"
-     * <li>"<code>ENABLE_SELECTIVE</code>"
-     * <li>"<code>DISABLE_SELECTIVE</code>"
-     * <li>"<code>UNSPECIFIED</code>"
+     * <li>{@code ALL}
+     * <li>{@code NONE}
+     * <li>{@code ENABLE_SELECTIVE}
+     * <li>{@code DISABLE_SELECTIVE}
+     * <li>{@code UNSPECIFIED}
      * </ul>
      *
-     * @see jakarta.persistence.SharedCacheMode
+     * @see "jakarta.persistence.SharedCacheMode"
      */
     public static final String SHARED_CACHE_MODE = "jakarta.persistence.sharedCache.mode";
 
@@ -1312,44 +1307,44 @@ public class PersistenceUnitProperties {
     public static final String CACHE_TYPE_DEFAULT = CACHE_TYPE_ + DEFAULT;
 
     /**
-     * The "<code>eclipselink.cache.extended.logging</code>" property control (enable/disable)
-     * usage logging of JPA L2 cache. In case of "<code>true</code>" EclipseLink generates messages into log output
+     * The {@code eclipselink.cache.extended.logging} property control (enable/disable)
+     * usage logging of JPA L2 cache. In case of {@code true} EclipseLink generates messages into log output
      * about cache hit/miss new object population and object removal or invalidation.
-     * This kind of messages will by displayed only if logging level (property "<code>eclipselink.logging.level</code>")
-     * is "<code>FINEST</code>"
+     * This kind of messages will by displayed only if logging level (property {@code eclipselink.logging.level})
+     * is {@code FINEST}
      * It displays Entity class, ID and thread info (ID, Name).
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String CACHE_EXTENDED_LOGGING = "eclipselink.cache.extended.logging";
 
     /**
-     * The "<code>eclipselink.thread.extended.logging</code>" property control (enable/disable)
+     * The {@code eclipselink.thread.extended.logging} property control (enable/disable)
      * some additional logging messages like print error message if cached Entity is picked by different thread,
      * or if EntityManager/UnitOfWork is reused/passed to different thread.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String THREAD_EXTENDED_LOGGING = "eclipselink.thread.extended.logging";
 
     /**
-     * The "<code>eclipselink.thread.extended.logging.threaddump</code>" property control (enable/disable)
-     * store and display thread dump. This is extension to "<code>eclipselink.thread.extended.logging</code>" which
-     * must be enabled. It prints additionally to some log messages presented by "<code>eclipselink.thread.extended.logging</code>"
+     * The {@code eclipselink.thread.extended.logging.threaddump} property control (enable/disable)
+     * store and display thread dump. This is extension to {@code eclipselink.thread.extended.logging} which
+     * must be enabled. It prints additionally to some log messages presented by {@code eclipselink.thread.extended.logging}
      * creation and current thread stack traces.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String THREAD_EXTENDED_LOGGING_THREADDUMP = "eclipselink.thread.extended.logging.threaddump";
@@ -1360,7 +1355,7 @@ public class PersistenceUnitProperties {
      */
 
     /**
-     * The "<code>eclipselink.canonicalmodel.prefix</code>" optional property specifies the prefix
+     * The {@code eclipselink.canonicalmodel.prefix} optional property specifies the prefix
      * that will be added to the start of the class name of any canonical model class generated.
      * By default the prefix is not used.
      *
@@ -1377,7 +1372,7 @@ public class PersistenceUnitProperties {
     public static String CANONICAL_MODEL_PREFIX_DEFAULT = "";
 
     /**
-     * The "<code>eclipselink.canonicalmodel.suffix</code>" optional property specifies the suffix
+     * The {@code eclipselink.canonicalmodel.suffix} optional property specifies the suffix
      * that will be added to the end of the class name of any canonical model class generated.
      * The suffix defaults to "_" unless a prefix is specified. If this property is
      * specified, the value must be a non-empty string that contains valid
@@ -1396,7 +1391,7 @@ public class PersistenceUnitProperties {
     public static String CANONICAL_MODEL_SUFFIX_DEFAULT = "_";
 
     /**
-     * The "<code>eclipselink.canonicalmodel.subpackage</code>" optional property specifies
+     * The {@code eclipselink.canonicalmodel.subpackage} optional property specifies
      * a sub-package name that can be used to have the canonical model generator generate its classes
      * in a sub-package of the package where the corresponding entity class is located. By
      * default the canonical model classes are generated into the same package as the entity classes.
@@ -1414,7 +1409,7 @@ public class PersistenceUnitProperties {
     public static String CANONICAL_MODEL_SUB_PACKAGE_DEFAULT = "";
 
     /**
-     * The "<code>eclipselink.canonicalmodel.load_xml</code>" optional property can be used a performance
+     * The {@code eclipselink.canonicalmodel.load_xml} optional property can be used a performance
      * enhancement between compile rounds. It is used to avoid reloading XML metadata on each
      * compile which may only contain a single class etc. The default value
      * is true and should be left as such for the initial generation to capture
@@ -1426,14 +1421,14 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_LOAD_XML = "eclipselink.canonicalmodel.load_xml";
 
     /**
-     * Default value for the "<code>eclipselink.canonicalmodel.load_xml</code>" optional property.
+     * Default value for the {@code eclipselink.canonicalmodel.load_xml} optional property.
      *
      * @see #CANONICAL_MODEL_LOAD_XML
      */
     public static final String CANONICAL_MODEL_LOAD_XML_DEFAULT = "true";
 
     /**
-     * The "<code>eclipselink.canonicalmodel.use_static_factory</code>" optional property can be used
+     * The {@code eclipselink.canonicalmodel.use_static_factory} optional property can be used
      * a performance enhancement between compile rounds within an IDE. It is used to avoid using
      * a static metadata factory between 'cache' metadata from incremental builds. Turning this
      * off in some use cases (IDE) could result in a loss of functionality.
@@ -1444,7 +1439,7 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_USE_STATIC_FACTORY = "eclipselink.canonicalmodel.use_static_factory";
 
     /**
-     * Default value for the "<code>eclipselink.canonicalmodel.use_static_factory</code>" optional
+     * Default value for the {@code eclipselink.canonicalmodel.use_static_factory} optional
      * property.
      *
      * @see #CANONICAL_MODEL_USE_STATIC_FACTORY
@@ -1452,7 +1447,7 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT = "true";
 
     /**
-     * The "<code>eclipselink.canonicalmodel.use_generated</code>" optional property can be used
+     * The {@code eclipselink.canonicalmodel.use_generated} optional property can be used
      * to disable generation of {@link jakarta.annotation.Generated} annotation.
      * The default value is true.
      * If the value is {@code false}, {@linkplain #CANONICAL_MODEL_GENERATE_TIMESTAMP}
@@ -1463,7 +1458,7 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_GENERATE_GENERATED = "eclipselink.canonicalmodel.use_generated";
 
     /**
-     * Default value for the "<code>eclipselink.canonicalmodel.use_generated</code>" optional
+     * Default value for the {@code eclipselink.canonicalmodel.use_generated} optional
      * property.
      *
      * @see #CANONICAL_MODEL_GENERATE_GENERATED
@@ -1471,7 +1466,7 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_GENERATE_GENERATED_DEFAULT = "true";
 
     /**
-     * The "<code>eclipselink.canonicalmodel.generate_timestamp</code>" optional property can be used
+     * The {@code eclipselink.canonicalmodel.generate_timestamp} optional property can be used
      * to disable usage of date in declaration of {@link jakarta.annotation.Generated} annotation.
      * The default value is true.
      *
@@ -1480,7 +1475,7 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_GENERATE_TIMESTAMP = "eclipselink.canonicalmodel.generate_timestamp";
 
     /**
-     * Default value for the "<code>eclipselink.canonicalmodel.generate_timestamp</code>" optional
+     * Default value for the {@code eclipselink.canonicalmodel.generate_timestamp} optional
      * property.
      *
      * @see #CANONICAL_MODEL_GENERATE_TIMESTAMP
@@ -1488,7 +1483,7 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT = "true";
 
     /**
-     * The "<code>eclipselink.canonicalmodel.generate_comments</code>" optional property can be used
+     * The {@code eclipselink.canonicalmodel.generate_comments} optional property can be used
      * to disable usage of comments in declaration of {@code Generated} annotation.
      * The default value is true.
      *
@@ -1497,7 +1492,7 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_GENERATE_COMMENTS = "eclipselink.canonicalmodel.generate_comments";
 
     /**
-     * Default value for the "<code>eclipselink.canonicalmodel.generate_comments</code>" optional property.
+     * Default value for the {@code eclipselink.canonicalmodel.generate_comments} optional property.
      *
      * @see #CANONICAL_MODEL_GENERATE_COMMENTS
      */
@@ -1506,12 +1501,12 @@ public class PersistenceUnitProperties {
     /**
      * Default caching properties - apply to all entities. May be overridden by
      * individual entity property with the same prefix. If you do not wish to
-     * cache your entities, set this to "<code>false</code>".
+     * cache your entities, set this to {@code false}.
      */
     public static final String CACHE_SHARED_DEFAULT = CACHE_SHARED_ + DEFAULT;
 
     /**
-     * Property prefix "<code>eclipselink.cache.query-results</code>" used to
+     * Property prefix {@code eclipselink.cache.query-results} used to
      * configure the default option for query results caching.
      * <p>
      * The query results cache is separate from the object cache.
@@ -1522,14 +1517,14 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String QUERY_CACHE = "eclipselink.cache.query-results";
 
     /**
-     * The "<code>eclipselink.cache.database-event-listener</code>" property allows integration
+     * The {@code eclipselink.cache.database-event-listener} property allows integration
      * with a database event notification service.
      * This allows the EclipseLink cache to be invalidated by database change events.
      * This is used to support Oracle QCN/DCN (Database Change event Notification),
@@ -1538,9 +1533,9 @@ public class PersistenceUnitProperties {
      * <b>Allowed Values:</b>
      * <ul>
      * <li>the fully qualified name for a class that implements {@link DatabaseEventListener} interface,
-     * for example "<code>org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener</code>"
-     * <li>"<code>DCN</code>" - for Oracle only
-     * <li>"<code>QCN</code>" - for Oracle only
+     * for example {@code org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener}
+     * <li>{@code DCN} - for Oracle only
+     * <li>{@code QCN} - for Oracle only
      * </ul>
      *
      * @see DatabaseEventListener
@@ -1549,13 +1544,13 @@ public class PersistenceUnitProperties {
     public static final String DATABASE_EVENT_LISTENER = "eclipselink.cache.database-event-listener";
 
     /**
-     * The "<code>eclipselink.cache.query-force-deferred-locks</code>" property force all queries and relationships
+     * The {@code eclipselink.cache.query-force-deferred-locks} property force all queries and relationships
      * to use deferred lock strategy during object building and L2 cache population.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT) - use use mixed object cache locking strategy
-     * <li>"<code>true</code>" - use deferred locking strategy all queries and relationships
+     * <li>{@code false} (DEFAULT) - use use mixed object cache locking strategy
+     * <li>{@code true} - use deferred locking strategy all queries and relationships
      * </ul>
      */
     public static final String CACHE_QUERY_FORCE_DEFERRED_LOCKS = "eclipselink.cache.query-force-deferred-locks";
@@ -1565,7 +1560,7 @@ public class PersistenceUnitProperties {
     // Logging properties
 
     /**
-     * The "<code>eclipselink.logging.logger</code>" property specifies the type of logger.
+     * The {@code eclipselink.logging.logger} property specifies the type of logger.
      * <p>
      * Default: {@link DefaultSessionLog}
      * <p>
@@ -1582,7 +1577,7 @@ public class PersistenceUnitProperties {
     public static final String LOGGING_LOGGER = "eclipselink.logging.logger";
 
     /**
-     * The "<code>eclipselink.logging.level</code>" property allows the default logging levels to be specified.
+     * The {@code eclipselink.logging.level} property allows the default logging levels to be specified.
      *
      * <table>
      * <caption>Logging Levels:</caption>
@@ -1609,7 +1604,7 @@ public class PersistenceUnitProperties {
     public static final String LOGGING_LEVEL = "eclipselink.logging.level";
 
     /**
-     * Property prefix "<code>eclipselink.logging.level.</code>" allows the category specific logging levels
+     * Property prefix {@code eclipselink.logging.level.} allows the category specific logging levels
      * to be specified.
      *
      * <table>
@@ -1633,7 +1628,7 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>names of levels defined in <code>java.util.logging.Level</code>, default value is <code>INFO</code>.
+     * <li>names of levels defined in {@code java.util.logging.Level}, default value is {@code INFO}.
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
@@ -1656,8 +1651,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>"
+     * <li>{@code false}
+     * <li>{@code true}
      * </ul>
      *
      * @see #JDBC_BIND_PARAMETERS
@@ -1665,71 +1660,71 @@ public class PersistenceUnitProperties {
     public static final String LOGGING_PARAMETERS = "eclipselink.logging.parameters";
 
     /**
-     * The "<code>eclipselink.logging.timestamp</code>" property configures if
+     * The {@code eclipselink.logging.timestamp} property configures if
      * the current time stamp should be included in each log message.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      */
     public static final String LOGGING_TIMESTAMP = "eclipselink.logging.timestamp";
 
     /**
-     * Property "<code>eclipselink.logging.thread</code>" indicates if current
+     * Property {@code eclipselink.logging.thread} indicates if current
      * thread should have its identity included in each log message.
      * <p>
-     * By default ("<code>true</code>") the thread is logged at FINE or less level. This can
-     * be turned off ("<code>false</code>") or on ("<code>true</code>").
+     * By default ({@code true}) the thread is logged at FINE or less level. This can
+     * be turned off ({@code false}) or on ({@code true}).
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      */
     public static final String LOGGING_THREAD = "eclipselink.logging.thread";
 
     /**
-     * Property "<code>eclipselink.logging.session</code>" indicates if the
+     * Property {@code eclipselink.logging.session} indicates if the
      * session in use should have its identity included in each log message.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      */
     public static final String LOGGING_SESSION = "eclipselink.logging.session";
 
     /**
-     * Property "<code>eclipselink.logging.connection</code>" indicates if the
+     * Property {@code eclipselink.logging.connection} indicates if the
      * connection in use should have its identity included in each log message.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      */
     public static final String LOGGING_CONNECTION = "eclipselink.logging.connection";
 
     /**
-     * Property "<code>eclipselink.logging.exceptions</code>" indicates if exception stack traces
+     * Property {@code eclipselink.logging.exceptions} indicates if exception stack traces
      * should be included in each log message.<br>
      * By default stack trace is logged for SEVERE all the time and at FINER level for WARNING or less.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      */
     public static final String LOGGING_EXCEPTIONS = "eclipselink.logging.exceptions";
 
     /**
-     * The "<code>eclipselink.logging.file</code>" property configures a file
+     * The {@code eclipselink.logging.file} property configures a file
      * location where the log will be output to instead of standard out.
      */
     public static final String LOGGING_FILE = "eclipselink.logging.file";
@@ -1737,7 +1732,7 @@ public class PersistenceUnitProperties {
     // Multitenancy properties
 
     /**
-     * The "<code>eclipselink.tenant-id</code>" property specifies the
+     * The {@code eclipselink.tenant-id} property specifies the
      * default context property used to populate multitenant entities.
      * <p>
      * NOTE: This is merely a default multitenant property than can be used on
@@ -1756,9 +1751,9 @@ public class PersistenceUnitProperties {
     public static final String MULTITENANT_PROPERTY_DEFAULT = "eclipselink.tenant-id";
 
     /**
-     * The "<code>eclipselink.tenant-schema-id</code>" property specifies the
+     * The {@code eclipselink.tenant-schema-id} property specifies the
      * context property used to distinguish tenants when using global schema per tenant
-     * multitenant strategy. It is expected to be set by user when creating an {@link EntityManager}.
+     * multitenant strategy. It is expected to be set by user when creating an {@code EntityManager}.
      * <p>
      * <b>Persistence XML example:</b><pre>
      * {@code <property name="eclipselink.tenant-schema-id" value="Oracle" />}</pre>
@@ -1772,7 +1767,7 @@ public class PersistenceUnitProperties {
     public static final String MULTITENANT_SCHEMA_PROPERTY_DEFAULT = "eclipselink.tenant-schema-id";
 
     /**
-     * Property "<code>eclipselink.multitenant.tenants-share-cache</code>"
+     * Property {@code eclipselink.multitenant.tenants-share-cache}
      * specifies that multitenant entities will share the L2 cache. By default
      * this property is false meaning multitenant entities will have an ISOLATED
      * setting. When setting it to true a PROTECTED cache setting will be used.
@@ -1791,10 +1786,10 @@ public class PersistenceUnitProperties {
     public static final String MULTITENANT_SHARED_CACHE = "eclipselink.multitenant.tenants-share-cache";
 
     /**
-     * Property "<code>eclipselink.multitenant.shared-emf</code>" is used to
+     * Property {@code eclipselink.multitenant.shared-emf} is used to
      * indicate that multitenant entities will be used within a shared entity
-     * manager factory. This property defaults to "<code>true</code>" (and applies to
-     * multitenant entities only). When setting it to "<code>false</code>", users are required
+     * manager factory. This property defaults to {@code true} (and applies to
+     * multitenant entities only). When setting it to {@code false}, users are required
      * to provide a unique session name.
      * <p>
      * <b>Persistence XML example:</b><pre>
@@ -1809,12 +1804,12 @@ public class PersistenceUnitProperties {
     public static final String MULTITENANT_SHARED_EMF = "eclipselink.multitenant.tenants-share-emf";
 
     /**
-     * The "<code>eclipselink.multitenant.strategy</code>" property specifies the
+     * The {@code eclipselink.multitenant.strategy} property specifies the
      * global, project wide multitenancy strategy.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>external</code>"
+     * <li>{@code external}
      * <li>the fully qualified name for a class that implements {@link MultitenantPolicy} interface
      * with public no-arg constructor
      * </ul>
@@ -1836,7 +1831,7 @@ public class PersistenceUnitProperties {
     // Platforms & Customization
 
     /**
-     * The "<code>eclipselink.ddl.table-creation-suffix</code>" property is used in
+     * The {@code eclipselink.ddl.table-creation-suffix} property is used in
      * conjunction with DDL generation options to append a string to the end of
      * generated CREATE Table statements.
      * <p>
@@ -1846,16 +1841,16 @@ public class PersistenceUnitProperties {
     public static final String TABLE_CREATION_SUFFIX = "eclipselink.ddl-generation.table-creation-suffix";
 
     /**
-     * The "<code>eclipselink.target-database</code>" property configures the
+     * The {@code eclipselink.target-database} property configures the
      * database that will be used controlling custom operations and SQL
      * generation for the specified database.
      * <p>
      * Default: {@link TargetDatabase#Auto} which means EclipseLink will try to automatically
      * determine the correct database platform type.
      * <p>
-     * Note: "<code>eclipselink.target-database</code>" must be specified with a
-     * non-"Auto" class name or short name when "<code>eclipselink.validation-only</code>"
-     * is set to "<code>true</code>".
+     * Note: {@code eclipselink.target-database} must be specified with a
+     * non-"Auto" class name or short name when {@code eclipselink.validation-only}
+     * is set to {@code true}.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
@@ -1869,7 +1864,7 @@ public class PersistenceUnitProperties {
     public static final String TARGET_DATABASE = "eclipselink.target-database";
 
     /**
-     * The "<code>eclipselink.target-database-properties</code>" property
+     * The {@code eclipselink.target-database-properties} property
      * configures additional properties for the configured target-database.
      * <p>
      * <b>Allowed Values:</b>
@@ -1903,7 +1898,7 @@ public class PersistenceUnitProperties {
     public static final String TARGET_DATABASE_PROPERTIES = "eclipselink.target-database-properties";
 
     /**
-     * The "<code>eclipselink.exclude-eclipselink-orm</code>" property
+     * The {@code eclipselink.exclude-eclipselink-orm} property
      * configures the exclusion of an EclipseLink ORM mapping file for a
      * specific persistence unit.
      * <p>
@@ -1913,7 +1908,7 @@ public class PersistenceUnitProperties {
     public static final String EXCLUDE_ECLIPSELINK_ORM_FILE = "eclipselink.exclude-eclipselink-orm";
 
     /**
-     * The "<code>eclipselink.session-name</code>" property configures a
+     * The {@code eclipselink.session-name} property configures a
      * specific name to use when storing the singleton server session within the
      * {@link SessionManager}.
      * <p>
@@ -1928,28 +1923,28 @@ public class PersistenceUnitProperties {
     // Weaving Properties
 
     /**
-     * The "<code>eclipselink.weaving</code>" property configures whether
+     * The {@code eclipselink.weaving} property configures whether
      * weaving should be performed. Weaving is required for lazy OneToOne,
      * ManyToOne, Basic, attribute change tracking, fetch groups, and other
      * optimizations.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>Not Set - defaults to "<code>true</code>" in Java SE using javaagent and within
+     * <li>Not Set - defaults to {@code true} in Java SE using javaagent and within
      * EJB 3+ compliant containers
-     * <li>"<code>true</code>" - requires that weaving is done. Will throw an exception if
+     * <li>{@code true} - requires that weaving is done. Will throw an exception if
      * entities are not woven
-     * <li>"<code>false</code>" - forces weaving not to be done
-     * <li>"<code>static</code>" - requires that the static weaving utility was used to weave
+     * <li>{@code false} - forces weaving not to be done
+     * <li>{@code static} - requires that the static weaving utility was used to weave
      * the entities
      * </ul>
      * <i>Note: Any value specified that is not in the above list is treated as
-     * "<code>static</code>".</i>
+     * {@code static}.</i>
      */
     public static final String WEAVING = "eclipselink.weaving";
 
     /**
-     * The "<code>eclipselink.weaving.internal</code>" property indicates
+     * The {@code eclipselink.weaving.internal} property indicates
      * whether internal optimizations should be enabled through weaving.
      *
      * Internal optimizations include caching of primary key and session,
@@ -1961,8 +1956,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      *
      * @see #WEAVING
@@ -1970,15 +1965,15 @@ public class PersistenceUnitProperties {
     public static final String WEAVING_INTERNAL = "eclipselink.weaving.internal";
 
     /**
-     * The "<code>eclipselink.weaving.lazy</code>" property configures whether
+     * The {@code eclipselink.weaving.lazy} property configures whether
      * LAZY OneToOne and ManyToOne mappings should be enabled through weaving.
      * <p>
      * This property will only be considered if weaving is enabled.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      *
      * @see #WEAVING
@@ -1986,15 +1981,15 @@ public class PersistenceUnitProperties {
     public static final String WEAVING_LAZY = "eclipselink.weaving.lazy";
 
     /**
-     * The "<code>eclipselink.weaving.eager</code>" property configures whether
+     * The {@code eclipselink.weaving.eager} property configures whether
      * EAGER mapping's attributes should be woven to use indirection.
      * <p>
      * This property will only be considered if weaving is enabled.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      *
      * @see #WEAVING
@@ -2002,7 +1997,7 @@ public class PersistenceUnitProperties {
     public static final String WEAVING_EAGER = "eclipselink.weaving.eager";
 
     /**
-     * The "<code>eclipselink.weaving.changetracking</code>" property configures
+     * The {@code eclipselink.weaving.changetracking} property configures
      * whether AttributeLevelChangeTracking should be enabled through weaving.
      * When this is enabled, only classes with all mappings allowing change
      * tracking will have change tracking enabled. Mutable basic attributes will
@@ -2012,8 +2007,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      *
      * @see #WEAVING
@@ -2021,7 +2016,7 @@ public class PersistenceUnitProperties {
     public static final String WEAVING_CHANGE_TRACKING = "eclipselink.weaving.changetracking";
 
     /**
-     * The "<code>eclipselink.weaving.fetchgroups</code>" property configures
+     * The {@code eclipselink.weaving.fetchgroups} property configures
      * whether FetchGroup support should be enabled through weaving. When this
      * is enabled, lazy direct mappings will be supported as well as descriptor
      * and query level FetchGroups. FetchGroups allow partial objects to be read
@@ -2032,8 +2027,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      *
      * @see #WEAVING
@@ -2043,35 +2038,35 @@ public class PersistenceUnitProperties {
     public static final String WEAVING_FETCHGROUPS = "eclipselink.weaving.fetchgroups";
 
     /**
-     * The "<code>eclipselink.weaving.mappedsuperclass</code>" property configures
-     * whether {@link MappedSuperclass}es with no direct sub-classes will be woven.
+     * The {@code eclipselink.weaving.mappedsuperclass} property configures
+     * whether {@code MappedSuperclass}es with no direct sub-classes will be woven.
      * <p>
      * This property will only be considered if weaving is enabled.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>true</code>" (DEFAULT)
-     * <li>"<code>false</code>"
+     * <li>{@code true} (DEFAULT)
+     * <li>{@code false}
      * </ul>
      */
     public static final String WEAVING_MAPPEDSUPERCLASS = "eclipselink.weaving.mappedsuperclass";
 
     /**
-     * The "<code>eclipselink.weaving.rest</code>" property configures
+     * The {@code eclipselink.weaving.rest} property configures
      * whether classes will be woven to support EclipseLink JPA_RS functionality
      * <p>
      * This property will only be considered if weaving is enabled.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      */
     public static final String WEAVING_REST = "eclipselink.weaving.rest";
 
     /**
-     * The "<code>eclipselink.target-server</code>" property configures the
+     * The {@code eclipselink.target-server} property configures the
      * {@link ServerPlatform} that will be used to enable integration with a
      * host container.
      * <p>
@@ -2091,41 +2086,41 @@ public class PersistenceUnitProperties {
     public static final String TARGET_SERVER = "eclipselink.target-server";
 
     /**
-     * The "<code>eclipselink.jta.controller</code>" property allows to override
+     * The {@code eclipselink.jta.controller} property allows to override
      * JTA transaction controller class of {@link ServerPlatform}.
      * <p>
      * Value of this property is a fully qualified name of a class that implements
      * {@link ExternalTransactionController} interface.
      * <p>
-     * If both "<code>eclipselink.target-server</code>" and "<code>eclipselink.jta.controller</code>"
+     * If both {@code eclipselink.target-server} and {@code eclipselink.jta.controller}
      * properties are set and contain classes implementing {@link ExternalTransactionController}
-     * interface, "<code>eclipselink.target-server</code>" value is used.
+     * interface, {@code eclipselink.target-server} value is used.
      */
     public static final String JTA_CONTROLLER = "eclipselink.jta.controller";
 
     /**
-     * <p>The "<code>jakarta.persistence.schema-generation.database.action</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.database.action}
      * property specifies the action to be taken by the persistence provider with
      * regard to the database artifacts.</p>
      *
-     * <p>The values for this property are "<code>none</code>", "<code>create</code>",
-     * "<code>drop-and-create</code>", "<code>drop</code>".</p>
+     * <p>The values for this property are {@code none}, {@code create},
+     * {@code drop-and-create}, {@code drop}.</p>
      *
-     * EclipseLink also supports the "<code>create-or-extend-tables</code>" option.
+     * EclipseLink also supports the {@code create-or-extend-tables} option.
      *
-     * <p>If the "<code>jakarta.persistence.schema-generation.database.action</code>"
+     * <p>If the {@code jakarta.persistence.schema-generation.database.action}
      * property is not specified, no schema generation actions must be taken on
      * the database.</p>
      */
     public static final String SCHEMA_GENERATION_DATABASE_ACTION = "jakarta.persistence.schema-generation.database.action";
 
     /**
-     * <p>The "<code>jakarta.persistence.schema-generation.scripts.action</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.scripts.action}
      * property specifies which scripts are to be generated by the persistence
      * provider.</p>
      *
-     * <p>The values for this property are "<code>none</code>", "<code>create</code>",
-     * "<code>drop-and-create</code>", "<code>drop</code>".</p>
+     * <p>The values for this property are {@code none}, {@code create},
+     * {@code drop-and-create}, {@code drop}.</p>
      *
      * <p>Scripts will only be generated if script targets are specified. If
      * this property is not specified, no scripts will be generated.</p>
@@ -2133,21 +2128,21 @@ public class PersistenceUnitProperties {
     public static final String SCHEMA_GENERATION_SCRIPTS_ACTION = "jakarta.persistence.schema-generation.scripts.action";
 
     /**
-     * <p>The "<code>jakarta.persistence.schema-generation.create-source</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.create-source}
      * property specifies whether the creation of database artifacts is to occur
      * on the basis of the object/relational mapping metadata, DDL script, or a
      * combination of the two.</p>
      *
-     * <p>The values for this property are "<code>metadata</code>", "<code>script</code>",
-     * "<code>metadata-then-script</code>", "<code>script-then-metadata</code>".</p>
+     * <p>The values for this property are {@code metadata}, {@code script},
+     * {@code metadata-then-script}, {@code script-then-metadata}.</p>
      *
      * <p>If this property is not specified, and a script is specified by the
-     * "<code>jakarta.persistence.schema-generation.create-script-source property</code>",
+     * {@code jakarta.persistence.schema-generation.create-script-source property},
      * the script (only) will be used for schema generation; otherwise if this
      * property is not specified, schema generation will occur on the basis of
      * the object/relational mapping metadata (only).</p>
      *
-     * <p>The "<code>metadata-then-script</code>" and "<code>script-then-metadata</code>"
+     * <p>The {@code metadata-then-script} and {@code script-then-metadata}
      * values specify that a combination of metadata and script is to be used
      * and the order in which this use is to occur. If either of these values is
      * specified and the resulting database actions are not disjoint, the
@@ -2156,22 +2151,22 @@ public class PersistenceUnitProperties {
     public static final String SCHEMA_GENERATION_CREATE_SOURCE = "jakarta.persistence.schema-generation.create-source";
 
     /**
-     * <p>The "<code>jakarta.persistence.schema-generation.drop-source</code>" property
+     * <p>The {@code jakarta.persistence.schema-generation.drop-source} property
      * specifies whether the dropping of database artifacts is to occur on the
      * basis of the object/relational mapping metadata, DDL script, or a
      * combination of the two.</p>
      *
-     * <p>The values for this property are "<code>metadata</code>", "<code>script</code>",
-     * "<code>metadata-then-script</code>", "<code>script-then-metadata</code>".</p>
+     * <p>The values for this property are {@code metadata}, {@code script},
+     * {@code metadata-then-script}, {@code script-then-metadata}.</p>
      *
      * <p>If this property is not specified, and a script is specified by the
-     * "<code>jakarta.persistence.schema-generation.drop-script-source</code>" property,
+     * {@code jakarta.persistence.schema-generation.drop-script-source} property,
      * the script (only) will be used for the dropping of database artifacts;
      * otherwise if this property is not specified, the dropping of database
      * artifacts will occur on the basis of the object/relational mapping
      * metadata (only).</p>
      *
-     * <p>The "<code>metadata-then-script</code>" and "<code>script-then-metadata</code>"
+     * <p>The {@code metadata-then-script} and {@code script-then-metadata}
      * values specify that a combination of metadata and script is to be used
      * and the order in which this use is to occur. If either of these values is
      * specified and the resulting database actions are not disjoint, the
@@ -2184,14 +2179,14 @@ public class PersistenceUnitProperties {
      * provider may wish to control the creation of database schemas rather than
      * delegate this task to the persistence provider.</p>
      *
-     * <p>The "<code>jakarta.persistence.schema-generation.create-database-schemas</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.create-database-schemas}
      * property specifies whether the persistence provider is to create the
      * database schema(s) in addition to creating database objects such as
      * tables, sequences, constraints, etc.</p>
      *
      * <p>The value of this boolean property should be set to true if the
      * persistence provider is to create schemas in the database or to generate
-     * DDL that contains "<code>CREATE SCHEMA</code>" commands. If this property
+     * DDL that contains {@code CREATE SCHEMA} commands. If this property
      * is not supplied, the provider should not attempt to create database
      * schemas. This property may also be specified in Java SE environments.</p>
      */
@@ -2201,7 +2196,7 @@ public class PersistenceUnitProperties {
      * <p>If scripts are to be generated, the target locations for the writing
      * of these scripts must be specified.</p>
      *
-     * <p>The "<code>jakarta.persistence.schema-generation.scripts.create-target</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.scripts.create-target}
      * property specifies a java.IO.Writer configured for use by the persistence
      * provider for output of the DDL script or a string specifying the file URL
      * for the DDL script. This property should only be specified if scripts are
@@ -2213,7 +2208,7 @@ public class PersistenceUnitProperties {
      * <p>If scripts are to be generated, the target locations for the writing
      * of these scripts must be specified.</p>
      *
-     * <p>The "<code>jakarta.persistence.schema-generation.scripts.drop-target</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.scripts.drop-target}
      * property specifies a java.IO.Writer configured for use by the persistence
      * provider for output of the DDL script or a string specifying the file URL
      * for the DDL script. This property should only be specified if scripts are
@@ -2224,15 +2219,15 @@ public class PersistenceUnitProperties {
     /**
      * <p>If scripts are to be generated by the persistence provider and a
      * connection to the target database is not supplied, the
-     * "<code>jakarta.persistence.database-product-name</code>" property must be
+     * {@code jakarta.persistence.database-product-name} property must be
      * specified.</p>
      *
      * <p>The value of this property should be the value returned for the target
      * database by the JDBC DatabaseMetaData method getDatabaseProductName.</p>
      *
      * <p>If sufficient database version information is not included in the
-     * result of this method, the "<code>jakarta.persistence.database-major-version</code>"
-     * and "<code>jakarta.persistence.database-minor-version</code>" properties
+     * result of this method, the {@code jakarta.persistence.database-major-version}
+     * and {@code jakarta.persistence.database-minor-version} properties
      * should be specified as needed. These should contain the values returned
      * by the JDBC getDatabaseMajorVersion and getDatabaseMinor-Version methods
      * respectively.</p>
@@ -2242,7 +2237,7 @@ public class PersistenceUnitProperties {
     /**
      * <p>If sufficient database version information is not included from the
      * JDBC DatabaseMetaData method getDatabaseProductName, the
-     * "<code>jakarta.persistence.database-major-version</code>" property should
+     * {@code jakarta.persistence.database-major-version} property should
      * be specified as needed. This should contain the value returned by the
      * JDBC getDatabaseMajor-Version method.</p>
      */
@@ -2251,14 +2246,14 @@ public class PersistenceUnitProperties {
     /**
      * <p>If sufficient database version information is not included from the
      * JDBC DatabaseMetaData method getDatabaseProductName, the
-     * "<code>jakarta.persistence.database-minor-version</code>" property should
+     * {@code jakarta.persistence.database-minor-version} property should
      * be specified as needed. This should contain the value returned by the
      * JDBC getDatabaseMinor-Version method.</p>
      */
     public static final String SCHEMA_DATABASE_MINOR_VERSION = "jakarta.persistence.database-minor-version";
 
     /**
-     * <p>The "<code>jakarta.persistence.schema-generation.create-script-source</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.create-script-source}
      * is used for script execution.</p>
      *
      * <p>In Java EE container environments, it is generally expected that the
@@ -2269,14 +2264,14 @@ public class PersistenceUnitProperties {
      * EE container delegates the execution of scripts to the persistence
      * provider, this property must be specified.</p>
      *
-     * <p>The "<code>jakarta.persistence.schema-generation.create-script-source</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.create-script-source}
      * property specifies a java.IO.Reader configured for reading of the DDL
      * script or a string designating a file URL for the DDL script.</p>
      */
     public static final String SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE = "jakarta.persistence.schema-generation.create-script-source";
 
     /**
-     * <p>The "<code>jakarta.persistence.schema-generation.drop-script-source</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.drop-script-source}
      * is used for script execution.</p>
      *
      * <p>In Java EE container environments, it is generally expected that the
@@ -2287,14 +2282,14 @@ public class PersistenceUnitProperties {
      * EE container delegates the execution of scripts to the persistence
      * provider, this property must be specified.</p>
      *
-     * <p>The "<code>jakarta.persistence.schema-generation.drop-script-source</code>"
+     * <p>The {@code jakarta.persistence.schema-generation.drop-script-source}
      * property specifies a java.IO.Reader configured for reading of the DDL
      * script or a string designating a file URL for the DDL script.</p>
      */
     public static final String SCHEMA_GENERATION_DROP_SCRIPT_SOURCE = "jakarta.persistence.schema-generation.drop-script-source";
 
     /**
-     * <p>The "<code>jakarta.persistence.schema-generation.connection</code>" property
+     * <p>The {@code jakarta.persistence.schema-generation.connection} property
      * specifies the JDBC connection to be used for schema generation. This is
      * intended for use in Java EE environments, where the platform provider may
      * want to control the database privileges that are available to the
@@ -2320,7 +2315,7 @@ public class PersistenceUnitProperties {
      * the Java EE container delegates the execution of the load script to the
      * persistence provider, this property must be specified.</p>
      *
-     * <p>The "<code>jakarta.persistence.sql-load-script-source</code>" property
+     * <p>The {@code jakarta.persistence.sql-load-script-source} property
      * specifies a java.IO.Reader configured for reading of the SQL load script
      * for database initialization or a string designating a file URL for the
      * script.</p>
@@ -2328,95 +2323,95 @@ public class PersistenceUnitProperties {
     public static final String SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE = "jakarta.persistence.sql-load-script-source";
 
     /**
-     * The parameter value "<code>create</code>"
-     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
-     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * The parameter value {@code create}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.database.action}
+     * and {@code jakarta.persistence.schema-generation.scripts.action} properties.</p>
      * <p>Specifies that database tables should be created.</p>
      */
     public static final String SCHEMA_GENERATION_CREATE_ACTION = "create";
 
     /**
-     * The parameter value "<code>drop-and-create</code>"
-     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
-     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * The parameter value {@code drop-and-create}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.database.action}
+     * and {@code jakarta.persistence.schema-generation.scripts.action} properties.</p>
      * <p>Specifies that database tables should be dropped, then created.</p>
      */
     public static final String SCHEMA_GENERATION_DROP_AND_CREATE_ACTION = "drop-and-create";
 
     /**
-     * The parameter value "<code>drop</code>"
-     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
-     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * The parameter value {@code drop}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.database.action}
+     * and {@code jakarta.persistence.schema-generation.scripts.action} properties.</p>
      * <p>Specifies that database tables should be dropped.</p>
      */
     public static final String SCHEMA_GENERATION_DROP_ACTION = "drop";
 
     /**
-     * The parameter value "<code>none</code>"
-     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
-     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * The parameter value {@code none}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.database.action}
+     * and {@code jakarta.persistence.schema-generation.scripts.action} properties.</p>
      * <p>Specifies that database tables should not be created or dropped.</p>
      */
     public static final String SCHEMA_GENERATION_NONE_ACTION = "none";
 
     /**
-     * The parameter value "<code>verify</code>"
-     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
-     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * The parameter value {@code verify}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.database.action}
+     * and {@code jakarta.persistence.schema-generation.scripts.action} properties.</p>
      * <p>Specifies that database tables should be verified.</p>
      */
     public static final String SCHEMA_GENERATION_VERIFY_ACTION = "verify";
 
     /**
-     * The parameter value "<code>metadata</code>"
-     * <p>For use with the "<code>jakarta.persistence.schema-generation.create-source</code>"
-     * and "<code>jakarta.persistence.schema-generation.drop-source</code>" properties.</p>
+     * The parameter value {@code metadata}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.create-source}
+     * and {@code jakarta.persistence.schema-generation.drop-source} properties.</p>
      * <p>Specifies that DDL generation source will come from the metadata only.</p>
      */
     public static final String SCHEMA_GENERATION_METADATA_SOURCE = "metadata";
 
     /**
-     * The parameter value "<code>script</code>"
-     * <p>For use with the "<code>jakarta.persistence.schema-generation.create-source</code>"
-     * and "<code>jakarta.persistence.schema-generation.drop-source</code>" properties.</p>
+     * The parameter value {@code script}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.create-source}
+     * and {@code jakarta.persistence.schema-generation.drop-source} properties.</p>
      * <p>Specifies that DDL generation source will come from scripts only.</p>
      */
     public static final String SCHEMA_GENERATION_SCRIPT_SOURCE = "script";
 
     /**
-     * The parameter value "<code>metadata-then-script</code>"
-     * <p>For use with the "<code>jakarta.persistence.schema-generation.create-source</code>"
-     * and "<code>jakarta.persistence.schema-generation.drop-source</code>" properties.</p>
+     * The parameter value {@code metadata-then-script}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.create-source}
+     * and {@code jakarta.persistence.schema-generation.drop-source} properties.</p>
      * <p>Specifies that DDL generation source will come from the metadata first
      * followed with the scripts.</p>
      */
     public static final String SCHEMA_GENERATION_METADATA_THEN_SCRIPT_SOURCE = "metadata-then-script";
 
     /**
-     * The parameter value "<code>script-then-metadata</code>"
-     * <p>For use with the "<code>jakarta.persistence.schema-generation.create-source</code>"
-     * and "<code>jakarta.persistence.schema-generation.drop-source</code>" properties.</p>
+     * The parameter value {@code script-then-metadata}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.create-source}
+     * and {@code jakarta.persistence.schema-generation.drop-source} properties.</p>
      * <p>Specifies that DDL generation source will come from the scripts first
      * followed with the metadata.</p>
      */
     public static final String SCHEMA_GENERATION_SCRIPT_THEN_METADATA_SOURCE = "script-then-metadata";
 
     /**
-     * When the "<code>eclipselink.ddlgen-terminate-statements</code>" property
+     * When the {@code eclipselink.ddlgen-terminate-statements} property
      * is set to true and a DDL script is being generated, the value of
      * {@link DatabasePlatform#getStoredProcedureTerminationToken()} is appended to the end of each statement.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" - (DEFAULT) Do not print line terminator
+     * <li>{@code false} - (DEFAULT) Do not print line terminator
      * characters
-     * <li>"<code>true</code>"
+     * <li>{@code true}
      * </ul>
      */
     public static final String SCHEMA_GENERATION_SCRIPT_TERMINATE_STATEMENTS = "eclipselink.ddlgen-terminate-statements";
 
     /**
-     * The "<code>eclipselink.sequencing.default-sequence-to-table</code>" property
+     * The {@code eclipselink.sequencing.default-sequence-to-table} property
      * determines the default behavior when a GeneratedValue of type SEQUENCE is used
      * on a database platform that does not support SEQUENCE generation.
      * By default IDENTITY generation is used if supported.
@@ -2427,19 +2422,19 @@ public class PersistenceUnitProperties {
     /**
      * By default, EclipseLink generates sequence values at (NEXTVAL - allocationSize). For instance, if NEXTVAL returns a
      * value of 100 and the allocationSize is 50 (default), EclipseLink will begin sequence values at 100 - allocationSize.
-     * When the "<code>eclipselink.sequencing.start-sequence-at-nextval</code>" property
+     * When the {@code eclipselink.sequencing.start-sequence-at-nextval} property
      * is set to true, the ID values generated from sequences starting at NEXTVAL and proceeding forward.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" - (DEFAULT) uses default behavior of next value - allocationSize
-     * <li>"<code>true</code>"
+     * <li>{@code false} - (DEFAULT) uses default behavior of next value - allocationSize
+     * <li>{@code true}
      * </ul>
      */
     public static final String SEQUENCING_START_AT_NEXTVAL = "eclipselink.sequencing.start-sequence-at-nextval";
 
     /**
-     * The "<code>eclipselink.session.customizer</code>" property configures a
+     * The {@code eclipselink.session.customizer} property configures a
      * {@link SessionCustomizer} used to alter the runtime configuration through
      * API.
      * <p>
@@ -2458,7 +2453,7 @@ public class PersistenceUnitProperties {
     // "eclipselink.relationships-fetch-default";
 
     /**
-     * The "<code>eclipselink.descriptor.customizer.</code>" is a prefix for a
+     * The {@code eclipselink.descriptor.customizer.} is a prefix for a
      * property used to configure a {@link DescriptorCustomizer}. Customization
      * Prefix Property names formed out of this prefix by appending either
      * entity name, or class name (indicating that the property values applies
@@ -2476,7 +2471,7 @@ public class PersistenceUnitProperties {
     public static final String DESCRIPTOR_CUSTOMIZER_ = "eclipselink.descriptor.customizer.";
 
     /**
-     * The "<code>eclipselink.jdbc.uppercase-columns</code>" property configures
+     * The {@code eclipselink.jdbc.uppercase-columns} property configures
      * native SQL queries are used, the JDBC meta-data may return column names
      * in lower case on some platforms. If the column names are upper-case in
      * the mappings (default) then they will not match. This setting allows for
@@ -2487,8 +2482,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>"
+     * <li>{@code false}
+     * <li>{@code true}
      * </ul>
      *
      * @see #UPPERCASE_COLUMN_NAMES
@@ -2496,17 +2491,17 @@ public class PersistenceUnitProperties {
     public static final String NATIVE_QUERY_UPPERCASE_COLUMNS = "eclipselink.jdbc.uppercase-columns";
 
     /**
-     * The "<code>eclipselink.jpa.uppercase-column-names</code>" property configures JPA processing
-     * to uppercase all column name definitions. A value of "<code>true</code>" also sets the
-     * "<code>eclipselink.jdbc.uppercase-columns</code>" property to "<code>true</code>", so that JDBC meta-data
+     * The {@code eclipselink.jpa.uppercase-column-names} property configures JPA processing
+     * to uppercase all column name definitions. A value of {@code true} also sets the
+     * {@code eclipselink.jdbc.uppercase-columns} property to {@code true}, so that JDBC meta-data
      * returned from the database is also returned in uppercase, ensuring fields are the same case.  This
      * gets around situations where user defined fields do not match the case returned by the database for
      * native queries, simulating case insensitivity.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      *
      * @see #NATIVE_QUERY_UPPERCASE_COLUMNS
@@ -2514,7 +2509,7 @@ public class PersistenceUnitProperties {
     public static final String UPPERCASE_COLUMN_NAMES = "eclipselink.jpa.uppercase-column-names";
 
     /**
-     * The "<code>eclipselink.jdbc.batch-writing</code>" property configures the
+     * The {@code eclipselink.jdbc.batch-writing} property configures the
      * use of batch writing to optimize transactions with multiple writes.
      * <p>Batch writing allows multiple heterogeneous dynamic SQL statements to be sent to the database as a single
      * execution, or multiple homogeneous parameterized SQL statements to be executed as a single batch execution.
@@ -2522,12 +2517,12 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>JDBC</code>" - use JDBC batch writing.
-     * <li>"<code>Buffered</code>" - do not use either JDBC batch writing nor native platform
+     * <li>{@code JDBC} - use JDBC batch writing.
+     * <li>{@code Buffered} - do not use either JDBC batch writing nor native platform
      * batch writing.
-     * <li>"<code>Oracle-JDBC</code>" - use Oracle's native batch writing. This requires the
+     * <li>{@code Oracle-JDBC} - use Oracle's native batch writing. This requires the
      * use of an Oracle JDBC driver.
-     * <li>"<code>None</code>" (DEFAULT): do not use batch writing (turn it off).
+     * <li>{@code None} (DEFAULT): do not use batch writing (turn it off).
      * <li>the fully qualified name for a class that extends {@link BatchWritingMechanism} abstract class
      * </ul>
      *
@@ -2537,7 +2532,7 @@ public class PersistenceUnitProperties {
     public static final String BATCH_WRITING = "eclipselink.jdbc.batch-writing";
 
     /**
-     * The "<code>eclipselink.jdbc.batch-writing.size</code>" property
+     * The {@code eclipselink.jdbc.batch-writing.size} property
      * configures the batch size used for batch writing. For parameterized batch
      * writing this is the number of statements to batch, default 100. For
      * dynamic batch writing, this is the size of the batched SQL buffer,
@@ -2548,13 +2543,13 @@ public class PersistenceUnitProperties {
     public static final String BATCH_WRITING_SIZE = "eclipselink.jdbc.batch-writing.size";
 
     /**
-     * The "<code>jakarta.persistence.bean.manager</code>" property is used to set
+     * The {@code jakarta.persistence.bean.manager} property is used to set
      * CDI BeanManager when available
      */
     public static final String CDI_BEANMANAGER = "jakarta.persistence.bean.manager";
 
     /**
-     * The "<code>eclipselink.persistencexml</code>" property specifies the full
+     * The {@code eclipselink.persistencexml} property specifies the full
      * resource name to look for the persistence XML files in. If not specified
      * the default value defined by {@link #ECLIPSELINK_PERSISTENCE_XML_DEFAULT}
      * will be used.
@@ -2571,7 +2566,7 @@ public class PersistenceUnitProperties {
     public static final String ECLIPSELINK_PERSISTENCE_XML = "eclipselink.persistencexml";
 
     /**
-     * The "<code>eclipselink.se-puinfo</code>" property specifies a
+     * The {@code eclipselink.se-puinfo} property specifies a
      * {@code org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo} that is used
      * create an EntityManagerFactory. That datastructure is used in liu of a persistence.xml.
      * <p><b>IMPORTANT</b>: This property is only supported for use in testing.
@@ -2585,7 +2580,7 @@ public class PersistenceUnitProperties {
     public static final String ECLIPSELINK_PERSISTENCE_XML_DEFAULT = "META-INF/persistence.xml";
 
     /**
-     * This "<code>eclipselink.persistenceunits</code>" property specifies the
+     * This {@code eclipselink.persistenceunits} property specifies the
      * set of persistence unit names that will be processed when generating the
      * canonical model. By default all persistence units available in all
      * persistence XML files will be used. The value of this property is a comma
@@ -2599,7 +2594,7 @@ public class PersistenceUnitProperties {
     public static final String ECLIPSELINK_PERSISTENCE_UNITS = "eclipselink.persistenceunits";
 
     /**
-     * The "<code>eclipselink.exception-handler</code>" property allows an
+     * The {@code eclipselink.exception-handler} property allows an
      * {@link ExceptionHandler} to be specified. An {@link ExceptionHandler} handles
      * exceptions when they are thrown so that an application might address
      * address expected failures and continue.
@@ -2609,16 +2604,16 @@ public class PersistenceUnitProperties {
     public static final String EXCEPTION_HANDLER_CLASS = "eclipselink.exception-handler";
 
     /**
-     * The "<code>eclipselink.session.include.descriptor.queries</code>"
+     * The {@code eclipselink.session.include.descriptor.queries}
      * property configures whether to enable the copying of all descriptor named
      * queries to the session to be usable from the entity manager.
      * <p>
-     * Default: "<code>false</code>".
+     * Default: {@code false}.
      */
     public static final String INCLUDE_DESCRIPTOR_QUERIES = "eclipselink.session.include.descriptor.queries";
 
     /**
-     * The "<code>eclipselink.session-event-listener</code>" property configures
+     * The {@code eclipselink.session-event-listener} property configures
      * a session event listener class.
      * <p>
      * Use {@link #SESSION_CUSTOMIZER} to configure multiple listeners using API.
@@ -2629,7 +2624,7 @@ public class PersistenceUnitProperties {
     public static final String SESSION_EVENT_LISTENER_CLASS = "eclipselink.session-event-listener";
 
     /**
-     * The "<code>eclipselink.sessions-xml</code>" property configures the use
+     * The {@code eclipselink.sessions-xml} property configures the use
      * of the specified native sessions.xml configuration file. When specified
      * this file will load all of the session configuration and mapping
      * information from the native XML. No JPA annotations or XML will be used.
@@ -2637,13 +2632,13 @@ public class PersistenceUnitProperties {
     public static final String SESSIONS_XML = "eclipselink.sessions-xml";
 
     /**
-     * The "<code>eclipselink.project-cache</code>" property configures the type of
+     * The {@code eclipselink.project-cache} property configures the type of
      * {@code org.eclipse.persistence.jpa.metadata.ProjectCache} implementation to use to retrieve and store projects
      * representing the metadata for the project.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>java-serialization</code>" - use {@code org.eclipse.persistence.jpa.metadata.FileBasedProjectCache}
+     * <li>{@code java-serialization} - use {@code org.eclipse.persistence.jpa.metadata.FileBasedProjectCache}
      * <li>the fully qualified name for a class that implements {@code org.eclipse.persistence.jpa.metadata.ProjectCache} interface
      * </ul>
      *
@@ -2652,21 +2647,21 @@ public class PersistenceUnitProperties {
     public static final String PROJECT_CACHE = "eclipselink.project-cache";
 
     /**
-     * The property "<code>eclipselink.project-cache.java-serialization.file</code>" specifies the name
+     * The property {@code eclipselink.project-cache.java-serialization.file} specifies the name
      * of the file to read/write a serialized project representing the application's metadata
      * <p>Specifies the name of the metadata repository xml file to read from using classloader to find the resource</p>
      *
      * <p>This property should be used in conjunction with
-     * "<code>eclipselink.project-cache</code>" when a project is serialized to a file for caching.</p>
+     * {@code eclipselink.project-cache} when a project is serialized to a file for caching.</p>
      *
      * @see #PROJECT_CACHE
      */
     public static final String PROJECT_CACHE_FILE = "eclipselink.project-cache.java-serialization.file-location";
 
     /**
-     * The "<code>eclipselink.temporal.mutable</code>" property configures the
+     * The {@code eclipselink.temporal.mutable} property configures the
      * default for detecting changes to temporal field (Date, Calendar). Default
-     * "<code>false</code>" (changes to date object itself are not detected). By default it
+     * {@code false} (changes to date object itself are not detected). By default it
      * is assumed that temporal fields are replaced, and the temporal object not
      * changed directly. Enabling mutable temporal fields will cause weaving of
      * attribute change tracking to be disabled.
@@ -2674,17 +2669,17 @@ public class PersistenceUnitProperties {
     public static final String TEMPORAL_MUTABLE = "eclipselink.temporal.mutable";
 
     /**
-     * The "<code>eclipselink.jdbc.allow-native-sql-queries</code>" property
+     * The {@code eclipselink.jdbc.allow-native-sql-queries} property
      * specifies whether any user defined SQL is allowed within a persistence
      * unit. This is of particular importance within a multitenant to minimize
      * the potential impact of revealing multi tenant information. By default
      * any persistence unit containing at least one multitenant entity will
-     * cause this flag to be set to "<code>false</code>".
+     * cause this flag to be set to {@code false}.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" - do not allow native SQL.
-     * <li>"<code>true</code>" (DEFAULT) - allow native SQL
+     * <li>{@code false} - do not allow native SQL.
+     * <li>{@code true} (DEFAULT) - allow native SQL
      * </ul>
      *
      * @see Project#setAllowNativeSQLQueries(boolean)
@@ -2692,7 +2687,7 @@ public class PersistenceUnitProperties {
     public static final String ALLOW_NATIVE_SQL_QUERIES = "eclipselink.jdbc.allow-native-sql-queries";
 
     /**
-     * The "<code>eclipselink.allow-zero-id</code>" property configures if zero
+     * The {@code eclipselink.allow-zero-id} property configures if zero
      * is considered a valid id on a new entity. If the id is not considered
      * valid and sequencing is enabled for the entity a new value will be
      * assigned when it is persisted to the database (INSERT). By default an id
@@ -2708,18 +2703,18 @@ public class PersistenceUnitProperties {
      * @see IdValidation
      * @see #ID_VALIDATION
      *
-     * @deprecated replaced by {@link #ID_VALIDATION} property with value "<code>NULL</code>".
+     * @deprecated replaced by {@link #ID_VALIDATION} property with value {@code NULL}.
      */
     @Deprecated
     public static final String ALLOW_ZERO_ID = "eclipselink.allow-zero-id";
 
     /**
-     * The "<code>eclipselink.id-validation</code>" property defines
+     * The {@code eclipselink.id-validation} property defines
      * which primary key components values are considered invalid.
      * These values will be also overridden by sequencing.
      * Note that Identity always overrides any existing id value
      * and so does any sequence with {@link Sequence#shouldAlwaysOverrideExistingValue()} flag
-     * set to "<code>true</code>".
+     * set to {@code true}.
      *
      * @see PrimaryKey
      * @see IdValidation
@@ -2727,9 +2722,9 @@ public class PersistenceUnitProperties {
     public static final String ID_VALIDATION = "eclipselink.id-validation";
 
     /**
-     * The "<code>eclipselink.flush-clear.cache</code>" property defines {@link EntityManager} cache
+     * The {@code eclipselink.flush-clear.cache} property defines {@code EntityManager} cache
      * behavior after a call to flush method followed by a call to clear method. This property
-     * could be specified while creating either {@link EntityManagerFactory} (either in the map passed to
+     * could be specified while creating either {@code EntityManagerFactory} (either in the map passed to
      * createEntityManagerFactory method or in persistence.xml) or EntityManager
      * (in the map passed to createEntityManager method); the latter overrides
      * the former.
@@ -2739,70 +2734,70 @@ public class PersistenceUnitProperties {
     public static final String FLUSH_CLEAR_CACHE = "eclipselink.flush-clear.cache";
 
     /**
-     * The "<code>eclipselink.classloader</code>" property specifies the classloader to use to create
+     * The {@code eclipselink.classloader} property specifies the classloader to use to create
      * an EntityManagerFactory in the property map passed to Persistence.createEntityManagerFactory.
      */
     public static final String CLASSLOADER = "eclipselink.classloader";
 
     /**
-     * The "<code>eclipselink.orm.throw.exceptions</code>" property specifies if the first exception
+     * The {@code eclipselink.orm.throw.exceptions} property specifies if the first exception
      * that occurs during deployment should be thrown, or if all exceptions should be caught
      * and summary thrown at end of deployment attempt.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      */
     public static final String THROW_EXCEPTIONS = "eclipselink.orm.throw.exceptions";
 
     /**
-     * The "<code>eclipselink.orm.validate.schema</code>" property set on the session is used to
-     * override orm.xml schema validation from its default of "<code>false</code>".
+     * The {@code eclipselink.orm.validate.schema} property set on the session is used to
+     * override orm.xml schema validation from its default of {@code false}.
      */
     public static final String ORM_SCHEMA_VALIDATION = "eclipselink.orm.validate.schema";
 
     /**
-     * The "<code>eclipselink.deploy-on-startup</code>" property controls whether
+     * The {@code eclipselink.deploy-on-startup} property controls whether
      * EclipseLink creates the persistence unit when the application starts up, or
      * when the persistence unit is first actually accessed by the application.
      * <p>
-     * Setting this to "<code>true</code>" causes the persistence unit to be created when the
+     * Setting this to {@code true} causes the persistence unit to be created when the
      * EntityManagerFactory is created, usually during deployment to a Java EE
      * 7 container or servlet container.  Enabling this option may increase
      * startup time of the container/server, but will prevent the first request
      * to the application from pausing while the persistence unit is deployed.
      * <p>
-     * When this property is set to "<code>false</code>" the persistence unit is not
+     * When this property is set to {@code false} the persistence unit is not
      * initialized until the first EntityManager is created or until metadata
      * is requested from the EntityManagerFactory.
      * <p>
-     * When set to "<code>false</code>", there is a known issue with Fields of static metamodel
-     * classes ("Entity_" classes) being <code>null</code> until the persistence unit is
+     * When set to {@code false}, there is a known issue with Fields of static metamodel
+     * classes ("Entity_" classes) being {@code null} until the persistence unit is
      * initialized. This behaviour won't affect applications unless they use
      * the static metamodel feature.  (See <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=383199">bug 383199</a>)
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String DEPLOY_ON_STARTUP = "eclipselink.deploy-on-startup";
 
     /**
-     * The "<code>eclipselink.validation-only</code>" property validates deployment
+     * The {@code eclipselink.validation-only} property validates deployment
      * which includes initializing descriptors but does not connect (no login to the database).
      * <p>
-     * Note: "<code>eclipselink.target-database</code>" must be specified with a
-     * non-"Auto" class name or short name when "<code>eclipselink.validation-only</code>"
-     * is set to "<code>true</code>".
+     * Note: {@code eclipselink.target-database} must be specified with a
+     * non-"Auto" class name or short name when {@code eclipselink.validation-only}
+     * is set to {@code true}.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      * @see #TARGET_DATABASE
      * @see TargetDatabase
@@ -2811,59 +2806,59 @@ public class PersistenceUnitProperties {
     public static final String VALIDATION_ONLY_PROPERTY = "eclipselink.validation-only";
 
     /**
-     * The "<code>eclipselink.ddl-generation</code>" property allows the database schema to be generated
+     * The {@code eclipselink.ddl-generation} property allows the database schema to be generated
      * on deployment.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>drop-tables</code>" - {@link #DROP_ONLY}
-     * <li>"<code>create-tables</code>" - {@link #CREATE_ONLY}
-     * <li>"<code>drop-and-create-tables</code>" - {@link #DROP_AND_CREATE}
-     * <li>"<code>create-or-extend-tables</code>" - {@link #CREATE_OR_EXTEND}
-     * <li>"<code>none</code>" - {@link #NONE} (DEFAULT)
+     * <li>{@code drop-tables} - {@link #DROP_ONLY}
+     * <li>{@code create-tables} - {@link #CREATE_ONLY}
+     * <li>{@code drop-and-create-tables} - {@link #DROP_AND_CREATE}
+     * <li>{@code create-or-extend-tables} - {@link #CREATE_OR_EXTEND}
+     * <li>{@code none} - {@link #NONE} (DEFAULT)
      * </ul>
      */
     public static final String DDL_GENERATION = "eclipselink.ddl-generation";
 
     /**
-     * The parameter value "<code>create-tables</code>" specifies that database tables should be created.
-     * <p>For use with the "<code>eclipselink.ddl-generation</code>" property.</p>
+     * The parameter value {@code create-tables} specifies that database tables should be created.
+     * <p>For use with the {@code eclipselink.ddl-generation} property.</p>
      *
      * @see #DDL_GENERATION
      */
     public static final String CREATE_ONLY = "create-tables";
 
     /**
-     * The parameter value "<code>drop-tables</code>" specifies that database tables should be dropped only.
-     * <p>For use with the "<code>eclipselink.ddl-generation</code>" property.</p>
+     * The parameter value {@code drop-tables} specifies that database tables should be dropped only.
+     * <p>For use with the {@code eclipselink.ddl-generation} property.</p>
      *
      * @see #DDL_GENERATION
      */
     public static final String DROP_ONLY = "drop-tables";
 
     /**
-     * The parameter value "<code>drop-and-create-tables</code>" specifies that database tables
+     * The parameter value {@code drop-and-create-tables} specifies that database tables
      * should be dropped, then created.
-     * <p>For use with the "<code>eclipselink.ddl-generation</code>" property.</p>
+     * <p>For use with the {@code eclipselink.ddl-generation} property.</p>
      *
      * @see #DDL_GENERATION
      */
     public static final String DROP_AND_CREATE = "drop-and-create-tables";
 
     /**
-     * The parameter value "<code>create-or-extend-tables</code>" specifies that database tables
+     * The parameter value {@code create-or-extend-tables} specifies that database tables
      * should be created and if existing, missing columns will be added.
-     * <p>For use with the "<code>eclipselink.ddl-generation</code>" property.</p>
-     * <p>Note this can only be used with "<code>eclipselink.ddl-generation.output-mode</code>"
-     * with value of "<code>database</code>".</p>
+     * <p>For use with the {@code eclipselink.ddl-generation} property.</p>
+     * <p>Note this can only be used with {@code eclipselink.ddl-generation.output-mode}
+     * with value of {@code database}.</p>
      *
      * @see #DDL_GENERATION
      */
     public static final String CREATE_OR_EXTEND = "create-or-extend-tables";
 
     /**
-     * The parameter value "<code>none</code>" specifies that database tables should not be created or dropped.
-     * <p>For use with the "<code>eclipselink.ddl-generation</code>" property,
+     * The parameter value {@code none} specifies that database tables should not be created or dropped.
+     * <p>For use with the {@code eclipselink.ddl-generation} property,
      * and is the default parameter value.</p>
      *
      * @see #DDL_GENERATION
@@ -2871,12 +2866,12 @@ public class PersistenceUnitProperties {
     public static final String NONE = "none";
 
     /**
-     * The "<code>eclipselink.metadata-source</code>"property configures the type of
+     * The {@code eclipselink.metadata-source}property configures the type of
      * MetadataSource implementation to use to read Metadata
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>XML</code>" - use {@code org.eclipse.persistence.jpa.metadata.XMLMetadataSource}
+     * <li>{@code XML} - use {@code org.eclipse.persistence.jpa.metadata.XMLMetadataSource}
      * <li>the fully qualified name for a class that implements {@code org.eclipse.persistence.jpa.metadata.MetadataSource} interface
      * </ul>
      *
@@ -2886,7 +2881,7 @@ public class PersistenceUnitProperties {
     public static final String METADATA_SOURCE = "eclipselink.metadata-source";
 
     /**
-     * The "<code>eclipselink.metadata-source.send-refresh-command</code>" property
+     * The {@code eclipselink.metadata-source.send-refresh-command} property
      * works with cache coordination for a clustered environment to. If cache coordination
      * is configured and the session is deployed on startup, this property controls the sending
      * of RCM refresh metadata commands to the cluster. These commands will cause the remote
@@ -2894,8 +2889,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      *
      * @see #COORDINATION_PROTOCOL
@@ -2904,27 +2899,27 @@ public class PersistenceUnitProperties {
     public static final String METADATA_SOURCE_RCM_COMMAND = "eclipselink.metadata-source.send-refresh-command";
 
     /**
-     * The property "<code>eclipselink.metadata-source.xml.file</code>" specifies the name of the metadata
+     * The property {@code eclipselink.metadata-source.xml.file} specifies the name of the metadata
      * repository xml file to read from using classloader to find the resource
      * <p>This property should be used in conjunction with the
-     * "<code>eclipselink.metadata-repository</code>" when an XML repository is being used.</p>
+     * {@code eclipselink.metadata-repository} when an XML repository is being used.</p>
      *
      * @see #METADATA_SOURCE
      */
     public static final String METADATA_SOURCE_XML_FILE = "eclipselink.metadata-source.xml.file";
 
     /**
-     * The property "<code>eclipselink.metadata-source.xml.URL</code>" specifies the name of the metadata
+     * The property {@code eclipselink.metadata-source.xml.URL} specifies the name of the metadata
      * repository xml URL to read from.
      * <p>This property should be used in conjunction with the
-     * "<code>eclipselink.metadata-repository</code>" when an XML repository is being used.</p>
+     * {@code eclipselink.metadata-repository} when an XML repository is being used.</p>
      *
      * @see #METADATA_SOURCE
      */
     public static final String METADATA_SOURCE_XML_URL = "eclipselink.metadata-source.xml.url";
 
     /**
-     * The property "<code>eclipselink.metadata-source.properties.file</code>" specifies the name
+     * The property {@code eclipselink.metadata-source.properties.file} specifies the name
      * of the metadata repository properties file to read from using classloader to find the resource.
      *
      * @see #METADATA_SOURCE
@@ -2932,12 +2927,12 @@ public class PersistenceUnitProperties {
     public static final String METADATA_SOURCE_PROPERTIES_FILE = "eclipselink.metadata-source.properties.file";
 
     /**
-     * The property "<code>eclipselink.application-location</code>" specifies the file system directory
+     * The property {@code eclipselink.application-location} specifies the file system directory
      * location where DDL files are written (output) to.
      *
      * <p>This property should be used in conjunction with the
-     * "<code>eclipselink.ddl-generation.output-mode</code>" property, with
-     * a setting of "<code>sql-script</code>" (or "<code>both</code>") for
+     * {@code eclipselink.ddl-generation.output-mode} property, with
+     * a setting of {@code sql-script} (or {@code both}) for
      * DDL file(s) to be written.</p>
      *
      * @see #DEFAULT_APP_LOCATION
@@ -2948,11 +2943,11 @@ public class PersistenceUnitProperties {
     public static final String APP_LOCATION = "eclipselink.application-location";
 
     /**
-     * The property "<code>eclipselink.create-ddl-jdbc-file-name</code>" specifies the name
+     * The property {@code eclipselink.create-ddl-jdbc-file-name} specifies the name
      * of the DDL file which is used to create database tables.
      *
      * <p>This property should be used in conjunction with the
-     * "<code>eclipselink.application-location</code>" property to specify a
+     * {@code eclipselink.application-location} property to specify a
      * location on the file system for DDL file(s) to be written.</p>
      *
      * @see #APP_LOCATION
@@ -2961,11 +2956,11 @@ public class PersistenceUnitProperties {
     public static final String CREATE_JDBC_DDL_FILE = "eclipselink.create-ddl-jdbc-file-name";
 
     /**
-     * The property "<code>eclipselink.drop-ddl-jdbc-file-name</code>" specifies the name
+     * The property {@code eclipselink.drop-ddl-jdbc-file-name} specifies the name
      * of the DDL file which is used to drop database tables.
      *
      * <p>This property should be used in conjunction with the
-     * "<code>eclipselink.application-location</code>" property to specify a
+     * {@code eclipselink.application-location} property to specify a
      * location on the file system for DDL file(s) to be written.</p>
      *
      * @see #APP_LOCATION
@@ -2985,7 +2980,7 @@ public class PersistenceUnitProperties {
     /**
      * The default name of the DDL file which is used to create database tables.
      * <p>
-     * Defaults to: <code>createDDL.jdbc</code>
+     * Defaults to: {@code createDDL.jdbc}
      *
      * @see #CREATE_JDBC_DDL_FILE
      */
@@ -2994,23 +2989,23 @@ public class PersistenceUnitProperties {
     /**
      * The default name of the DDL file which is used to drop database tables.
      * <p>
-     * Defaults to: <code>dropDDL.jdbc</code>
+     * Defaults to: {@code dropDDL.jdbc}
      *
      * @see #DROP_JDBC_DDL_FILE
      */
     public static final String DEFAULT_DROP_JDBC_FILE_NAME = "dropDDL.jdbc";
 
     /**
-     * The system property "<code>INTERACT_WITH_DB</code>" specifies to enable or disable
-     * the execution of DDL (configured with the "<code>eclipselink.ddl-generation</code>" property)
+     * The system property {@code INTERACT_WITH_DB} specifies to enable or disable
+     * the execution of DDL (configured with the {@code eclipselink.ddl-generation} property)
      * against a database.
-     * <p>e.g. a command line setting of <code>-DINTERACT_WITH_DB=false</code>
+     * <p>e.g. a command line setting of {@code -DINTERACT_WITH_DB=false}
      * will not output DDL to the database.</p>
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" - do not output DDL to the database
-     * <li>"<code>true</code>" - output DDL to the database<br>
+     * <li>{@code false} - do not output DDL to the database
+     * <li>{@code true} - output DDL to the database<br>
      * </ul>
      *
      * @see #DDL_GENERATION
@@ -3018,16 +3013,16 @@ public class PersistenceUnitProperties {
     public static final String JAVASE_DB_INTERACTION = "INTERACT_WITH_DB";
 
     /**
-     * The "<code>eclipselink.ddl-generation.output-mode</code>" property specifies if database schema
+     * The {@code eclipselink.ddl-generation.output-mode} property specifies if database schema
      * should be generated on the database, to a file, or both.
      * <p>
      * Note DDL_GENERATION must also be set, for this to have an effect.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>database</code>" - {@link #DDL_DATABASE_GENERATION} (DEFAULT)
-     * <li>"<code>sql-script</code>" - {@link #DDL_SQL_SCRIPT_GENERATION}
-     * <li>"<code>both</code>" - {@link #DDL_BOTH_GENERATION}
+     * <li>{@code database} - {@link #DDL_DATABASE_GENERATION} (DEFAULT)
+     * <li>{@code sql-script} - {@link #DDL_SQL_SCRIPT_GENERATION}
+     * <li>{@code both} - {@link #DDL_BOTH_GENERATION}
      * </ul>
      *
      * @see #DEFAULT_DDL_GENERATION_MODE
@@ -3038,7 +3033,7 @@ public class PersistenceUnitProperties {
     public static final String DDL_GENERATION_MODE = "eclipselink.ddl-generation.output-mode";
 
     /**
-     * The "<code>eclipselink.ddl-generation.index-foreign-keys</code>" property specifies if an index
+     * The {@code eclipselink.ddl-generation.index-foreign-keys} property specifies if an index
      * should be automatically generated for foreign key constraints. It is normally recommended to have
      * an index for a foreign key.
      * <p>
@@ -3046,8 +3041,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      *
      * @see #DDL_GENERATION
@@ -3055,12 +3050,12 @@ public class PersistenceUnitProperties {
     public static final String DDL_GENERATION_INDEX_FOREIGN_KEYS = "eclipselink.ddl-generation.index-foreign-keys";
 
     /**
-     * The "<code>eclipselink.schema-validation.mode</code>" property specifies database schema validation mode.
-     * By default, the "<code>simple</code>" validation mode is selected.
+     * The {@code eclipselink.schema-validation.mode} property specifies database schema validation mode.
+     * By default, the {@code simple} validation mode is selected.
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>simple</code>" (DEFAULT)
-     * <li>"<code>full</code>" (experimental feature)
+     * <li>{@code simple} (DEFAULT)
+     * <li>{@code full} (experimental feature)
      * </ul>
      *
      * @see #SCHEMA_VALIDATION_MODE_SIMPLE
@@ -3069,7 +3064,7 @@ public class PersistenceUnitProperties {
     public static final String SCHEMA_VALIDATION_MODE = "eclipselink.schema-validation.mode";
 
     /**
-     * The "<code>simple</code>" value of the "<code>eclipselink.schema-validation.mode</code>" property.
+     * The {@code simple} value of the {@code eclipselink.schema-validation.mode} property.
      * Specifies, that simple schema validation shall be performed.
      * Simple schema validation checks missing tables and missing or surplus columns in the existing tables.
      *
@@ -3078,7 +3073,7 @@ public class PersistenceUnitProperties {
     public static final String SCHEMA_VALIDATION_MODE_SIMPLE = "simple";
 
     /**
-     * The "<code>full</code>" value of the "<code>eclipselink.schema-validation.mode</code>" property.
+     * The {@code full} value of the {@code eclipselink.schema-validation.mode} property.
      * Specifies, that full schema validation shall be performed. Full schema validation also checks differences
      * in columns definitions. This feature is experimental.
      *
@@ -3087,8 +3082,8 @@ public class PersistenceUnitProperties {
     public static final String SCHEMA_VALIDATION_MODE_FULL = "full";
 
     /**
-     * The parameter value "<code>sql-script</code>" specifies that DDL will be written to file(s).
-     * <p>For use with the "<code>eclipselink.ddl-generation.output-mode</code>" property.</p>
+     * The parameter value {@code sql-script} specifies that DDL will be written to file(s).
+     * <p>For use with the {@code eclipselink.ddl-generation.output-mode} property.</p>
      *
      * @see #DDL_GENERATION_MODE
      * @see #CREATE_JDBC_DDL_FILE
@@ -3097,8 +3092,8 @@ public class PersistenceUnitProperties {
     public static final String DDL_SQL_SCRIPT_GENERATION = "sql-script";
 
     /**
-     * The parameter value "<code>database</code>" specifies that DDL will be written to the database.
-     * <p>For use with the "<code>eclipselink.ddl-generation.output-mode</code>" property,
+     * The parameter value {@code database} specifies that DDL will be written to the database.
+     * <p>For use with the {@code eclipselink.ddl-generation.output-mode} property,
      * and is the default parameter value</p>
      *
      * @see #DDL_GENERATION_MODE
@@ -3108,8 +3103,8 @@ public class PersistenceUnitProperties {
     public static final String DDL_DATABASE_GENERATION = "database";
 
     /**
-     * The parameter value "<code>both</code>" specifies that DDL will be written to file(s) and the database.
-     * <p>For use with the "<code>eclipselink.ddl-generation.output-mode</code>" property.</p>
+     * The parameter value {@code both} specifies that DDL will be written to file(s) and the database.
+     * <p>For use with the {@code eclipselink.ddl-generation.output-mode} property.</p>
      *
      * @see #DDL_GENERATION_MODE
      * @see #CREATE_JDBC_DDL_FILE
@@ -3118,8 +3113,8 @@ public class PersistenceUnitProperties {
     public static final String DDL_BOTH_GENERATION = "both";
 
     /**
-     * The <code>eclipselink.ddl-generation.output-mode</code> parameter is configured
-     * to the default value of <code>database</code>.
+     * The {@code eclipselink.ddl-generation.output-mode} parameter is configured
+     * to the default value of {@code database}.
      *
      * @see #DDL_GENERATION_MODE
      * @see #DDL_DATABASE_GENERATION
@@ -3127,21 +3122,21 @@ public class PersistenceUnitProperties {
     public static final String DEFAULT_DDL_GENERATION_MODE = DDL_DATABASE_GENERATION;
 
     /**
-     * The "<code>eclipselink.validate-existence</code>" property configures if
+     * The {@code eclipselink.validate-existence} property configures if
      * the existence of an object should be verified on persist(), otherwise it
      * will assume to be new if not in the persistence context. If checked and
      * existing and not in the persistence context and error will be thrown.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String VALIDATE_EXISTENCE = "eclipselink.validate-existence";
 
     /**
-     * The "<code>eclipselink.order-updates</code>" property configures if updates
+     * The {@code eclipselink.order-updates} property configures if updates
      * should be ordered by primary key.
      * <p>
      * This can be used to avoid possible database deadlocks from concurrent
@@ -3150,8 +3145,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      * @deprecated as of EclipseLink 2.6 replaced by {@link #PERSISTENCE_CONTEXT_COMMIT_ORDER}
      */
@@ -3159,7 +3154,7 @@ public class PersistenceUnitProperties {
     public static final String ORDER_UPDATES = "eclipselink.order-updates";
 
     /**
-     * The "<code>eclipselink.persistence-context.commit-order</code>" property defines the ordering of updates
+     * The {@code eclipselink.persistence-context.commit-order} property defines the ordering of updates
      * and deletes of a set of the same entity type during a commit or flush operation.
      * The commit order of entities is defined by their foreign key constraints, and then sorted alphabetically.
      * <p>
@@ -3167,31 +3162,31 @@ public class PersistenceUnitProperties {
      * <p>
      * Entity type commit order can be modified using a {@link DescriptorCustomizer}
      * and the {@link ClassDescriptor#addConstraintDependency(Class)} API.
-     * Commit order can also be controlled using the {@link EntityManager#flush()} API.
+     * Commit order can also be controlled using the {@code EntityManager#flush()} API.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>Id</code>" (DEFAULT) - updates and deletes are ordered by the object's id.
+     * <li>{@code Id} (DEFAULT) - updates and deletes are ordered by the object's id.
      * This can help avoid deadlocks on highly concurrent systems.
-     * <li>"<code>Changes</code>" - updates are ordered by the object's changes, then by id.
+     * <li>{@code Changes} - updates are ordered by the object's changes, then by id.
      * This can improve batch writing efficiency.
-     * <li>"<code>None</code>" - no ordering is done.
+     * <li>{@code None} - no ordering is done.
      * </ul>
      * @see CommitOrderType
      */
     public static final String PERSISTENCE_CONTEXT_COMMIT_ORDER = "eclipselink.persistence-context.commit-order";
 
     /**
-     * The "<code>eclipselink.profiler</code>" property configures the type of
+     * The {@code eclipselink.profiler} property configures the type of
      * profiler used to capture runtime statistics.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>NoProfiler</code>" (DEFAULT)
-     * <li>"<code>PerformanceMonitor</code>" - use {@link PerformanceMonitor}
-     * <li>"<code>PerformanceProfiler</code>" - use {@link PerformanceProfiler}
-     * <li>"<code>QueryMonitor</code>" - use {@link QueryMonitor}
-     * <li>"<code>DMSProfiler</code>" - use {@code org.eclipse.persistence.tools.profiler.oracle.DMSPerformanceProfiler}
+     * <li>{@code NoProfiler} (DEFAULT)
+     * <li>{@code PerformanceMonitor} - use {@link PerformanceMonitor}
+     * <li>{@code PerformanceProfiler} - use {@link PerformanceProfiler}
+     * <li>{@code QueryMonitor} - use {@link QueryMonitor}
+     * <li>{@code DMSProfiler} - use {@code org.eclipse.persistence.tools.profiler.oracle.DMSPerformanceProfiler}
      * <li>the fully qualified name for a class that implements {@link SessionProfiler} interface
      * </ul>
      *
@@ -3200,7 +3195,7 @@ public class PersistenceUnitProperties {
     public static final String PROFILER = "eclipselink.profiler";
 
     /**
-     * The "<code>eclipselink.tuning</code>"property configures the type of
+     * The {@code eclipselink.tuning}property configures the type of
      * tuner to use to configure the persistence unit.
      * <p>
      * A {@link SessionTuner} can be used to define a template for a persistence unit configuration.
@@ -3208,8 +3203,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>Standard</code>" (DEFAULT)
-     * <li>"<code>Safe</code>" - see {@link SafeModeTuner}
+     * <li>{@code Standard} (DEFAULT)
+     * <li>{@code Safe} - see {@link SafeModeTuner}
      * <li>Custom tuner - specify a full class name of an implementation of {@link SessionTuner}
      * </ul>
      *
@@ -3218,25 +3213,25 @@ public class PersistenceUnitProperties {
     public static final String TUNING = "eclipselink.tuning";
 
     /**
-     * The "<code>eclipselink.memory.free-metadata</code>" property configures the JPA
+     * The {@code eclipselink.memory.free-metadata} property configures the JPA
      * internal deployment metadata to be released after deployment.
      * This conserves memory, as the metadata is no longer required, but make
      * future deployments of any other application take longer, as the metadata must be re-allocated.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String FREE_METADATA = "eclipselink.memory.free-metadata";
 
     /**
-     * The "<code>eclipselink.transaction.join-existing</code>" property set to
-     * "<code>true</code>" forces persistence context to read through
+     * The {@code eclipselink.transaction.join-existing} property set to
+     * {@code true} forces persistence context to read through
      * JTA-managed ("write") connection in case there is an active transaction.
      * <p>
-     * Note that if the property set to "<code>true</code>" then objects read during
+     * Note that if the property set to {@code true} then objects read during
      * transaction won't be placed into the shared cache unless they have been
      * updated.
      * <p>
@@ -3247,16 +3242,16 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String JOIN_EXISTING_TRANSACTION = "eclipselink.transaction.join-existing";
 
     /**
-     * The "<code>eclipselink.persistence-context.reference-mode</code>"
+     * The {@code eclipselink.persistence-context.reference-mode}
      * property configures whether there should be hard or soft references used
-     * within the Persistence Context. Default is "<code>HARD</code>". With soft references
+     * within the Persistence Context. Default is {@code HARD}. With soft references
      * entities no longer referenced by the application may be garbage collected
      * freeing resources. Any changes that have not been flushed in these
      * entities will be lost.
@@ -3268,9 +3263,9 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>HARD</code>" (DEFAULT) - {@link ReferenceMode#HARD}
-     * <li>"<code>WEAK</code>"  - {@link ReferenceMode#WEAK}
-     * <li>"<code>FORCE_WEAK</code>" - {@link ReferenceMode#FORCE_WEAK}
+     * <li>{@code HARD} (DEFAULT) - {@link ReferenceMode#HARD}
+     * <li>{@code WEAK}  - {@link ReferenceMode#WEAK}
+     * <li>{@code FORCE_WEAK} - {@link ReferenceMode#FORCE_WEAK}
      * </ul>
      *
      * @see ReferenceMode
@@ -3278,7 +3273,7 @@ public class PersistenceUnitProperties {
     public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE = "eclipselink.persistence-context.reference-mode";
 
     /**
-     * The "<code>jakarta.persistence.lock.timeout</code>" property configures the
+     * The {@code jakarta.persistence.lock.timeout} property configures the
      * WAIT timeout used in pessimistic locking, if the database query exceeds
      * the timeout the database will terminate the query and return an
      * exception.
@@ -3291,22 +3286,22 @@ public class PersistenceUnitProperties {
     public static final String PESSIMISTIC_LOCK_TIMEOUT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT;
 
     /**
-     * The "<code>eclipselink.pessimistic.lock.timeout.unit</code>" property
+     * The {@code eclipselink.pessimistic.lock.timeout.unit} property
      * configures the query timeout unit value. Allows users more refinement.
      * Used in combination with PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * <li>{@code java.util.concurrent.TimeUnit.MILLISECONDS} (DEFAULT),
+     * <li>{@code java.util.concurrent.TimeUnit.SECONDS},
+     * <li>{@code java.util.concurrent.TimeUnit.MINUTES}.
      * </ul>
      * @see #PESSIMISTIC_LOCK_TIMEOUT_UNIT
     */
     public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT;
 
     /**
-     * The "<code>jakarta.persistence.query.timeout</code>" property configures
+     * The {@code jakarta.persistence.query.timeout} property configures
      * the default query timeout value. Defaults to milliseconds, but is configurable
      * with PersistenceUnitProperties.QUERY_TIMEOUT_UNIT
      * <p>
@@ -3319,22 +3314,22 @@ public class PersistenceUnitProperties {
     public static final String QUERY_TIMEOUT = "jakarta.persistence.query.timeout";
 
     /**
-     * The "<code>eclipselink.query.timeout.unit</code>" property
+     * The {@code eclipselink.query.timeout.unit} property
      * configures the query timeout unit value. Allows users more refinement.
      * Used in combination with PersistenceUnitProperties.QUERY_TIMEOUT
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * <li>{@code java.util.concurrent.TimeUnit.MILLISECONDS} (DEFAULT),
+     * <li>{@code java.util.concurrent.TimeUnit.SECONDS},
+     * <li>{@code java.util.concurrent.TimeUnit.MINUTES}.
      * </ul>
      * @see #QUERY_TIMEOUT
      */
     public static final String QUERY_TIMEOUT_UNIT = "eclipselink.query.timeout.unit";
 
     /**
-     * The "<code>eclipselink.persistence-context.close-on-commit</code>"
+     * The {@code eclipselink.persistence-context.close-on-commit}
      * property specifies that the EntityManager will be closed or not used
      * after commit (not extended). In general this is normally always the case
      * for a container managed EntityManager, and common for application
@@ -3347,14 +3342,14 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT = "eclipselink.persistence-context.close-on-commit";
 
     /**
-     * The "<code>eclipselink.persistence-context.persist-on-commit</code>"
+     * The {@code eclipselink.persistence-context.persist-on-commit}
      * property specifies that the EntityManager will search all managed objects
      * and persist any related non-managed new objects that are cascade persist.
      * This can be used to avoid the cost of performing this search if persist
@@ -3366,14 +3361,14 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>"
-     * <li>"<code>true</code>" (DEFAULT)
+     * <li>{@code false}
+     * <li>{@code true} (DEFAULT)
      * </ul>
      */
     public static final String PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT = "eclipselink.persistence-context.persist-on-commit";
 
     /**
-     * The "<code>eclipselink.persistence-context.commit-without-persist-rules</code>"
+     * The {@code eclipselink.persistence-context.commit-without-persist-rules}
      * property specifies that the EntityManager will search all managed objects
      * and persist any related non-managed new objects that are found ignoring
      * any absence of CascadeType.PERSIST settings. Also the Entity life-cycle
@@ -3382,17 +3377,17 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES = "eclipselink.persistence-context.commit-without-persist-rules";
 
     /**
-     * The "<code>eclipselink.persistence-context.flush-mode</code>" property configures the EntityManager FlushMode to be set as a
-     * persistence property. This can be set to either "<code>AUTO</code>" or "<code>COMMIT</code>".
+     * The {@code eclipselink.persistence-context.flush-mode} property configures the EntityManager FlushMode to be set as a
+     * persistence property. This can be set to either {@code AUTO} or {@code COMMIT}.
      * <p>
-     * By default the flush mode is "<code>AUTO</code>", which requires an automatic flush before
+     * By default the flush mode is {@code AUTO}, which requires an automatic flush before
      * all query execution. This can be used to avoid any flushing until commit.
      * <p>
      * The property set in persistence.xml or passed to
@@ -3400,13 +3395,13 @@ public class PersistenceUnitProperties {
      * factory. Alternatively, to apply the property only to some EntityManagers
      * pass it to createEntityManager method.
      *
-     * @see EntityManager#setFlushMode(jakarta.persistence.FlushModeType)
-     * @see FlushModeType
+     * @see "jakarta.persistence.EntityManager#setFlushMode(jakarta.persistence.FlushModeType)"
+     * @see "jakarta.persistence.FlushModeType"
      */
     public static final String PERSISTENCE_CONTEXT_FLUSH_MODE = "eclipselink.persistence-context.flush-mode";
 
     /**
-     * The "<code>eclipselink.oracle.proxy-type</code>" property is used to
+     * The {@code eclipselink.oracle.proxy-type} property is used to
      * specify proxy type that should be passed to
      * OracleConnection.openProxySession method. Requires Oracle JDBC version
      * 10.1.0.2 or later. Requires Oracle9Platform or later as a database
@@ -3438,7 +3433,7 @@ public class PersistenceUnitProperties {
     public static final String ORACLE_PROXY_TYPE = "eclipselink.oracle.proxy-type";
 
     /**
-     * The "<code>eclipselink.cache.coordination.protocol</code>" property
+     * The {@code eclipselink.cache.coordination.protocol} property
      * configures cache coordination for a clustered environment. This needs to
      * be set on every persistence unit/session in the cluster. Depending on the
      * cache configuration for each descriptor, this will broadcast cache
@@ -3449,11 +3444,11 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>jms</code>"
-     * <li>"<code>jms-publishing</code>"
-     * <li>"<code>rmi</code>"
-     * <li>"<code>rmi-iiop</code>"
-     * <li>"<code>jgroups</code>"
+     * <li>{@code jms}
+     * <li>{@code jms-publishing}
+     * <li>{@code rmi}
+     * <li>{@code rmi-iiop}
+     * <li>{@code jgroups}
      * <li>the fully qualified name for a class that extends {@link TransportManager} abstract class.
      * </ul>
      *
@@ -3465,7 +3460,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_PROTOCOL = "eclipselink.cache.coordination.protocol";
 
     /**
-     * The "<code>eclipselink.cache.coordination.jgroups.config</code>" property
+     * The {@code eclipselink.cache.coordination.jgroups.config} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Only used for JGroups coordination.
@@ -3479,7 +3474,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_JGROUPS_CONFIG = "eclipselink.cache.coordination.jgroups.config";
 
     /**
-     * The "<code>eclipselink.cache.coordination.jms.host</code>" property
+     * The {@code eclipselink.cache.coordination.jms.host} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Only used for JMS coordination.
@@ -3493,13 +3488,13 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_JMS_HOST = "eclipselink.cache.coordination.jms.host";
 
     /**
-     * The "<code>eclipselink.cache.coordination.jms.topic</code>" property
+     * The {@code eclipselink.cache.coordination.jms.topic} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Only used for JMS coordination.
      * <p>
      * Sets the JMS topic name.<br>
-     * The default topic JNDI name is "<code>jms/EclipseLinkTopic</code>".
+     * The default topic JNDI name is {@code jms/EclipseLinkTopic}.
      *
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager#setTopicName(String)
@@ -3507,13 +3502,13 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_JMS_TOPIC = "eclipselink.cache.coordination.jms.topic";
 
     /**
-     * The "<code>eclipselink.cache.coordination.jms.factory</code>" property
+     * The {@code eclipselink.cache.coordination.jms.factory} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Only used for JMS coordination.
      * <p>
      * Sets the JMS topic connection factory name.<br>
-     * The default topic connection factory JNDI name is "<code>jms/EclipseLinkTopicConnectionFactory</code>".
+     * The default topic connection factory JNDI name is {@code jms/EclipseLinkTopicConnectionFactory}.
      *
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.internal.sessions.factories.model.transport.JMSPublishingTransportManagerConfig#setTopicConnectionFactoryName(String)
@@ -3521,7 +3516,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_JMS_FACTORY = "eclipselink.cache.coordination.jms.factory";
 
     /**
-     * The "<code>eclipselink.cache.coordination.jms.reuse-topic-publisher</code>" property
+     * The {@code eclipselink.cache.coordination.jms.reuse-topic-publisher} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Only used for JMS coordination.
@@ -3535,7 +3530,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_JMS_REUSE_PUBLISHER = "eclipselink.cache.coordination.jms.reuse-topic-publisher";
 
     /**
-     * The "<code>eclipselink.cache.coordination.rmi.announcement-delay</code>"
+     * The {@code eclipselink.cache.coordination.rmi.announcement-delay}
      * property configures cache coordination for a clustered environment.
      * <p>
      * Only used for RMI coordination.
@@ -3549,7 +3544,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_RMI_ANNOUNCEMENT_DELAY = "eclipselink.cache.coordination.rmi.announcement-delay";
 
     /**
-     * The "<code>eclipselink.cache.coordination.rmi.multicast-group</code>"
+     * The {@code eclipselink.cache.coordination.rmi.multicast-group}
      * property configures cache coordination for a clustered environment.
      * <p>
      * Only used for RMI coordination.
@@ -3564,7 +3559,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_RMI_MULTICAST_GROUP = "eclipselink.cache.coordination.rmi.multicast-group";
 
     /**
-     * The "<code>eclipselink.cache.coordination.rmi.multicast-group.port</code>"
+     * The {@code eclipselink.cache.coordination.rmi.multicast-group.port}
      * property configures cache coordination for a clustered environment.
      * <p>
      * Only used for RMI coordination.
@@ -3579,7 +3574,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_RMI_MULTICAST_GROUP_PORT = "eclipselink.cache.coordination.rmi.multicast-group.port";
 
     /**
-     * The "<code>eclipselink.cache.coordination.rmi.packet-time-to-live</code>"
+     * The {@code eclipselink.cache.coordination.rmi.packet-time-to-live}
      * property configures cache coordination for a clustered environment.
      * <p>
      * Only used for RMI coordination.
@@ -3603,7 +3598,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_RMI_PACKET_TIME_TO_LIVE = "eclipselink.cache.coordination.rmi.packet-time-to-live";
 
     /**
-     * The "<code>eclipselink.cache.coordination.rmi.url</code>" property
+     * The {@code eclipselink.cache.coordination.rmi.url} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Only used for RMI coordination.
@@ -3620,15 +3615,15 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_RMI_URL = "eclipselink.cache.coordination.rmi.url";
 
     /**
-     * The "<code>eclipselink.cache.coordination.naming-service</code>" property
+     * The {@code eclipselink.cache.coordination.naming-service} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Set the naming service to use, either "jndi" or "rmi".
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>jndi</code>"
-     * <li>"<code>rmi</code>"
+     * <li>{@code jndi}
+     * <li>{@code rmi}
      * </ul>
      *
      * @see #COORDINATION_PROTOCOL
@@ -3637,7 +3632,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_NAMING_SERVICE = "eclipselink.cache.coordination.naming-service";
 
     /**
-     * The "<code>eclipselink.cache.coordination.jndi.user</code>" property
+     * The {@code eclipselink.cache.coordination.jndi.user} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Set the JNDI naming service user name.<br>
@@ -3649,7 +3644,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_JNDI_USER = "eclipselink.cache.coordination.jndi.user";
 
     /**
-     * The "<code>eclipselink.cache.coordination.jndi.password</code>" property
+     * The {@code eclipselink.cache.coordination.jndi.password} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Set the JNDI naming service user name.<br>
@@ -3661,7 +3656,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_JNDI_PASSWORD = "eclipselink.cache.coordination.jndi.password";
 
     /**
-     * The "<code>eclipselink.cache.coordination.jndi.initial-context-factory</code>"
+     * The {@code eclipselink.cache.coordination.jndi.initial-context-factory}
      * property configures cache coordination for a clustered environment.
      * <p>
      * Set the JNDI InitialContext factory.<br>
@@ -3673,7 +3668,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_JNDI_CONTEXT = "eclipselink.cache.coordination.jndi.initial-context-factory";
 
     /**
-     * The "<code>eclipselink.cache.coordination.remove-connection-on-error</code>"
+     * The {@code eclipselink.cache.coordination.remove-connection-on-error}
      * property configures cache coordination for a clustered environment.
      * <p>
      * Set if the connection should be removed if a communication error occurs when
@@ -3687,7 +3682,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_REMOVE_CONNECTION = "eclipselink.cache.coordination.remove-connection-on-error";
 
     /**
-     * The "<code>eclipselink.cache.coordination.propagate-asynchronously</code>"
+     * The {@code eclipselink.cache.coordination.propagate-asynchronously}
      * property configures cache coordination for a clustered environment.
      * <p>
      * Set if the coordination broadcast should occur asynchronously with the
@@ -3701,7 +3696,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_ASYNCH = "eclipselink.cache.coordination.propagate-asynchronously";
 
     /**
-     * The "<code>eclipselink.cache.coordination.thread.pool.size</code>"
+     * The {@code eclipselink.cache.coordination.thread.pool.size}
      * property configures thread pool size for cache coordination threads.
      * <p>
      * RMI cache coordination will spawn one thread per node to send change notifications.
@@ -3720,7 +3715,7 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_THREAD_POOL_SIZE = "eclipselink.cache.coordination.thread.pool.size";
 
     /**
-     * The "<code>eclipselink.cache.coordination.serializer</code>" property
+     * The {@code eclipselink.cache.coordination.serializer} property
      * configures how cache coordination serializes message sent between nodes.
      * <p>
      * By default Java serialization is used. Other serializer can be used for improved performance
@@ -3735,12 +3730,12 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_SERIALIZER = "eclipselink.cache.coordination.serializer";
 
     /**
-     * The "<code>eclipselink.cache.coordination.channel</code>" property
+     * The {@code eclipselink.cache.coordination.channel} property
      * configures cache coordination for a clustered environment.
      * <p>
      * Set the channel for this cluster. All server's in the same channel will be
      * coordinated.<br>
-     * The default channel name is "<code>EclipseLinkCommandChannel</code>".<br>
+     * The default channel name is {@code EclipseLinkCommandChannel}.<br>
      * If multiple EclipseLink deployment reside on the same network, they should use different channels.
      *
      * @see #COORDINATION_PROTOCOL
@@ -3749,8 +3744,8 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_CHANNEL = "eclipselink.cache.coordination.channel";
 
     /**
-     * The "<code>eclipselink.composite-unit</code>" property indicates if it's a composite
-     * persistence unit ("<code>true</code>").
+     * The {@code eclipselink.composite-unit} property indicates if it's a composite
+     * persistence unit ({@code true}).
      * <p>
      * The property must be specified in persistence.xml of a composite persistence unit.
      * The property passed to createEntityManagerFactory method or in system properties is ignored.
@@ -3771,15 +3766,15 @@ public class PersistenceUnitProperties {
     public static final String COMPOSITE_UNIT = "eclipselink.composite-unit";
 
     /**
-     * The "<code>eclipselink.composite-unit.member</code>" property indicates if the persistence unit
-     * must be a member of a composite persistence unit ("<code>true</code>"),
+     * The {@code eclipselink.composite-unit.member} property indicates if the persistence unit
+     * must be a member of a composite persistence unit ({@code true}),
      * can't be used as an independent persistence unit.
      * That happens if persistence unit has dependencies on other persistence unit(s).
      * <p>
      * The property may be specified in persistence.xml.
      * The property passed to createEntityManagerFactory method or in system properties is ignored.
      * <p>
-     * If this property is set to "<code>true</code>", EntityManagerFactory still could be created,
+     * If this property is set to {@code true}, EntityManagerFactory still could be created,
      * but it can't be connected: an attempt to create entity manager would cause an exception.
      *
      * @see #COMPOSITE_UNIT
@@ -3788,7 +3783,7 @@ public class PersistenceUnitProperties {
     public static final String COMPOSITE_UNIT_MEMBER = "eclipselink.composite-unit.member";
 
     /**
-     * The "<code>eclipselink.composite-unit.properties</code>" property may be passed
+     * The {@code eclipselink.composite-unit.properties} property may be passed
      * to createEntityManagerFactory method of a composite persistence unit to pass properties
      * to member persistence units.
      * <p>
@@ -3815,13 +3810,13 @@ public class PersistenceUnitProperties {
     public static final String COMPOSITE_UNIT_PROPERTIES = "eclipselink.composite-unit.properties";
 
     /**
-     * The "<code>eclipselink.remote.protocol</code>" property
+     * The {@code eclipselink.remote.protocol} property
      * configures remote JPA for a client or server.
      * This allows JPA to be access over RMI or other protocol from a remote Java client.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>rmi</code>"
+     * <li>{@code rmi}
      * <li>the fully qualified name for a class that extends {@link RemoteConnection} abstract class
      * </ul>
      *
@@ -3832,7 +3827,7 @@ public class PersistenceUnitProperties {
     public static final String REMOTE_PROTOCOL = "eclipselink.remote.protocol";
 
     /**
-     * The "<code>eclipselink.remote.client.url</code>" property
+     * The {@code eclipselink.remote.client.url} property
      * configures remote JPA for a client.
      * This allows JPA to be access over RMI or other protocol from a remote Java client.
      * <p>
@@ -3843,7 +3838,7 @@ public class PersistenceUnitProperties {
     public static final String REMOTE_URL = "eclipselink.remote.client.url";
 
     /**
-     * The "<code>eclipselink.remote.server.name</code>" property
+     * The {@code eclipselink.remote.server.name} property
      * configures remote JPA for a server.
      * This allows JPA to be access over RMI or other protocol from a remote Java client.
      * <p>
@@ -3854,7 +3849,7 @@ public class PersistenceUnitProperties {
     public static final String REMOTE_SERVER_NAME = "eclipselink.remote.server.name";
 
     /**
-     * The "<code>eclipselink.nosql.connection-spec</code>" property allows the connection information
+     * The {@code eclipselink.nosql.connection-spec} property allows the connection information
      * for an NoSQL or EIS datasource to be specified.
      * <p>
      * An NoSQL datasource is a non-relational datasource such as a legacy database, NoSQL database,
@@ -3866,7 +3861,7 @@ public class PersistenceUnitProperties {
     public static final String NOSQL_CONNECTION_SPEC = "eclipselink.nosql.connection-spec";
 
     /**
-     * The "<code>eclipselink.nosql.connection-factory</code>" property allows
+     * The {@code eclipselink.nosql.connection-factory} property allows
      * the JCA ConnectionFactory to be specified for a NoSQL or EIS adapter.
      * <p>
      * An NoSQL datasource is a non-relational datasource such as a legacy database, NoSQL database,
@@ -3877,7 +3872,7 @@ public class PersistenceUnitProperties {
     public static final String NOSQL_CONNECTION_FACTORY = "eclipselink.nosql.connection-factory";
 
     /**
-     * The "<code>eclipselink.nosql.property.</code>" property prefix allows setting NoSQL connection
+     * The {@code eclipselink.nosql.property.} property prefix allows setting NoSQL connection
      * properties. The NoSQL specific property name should be appended to this prefix.
      * <p>
      * i.e. "eclipselink.nosql.property.nosql.host"="localhost:5000"
@@ -3888,9 +3883,9 @@ public class PersistenceUnitProperties {
     public static final String NOSQL_PROPERTY = "eclipselink.nosql.property.";
 
     /**
-     * The "<code>eclipselink.nosql.property.user</code>" property specifies user name for NoSQL
+     * The {@code eclipselink.nosql.property.user} property specifies user name for NoSQL
      * connection.<br>
-     * Note that "<code>jakarta.persistence.jdbc.user</code>" is also supported.
+     * Note that {@code jakarta.persistence.jdbc.user} is also supported.
      *
      * @see org.eclipse.persistence.eis.EISConnectionSpec
      * @see "org.eclipse.persistence.nosql.annotations.NoSql"
@@ -3899,9 +3894,9 @@ public class PersistenceUnitProperties {
     public static final String NOSQL_USER = "eclipselink.nosql.property.user";
 
     /**
-     * The "<code>eclipselink.nosql.property.password</code>" property specifies password for NoSQL
+     * The {@code eclipselink.nosql.property.password} property specifies password for NoSQL
      * connection.<br>
-     * Note that "<code>jakarta.persistence.jdbc.password</code>" is also supported.
+     * Note that {@code jakarta.persistence.jdbc.password} is also supported.
      *
      * @see org.eclipse.persistence.eis.EISConnectionSpec
      * @see "org.eclipse.persistence.nosql.annotations.NoSql"
@@ -3910,7 +3905,7 @@ public class PersistenceUnitProperties {
     public static final String NOSQL_PASSWORD = "eclipselink.nosql.property.password";
 
     /**
-     * The "<code>eclipselink.jdbc.connector</code>" property.<br>
+     * The {@code eclipselink.jdbc.connector} property.<br>
      * Allows a custom connector to be used to define how to connect to the database.
      * This is not required if a DataSource or JDBC DriverManager is used.
      * It can be used to connect to a non standard connection pool,
@@ -3922,7 +3917,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_CONNECTOR = "eclipselink.jdbc.connector";
 
     /**
-     * The "<code>eclipselink.jdbc.property.</code>" property allows
+     * The {@code eclipselink.jdbc.property.} property allows
      * passing of JDBC driver specific connection properties.
      * This allows for properties to be set on the JDBC connection.
      * The JDBC driver specific property name should be appended to this prefix.
@@ -3935,7 +3930,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_PROPERTY = "eclipselink.jdbc.property.";
 
     /**
-     * The "<code>eclipselink.jdbc.result-set-access-optimization</code>" property allows to set
+     * The {@code eclipselink.jdbc.result-set-access-optimization} property allows to set
      * whether a query should by default use ResultSet Access optimization.
      * <p>
      * The optimization allows to avoid getting objects from ResultSet if the cached object used.
@@ -3947,8 +3942,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" - don't use optimization
-     * <li>"<code>true</code>" - use optimization
+     * <li>{@code false} - don't use optimization
+     * <li>{@code true} - use optimization
      * </ul>
      * <p>
      * Default value is {@code ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault = false;}
@@ -3959,10 +3954,10 @@ public class PersistenceUnitProperties {
     public static final String JDBC_RESULT_SET_ACCESS_OPTIMIZATION = "eclipselink.jdbc.result-set-access-optimization";
 
     /**
-     * The "<code>eclipselink.serializer</code>" property specifies class name for session serializer
+     * The {@code eclipselink.serializer} property specifies class name for session serializer
      * (must implement {@link org.eclipse.persistence.sessions.serializers.Serializer})
      * <p>
-     * Default value is "<code>org.eclipse.persistence.sessions.serializers.JavaSerializer</code>"
+     * Default value is {@code org.eclipse.persistence.sessions.serializers.JavaSerializer}
      *
      * @see org.eclipse.persistence.internal.sessions.AbstractSession#setSerializer(Serializer)
      * @see org.eclipse.persistence.sessions.serializers.JavaSerializer
@@ -3971,62 +3966,62 @@ public class PersistenceUnitProperties {
     public static final String SERIALIZER = "eclipselink.serializer";
 
     /**
-     * The "<code>eclipselink.tolerate-invalid-jpql</code>" property allows an
-     * {@link EntityManager} to be created even in the event that an application
+     * The {@code eclipselink.tolerate-invalid-jpql} property allows an
+     * {@code EntityManager} to be created even in the event that an application
      * has invalid JPQL statements declared in annotations or xml.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String JPQL_TOLERATE = "eclipselink.tolerate-invalid-jpql";
 
     /**
-     * The "<code>eclipselink.locking.timestamp.local</code>" property defines if locking policies
+     * The {@code eclipselink.locking.timestamp.local} property defines if locking policies
      * should default to local time(true) or server time(false).
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String USE_LOCAL_TIMESTAMP = "eclipselink.locking.timestamp.local." + PersistenceUnitProperties.DEFAULT;
 
     /**
-     * The "<code>eclipselink.jpa.sqlcall.deferral.default</code>" property defines if SQL calls should be deferred to end of
-     * transaction by default or not. When setting this property to <code>false</code>, the application assumes the responsibility
+     * The {@code eclipselink.jpa.sqlcall.deferral.default} property defines if SQL calls should be deferred to end of
+     * transaction by default or not. When setting this property to {@code false}, the application assumes the responsibility
      * of ordering the SQL statements and must therefore be aware of any interdependencies between entities.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>true</code>" (DEFAULT)
-     * <li>"<code>false</code>"
+     * <li>{@code true} (DEFAULT)
+     * <li>{@code false}
      * </ul>
      */
     public static final String SQL_CALL_DEFERRAL = "eclipselink.jpa.sql-call-deferral";
 
     /**
-     * The "<code>eclipselink.jpa.naming_into_indexed</code>" property defines if stored procedure parameters passed by name
-     * should be transformed into positional/index based passing if property value will be <code>true</code>. e.g.
+     * The {@code eclipselink.jpa.naming_into_indexed} property defines if stored procedure parameters passed by name
+     * should be transformed into positional/index based passing if property value will be {@code true}. e.g.
      * For stored procedure:
-     * <code>CREATE PROCEDURE test_stored_proc1( IN param1 TEXT, IN param2 INTEGER )</code>
+     * {@code CREATE PROCEDURE test_stored_proc1( IN param1 TEXT, IN param2 INTEGER )}
      * following Java call
-     * <code>query.registerStoredProcedureParameter( "param1",Integer.class,ParameterMode.IN );</code>
-     * <code>query.registerStoredProcedureParameter( "param2",String.class,ParameterMode.IN );</code>
+     * {@code query.registerStoredProcedureParameter( "param1",Integer.class,ParameterMode.IN );}
+     * {@code query.registerStoredProcedureParameter( "param2",String.class,ParameterMode.IN );}
      * will be transformed into following e.g.
-     * <code>{call test_stored_proc1(10, 'abcd')}</code>
+     * {@code {call test_stored_proc1(10, 'abcd')}}
      * instead of default
-     * <code>{call test_stored_proc1(param1 ={@literal >} 10, param2 ={@literal >} 'abcd')}</code>
+     * {@code {call test_stored_proc1(param1 ={@literal >} 10, param2 ={@literal >} 'abcd')}}
      * It's important to register parameters in Java in a same order as they specified in the stored procedure.
      * This code was added there to ensure backward compatibility with older EclipseLink releases.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT)
-     * <li>"<code>true</code>"
+     * <li>{@code false} (DEFAULT)
+     * <li>{@code true}
      * </ul>
      */
     public static final String NAMING_INTO_INDEXED = "eclipselink.jpa.naming_into_indexed";
@@ -4070,17 +4065,17 @@ public class PersistenceUnitProperties {
 
     /**
      * <p>
-     * This property control (enable/disable) if <code>InterruptedException</code> fired when dead-lock diagnostic is enabled.
+     * This property control (enable/disable) if {@code InterruptedException} fired when dead-lock diagnostic is enabled.
      * <p>
      * <b>Allowed Values</b> (case sensitive String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" - if aborting frozen thread is not effective it is preferable to not fire the interrupted exception let the system
+     * <li>{@code false} - if aborting frozen thread is not effective it is preferable to not fire the interrupted exception let the system
      * In the places where use this property normally if a thread is stuck it is because it is doing object building.
      * Blowing the threads ups is not that dangerous. It can be very dangerous for production if the dead lock ends up
      * not being resolved because the productive business transactions will become cancelled if the application has a
      * limited number of retries to for example process an MDB. However, the code spots where we use this constant are
      * not as sensible as when the write lock manager is starving to run commit.
-     * <li>"<code>true</code>" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired locks and allow other
+     * <li>{@code true} (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired locks and allow other
      * threads to progress.
      * </ul>
      */
@@ -4088,16 +4083,16 @@ public class PersistenceUnitProperties {
 
     /**
      * <p>
-     * This property control (enable/disable) if <code>ConcurrencyException</code> fired when dead-lock diagnostic is enabled.
+     * This property control (enable/disable) if {@code ConcurrencyException} fired when dead-lock diagnostic is enabled.
      * <p>
      * <b>Allowed Values</b> (case sensitive String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" - if aborting frozen thread is not effective it is preferable to not fire the concurrency exception let the system
+     * <li>{@code false} - if aborting frozen thread is not effective it is preferable to not fire the concurrency exception let the system
      * freeze and die and force the administration to kill the server. This is preferable to aborting the transactions
      * multiple times without success in resolving the dead lock and having business critical messages that after 3 JMS
      * retries are discarded out. Failing to resolve a dead lock can have terrible impact in system recovery unless we
      * have infinite retries for the business transactions.
-     * <li>"<code>true</code>" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired
+     * <li>{@code true} (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired
      * locks and allow other threads to progress.
      * </ul>
      */
@@ -4109,8 +4104,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values</b> (case sensitive String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT) - don't collect debug/trace information during ReadLock acquisition
-     * <li>"<code>true</code>" - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
+     * <li>{@code false} (DEFAULT) - don't collect debug/trace information during ReadLock acquisition
+     * <li>{@code true} - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
      * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK = "eclipselink.concurrency.manager.allow.readlockstacktrace";
@@ -4121,13 +4116,13 @@ public class PersistenceUnitProperties {
      * </p>
      * Object building see {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder} could be one of the
      * primary sources pressure on concurrency manager. Most of the cache key acquisition and releasing is taking place during object building.
-     * Enable <code>true</code> this property to try reduce the likelihood of having dead locks is to allow less threads to start object
+     * Enable {@code true} this property to try reduce the likelihood of having dead locks is to allow less threads to start object
      * building in parallel. In this case there should be negative impact to the performance.
      * Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
      * <ul>
-     * <li>"<code>true</code>" - means we want to override vanilla behavior and use a semaphore to not allow too many
+     * <li>{@code true} - means we want to override vanilla behavior and use a semaphore to not allow too many
      * threads in parallel to do object building
-     * <li>"<code>false</code>" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
+     * <li>{@code false} (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
      * vanilla behavior).
      * </ul>
      */
@@ -4144,9 +4139,9 @@ public class PersistenceUnitProperties {
      * one-to-many relations of master detail being enriched with more details on this master).
      * Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
      * <ul>
-     * <li>"<code>true</code>" - means we want to override vanilla behavior and use a semaphore to not allow too many
+     * <li>{@code true} - means we want to override vanilla behavior and use a semaphore to not allow too many
      * threads. In this case there should be negative impact to the performance.
-     * <li>"<code>false</code>" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
+     * <li>{@code false} (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
      * vanilla behavior).
      * </ul>
      */
@@ -4155,8 +4150,8 @@ public class PersistenceUnitProperties {
     /**
      * <p>
      * This property control number of threads in semaphore in {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder}
-     * If "eclipselink.concurrency.manager.object.building.semaphore" property is <code>true</code> default value is 10. Allowed values are: int
-     * If "eclipselink.concurrency.manager.object.building.semaphore" property is <code>false</code> (DEFAULT) number of threads is unlimited.
+     * If "eclipselink.concurrency.manager.object.building.semaphore" property is {@code true} default value is 10. Allowed values are: int
+     * If "eclipselink.concurrency.manager.object.building.semaphore" property is {@code false} (DEFAULT) number of threads is unlimited.
      * </p>
      */
     public static final String CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS = "eclipselink.concurrency.manager.object.building.no.threads";
@@ -4164,8 +4159,8 @@ public class PersistenceUnitProperties {
     /**
      * <p>
      * This property control number of threads in semaphore in {@link org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks}
-     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is <code>true</code> default value is 2. Allowed values are: int
-     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is <code>false</code> (DEFAULT) number of threads is unlimited.
+     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is {@code true} default value is 2. Allowed values are: int
+     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is {@code false} (DEFAULT) number of threads is unlimited.
      * </p>
      */
     public static final String CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS = "eclipselink.concurrency.manager.write.lock.manager.no.threads";
@@ -4193,19 +4188,19 @@ public class PersistenceUnitProperties {
      * </p>
      * This can be used to help debugging an object identity problem. An object identity problem is when an managed/active entity in the cache references an entity not in managed state.
      * This method will validate that objects in query results (object tree) are in a correct state. As a result there are new log messages in the log.
-     * It's related with "read" queries like <code>em.find(...);</code> or JPQL queries like <code>SELECT e FROM Entity e</code>.
+     * It's related with "read" queries like {@code em.find(...);} or JPQL queries like {@code SELECT e FROM Entity e}.
      * It should be controlled at query level too by query hint {@link org.eclipse.persistence.config.QueryHints#QUERY_RESULTS_CACHE_VALIDATION}
      * <ul>
-     * <li>"<code>true</code>" - validate query result object tree and if content is not valid print diagnostic messages. In this case there should be negative impact to the performance.
-     * <li>"<code>false</code>" (DEFAULT) - don't validate and print any diagnostic messages
+     * <li>{@code true} - validate query result object tree and if content is not valid print diagnostic messages. In this case there should be negative impact to the performance.
+     * <li>{@code false} (DEFAULT) - don't validate and print any diagnostic messages
      * </ul>
      */
     public static final String QUERY_RESULTS_CACHE_VALIDATION = "eclipselink.query-results-cache.validation";
 
     /**
-     * The "<code>eclipselink.login.encryptor</code>" property configures a custom implementation of
+     * The {@code eclipselink.login.encryptor} property configures a custom implementation of
      * {@link org.eclipse.persistence.security.Securable} class used to encrypt and decrypt database password
-     * loaded from "<code>jakarta.persistence.jdbc.password</code>" property.
+     * loaded from {@code jakarta.persistence.jdbc.password} property.
      * Usage of this property avoids limitation of {@link SessionCustomizer} which is called when all other
      * properties have been processed (too late when database login needs to be configured).
      * If this property is not specified {@link org.eclipse.persistence.internal.security.JCEEncryptor} as a default encryptor is used.
@@ -4243,8 +4238,8 @@ public class PersistenceUnitProperties {
 
     /**
      * INTERNAL: The following properties passed to
-     * {@link Persistence#createEntityManagerFactory(String, Map)} cached and
-     * processed on the {@link EntityManagerFactory} directly. None of these
+     * {@code Persistence#createEntityManagerFactory(String, Map)} cached and
+     * processed on the {@code EntityManagerFactory} directly. None of these
      * properties processed during pre-deploy or deploy.
      **/
     private static final Set<String> supportedNonServerSessionProperties = new HashSet<String>() {

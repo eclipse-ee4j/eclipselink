@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,25 +30,23 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * stores a collection of key-value pairs of simple types (String, Number, Date,
  * etc.). It is used in conjunction with a CollectionTable which stores the key,
  * the value and a foreign key to the source object.
- *
- * @see org.eclipse.persistence.annotations.CollectionTable
- *
  * A converter may be used if the desired object type and the data type do not
  * match. This applied to both the key and value of the map.
+ * <p>
+ * A BasicMap can be specified within an Entity, MappedSuperclass and Embeddable
+ * class.
  *
+ * @see "jakarta.persistence.ElementCollection"
+ * @see org.eclipse.persistence.annotations.CollectionTable
  * @see org.eclipse.persistence.annotations.Convert
  * @see org.eclipse.persistence.annotations.Converter
  * @see org.eclipse.persistence.annotations.ObjectTypeConverter
  * @see org.eclipse.persistence.annotations.TypeConverter
  *
- * A BasicMap can be specified within an Entity, MappedSuperclass and Embeddable
- * class.
- *
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  *
  * @deprecated
- * @see jakarta.persistence.ElementCollection
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)

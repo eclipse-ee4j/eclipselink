@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * Thrown when database table validation fails.
- * Instances of this {@link Exception} are passed as {@link jakarta.persistence.SchemaValidationException#getFailures()}
+ * Instances of this {@link Exception} are passed as {@code jakarta.persistence.SchemaValidationException#getFailures()}
  * for each problem found during the schema validation process.
  */
 public abstract class TableValidationException extends Exception {
@@ -267,7 +267,7 @@ public abstract class TableValidationException extends Exception {
             }
 
             /**
-             * Column type name from the {@link jakarta.persistence.Entity} model.
+             * Column type name from the {@code jakarta.persistence.Entity} model.
              *
              * @return column type name
              */
@@ -307,7 +307,7 @@ public abstract class TableValidationException extends Exception {
             }
 
             /**
-             * Whether {@link jakarta.persistence.Entity} model column type definition allows {@code NULL} values.
+             * Whether {@code jakarta.persistence.Entity} model column type definition allows {@code NULL} values.
              *
              * @return type definition allows {@code NULL} values then {@code true}
              */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ package org.eclipse.persistence.dynamic;
 
 //javase imports
 
-import jakarta.persistence.Embeddable;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -387,14 +386,14 @@ public class DynamicTypeBuilder {
     }
 
     /**
-     * Add a {@link AggregateObjectMapping} ({@link Embeddable} in JPA) to the
+     * Add a {@link AggregateObjectMapping} ({@code Embeddable} in JPA) to the
      * {@link #entityType} being built or extended.
      *
      * @param name
      *            attribute name to use in the dynamic entity. Also the property
      *            name used to access the state of the entity
      * @param refType
-     *            dynamic type re[presenting the Embeddable/AggregateObject
+     *            dynamic type re[presenting the {@code Embeddable}/{@code AggregateObject}
      * @param allowsNull
      *            true indicates that the attribute can be null if all values
      *            are null.

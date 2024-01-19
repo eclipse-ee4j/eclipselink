@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,35 +14,32 @@
 //     tware - added in fix for bug 277550
 package org.eclipse.persistence.annotations;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * PUBLIC:
- *
  * This class is used by our JPA annotation processing to discover which annotations may coexist with a
- * jakarta.persistence.Transient annotation.  If jakarta.persistence.Transient appears on a field or property with an
- * annotation in the jakarta.persistence or org.eclipse.persistence package that is not in the list returned by getTransientCompatibleAnnotations()
- * an exception will be thrown.
- * @author tware
+ * {@code jakarta.persistence.Transient annotation}. If {@code jakarta.persistence.Transient} appears on
+ * a field annotation in the {@code jakarta.persistence} or {@code org.eclipse.persistence} package that
+ * is not in the list returned by {@link #getTransientCompatibleAnnotations()} an exception will be thrown.
  *
+ * @author tware
  */
 public class TransientCompatibleAnnotations {
 
-    private static final List<String> transientCompatibleAnnotations = Collections.unmodifiableList(new ArrayList<String>() {{
-        add("jakarta.persistence.PersistenceUnits");
-        add("jakarta.persistence.PersistenceUnit");
-        add("jakarta.persistence.PersistenceContext");
-        add("jakarta.persistence.PersistenceContexts");
-        add("jakarta.persistence.Access");
-        add("jakarta.persistence.Transient");
-    }});
+    private static final List<String> transientCompatibleAnnotations = List.of(
+            "jakarta.persistence.PersistenceUnits",
+            "jakarta.persistence.PersistenceUnit",
+            "jakarta.persistence.PersistenceContext",
+            "jakarta.persistence.PersistenceContexts",
+            "jakarta.persistence.Access",
+            "jakarta.persistence.Transient"
+    );
 
     /**
      * PUBLIC:
-     * Return a list of classnames of annotations that are compatible with the jakarta.persistence.Transient
-     * annotation.
+     * Return a list of classnames of annotations that are compatible with
+     * the {@code jakarta.persistence.Transient} annotation.
      */
     public static List<String> getTransientCompatibleAnnotations(){
         return transientCompatibleAnnotations;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,9 +29,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * strategy. The tenant table discriminator describes the type of table
  * discriminator to use. The user may choose their own tenant identifier
  * property or use the default property:
- *
- * org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT = "eclipselink.tenant-id"
- *
+ * <p>
+ * {@code org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT = "eclipselink.tenant-id"}
  * <p>
  * Tenant table discriminator can be specified at the Entity or MappedSuperclass
  * level and must always be accompanied with a Multitenant(TABLE_PER_TENANT)

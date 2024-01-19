@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2598,7 +2598,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * returns the jakarta.persistence.LockModeType string value set on this query.
+     * returns the {@code jakarta.persistence.LockModeType} string value set on this query.
      */
     public String getLockModeType(){
         return this.lockModeType;
@@ -2606,16 +2606,17 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Sets a jakarta.persistence.LockModeType to used with this queries execution.
-     * The valid types are:
-     *  - WRITE
-     *  - READ
-     *  - OPTIMISTIC
-     *  - OPTIMISTIC_FORCE_INCREMENT
-     *  - PESSIMISTIC_READ
-     *  - PESSIMISTIC_WRITE
-     *  - PESSIMISTIC_FORCE_INCREMENT
-     *  - NONE
+     * Sets a {@code jakarta.persistence.LockModeType} to used with this queries execution.
+     * <p><br>
+     * The valid types are:<ul>
+     * <li>{@code WRITE}</li>
+     * <li>{@code READ}</li>
+     * <li>{@code OPTIMISTIC}</li>
+     * <li>{@code OPTIMISTIC_FORCE_INCREMENT}</li>
+     * <li>{@code PESSIMISTIC_READ}</li>
+     * <li>{@code PESSIMISTIC_WRITE}</li>
+     * <li>{@code PESSIMISTIC_FORCE_INCREMENT}</li>
+     * <li>{@code NONE}</li></ul>
      * Setting a null type will do nothing.
      * @return returns a failure flag indicating that we were UNABLE to set the
      * lock mode because of validation. Callers to this method should check the
