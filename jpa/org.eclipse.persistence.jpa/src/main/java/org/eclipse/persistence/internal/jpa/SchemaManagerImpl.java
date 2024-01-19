@@ -19,9 +19,11 @@ package org.eclipse.persistence.internal.jpa;
 import java.util.Locale;
 import java.util.Map;
 
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SchemaValidationException;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.tools.schemaframework.TableValidationException;
@@ -75,7 +77,11 @@ class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public void truncate() {
-        schemaManager.truncateDefaultTables(false);
+        try {
+            schemaManager.truncateDefaultTables(false);
+        } catch (EclipseLinkException ex) {
+            throw new PersistenceException(ex.getMessage(), ex);
+        }
     }
 
 }
