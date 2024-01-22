@@ -55,6 +55,7 @@ import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
@@ -70,7 +71,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -561,6 +561,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     // TODO-API-3.2 - SEPersistenceUnitInfo must return new PersistenceUnitTransactionType instead of old spi
     @Override
+    @SuppressWarnings("removal")
     public PersistenceUnitTransactionType getTransactionType() {
         // Temporary mapping between old and new PersistenceUnitTransactionType
         return switch (setupImpl.getPersistenceUnitInfo().getTransactionType()) {
@@ -832,6 +833,11 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     @Override
+    public <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType) {
+        return EntityManagerFactoryImpl.getNamedQueries(resultType, getAbstractSession());
+    }
+
+    @Override
     public <T> T unwrap(Class<T> cls) {
         if (cls.equals(JpaEntityManagerFactory.class) || cls.equals(EntityManagerFactoryImpl.class)) {
             return (T) this;
@@ -851,10 +857,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        AttributeGroup group = ((EntityGraphImpl)entityGraph).getAttributeGroup().clone();
-        group.setName(graphName);
-        this.getAbstractSession().getAttributeGroups().put(graphName, group);
-        this.getAbstractSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
+        EntityManagerFactoryImpl.addNamedEntityGraph(graphName, entityGraph, getAbstractSession());
+    }
+
+    @Override
+    public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
+        return EntityManagerFactoryImpl.getNamedEntityGraphs(entityType, getAbstractSession(), getMetamodel());
     }
 
     @Override

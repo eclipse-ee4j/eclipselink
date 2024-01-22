@@ -159,6 +159,12 @@ public class QueryHintsHandler {
         Hint.verify(hintName, shouldUseDefault(hintValue), hintValue, queryName, session);
     }
 
+    // Retrieve query hints Map from DatabaseQuery
+    @SuppressWarnings("unchecked")
+    static Map<String, Object> get(DatabaseQuery query) {
+        return (Map<String, Object>) query.getProperty(QUERY_HINT_PROPERTY);
+    }
+
     /**
      * Applies the hints to the query.
      * Throws IllegalArgumentException in case the hint value is illegal.

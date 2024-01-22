@@ -55,6 +55,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -83,6 +84,7 @@ import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -1258,15 +1260,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     @Override
     public Query createNamedQuery(String name) {
-        try {
-            verifyOpen();
-            EJBQueryImpl query = new EJBQueryImpl(name, this, true);
-            query.getDatabaseQueryInternal();
-            return query;
-        } catch (RuntimeException e) {
-            setRollbackOnly();
-            throw e;
-        }
+        return createNamedQueryInternal(name, null);
     }
 
     /**
@@ -1281,8 +1275,38 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *      found to be invalid
      */
     @Override
-    public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass){
-        return (TypedQuery<T>) createNamedQuery(name);
+    public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
+        return createNamedQueryInternal(name, null);
+    }
+
+    @Override
+    public <T> TypedQuery<T> createQuery(TypedQueryReference<T> typedQueryReference) {
+        Objects.requireNonNull(typedQueryReference, ExceptionLocalization.buildMessage("typed_query_reference_is_null"));
+        return createNamedQueryInternal(typedQueryReference.getName(), typedQueryReference.getHints());
+    }
+
+    /**
+     * Create an instance of {@link TypedQuery} for executing a named query written in the Jakarta Persistence query language
+     * or in native SQL.
+     *
+     * @param name the name of the query
+     * @param hints a {@link Map} with query hints or {@code null} to pass no hints
+     * @return the new {@link TypedQuery} instance
+     * @param <T> the query result type
+     */
+    private <T> TypedQuery<T> createNamedQueryInternal(String name, Map<String,Object> hints) {
+        try {
+            verifyOpen();
+            EJBQueryImpl<T> query = new EJBQueryImpl<>(name, this, true);
+            query.getDatabaseQueryInternal();
+            if (hints != null) {
+                hints.forEach(query::setHint);
+            }
+            return query;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     /**
@@ -3167,22 +3191,22 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     @Override
-    public EntityGraph createEntityGraph(String graphName) {
+    public EntityGraph<?> createEntityGraph(String graphName) {
         AttributeGroup group = this.getAbstractSession().getAttributeGroups().get(graphName);
         if (group == null){
             return null;
         }
         ClassDescriptor descriptor = this.getAbstractSession().getDescriptor(group.getType());
-        return new EntityGraphImpl(group.clone(), descriptor);
+        return new EntityGraphImpl<>(group.clone(), descriptor);
     }
 
     @Override
-    public EntityGraph getEntityGraph(String graphName) {
+    public EntityGraph<?> getEntityGraph(String graphName) {
         AttributeGroup group = this.getAbstractSession().getAttributeGroups().get(graphName);
         if (group == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{graphName}));
         }
-        return new EntityGraphImpl(group);
+        return new EntityGraphImpl<>(group);
     }
 
     @Override

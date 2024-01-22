@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -27,10 +28,12 @@ import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PersistenceUnitUtil;
+import jakarta.persistence.TypedQueryReference;
 import junit.framework.Test;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.internal.jpa.EntityGraphImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Team;
@@ -62,7 +65,11 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
                 new EntityManagerFactoryTest("testIsLoadedEntity"),
                 new EntityManagerFactoryTest("testLoadEntity"),
                 new EntityManagerFactoryTest("testGetVersionOnEntityWithVersion"),
-                new EntityManagerFactoryTest("testGetVersionOnEntityWithoutVersion")
+                new EntityManagerFactoryTest("testGetVersionOnEntityWithoutVersion"),
+                new EntityManagerFactoryTest("testGetNamedPokemonQueries"),
+                new EntityManagerFactoryTest("testGetNamedAllQueries"),
+                new EntityManagerFactoryTest("testGetNamedPokemonEntityGraphs"),
+                new EntityManagerFactoryTest("testGetNamedAllEntityGraphs")
         );
     }
 
@@ -367,6 +374,72 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
             assertTrue(
                     "Unexpected exception message: " + iae.getMessage(),
                     iae.getMessage().contains("which has no version attribute"));
+        }
+    }
+
+    // All named queries returning Pokemon in current PU
+    public void testGetNamedPokemonQueries() {
+        Map<String, TypedQueryReference<Pokemon>> queries = emf.getNamedQueries(Pokemon.class);
+        assertEquals(1, queries.size());
+        TypedQueryReference<Pokemon> reference = queries.get("Pokemon.get");
+        assertEquals("Pokemon.get", reference.getName());
+    }
+
+    // All named queries defined in current PU
+    public void testGetNamedAllQueries() {
+        Map<String, TypedQueryReference<Object>> queries = emf.getNamedQueries(Object.class);
+        assertEquals(4, queries.size());
+        for (TypedQueryReference<Object> query : queries.values()) {
+            switch (query.getName()) {
+                case "Team.get":
+                    assertEquals(Team.class, query.getResultType());
+                    assertEquals(2, query.getHints().size());
+                    assertTrue(String.format("Named query Team.get shall contain %s hint", QueryHints.CACHE_USAGE),
+                               query.getHints().containsKey(QueryHints.CACHE_USAGE));
+                    assertTrue(String.format("Named query Team.get shall contain %s hint", QueryHints.QUERY_TIMEOUT),
+                               query.getHints().containsKey(QueryHints.QUERY_TIMEOUT));
+                    break;
+                case "Trainer.get":
+                    assertEquals(Trainer.class, query.getResultType());
+                    assertEquals(0, query.getHints().size());
+                    break;
+                case "Type.all":
+                    assertEquals(Type.class, query.getResultType());
+                    assertEquals(0, query.getHints().size());
+                    break;
+                case "Pokemon.get":
+                    assertEquals(Pokemon.class, query.getResultType());
+                    assertEquals(0, query.getHints().size());
+                    break;
+                default:
+                    fail(String.format("Unknown named query %s found", query.getName()));
+            }
+        }
+    }
+
+    // All EntityGraphs for Pokemon entity in current PU
+    public void testGetNamedPokemonEntityGraphs() {
+        Map<String, EntityGraph<? extends Pokemon>> entityGraphs = emf.getNamedEntityGraphs(Pokemon.class);
+        assertEquals(1, entityGraphs.size());
+        EntityGraph<? extends Pokemon> pokemonGraph = entityGraphs.get("Pokemon.fetchGraph");
+        assertNotNull(pokemonGraph);
+    }
+
+    // All EntityGraphs in current PU
+    public void testGetNamedAllEntityGraphs() {
+        Map<String, EntityGraph<?>> entityGraphs = emf.getNamedEntityGraphs(Object.class);
+        assertEquals(2, entityGraphs.size());
+        for (EntityGraph<?> entityGraph : entityGraphs.values()) {
+            switch (entityGraph.getName()) {
+            case "Pokemon.fetchGraph":
+                assertEquals(Pokemon.class, ((EntityGraphImpl<?>)entityGraph).getClassType());
+                break;
+            case "Trainer.fetchGraph":
+                assertEquals(Trainer.class, ((EntityGraphImpl<?>)entityGraph).getClassType());
+                break;
+            default:
+                fail(String.format("Unknown EntityGraph %s found", entityGraph.getName()));
+            }
         }
     }
 

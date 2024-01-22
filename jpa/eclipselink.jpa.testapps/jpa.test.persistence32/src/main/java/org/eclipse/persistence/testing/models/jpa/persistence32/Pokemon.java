@@ -21,8 +21,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.Table;
 import org.eclipse.persistence.annotations.FetchAttribute;
 import org.eclipse.persistence.annotations.FetchGroup;
@@ -36,6 +39,14 @@ import org.eclipse.persistence.annotations.FetchGroups;
 @FetchGroups({
         @FetchGroup(name = "FetchTypes", attributes = {@FetchAttribute(name = "types")})
 })
+@NamedEntityGraph(name = "Pokemon.fetchGraph",
+                  attributeNodes = {
+                        @NamedAttributeNode("name"),
+                        @NamedAttributeNode(value = "types", subgraph = "types")
+                  },
+                  subgraphs = @NamedSubgraph(name = "types",
+                                             attributeNodes = @NamedAttributeNode("name"))
+)
 public class Pokemon {
 
     // ID is assigned in tests to avoid collisions

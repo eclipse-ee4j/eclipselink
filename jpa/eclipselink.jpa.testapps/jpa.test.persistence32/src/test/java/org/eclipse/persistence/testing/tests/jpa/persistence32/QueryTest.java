@@ -12,7 +12,6 @@
 package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
 import java.util.List;
-import java.util.Map;
 
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
@@ -46,8 +45,6 @@ public class QueryTest extends AbstractPokemon {
                 new QueryTest("testGetSingleResultOrNullWithMultipleResults")
         );
     }
-
-    Map<Integer, Pokemon> pokemons = null;
 
     public QueryTest() {
     }
