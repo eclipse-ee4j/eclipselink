@@ -5687,8 +5687,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (forDetach){
             CascadeCondition detached = iterator.new CascadeCondition(){
                 @Override
+                public boolean shouldCascade(DatabaseMapping mapping){
+                    return mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach();
+                }
+
+                @Override
                 public boolean shouldNotCascade(DatabaseMapping mapping){
-                    return ! (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach());
+                    return !shouldCascade(mapping);
                 }
             };
             iterator.setCascadeCondition(detached);

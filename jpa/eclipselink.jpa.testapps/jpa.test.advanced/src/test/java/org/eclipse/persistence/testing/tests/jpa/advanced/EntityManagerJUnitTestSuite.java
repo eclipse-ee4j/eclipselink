@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -517,6 +517,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testInheritanceFetchJoinSecondCall");
 
         tests.add("testDetachChildObjects");
+        tests.add("testDetachLazyLoadedCollection");
         tests.add("testAutoCloseable");
 
 
@@ -7997,7 +7998,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
 
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         HashMap map = null;
@@ -8132,7 +8133,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         boolean ok = false;
@@ -8239,7 +8240,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform." );
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         Employee empTemp = null;
@@ -13103,7 +13104,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testDetachChildObjects() {
     	EntityManager em = createEntityManager();
     	beginTransaction(em);
-		InitTestDetachChildObjects(em);
+		InitTestDetachChildObjects1(em);
 		UnitOfWorkImpl uow = (UnitOfWorkImpl) em.unwrap(JpaEntityManager.class).getActiveSession();
 
 		Material mat = em.find(Material.class, 1L);
@@ -13123,8 +13124,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 		for (PlanArbeitsgangHist pag : pagList) {
 			assertTrue(em.contains(pag));
 		}
+        assertTrue(em.contains(matEreignis1.getChangedObject()));
+        assertFalse(em.contains(matEreignis1));
+        assertFalse(em.contains(matEreignis1.getBeforeChange()));
+        assertFalse(em.contains(matEreignis1.getAfterChange()));
+        for (PlanArbeitsgangHist planArbeitsgangHist: matEreignis1.getBeforeChange().getRestproduktionsweg()) {
+            assertFalse(em.contains(planArbeitsgangHist));
+        }
+        for (PlanArbeitsgangHist planArbeitsgangHist: matEreignis1.getAfterChange().getRestproduktionsweg()) {
+            assertFalse(em.contains(planArbeitsgangHist));
+        }
+
 		rollbackTransaction(em);
 		closeEntityManager(em);
+    }
+
+    public void testDetachLazyLoadedCollection() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        InitTestDetachChildObjects2(em);
+        Material mat = em.find(Material.class, 2L);
+        IndirectList<PlanArbeitsgang> restproduktionsweg = (IndirectList<PlanArbeitsgang>)mat.getRestproduktionsweg();
+        IndirectList<PlanArbeitsgang> restproduktionswegNoCascadeDetach = (IndirectList<PlanArbeitsgang>)mat.getRestproduktionswegNoCascadeDetach();
+        assertFalse(restproduktionsweg.isInstantiated());
+        assertFalse(restproduktionswegNoCascadeDetach.isInstantiated());
+        em.detach(mat);
+        assertTrue(restproduktionsweg.isInstantiated());
+        assertFalse(restproduktionswegNoCascadeDetach.isInstantiated());
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
 
     public void testAutoCloseable() {
@@ -13144,7 +13172,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
-    private void InitTestDetachChildObjects(EntityManager em) {
+    private void InitTestDetachChildObjects1(EntityManager em) {
         // test data - manual creation
         try {
             em.createNativeQuery("INSERT INTO MATERIAL (ID, VERSION, IDENT, WERT) VALUES (1, 1, 'MAT', 'WERT2')").executeUpdate();
@@ -13162,8 +13190,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 			em.createNativeQuery("INSERT INTO MATERIALEREIGNIS (ID, VERSION, AFTERCHANGE_ID, BEFORECHANGE_ID, CHANGEDOBJECT_ID) VALUES (1, 1, 2, 1, 1)").executeUpdate();
         } catch (Exception e) {
             fail("Error creating test data: " + e.getMessage());
+        } 
+    }
+
+    private void InitTestDetachChildObjects2(EntityManager em) {
+        // test data - manual creation
+        try {
+            em.createNativeQuery("INSERT INTO MATERIAL (ID, VERSION, IDENT, WERT) VALUES (2, 2, 'MAT', 'WERT22')").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (11, 11, 'PAG1', 2)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (22, 11, 'PAG2', 2)").executeUpdate();
+        } catch (Exception e) {
+            fail("Error creating test data: " + e.getMessage());
         }
     }
+
     private MaterialHist makeHistCopy(Material mat) {
 		MaterialHist histCopy = new MaterialHist();
 		mat.setLastHist(histCopy);
