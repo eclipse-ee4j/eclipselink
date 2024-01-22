@@ -5691,7 +5691,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
                 @Override
                 public boolean shouldNotCascade(DatabaseMapping mapping){
-                    return ! (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach());
+                    return !shouldCascade(mapping);
                 }
             };
             iterator.setCascadeCondition(detached);

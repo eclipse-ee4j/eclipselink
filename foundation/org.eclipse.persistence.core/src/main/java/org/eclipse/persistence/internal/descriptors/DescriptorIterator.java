@@ -161,7 +161,7 @@ public abstract class DescriptorIterator {
         return visitedObjects;
     }
 
-    public Map getVisitedMappings() {
+    public Map<Integer, DatabaseMapping> getVisitedMappings() {
         return visitedMappings;
     }
 
@@ -712,7 +712,7 @@ public abstract class DescriptorIterator {
         }
 
         public boolean shouldNotCascade(DatabaseMapping mapping){
-            return !(shouldCascadeAllParts() || (shouldCascadePrivateParts() && mapping.isPrivateOwned()));
+            return !shouldCascade(mapping);
         }
     }
 
