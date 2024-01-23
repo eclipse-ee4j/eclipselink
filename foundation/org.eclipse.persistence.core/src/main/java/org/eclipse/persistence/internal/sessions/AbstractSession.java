@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2661,21 +2661,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             logSessionString = writer.toString();
         }
         return logSessionString;
-    }
-
-    /**
-     * INTERNAL:
-     * Return the name of the session: class name + system hashcode.
-     * <p>
-     * This should be the implementation of toString(), and also the
-     * value should be calculated in the constructor for it is used all the
-     * time.  However, everything is lazily initialized now and the value is
-     * transient for the system hashcode could vary?
-     * @deprecated Use {@link #getSessionId()}.
-     */
-    @Deprecated(forRemoval = true)
-    public String getLogSessionString() {
-        return getSessionId();
     }
 
     /**

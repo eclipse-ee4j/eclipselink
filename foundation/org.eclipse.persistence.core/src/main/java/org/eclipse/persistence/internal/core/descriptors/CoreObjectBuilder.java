@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,13 +42,6 @@ public abstract class CoreObjectBuilder<
      * This allows subclasses to define different record types.
      */
     public abstract ABSTRACT_RECORD createRecord(ABSTRACT_SESSION session);
-
-    /**
-     * Create a new row/record from XMLContext.
-     * @deprecated Use {@link #createRecord(CoreAbstractSession)}.
-     */
-    @Deprecated(forRemoval = true)
-    public abstract ABSTRACT_RECORD createRecordFromXMLContext(XMLContext context);
 
     /**
      * Extract primary key attribute values from the domainObject.

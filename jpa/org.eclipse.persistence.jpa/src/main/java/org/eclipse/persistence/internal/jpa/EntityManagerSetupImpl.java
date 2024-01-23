@@ -3443,8 +3443,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (parser != null) {
             if (parser.equalsIgnoreCase(ParserType.Hermes)) {
                 parser = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
-            } else if (parser.equalsIgnoreCase(ParserType.ANTLR)) {
-                parser = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
             }
             this.session.setProperty(PersistenceUnitProperties.JPQL_PARSER, parser);
         }

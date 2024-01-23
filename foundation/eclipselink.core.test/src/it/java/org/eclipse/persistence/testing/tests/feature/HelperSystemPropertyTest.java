@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,14 +32,6 @@ public class HelperSystemPropertyTest extends AutoVerifyTestCase {
     public void verify() {
         if (!System.lineSeparator().equals(System.getProperty("line.separator"))) {
             throw new TestErrorException("System.lineSeparator() returns the incorrect value.");
-        }
-
-        if (!org.eclipse.persistence.internal.helper.Helper.pathSeparator().equals(File.pathSeparator)) {
-            throw new TestErrorException("Helper.pathSeparator() returns the incorrect value.");
-        }
-
-        if (!org.eclipse.persistence.internal.helper.Helper.fileSeparator().equals(File.separator)) {
-            throw new TestErrorException("Helper.fileSeparator() returns the incorrect value.");
         }
 
         if (!org.eclipse.persistence.internal.helper.Helper.currentWorkingDirectory().equals(System.getProperty("user.dir"))) {
