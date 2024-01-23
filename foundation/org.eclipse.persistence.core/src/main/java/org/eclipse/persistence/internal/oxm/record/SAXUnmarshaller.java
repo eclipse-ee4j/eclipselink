@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1124,9 +1124,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         try {
             br.mark(READ_AHEAD_LIMIT);
             try {
-                char c = 0;
+                int c = 0;
                 for (int i = 0; c != -1 && i < READ_AHEAD_LIMIT; i++) {
-                    c = (char) br.read();
+                    c = br.read();
                     if (c == '[' || c == '{') {
                         return Constants.APPLICATION_JSON;
                     } else if (c == '<') {
