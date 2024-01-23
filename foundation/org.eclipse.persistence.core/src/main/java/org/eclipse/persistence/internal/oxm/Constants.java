@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -179,15 +179,5 @@ public class Constants {
         }
 
     };
-
-    /**
-     * Return a string containing the platform-appropriate
-     * characters for carriage return.
-     * @deprecated Use {@link System#lineSeparator()}.
-     */
-    @Deprecated(forRemoval = true)
-    public static String cr() {
-        return System.lineSeparator();
-    }
 
 }

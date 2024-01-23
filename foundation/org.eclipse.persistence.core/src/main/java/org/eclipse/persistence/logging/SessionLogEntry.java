@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import org.eclipse.persistence.sessions.Session;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Date;
 
 /**
  * SessionLogEntry is a simple container object that holds
@@ -36,8 +35,6 @@ import java.util.Date;
  * @since TOPLink/Java 3.0
  */
 public class SessionLogEntry implements Serializable {
-    @Deprecated(forRemoval = true)
-    protected Date date;
     protected transient Session session;
     protected transient Thread thread;
     protected transient Accessor connection;
@@ -168,20 +165,6 @@ public class SessionLogEntry implements Serializable {
         return connection;
     }
 
-    /**
-     * Return the date of the log entry.
-     *
-     * @return the date
-     * @deprecated Use {@link #getTimeStamp()}.
-     */
-    @Deprecated(forRemoval = true)
-    public Date getDate() {
-        if (date == null) {
-            this.date = Date.from(getTimeStamp());
-        }
-        return date;
-    }
-
     public Instant getTimeStamp() {
         return timeStamp;
     }
@@ -293,17 +276,6 @@ public class SessionLogEntry implements Serializable {
      */
     public void setConnection(Accessor connection) {
         this.connection = connection;
-    }
-
-    /**
-     * Set the date of the log entry.
-     *
-     * @param date the date
-     * @deprecated Use {@link #setTimeStamp(Instant)}.
-     */
-    @Deprecated(forRemoval = true)
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public void setTimeStamp(Instant timeStamp) {

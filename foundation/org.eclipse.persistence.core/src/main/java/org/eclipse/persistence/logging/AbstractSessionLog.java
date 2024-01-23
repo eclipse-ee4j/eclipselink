@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.util.Date;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.
@@ -125,13 +124,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * By default, set to {@code "yyyy.MM.dd HH:mm:ss.SSS"}.
      */
     protected static String DATE_FORMAT_STR = "yyyy.MM.dd HH:mm:ss.SSS";
-
-    /**
-     * Format use to print the current date/time.
-     * @deprecated Use {@link #timeStampFormatter}.
-     */
-    @Deprecated(forRemoval = true)
-    protected DateFormat dateFormat;
 
     /**
      * Formatter used to print the current date/time.
@@ -756,30 +748,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * Return the date format to be used when printing a log entry date.
-     * @return the date format
-     * @deprecated Use {@link #getTimeStampFormatter()}.
-     */
-    @Deprecated(forRemoval = true)
-    public DateFormat getDateFormat() {
-        return dateFormat;
-    }
-
-    /**
-     * Return the specified date and/or time information in string.
-     * The format will be determined by the date format settings.
-     * @deprecated Use {@link #getTimeStampString(TemporalAccessor)}.
-     */
-    @Deprecated(forRemoval = true)
-    protected String getDateString(Date date) {
-        if (date == null) {
-            return null;
-        }
-        return getTimeStampString(date.toInstant());
-    }
-
-    /**
      * Return the specified date and/or time information in string.
      * The format will be determined by the {@linkplain  DateTimeFormatter} settings.
      * By default, the value of the {@linkplain #DATE_FORMAT_STR} pattern is used.
@@ -932,21 +900,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         }
     }
 
-
-    /**
-     * PUBLIC:
-     * Set the date format to be used when printing a log entry date.
-     * <p>Note: the JDK's <code>java.text.SimpleDateFormat</code> is <b>NOT</b> thread-safe.<br>
-     * The user is <b>strongly</b> advised to use {@linkplain #setTimeStampFormatter(DateTimeFormatter)} instead.</p>
-     *
-     * @param dateFormat java.text.DateFormat
-     * @deprecated Use {@link #setTimeStampFormatter(DateTimeFormatter)}.
-     */
-    @Deprecated(forRemoval = true)
-    public void setDateFormat(DateFormat dateFormat) {
-        this.dateFormat = dateFormat;
-    }
-
     /**
      * PUBLIC:
      * Set the date-time format to be used when printing a log entry date.
@@ -974,7 +927,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             //Bug5976657, if there are entry parameters and the string "{0" contained in the message
             //body, we assume it needs to be formatted.
             if (entry.getParameters() != null && entry.getParameters().length > 0 && message.contains("{0")) {
-                message = java.text.MessageFormat.format(message, entry.getParameters());
+                message = MessageFormat.format(message, entry.getParameters());
             }
         }
         return message;

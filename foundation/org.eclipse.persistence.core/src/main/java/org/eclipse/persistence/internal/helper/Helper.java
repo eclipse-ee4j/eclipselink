@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ package org.eclipse.persistence.internal.helper;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.core.helper.CoreHelper;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -71,7 +70,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * <p>
  * <b>Purpose</b>: Define any useful methods that are missing from the base Java.
  */
-public class Helper extends CoreHelper implements Serializable {
+public class Helper implements Serializable {
 
     /** Used to configure JDBC level date optimization. */
     public static boolean shouldOptimizeDates = false;
@@ -92,27 +91,12 @@ public class Helper extends CoreHelper implements Serializable {
 
     // Changed static initialization to lazy initialization for bug 2756643
 
-    /** Store CR string, for some reason \n is not platform independent.
-     * @deprecated Use {@link System#lineSeparator()}. */
-    @Deprecated(forRemoval = true)
-    protected static String CR;
-
     /** formatting strings for indenting */
     public static final String SPACE = " ";
     public static final String INDENT = "  ";
 
     /** Store newline string */
     public static final String NL = "\n";
-
-    /** Prime the platform-dependent path separator
-     * @deprecated Use {@link File#pathSeparator}. */
-    @Deprecated(forRemoval = true)
-    protected static String PATH_SEPARATOR = null;
-
-    /** Prime the platform-dependent file separator
-     * @deprecated Use {@link File#separator}. */
-    @Deprecated(forRemoval = true)
-    protected static String FILE_SEPARATOR = null;
 
     /** Prime the platform-dependent current working directory */
     protected static String CURRENT_WORKING_DIRECTORY = null;
@@ -831,19 +815,6 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Return a string containing the platform-appropriate
-     * characters for carriage return.
-     * @deprecated Use {@link System#lineSeparator()}.
-     */
-    @Deprecated(forRemoval = true)
-    public static String cr() {
-        if (CR == null) {
-            CR = System.lineSeparator();
-        }
-        return CR;
-    }
-
-    /**
      * Return the name of the "current working directory".
      */
     public static String currentWorkingDirectory() {
@@ -986,20 +957,6 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Return a string containing the platform-appropriate
-     * characters for separating directory and file names.
-     * @deprecated Use {@link File#separator}.
-     */
-    @Deprecated(forRemoval = true)
-    public static String fileSeparator() {
-        //Bug 2756643
-        if (FILE_SEPARATOR == null) {
-            FILE_SEPARATOR = File.separator;
-        }
-        return FILE_SEPARATOR;
-    }
-
-    /**
      * INTERNAL:
      * Returns a Field for the specified Class and field name.
      * Uses Class.getDeclaredField(String) to find the field.
@@ -1078,34 +1035,10 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     *    Answers the unqualified class name for the provided class.
-     */
-    @Deprecated(forRemoval = true)
-    public static String getShortClassName(Class<?> javaClass) {
-        return javaClass.getSimpleName();
-    }
-
-    /**
      *    Answers the unqualified class name from the specified String.
      */
     public static String getShortClassName(String javaClassName) {
         return javaClassName.substring(javaClassName.lastIndexOf('.') + 1);
-    }
-
-    /**
-     *    Answers the unqualified class name for the specified object.
-     */
-    @Deprecated(forRemoval = true)
-    public static String getShortClassName(Object object) {
-        return getShortClassName(object.getClass());
-    }
-
-    /**
-     *    return a package name for the specified class.
-     */
-    @Deprecated(forRemoval = true)
-    public static String getPackageName(Class<?> javaClass) {
-        return javaClass.getPackageName();
     }
 
     /**
@@ -1253,20 +1186,6 @@ public class Helper extends CoreHelper implements Serializable {
         } finally {
             Helper.close(fos);
         }
-    }
-
-    /**
-     * Return a string containing the platform-appropriate
-     * characters for separating entries in a path (e.g. the classpath)
-     * @deprecated Use {@link File#pathSeparator}.
-     */
-    @Deprecated(forRemoval = true)
-    public static String pathSeparator() {
-        // Bug 2756643
-        if (PATH_SEPARATOR == null) {
-            PATH_SEPARATOR = File.pathSeparator;
-        }
-        return PATH_SEPARATOR;
     }
 
     /**
