@@ -194,7 +194,7 @@ module org.eclipse.persistence.core {
             org.eclipse.persistence.sdo,
             org.eclipse.persistence.pgsql;
     exports org.eclipse.persistence.internal.mappings.converters to org.eclipse.persistence.jpa;
-    exports org.eclipse.persistence.internal.weaving to org.eclipse.persistence.jpa;
+    exports org.eclipse.persistence.internal.weaving;
     exports org.eclipse.persistence.internal.cache to org.eclipse.persistence.moxy;
     exports org.eclipse.persistence.internal.oxm.schema to
             org.eclipse.persistence.dbws,
