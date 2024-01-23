@@ -224,7 +224,7 @@
         <ant.version>1.10.14</ant.version>
         <aspectj.version>1.9.20.1</aspectj.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
-        <derby.version>10.16.1.1</derby.version>
+        <derby.version>10.17.1.0</derby.version>
         <db2.version>11.5.8.0</db2.version>
         <h2.version>2.2.224</h2.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
