@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -194,7 +194,7 @@ module org.eclipse.persistence.core {
             org.eclipse.persistence.sdo,
             org.eclipse.persistence.pgsql;
     exports org.eclipse.persistence.internal.mappings.converters to org.eclipse.persistence.jpa;
-    exports org.eclipse.persistence.internal.weaving to org.eclipse.persistence.jpa;
+    exports org.eclipse.persistence.internal.weaving;
     exports org.eclipse.persistence.internal.cache to org.eclipse.persistence.moxy;
     exports org.eclipse.persistence.internal.oxm.schema to
             org.eclipse.persistence.dbws,
