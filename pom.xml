@@ -96,8 +96,8 @@
 
     <properties>
         <!-- Minimum required JDK version -->
-        <maven.compiler.release>21</maven.compiler.release>
-        <maven.compiler.testRelease>21</maven.compiler.testRelease>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.testRelease>17</maven.compiler.testRelease>
 
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -224,7 +224,7 @@
         <ant.version>1.10.14</ant.version>
         <aspectj.version>1.9.20.1</aspectj.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
-        <derby.version>10.17.1.0</derby.version>
+        <derby.version>10.16.1.1</derby.version>
         <db2.version>11.5.8.0</db2.version>
         <h2.version>2.2.224</h2.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
@@ -1656,7 +1656,7 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[21,)</version>
+                                    <version>[17,)</version>
                                 </requireJavaVersion>
                                 <requireMavenVersion>
                                     <version>[3.6.3,)</version>
