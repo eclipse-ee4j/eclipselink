@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -202,7 +202,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         List<DatabaseQuery> queriesByName = getQueries().get(query.getName());
         if (queriesByName == null) {
             // lazily create Vector in Hashtable.
-            queriesByName = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            queriesByName = new ArrayList<>();
             getQueries().put(query.getName(), queriesByName);
         } else {
             int argumentTypesSize = 0;
@@ -597,9 +597,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         if (arguments != null) {
             argumentTypesSize = arguments.size();
         }
-        Vector argumentTypes = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(argumentTypesSize);
+        List<Class<?>> argumentTypes = new ArrayList<>(argumentTypesSize);
         for (int i = 0; i < argumentTypesSize; i++) {
-            argumentTypes.addElement(arguments.elementAt(i).getClass());
+            argumentTypes.add(arguments.elementAt(i).getClass());
         }
         return getLocalQueryByArgumentTypes(name, argumentTypes);
 

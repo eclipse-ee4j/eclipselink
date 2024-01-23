@@ -241,6 +241,7 @@ module eclipselink {
     exports org.eclipse.persistence.internal.sessions.factories;
     exports org.eclipse.persistence.internal.sessions.factories.model;
     exports org.eclipse.persistence.internal.sessions.remote;
+    exports org.eclipse.persistence.internal.weaving;
     exports org.eclipse.persistence.internal.xr;
 
     //exported through EclipseLink INTERNAL API
