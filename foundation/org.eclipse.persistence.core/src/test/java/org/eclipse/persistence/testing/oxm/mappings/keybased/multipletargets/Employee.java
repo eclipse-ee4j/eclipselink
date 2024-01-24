@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +17,12 @@ package org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Address;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keybased.Employee {
     public ArrayList<Address> addresses;
 
     public Employee() {
-        addresses = new ArrayList<Address>();
+        addresses = new ArrayList<>();
     }
 
     public boolean equals(Object obj) {
@@ -40,8 +39,7 @@ public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keyba
             return false;
         }
 
-        for (Iterator<Address> addIt = this.addresses.iterator(); addIt.hasNext(); ) {
-            Address address = addIt.next();
+        for (Address address : this.addresses) {
             if (!(tgtAddresses.contains(address))) {
                 return false;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,8 +32,8 @@ public class ExceptionOnIsolatedReference extends TestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            descriptors.addElement(iterator.next());
+        for (ClassDescriptor classDescriptor : session.getDescriptors().values()) {
+            descriptors.addElement(classDescriptor);
         }
         this.server.addDescriptors(descriptors);
     }
@@ -53,8 +53,8 @@ public class ExceptionOnIsolatedReference extends TestCase {
             }
         } catch (IntegrityException ex) {
             Vector exceptions = ex.getIntegrityChecker().getCaughtExceptions();
-            for (int index = 0; index < exceptions.size(); ++index) {
-                if (((EclipseLinkException)exceptions.get(index)).getErrorCode() == DescriptorException.ISOLATED_DESCRIPTOR_REFERENCED_BY_SHARED_DESCRIPTOR) {
+            for (Object exception : exceptions) {
+                if (((EclipseLinkException) exception).getErrorCode() == DescriptorException.ISOLATED_DESCRIPTOR_REFERENCED_BY_SHARED_DESCRIPTOR) {
                     throw new TestErrorException("Validation Exception error  thrown.  Non-isolated data was not allowed to reference isolated Data");
                 }
             }

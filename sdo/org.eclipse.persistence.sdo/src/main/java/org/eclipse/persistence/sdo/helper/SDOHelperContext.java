@@ -1050,7 +1050,7 @@ public class SDOHelperContext implements HelperContext {
         while ((loaderString.startsWith(WAS_NEWLINE)) && (loaderString.length() > 0)) {
             loaderString = loaderString.substring(1).trim();
         }
-        String loaderStringLines[] = loaderString.split(WAS_NEWLINE, 2);
+        String[] loaderStringLines = loaderString.split(WAS_NEWLINE, 2);
         if (loaderStringLines.length > 0) {
             String firstLine = loaderStringLines[0].trim();
             int appPos = firstLine.indexOf(WAS_APP_COLON);
@@ -1126,7 +1126,7 @@ public class SDOHelperContext implements HelperContext {
         while ((loaderString.startsWith(WAS_NEWLINE)) && (loaderString.length() > 0)) {
             loaderString = loaderString.substring(1).trim();
         }
-        String loaderStringLines[] = loaderString.split(WAS_NEWLINE, 2);
+        String[] loaderStringLines = loaderString.split(WAS_NEWLINE, 2);
         if (loaderStringLines.length > 0) {
             String firstLine = loaderStringLines[0].trim();
             int appPos = firstLine.indexOf(WAS_APP_COLON);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -321,7 +321,7 @@ public class ServerEmployeeV2Test extends ServerEmployeeTestBase {
         manager = RestUtils.restReadObject(context, manager.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
-        assertTrue("Manager's managed employee list is empty", manager.getManagedEmployees().size() > 0);
+        assertTrue("Manager's managed employee list is empty", !manager.getManagedEmployees().isEmpty());
 
         employee = RestUtils.restReadObject(context, employee.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", employee);
@@ -655,7 +655,7 @@ public class ServerEmployeeV2Test extends ServerEmployeeTestBase {
         manager = RestUtils.restReadObject(context, manager.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
-        assertTrue("Manager's managed employee list is empty", manager.getManagedEmployees().size() > 0);
+        assertTrue("Manager's managed employee list is empty", !manager.getManagedEmployees().isEmpty());
 
         employee = RestUtils.restReadObject(context, employee.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", employee);

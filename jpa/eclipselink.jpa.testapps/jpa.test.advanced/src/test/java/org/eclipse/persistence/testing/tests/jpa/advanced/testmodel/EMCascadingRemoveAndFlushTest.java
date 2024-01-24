@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumberPK;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,8 +65,8 @@ public class EMCascadingRemoveAndFlushTest extends EntityContainerTestBase  {
         try {
             beginTransaction();
             Employee employee = getEntityManager().find(Employee.class, empIDs[0]);
-            for (Iterator<PhoneNumber> phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
-                this.phoneIDs.add(phones.next().buildPK());
+            for (PhoneNumber phoneNumber : employee.getPhoneNumbers()) {
+                this.phoneIDs.add(phoneNumber.buildPK());
             }
             getEntityManager().remove(employee);
 
@@ -77,9 +76,9 @@ public class EMCascadingRemoveAndFlushTest extends EntityContainerTestBase  {
             getEntityManager().clear();
 
             persistedItems.put("after flush Employee", getEntityManager().find(Employee.class, empIDs[0]));
-            for (Iterator<PhoneNumberPK> ids = this.phoneIDs.iterator(); ids.hasNext();){
-                PhoneNumber phone = getEntityManager().find(PhoneNumber.class, ids.next());
-                if (phone != null){
+            for (PhoneNumberPK phoneID : this.phoneIDs) {
+                PhoneNumber phone = getEntityManager().find(PhoneNumber.class, phoneID);
+                if (phone != null) {
                     persistedItems.put("after flush PhoneNumber", phone);
                 }
             }

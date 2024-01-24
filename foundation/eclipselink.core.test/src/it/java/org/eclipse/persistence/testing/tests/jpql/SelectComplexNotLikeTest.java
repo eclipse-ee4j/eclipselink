@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,8 +26,8 @@ public class SelectComplexNotLikeTest extends org.eclipse.persistence.testing.te
         // Bug 223005: Verify that we have at least 1 employee with the required field length otherwise an EclipseLinkException will be thrown
         Employee emp = getEmployeeWithRequiredNameLength(MIN_FIRSTNAME_LENGTH, getName());
         String firstName = emp.getFirstName();
-        StringBuffer partialFirstName = new StringBuffer();
-        partialFirstName.append(firstName.substring(0, 1));
+        StringBuilder partialFirstName = new StringBuilder();
+        partialFirstName.append(firstName.charAt(0));
         partialFirstName.append("_");
         partialFirstName.append(firstName.substring(2, 4));
         partialFirstName.append( "%");
@@ -42,7 +42,7 @@ public class SelectComplexNotLikeTest extends org.eclipse.persistence.testing.te
         setOriginalOject(getSession().executeQuery(raq));
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName NOT LIKE \"" + partialFirstName.toString() + "\"";
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName NOT LIKE \"" + partialFirstName + "\"";
 
         setEjbqlString(ejbqlString);
         //setOriginalOject(emp);

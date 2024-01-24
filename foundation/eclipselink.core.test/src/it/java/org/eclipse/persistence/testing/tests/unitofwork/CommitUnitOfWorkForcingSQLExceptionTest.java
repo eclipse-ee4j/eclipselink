@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class CommitUnitOfWorkForcingSQLExceptionTest extends UnitOfWorkEventTest
          * 2 - This test will throw an UnsupportedOperationException if the map on AbstractSession is not cloned when immutable - bug fix
          * 3 - This test will throw an SQLException when operating normally due to the field length exception
          */
-        StringBuffer firstName = new StringBuffer("firstName_maxfieldLength_");
+        StringBuilder firstName = new StringBuilder("firstName_maxfieldLength_");
         for(int i=0; i<MAX_FIRST_NAME_FIELD_LENGTH + 100; i++) {
             firstName.append("0");
         }

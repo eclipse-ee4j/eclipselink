@@ -185,9 +185,9 @@ public class MappingSystem extends TestSystem {
         if (!cubicleDescriptor.usesSequenceNumbers()) {
             Employee[] employees = { employee1, employee2, employee3, employee4, employee5, employee6 };
             int id = 100;
-            for (int i = 0; i < employees.length; i++) {
-                if ((employees[i].cubicle != null) && (employees[i].cubicle.id == null)) {
-                    employees[i].cubicle.id = new java.math.BigDecimal(id);
+            for (Employee employee : employees) {
+                if ((employee.cubicle != null) && (employee.cubicle.id == null)) {
+                    employee.cubicle.id = new java.math.BigDecimal(id);
                     id = id + 10;
                 }
             }

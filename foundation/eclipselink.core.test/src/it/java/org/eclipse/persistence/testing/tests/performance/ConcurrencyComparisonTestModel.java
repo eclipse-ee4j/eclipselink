@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ public class ConcurrencyComparisonTestModel extends TestModel {
             Employee empInsert = new Employee();
             empInsert.setFirstName("Brendan");
             empInsert.setMale();
-            empInsert.setLastName("" + j + "");
+            empInsert.setLastName("" + j);
             empInsert.setSalary(100000);
             EmploymentPeriod employmentPeriod = new EmploymentPeriod();
             java.sql.Date startDate = Helper.dateFromString("1901-12-31");
@@ -88,7 +88,7 @@ public class ConcurrencyComparisonTestModel extends TestModel {
         serverSession.useExclusiveReadConnectionPool(32, 32);
 
         // Enable binding for 10.1.3 runs.
-        if (Version.getVersion().indexOf("10.1.3") != -1) {
+        if (Version.getVersion().contains("10.1.3")) {
             serverSession.getLogin().setShouldBindAllParameters(true);
         }
         serverSession.getLogin().setShouldCacheAllStatements(true);

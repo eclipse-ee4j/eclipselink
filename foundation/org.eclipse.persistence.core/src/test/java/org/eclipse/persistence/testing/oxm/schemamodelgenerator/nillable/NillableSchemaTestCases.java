@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,7 +81,7 @@ public class NillableSchemaTestCases extends GenerateSchemaTestCases {
     }
 
     private List<Descriptor> setupDescriptorList(Project prj) {
-        List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
+        List<Descriptor> descriptorsToProcess = new ArrayList<>();
         descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("NillableTestObject"));
         descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("NillableTestSubObject"));
         return descriptorsToProcess;

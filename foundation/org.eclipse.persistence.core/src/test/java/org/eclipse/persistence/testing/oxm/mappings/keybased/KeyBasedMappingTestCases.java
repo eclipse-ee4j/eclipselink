@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.oxm.mappings.keybased;
 
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -59,21 +58,6 @@ public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
 
     public KeyBasedMappingTestCases(String name) throws Exception {
         super(name);
-    }
-
-    @Override
-    public void objectToXMLDocumentTest(Document testDocument) throws Exception {
-        log("**objectToXMLDocumentTest**");
-        log("Expected:");
-        log(getWriteControlDocument());
-        log("\nActual:");
-        log(testDocument);
-        assertXMLIdentical(getWriteControlDocument(), testDocument);
-    }
-
-    @Override
-    protected void setProject(Project project) {
-        this.project = project;
     }
 
     @Override

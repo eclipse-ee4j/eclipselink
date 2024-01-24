@@ -298,9 +298,8 @@ public abstract class BroadcastSetupHelper {
                 return (TestCase)test;
             }
         } else if (test instanceof TestCollection) {
-            Iterator it = ((TestCollection)test).getTests().iterator();
-            while (it.hasNext()) {
-                TestCase currentTest = getTestCase(it.next(), testShortClassName, shouldLookUnderWrapper);
+            for (junit.framework.Test value : ((TestCollection) test).getTests()) {
+                TestCase currentTest = getTestCase(value, testShortClassName, shouldLookUnderWrapper);
                 if (currentTest != null) {
                     return currentTest;
                 }
@@ -317,7 +316,7 @@ public abstract class BroadcastSetupHelper {
             session.getCommandManager().shutdown();
             session.setCommandManager(null);
 
-            if (sessions.size() == 0) {
+            if (sessions.isEmpty()) {
                 // destroy the factory
                 destroyFactory();
             }
@@ -332,9 +331,8 @@ public abstract class BroadcastSetupHelper {
     }
 
     public void removeConnectionsForAllSessionsExcept(AbstractSession sessionToIgnore, String connectionType) throws Exception {
-        Iterator it = sessions.keySet().iterator();
-        while (it.hasNext()) {
-            AbstractSession session = (AbstractSession)it.next();
+        for (Object o : sessions.keySet()) {
+            AbstractSession session = (AbstractSession) o;
             if (session != sessionToIgnore) {
                 removeConnections(session, connectionType);
             }
@@ -363,9 +361,8 @@ public abstract class BroadcastSetupHelper {
     }
 
     public void createConnectionsForAllSessionsExcept(AbstractSession sessionToIgnore, String connectionType) {
-        Iterator it = sessions.keySet().iterator();
-        while (it.hasNext()) {
-            AbstractSession session = (AbstractSession)it.next();
+        for (Object o : sessions.keySet()) {
+            AbstractSession session = (AbstractSession) o;
             if (session != sessionToIgnore) {
                 createConnections(session, connectionType);
             }

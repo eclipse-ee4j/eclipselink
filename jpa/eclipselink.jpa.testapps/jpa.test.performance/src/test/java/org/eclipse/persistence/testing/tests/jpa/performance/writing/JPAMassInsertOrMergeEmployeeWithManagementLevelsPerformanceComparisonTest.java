@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import org.eclipse.persistence.testing.framework.PerformanceRegressionTestCase;
 import org.eclipse.persistence.testing.models.jpa.performance.Employee;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * This test compares the performance of inserting Employee.
@@ -115,14 +114,12 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
             int nEmployeesTotal = 1;
             for (int nLevel = 1; nLevel <= nLevels; nLevel++) {
                 employeesForCurrentLevel = new ArrayList<>(employeesForHigherLevel.size() * nDirects);
-                Iterator<Employee> it = employeesForHigherLevel.iterator();
-                while(it.hasNext()) {
-                    Employee mgr = it.next();
-                    for(int nCurrent = 0; nCurrent < nDirects; nCurrent++) {
+                for (Employee mgr : employeesForHigherLevel) {
+                    for (int nCurrent = 0; nCurrent < nDirects; nCurrent++) {
                         Employee employee = new Employee();
                         employee.setFirstName("Level_" + nLevel);
                         employee.setLastName("Number_" + employeesForCurrentLevel.size());
-                        if(!shouldUseSequencing) {
+                        if (!shouldUseSequencing) {
                             employee.setId(id++);
                         }
                         employeesForCurrentLevel.add(employee);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     tware - initial implementation
 package org.eclipse.persistence.testing.tests.collections.map;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -26,7 +25,7 @@ import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.collections.map.EntityEntity1MMapHolder;
 import org.eclipse.persistence.testing.models.collections.map.EntityMapKey;
-import org.eclipse.persistence.testing.models.collections.map.EEOTMMapValue;;
+import org.eclipse.persistence.testing.models.collections.map.EEOTMMapValue;
 
 public class TestReadEntityEntity1MMapMapping extends TestCase {
 
@@ -114,12 +113,9 @@ public class TestReadEntityEntity1MMapMapping extends TestCase {
     @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        Iterator i = holders.iterator();
-        while (i.hasNext()){
-            EntityEntity1MMapHolder holder = (EntityEntity1MMapHolder)i.next();
-            Iterator j = holder.getEntityToEntityMap().keySet().iterator();
-            while (j.hasNext()){
-                Object key = j.next();
+        for (Object o : holders) {
+            EntityEntity1MMapHolder holder = (EntityEntity1MMapHolder) o;
+            for (Object key : holder.getEntityToEntityMap().keySet()) {
                 uow.deleteObject(holder.getEntityToEntityMap().get(key));
                 uow.deleteObject(key);
             }

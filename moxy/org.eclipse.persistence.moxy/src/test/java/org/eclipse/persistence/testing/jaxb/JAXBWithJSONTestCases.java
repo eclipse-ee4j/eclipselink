@@ -333,7 +333,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             return;
         }
 
-        compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+        compareStringToControlFile("testJSONMarshalToOutputStream", os.toString());
         os.close();
     }
 
@@ -353,7 +353,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             return;
         }
 
-        compareStringToControlFile("testJSONMarshalToOutputStream_FORMATTED", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
+        compareStringToControlFile("testJSONMarshalToOutputStream_FORMATTED", os.toString(), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
         os.close();
     }
 
@@ -518,7 +518,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     public void generateJSONSchema(List<InputStream> controlSchemas) throws Exception {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
 
-        Class<? extends Object> theClass = getWriteControlObject().getClass();
+        Class<?> theClass = getWriteControlObject().getClass();
         if(getWriteControlObject() instanceof JAXBElement){
              theClass = ((JAXBElement) getWriteControlObject()).getValue().getClass();
         }

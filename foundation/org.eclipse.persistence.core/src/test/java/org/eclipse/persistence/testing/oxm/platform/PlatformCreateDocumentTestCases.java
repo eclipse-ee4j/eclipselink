@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
         try {
             Document systemDocument = xmlPlatform.createDocumentWithSystemIdentifier(null, "http://127.0.0.1/manual.dtd");
         } catch (XMLPlatformException platformException) {
-            assertTrue("The wrong XMLPlatformException was thrown.", platformException.getErrorCode() == XMLPlatformException.XML_PLATFORM_COULD_NOT_CREATE_DOCUMENT);
+            assertEquals("The wrong XMLPlatformException was thrown.", XMLPlatformException.XML_PLATFORM_COULD_NOT_CREATE_DOCUMENT, platformException.getErrorCode());
             return;
         } catch (Exception e) {
             fail("An XMLPlatformException should have been thrown but another Exception was thrown.");
@@ -136,7 +136,7 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
             XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
             Document publicDocument = xmlPlatform.createDocumentWithPublicIdentifier(null, "-//loopbackInc//DTD manual//EN", null);
         } catch (XMLPlatformException platformException) {
-            assertTrue("The wrong XMLPlatformException was thrown.", platformException.getErrorCode() == XMLPlatformException.XML_PLATFORM_COULD_NOT_CREATE_DOCUMENT);
+            assertEquals("The wrong XMLPlatformException was thrown.", XMLPlatformException.XML_PLATFORM_COULD_NOT_CREATE_DOCUMENT, platformException.getErrorCode());
             return;
         } catch (Exception e) {
             fail("An XMLPlatformException should have been thrown but another Exception was thrown.");
@@ -173,7 +173,7 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
         try {
             XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         } catch (XMLPlatformException e) {
-            assertTrue("An incorrect PlatformException was thrown.", e.getErrorCode() == XMLPlatformException.XML_PLATFORM_COULD_NOT_INSTANTIATE);
+            assertEquals("An incorrect PlatformException was thrown.", XMLPlatformException.XML_PLATFORM_COULD_NOT_INSTANTIATE, e.getErrorCode());
             return;
         } catch (Exception e) {
             fail("An incorrect exception was thrown, should have been XMLPlatformException");
@@ -192,7 +192,7 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
             System.setProperty("eclipselink.xml.platform", "a.b.c.class");
             XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         } catch (XMLPlatformException e) {
-            assertTrue("An incorrect PlatformException was thrown.", e.getErrorCode() == XMLPlatformException.XML_PLATFORM_CLASS_NOT_FOUND);
+            assertEquals("An incorrect PlatformException was thrown.", XMLPlatformException.XML_PLATFORM_CLASS_NOT_FOUND, e.getErrorCode());
             return;
         } catch (Exception e) {
             fail("An incorrect exception was thrown, should have been XMLPlatformException");
@@ -220,14 +220,13 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
             // If the XDK is not on the classpath this error will be thrown.
         } catch (Exception e) {
             fail("An unexpected error occurred:" + e.getMessage());
-            return;
         } finally {
             XMLPlatformFactory.getInstance().setXMLPlatformClass(originalClass);
             System.setProperty("eclipselink.xml.platform", originalPlatform);
         }
     }
 
-    public class MyEntityResolver implements EntityResolver {
+    public static class MyEntityResolver implements EntityResolver {
         @Override
         public InputSource resolveEntity(String string, String string2) {
             try {

@@ -129,7 +129,6 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
     public void testGetDateConversionFromDefinedStringProperty() {
         // dataObject's type add int property
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
-        ;
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2001);

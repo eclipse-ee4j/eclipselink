@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class RMIServerManagerController extends PortableRemoteObject implements 
             try {
                 controller = new RMIRemoteSessionControllerDispatcher((getSession()));
             } catch (RemoteException exception) {
-                System.out.println("Error in invocation " + exception.toString());
+                System.out.println("Error in invocation " + exception);
             }
         } else {
             try {
@@ -60,7 +60,7 @@ public class RMIServerManagerController extends PortableRemoteObject implements 
                 Object[] params = { getSession() };
                 controller = (RMIRemoteSessionController)constructor.newInstance(params);
             } catch (Exception exception) {
-                System.out.println("Error instantiating  " + controllerClassName + " " + exception.toString());
+                System.out.println("Error instantiating  " + controllerClassName + " " + exception);
             }
         }
 
@@ -93,20 +93,20 @@ public class RMIServerManagerController extends PortableRemoteObject implements 
         try {
             initialNamingContext = new InitialContext();
         } catch (NamingException exception) {
-            System.out.println("Naming Exception " + exception.toString());
+            System.out.println("Naming Exception " + exception);
         }
         // Set the security manager
         try {
             System.setSecurityManager(new RMISecurityManager());
         } catch (Exception exception) {
-            System.out.println("Security violation 1" + exception.toString());
+            System.out.println("Security violation 1" + exception);
         }
 
         // Make sure RMI registry is started.
         try {
             java.rmi.registry.LocateRegistry.createRegistry(1099);
         } catch (Exception exception) {
-            System.out.println("Security violation 2" + exception.toString());
+            System.out.println("Security violation 2" + exception);
         }
 
         // Create local instance of the factory
@@ -120,7 +120,7 @@ public class RMIServerManagerController extends PortableRemoteObject implements 
         try {
             initialNamingContext.unbind(nameToBind);
         } catch (Exception exception) {
-            System.out.println("Security violation " + exception.toString());
+            System.out.println("Security violation " + exception);
         }
 
         // Put the local instance into the Registry

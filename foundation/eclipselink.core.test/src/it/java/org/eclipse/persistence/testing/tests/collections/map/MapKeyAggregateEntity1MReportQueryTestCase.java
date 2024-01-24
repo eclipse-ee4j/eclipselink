@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -29,10 +28,9 @@ public class MapKeyAggregateEntity1MReportQueryTestCase extends ReportQueryTestC
 
         for (Enumeration e = holders.elements(); e.hasMoreElements(); ) {
             AggregateEntity1MMapHolder holder = (AggregateEntity1MMapHolder)e.nextElement();
-            Iterator i = holder.getAggregateToEntityMap().keySet().iterator();
-            while (i.hasNext()){
+            for (Object o : holder.getAggregateToEntityMap().keySet()) {
                 Object[] result = new Object[1];
-                result[0] = i.next();
+                result[0] = o;
                 addResult(result, null);
             }
         }

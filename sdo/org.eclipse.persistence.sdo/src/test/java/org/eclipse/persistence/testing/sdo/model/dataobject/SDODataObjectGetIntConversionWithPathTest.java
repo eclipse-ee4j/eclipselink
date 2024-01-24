@@ -284,7 +284,7 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        dataObject_c.set(property_c, new String("eee").getBytes());
+        dataObject_c.set(property_c, "eee".getBytes());
         try {
             dataObject_a.getInt(propertyPath_a_b_c);
         } catch (Exception e) {

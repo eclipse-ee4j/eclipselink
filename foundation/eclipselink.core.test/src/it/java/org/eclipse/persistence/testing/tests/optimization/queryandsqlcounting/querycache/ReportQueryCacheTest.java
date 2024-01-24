@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,10 +44,9 @@ public class ReportQueryCacheTest extends NamedQueryQueryCacheTest {
     @Override
     public void verify() {
         super.verify();
-        Iterator reportResults = ((Vector)results).iterator();
-        while (reportResults.hasNext()) {
-            ReportQueryResult result = (ReportQueryResult)reportResults.next();
-            if (!((String)result.get("firstName")).startsWith("B")) {
+        for (Object o : (Vector) results) {
+            ReportQueryResult result = (ReportQueryResult) o;
+            if (!((String) result.get("firstName")).startsWith("B")) {
                 throw new TestErrorException("Incorrect Report Query result returned from the cache.");
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ public abstract class SpringJunitTestCase extends TestCase {
         Truck truck = new Truck("persist");
         try {
             em.persist(truck);
-            assertTrue(((Truck)em.find(truck)).getDriverName().equals("persist"));
+            assertEquals("persist", ((Truck) em.find(truck)).getDriverName());
         } finally {
             em.remove(truck);
         }
@@ -58,14 +58,14 @@ public abstract class SpringJunitTestCase extends TestCase {
         truck.setRoute(route);
         try {
             em.persist(truck);
-            assertTrue(((Truck)em.find(truck)).getDriverName().equals("cascade"));
-            assertTrue(((Route)em.find(route)).getAverageTimeMins() == 155);
-            assertTrue(((Address)em.find(address)).getStreet().equals("First St."));
+            assertEquals("cascade", ((Truck) em.find(truck)).getDriverName());
+            assertEquals(155, ((Route) em.find(route)).getAverageTimeMins());
+            assertEquals("First St.", ((Address) em.find(address)).getStreet());
 
             em.remove(truck);
-            assertTrue(em.find(truck) == null);
-            assertTrue(((Route)em.find(route)).getAverageTimeMins() == 155);
-            assertTrue(((Address)em.find(address)).getStreet().equals("First St."));
+            assertNull(em.find(truck));
+            assertEquals(155, ((Route) em.find(route)).getAverageTimeMins());
+            assertEquals("First St.", ((Address) em.find(address)).getStreet());
         } finally {
             route.removeAddress(address);
             em.remove(address);
@@ -76,9 +76,9 @@ public abstract class SpringJunitTestCase extends TestCase {
     public void testRemove(){
         Truck truck = new Truck("remove");
         em.persist(truck);
-        assertTrue(((Truck) em.find(truck)).getDriverName().equals("remove"));
+        assertEquals("remove", ((Truck) em.find(truck)).getDriverName());
         em.remove(truck);
-        assertTrue(em.find(truck) == null);
+        assertNull(em.find(truck));
     }
 
     public void testContains(){
@@ -96,7 +96,7 @@ public abstract class SpringJunitTestCase extends TestCase {
         Truck truck = new Truck("merge");
         try {
             truck = (Truck)em.merge(truck);
-            assertTrue(((Truck) em.find(truck)).getDriverName().equals("merge"));
+            assertEquals("merge", ((Truck) em.find(truck)).getDriverName());
         } finally {
             em.remove(truck);
         }
@@ -107,10 +107,10 @@ public abstract class SpringJunitTestCase extends TestCase {
         try {
             em.persist(truck);
             em.flush();
-            assertTrue(((Truck) em.find(truck)).getDriverName().equals("refresh"));
+            assertEquals("refresh", ((Truck) em.find(truck)).getDriverName());
             truck.setDriverName("changeRefresh");
             em.refresh(truck);
-            assertTrue(truck.getDriverName().equals("refresh"));
+            assertEquals("refresh", truck.getDriverName());
         } finally {
             em.remove(truck);
         }
@@ -120,10 +120,10 @@ public abstract class SpringJunitTestCase extends TestCase {
         Truck truck = new Truck("flush");
         try {
             em.persist(truck);
-            assertTrue(((Truck) em.find(truck)).getDriverName().equals("flush"));
+            assertEquals("flush", ((Truck) em.find(truck)).getDriverName());
             truck.setDriverName("reflush");
             em.flush();
-            assertTrue(((Truck) em.find(truck)).getDriverName().equals("reflush"));
+            assertEquals("reflush", ((Truck) em.find(truck)).getDriverName());
         } finally {
             em.remove(truck);
         }
@@ -136,13 +136,13 @@ public abstract class SpringJunitTestCase extends TestCase {
         Route r = (Route)em.createNativeQuery(
                 "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
                 .getSingleResult();
-        assertTrue(r.getAverageTimeMins() == 150);
+        assertEquals(150, r.getAverageTimeMins());
 
         em.executeNativeQuery("DELETE FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")");
         List<?> l = em.createNativeQuery(
                 "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
                 .getResultList();
-        assertTrue(l.size() == 0);
+        assertEquals(0, l.size());
     }
 
     public void testNamedQuery(){
@@ -153,7 +153,7 @@ public abstract class SpringJunitTestCase extends TestCase {
             em.persist(truck);
             Query q = em.createNamedQuery("findTruckByDriverName");
             q.setParameter(1, "namedQuery");
-            assertTrue(((Truck)q.getSingleResult()).getRoute().getId() == route.getId());
+            assertEquals(((Truck) q.getSingleResult()).getRoute().getId(), route.getId());
         } finally {
             em.remove(truck);
             em.remove(route);
@@ -167,7 +167,7 @@ public abstract class SpringJunitTestCase extends TestCase {
             em.flush();
             Query q = em.createQuery("SELECT t FROM Truck t WHERE t.driverName LIKE ?1");
             q.setParameter(1, "createQuery");
-            assertTrue(((Truck)q.getSingleResult()).getId() == truck.getId());
+            assertEquals(((Truck) q.getSingleResult()).getId(), truck.getId());
         } finally {
             em.remove(truck);
         }
@@ -179,7 +179,7 @@ public abstract class SpringJunitTestCase extends TestCase {
         try {
             f = Address.class.getDeclaredField("_persistence_route_vh");
         } catch (Exception e) {
-            assertFalse("Exception when Address value holder retrieved", true);
+            fail("Exception when Address value holder retrieved");
         }
         assertNotNull("Address class does not have '_persistence_route_vh' field", f);
     }
@@ -187,11 +187,11 @@ public abstract class SpringJunitTestCase extends TestCase {
     public void testDataExceptionTranslation(){
         try {
             em.refresh(new Truck("detachedTruck"));
-            assertFalse("No exception thrown with bad refresh", true);
+            fail("No exception thrown with bad refresh");
         }catch (InvalidDataAccessApiUsageException idaaue) {
             //expected, so do nothing
         }catch (Exception e) {
-            assertFalse("Wrong exception thrown with bad refresh: " + e, true);
+            fail("Wrong exception thrown with bad refresh: " + e);
         }
     }
 

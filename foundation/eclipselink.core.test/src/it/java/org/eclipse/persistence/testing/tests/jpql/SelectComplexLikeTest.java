@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,12 +24,11 @@ public class SelectComplexLikeTest extends org.eclipse.persistence.testing.tests
         // Bug 223005: Verify that we have at least 1 employee with the required field length otherwise an EclipseLinkException will be thrown
         Employee emp = getEmployeeWithRequiredNameLength(MIN_FIRSTNAME_LENGTH, getName());
         String firstName = emp.getFirstName();
-        StringBuffer partialFirstName = new StringBuffer();
-        partialFirstName.append(firstName.substring(0, 1));
-        partialFirstName.append("_");
-        partialFirstName.append(firstName.substring(2, 4));
-        partialFirstName.append( "%");
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName.toString() + "\"";
+        String partialFirstName = firstName.charAt(0) +
+                "_" +
+                firstName.substring(2, 4) +
+                "%";
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName + "\"";
         setEjbqlString(ejbqlString);
         setOriginalOject(emp);
         super.setup();

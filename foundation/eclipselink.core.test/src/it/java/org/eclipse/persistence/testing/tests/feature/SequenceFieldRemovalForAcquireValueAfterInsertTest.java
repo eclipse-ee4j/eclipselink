@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,7 +117,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
         String fieldName = descriptor.getSequenceNumberField().getName();
         String qualifiedFieldName = descriptor.getSequenceNumberField().getQualifiedName();
 
-        if (sqlString.indexOf(qualifiedFieldName) != -1 || sqlString.indexOf(fieldName) != -1) {
+        if (sqlString.contains(qualifiedFieldName) || sqlString.contains(fieldName)) {
             throw new TestErrorException("Invalid SQL String - sequence field " + fieldName + " was included in SQL: (" + sqlString + ")"
                 + "- incorrect for shouldAcquireValueAfterInsert = true");
         }
@@ -146,8 +146,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
         public void aboutToInsert(DescriptorEvent event) {
             DataRecord modifyRow = event.getRecord();
             Object[] keys = modifyRow.keySet().toArray();
-            for (int i = 0; i < keys.length; i++) {
-                Object key = keys[i];
+            for (Object key : keys) {
                 Object value = modifyRow.get(key);
                 if (value != null && value.equals(OMISSION_MARKER)) {
                     modifyRow.remove(key);

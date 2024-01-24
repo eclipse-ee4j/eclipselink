@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class SDOCopyHelperOriginalDeepCopyTestCases extends SDOCopyHelperDeepCop
     @Override
     public void assertEqualityHelperEqual(DataObject original, DataObject copy) {
         if (original.getChangeSummary() != null) {
-            if (original.getChangeSummary().getChangedDataObjects().size() > 0) {
+            if (!original.getChangeSummary().getChangedDataObjects().isEmpty()) {
                 assertFalse(equalityHelper.equal(original, copy));
                 original.getChangeSummary().undoChanges();
             }

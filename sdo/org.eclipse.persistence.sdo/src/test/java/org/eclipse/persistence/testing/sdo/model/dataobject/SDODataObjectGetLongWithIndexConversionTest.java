@@ -163,7 +163,7 @@ public class SDODataObjectGetLongWithIndexConversionTest extends SDODataObjectCo
     public void testGetLongFromBytes() {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("eee").getBytes());
+        dataObject.set(property, "eee".getBytes());
         try {
             dataObject.getLong(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");

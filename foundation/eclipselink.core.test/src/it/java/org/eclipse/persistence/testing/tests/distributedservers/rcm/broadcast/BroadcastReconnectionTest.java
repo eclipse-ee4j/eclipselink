@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -264,9 +264,8 @@ public class BroadcastReconnectionTest extends TestWrapper {
     @Override
     public void reset() throws Throwable {
         if (localConnectionCreators != null) {
-            Iterator it = localConnectionCreators.iterator();
-            while (it.hasNext()) {
-                LocalConnectionCreator localConnectionCreator = (LocalConnectionCreator)it.next();
+            for (Object connectionCreator : localConnectionCreators) {
+                LocalConnectionCreator localConnectionCreator = (LocalConnectionCreator) connectionCreator;
                 localConnectionCreator.clear();
             }
             localConnectionCreators = null;
@@ -347,9 +346,8 @@ public class BroadcastReconnectionTest extends TestWrapper {
             boolean allReconnected;
             do {
                 allReconnected = true;
-                Iterator it = localConnectionCreators.iterator();
-                while (it.hasNext()) {
-                    LocalConnectionCreator localConnectionCreator = (LocalConnectionCreator)it.next();
+                for (Object connectionCreator : localConnectionCreators) {
+                    LocalConnectionCreator localConnectionCreator = (LocalConnectionCreator) connectionCreator;
                     allReconnected = allReconnected && localConnectionCreator.hasReconnected;
                 }
                 if (!allReconnected) {

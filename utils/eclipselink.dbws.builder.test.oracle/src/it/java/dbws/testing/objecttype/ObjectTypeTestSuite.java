@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -208,8 +208,8 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_MYTYPE_PKG_BODY, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_EMP_TYPE_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_EMP_TYPE_TABLE[i]);
+                for (String s : POPULATE_EMP_TYPE_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             }

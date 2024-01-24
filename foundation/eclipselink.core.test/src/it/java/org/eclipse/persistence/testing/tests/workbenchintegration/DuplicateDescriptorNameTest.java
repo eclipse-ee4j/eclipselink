@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,13 +34,13 @@ public class DuplicateDescriptorNameTest extends ProjectClassGeneratorResultFile
     public void verify() {
         if (generationException != null) {
             throw new TestErrorException("Exception thrown while generating Java source. " +
-                                         generationException.toString());
+                    generationException);
         }
         if (!findStringInFile(testString, fileName) && !findStringInFile(testString2, fileName)) {
             String exceptionString = "Duplicately named descriptors incorrectly generated in Project java file.";
             if (fileReadException != null) {
                 exceptionString =
-                        exceptionString + " Exception thrown while reading file. - " + fileReadException.toString();
+                        exceptionString + " Exception thrown while reading file. - " + fileReadException;
             }
             throw new TestErrorException(exceptionString);
         }

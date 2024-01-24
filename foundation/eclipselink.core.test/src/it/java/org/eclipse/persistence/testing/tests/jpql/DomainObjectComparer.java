@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,11 +53,8 @@ public class DomainObjectComparer {
     }
 
     public boolean compareObjects(Vector objects1, Vector objects2) {
-        boolean allMatched = true;
+        boolean allMatched = objects1.size() == objects2.size();
 
-        if (objects1.size() != objects2.size()) {
-            allMatched = false;
-        }
         /*else if (objects1.isEmpty() || objects2.isEmpty()) {
           allMatched = false;
         }*/
@@ -87,7 +84,7 @@ public class DomainObjectComparer {
                 allMatched = allMatched && compareObjects(phone1, phone2);
             }
             if (obj1.getClass().equals(String.class)) {
-                allMatched = allMatched && (objects2.indexOf(obj1) != -1);
+                allMatched = allMatched && (objects2.contains(obj1));
             }
         }
         return allMatched;

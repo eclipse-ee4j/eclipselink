@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,13 +44,13 @@ public class XMLMarshalExceptionTestCases  extends OXTestCase {
         try {
             context = getXMLContext(new XMLMarshallerExceptionTestProject());
         } catch (org.eclipse.persistence.exceptions.IntegrityException e){
-            assertTrue(e.getIntegrityChecker().getCaughtExceptions().size() == 1);
-            Exception nestedException = (Exception)e.getIntegrityChecker().getCaughtExceptions().get(0);
+            assertEquals(1, e.getIntegrityChecker().getCaughtExceptions().size());
+            Exception nestedException = e.getIntegrityChecker().getCaughtExceptions().get(0);
             assertTrue(nestedException instanceof XMLMarshalException);
-            assertTrue("An unexpected XMLMarshalException was caught.", ((XMLMarshalException)nestedException).getErrorCode() == XMLMarshalException.NAMESPACE_NOT_FOUND);
+            assertEquals("An unexpected XMLMarshalException was caught.", XMLMarshalException.NAMESPACE_NOT_FOUND, ((XMLMarshalException) nestedException).getErrorCode());
             return;
         }
 
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 }

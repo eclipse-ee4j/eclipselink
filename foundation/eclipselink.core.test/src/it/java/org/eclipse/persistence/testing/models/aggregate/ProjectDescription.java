@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,10 +42,10 @@ public class ProjectDescription implements Serializable {
         responsibilities.addElement(Responsibility.example1(anEmployee));
         responsibilities.addElement(Responsibility.example2(anEmployee));
 
-        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example1"));
-        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example2"));
-        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example3"));
-        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example4"));
+        languages.addElement((Language) manger.getObject(Language.class, "example1"));
+        languages.addElement((Language) manger.getObject(Language.class, "example2"));
+        languages.addElement((Language) manger.getObject(Language.class, "example3"));
+        languages.addElement((Language) manger.getObject(Language.class, "example4"));
 
         example.setDescription("TOPLink");
         example.getComputer().setValue(Computer.example1());
@@ -57,15 +57,15 @@ public class ProjectDescription implements Serializable {
 
     public static ProjectDescription example2(Employee anEmployee) {
         ProjectDescription example = new ProjectDescription();
-        Vector<Responsibility> responsibilities = new Vector<Responsibility>();
+        Vector<Responsibility> responsibilities = new Vector<>();
         Vector<Language> languages = new Vector<>();
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         responsibilities.addElement(Responsibility.example3(anEmployee));
         responsibilities.addElement(Responsibility.example4(anEmployee));
 
-        languages.addElement((Language) manager.getObject((new Language()).getClass(), "example3"));
-        languages.addElement((Language) manager.getObject((new Language()).getClass(), "example4"));
+        languages.addElement((Language) manager.getObject(Language.class, "example3"));
+        languages.addElement((Language) manager.getObject(Language.class, "example4"));
 
         example.setDescription("Course Development");
         example.getComputer().setValue(Computer.example2());
@@ -77,15 +77,15 @@ public class ProjectDescription implements Serializable {
 
     public static ProjectDescription example3(Employee anEmployee) {
         ProjectDescription example = new ProjectDescription();
-        Vector<Responsibility> responsibilities = new Vector<Responsibility>();
+        Vector<Responsibility> responsibilities = new Vector<>();
         Vector<Language>  languages= new Vector<>();
         PopulationManager manger = PopulationManager.getDefaultManager();
 
         responsibilities.addElement(Responsibility.example5(anEmployee));
         responsibilities.addElement(Responsibility.example6(anEmployee));
 
-        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example5"));
-        languages.addElement((Language) manger.getObject((new Language()).getClass(), "example6"));
+        languages.addElement((Language) manger.getObject(Language.class, "example5"));
+        languages.addElement((Language) manger.getObject(Language.class, "example6"));
 
         example.setDescription("Network Administration");
         example.getComputer().setValue(Computer.example3());

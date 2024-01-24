@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,22 +71,22 @@ public class XPathHelperTestCases extends SDOTestCase {
         DataObject rake = (DataObject) returnValue.get(3);
 
         returnValue = xpathHelper.evaluate("productName", battery);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Battery", pName);
 
         returnValue = xpathHelper.evaluate("productName", rake);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Rake", pName);
 
         returnValue = xpathHelper.evaluate("productName", mower);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
 
         returnValue = xpathHelper.evaluate("productName", monitor);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Baby Monitor", pName);
     }
@@ -165,25 +165,25 @@ public class XPathHelperTestCases extends SDOTestCase {
 
     public void testMultipleBracketExpression() {
         List returnValue = xpathHelper.evaluate("items/item[2]/partsList/partNumber[4]", rootObject);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pNum = (String) returnValue.get(0);
         assertEquals("23", pNum);
     }
 
     public void testGetFirstItemViaBracket() {
         List returnValue = xpathHelper.evaluate("items/item[1]", rootObject);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         DataObject dao = (DataObject) returnValue.get(0);
 
         returnValue = xpathHelper.evaluate("productName", dao);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
     }
 
     public void testGetPartsListFromSecondItemViaBracket() {
         List returnValue = xpathHelper.evaluate("items/item[2]/partsList/partNumber", rootObject);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         ArrayList compareToList = new ArrayList();
         compareToList.add("1");
         compareToList.add("8");
@@ -204,7 +204,7 @@ public class XPathHelperTestCases extends SDOTestCase {
 
     public void testSelfExpression() {
         List returnValue = xpathHelper.evaluate("./items/item[2]/partsList/partNumber/", rootObject);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         ArrayList compareToList = new ArrayList();
         compareToList.add("1");
         compareToList.add("8");
@@ -215,7 +215,7 @@ public class XPathHelperTestCases extends SDOTestCase {
 
     public void testNestedSelfExpression() {
         List returnValue = xpathHelper.evaluate("items/item[2]/partsList/./partNumber/", rootObject);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         ArrayList compareToList = new ArrayList();
         compareToList.add("1");
         compareToList.add("8");
@@ -226,10 +226,10 @@ public class XPathHelperTestCases extends SDOTestCase {
 
     public void testParentExpression() {
         List returnValue = xpathHelper.evaluate("items", rootObject);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         DataObject itemsDao = (DataObject) returnValue.get(0);
         returnValue = xpathHelper.evaluate("../items/item[1]/partsList/partNumber/", itemsDao);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         ArrayList compareToList = new ArrayList();
         compareToList.add("1");
         compareToList.add("2");
@@ -242,7 +242,7 @@ public class XPathHelperTestCases extends SDOTestCase {
 
     public void testNestedParentExpression() {
         List returnValue = xpathHelper.evaluate("items/item[1]/partsList/../partsList/partNumber/", rootObject);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         ArrayList compareToList = new ArrayList();
         compareToList.add("1");
         compareToList.add("2");
@@ -255,23 +255,23 @@ public class XPathHelperTestCases extends SDOTestCase {
 
     public void testInvalidNSPrefixExpression() {
         List returnValue = xpathHelper.evaluate("ns0:items/item[2]/partsList/partNumber/", rootObject);
-        assertTrue(returnValue == null || returnValue.size() == 0);
+        assertTrue(returnValue == null || returnValue.isEmpty());
     }
 
     public void testPositionalFloatExpression() {
         List returnValue = xpathHelper.evaluate("items/item[1.9]", rootObject);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         DataObject dao = (DataObject) returnValue.get(0);
 
         returnValue = xpathHelper.evaluate("productName", dao);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
     }
 
     public void testBrokenExpression() {
         List returnValue = xpathHelper.evaluate("items//>item[name=-!james]", rootObject);
-        assertTrue(returnValue == null || returnValue.size() == 0);
+        assertTrue(returnValue == null || returnValue.isEmpty());
     }
 
     // -------------------- Not supported in XPathHelper -------------------- //

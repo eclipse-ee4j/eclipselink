@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,7 +102,7 @@ public class DeepMergeCloneSerializedObjectReferenceChangesTest extends org.ecli
             try {
                 this.deserialEmp = (Employee)inObjStream.readObject();
             } catch (ClassNotFoundException e) {
-                throw new TestErrorException("Could not deserialize object " + e.toString());
+                throw new TestErrorException("Could not deserialize object " + e);
             }
 
             Address newAddress = new Address();
@@ -129,14 +129,14 @@ public class DeepMergeCloneSerializedObjectReferenceChangesTest extends org.ecli
             try {
                 deserialEmp = (Employee)inObjStream.readObject();
             } catch (ClassNotFoundException e) {
-                throw new TestErrorException("Could not deserialize object " + e.toString());
+                throw new TestErrorException("Could not deserialize object " + e);
             }
 
             //merge the ammended clone with the unit of work
             empClone = (Employee)uow.deepMergeClone(deserialEmp);
             uow.commit();
         } catch (IOException e) {
-            throw new TestErrorException("Error running Test " + e.toString());
+            throw new TestErrorException("Error running Test " + e);
         }
     }
 

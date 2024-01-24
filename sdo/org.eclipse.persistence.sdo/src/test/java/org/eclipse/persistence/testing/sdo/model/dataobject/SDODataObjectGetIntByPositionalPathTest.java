@@ -218,7 +218,7 @@ public class SDODataObjectGetIntByPositionalPathTest extends SDODataObjectGetByP
     public void testGetIntFromBytes() {
         SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BYTES);
-        dataObject_c.set(prop, new String("eee").getBytes());
+        dataObject_c.set(prop, "eee".getBytes());
         try {
             dataObject_a.getInt(propertyPath_a_b_c);
         } catch (Exception e) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
@@ -91,9 +90,8 @@ public class AllChangeSetsTest extends AutoVerifyTestCase {
         newEmpClone.setFirstName("New");
         changedObjectsCount++;
 
-        Iterator it = emp.getPhoneNumbers().iterator();
-        while (it.hasNext()) {
-            PhoneNumber phone = (PhoneNumber)it.next();
+        for (Object o : emp.getPhoneNumbers()) {
+            PhoneNumber phone = (PhoneNumber) o;
 
             // to force reading the phone in and therefore registering in uow
             // Registered but not changed - should NOT be counted

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,7 @@ public class ChangeSetOptimisticLockingInsertTest extends AutoVerifyTestCase {
         try {
             originalObject = domainClass.getConstructor().newInstance();
         } catch (Exception ex) {
-            throw new TestErrorException("Failed to run test.  Unable to get new instance. " + ex.toString());
+            throw new TestErrorException("Failed to run test.  Unable to get new instance. " + ex);
         }
         ((LockObject)originalObject).value = "Time:" + System.currentTimeMillis();
         uow.registerObject(originalObject);

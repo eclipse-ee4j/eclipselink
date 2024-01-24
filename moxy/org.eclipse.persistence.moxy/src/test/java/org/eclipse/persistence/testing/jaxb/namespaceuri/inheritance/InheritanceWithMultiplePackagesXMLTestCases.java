@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,17 +50,17 @@ public class InheritanceWithMultiplePackagesXMLTestCases extends JAXBTestCases {
         root.baseTypeList = baseTypes;
 
         List objectList = new ArrayList(baseTypes);
-        objectList.add(new String("string test"));
+        objectList.add("string test");
         objectList.add(500);
         root.objectList = objectList;
 
         List anyObjectList = new ArrayList(baseTypes);
-        anyObjectList.add(new String("string test2"));
+        anyObjectList.add("string test2");
 
         List choiceList = new ArrayList();
         choiceList.add(anotherPackageSubType);
         choiceList.add(subTypeLevel2);
-        choiceList.add(new String("choice string test"));
+        choiceList.add("choice string test");
         choiceList.add(500);
         root.choiceList = choiceList;
         return root;

@@ -64,15 +64,15 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
                 additionalGlobalElements.put(new QName("example.com", "AListOfEmployees"), employeesField.getGenericType());
                 additionalGlobalElements.put(new QName("AnEmployeeArray"), Employee[].class);
             } catch (Exception x) {
-                fail("Type[] and additional global element Map setup failed: " + x.toString());
+                fail("Type[] and additional global element Map setup failed: " + x);
             }
             try {
                 generateSchema(typesToBeBound, outputResolver, additionalGlobalElements);
             } catch (Exception ex) {
                 ex.printStackTrace();
-                fail("Schema generation failed unexpectedly: " + ex.toString());
+                fail("Schema generation failed unexpectedly: " + ex);
             }
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+            assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
             assertTrue("Expected two schemas to be generated, but there were [ " + outputResolver.schemaFiles.size()  + "]", outputResolver.schemaFiles.size() == 2);
             shouldGenerateSchema = false;
         }

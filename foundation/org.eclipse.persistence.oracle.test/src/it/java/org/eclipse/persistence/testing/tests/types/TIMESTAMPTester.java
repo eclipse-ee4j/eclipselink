@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -503,13 +503,13 @@ public abstract class TIMESTAMPTester extends TypeTester {
             if (objectTimeInCache.equals(objectTimeInDB)) {
                 if (originalTS != objectTimeInDB.getNanos()) {
                     // Nanos don't match, ok, as everything else has been checked, assume this was the reason for the error.
-                    if(errorMsg.length() == 0) {
+                    if(errorMsg.isEmpty()) {
                         return;
                     }
                 } else if (!calToTSLTZ.equals(fromDatabase.getCalToTSLTZ())) {
                     // This seems to be ok, as the timezones are not suppose to come back the same??
                     // So ok, as everything else has been checked, assume this was the reason for the error.
-                    if(errorMsg.length() == 0) {
+                    if(errorMsg.isEmpty()) {
                         return;
                     }
                 }
@@ -518,7 +518,7 @@ public abstract class TIMESTAMPTester extends TypeTester {
                 errorMsg += "The tsToDate should be: " + objectTimeInCache + " but were read back as: " +
                                              objectTimeInDB;
             }
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 throw new TestErrorException("\n"+errorMsg, e);
             } else {
                 throw e;

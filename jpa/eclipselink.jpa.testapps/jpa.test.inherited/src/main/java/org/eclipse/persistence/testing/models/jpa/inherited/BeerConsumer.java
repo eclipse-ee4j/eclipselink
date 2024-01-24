@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -180,17 +179,13 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
         @SuppressWarnings({"unchecked"})
         BeerConsumer<T> consumer = (BeerConsumer<T>)super.clone();
         consumer.setAlpineBeersToConsume(new Vector<>());
-        Iterator<Alpine> alpineIterator = this.getAlpineBeersToConsume().iterator();
-        while (alpineIterator.hasNext()) {
-            Alpine alpine = alpineIterator.next();
+        for (Alpine alpine : this.getAlpineBeersToConsume()) {
             consumer.addAlpineBeerToConsume(alpine.clone());
         }
 
         consumer.setBlueLightBeersToConsume(new Vector<>());
-        Iterator<BlueLight> blueLightIterator = this.getBlueLightBeersToConsume().iterator();
-        while (blueLightIterator.hasNext()) {
-            Blue blue = blueLightIterator.next();
-            consumer.addBlueLightBeerToConsume((BlueLight)blue.clone());
+        for (Blue blue : this.getBlueLightBeersToConsume()) {
+            consumer.addBlueLightBeerToConsume((BlueLight) blue.clone());
         }
         return consumer;
     }

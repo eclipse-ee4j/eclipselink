@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,10 +65,7 @@ public class CachedUpdateCallsQueryClearTest extends TestCase {
         assertNotNull(cachedUpdateCalls);
         assertFalse(cachedUpdateCalls.isEmpty());
 
-        Iterator<DatasourceCall> iterator = cachedUpdateCalls.iterator();
-
-        while (iterator.hasNext()) {
-            DatasourceCall call = iterator.next();
+        for (DatasourceCall call : (Iterable<DatasourceCall>) cachedUpdateCalls) {
             // calls should not cache a query
             if (call.getQuery() != null) {
                 throw new TestErrorException("DatasourceCall's query is not null: " + call);

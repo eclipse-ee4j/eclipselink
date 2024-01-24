@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -128,7 +128,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
 
         Vector<TestResult> testResults = new Vector<>();
 
-        if ((selectedSummary.getResults() != null) && (selectedSummary.getResults().size() > 0)) {
+        if ((selectedSummary.getResults() != null) && (!selectedSummary.getResults().isEmpty())) {
             for (Enumeration<TestResult> enumtr = selectedSummary.getResults().elements();
                      enumtr.hasMoreElements();) {
                 TestResult result = enumtr.nextElement();
@@ -141,7 +141,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             for (Enumeration<TestResultsSummary> enumtr = selectedSummary.getLoadBuildSummary().getSummaries().elements();
                  enumtr.hasMoreElements();) {
                 TestResultsSummary summary = enumtr.nextElement();
-                if ((summary.getResults() != null) && (summary.getResults().size() != 0)) {
+                if ((summary.getResults() != null) && (!summary.getResults().isEmpty())) {
                     summariesHasResult.addElement(summary);
                 }
             }
@@ -777,7 +777,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     public void initilaizeTestSummaryCache(TestResultsSummary theSummary) {
-        if ((theSummary.getResults() != null) && (theSummary.getResults().size() > 0)) {
+        if ((theSummary.getResults() != null) && (!theSummary.getResults().isEmpty())) {
             tableSelection = RESULT;
             testResultsCahce = theSummary.getResults();
             return;

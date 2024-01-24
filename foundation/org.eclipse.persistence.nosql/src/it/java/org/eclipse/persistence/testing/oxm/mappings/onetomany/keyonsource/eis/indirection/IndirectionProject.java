@@ -26,7 +26,6 @@ import org.eclipse.persistence.eis.EISDescriptor;
 
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.testing.oxm.mappings.onetomany.keyonsource.Project;
-import org.eclipse.persistence.testing.oxm.mappings.onetomany.keyonsource.eis.indirection.Employee;
 
 public class IndirectionProject extends org.eclipse.persistence.sessions.Project {
 

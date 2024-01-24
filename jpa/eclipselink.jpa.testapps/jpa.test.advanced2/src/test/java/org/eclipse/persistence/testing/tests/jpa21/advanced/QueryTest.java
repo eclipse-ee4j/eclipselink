@@ -337,12 +337,12 @@ public class QueryTest extends JUnitTestCase {
 
         if (!failedMethodList.isEmpty()) {
             //format the string of methods that failed
-            String methodList = null;
+            StringBuilder methodList = null;
             for (String methodName: failedMethodList) {
                 if (methodList==null) {
-                    methodList = methodName;
+                    methodList = new StringBuilder(methodName);
                 } else {
-                    methodList = methodList +", "+methodName;
+                    methodList.append(", ").append(methodName);
                 }
             }
             fail("Expected IllegalStateException not thrown from Query methods "+methodList);

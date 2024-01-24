@@ -47,9 +47,9 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
                 JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
                 context.generateSchema(outputResolver);
             } catch (Exception ex) {
-                fail("Schema generation failed unexpectedly: " + ex.toString());
+                fail("Schema generation failed unexpectedly: " + ex);
             }
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+            assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
             assertTrue("More than one shcema was generated unxepectedly", outputResolver.schemaFiles.size() == 1);
             shouldGenerateSchema = false;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ public class PhoneNumber implements SequencedObject {
     private String areaCode;
     private String number;
     private String extension;
-    private List<Setting> settings = new ArrayList<Setting>();
+    private List<Setting> settings = new ArrayList<>();
 
     public String getAreaCode() {
         return areaCode;
@@ -60,10 +60,7 @@ public class PhoneNumber implements SequencedObject {
     public boolean equals(Object object) {
         try {
             PhoneNumber testPhoneNumber = (PhoneNumber) object;
-            if(!Comparer.equals(settings, testPhoneNumber.getSettings())) {
-                return false;
-            }
-            return true;
+            return Comparer.equals(settings, testPhoneNumber.getSettings());
         } catch(ClassCastException e) {
             return false;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 import java.util.Vector;
-import java.util.Iterator;
 
 import java.lang.reflect.Field;
 
@@ -51,8 +50,8 @@ public class SimplePojoSessionsXMLClientTest extends TestCase {
     public void test() throws TestErrorException {
         try {
             Vector objects = session.readAllObjects(org.eclipse.persistence.testing.tests.simplepojoclient.PojoEmployee.class);
-            for (Iterator itr = objects.iterator(); itr.hasNext(); ) {
-                simplePojoSessionsXMLClient.printObjectAttributes(itr.next());
+            for (Object object : objects) {
+                simplePojoSessionsXMLClient.printObjectAttributes(object);
             }
             System.out.println(System.lineSeparator() + System.lineSeparator() + "Test using Project Deployment XML file is complete" + System.lineSeparator() + System.lineSeparator());
         } catch (Exception e) {
@@ -63,10 +62,10 @@ public class SimplePojoSessionsXMLClientTest extends TestCase {
     private void printObjectAttributes(Object object) throws Exception {
         System.out.println("Object Name: " + object.getClass().getName());
         System.out.println("Fields:");
-        Field fields[] = object.getClass().getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
+        Field[] fields = object.getClass().getDeclaredFields();
+        for (Field value : fields) {
             try {
-                Field field = fields[i];
+                Field field = value;
                 field.setAccessible(true);
                 System.out.println("    " + field.getName() + " = " + field.get(object));
             } catch (Exception e) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,7 @@ TransactionIsolationM2MBatchReadTest extends AutoVerifyTestCase {
         // Try one more thing to make sure that they are batch read correctly.
         strongAssert(workerProjects != otherWorkerProjects, "Everyone is getting back the same batched result.");
         strongAssert(workerProjects != null, "The batched attribute [projects] was null.");
-        strongAssert(workerProjects.size() > 0, "The batched attribute [projects] was empty.");
+        strongAssert(!workerProjects.isEmpty(), "The batched attribute [projects] was empty.");
 
         Employee originalWorker = (Employee)getSession().readObject(worker);
 

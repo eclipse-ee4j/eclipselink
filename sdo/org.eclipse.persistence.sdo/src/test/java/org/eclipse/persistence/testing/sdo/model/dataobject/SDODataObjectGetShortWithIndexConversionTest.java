@@ -159,7 +159,7 @@ public class SDODataObjectGetShortWithIndexConversionTest extends SDODataObjectC
     public void testGetShortFromBytes() {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("rrr").getBytes());
+        dataObject.set(property, "rrr".getBytes());
         try {
             dataObject.getShort(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,8 +36,8 @@ public class ReadAllvsBatch21mTest extends PerformanceComparisonTestCase {
     public void test() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         List results = getSession().readAllObjects(Employee.class);
-        for (int index = 0; index < results.size(); index++) {
-            Employee employee = (Employee)results.get(index);
+        for (Object result : results) {
+            Employee employee = (Employee) result;
             employee.getPhoneNumbers().size();
             employee.getManagedEmployees().size();
         }
@@ -55,8 +55,8 @@ public class ReadAllvsBatch21mTest extends PerformanceComparisonTestCase {
                 query.addBatchReadAttribute("phoneNumbers");
                 query.addBatchReadAttribute("managedEmployees");
                 List results = (List)getSession().executeQuery(query);
-                for (int index = 0; index < results.size(); index++) {
-                    Employee employee = (Employee)results.get(index);
+                for (Object result : results) {
+                    Employee employee = (Employee) result;
                     employee.getPhoneNumbers().size();
                     employee.getManagedEmployees().size();
                 }
@@ -79,8 +79,8 @@ public class ReadAllvsBatch21mTest extends PerformanceComparisonTestCase {
                 query.addJoinedAttribute(query.getExpressionBuilder().anyOf("phoneNumbers"));
                 query.addJoinedAttribute(query.getExpressionBuilder().anyOfAllowingNone("managedEmployees"));
                 List results = (List)getSession().executeQuery(query);
-                for (int index = 0; index < results.size(); index++) {
-                    Employee employee = (Employee)results.get(index);
+                for (Object result : results) {
+                    Employee employee = (Employee) result;
                     employee.getPhoneNumbers().size();
                     employee.getManagedEmployees().size();
                 }

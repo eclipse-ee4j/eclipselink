@@ -57,18 +57,18 @@ public class Employee  {
 
   public String toString()
   {
-        String returnString =  "Employee: " + this.getFirstName() + " ";
+        StringBuilder returnString = new StringBuilder("Employee: " + this.getFirstName() + " ");
 
         if(getProjects() != null)
         {
-      returnString += "Projects: ";
+      returnString.append("Projects: ");
       for(int i=0; i<projects.size(); i++)
       {
-        returnString += projects.elementAt(i).toString() + " ";
+        returnString.append(projects.elementAt(i).toString()).append(" ");
       }
         }
 
-        return returnString;
+        return returnString.toString();
   }
 
   public boolean equals(Object object)

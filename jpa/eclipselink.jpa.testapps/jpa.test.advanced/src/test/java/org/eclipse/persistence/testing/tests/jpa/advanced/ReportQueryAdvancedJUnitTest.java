@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
@@ -81,13 +80,10 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
             updateEmployees.addUpdate("address", null);
             uow.executeQuery(updateEmployees);
         } else {
-            @SuppressWarnings({"unchecked"})
-            Iterator<Employee> emps = uow.readAllObjects(Employee.class).iterator();
-            while (emps.hasNext()){
-              Employee emp = emps.next();
-              emp.setManager(null);
-              emp.setAddress((String)null);
-              uow.deleteObject(emp);
+            for (Employee emp : (Iterable<Employee>) uow.readAllObjects(Employee.class)) {
+                emp.setManager(null);
+                emp.setAddress((String) null);
+                uow.deleteObject(emp);
             }
         }
 

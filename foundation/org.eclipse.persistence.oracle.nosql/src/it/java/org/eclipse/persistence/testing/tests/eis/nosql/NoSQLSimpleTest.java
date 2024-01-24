@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,7 @@ public class NoSQLSimpleTest {
             sb.append(uriParts[0]);
             sb.append(kw);
             sb.append(uriParts[1]);
-            if (uriParts[2] != null && uriParts[2].length() > 0) {
+            if (uriParts[2] != null && !uriParts[2].isEmpty()) {
                 sb.append(':');
                 sb.append(uriParts[2]);
             }
@@ -109,7 +109,7 @@ public class NoSQLSimpleTest {
             final String uriStr = sb.toString();
             final NoSQLURI uri = new NoSQLURI(uriStr);
             final String host = uri.getHost();
-            final int portRef = uriParts[2] != null && uriParts[2].length() > 0 ? Integer.parseInt(uriParts[2]) : -1;
+            final int portRef = uriParts[2] != null && !uriParts[2].isEmpty() ? Integer.parseInt(uriParts[2]) : -1;
             final int port = uri.getPort();
             final String store = uri.getStore();
             LOG.log(SessionLog.FINE, String.format("Testing URI parser on URI: |%s|", uriStr));

@@ -101,7 +101,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
     }
 
     protected QueryResult getCurrentResult() {
-        if (getQueries().size() == 0) {
+        if (getQueries().isEmpty()) {
             getQueries().add(new QueryResult(null));
             // throw new RuntimeException("Received SQL without a Query ???");
         }

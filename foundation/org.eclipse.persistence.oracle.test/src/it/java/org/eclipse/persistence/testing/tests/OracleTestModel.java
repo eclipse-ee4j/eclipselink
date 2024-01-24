@@ -62,11 +62,11 @@ public class OracleTestModel extends TestModel {
         tests.add("org.eclipse.persistence.testing.tests.flashback.FlashbackTestModel");
         tests.add("org.eclipse.persistence.testing.tests.returning.ReturningPolicyTestModel");
 
-        for (int index = 0; index < tests.size(); ++index) {
+        for (Object test : tests) {
             try {
-                addTest((TestModel)Class.forName((String)tests.get(index)).getConstructor().newInstance());
+                addTest((TestModel) Class.forName((String) test).getConstructor().newInstance());
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+                System.out.println("Failed to set up " + test + " \n" + exception);
             }
         }
 

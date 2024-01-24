@@ -51,12 +51,9 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
 
     @Override
     public void updateProject(Project project, Session session) {
-        Iterator<ClassDescriptor> it = project.getDescriptors().values().iterator();
-        while (it.hasNext()) {
-            ClassDescriptor desc = it.next();
-            Iterator<DatabaseTable> enumDescTableNames = desc.getTables().iterator();
-            while (enumDescTableNames.hasNext()) {
-                String tableName = enumDescTableNames.next().getName();
+        for (ClassDescriptor desc : project.getDescriptors().values()) {
+            for (DatabaseTable databaseTable : desc.getTables()) {
+                String tableName = databaseTable.getName();
                 if (!tableNamesToPkFields.containsKey(tableName)) {
                     while (desc.isChildDescriptor()) {
                         desc = project.getClassDescriptor(desc.getInheritancePolicy().getParentClass());
@@ -149,23 +146,22 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
     }
 
     protected void createOrReplaceTrigger(Session session, String tableName, List pkFields) {
-        String str = "";
+        StringBuilder str = new StringBuilder();
         String triggerName = getTriggerNameFromTableName(tableName);
         String[] strBegin = { "CREATE OR REPLACE  TRIGGER " + triggerName + " AFTER", "UPDATE OR DELETE ON " + tableName + " FOR EACH ROW", "DECLARE", "  msg SYS.AQ$_JMS_TEXT_MESSAGE;", "BEGIN", "  IF NOT NOTIFY_IS_ENABLED THEN", "    RETURN;", "  END IF;", "  msg := NOTIFY_MAKE_MSG('" + tableName + "');" };
-        for (int i = 0; i < strBegin.length; i++) {
-            str = str + strBegin[i] + '\n';
+        for (String s : strBegin) {
+            str.append(s).append('\n');
         }
 
-        Iterator itFields = pkFields.iterator();
-        while (itFields.hasNext()) {
-            str = str + getPkFieldString((DatabaseField)itFields.next()) + '\n';
+        for (Object pkField : pkFields) {
+            str.append(getPkFieldString((DatabaseField) pkField)).append('\n');
         }
 
-        str = str + "  NOTIFY_ENQUEUE('" + queueName + "', msg);\n";
+        str.append("  NOTIFY_ENQUEUE('").append(queueName).append("', msg);\n");
         //    str = str + "  NOTIFY_ENQUEUE(msg);\n";
-        str = str + "END;";
+        str.append("END;");
 
-        execute(session, str, true);
+        execute(session, str.toString(), true);
     }
 
     protected String getPkFieldString(DatabaseField field) {
@@ -190,14 +186,14 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
     }
 
     protected void execute(Session session, String[] strArray, boolean shouldThrowException) {
-        String str = "";
+        StringBuilder str = new StringBuilder();
         for (int i = 0; i < strArray.length; i++) {
-            str = str + strArray[i];
+            str.append(strArray[i]);
             if (i < strArray.length - 1) {
-                str = str + '\n';
+                str.append('\n');
             }
         }
-        execute(session, str, shouldThrowException);
+        execute(session, str.toString(), shouldThrowException);
     }
 
     protected void execute(Session session, String str, boolean shouldThrowException) {

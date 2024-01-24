@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,22 +28,21 @@ public abstract class SequencedInfo {
     public static SequencedInfo[] reorder(SequencedInfo[] p) {
         boolean reversed = false;
         int seqCur = -1;
-        for (int i = 0; i < p.length; i++) {
-            if (seqCur > 2 && p[i].sequence() == (seqCur - 1)) {
+        for (SequencedInfo info : p) {
+            if (seqCur > 2 && info.sequence() == (seqCur - 1)) {
                 reversed = true;
                 break;
-            }
-            else if (seqCur > 2 && p[i].sequence() == (seqCur + 1)) {
+            } else if (seqCur > 2 && info.sequence() == (seqCur + 1)) {
                 reversed = false;
                 break;
             }
-            seqCur = p[i].sequence();
+            seqCur = info.sequence();
         }
         if (reversed) {
-            ArrayList<SequencedInfo> v = new ArrayList<SequencedInfo>();
+            ArrayList<SequencedInfo> v = new ArrayList<>();
             int vLen = p.length;
-            for (int i = 0; i < vLen; i++) {
-                v.add(p[i]);
+            for (SequencedInfo sequencedInfo : p) {
+                v.add(sequencedInfo);
             }
             for (int i = 0; i < vLen; i++) {
                 p[i] = v.get(vLen - i - 1);

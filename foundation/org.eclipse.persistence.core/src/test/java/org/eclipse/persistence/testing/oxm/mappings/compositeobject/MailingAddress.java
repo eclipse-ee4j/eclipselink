@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,8 +71,7 @@ public class MailingAddress  {
     if((this.getCity()==null && addressObject.getCity()==null)||(this.getCity().equals(addressObject.getCity())))
       if((this.getStreet()==null && addressObject.getStreet()==null)||(this.getStreet().equals(addressObject.getStreet())))
         if((this.getProvince()==null && addressObject.getProvince()==null)||(this.getProvince().equals(addressObject.getProvince())))
-          if((this.getPostalCode()==null && addressObject.getPostalCode()==null)||(this.getPostalCode().equals(addressObject.getPostalCode())))
-            return true;
+            return (this.getPostalCode() == null && addressObject.getPostalCode() == null) || (this.getPostalCode().equals(addressObject.getPostalCode()));
 
     return false;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -56,19 +56,19 @@ public class TestAggregateFunctions {
 
             Query q = em.createQuery("SELECT MIN(n.primitive) FROM NoResultEntity n");
             Object res = q.getSingleResult();
-            Assert.assertEquals("Result of MIN aggregate should have been NULL", null, res);
+            Assert.assertNull("Result of MIN aggregate should have been NULL", res);
 
             q = em.createQuery("SELECT MAX(n.primitive) FROM NoResultEntity n");
             res = q.getSingleResult();
-            Assert.assertEquals("Result of MAX aggregate should have been NULL", null, res);
+            Assert.assertNull("Result of MAX aggregate should have been NULL", res);
 
             q = em.createQuery("SELECT AVG(n.primitive) FROM NoResultEntity n");
             res = q.getSingleResult();
-            Assert.assertEquals("Result of AVG aggregate should have been NULL", null, res);
+            Assert.assertNull("Result of AVG aggregate should have been NULL", res);
 
             q = em.createQuery("SELECT SUM(n.primitive) FROM NoResultEntity n");
             res = q.getSingleResult();
-            Assert.assertEquals("Result of SUM aggregate should have been NULL", null, res);
+            Assert.assertNull("Result of SUM aggregate should have been NULL", res);
 
             q = em.createQuery("SELECT COUNT(n.primitive) FROM NoResultEntity n");
             res = q.getSingleResult();
@@ -101,19 +101,19 @@ public class TestAggregateFunctions {
 
             Query q = em.createQuery("SELECT MIN(n.wrapper) FROM NoResultEntity n");
             Object res = q.getSingleResult();
-            Assert.assertEquals("Result of MIN aggregate should have been NULL", null, res);
+            Assert.assertNull("Result of MIN aggregate should have been NULL", res);
 
             q = em.createQuery("SELECT MAX(n.wrapper) FROM NoResultEntity n");
             res = q.getSingleResult();
-            Assert.assertEquals("Result of MAX aggregate should have been NULL", null, res);
+            Assert.assertNull("Result of MAX aggregate should have been NULL", res);
 
             q = em.createQuery("SELECT AVG(n.wrapper) FROM NoResultEntity n");
             res = q.getSingleResult();
-            Assert.assertEquals("Result of AVG aggregate should have been NULL", null, res);
+            Assert.assertNull("Result of AVG aggregate should have been NULL", res);
 
             q = em.createQuery("SELECT SUM(n.wrapper) FROM NoResultEntity n");
             res = q.getSingleResult();
-            Assert.assertEquals("Result of SUM aggregate should have been NULL", null, res);
+            Assert.assertNull("Result of SUM aggregate should have been NULL", res);
 
             q = em.createQuery("SELECT COUNT(n.wrapper) FROM NoResultEntity n");
             res = q.getSingleResult();
@@ -136,7 +136,7 @@ public class TestAggregateFunctions {
      */
     @Test
     public void testAggregateFunctionsWithPrimitives() {
-        List<SimpleEntity> entities = new ArrayList<SimpleEntity>();
+        List<SimpleEntity> entities = new ArrayList<>();
 
         SimpleEntity se = new SimpleEntity();
         se.setKeyString("SimpleEntity1");
@@ -200,7 +200,7 @@ public class TestAggregateFunctions {
      */
     @Test
     public void testAggregateFunctionsWithWrappers() {
-        List<SimpleEntity> entities = new ArrayList<SimpleEntity>();
+        List<SimpleEntity> entities = new ArrayList<>();
 
         SimpleEntity se = new SimpleEntity();
         se.setKeyString("SimpleEntity1");

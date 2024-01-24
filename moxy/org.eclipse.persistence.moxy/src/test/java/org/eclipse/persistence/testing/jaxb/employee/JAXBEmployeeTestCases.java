@@ -152,7 +152,7 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
           m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON );
           ByteArrayOutputStream os = new ByteArrayOutputStream();
           m.marshal(getWriteControlObject(), os);
-          compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+          compareStringToControlFile("testJSONMarshalToOutputStream", os.toString());
           os.close();
       }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,9 +55,8 @@ public class AggregateWithOneToOneRelationshipTest extends AutoVerifyTestCase {
         try {
             // must not throw an exception on read (w/batch reading on 1:1 off Aggregate)
             Vector employees = (Vector) getSession().executeQuery(query);
-            Iterator iterator = employees.iterator();
-            while (iterator.hasNext()) {
-                Employee employee = (Employee) iterator.next();
+            for (Object o : employees) {
+                Employee employee = (Employee) o;
                 // traverse Aggregate, 1:1 relationships
                 Address addressFromDB = employee.getAddressDescription().getAddress().getValue();
                 assertNotNull(addressFromDB);

@@ -242,7 +242,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
     public void testGetCharacterFromBytes() {
         SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject_c.set(property, new byte[]{10, 100});;
+        dataObject_c.set(property, new byte[]{10, 100});
 
         try {
             dataObject_a.getChar(propertyPath_a_b_c);

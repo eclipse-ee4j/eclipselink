@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2017, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -393,7 +393,7 @@ public class ConnectionWrapper implements Connection {
     }
 
     @Override
-    public PreparedStatement prepareStatement(String sql, int columnIndexes[]) throws SQLException {
+    public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
         }
@@ -401,7 +401,7 @@ public class ConnectionWrapper implements Connection {
     }
 
     @Override
-    public PreparedStatement prepareStatement(String sql, String columnNames[]) throws SQLException {
+    public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
         }

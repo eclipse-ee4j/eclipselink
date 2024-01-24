@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,7 +147,7 @@ public class SqlName extends Name {
         // Figure out an identifying name for the SQL type
         // correpsonding to the PL/SQL type
         m_sourceName = type;
-        if (m_context == null || m_context.equals("")) {
+        if (m_context == null || m_context.isEmpty()) {
             if (type.indexOf('.') >= 0) {
                 m_context = type.substring(0, type.indexOf('.'));
                 m_sourceName = type.substring(type.indexOf('.') + 1);
@@ -210,7 +210,7 @@ public class SqlName extends Name {
             isRowType[0] = true;
             sourceName[0] = ROWTYPE_PL + (m_rowtypeDistinguisher++);
             name = ROWTYPE_SQL;
-            if (packageName != null && !packageName.equals("")) {
+            if (packageName != null && !packageName.isEmpty()) {
                 if (parentName != null)
                     name = parentName + "_" + name;
                 else
@@ -492,12 +492,12 @@ public class SqlName extends Name {
      */
     @Override
     public String toString() {
-        String fullName = (m_sourceName.equals("")) ? "<top-level scope>"
-            : ((m_printAsIs || m_sourceName.indexOf(".") < 0) ? m_sourceName : "\"" + m_sourceName
+        String fullName = (m_sourceName.isEmpty()) ? "<top-level scope>"
+            : ((m_printAsIs || !m_sourceName.contains(".")) ? m_sourceName : "\"" + m_sourceName
                 + "\"");
 
         if (m_context != NO_CONTEXT) {
-            String schemaName = (m_printAsIs || m_context.indexOf(".") < 0) ? m_context : "\""
+            String schemaName = (m_printAsIs || !m_context.contains(".")) ? m_context : "\""
                 + m_context + "\"";
 
             fullName = schemaName + "." + fullName;
@@ -535,7 +535,7 @@ public class SqlName extends Name {
          * expect.
          */
         String name = null;
-        if (omitSchemaName == true || m_context == null || m_context.equals("")) {
+        if (omitSchemaName == true || m_context == null || m_context.isEmpty()) {
             name = getTargetTypeName();
         }
         else {
@@ -592,11 +592,11 @@ public class SqlName extends Name {
     }
 
     public static boolean containsLowerChar(String s) {
-        char carr[] = s.toCharArray();
+        char[] carr = s.toCharArray();
         int len = carr.length;
         char ch;
-        for (int i = 0; i < len; i++) {
-            ch = carr[i];
+        for (char c : carr) {
+            ch = c;
             if (Character.isLetterOrDigit(ch) && Character.isLowerCase(ch)) {
                 return true;
             }
@@ -613,7 +613,7 @@ public class SqlName extends Name {
             return "_return";
 
         boolean needToWarn = false;
-        char carr[] = s.toCharArray();
+        char[] carr = s.toCharArray();
         int len = carr.length;
         char ch;
         int destPos = 0;
@@ -672,13 +672,13 @@ public class SqlName extends Name {
     }
 
     public static boolean isAlpha(char ch) {
-        String lettersStr = new String("abcdefghijklmnopqrstuvwxyz");
+        String lettersStr = "abcdefghijklmnopqrstuvwxyz";
         char[] chars = lettersStr.toCharArray();
 
         ch = Character.toLowerCase(ch);
         int len = chars.length;
-        for (int i = 0; i < len; i++) {
-            if (chars[i] == ch) {
+        for (char aChar : chars) {
+            if (aChar == ch) {
                 return true;
             }
         }
@@ -692,10 +692,10 @@ public class SqlName extends Name {
         }
 
         if (predefined) {
-            schema = schema.length() > 0 ? reflector.getViewCache().dbifyName(schema) : schema;
+            schema = !schema.isEmpty() ? reflector.getViewCache().dbifyName(schema) : schema;
         }
         else if (!fromDB) {
-            schema = schema.length() > 0 ? reflector.getViewCache().dbifyName(schema)
+            schema = !schema.isEmpty() ? reflector.getViewCache().dbifyName(schema)
                 : m_defaultSchema;
         }
 
@@ -715,9 +715,7 @@ public class SqlName extends Name {
         if (!(obj instanceof SqlName)) {
             return false;
         }
-        SqlName n = (SqlName)obj;
-        boolean eq = (m_context == null || n.m_context == null || m_context.equals("") || n.m_context
-            .equals("")) ? m_sourceName.equalsIgnoreCase(n.m_sourceName) : (m_context
+        boolean eq = (m_context == null || n.m_context == null || m_context.isEmpty() || n.m_context.isEmpty()) ? m_sourceName.equalsIgnoreCase(n.m_sourceName) : (m_context
             .equalsIgnoreCase(n.m_context) && m_sourceName.equalsIgnoreCase(n.m_sourceName));
         return eq;
     }
@@ -817,7 +815,7 @@ public class SqlName extends Name {
 
     private String getFullTypeName(String typeName, int schemaName) {
         String name = null;
-        if (m_context != null && !m_context.equals("") && m_contextFromIntype) {
+        if (m_context != null && !m_context.isEmpty() && m_contextFromIntype) {
             name = m_context + "." + typeName;
         }
         else {
@@ -832,7 +830,7 @@ public class SqlName extends Name {
 
     public static String dbifyName(String s, SqlReflector reflector) {
 
-        if (s == null || s.equals("") || reflector == null || reflector.getConnection() == null)
+        if (s == null || s.isEmpty() || reflector == null || reflector.getConnection() == null)
             return s;
         return dbifyName(s, reflector.getConnection());
     }

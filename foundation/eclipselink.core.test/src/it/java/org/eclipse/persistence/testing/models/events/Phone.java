@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,14 +84,14 @@ public class Phone implements DescriptorEventListener {
     public static Phone example1() {
         Phone phone = new Phone();
 
-        phone.phoneNo = new String("123-4567");
+        phone.phoneNo = "123-4567";
         return phone;
     }
 
     public static Phone example2() {
         Phone phone = new Phone();
 
-        phone.phoneNo = new String("234-5678");
+        phone.phoneNo = "234-5678";
         return phone;
     }
 

@@ -59,22 +59,22 @@ public class XPathExpressionTestCases extends SDOTestCase {
         DataObject rake = (DataObject) returnValue.get(3);
 
         returnValue = xpathHelper.evaluate("productName", battery);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Battery", pName);
 
         returnValue = xpathHelper.evaluate("productName", rake);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Rake", pName);
 
         returnValue = xpathHelper.evaluate("productName", mower);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
 
         returnValue = xpathHelper.evaluate("productName", monitor);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Baby Monitor", pName);
     }

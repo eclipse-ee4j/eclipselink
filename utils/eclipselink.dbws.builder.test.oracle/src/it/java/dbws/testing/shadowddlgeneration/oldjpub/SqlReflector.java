@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -180,7 +180,7 @@ public class SqlReflector {
     protected SqlStmtType m_sqlStmtType;
     protected int m_rowtypeDistinguisher = 0;
     protected WrapperPackageMetadata m_wrapperPackageMetadata;
-    protected Map<String, SqlType> m_typeMap = new HashMap<String, SqlType>();
+    protected Map<String, SqlType> m_typeMap = new HashMap<>();
 
     @SuppressWarnings("this-escape")
     public SqlReflector(Connection conn, String user) {
@@ -209,18 +209,18 @@ public class SqlReflector {
             m_viewCache.reset(m_conn);
         }
 
-        m_allTypes = new HashMap<Name, TypeClass>();
-        m_predefTypes = new HashMap<Name, TypeClass>();
-        m_userTypes = new ArrayList<TypeClass>();
+        m_allTypes = new HashMap<>();
+        m_predefTypes = new HashMap<>();
+        m_userTypes = new ArrayList<>();
         sqlTypeInit();
 
-        m_allTypeNames = new HashSet<String>();
-        m_allGeneratedTypeNames = new HashSet<String>();
+        m_allTypeNames = new HashSet<>();
+        m_allGeneratedTypeNames = new HashSet<>();
         m_allGeneratedTypeNamesMagicNumber = MAGIC_NUMBER;
-        m_allDefaultArgsHolderTypeNames = new HashMap<String, String>();
+        m_allDefaultArgsHolderTypeNames = new HashMap<>();
         m_sqlStmtType = null;
 
-        m_isReused = new HashSet<String>();
+        m_isReused = new HashSet<>();
         m_wrapperPackageMetadata = null;
 
         if (conn != null) {
@@ -238,7 +238,7 @@ public class SqlReflector {
             }
         }
         catch (Exception e) { /* Cannot access ALL_TYPES table */
-            e.printStackTrace();;
+            e.printStackTrace();
         }
     }
 
@@ -267,7 +267,7 @@ public class SqlReflector {
             isRowType[0] = true;
             sourceName[0] = ROWTYPE_PL + (m_rowtypeDistinguisher++);
             name = ROWTYPE_SQL;
-            if (packageName != null && !packageName.equals("")) {
+            if (packageName != null && !packageName.isEmpty()) {
                 if (parentName != null) {
                     name = parentName + "_" + name;
                 }
@@ -295,11 +295,10 @@ public class SqlReflector {
             boolean match = true;
             Iterator<ViewRow> iter;
             if (fields != null) {
-                HashSet<String> hs = new HashSet<String>();
-                for (int i = 0; i < fields.size(); i++) {
-                    AttributeField af = fields.get(i);
-                    String fieldType = ((SqlName)af.getType().getNameObject())
-                        .getTargetTypeName();
+                HashSet<String> hs = new HashSet<>();
+                for (AttributeField af : fields) {
+                    String fieldType = ((SqlName) af.getType().getNameObject())
+                            .getTargetTypeName();
                     hs.add(fieldType + af.getName());
                 }
                 iter = m_viewCache.getRows(ALL_TYPE_ATTRS, new String[]{"CONCAT("
@@ -386,7 +385,7 @@ public class SqlReflector {
 
     private void sqlTypeInit() {
         if (!m_allTypes.isEmpty()) {
-            m_allTypes = new HashMap<Name, TypeClass>();
+            m_allTypes = new HashMap<>();
         }
         m_allTypes.put(BFILE_TYPE.m_name, BFILE_TYPE);
         m_allTypes.put(BINARY_INTEGER_TYPE.m_name, BINARY_INTEGER_TYPE);
@@ -558,7 +557,7 @@ public class SqlReflector {
             if (t != null) {
                 result = t;
                 if (mustBeNew && predefined) {
-                    throw new PublisherException("duplicate type " + result.toString());
+                    throw new PublisherException("duplicate type " + result);
                 }
                 else if (mustBeNew) {
                     t.setNameObject(sqlName);
@@ -585,7 +584,7 @@ public class SqlReflector {
                     return result;
                 }
                 if (whatIsIt == IS_PACKAGE) {
-                    throw new PublisherException("package not found " + sqlName.toString());
+                    throw new PublisherException("package not found " + sqlName);
                 }
             }
 
@@ -658,17 +657,17 @@ public class SqlReflector {
                          */
                         int line = sqlName.getLine();
                         int column = sqlName.getColumn();
-                        String mesg = "incomplete type " + sqlName.toString();
+                        String mesg = "incomplete type " + sqlName;
 
                         if (line > 0 || column > 0) {
-                            mesg = "" + line + "." + column + ": " + mesg;
+                            mesg = line + "." + column + ": " + mesg;
                         }
                         System.err.println(mesg);
                     }
                 }
                 else if (typeCode.equals("COLLECTION")) {
                     if ((whatIsIt & IS_COLLECTION) == 0) {
-                        throw new PublisherException("collection found " + sqlName.toString());
+                        throw new PublisherException("collection found " + sqlName);
                     }
                     Iterator<ViewRow> iter3 = m_viewCache.getRows(ALL_COLL_TYPES, new String[0],
                         new String[]{OWNER, TYPE_NAME}, new Object[]{schema, type},
@@ -695,15 +694,12 @@ public class SqlReflector {
                 result = addPredefType(sqlName, OracleTypes.UNSUPPORTED);
                 // Now add an error message
                 if ((whatIsIt & IS_PACKAGE) != 0) {
-                    throw new PublisherException("type not found " + sqlName.toString());
+                    throw new PublisherException("type not found " + sqlName);
                 }
             }
         }
-        catch (SQLException e) {
+        catch (SQLException | PublisherException e) {
             System.err.println(e.getMessage());
-        }
-        catch (PublisherException ex) {
-            System.err.println(ex.getMessage());
         }
         return result;
     }
@@ -796,8 +792,8 @@ public class SqlReflector {
         // For SQL types, delegate to addSqlDBType
         if (modifier == null
             || (!modifier.equals("PL/SQL RECORD") && !modifier.equals("PL/SQL TABLE")
-                && (!modifier.equals("TABLE") || (subtype == null && type.indexOf(".") == -1)) && (!modifier
-                .equals("VARRAY") || (subtype == null && type.indexOf(".") == -1)))) {
+                && (!modifier.equals("TABLE") || (subtype == null && !type.contains("."))) && (!modifier
+                .equals("VARRAY") || (subtype == null && !type.contains("."))))) {
             SqlName sn = new SqlName(schema, type, true, line, col, this);
             sn.setAnnotation(genPattern((LangName)sn.getAnnotation(), sn.getSimpleName(), true));
             return addSqlDBType(sn, modifier, ncharFormOfUse, parentType);
@@ -809,22 +805,22 @@ public class SqlReflector {
         if (modifier != null && type != null && modifier.equals("PL/SQL RECORD")
             && type.equals("PL/SQL RECORD")) {
             rowtypeInfoA = reflectRowtypeInfo(packageName, methodName, methodNo, sequence);
-            for (int i = 0; i < m_userTypes.size(); i++) {
+            for (TypeClass mUserType : m_userTypes) {
                 boolean found = true;
-                TypeClass p = m_userTypes.get(i);
+                TypeClass p = mUserType;
                 if (!(p instanceof PlsqlRecordType)) {
                     continue;
                 }
-                List<RowtypeInfo> rowtypeInfoB = ((PlsqlRecordType)p).getRowtypeInfo();
+                List<RowtypeInfo> rowtypeInfoB = ((PlsqlRecordType) p).getRowtypeInfo();
                 if (rowtypeInfoB == null || rowtypeInfoA == null
-                    || rowtypeInfoA.size() != rowtypeInfoB.size()) {
+                        || rowtypeInfoA.size() != rowtypeInfoB.size()) {
                     found = false;
                     continue;
                 }
-                for (int ja = 0; ja < rowtypeInfoA.size(); ja++) {
+                for (RowtypeInfo info : rowtypeInfoA) {
                     boolean microFound = false;
-                    for (int jb = 0; jb < rowtypeInfoB.size(); jb++) {
-                        if (rowtypeInfoA.get(ja).equals(rowtypeInfoB.get(jb))) {
+                    for (RowtypeInfo rowtypeInfo : rowtypeInfoB) {
+                        if (info.equals(rowtypeInfo)) {
                             microFound = true;
                             break;
                         }
@@ -835,7 +831,7 @@ public class SqlReflector {
                     }
                 }
                 if (found) {
-                    return (SqlType)p;
+                    return (SqlType) p;
                 }
             }
         }
@@ -899,10 +895,10 @@ public class SqlReflector {
             if (modifier != null && modifier.equals("PL/SQL TABLE")) {
                 oracleType = OracleTypes.PLSQL_INDEX_TABLE;
             }
-            else if (modifier != null && modifier.equals("TABLE") && type.indexOf(".") > -1) {
+            else if (modifier != null && modifier.equals("TABLE") && type.contains(".")) {
                 oracleType = OracleTypes.PLSQL_NESTED_TABLE;
             }
-            else if (modifier != null && modifier.equals("VARRAY") && type.indexOf(".") > -1) {
+            else if (modifier != null && modifier.equals("VARRAY") && type.contains(".")) {
                 oracleType = OracleTypes.PLSQL_VARRAY_TABLE;
             }
             if (oracleType != OracleTypes.UNSUPPORTED) {
@@ -950,35 +946,32 @@ public class SqlReflector {
         Iterator<ViewRow> iter = m_viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{
            PACKAGE_NAME, OBJECT_NAME, OVERLOAD}, new Object[]{packageName, methodName,
             methodNo}, new String[0]);
-        ArrayList<ViewRow> viewRows = new ArrayList<ViewRow>();
+        ArrayList<ViewRow> viewRows = new ArrayList<>();
         while (iter.hasNext()) { // DISTINCT not enforced
             UserArguments item = (UserArguments)iter.next();
             viewRows.add(item);
         }
         List<RowtypeInfo> rowtypeInfoA = RowtypeInfo.getRowtypeInfo(viewRows);
         int data_level = 0;
-        for (int i = 0; i < rowtypeInfoA.size(); i++) {
-            RowtypeInfo rti = rowtypeInfoA.get(i);
+        for (RowtypeInfo rti : rowtypeInfoA) {
             if (sequence == -1 || sequence == rti.sequence()) {
                 data_level = rti.data_level();
                 break;
             }
         }
         int next_rec_sequence = -1;
-        for (int i = 0; i < rowtypeInfoA.size(); i++) {
-            RowtypeInfo rti = rowtypeInfoA.get(i);
+        for (RowtypeInfo rti : rowtypeInfoA) {
             if (data_level == rti.data_level() && (sequence == -1 || sequence < rti.sequence())) {
                 next_rec_sequence = rti.sequence();
                 break;
             }
         }
         data_level++;
-        ArrayList<RowtypeInfo> rowtypeInfoW = new ArrayList<RowtypeInfo>();
-        for (int i = 0; i < rowtypeInfoA.size(); i++) {
-            RowtypeInfo rti = rowtypeInfoA.get(i);
+        ArrayList<RowtypeInfo> rowtypeInfoW = new ArrayList<>();
+        for (RowtypeInfo rti : rowtypeInfoA) {
             if ((sequence == -1 || sequence < rti.sequence()) && data_level == rti.data_level()
-            // && data_level <= rti.data_level()
-                && (next_rec_sequence == -1 || next_rec_sequence > rti.sequence())) {
+                    // && data_level <= rti.data_level()
+                    && (next_rec_sequence == -1 || next_rec_sequence > rti.sequence())) {
                 rowtypeInfoW.add(rti);
             }
         }
@@ -1050,7 +1043,7 @@ public class SqlReflector {
     public SqlType addPredefType(SqlName name, int typecode) throws PublisherException {
         // To determine whether the Java type implements ORAData or CustomData
         boolean isPrimitive = true;
-        String declClassName = ((name.getDeclPackage() != null && name.getDeclPackage().length() > 0) ? (name
+        String declClassName = ((name.getDeclPackage() != null && !name.getDeclPackage().isEmpty()) ? (name
             .getDeclPackage() + ".")
             : "")
             + name.getDeclClass();
@@ -1138,7 +1131,7 @@ public class SqlReflector {
     public SqlType addDefaultArgsHolderType(SqlType valueType, String packageName,
         SqlType parentType, boolean ncharFormOfUse) throws SQLException, PublisherException {
         String typeName = "";
-        if (valueType.getSqlName().getTypeName().indexOf(".") > -1) {
+        if (valueType.getSqlName().getTypeName().contains(".")) {
             typeName += valueType.getSqlName().getSimpleName();
         }
         else {
@@ -1157,8 +1150,8 @@ public class SqlReflector {
 
     public boolean isUserType(TypeClass t) {
         if (t instanceof SqlType) {
-            for (int i = 0; i < m_userTypes.size(); i++) {
-                if (m_userTypes.get(i).equals(t)) {
+            for (TypeClass mUserType : m_userTypes) {
+                if (mUserType.equals(t)) {
                     return true;
                 }
             }
@@ -1262,9 +1255,9 @@ public class SqlReflector {
             return null;
         }
         JavaType jt = null;
-        for (int i = 0; i < m_userTypes.size(); i++) {
-            if (m_userTypes.get(i) instanceof JavaType) {
-                JavaType jTypeTmp = (JavaType)m_userTypes.get(i);
+        for (TypeClass mUserType : m_userTypes) {
+            if (mUserType instanceof JavaType) {
+                JavaType jTypeTmp = (JavaType) mUserType;
                 JavaName jNameTmp = new JavaName(null, typeName, null, null, null);
                 if (jTypeTmp.getJavaName().equals(jNameTmp)) {
                     jt = jTypeTmp;
@@ -1288,15 +1281,13 @@ public class SqlReflector {
      * type has methods
      */
     public boolean hasMethodsInSubclasses(TypeClass who) throws SQLException, PublisherException {
-        Iterator<TypeClass> iter = m_userTypes.iterator();
-        while (iter.hasNext()) {
-            TypeClass t = iter.next();
+        for (TypeClass t : m_userTypes) {
             if (!(t instanceof SqlType)) {
                 continue;
             }
-            SqlType st = (SqlType)t;
+            SqlType st = (SqlType) t;
             boolean stHasMethods = st.hasMethods();
-            while ((st = (SqlType)st.getSupertype()) != null) {
+            while ((st = (SqlType) st.getSupertype()) != null) {
                 if (who.getName() != null && who.getName().equals(st.getName())) {
                     if (stHasMethods) {
                         return true;
@@ -1374,7 +1365,7 @@ public class SqlReflector {
 
     // Return true if a column is null
     public static boolean isNull(String col) {
-        return (col == null || col.length() == 0);
+        return (col == null || col.isEmpty());
     }
 
     public boolean noUserTypes() {

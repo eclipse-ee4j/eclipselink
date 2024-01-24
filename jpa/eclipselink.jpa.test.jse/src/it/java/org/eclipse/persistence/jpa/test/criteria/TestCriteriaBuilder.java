@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,7 +134,7 @@ public class TestCriteriaBuilder {
 
             //Create a list longer than the limit
             int limit = getPlatform(emf).getINClauseLimit() + 10;
-            List<String> parameterList = new ArrayList<String>();
+            List<String> parameterList = new ArrayList<>();
             for(int p = 0; p < limit; p++) {
                 parameterList.add("" + p);
             }
@@ -165,7 +165,7 @@ public class TestCriteriaBuilder {
 
             //Create a list longer than the limit
             int limit = getPlatform(emf).getINClauseLimit() + 10;
-            List<String> parameterList = new ArrayList<String>();
+            List<String> parameterList = new ArrayList<>();
             for(int p = 0; p < limit; p++) {
                 parameterList.add("" + p);
             }

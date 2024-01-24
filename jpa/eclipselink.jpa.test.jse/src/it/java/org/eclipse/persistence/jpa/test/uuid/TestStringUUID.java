@@ -78,7 +78,7 @@ public class TestStringUUID {
         EntityManager em = uuidEmf.createEntityManager();
         try {
             List<UUIDStringEntity> testEntities = em.createQuery("SELECT e FROM UUIDStringEntity AS e").getResultList();
-            assertTrue(testEntities.size() > 0);
+            assertTrue(!testEntities.isEmpty());
             for (UUIDStringEntity entity: testEntities) {
                 assertNotNull(UUID.fromString(entity.getId()));
             }
@@ -100,7 +100,7 @@ public class TestStringUUID {
             Query query = em.createQuery("SELECT e FROM UUIDStringEntity AS e WHERE e.id = :id");
             query.setParameter("id", id);
             List<UUIDStringEntity> testEntities = query.getResultList();
-            assertTrue(testEntities.size() > 0);
+            assertTrue(!testEntities.isEmpty());
             for (UUIDStringEntity entity: testEntities) {
                 assertNotNull(entity);
                 assertNotNull(UUID.fromString(entity.getId()));

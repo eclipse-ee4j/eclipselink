@@ -96,36 +96,33 @@ public class JoinedAttributeTestHelper {
         }
         Set<CacheKey> excluded = new HashSet<>();
         // Iterate over the result and add removed results to the excluded set.
-        for (Iterator<Object> iterator = collectionResult.iterator(); iterator.hasNext(); ) {
-            Object object = iterator.next();
+        for (Object object : collectionResult) {
             boolean remove = false;
-            for (Iterator<Expression> joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
-                Expression joinExpression = joinsIterator.next();
+            for (Expression joinExpression : queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions()) {
                 joinExpression.getBuilder().setSession(session);
                 joinExpression.getBuilder().setQueryClass(queryWithJoins.getReferenceClass());
                 // Instantiate value holders that should be instantiated.
                 Object value = joinExpression.valueFromObject(object, session, null, valueHolderPolicy, false);
                 if (joinExpression.isQueryKeyExpression()) {
-                    QueryKeyExpression queryKeyExpression = ((QueryKeyExpression)joinExpression);
+                    QueryKeyExpression queryKeyExpression = ((QueryKeyExpression) joinExpression);
                     // Iin case of NOT an outer join, remove objects with null / empty values.
                     if (!queryKeyExpression.shouldUseOuterJoin()) {
                         if (value == null) {
                             remove = true;
                             break;
                         } else if (value instanceof Collection) {
-                            Collection<?> collection = (Collection<?>)value;
+                            Collection<?> collection = (Collection<?>) value;
                             if (collection.isEmpty()) {
-                            remove = true;
+                                remove = true;
                                 break;
                             } else if (!queryKeyExpression.shouldQueryToManyRelationship()) {
-                                Iterator<?> collectionIterator = collection.iterator();
-                                while (collectionIterator.hasNext()) {
-                                    if (collectionIterator.next() == null) {
+                                for (Object o : collection) {
+                                    if (o == null) {
                                         remove = true;
                                         break;
                                     }
                                 }
-                                if (remove == true) {
+                                if (remove) {
                                     break;
                                 }
                             }
@@ -156,8 +153,7 @@ public class JoinedAttributeTestHelper {
             if (excluded.contains(new CacheKey(session.getId(object)))) {
                 iterator.remove();
             } else {
-                for (Iterator<Expression> joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
-                    Expression joinExpression = joinsIterator.next();
+                for (Expression joinExpression : queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions()) {
                     // Instantiate value holders that should be instantiated.
                     joinExpression.valueFromObject(object, session, null, valueHolderPolicy, false);
                 }
@@ -194,15 +190,15 @@ public class JoinedAttributeTestHelper {
         if(col1==null && col2==null) {
             return "";
         }
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         if(col1 != null) {
             if(processed.containsKey(col1)) {
                 return "";
             }
             processed.put(col1, col1);
             if(col2==null) {
-                errorMsg = ": " + col1 + "!= null ;  ";
-                return errorMsg;
+                errorMsg = new StringBuilder(": " + col1 + "!= null ;  ");
+                return errorMsg.toString();
             }
         }
         if(col2 != null) {
@@ -211,13 +207,13 @@ public class JoinedAttributeTestHelper {
             }
             processed.put(col2, col2);
             if(col1 == null) {
-                errorMsg = ": null !=" + col2 + ";  ";
-                return errorMsg;
+                errorMsg = new StringBuilder(": null !=" + col2 + ";  ");
+                return errorMsg.toString();
             }
         }
         if(col1.size() != col2.size()) {
-            errorMsg = ": size1==" + col1.size() + "!= size2==" + col2.size() + ";  ";
-            return errorMsg;
+            errorMsg = new StringBuilder(": size1==" + col1.size() + "!= size2==" + col2.size() + ";  ");
+            return errorMsg.toString();
         }
 
         if(desc != null) {
@@ -237,41 +233,40 @@ public class JoinedAttributeTestHelper {
                 map2.put(pk2, obj2);
             }
 
-            Iterator itEntries1 = map1.entrySet().iterator();
-            while(itEntries1.hasNext()) {
-                Map.Entry entry = (Map.Entry)itEntries1.next();
+            for (Object o : map1.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
                 Object pk = entry.getKey();
                 Object obj1 = entry.getValue();
                 Object obj2 = map2.get(pk);
                 String objErrorMsg = compareObjects(obj1, obj2, session, processed);
-                if(objErrorMsg.length() > 0) {
-                    errorMsg += "PK = " + pk.toString() + ": " + obj1.getClass().getSimpleName() + objErrorMsg + "  ";
+                if (!objErrorMsg.isEmpty()) {
+                    errorMsg.append("PK = ").append(pk.toString()).append(": ").append(obj1.getClass().getSimpleName()).append(objErrorMsg).append("  ");
                 }
 
             }
         } else {
             // there's no target descriptor - compare collections directly
             if(!col1.equals(col2)) {
-                errorMsg += "Collections " + col1 + " and " + col2 + " are not equal; ";
+                errorMsg.append("Collections ").append(col1).append(" and ").append(col2).append(" are not equal; ");
             }
         }
 
-        return errorMsg;
+        return errorMsg.toString();
     }
 
     protected static String compareMaps(Map map1, Map map2, AbstractSession session, Map processed) {
         if(map1==null && map2==null) {
             return "";
         }
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         if(map1 != null) {
             if(processed.containsKey(map1)) {
                 return "";
             }
             processed.put(map1, map1);
             if(map2==null) {
-                errorMsg = ": " + map1 + "!= null ;  ";
-                return errorMsg;
+                errorMsg = new StringBuilder(": " + map1 + "!= null ;  ");
+                return errorMsg.toString();
             }
         }
         if(map2 != null) {
@@ -280,44 +275,43 @@ public class JoinedAttributeTestHelper {
             }
             processed.put(map2, map2);
             if(map1 == null) {
-                errorMsg = ": null !=" + map2 + ";  ";
-                return errorMsg;
+                errorMsg = new StringBuilder(": null !=" + map2 + ";  ");
+                return errorMsg.toString();
             }
         }
         if(map1.size() != map2.size()) {
-            errorMsg = ": size1==" + map1.size() + "!= size2==" + map2.size() + ";  ";
-            return errorMsg;
+            errorMsg = new StringBuilder(": size1==" + map1.size() + "!= size2==" + map2.size() + ";  ");
+            return errorMsg.toString();
         }
 
-        Iterator itEntries1 = map1.entrySet().iterator();
-        while(itEntries1.hasNext()) {
-            Map.Entry entry = (Map.Entry)itEntries1.next();
+        for (Object o : map1.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
             Object key = entry.getKey();
             Object obj1 = entry.getValue();
             Object obj2 = map2.get(key);
             String objErrorMsg = compareObjects(obj1, obj2, session, processed);
-            if(objErrorMsg.length() > 0) {
-                errorMsg += "Key = " + key.toString() + ": " + obj1.getClass().getSimpleName() + objErrorMsg + "  ";
+            if (!objErrorMsg.isEmpty()) {
+                errorMsg.append("Key = ").append(key.toString()).append(": ").append(obj1.getClass().getSimpleName()).append(objErrorMsg).append("  ");
             }
 
         }
 
-        return errorMsg;
+        return errorMsg.toString();
     }
 
     protected static String compareObjects(Object obj1, Object obj2, AbstractSession session, Map processed) {
         if(obj1==null && obj2==null) {
             return "";
         }
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         if(obj1 != null) {
             if(processed.containsKey(obj1)) {
                 return "";
             }
             processed.put(obj1, obj1);
             if(obj2==null) {
-                errorMsg = ": " + obj1 + "!= null;  ";
-                return errorMsg;
+                errorMsg = new StringBuilder(": " + obj1 + "!= null;  ");
+                return errorMsg.toString();
             }
         }
         if(obj2 != null) {
@@ -326,32 +320,31 @@ public class JoinedAttributeTestHelper {
             }
             processed.put(obj2, obj2);
             if(obj1 == null) {
-                errorMsg = ": null !=" + obj2 + ";  ";
-                return errorMsg;
+                errorMsg = new StringBuilder(": null !=" + obj2 + ";  ");
+                return errorMsg.toString();
             }
         }
 
         if(obj1.getClass() != obj2.getClass()) {
-            errorMsg = ": " + obj1.getClass().getName() + "!=" + obj2.getClass().getName() + "; ";
-            return errorMsg;
+            errorMsg = new StringBuilder(": " + obj1.getClass().getName() + "!=" + obj2.getClass().getName() + "; ");
+            return errorMsg.toString();
         }
 
         ClassDescriptor desc = session.getDescriptor(obj1);
         if(desc == null ) {
             if (!obj1.equals(obj2)) {
-                errorMsg = ": " + obj1 + "!=" + obj2 + ";  ";
+                errorMsg = new StringBuilder(": " + obj1 + "!=" + obj2 + ";  ");
             }
-            return errorMsg;
+            return errorMsg.toString();
         }
 
         List<DatabaseMapping> mappings = desc.getMappings();
-        for (int index = 0; index < mappings.size(); index++) {
-            DatabaseMapping mapping = mappings.get(index);
+        for (DatabaseMapping mapping : mappings) {
             String mappingErrorMsg = compareAttributes(obj1, obj2, mapping, session, processed);
-            errorMsg += mappingErrorMsg;
+            errorMsg.append(mappingErrorMsg);
         }
 
-        return errorMsg;
+        return errorMsg.toString();
     }
 
     protected static String compareAttributes(Object obj1, Object obj2, DatabaseMapping mapping, AbstractSession session, Map processed) {
@@ -403,7 +396,7 @@ public class JoinedAttributeTestHelper {
             }
             errorMsg = ": " + value1 + "!=" + value2 + "; ";
         }
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             errorMsg = "." + mapping.getAttributeName() + errorMsg;
         }
         return errorMsg;

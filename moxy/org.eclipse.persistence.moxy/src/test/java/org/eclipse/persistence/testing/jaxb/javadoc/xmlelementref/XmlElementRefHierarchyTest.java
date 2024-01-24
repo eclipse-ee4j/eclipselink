@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public class XmlElementRefHierarchyTest extends JAXBWithJSONTestCases {
         Target target = new Target();
         target.tasks = new ArrayList();
         JarTask jarTask = new JarTask();
-        jarTask.name = new String("first jar task");
+        jarTask.name = "first jar task";
         target.tasks.add(jarTask);
         JavacTask javacTask = new JavacTask();
         javacTask.name = "first javac task";

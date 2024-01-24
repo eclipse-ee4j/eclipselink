@@ -37,7 +37,7 @@ public class InvalidUseOfTransparentIndirectionTest_valueFromMethod extends Exce
     IntegrityChecker orgIntegrityChecker;
 
     public InvalidUseOfTransparentIndirectionTest_valueFromMethod() {
-        setDescription("This tests Invalid Use Of Transparent Indirection (valueFromMethod) (TL-ERROR 144) " + "");
+        setDescription("This tests Invalid Use Of Transparent Indirection (valueFromMethod) (TL-ERROR 144) ");
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -80,8 +79,7 @@ public class FindAllThread implements Runnable
                 System.out.println(prefix);
                 List<Employee> result = getEmployeeService().findAll();
                 int employCount = 0;
-                for (Iterator<Employee> iterator = result.iterator(); iterator.hasNext(); ) {
-                    Employee employee = iterator.next();
+                for (Employee employee : result) {
                     employCount++;
                 }
                 if (employCount != 2) {

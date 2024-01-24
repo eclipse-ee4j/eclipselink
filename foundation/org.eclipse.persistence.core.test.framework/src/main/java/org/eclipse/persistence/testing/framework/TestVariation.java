@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -131,7 +131,7 @@ public class TestVariation {
         }
 
         out[0] = str.substring(first, lastPlusOne);
-        out[1] = str.substring(lastPlusOne, str.length());
+        out[1] = str.substring(lastPlusOne);
 
         return out;
     }
@@ -149,24 +149,24 @@ public class TestVariation {
         Vector<String> candidateSettersNames = new Vector<>();
         Vector<String> candidateFieldsNames = new Vector<>();
 
-        for (int i = 0; i < allMethods.length; i++) {
-            Class<?> returnType = allMethods[i].getReturnType();
-            Class<?>[] parameterTypes = allMethods[i].getParameterTypes();
+        for (Method allMethod : allMethods) {
+            Class<?> returnType = allMethod.getReturnType();
+            Class<?>[] parameterTypes = allMethod.getParameterTypes();
             if (returnType.equals(boolean.class) && (parameterTypes.length == 0)) {
-                candidateGetters.addElement(allMethods[i]);
-                candidateGettersNames.addElement(allMethods[i].getName().toLowerCase());
+                candidateGetters.addElement(allMethod);
+                candidateGettersNames.addElement(allMethod.getName().toLowerCase());
             } else if (returnType.equals(void.class) && (parameterTypes.length == 1)) {
                 if (parameterTypes[0].equals(boolean.class)) {
-                    candidateSetters.addElement(allMethods[i]);
-                    candidateSettersNames.addElement(allMethods[i].getName().toLowerCase());
+                    candidateSetters.addElement(allMethod);
+                    candidateSettersNames.addElement(allMethod.getName().toLowerCase());
                 }
             }
         }
-        for (int i = 0; i < allFields.length; i++) {
-            Class<?> type = allFields[i].getType();
+        for (Field allField : allFields) {
+            Class<?> type = allField.getType();
             if (type.equals(boolean.class)) {
-                candidateFields.addElement(allFields[i]);
-                candidateFieldsNames.addElement(allFields[i].getName().toLowerCase());
+                candidateFields.addElement(allField);
+                candidateFieldsNames.addElement(allField.getName().toLowerCase());
             }
         }
         for (int i = 0; i < names.size(); i++) {

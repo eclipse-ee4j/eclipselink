@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,7 +104,7 @@ public class DeepMergeCloneIndirectionTest extends org.eclipse.persistence.testi
             try {
                 deserialOrder = (Order)inObjStream.readObject();
             } catch (ClassNotFoundException e) {
-                throw new TestErrorException("Could not deserialize object " + e.toString());
+                throw new TestErrorException("Could not deserialize object " + e);
             }
 
             //add a new manager, test 1-m's
@@ -118,7 +118,7 @@ public class DeepMergeCloneIndirectionTest extends org.eclipse.persistence.testi
             orderClone = (Order)uow.deepMergeClone(deserialOrder);
             uow.commit();
         } catch (IOException e) {
-            throw new TestErrorException("Error running Test " + e.toString());
+            throw new TestErrorException("Error running Test " + e);
         } catch (NullPointerException exception) {
             throw new TestErrorException("Test Failed.  Backup clone indirection was not triggered in mergeIntoObject.");
         }

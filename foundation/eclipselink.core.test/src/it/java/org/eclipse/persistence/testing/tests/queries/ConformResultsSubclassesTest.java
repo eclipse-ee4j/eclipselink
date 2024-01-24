@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,11 +71,11 @@ public class ConformResultsSubclassesTest extends org.eclipse.persistence.testin
     @Override
     public void verify() {
         // verify ReadAllQuery
-        for( int i = 0; i < people.size(); i++ ) {
-          Person result = (Person) people.get(i);
-          if (result.name.equals("e") || result.name.equals("s")) {
-              throwError("ReadAllQuery with conform in unit of work returned subclasses despite descriptor indication not to.");
-          }
+        for (Object person : people) {
+            Person result = (Person) person;
+            if (result.name.equals("e") || result.name.equals("s")) {
+                throwError("ReadAllQuery with conform in unit of work returned subclasses despite descriptor indication not to.");
+            }
         }
 
         // verify ReadObjectQuery

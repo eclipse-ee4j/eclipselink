@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.MethodFilter;
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
-import dbws.testing.shadowddlgeneration.oldjpub.OracleTypes;
-import dbws.testing.shadowddlgeneration.oldjpub.SqlName;
+
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
 
 @SuppressWarnings({"unchecked","rawtypes"})
@@ -248,36 +245,35 @@ public class ViewCache implements Externalizable {
 
     private String makeKey(String view, String[] columns, String[] keys, Object[] values,
         String[] orderby) {
-        String key = view;
+        StringBuilder key = new StringBuilder(view);
         if (columns.length != 0) {
-            key = key + "[";
+            key.append("[");
             for (int i = 0; i < columns.length; i++) {
-                key += columns[i] + (i > 0 ? ", " : "");
+                key.append(columns[i]).append(i > 0 ? ", " : "");
             }
-            key += "]";
+            key.append("]");
         }
-        key = key + "(";
-        for (int i = 0; i < keys.length; i++) {
-            key += keys[i] + ", ";
+        key.append("(");
+        for (String string : keys) {
+            key.append(string).append(", ");
         }
-        key += ": ";
-        for (int i = 0; i < values.length; i++) {
-            if (values[i] instanceof byte[]) {
-                byte[] bytes = (byte[])values[i];
-                for (int j = 0; j < bytes.length; j++) {
-                    key += bytes[j];
+        key.append(": ");
+        for (Object value : values) {
+            if (value instanceof byte[]) {
+                byte[] bytes = (byte[]) value;
+                for (byte aByte : bytes) {
+                    key.append(aByte);
                 }
-                key += ", ";
-            }
-            else {
-                key += values[i] + ", ";
+                key.append(", ");
+            } else {
+                key.append(value).append(", ");
             }
         }
-        key += ")";
-        for (int i = 0; i < orderby.length; i++) {
-            key += orderby[i] + "(o)";
+        key.append(")");
+        for (String s : orderby) {
+            key.append(s).append("(o)");
         }
-        return key.toUpperCase(); // On Windows, all keys are capitalized during deserialization
+        return key.toString().toUpperCase(); // On Windows, all keys are capitalized during deserialization
     }
 
     /*
@@ -287,59 +283,59 @@ public class ViewCache implements Externalizable {
      */
     private String makeQuery(String view, String[] columns, String[] keys, Object[] values,
         String[] orderby) {
-        String stmt = "SELECT " + ViewRowFactory.getProject(view, columns) + " FROM " + view;
+        StringBuilder stmt = new StringBuilder("SELECT " + ViewRowFactory.getProject(view, columns) + " FROM " + view);
         if (keys.length > 0) {
-            stmt += " WHERE ";
+            stmt.append(" WHERE ");
         }
         boolean inOR = false;
         for (int i = 0; i < keys.length; i++) {
             // OR
             if (!inOR && i < (keys.length - 1) && keys[i].equals(keys[i + 1])) {
-                stmt += "(";
+                stmt.append("(");
                 inOR = true;
             }
-            stmt += keys[i];
+            stmt.append(keys[i]);
             if (values[i] == null || "".equals(values[i])) {
-                stmt += " IS NULL";
+                stmt.append(" IS NULL");
             }
             else if ("NOT NULL".equals(values[i])) {
-                stmt += " IS NOT NULL";
+                stmt.append(" IS NOT NULL");
             }
             else if (values[i] instanceof java.lang.String) {
-                stmt += "='" + values[i] + "'";
+                stmt.append("='").append(values[i]).append("'");
             }
             else if ((values[i] instanceof java.lang.String)
-                && ((String)values[i]).indexOf("%") > -1) {
-                stmt += " like '" + values[i] + "'";
+                && ((String) values[i]).contains("%")) {
+                stmt.append(" like '").append(values[i]).append("'");
             }
             else {
-                stmt += "=" + values[i];
+                stmt.append("=").append(values[i]);
             }
             if (inOR && i < keys.length - 1 && keys[i].equals(keys[i + 1])) {
-                stmt += " OR ";
+                stmt.append(" OR ");
             }
             else if (inOR && i < keys.length - 1) {
-                stmt += ") AND ";
+                stmt.append(") AND ");
                 inOR = false;
             }
             else if (inOR) {
-                stmt += ")";
+                stmt.append(")");
                 inOR = false;
             }
             else if (i < keys.length - 1) {
-                stmt += " AND ";
+                stmt.append(" AND ");
             }
         }
         for (int i = 0; i < orderby.length; i++) {
             if (i == 0) {
-                stmt += " ORDER BY ";
+                stmt.append(" ORDER BY ");
             }
-            stmt += orderby[i];
+            stmt.append(orderby[i]);
             if (i != (orderby.length - 1)) {
-                stmt += ", ";
+                stmt.append(", ");
             }
         }
-        return stmt;
+        return stmt.toString();
     }
 
     public ViewCache() {
@@ -359,14 +355,13 @@ public class ViewCache implements Externalizable {
      */
     public void init(ViewCache viewCache) {
         int len = m_rowsCache.size();
-        for (int i = 0; i < len; i++) {
-            RowsCacheEntry entry = (RowsCacheEntry)m_rowsCache.get(i);
+        for (Object o : m_rowsCache) {
+            RowsCacheEntry entry = (RowsCacheEntry) o;
             try {
                 getRows(entry);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("WARNING: error in refreshing view cache for view "
-                    + entry.getView());
+                        + entry.getView());
             }
         }
     }
@@ -376,14 +371,13 @@ public class ViewCache implements Externalizable {
      */
     public void refresh() {
         int len = m_rowsCache.size();
-        for (int i = 0; i < len; i++) {
-            RowsCacheEntry entry = (RowsCacheEntry)m_rowsCache.get(i);
+        for (Object o : m_rowsCache) {
+            RowsCacheEntry entry = (RowsCacheEntry) o;
             try {
                 getRows(entry);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("WARNING: error in refreshing view cache for view "
-                    + entry.getView());
+                        + entry.getView());
             }
         }
     }
@@ -498,8 +492,8 @@ public class ViewCache implements Externalizable {
 
         // m_rowsCache
         out.writeObject(m_rowsCache.size());
-        for (int i = 0; i < m_rowsCache.size(); i++) {
-            RowsCacheEntry rce = (RowsCacheEntry)m_rowsCache.get(i);
+        for (Object o : m_rowsCache) {
+            RowsCacheEntry rce = (RowsCacheEntry) o;
             out.writeObject(rce);
         }
 
@@ -511,23 +505,23 @@ public class ViewCache implements Externalizable {
             out.writeObject(keys.next());
             ArrayList rows = (ArrayList)values.next();
             out.writeObject(rows.size());
-            for (int i = 0; i < rows.size(); i++) {
-                out.writeObject(rows.get(i));
+            for (Object row : rows) {
+                out.writeObject(row);
             }
         }
     }
 
     public String printSummary() {
         // summary
-        String text = "";
-        text += "****" + getFileName(null) + "****" + "\n";
-        text += "schema: " + m_user + "\n";
-        text += "hits/visits: " + m_hits + "/" + m_visits + "\n";
-        for (int i = 0; i < m_rowsCache.size(); i++) {
-            RowsCacheEntry rce = (RowsCacheEntry)m_rowsCache.get(i);
-            text += rce.printSummary();
+        StringBuilder text = new StringBuilder();
+        text.append("****").append(getFileName(null)).append("****").append("\n");
+        text.append("schema: ").append(m_user).append("\n");
+        text.append("hits/visits: ").append(m_hits).append("/").append(m_visits).append("\n");
+        for (Object o : m_rowsCache) {
+            RowsCacheEntry rce = (RowsCacheEntry) o;
+            text.append(rce.printSummary());
         }
-        return text;
+        return text.toString();
     }
 
     /*
@@ -542,7 +536,7 @@ public class ViewCache implements Externalizable {
         if (s == null) {
             return "";
         }
-        else if (s.equals("")) {
+        else if (s.isEmpty()) {
             return "";
         }
         else if (SqlName.isQuoted(s)) {

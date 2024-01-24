@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,13 +58,13 @@ public class XMLTestCase extends junit.framework.TestCase {
     protected void compareArrays(Object controlValue, Object testValue) {
         assertTrue("Test array is not an Array", testValue.getClass().isArray());
         int controlSize = Array.getLength(controlValue);
-        assertTrue("Control and test arrays are not the same length", controlSize == Array.getLength(testValue));
+        assertEquals("Control and test arrays are not the same length", controlSize, Array.getLength(testValue));
         for(int x=0; x<controlSize; x++) {
             Object controlItem = Array.get(controlValue, x);
             Object testItem = Array.get(testValue, x);
             if(null == controlItem) {
-                assertEquals(null, testItem);
-                Class<? extends Object> controlItemClass = controlItem.getClass();
+                assertNull(testItem);
+                Class<?> controlItemClass = controlItem.getClass();
                 if(controlItemClass.isArray()) {
                     compareArrays(controlItem, testItem);
                 } else {

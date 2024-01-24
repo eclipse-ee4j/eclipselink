@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,6 @@
 package org.eclipse.persistence.testing.tests.distributedservers;
 
 import java.rmi.registry.Registry;
-
-import java.util.Iterator;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
@@ -42,11 +40,9 @@ public abstract class DistributedServer {
         super();
         if (testSssion.isSessionBroker()) {
             this.session = new SessionBroker();
-            Iterator<String> enumtr = ((SessionBroker)testSssion).getSessionsByName().keySet().iterator();
-            while (enumtr.hasNext()) {
-                String name = enumtr.next();
-                DatabaseSession newMemberSession = ((SessionBroker)testSssion).getSessionForName(name).getProject().createDatabaseSession();
-                ((SessionBroker)this.session).registerSession(name, newMemberSession);
+            for (String name : ((SessionBroker) testSssion).getSessionsByName().keySet()) {
+                DatabaseSession newMemberSession = ((SessionBroker) testSssion).getSessionForName(name).getProject().createDatabaseSession();
+                ((SessionBroker) this.session).registerSession(name, newMemberSession);
             }
         } else {
             this.session = testSssion.getProject().createDatabaseSession();
@@ -54,11 +50,9 @@ public abstract class DistributedServer {
         this.session.setSessionLog(testSssion.getSessionLog());
         this.session.login();
         if (testSssion.isSessionBroker()) {
-            Iterator<String> enumtr = ((SessionBroker)testSssion).getSessionsByName().keySet().iterator();
-            while (enumtr.hasNext()) {
-                String name = enumtr.next();
-                AbstractSession oldMemberSession = ((SessionBroker)testSssion).getSessionForName(name);
-                AbstractSession newMemberSession = ((SessionBroker)this.session).getSessionForName(name);
+            for (String name : ((SessionBroker) testSssion).getSessionsByName().keySet()) {
+                AbstractSession oldMemberSession = ((SessionBroker) testSssion).getSessionForName(name);
+                AbstractSession newMemberSession = ((SessionBroker) this.session).getSessionForName(name);
                 newMemberSession.getAccessor().closeConnection();
                 newMemberSession.setAccessor(oldMemberSession.getAccessor());
             }

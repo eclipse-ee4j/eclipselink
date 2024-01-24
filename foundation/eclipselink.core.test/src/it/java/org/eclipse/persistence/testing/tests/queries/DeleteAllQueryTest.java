@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,7 +82,7 @@ public class DeleteAllQueryTest extends AutoVerifyTestCase {
     Vector employees = getSession().readAllObjects(Employee.class);
 
     // Ensure that our delete all didn't wack all the employees from the database
-    if (employees.size() == 0) {
+    if (employees.isEmpty()) {
       throw new TestErrorException("The delete all query test failed.  All the employees were deleted.");
     }
   }

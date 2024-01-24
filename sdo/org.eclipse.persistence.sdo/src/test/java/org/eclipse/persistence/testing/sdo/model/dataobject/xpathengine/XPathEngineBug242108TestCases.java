@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class<IllegalArgumentException> expectedExceptionClass = IllegalArgumentException.class;
         Class<?> caughtExceptionClass = null;
         try {
-            do1.set("activity[0]", new String("Test"));
+            do1.set("activity[0]", "Test");
         } catch (Exception e) {
             caughtExceptionClass = e.getClass();
         }
@@ -69,7 +69,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class<IndexOutOfBoundsException> expectedExceptionClass = IndexOutOfBoundsException.class;
         Class<?> caughtExceptionClass = null;
         try {
-            do1.set("activity[99]", new String("Test"));
+            do1.set("activity[99]", "Test");
         } catch (Exception e) {
             caughtExceptionClass = e.getClass();
         }
@@ -85,7 +85,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class<IndexOutOfBoundsException> expectedExceptionClass = IndexOutOfBoundsException.class;
         Class<?> caughtExceptionClass = null;
         try {
-            do1.set("activity.99", new String("Test"));
+            do1.set("activity.99", "Test");
         } catch (Exception e) {
             caughtExceptionClass = e.getClass();
         }
@@ -101,7 +101,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class<IllegalArgumentException> expectedExceptionClass = IllegalArgumentException.class;
         Class<?> caughtExceptionClass = null;
         try {
-            do1.set("activity", new String("Test"));
+            do1.set("activity", "Test");
         } catch (Exception e) {
             caughtExceptionClass = e.getClass();
         }
@@ -117,7 +117,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class<SDOException> expectedExceptionClass = SDOException.class;
         Class<?> caughtExceptionClass = null;
         try {
-            do1.set("activity[0]/what", new String("Test"));
+            do1.set("activity[0]/what", "Test");
         } catch (Exception e) {
             caughtExceptionClass = e.getClass();
         }
@@ -133,7 +133,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class<SDOException> expectedExceptionClass = SDOException.class;
         Class<?> caughtExceptionClass = null;
         try {
-            do1.set("activity[99]/what", new String("Test"));
+            do1.set("activity[99]/what", "Test");
         } catch (Exception e) {
             caughtExceptionClass = e.getClass();
         }
@@ -149,7 +149,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class<SDOException> expectedExceptionClass = SDOException.class;
         Class<?> caughtExceptionClass = null;
         try {
-            do1.set("activity.99/what", new String("Test"));
+            do1.set("activity.99/what", "Test");
         } catch (Exception e) {
             caughtExceptionClass = e.getClass();
         }
@@ -165,7 +165,7 @@ public class XPathEngineBug242108TestCases extends SDOTestCase {
         Class<SDOException> expectedExceptionClass = SDOException.class;
         Class<?> caughtExceptionClass = null;
         try {
-            do1.set("activity/what", new String("Test"));
+            do1.set("activity/what", "Test");
         } catch (Exception e) {
             caughtExceptionClass = e.getClass();
         }

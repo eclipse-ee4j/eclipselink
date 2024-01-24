@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +67,6 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             return state == FINISHED;
         }
     }
-    ;
 
     protected TestEventListenerImpl[] testExecutorListener;
     protected TestExecutorWithClientSession[] testExecutorWithClientSession;
@@ -101,7 +100,6 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             return exception;
         }
     }
-    ;
 
     protected SynchronizedTesterImpl[] testThreadListener;
     protected Hashtable allowedExceptions;
@@ -232,17 +230,12 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             databaseSession.getSequencingControl().initializePreallocated();
             Server serverSession = new ServerSession(login, 5, 5);
             serverSession.setSessionLog(databaseSession.getSessionLog());
-            if (useSequenceConnectionPool) {
-                serverSession.getSequencingControl().setShouldUseSeparateConnection(true);
-            } else {
-                serverSession.getSequencingControl().setShouldUseSeparateConnection(false);
-            }
+            serverSession.getSequencingControl().setShouldUseSeparateConnection(useSequenceConnectionPool);
             serverSession.login();
 
             Vector descriptors = new Vector();
-            for (Iterator<ClassDescriptor> iterator = databaseSession.getDescriptors().values().iterator();
-                 iterator.hasNext();) {
-                descriptors.addElement(iterator.next());
+            for (ClassDescriptor classDescriptor : databaseSession.getDescriptors().values()) {
+                descriptors.addElement(classDescriptor);
             }
             serverSession.addDescriptors(descriptors);
 
@@ -322,7 +315,6 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
         if (originalSession.isServerSession()) {
             // Assuming that originalSession == newSession
             // (see setNewSession(..))
-            return;
         } else if (originalSession.isDatabaseSession()) {
             ((DatabaseSession)newSession).logout();
 

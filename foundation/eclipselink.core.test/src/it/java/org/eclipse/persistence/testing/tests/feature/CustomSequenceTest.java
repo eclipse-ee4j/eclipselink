@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class CustomSequenceTest extends AutoVerifyTestCase {
         /**
          * Build another sequence table for our custom sequencing.
          */
-        this.newSeqTableName = new String("NEW_SEQUENCE");
+        this.newSeqTableName = "NEW_SEQUENCE";
         this.initialSeqCount = 1233;
         buildNEW_SEQUENCETable();
         getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("INSERT INTO " + this.newSeqTableName + "(" + p.getSequenceNameFieldName() + ", " + p.getSequenceCounterFieldName() + ") values ('EMP_SEQ', " + this.initialSeqCount + ")"));

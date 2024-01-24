@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,7 +117,7 @@ public class ConversionDataObject {
         example.aCalendar.set(Calendar.MILLISECOND, 0);
         example.aTime = Helper.timeFromHourMinuteSecond(3, 3, 3);
         example.aTimestamp = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1903, 3, 3, 3, 3, 3, 0);
-        example.aString = new String("Conversion Managaer Test Example 1");
+        example.aString = "Conversion Managaer Test Example 1";
 
         //    example.intToChar = 111;
         example.timestamp2Long = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1990, 1, 1, 0, 0, 0, 0).getTime();
@@ -137,7 +137,7 @@ public class ConversionDataObject {
         example.floatToString = 111;
         example.floatToByte = 11;
 
-        example.stringToInt = new String("111");
+        example.stringToInt = "111";
 
         return example;
     }
@@ -176,7 +176,7 @@ public class ConversionDataObject {
         example.aCalendar.set(java.util.Calendar.MILLISECOND, 0);
         example.aTime = Helper.timeFromHourMinuteSecond(6, 6, 6);
         example.aTimestamp = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1906, 6, 6, 6, 6, 6, 0);
-        example.aString = new String("Conversion Managaer Test Example 2");
+        example.aString = "Conversion Managaer Test Example 2";
 
         //    example.intToChar = 222;
         example.timestamp2Long = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1999, 9, 9, 0, 0, 0, 0).getTime();
@@ -195,7 +195,7 @@ public class ConversionDataObject {
         example.floatToString = 222;
         example.floatToByte = 22;
 
-        example.stringToInt = new String("222");
+        example.stringToInt = "222";
 
         return example;
     }
@@ -234,7 +234,7 @@ public class ConversionDataObject {
         example.aCalendar.set(Calendar.MILLISECOND, 0);
         example.aTime = Helper.timeFromHourMinuteSecond(9, 9, 9);
         example.aTimestamp = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1909, 9, 9, 9, 9, 9, 0);
-        example.aString = new String("Conversion Managaer Test Example 3");
+        example.aString = "Conversion Managaer Test Example 3";
 
         //    example.intToChar = 333;
         example.timestamp2Long = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1990, 1, 1, 0, 0, 0, 0).getTime();
@@ -253,7 +253,7 @@ public class ConversionDataObject {
         example.floatToString = 333;
         example.floatToByte = 33;
 
-        example.stringToInt = new String("333");
+        example.stringToInt = "333";
 
         return example;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public class AddObjectNonPrimaryKeyManyToManyTest extends org.eclipse.persistenc
             cubicle.emergencyExits.add(EmergencyExit.example1());
             uow.commit();
         } catch (DatabaseException exception) {
-            throw new TestErrorException("CR 3819, Sent Null to database when source foreign key for many to many is not a primary key " + exception.toString());
+            throw new TestErrorException("CR 3819, Sent Null to database when source foreign key for many to many is not a primary key " + exception);
         }
     }
 

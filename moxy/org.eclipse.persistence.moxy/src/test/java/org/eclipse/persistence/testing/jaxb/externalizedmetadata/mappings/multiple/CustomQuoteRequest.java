@@ -55,6 +55,6 @@ public class CustomQuoteRequest {
 
     public static class MyCQRInnerClass {
         public String foo;
-        public MyCQRInnerClass() {};
+        public MyCQRInnerClass() {}
     }
 }

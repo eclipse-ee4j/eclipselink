@@ -51,7 +51,7 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
     public void testGetBytesFromByte() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
-        dataObject.set(property, new String("ddd").getBytes()[0]);
+        dataObject.set(property, "ddd".getBytes()[0]);
         try {
             dataObject.getBytes(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");
@@ -151,7 +151,7 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_STRING);
 
-        dataObject.set(property, new String("0A64"));
+        dataObject.set(property, "0A64");
 
         try {
             byte[] value = dataObject.getBytes(PROPERTY_INDEX);

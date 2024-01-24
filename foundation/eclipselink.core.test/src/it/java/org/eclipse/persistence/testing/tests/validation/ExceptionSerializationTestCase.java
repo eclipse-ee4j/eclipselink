@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
             objectOut.writeObject(conversionException);
             objectOut.flush();
         } catch (java.io.IOException exception) {
-            throw new TestErrorException("Exception while serializing exceptions: " + exception.toString(), exception);
+            throw new TestErrorException("Exception while serializing exceptions: " + exception, exception);
         }
         byte[] data = byteOut.toByteArray();
 
@@ -60,7 +60,7 @@ public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
             java.io.ObjectInputStream objectIn = new java.io.ObjectInputStream(byteIn);
             conversionException = (ConversionException)objectIn.readObject();
         } catch (Exception exception) {
-            throw new TestErrorException("Exception while serializing exceptions: " + exception.toString(), exception);
+            throw new TestErrorException("Exception while serializing exceptions: " + exception, exception);
         }
     }
 

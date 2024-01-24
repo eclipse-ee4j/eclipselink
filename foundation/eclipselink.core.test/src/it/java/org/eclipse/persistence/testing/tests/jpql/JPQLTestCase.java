@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,7 +117,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         Employee empMatch = null;
         Vector<Employee> employees = vectorOfEmployees;
         String firstName;
-        StringBuffer partialFirstName;
+        StringBuilder partialFirstName;
 
         // Loop through the collection of employees to find one that matches our test requirements
         for(int i=0; i<employees.size();i++) {
@@ -323,8 +323,8 @@ public class JPQLTestCase extends TransactionalTestCase {
             return true;
         }
         if (supportedPlatforms != null) {
-            for (Iterator iterator = supportedPlatforms.iterator(); iterator.hasNext();) {
-                Class<?> platformClass = (Class)iterator.next();
+            for (Object supportedPlatform : supportedPlatforms) {
+                Class<?> platformClass = (Class) supportedPlatform;
                 if (platformClass.isInstance(platform)) {
                     supported = true;
                 }
@@ -333,8 +333,8 @@ public class JPQLTestCase extends TransactionalTestCase {
             supported = true;
         }
         if (unsupportedPlatforms != null) {
-            for (Iterator iterator = unsupportedPlatforms.iterator(); iterator.hasNext();) {
-                Class<?> platformClass = (Class)iterator.next();
+            for (Object unsupportedPlatform : unsupportedPlatforms) {
+                Class<?> platformClass = (Class) unsupportedPlatform;
                 if (platformClass.isInstance(platform)) {
                     notSupported = true;
                 }

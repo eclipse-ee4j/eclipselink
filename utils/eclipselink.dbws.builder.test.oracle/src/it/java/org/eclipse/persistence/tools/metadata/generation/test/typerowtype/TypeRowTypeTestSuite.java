@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -125,7 +125,7 @@ public class TypeRowTypeTestSuite {
 
         String schema = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
 
-        List<String> procedurePatterns = new ArrayList<String>();
+        List<String> procedurePatterns = new ArrayList<>();
         procedurePatterns.add("get_emp_record");
         procedurePatterns.add("testProc");
         procedurePatterns.add("testFunc");
@@ -137,7 +137,7 @@ public class TypeRowTypeTestSuite {
             List<TableType> dbTables = dbTypeBuilder.buildTables(conn, schema, "EMPTYPEX");
 
             // process the "EMP_RECORD_PACKAGE" package
-            List<ProcedureType> empRecPkgProcedures = new ArrayList<ProcedureType>();
+            List<ProcedureType> empRecPkgProcedures = new ArrayList<>();
             List<PLSQLPackageType> packages = dbTypeBuilder.buildPackages(conn, schema, "EMP_RECORD_PACKAGE");
             for (PLSQLPackageType pkgType : packages) {
                 // now get the desired procedures/functions from the processed package
@@ -148,7 +148,7 @@ public class TypeRowTypeTestSuite {
                 }
             }
             // process the "RTYPE_PKG" package
-            List<ProcedureType> rtypePkgProcedures = new ArrayList<ProcedureType>();
+            List<ProcedureType> rtypePkgProcedures = new ArrayList<>();
             packages = dbTypeBuilder.buildPackages(conn, schema, "RTYPE_PKG");
             for (PLSQLPackageType pkgType : packages) {
                 // now get the desired procedures/functions from the processed package

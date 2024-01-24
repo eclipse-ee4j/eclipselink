@@ -49,7 +49,7 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
     public void testGetBytesFromByte() {
         property_c = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property_c.setType(SDOConstants.SDO_BYTE);
-        dataObject_c.set(property_c, new String("aaa").getBytes()[0]);
+        dataObject_c.set(property_c, "aaa".getBytes()[0]);
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
         } catch (Exception e) {

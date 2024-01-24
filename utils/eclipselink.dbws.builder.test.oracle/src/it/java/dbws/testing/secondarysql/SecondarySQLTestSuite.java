@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Iterator;
 
 import javax.wsdl.WSDLException;
 
@@ -138,8 +137,8 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_GET_SECONDARY_BY_NAME_PROC, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_SECONDARY_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_SECONDARY_TABLE[i]);
+                for (String s : POPULATE_SECONDARY_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             }
@@ -282,8 +281,8 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
          Element ec = doc.createElement("collection");
          doc.appendChild(ec);
          XRDynamicEntity_CollectionWrapper xrDynEntityCol = (XRDynamicEntity_CollectionWrapper) result;
-         for (Iterator xrIt = xrDynEntityCol.iterator(); xrIt.hasNext(); ) {
-             marshaller.marshal(xrIt.next(), ec);
+         for (Object o : xrDynEntityCol) {
+             marshaller.marshal(o, ec);
          }
          Document controlDoc = xmlParser.parse(new StringReader(ALL_RESPONSE_MSG));
          assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
@@ -505,8 +504,8 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
          Element ec = doc.createElement("collection");
          doc.appendChild(ec);
          XRDynamicEntity_CollectionWrapper xrDynEntityCol = (XRDynamicEntity_CollectionWrapper) result;
-         for (Iterator xrIt = xrDynEntityCol.iterator(); xrIt.hasNext(); ) {
-             marshaller.marshal(xrIt.next(), ec);
+         for (Object o : xrDynEntityCol) {
+             marshaller.marshal(o, ec);
          }
          Document controlDoc = xmlParser.parse(new StringReader(GETBYNAME_RESPONSE_MSG));
          assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,6 @@ import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.Defa
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener2;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener3;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -264,10 +263,9 @@ public class XmlInheritanceTest extends JUnitTestCase {
         List<?> results = query.getResultList();
         assertTrue("Failed to return 1 item", (results.size() == 1));
 
-        for (Iterator<?> iterator = results.iterator(); iterator.hasNext(); ){
-            Object maxSpeed = iterator.next();
-            assertTrue("Failed to return column",(maxSpeed instanceof Number));
-            assertTrue("Failed to return correct speed of 300",(((Number)maxSpeed).intValue() == 300));
+        for (Object maxSpeed : results) {
+            assertTrue("Failed to return column", (maxSpeed instanceof Number));
+            assertTrue("Failed to return correct speed of 300", (((Number) maxSpeed).intValue() == 300));
         }
     }
 

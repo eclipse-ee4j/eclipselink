@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,15 +27,14 @@ public class EmployeeWithAddress {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append(id);
-        sb.append("] ");
-        sb.append(firstName);
-        sb.append(" ");
-        sb.append(lastName);
-        sb.append(" ");
-        sb.append(address);
-        return sb.toString();
+        String sb = "[" +
+                id +
+                "] " +
+                firstName +
+                " " +
+                lastName +
+                " " +
+                address;
+        return sb;
     }
 }

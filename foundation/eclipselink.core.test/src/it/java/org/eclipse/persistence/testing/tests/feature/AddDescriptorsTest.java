@@ -20,8 +20,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.framework.*;
 
-import java.util.Iterator;
-
 // To make this test fail, comment a single line of code:
 //   session.clearLastDescriptorAccessed();
 // in org.eclipse.persistence.descriptors.ClassDescriptor.preInterfaceInitialization() method.
@@ -39,9 +37,7 @@ public class AddDescriptorsTest extends AutoVerifyTestCase {
             // The test has failed - at least one "old" descriptor is referenced by a new descriptor.
             // To ensure consistency, remove EmployeeSystem interface descriptors first,
             // then add all EmployeeSystem descriptors again
-            Iterator<Class<?>> iterator = getSession().getDescriptors().keySet().iterator();
-            while (iterator.hasNext()) {
-                Class<?> cls = iterator.next();
+            for (Class<?> cls : getSession().getDescriptors().keySet()) {
                 String packageName = cls.getPackageName();
                 if (packageName.equals("org.eclipse.persistence.testing.models.employee.interfaces")) {
                     getSession().getDescriptors().remove(cls);

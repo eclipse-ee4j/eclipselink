@@ -118,26 +118,26 @@ public class TestModelAdapted extends TestModel {
     }
 
     protected String excludeTests(TestCollection testCollection) {
-        String suffix = "";
+        StringBuilder suffix = new StringBuilder();
         Vector tests = testCollection.getTests();
         for (int i = tests.size() - 1; i >= 0; i--) {
             TestEntity testEntity = (TestEntity)tests.elementAt(i);
             if (shouldBeExcluded(testEntity)) {
                 tests.removeElementAt(i);
-                suffix = suffix + testEntity.getName() + ' ';
+                suffix.append(testEntity.getName()).append(' ');
             } else if (testEntity instanceof TestCollection) {
-                suffix = suffix + excludeTests((TestCollection)testEntity);
+                suffix.append(excludeTests((TestCollection) testEntity));
             }
         }
-        if (suffix.length() != 0) {
+        if (!suffix.isEmpty()) {
             testCollection.setName(testCollection.getName() + " without " + suffix);
         }
-        return suffix;
+        return suffix.toString();
     }
 
     protected boolean shouldBeExcluded(TestEntity testEntity) {
-        for (int i = 0; i < testNamesToExclude.length; i++) {
-            if (testEntity.getName().equals(testNamesToExclude[i])) {
+        for (String s : testNamesToExclude) {
+            if (testEntity.getName().equals(s)) {
                 return true;
             }
         }

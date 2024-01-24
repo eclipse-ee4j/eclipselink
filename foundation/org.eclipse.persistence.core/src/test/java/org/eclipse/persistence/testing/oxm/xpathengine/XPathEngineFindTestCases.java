@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,9 +90,9 @@ public class XPathEngineFindTestCases extends TestCase {
         NodeList controlNodes = searchNode.getElementsByTagName("postal-code");
 
         if (controlNodes.getLength() == 0) {
-            assertTrue("XPath found 1 elements, but document contained 0.", node == null);
+            assertNull("XPath found 1 elements, but document contained 0.", node);
         } else {
-            assertTrue("XPath found 0 elements, but document contained " + controlNodes.getLength() + ".", node != null);
+            assertNotNull("XPath found 0 elements, but document contained " + controlNodes.getLength() + ".", node);
         }
     }
 
@@ -103,7 +103,7 @@ public class XPathEngineFindTestCases extends TestCase {
 
         NodeList controlNodes = searchNode.getElementsByTagName("postal-code");
 
-        assertTrue("XPath found " + xpathNodes.getLength() + " elements, but document contained  " + controlNodes.getLength() + ".", xpathNodes.getLength() == controlNodes.getLength());
+        assertEquals("XPath found " + xpathNodes.getLength() + " elements, but document contained  " + controlNodes.getLength() + ".", xpathNodes.getLength(), controlNodes.getLength());
 
         for (int i = 0; i < xpathNodes.getLength(); i++) {
             Object xpathNode = xpathNodes.item(i);
@@ -118,7 +118,7 @@ public class XPathEngineFindTestCases extends TestCase {
         XMLField xmlField = new XMLField("address/phone[2]");
         NodeList xpathNodes = UnmarshalXPathEngine.getInstance().selectNodes(searchNode, xmlField, xmlField.getNamespaceResolver());
 
-        assertTrue("XPath found " + xpathNodes.getLength() + " elements, but document contained  2.", xpathNodes.getLength() == 2);
+        assertEquals("XPath found " + xpathNodes.getLength() + " elements, but document contained  2.", 2, xpathNodes.getLength());
 
         NodeList controlNodes = searchNode.getElementsByTagName("phone");
 
@@ -147,7 +147,7 @@ public class XPathEngineFindTestCases extends TestCase {
         XMLField xmlField = new XMLField("address[2]");
         NodeList xpathNodes = UnmarshalXPathEngine.getInstance().selectNodes(searchNode, xmlField, xmlField.getNamespaceResolver());
 
-        assertTrue("XPath found " + xpathNodes.getLength() + " elements, but document contained  1.", xpathNodes.getLength() == 1);
+        assertEquals("XPath found " + xpathNodes.getLength() + " elements, but document contained  1.", 1, xpathNodes.getLength());
 
         NodeList controlNodes = searchNode.getElementsByTagName("address");
         Object controlNode = controlNodes.item(1);
@@ -161,7 +161,7 @@ public class XPathEngineFindTestCases extends TestCase {
         XMLField xmlField = new XMLField("address/addressee/@initial");
         NodeList xpathNodes = UnmarshalXPathEngine.getInstance().selectNodes(searchNode, xmlField, xmlField.getNamespaceResolver());
 
-        assertTrue("XPath found " + xpathNodes.getLength() + " attributes, but document contained  2.", xpathNodes.getLength() == 2);
+        assertEquals("XPath found " + xpathNodes.getLength() + " attributes, but document contained  2.", 2, xpathNodes.getLength());
 
         NodeList controlNodes = searchNode.getElementsByTagName("addressee");
         for (int i = 0; i < controlNodes.getLength(); i++) {
@@ -201,7 +201,7 @@ public class XPathEngineFindTestCases extends TestCase {
             String fieldName = "address[3.0]";
             XMLField field = new XMLField(fieldName);
             Node node = (Node)UnmarshalXPathEngine.getInstance().selectSingleNode(searchNode, field, field.getNamespaceResolver());
-            assertTrue("Node should have been null.", node == null);
+            assertNull("Node should have been null.", node);
         } catch (ValidationException e) {
             String xmlPlatform = System.getProperty(XMLPlatformFactory.XML_PLATFORM_PROPERTY, XMLPlatformFactory.XDK_PLATFORM_CLASS_NAME);
             assertEquals("This test should pass when the JAXPPlatform is not used.", XMLPlatformFactory.JAXP_PLATFORM_CLASS_NAME, xmlPlatform);

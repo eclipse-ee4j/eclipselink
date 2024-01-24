@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,17 +80,17 @@ public abstract class QueryTimeoutBatchDescriptorQueryManagerTest extends QueryT
         */
        @Override
        protected List<Employee>  registerObjects(UnitOfWork uow) {
-           List<Employee> objectListForEditing = new ArrayList<Employee>();
+           List<Employee> objectListForEditing = new ArrayList<>();
            Address address = null;
            Employee employee = null;
            for (int i = 0; i < getNumberOfInserts(); i++) {
                address = new Address();
-               address.setCity(new StringBuffer("city").append(i).toString());
-               address.setProvince(new StringBuffer("province").append(i).toString());
+               address.setCity("city" + i);
+               address.setProvince("province" + i);
 
                employee = new Employee();
-               employee.setFirstName(new StringBuffer("first").append(i).toString());
-               employee.setLastName(new StringBuffer("last").append(i).toString());
+               employee.setFirstName("first" + i);
+               employee.setLastName("last" + i);
                //employee.setId(new java.math.BigDecimal(i));
                employee.setAddress(address);
 
@@ -112,11 +112,10 @@ public abstract class QueryTimeoutBatchDescriptorQueryManagerTest extends QueryT
                InsertObjectQuery query = new InsertObjectQuery();
                //queryCount++;
                // insert into employee (emp_id, version) SELECT 40003, SUM(e.address_id) as version from address e, address b, address b, address c, address c;
-            StringBuffer sBuffer = new StringBuffer(getQuerySQLPrefix());
-            sBuffer.append(getCurrentIDSequence() + i);
-            //sBuffer.append(i);
-            sBuffer.append(getQuerySQLPostfix());
-               query.setSQLString(sBuffer.toString());
+               String sBuffer = getQuerySQLPrefix() + (getCurrentIDSequence() + i) +
+                       //sBuffer.append(i);
+                       getQuerySQLPostfix();
+               query.setSQLString(sBuffer);
                // Override parent
                query.setQueryTimeout(getChildQueryTimeout());
                // We don't set the f_name parameter so Ignore: WARNING: Missing Query parameter for named argument: 1 null will be substituted.

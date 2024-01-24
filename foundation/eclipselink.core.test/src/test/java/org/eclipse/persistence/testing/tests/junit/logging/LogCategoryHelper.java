@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,10 +61,8 @@ public class LogCategoryHelper {
         final String namespacePrefix = ReflectionHelper.<String>getPrivateStatic(LogCategory.class, "NAMESPACE_PREFIX");
         for (LogCategory category : LogCategory.values()) {
             String name = category.getName();
-            StringBuilder sb = new StringBuilder(namespacePrefix.length() + name.length());
-            sb.append(namespacePrefix);
-            sb.append(name);
-            String nameSpace = sb.toString();
+            String nameSpace = namespacePrefix +
+                    name;
             assertEquals("Logger name space shall be " + nameSpace, nameSpace, category.getNameSpace());
         }
     }

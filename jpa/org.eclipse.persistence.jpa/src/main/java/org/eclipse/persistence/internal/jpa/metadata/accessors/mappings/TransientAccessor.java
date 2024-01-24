@@ -20,8 +20,6 @@
 //       - 337323: Multi-tenant with shared schema support (part 1)
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-
 /**
  * INTERNAL:
  * An transient accessor ... which does nothing ... just a clever way to

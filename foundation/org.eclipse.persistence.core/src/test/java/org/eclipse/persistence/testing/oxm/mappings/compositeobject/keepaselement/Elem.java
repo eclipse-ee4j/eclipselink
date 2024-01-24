@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,15 +73,12 @@ public class Elem {
                 Element elem1 = (Element )obj3;
                 Element elem2 = (Element) obj4;
 
-                if (!(elem1.getLocalName().equals(elem2.getLocalName()))) {
-                    return false;
-                }
+                return elem1.getLocalName().equals(elem2.getLocalName());
             } else {
                 return false;
             }
 
             // Passed all equality tests
-            return true;
         } else {
             return false;
         }

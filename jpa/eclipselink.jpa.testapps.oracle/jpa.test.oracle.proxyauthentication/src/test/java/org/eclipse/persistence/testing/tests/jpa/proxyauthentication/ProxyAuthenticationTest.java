@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,7 +143,7 @@ public class ProxyAuthenticationTest extends JUnitTestCase {
                 setupErrorMsg = ProxyAuthenticationUsersAndProperties.verify(getServerSession(PU_NAME));
             }
         }
-        if(setupErrorMsg.length() > 0) {
+        if(!setupErrorMsg.isEmpty()) {
             // setup has failed - can't run the test.
             fail("Setup Failure:\n" + setupErrorMsg);
         } else {
@@ -157,7 +157,7 @@ public class ProxyAuthenticationTest extends JUnitTestCase {
     @Override
     public void tearDown() {
         // clean-up
-        if(setupErrorMsg.length() > 0) {
+        if(!setupErrorMsg.isEmpty()) {
             // setup failed, the test didn't run, nothing to clean up.
             return;
         }
@@ -347,7 +347,7 @@ public class ProxyAuthenticationTest extends JUnitTestCase {
         verifyUser("ClientSession3 after transaction read", getReadUser(em3), expectedMainSessionUser);
         em3.close();
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -369,7 +369,7 @@ public class ProxyAuthenticationTest extends JUnitTestCase {
     // otherwise it should use proxyUser specified in the proxyProperties.
     String getExpectedUserName(Map proxyProperties) {
         Object proxytype = proxyProperties.get(PersistenceUnitProperties.ORACLE_PROXY_TYPE);
-        boolean proxytypeIsAnEmptyString = proxytype instanceof String && ((String)proxytype).length()==0;
+        boolean proxytypeIsAnEmptyString = proxytype instanceof String && ((String) proxytype).isEmpty();
         if(proxytypeIsAnEmptyString) {
             // PersistenceUnitProperties.ORACLE_PROXY_TYPE -> "" means that proxyProperies are to be ignored and therefore connectionUser should be used.
             return ProxyAuthenticationUsersAndProperties.connectionUser;

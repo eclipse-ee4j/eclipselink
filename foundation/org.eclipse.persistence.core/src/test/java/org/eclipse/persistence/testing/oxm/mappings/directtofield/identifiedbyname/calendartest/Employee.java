@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,7 @@ public class Employee extends org.eclipse.persistence.testing.oxm.mappings.direc
 
   public boolean equals(Object object) {
         boolean returnVal = super.equals(object);
-        if((returnVal) && ((this.getBirthdate()!=null && ((Employee)object).getBirthdate()!=null)||(this.getBirthdate().equals(((Employee)object).getBirthdate()))) )
-        {
-                return true;
-        }
-    return false;
+      return (returnVal) && ((this.getBirthdate() != null && ((Employee) object).getBirthdate() != null) || (this.getBirthdate().equals(((Employee) object).getBirthdate())));
 
   }
 

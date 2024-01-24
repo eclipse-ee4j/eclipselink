@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,9 +74,7 @@ public class SubstituteSequencingWithReturningPolicyAdapter implements ProjectAn
 
     @Override
     public void updateProject(Project project, Session session) {
-        Iterator<ClassDescriptor> it = project.getDescriptors().values().iterator();
-        while (it.hasNext()) {
-            ClassDescriptor desc = it.next();
+        for (ClassDescriptor desc : project.getDescriptors().values()) {
             if (desc.isAggregateDescriptor()) {
                 continue;
             }

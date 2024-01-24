@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,8 @@ import javax.xml.stream.XMLStreamReader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -170,8 +172,8 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_WEAKLY_TYPED_REF_CURSOR_EMP_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_WEAKLY_TYPED_REF_CURSOR_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_WEAKLY_TYPED_REF_CURSOR_TABLE[i]);
+                for (String s : POPULATE_WEAKLY_TYPED_REF_CURSOR_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             }
@@ -325,7 +327,7 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
                 idx++;
             }
             // at this point we've found the "EMP_DEPTNO" element, so check the type attribute
-            assertTrue("Element '" + ELEMENT_NAME + "' should have type [" + ELEMENT_TYPE + "] but was ["+xsr.getAttributeValue(1)+"]", xsr.getAttributeValue(1).equals(ELEMENT_TYPE));
+            assertEquals("Element '" + ELEMENT_NAME + "' should have type [" + ELEMENT_TYPE + "] but was [" + xsr.getAttributeValue(1) + "]", ELEMENT_TYPE, xsr.getAttributeValue(1));
         } catch (Exception x) {
             fail("Did not locate [" + ELEMENT_NAME + "] element: \n" + x.getMessage());
         } finally {

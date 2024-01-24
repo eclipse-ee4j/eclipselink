@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -45,14 +44,13 @@ public class CollectionMappingIsMapPolicyTest extends ProjectClassGeneratorResul
 
         descriptorToModify = project.getDescriptors().get(Employee.class);
         policy = new MapContainerPolicy();
-        for (Iterator<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).iterator();
-             mappingsEnum.hasNext(); ) {
-            mappingToModify = mappingsEnum.next();
+        for (DatabaseMapping databaseMapping : descriptorToModify.getMappings()) {
+            mappingToModify = databaseMapping;
 
             if (mappingToModify.isForeignReferenceMapping()) {
                 if (mappingToModify.isCollectionMapping()) {
                     CollectionMapping collectionMapping =
-                        (CollectionMapping) mappingToModify;
+                            (CollectionMapping) mappingToModify;
                     collectionMapping.setContainerPolicy(policy);
                     policy.setKeyName("testMethod");
                     collectionMapping.getContainerPolicy().setContainerClass(Vector.class);

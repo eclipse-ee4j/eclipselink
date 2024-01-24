@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.SqlReflector;
+
 
 public class FieldInfo {
 
@@ -94,7 +94,7 @@ public class FieldInfo {
     }
 
     public static List<FieldInfo> getFieldInfo(Iterator<ViewRow> iter) throws SQLException {
-        ArrayList<ViewRow> v = new ArrayList<ViewRow>();
+        ArrayList<ViewRow> v = new ArrayList<>();
         while (iter.hasNext()) {
             v.add(iter.next());
         }
@@ -102,15 +102,13 @@ public class FieldInfo {
     }
 
     public static List<FieldInfo> getFieldInfo(ArrayList<ViewRow> v) throws SQLException {
-        ArrayList<FieldInfo> a = new ArrayList<FieldInfo>();
-        for (int i = 0; i < v.size(); i++) {
-            ViewRow vr = v.get(i);
+        ArrayList<FieldInfo> a = new ArrayList<>();
+        for (ViewRow vr : v) {
             if (vr.isUserArguments() || vr.isAllArguments()) {
-                UserArguments userArguments = (UserArguments)vr;
+                UserArguments userArguments = (UserArguments) vr;
                 a.add(new FieldInfo(userArguments));
-            }
-            else if (vr.isAllTypeAttrs()) {
-                AllTypeAttrs allTypeAttrs = (AllTypeAttrs)vr;
+            } else if (vr.isAllTypeAttrs()) {
+                AllTypeAttrs allTypeAttrs = (AllTypeAttrs) vr;
                 a.add(new FieldInfo(allTypeAttrs));
             }
         }

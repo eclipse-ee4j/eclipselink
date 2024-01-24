@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package dbws.testing.ordescriptor;
 
 //javase imports
 import java.util.List;
-import java.util.Vector;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
@@ -27,6 +26,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -385,69 +385,69 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
 
     // ASSERT METHODS
     protected void tbl1Asserts(ClassDescriptor tbl1Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + TBL1_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl1Descriptor.getJavaClassName() + "]", tbl1Descriptor.getJavaClassName().equals(TBL1_DESCRIPTOR_JAVACLASSNAME));
+        assertEquals("Wrong Java class name.  Expected [" + TBL1_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl1Descriptor.getJavaClassName() + "]", tbl1Descriptor.getJavaClassName(), TBL1_DESCRIPTOR_JAVACLASSNAME);
         List<DatabaseMapping> mappings = tbl1Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
-        assertTrue("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", mapping.getField().getName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
+        assertEquals("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME, mapping.getField().getName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeDirectCollection mapping], but was [" + mapping.getClass().getName() + "]",  mapping.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping = (ArrayMapping)mapping;
-        assertTrue("Wrong structure name for mapping.  Expected [" + TBL1_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", arrayMapping.getStructureName().equals(TBL1_COMPATIBLETYPE));
+        assertEquals("Wrong structure name for mapping.  Expected [" + TBL1_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", TBL1_COMPATIBLETYPE, arrayMapping.getStructureName());
     }
 
     protected void tbl2Asserts(ClassDescriptor tbl2Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + TBL2_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl2Descriptor.getJavaClassName() + "]", tbl2Descriptor.getJavaClassName().equals(TBL2_DESCRIPTOR_JAVACLASSNAME));
+        assertEquals("Wrong Java class name.  Expected [" + TBL2_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl2Descriptor.getJavaClassName() + "]", tbl2Descriptor.getJavaClassName(), TBL2_DESCRIPTOR_JAVACLASSNAME);
         List<DatabaseMapping> mappings = tbl2Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
-        assertTrue("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", mapping.getField().getName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
+        assertEquals("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME, mapping.getField().getName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeDirectCollection mapping], but was [" + mapping.getClass().getName() + "]", mapping.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping = (ArrayMapping)mapping;
-        assertTrue("Wrong structure name for mapping.  Expected [" + TBL2_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", arrayMapping.getStructureName().equals(TBL2_COMPATIBLETYPE));
+        assertEquals("Wrong structure name for mapping.  Expected [" + TBL2_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", TBL2_COMPATIBLETYPE, arrayMapping.getStructureName());
     }
 
     protected void tbl3Asserts(ClassDescriptor tbl3Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + TBL3_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl3Descriptor.getJavaClassName() + "]", tbl3Descriptor.getJavaClassName().equals(TBL3_DESCRIPTOR_JAVACLASSNAME));
+        assertEquals("Wrong Java class name.  Expected [" + TBL3_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl3Descriptor.getJavaClassName() + "]", tbl3Descriptor.getJavaClassName(), TBL3_DESCRIPTOR_JAVACLASSNAME);
         List<DatabaseMapping> mappings = tbl3Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
-        assertTrue("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", mapping.getField().getName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
+        assertEquals("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME, mapping.getField().getName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeCollection mapping] but was [" + mapping.getClass().getName() + "]", mapping.isAbstractCompositeCollectionMapping());
 
         ObjectArrayMapping oArrayMapping = (ObjectArrayMapping)mapping;
-        assertTrue("Incorrect structure name.  Expected [" + TBL3_COMPATIBLETYPE + "] but was [" + oArrayMapping.getStructureName() + "]", oArrayMapping.getStructureName().equals(TBL3_COMPATIBLETYPE));
-        assertTrue("Incorrect reference class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + oArrayMapping.getReferenceClassName() + "]", oArrayMapping.getReferenceClassName().equals(ARECORD_DESCRIPTOR_JAVACLASSNAME));
+        assertEquals("Incorrect structure name.  Expected [" + TBL3_COMPATIBLETYPE + "] but was [" + oArrayMapping.getStructureName() + "]", TBL3_COMPATIBLETYPE, oArrayMapping.getStructureName());
+        assertEquals("Incorrect reference class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + oArrayMapping.getReferenceClassName() + "]", oArrayMapping.getReferenceClassName(), ARECORD_DESCRIPTOR_JAVACLASSNAME);
     }
     protected void tbl4Asserts(ClassDescriptor tbl4Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" +TBL4_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl4Descriptor.getJavaClassName() + "]", tbl4Descriptor.getJavaClassName().equals(TBL4_DESCRIPTOR_JAVACLASSNAME));
+        assertEquals("Wrong Java class name.  Expected [" + TBL4_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl4Descriptor.getJavaClassName() + "]", tbl4Descriptor.getJavaClassName(), TBL4_DESCRIPTOR_JAVACLASSNAME);
         List<DatabaseMapping> mappings = tbl4Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
-        assertTrue("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", mapping.getField().getName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
+        assertEquals("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME, mapping.getField().getName());
         assertTrue("Incorrect mapping type.  Expected [isAbstractCompositeDirectCollectionMapping mapping] but was [" + mapping.getClass().getName() + "]", mapping.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping2 = (ArrayMapping)mapping;
-        assertTrue("Incorrect structure name.  Expected [" + TBL4_COMPATIBLETYPE + "] but was [" +arrayMapping2.getStructureName() + "]", arrayMapping2.getStructureName().equals(TBL4_COMPATIBLETYPE));
+        assertEquals("Incorrect structure name.  Expected [" + TBL4_COMPATIBLETYPE + "] but was [" + arrayMapping2.getStructureName() + "]", TBL4_COMPATIBLETYPE, arrayMapping2.getStructureName());
     }
     protected void aRecordAsserts(ClassDescriptor aRecordDescriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + aRecordDescriptor.getJavaClassName() + "]", aRecordDescriptor.getJavaClassName().equals(ARECORD_DESCRIPTOR_JAVACLASSNAME));
+        assertEquals("Wrong Java class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + aRecordDescriptor.getJavaClassName() + "]", aRecordDescriptor.getJavaClassName(), ARECORD_DESCRIPTOR_JAVACLASSNAME);
         List<DatabaseMapping> mappings = aRecordDescriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [3] but was [" + mappings.size() + "]", mappings.size() == 3);
+        assertEquals("Wrong number of mappings.  Expected [3] but was [" + mappings.size() + "]", 3, mappings.size());
         DatabaseMapping dm1 = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [t1] but was [" + dm1.getAttributeName() + "]", dm1.getAttributeName().equals("t1"));
+        assertEquals("Incorrect mapping attribute name.  Expected [t1] but was [" + dm1.getAttributeName() + "]", "t1", dm1.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeDirectCollection mapping] but was [" + dm1.getClass().getName() +"]", dm1.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping1 = (ArrayMapping)dm1;
-        assertTrue("Incorrect attribute element class.  Expected [" + TBL1_COMPATIBLETYPE + "] but was [" + arrayMapping1.getStructureName() + "]", arrayMapping1.getStructureName().equals(TBL1_COMPATIBLETYPE));
+        assertEquals("Incorrect attribute element class.  Expected [" + TBL1_COMPATIBLETYPE + "] but was [" + arrayMapping1.getStructureName() + "]", TBL1_COMPATIBLETYPE, arrayMapping1.getStructureName());
         DatabaseMapping dm2 = mappings.get(1);
-        assertTrue("Incorrect mapping attribute name.  Expected [t2] but was [" + dm2.getAttributeName() + "]", dm2.getAttributeName().equals("t2"));
+        assertEquals("Incorrect mapping attribute name.  Expected [t2] but was [" + dm2.getAttributeName() + "]", "t2", dm2.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeDirectCollection mapping ]but was [" + dm2.getClass().getName() +"]", dm2.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping2 = (ArrayMapping)dm2;
-        assertTrue("Incorrect structure name.  Expected [" + TBL2_COMPATIBLETYPE + "] but was [" + arrayMapping2.getStructureName() + "]", arrayMapping2.getStructureName().equals(TBL2_COMPATIBLETYPE));
+        assertEquals("Incorrect structure name.  Expected [" + TBL2_COMPATIBLETYPE + "] but was [" + arrayMapping2.getStructureName() + "]", TBL2_COMPATIBLETYPE, arrayMapping2.getStructureName());
         DatabaseMapping dm3 = mappings.get(2);
-        assertTrue("Incorrect mapping attribute name.  Expected [t3] but was [" + dm3.getAttributeName() + "]", dm3.getAttributeName().equals("t3"));
+        assertEquals("Incorrect mapping attribute name.  Expected [t3] but was [" + dm3.getAttributeName() + "]", "t3", dm3.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [DirectToField mapping] but was [" + dm3.getClass().getName() + "]", dm3.isDirectToFieldMapping());
     }
 }

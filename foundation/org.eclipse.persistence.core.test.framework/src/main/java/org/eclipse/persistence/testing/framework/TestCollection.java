@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
         tests = new Vector<>();
         finishedTests = new Vector<>();
         summary = new TestResultsSummary(this);
-        if ((getName() == null) || (getName().length() == 0)) {
+        if ((getName() == null) || (getName().isEmpty())) {
             setName(getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1));
         } else {
             setName(getName());
@@ -146,7 +146,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
 
         try {
 
-            /** The code below is doing a roundabout version of the following (because of packaging problems):
+            /* The code below is doing a roundabout version of the following (because of packaging problems):
              *
              * org.eclipse.persistence.testing.framework.ejb.ServerTestCase serverTestCase;
              * serverTestCase = new org.eclipse.persistence.testing.framework.ejb.ServerTestCase(

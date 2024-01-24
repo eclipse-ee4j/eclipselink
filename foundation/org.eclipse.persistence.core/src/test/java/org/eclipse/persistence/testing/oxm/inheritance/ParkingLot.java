@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,10 +43,7 @@ public class ParkingLot {
                         return false;
                     }
 
-                    if (!(nextVehicle.equals(nextOtherVehicle))) {
-                        return false;
-                    }
-                    return true;
+                    return nextVehicle.equals(nextOtherVehicle);
                 }
             }
         }
@@ -54,11 +51,11 @@ public class ParkingLot {
     }
 
     public String toString() {
-        String returnString = "ParkingLot has " + vehicles.size() + " vehicles:";
-        for (int i = 0; i < vehicles.size(); i++) {
-            Vehicle nextVehicle = (Vehicle)vehicles.get(i);
-            returnString += (" " + nextVehicle.toString());
+        StringBuilder returnString = new StringBuilder("ParkingLot has " + vehicles.size() + " vehicles:");
+        for (Object vehicle : vehicles) {
+            Vehicle nextVehicle = (Vehicle) vehicle;
+            returnString.append(" ").append(nextVehicle.toString());
         }
-        return returnString;
+        return returnString.toString();
     }
 }

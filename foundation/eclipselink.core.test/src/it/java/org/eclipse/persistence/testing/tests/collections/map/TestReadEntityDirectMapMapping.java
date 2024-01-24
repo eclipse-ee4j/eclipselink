@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     tware - initial implementation
 package org.eclipse.persistence.testing.tests.collections.map;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -100,12 +99,10 @@ public class TestReadEntityDirectMapMapping extends TestCase {
     @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        Iterator i = holders.iterator();
-        while (i.hasNext()){
-            EntityDirectMapHolder holder = (EntityDirectMapHolder)i.next();
-            Iterator j = holder.getEntityToDirectMap().keySet().iterator();
-            while (j.hasNext()){
-                uow.deleteObject(j.next());
+        for (Object object : holders) {
+            EntityDirectMapHolder holder = (EntityDirectMapHolder) object;
+            for (Object o : holder.getEntityToDirectMap().keySet()) {
+                uow.deleteObject(o);
             }
         }
         uow.deleteAllObjects(holders);

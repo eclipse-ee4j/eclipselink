@@ -53,7 +53,7 @@ public class StoredFunctionXMLTypeTest extends TestCase {
             } else {
                 str = JavaPlatform.getStringAndFreeSQLXML(xmlResult);
             }
-            StringBuffer strBuffer = new StringBuffer();
+            StringBuilder strBuffer = new StringBuilder();
             for (int i=0; i<str.length(); i++) {
                 char ch = str.charAt(i);
                 if (charsToIgnore.indexOf(ch) == -1) {

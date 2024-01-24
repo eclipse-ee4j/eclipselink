@@ -64,8 +64,8 @@ public class CollectionHolderWrappersPopulatedTestCases extends JAXBWithJSONTest
         obj.collection6.add(CoinEnum.DIME);
 
         obj.collection7 = new ArrayList<byte[]>();
-        obj.collection7.add(new String("abc").getBytes());
-        obj.collection7.add(new String("def").getBytes());
+        obj.collection7.add("abc".getBytes());
+        obj.collection7.add("def".getBytes());
         return obj;
     }
 

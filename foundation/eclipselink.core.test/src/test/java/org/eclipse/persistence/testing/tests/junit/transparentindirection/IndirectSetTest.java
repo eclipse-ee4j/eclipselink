@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.tests.junit.transparentindirection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.beans.PropertyChangeEvent;
@@ -169,13 +170,13 @@ public class IndirectSetTest {
 
     @Test
     public void testEquals() {
-        assertTrue(testList.equals(new HashSet(list)));
+        assertEquals(testList, new HashSet(list));
         assertNoEvents();
     }
 
     @Test
     public void testIsEmpty() {
-        assertTrue(!testList.isEmpty());
+        assertFalse(testList.isEmpty());
         assertNoEvents();
     }
 
@@ -195,7 +196,7 @@ public class IndirectSetTest {
         assertTrue(list.remove(temp));
         assertTrue(testList.remove(temp));
         ZTestCase.assertUnorderedElementsEqual(list, new Vector(testList));
-        assertTrue(!testList.contains(temp));
+        assertFalse(testList.contains(temp));
         assertRemoveEvents(1);
     }
 
@@ -208,7 +209,7 @@ public class IndirectSetTest {
         assertTrue(list.removeAll(temp));
         assertTrue(testList.removeAll(temp));
         ZTestCase.assertUnorderedElementsEqual(list, new Vector(testList));
-        assertTrue(!testList.containsAll(temp));
+        assertFalse(testList.containsAll(temp));
         assertRemoveEvents(2);
     }
 
@@ -239,13 +240,13 @@ public class IndirectSetTest {
     public void testToArray1() {
         Object[] temp = list.toArray();
         Vector v1 = new Vector(temp.length);
-        for (int i = 0; i < temp.length; i++) {
-            v1.addElement(temp[i]);
+        for (Object object : temp) {
+            v1.addElement(object);
         }
         temp = testList.toArray();
         Vector v2 = new Vector(temp.length);
-        for (int i = 0; i < temp.length; i++) {
-            v2.addElement(temp[i]);
+        for (Object o : temp) {
+            v2.addElement(o);
         }
         ZTestCase.assertUnorderedElementsEqual(v1, v2);
         assertNoEvents();
@@ -255,13 +256,13 @@ public class IndirectSetTest {
     public void testToArray2() {
         String[] temp = list.toArray(new String[0]);
         Vector v1 = new Vector(temp.length);
-        for (int i = 0; i < temp.length; i++) {
-            v1.addElement(temp[i]);
+        for (String string : temp) {
+            v1.addElement(string);
         }
         temp = testList.toArray(new String[0]);
         Vector v2 = new Vector(temp.length);
-        for (int i = 0; i < temp.length; i++) {
-            v2.addElement(temp[i]);
+        for (String s : temp) {
+            v2.addElement(s);
         }
         ZTestCase.assertUnorderedElementsEqual(v1, v2);
         assertNoEvents();
@@ -306,8 +307,8 @@ public class IndirectSetTest {
     public void testForEach() {
         final Vector<String> v1 = new Vector<>();
         final Vector<String> v2 = new Vector<>();
-        list.forEach(v1::add);
-        testList.forEach(v2::add);
+        v1.addAll(list);
+        v2.addAll(testList);
         ZTestCase.assertUnorderedElementsEqual(list, new Vector(testList));
         ZTestCase.assertUnorderedElementsEqual(v1, v2);
         assertNoEvents();

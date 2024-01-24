@@ -67,7 +67,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyNSTestCases extends JAX
         baseTypes.add(anotherPackageSubType);
 
         List objectList = new ArrayList(baseTypes);
-        objectList.add(new String("string test"));
+        objectList.add("string test");
         objectList.add(500);
         root.objectList = objectList;
 

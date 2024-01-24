@@ -35,7 +35,7 @@ public class InvalidUseOfTransparentIndirectionTest_nullValueFromRow extends Exc
     IntegrityChecker orgIntegrityChecker;
 
     public InvalidUseOfTransparentIndirectionTest_nullValueFromRow() {
-        setDescription("This tests Invalid Use Of Transparent Indirection (nullValueFromRow) (TL-ERROR 144) " + "");
+        setDescription("This tests Invalid Use Of Transparent Indirection (nullValueFromRow) (TL-ERROR 144) ");
     }
 
     @Override

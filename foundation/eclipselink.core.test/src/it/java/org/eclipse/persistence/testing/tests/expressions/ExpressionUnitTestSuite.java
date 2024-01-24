@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -334,7 +334,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
      */
     protected void _addGetFunctionWithArgumentsTest() {
         Vector arguments = new Vector();
-        arguments.addElement(new String("Smith"));
+        arguments.addElement("Smith");
         Expression expression = (new ExpressionBuilder()).get("firstName").getFunctionWithArguments("Concat", arguments).equal("BobSmith");
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
@@ -1399,7 +1399,6 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
             exp.doesConform(null, null, null, 0);
             throw new TestErrorException("Cannot conform expression exception not thrown.");
         } catch (QueryException e) {
-            ;
         }
     }
 
@@ -1408,23 +1407,21 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
             (new ExpressionBuilder()).value(0).getField(new DatabaseField("Foo"));
             throw new TestErrorException("Expression.getField(DatabaseField) should throw query exception.");
         } catch (QueryException e) {
-            ;
         }
     }
 
     public void _testGetField$StringTest() {
         try {
-            (new ExpressionBuilder()).value(0).getField(new String("Foo"));
+            (new ExpressionBuilder()).value(0).getField("Foo");
             throw new TestErrorException("Expression.getField(String) should throw query exception.");
         } catch (QueryException e) {
-            ;
         }
     }
 
     public void _testGetFieldsTest() {
         // Uses ConstantExpression to test methods defined in abstract Expression.
         Expression exp = (new ExpressionBuilder()).value(0);
-        if ((exp.getFields() == null) || (exp.getFields().size() != 0)) {
+        if ((exp.getFields() == null) || (!exp.getFields().isEmpty())) {
             throw new TestErrorException("Expression.getFields() should return empty vector");
         }
     }
@@ -1450,16 +1447,14 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
             (new ExpressionBuilder()).value(0).getTable(new DatabaseTable("Foo"));
             throw new TestErrorException("Expression.getTable(DatabaseTable) should throw query exception.");
         } catch (QueryException e) {
-            ;
         }
     }
 
     public void _testGetTable$StringTest() {
         try {
-            (new ExpressionBuilder()).value(0).getTable(new String("Foo"));
+            (new ExpressionBuilder()).value(0).getTable("Foo");
             throw new TestErrorException("Expression.getTable(String) should throw query exception.");
         } catch (QueryException e) {
-            ;
         }
     }
 
@@ -1477,7 +1472,6 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
             exp.valueFromObject(null, null, null, 0);
             throw new TestErrorException("Cannot conform expression exception not thrown.");
         } catch (QueryException e) {
-            ;
         }
     }
 

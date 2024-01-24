@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,7 +93,7 @@ public class ClientServerConcurrentWriteTest extends AutoVerifyTestCase {
         for (Enumeration enumtr = getClients().elements(); enumtr.hasMoreElements();) {
             EmployeeClient thread = (EmployeeClient)enumtr.nextElement();
             if (thread.anErrorOccurred()) {
-                throw new TestErrorException("An exception " + thread.getTestException() + " occurred in client " + thread.toString());
+                throw new TestErrorException("An exception " + thread.getTestException() + " occurred in client " + thread);
             } else {
                 for (Enumeration sequences = thread.getSequenceNumbers().elements();
                          sequences.hasMoreElements();) {
@@ -116,7 +116,7 @@ public class ClientServerConcurrentWriteTest extends AutoVerifyTestCase {
             } catch (Exception ex) {
                 ex.printStackTrace();
                 stopThreads(getClients());
-                throw new TestErrorException("Client:" + toString() + "caught exception -> " + ex);
+                throw new TestErrorException("Client:" + this + "caught exception -> " + ex);
             }
         }
     }

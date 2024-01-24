@@ -511,7 +511,7 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
             DataHandler dh = aPart.getDataHandler();
             InputStream inputStream = dh.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte buf[] = new byte[1024];
+            byte[] buf = new byte[1024];
             int len;
             while ((len = inputStream.read(buf)) > 0) {
                 baos.write(buf, 0, len);
@@ -542,7 +542,7 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
                 DataHandler dh = aPart.getDataHandler();
                 InputStream inputStream = dh.getInputStream();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte buf[] = new byte[4096];
+                byte[] buf = new byte[4096];
                 int len;
                 while ((len = inputStream.read(buf)) > 0) {
                     baos.write(buf, 0, len);

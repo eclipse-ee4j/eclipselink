@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     tware - initial implementation
 package org.eclipse.persistence.testing.tests.collections.map;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -106,12 +105,10 @@ public class TestReadAggregateEntityU1MMapMapping extends TestCase {
     @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        Iterator i = holders.iterator();
-        while (i.hasNext()){
-            AggregateEntityU1MMapHolder holder = (AggregateEntityU1MMapHolder)i.next();
-            Iterator j = holder.getAggregateToEntityMap().keySet().iterator();
-            while (j.hasNext()){
-                uow.deleteObject(holder.getAggregateToEntityMap().get(j.next()));
+        for (Object object : holders) {
+            AggregateEntityU1MMapHolder holder = (AggregateEntityU1MMapHolder) object;
+            for (Object o : holder.getAggregateToEntityMap().keySet()) {
+                uow.deleteObject(holder.getAggregateToEntityMap().get(o));
             }
         }
         uow.deleteAllObjects(holders);

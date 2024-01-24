@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -300,7 +300,6 @@ public class TestModel extends TestCollection {
      * that test collection should perform after running itself.
      */
     public void reset() {
-        return;
     }
 
     /**
@@ -405,7 +404,6 @@ public class TestModel extends TestCollection {
      * that test collection should perform before running itself.
      */
     public void setup() {
-        return;
     }
 
     /**

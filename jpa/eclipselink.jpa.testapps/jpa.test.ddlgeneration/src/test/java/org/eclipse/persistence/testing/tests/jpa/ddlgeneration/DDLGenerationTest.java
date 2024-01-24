@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014 IBM Corporation. All rights reserved.
  * Copyright (c) 2010 Frank Schwarz. All rights reserved.
  * Copyright (c) 2008 Daryl Davis. All rights reserved.
@@ -991,7 +991,7 @@ public class DDLGenerationTest extends DDLGenerationTestBase {
         commitTransaction(em);
         closeEntityManager(em);
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -1231,7 +1231,7 @@ public class DDLGenerationTest extends DDLGenerationTestBase {
             closeEntityManager(em);
         }
 
-        if (errorMsg.length() > 0) {
+        if (!errorMsg.isEmpty()) {
             fail("\n" + errorMsg);
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,12 +81,12 @@ public class Person {
     }
 
     public String toString() {
-        String returnString = "fname:" + this.getFirstName() + " lname:" + this.getLastName();
+        StringBuilder returnString = new StringBuilder("fname:" + this.getFirstName() + " lname:" + this.getLastName());
         for (int i = 0; i < this.getItems().size(); i++) {
             Object nextDate = this.getItems().get(i);
-            returnString += (" nextDate: " + nextDate);
-            returnString += (" nextDateClass: " + nextDate.getClass());
+            returnString.append(" nextDate: ").append(nextDate);
+            returnString.append(" nextDateClass: ").append(nextDate.getClass());
         }
-        return returnString;
+        return returnString.toString();
     }
 }

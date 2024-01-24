@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
             project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Address.class).getCMPPolicy();
         CMPPolicy generatedCMPPolicy =
             generatedProject.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Address.class).getCMPPolicy();
-        String errors = new String();
+        String errors = "";
 
         if (generatedCMPPolicy == null) {
             errors += "CMPPolicy is null.\n";
@@ -131,7 +131,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
             }
         }
 
-        if (errors.length() > 0) {
+        if (!errors.isEmpty()) {
             throw new TestErrorException("The following settings of the generated project instance does not have the expected value:\n" +
                                          errors);
         }

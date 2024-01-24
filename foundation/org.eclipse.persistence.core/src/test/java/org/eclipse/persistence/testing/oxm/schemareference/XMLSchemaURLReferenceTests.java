@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,10 +67,10 @@ public class XMLSchemaURLReferenceTests extends org.eclipse.persistence.testing.
         try {
             java.net.URL resultingURL = schemaReference.getURL();
         } catch (XMLMarshalException e) {
-            assertTrue("An unexpected XMLMarshalException was caught", e.getErrorCode() == XMLMarshalException.ERROR_RESOLVING_XML_SCHEMA);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.ERROR_RESOLVING_XML_SCHEMA, e.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
     public void testInvalidURL() throws Exception {
@@ -79,7 +79,7 @@ public class XMLSchemaURLReferenceTests extends org.eclipse.persistence.testing.
         try {
             schemaReference.setURL(new URL("http://"));
         } catch (java.net.MalformedURLException malformedException) {
-            assertTrue(false);
+            fail();
             return;
         }
 
@@ -87,9 +87,9 @@ public class XMLSchemaURLReferenceTests extends org.eclipse.persistence.testing.
             Document doc = parser.parse(stream);
             boolean isValid = schemaReference.isValid(doc, null);
         } catch (XMLMarshalException e) {
-            assertTrue("An unexpected XMLMarshalException was caught", e.getErrorCode() == XMLMarshalException.ERROR_RESOLVING_XML_SCHEMA);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.ERROR_RESOLVING_XML_SCHEMA, e.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 }

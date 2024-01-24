@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class ContainerMethodAccessorTestCases extends XMLMappingTestCases {
         emp.address.country = "Canada";
         emp.address.owningEmployee = emp;
 
-        emp.phoneNumbers = new ArrayList<PhoneNumber>();
+        emp.phoneNumbers = new ArrayList<>();
 
         PhoneNumber num1 = new PhoneNumber();
         num1.number = "123-4567";

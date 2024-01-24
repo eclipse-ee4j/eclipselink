@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
         long sCNNow = ((BigDecimal)getSession().executeQuery(scnQuery)).longValue();
         long testSCN = ((Number)getAsOfClause().getValue()).longValue();
         ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
-        AsOfClause sCNClause = new AsOfSCNClause(builder.value("" + sCNNow + " - " + (sCNNow - testSCN)));
+        AsOfClause sCNClause = new AsOfSCNClause(builder.value(sCNNow + " - " + (sCNNow - testSCN)));
 
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.setAsOfClause(sCNClause);
@@ -132,7 +132,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
         arguments.add(value);
 
         Vector employees = (Vector)getSession().executeQuery(query, arguments);
-        if (employees.size() != 0) {
+        if (!employees.isEmpty()) {
             throw new TestErrorException("Somehow the long value was not converted to a proper timestamp.  Check the SQL against: " + value);
         }
     }
@@ -176,8 +176,8 @@ public class FlashbackUnitTestSuite extends TestSuite {
             ReadAllQuery query = new ReadAllQuery(LargeProject.class, criteria);
             query.addJoinedAttribute(oldProject.get("teamLeader"));
             Vector projects = (Vector)getSession().executeQuery(query);
-            for (int i = 0; i < projects.size(); i++) {
-                LargeProject next = (LargeProject)projects.get(i);
+            for (Object o : projects) {
+                LargeProject next = (LargeProject) o;
                 if (next.getTeamLeader() != null) {
                     throw new TestErrorException("The dynamic query must still return objects as they exist now, even if a joined attribute is added as of a past time.");
                 }
@@ -203,8 +203,8 @@ public class FlashbackUnitTestSuite extends TestSuite {
             ReadAllQuery query = new ReadAllQuery(LargeProject.class, criteria);
             query.addJoinedAttribute("teamLeader");
             Vector projects = (Vector)getSession().executeQuery(query);
-            for (int i = 0; i < projects.size(); i++) {
-                LargeProject next = (LargeProject)projects.get(i);
+            for (Object o : projects) {
+                LargeProject next = (LargeProject) o;
                 if (next.getTeamLeader() != null) {
                     throw new TestErrorException("The dynamic query must still return objects as they exist now, even if a joined attribute is added on an attribute read as of a past time.");
                 }
@@ -230,8 +230,8 @@ public class FlashbackUnitTestSuite extends TestSuite {
             ReadAllQuery query = new ReadAllQuery(LargeProject.class, criteria);
             query.addBatchReadAttribute("teamLeader");
             Vector projects = (Vector)getSession().executeQuery(query);
-            for (int i = 0; i < projects.size(); i++) {
-                LargeProject next = (LargeProject)projects.get(i);
+            for (Object o : projects) {
+                LargeProject next = (LargeProject) o;
                 if (next.getTeamLeader() != null) {
                     throw new TestErrorException("The dynamic query must still return objects as they exist now, even if a batched attribute is added on an attribute read as of a past time.");
                 }
@@ -250,8 +250,8 @@ public class FlashbackUnitTestSuite extends TestSuite {
         try {
             hs.readAllObjects(Employee.class);
             Vector employees = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getAllFromIdentityMap(null, Employee.class, null);
-            if ((employees != null) && (employees.size() > 0)) {
-                throw new TestErrorException("" + employees.size() + " objects read in a HistoricalSession were cached in the global session.");
+            if ((employees != null) && (!employees.isEmpty())) {
+                throw new TestErrorException(employees.size() + " objects read in a HistoricalSession were cached in the global session.");
             }
         } finally {
             hs.release();
@@ -266,8 +266,8 @@ public class FlashbackUnitTestSuite extends TestSuite {
         Session hs = getSession().acquireHistoricalSession(getAsOfClause());
         try {
             Vector pastEmployees = hs.readAllObjects(Employee.class);
-            for (int i = 0; i < pastEmployees.size(); i++) {
-                Employee employee = (Employee)pastEmployees.get(i);
+            for (Object pastEmployee : pastEmployees) {
+                Employee employee = (Employee) pastEmployee;
                 employee.getProjects();
                 employee.getAddress();
                 employee.getPhoneNumbers();
@@ -276,8 +276,8 @@ public class FlashbackUnitTestSuite extends TestSuite {
             Vector addresses = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getAllFromIdentityMap(null, Address.class, null);
             Vector phoneNumbers = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getAllFromIdentityMap(null, PhoneNumber.class, null);
 
-            if ((projects.size() > 0) || (addresses.size() > 0) || (phoneNumbers.size() > 0)) {
-                throw new TestErrorException("" + projects.size() + " projects, " + addresses.size() + " addresses, and " + phoneNumbers.size() + " phone numbers read in a HistoricalSession were cached in the global session.");
+            if ((!projects.isEmpty()) || (!addresses.isEmpty()) || (!phoneNumbers.isEmpty())) {
+                throw new TestErrorException(projects.size() + " projects, " + addresses.size() + " addresses, and " + phoneNumbers.size() + " phone numbers read in a HistoricalSession were cached in the global session.");
             }
         } finally {
             hs.release();
@@ -315,8 +315,8 @@ public class FlashbackUnitTestSuite extends TestSuite {
             if (projects.size() != 3) {
                 throw new TestErrorException("Expected to read 6 projects, instead read: " + projects.size());
             }
-            for (int i = 0; i < projects.size(); i++) {
-                LargeProject next = (LargeProject)projects.get(i);
+            for (Object o : projects) {
+                LargeProject next = (LargeProject) o;
                 if (next.getTeamLeader() != null) {
                     throw new TestErrorException("The dynamic query must still return objects as they exist now.");
                 }
@@ -346,8 +346,8 @@ public class FlashbackUnitTestSuite extends TestSuite {
             if (projects.size() != 3) {
                 throw new TestErrorException("Expected to read 6 projects, instead read: " + projects.size());
             }
-            for (int i = 0; i < projects.size(); i++) {
-                LargeProject next = (LargeProject)projects.get(i);
+            for (Object o : projects) {
+                LargeProject next = (LargeProject) o;
                 if (next.getTeamLeader() != null) {
                     throw new TestErrorException("The dynamic query must still return objects as they exist now.");
                 }
@@ -451,8 +451,8 @@ public class FlashbackUnitTestSuite extends TestSuite {
         try {
             Employee pastManager = (Employee)hs.readObject(Employee.class, new ExpressionBuilder().anyOf("managedEmployees").get("id").greaterThan(0));
             Vector employees = pastManager.getManagedEmployees();
-            for (int i = 0; i < employees.size(); i++) {
-                Employee employee = (Employee)employees.get(i);
+            for (Object o : employees) {
+                Employee employee = (Employee) o;
                 if (employee.getManager() != pastManager) {
                     throw new TestErrorException("Objects read in a HistoricalSession are not being cached properly by identity.");
                 }
@@ -530,7 +530,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
         } catch (TestErrorException tee) {
             throw tee;
         } catch (Exception e) {
-            throw new TestErrorException("Exception not thrown in reading past versions of objects outside of Oracle.  Instead triggered: " + e.toString(), e);
+            throw new TestErrorException("Exception not thrown in reading past versions of objects outside of Oracle.  Instead triggered: " + e, e);
         } finally {
             getAbstractSession().setLogin(oldLogin);
         }

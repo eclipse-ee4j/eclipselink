@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,10 +47,9 @@ public class BatchReadValueholderTest extends TestCase {
         Expression exp = employees.get("firstName").equal("Jim-bob");
         query.setSelectionCriteria(exp);
         Vector emps = (Vector)getSession().executeQuery(query);
-        Iterator i = emps.iterator();
-        while (i.hasNext()) {
-            Employee e = (Employee)i.next();
-            Employee m = (Employee)e.getManager();
+        for (Object emp : emps) {
+            Employee e = (Employee) emp;
+            Employee m = (Employee) e.getManager();
             if (m != null) {
                 m.hashCode();
             }
@@ -66,9 +65,8 @@ public class BatchReadValueholderTest extends TestCase {
 
     @Override
     public void verify() {
-        Iterator i = employees.iterator();
-        while (i.hasNext()) {
-            Employee emp = (Employee)i.next();
+        for (Object employee : employees) {
+            Employee emp = (Employee) employee;
             if (emp.getFirstName().equals("Jim-bob") && emp.getLastName().equals("Jefferson") && !emp.manager.isInstantiated()) {
                 throw new TestErrorException("A batch read query changed an instantiated valueholder to uninstantiated.");
             } else if (emp.getFirstName().equals("John") && emp.getLastName().equals("Way") && emp.manager.isInstantiated()) {

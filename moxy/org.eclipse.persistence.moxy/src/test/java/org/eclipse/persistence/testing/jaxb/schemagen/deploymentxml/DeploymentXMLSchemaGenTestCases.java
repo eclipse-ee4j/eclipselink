@@ -55,14 +55,14 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
                 additionalGlobalElements.put(new QName("example.com", "ASingleEmployee"), Employee.class);
                 additionalGlobalElements.put(new QName("ASingleInt"), int.class);
             } catch (Exception x) {
-                fail("Additional global element Map setup failed: " + x.toString());
+                fail("Additional global element Map setup failed: " + x);
             }
             try {
                 generateSchema(CONTEXT_PATH, outputResolver, additionalGlobalElements);
             } catch (Exception ex) {
-                fail("Schema generation failed unexpectedly: " + ex.toString());
+                fail("Schema generation failed unexpectedly: " + ex);
             }
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+            assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
             assertTrue("Expected two schemas to be generated, but there were [ " + outputResolver.schemaFiles.size()  + "]", outputResolver.schemaFiles.size() == 2);
             shouldGenerateSchema = false;
         }

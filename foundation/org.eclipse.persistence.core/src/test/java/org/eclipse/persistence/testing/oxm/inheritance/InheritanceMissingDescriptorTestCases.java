@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,13 +47,13 @@ public class InheritanceMissingDescriptorTestCases extends OXTestCase {
             StringWriter writer = new StringWriter();
             marshaller.marshal(car, writer);
         } catch (XMLMarshalException exception) {
-            assertTrue("An incorrect XMLValidation was thrown.", exception.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT);
+            assertEquals("An incorrect XMLValidation was thrown.", XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT, exception.getErrorCode());
             return;
         } catch (Exception exception) {
-            assertTrue("An unexpected exception was thrown.", false);
+            fail("An unexpected exception was thrown.");
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
     public void testMissingDescriptorRead() {
@@ -61,12 +61,12 @@ public class InheritanceMissingDescriptorTestCases extends OXTestCase {
             InputStream carStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/inheritance/car.xml");
             Object car = unmarshaller.unmarshal(carStream);
         } catch (XMLMarshalException exception) {
-            assertTrue("An incorrect XMLValidation was thrown.", exception.getErrorCode() == XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT);
+            assertEquals("An incorrect XMLValidation was thrown.", XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT, exception.getErrorCode());
             return;
         } catch (Exception exception) {
-            assertTrue("An unexpected exception was caught.", false);
+            fail("An unexpected exception was caught.");
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
      */
     @Override
     public void test() throws Exception {
-        variable = new String("hello");
+        variable = "hello";
     }
 
     /**
@@ -51,7 +51,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
 
             @Override
             public void test() {
-                setVariable(new String("hello"));
+                setVariable("hello");
             }
 
             /**
@@ -79,7 +79,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
                 if (!this.getClass().isAssignableFrom(this.getClass())) {
                     throw new Error("Not assignable");
                 }
-                String hello = new String("hello");
+                String hello = "hello";
                 if (!object.isAssignableFrom(hello.getClass())) {
                     throw new Error("Not assignable");
                 }
@@ -111,7 +111,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
                 }
                 try {
                     Object[] args = new Object[1];
-                    args[0] = new String("hello");
+                    args[0] = "hello";
                     method.invoke(this, args);
                 } catch (Exception ignore) {
                     throw new Error(ignore.toString());
@@ -149,7 +149,7 @@ public class FieldTest extends PerformanceComparisonTestCase {
                     }
                 }
                 try {
-                    field.set(this, new String("hello"));
+                    field.set(this, "hello");
                 } catch (Exception ignore) {
                     throw new Error(ignore.toString());
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class OnlyRefreshIfNewTest extends AutoVerifyTestCase {
     @Override
     public void test() {
         // Change the object
-        this.firstName = new String("Chelmsford");
+        this.firstName = "Chelmsford";
         employeeObject.setFirstName(firstName);
 
         // Refresh the employee using the one in the DB -- city should change

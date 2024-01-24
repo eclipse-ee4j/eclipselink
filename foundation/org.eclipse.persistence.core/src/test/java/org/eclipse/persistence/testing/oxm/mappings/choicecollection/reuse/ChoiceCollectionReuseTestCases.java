@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ public class ChoiceCollectionReuseTestCases extends XMLMappingTestCases {
         Employee employee = new Employee();
         employee.name = "Jane Doe";
 
-        employee.choice = new LinkedList<Object>();
+        employee.choice = new LinkedList<>();
         employee.choice.add("123 Fake Street");
         employee.choice.add(12);
         Address addr = new Address();
@@ -58,7 +58,7 @@ public class ChoiceCollectionReuseTestCases extends XMLMappingTestCases {
         Employee employee = new Employee();
         employee.name = "Jane Doe";
 
-        employee.choice = new LinkedList<Object>();
+        employee.choice = new LinkedList<>();
         employee.choice.add("123 Fake Street");
         employee.choice.add(12);
         Address addr = new Address();

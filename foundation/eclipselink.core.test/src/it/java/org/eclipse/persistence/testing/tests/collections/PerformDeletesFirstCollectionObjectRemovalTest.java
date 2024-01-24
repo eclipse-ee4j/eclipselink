@@ -64,7 +64,7 @@ public class PerformDeletesFirstCollectionObjectRemovalTest extends TestCase {
 
         Restaurant restaurantClone = (Restaurant) uow.registerObject(restaurantOriginal);
 
-        assertTrue(restaurantClone.getMenus() != null);
+        assertNotNull(restaurantClone.getMenus());
         Collection menus = restaurantClone.getMenus().values();
         assertFalse(menus.isEmpty());
 
@@ -87,16 +87,15 @@ public class PerformDeletesFirstCollectionObjectRemovalTest extends TestCase {
     protected void verify() {
         // we remove 1 element from the collection, so expected size is startSize - 1
         if (endSize != (startSize - 1)) {
-            StringBuffer buffer = new StringBuffer();
-            buffer.append("Parent collection was not updated correctly.");
-            buffer.append(System.lineSeparator());
-            buffer.append("Start size: ");
-            buffer.append(startSize);
-            buffer.append(" End size: ");
-            buffer.append(endSize);
-            buffer.append(" Perform deletes first: ");
-            buffer.append(this.shouldPerformDeletesFirst);
-            throw new TestErrorException(buffer.toString());
+            String buffer = "Parent collection was not updated correctly." +
+                    System.lineSeparator() +
+                    "Start size: " +
+                    startSize +
+                    " End size: " +
+                    endSize +
+                    " Perform deletes first: " +
+                    this.shouldPerformDeletesFirst;
+            throw new TestErrorException(buffer);
         }
     }
 

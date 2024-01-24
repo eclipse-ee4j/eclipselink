@@ -108,7 +108,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
     public void testSchemaGen() throws Exception{
         List controlSchemas = new ArrayList();
         InputStream is = ClassLoader.getSystemResourceAsStream(XSD_DOC);
-        InputStream is2 = ClassLoader.getSystemResourceAsStream(WORK_ADD_XSD_DOC);;
+        InputStream is2 = ClassLoader.getSystemResourceAsStream(WORK_ADD_XSD_DOC);
         controlSchemas.add(is);
 
         controlSchemas.add(is2);
@@ -225,7 +225,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         assertNotNull("No descriptor was generated for Company.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("employees");
         assertNotNull("No mapping exists on Customer for attribute [employees].", mapping);
-        assertTrue("Expected an XMLCollectionReferenceMapping for attribute [employees], but was [" + mapping.toString() +"].", mapping instanceof XMLCollectionReferenceMapping);
+        assertTrue("Expected an XMLCollectionReferenceMapping for attribute [employees], but was [" + mapping +"].", mapping instanceof XMLCollectionReferenceMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 

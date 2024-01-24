@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,29 +147,29 @@ public class OptimisticLockingTestModel extends TestModel {
         final Class<?>[] policies = { AllFieldsLockingPolicy.class, SelectedFieldsLockingPolicy.class,
                 ChangedFieldsLockingPolicy.class, VersionLockingPolicy.class, TimestampLockingPolicy.class };
         // done this way for test ordering
-        for (int i = 0; i < policies.length; i++) {
-            suite.addTest(new UpdateNullDirectToFieldValueTest(policies[i]));
+        for (Class<?> policy3 : policies) {
+            suite.addTest(new UpdateNullDirectToFieldValueTest(policy3));
         }
-        for (int i = 0; i < policies.length; i++) {
-            suite.addTest(new UpdateNullOneToOneValueTest(policies[i]));
+        for (Class<?> policy2 : policies) {
+            suite.addTest(new UpdateNullOneToOneValueTest(policy2));
         }
-        for (int i = 0; i < policies.length; i++) {
-            suite.addTest(new UpdateNullAggregateValueTest(policies[i]));
+        for (Class<?> policy1 : policies) {
+            suite.addTest(new UpdateNullAggregateValueTest(policy1));
         }
-        for (int i = 0; i < policies.length; i++) {
-            suite.addTest(new UpdateNullOneToManyValueTest(policies[i]));
+        for (Class<?> element : policies) {
+            suite.addTest(new UpdateNullOneToManyValueTest(element));
         }
-        for (int i = 0; i < policies.length; i++) {
-            suite.addTest(new UpdateNullOneToManyValueTest2(policies[i]));
+        for (Class<?> item : policies) {
+            suite.addTest(new UpdateNullOneToManyValueTest2(item));
         }
-        for (int i = 0; i < policies.length; i++) {
-            suite.addTest(new UpdateNullTransformationValueTest(policies[i]));
+        for (Class<?> value : policies) {
+            suite.addTest(new UpdateNullTransformationValueTest(value));
         }
-        for (int i = 0; i < policies.length; i++) {
-            suite.addTest(new UpdateNullVariableOneToOneValueTest(policies[i]));
+        for (Class<?> aClass : policies) {
+            suite.addTest(new UpdateNullVariableOneToOneValueTest(aClass));
         }
-        for (int i = 0; i < policies.length; i++) {
-            suite.addTest(new UpdateNullManyToManyValueTest(policies[i]));
+        for (Class<?> policy : policies) {
+            suite.addTest(new UpdateNullManyToManyValueTest(policy));
         }
 
         return suite;

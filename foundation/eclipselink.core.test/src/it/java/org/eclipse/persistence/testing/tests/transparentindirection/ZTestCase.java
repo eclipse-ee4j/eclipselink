@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,18 +46,18 @@ public class ZTestCase extends AutoVerifyTestCase {
             return;
         }
         if (expected.size() != actual.size()) {
-            assertTrue(notEqualsMessage(message, expected, actual), false);
+            fail(notEqualsMessage(message, expected, actual));
         }
         for (int i = 0; i < expected.size(); i++) {
             Object e1 = expected.elementAt(i);
             Object e2 = actual.elementAt(i);
             if (e1 == null) {// avoid null pointer exception
                 if (e2 != null) {
-                    assertTrue(notEqualsMessage(message, expected, actual), false);
+                    fail(notEqualsMessage(message, expected, actual));
                 }
             } else {
                 if (!e1.equals(e2)) {
-                    assertTrue(notEqualsMessage(message, expected, actual), false);
+                    fail(notEqualsMessage(message, expected, actual));
                 }
             }
         }
@@ -85,18 +85,18 @@ public class ZTestCase extends AutoVerifyTestCase {
             return;
         }
         if (expected.size() != actual.size()) {
-            assertTrue(notEqualsMessage(message, expected, actual), false);
+            fail(notEqualsMessage(message, expected, actual));
         }
         Vector temp = (Vector)actual.clone();
         for (int i = 0; i < expected.size(); i++) {
             Object e1 = expected.elementAt(i);
             if (e1 == null) {// avoid null pointer exception
                 if (!removeNullElement(temp)) {
-                    assertTrue(notEqualsMessage(message, expected, actual), false);
+                    fail(notEqualsMessage(message, expected, actual));
                 }
             } else {
                 if (!temp.removeElement(e1)) {
-                    assertTrue(notEqualsMessage(message, expected, actual), false);
+                    fail(notEqualsMessage(message, expected, actual));
                 }
             }
         }
@@ -156,8 +156,8 @@ public class ZTestCase extends AutoVerifyTestCase {
      * equal the expected one.
      */
     public static String notEqualsMessage(String message, Object expected, Object actual) {
-        StringBuffer buffer = new StringBuffer(250);
-        if ((message != null) && (message.length() != 0)) {
+        StringBuilder buffer = new StringBuilder(250);
+        if ((message != null) && (!message.isEmpty())) {
             buffer.append(message);
             buffer.append(" ");
         }

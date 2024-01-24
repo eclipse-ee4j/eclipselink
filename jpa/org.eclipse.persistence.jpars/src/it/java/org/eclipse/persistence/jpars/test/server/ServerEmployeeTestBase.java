@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ import org.eclipse.persistence.jpars.test.model.employee.LargeProject;
 import org.eclipse.persistence.jpars.test.model.employee.Office;
 import org.eclipse.persistence.jpars.test.model.employee.PhoneNumber;
 import org.eclipse.persistence.jpars.test.model.employee.SmallProject;
-import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 import org.eclipse.persistence.jpars.test.util.DBUtils;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.After;
@@ -775,7 +774,7 @@ public class ServerEmployeeTestBase extends BaseJparsTest {
         manager = RestUtils.restReadObject(context, manager.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
-        assertTrue("Manager's managed employee list is empty", manager.getManagedEmployees().size() > 0);
+        assertTrue("Manager's managed employee list is empty", !manager.getManagedEmployees().isEmpty());
 
         employee = RestUtils.restReadObject(context, employee.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", employee);
@@ -1131,7 +1130,7 @@ public class ServerEmployeeTestBase extends BaseJparsTest {
         manager = RestUtils.restReadObject(context, manager.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
-        assertTrue("Manager's managed employee list is empty", manager.getManagedEmployees().size() > 0);
+        assertTrue("Manager's managed employee list is empty", !manager.getManagedEmployees().isEmpty());
 
         employee = RestUtils.restReadObject(context, employee.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", employee);
@@ -1320,7 +1319,7 @@ public class ServerEmployeeTestBase extends BaseJparsTest {
         manager = RestUtils.restReadObject(context, manager.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
-        assertTrue("Manager's managed employee list is empty", manager.getManagedEmployees().size() > 0);
+        assertTrue("Manager's managed employee list is empty", !manager.getManagedEmployees().isEmpty());
 
         employee = RestUtils.restReadObject(context, employee.getId(), Employee.class, mediaType);
         assertNotNull("Manager read failed.", employee);

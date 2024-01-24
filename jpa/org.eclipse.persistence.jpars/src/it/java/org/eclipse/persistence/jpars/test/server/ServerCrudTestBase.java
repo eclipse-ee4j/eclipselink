@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,6 @@ import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
 import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 import org.eclipse.persistence.jpars.test.model.multitenant.Account;
-import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.UriBuilder;
@@ -397,7 +396,7 @@ public class ServerCrudTestBase extends BaseJparsTest {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", 0);
         List<StaticUser> users = RestUtils.restNamedMultiResultQuery(context, "User.byId", StaticUser.class, parameters, null, MediaType.APPLICATION_XML_TYPE);
-        assertTrue("Incorrect Number of users found.", users.size() == 0);
+        assertTrue("Incorrect Number of users found.", users.isEmpty());
     }
 
     /**
@@ -746,7 +745,7 @@ public class ServerCrudTestBase extends BaseJparsTest {
      */
     @Test
     public void testGetTypesXML() throws Exception {
-        String uri = new UriBuilder(context).toString() + "/metadata";
+        String uri = new UriBuilder(context) + "/metadata";
         Response response = RestUtils.doGet(context, uri, MediaType.APPLICATION_XML_TYPE);
         String result = response.readEntity(String.class);
 
@@ -765,7 +764,7 @@ public class ServerCrudTestBase extends BaseJparsTest {
      */
     @Test
     public void testGetTypesJSON() throws Exception {
-        String uri = new UriBuilder(context).toString() + "/metadata";
+        String uri = new UriBuilder(context) + "/metadata";
         Response response = RestUtils.doGet(context, uri, MediaType.APPLICATION_JSON_TYPE);
         String result = response.readEntity(String.class);
 

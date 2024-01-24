@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public abstract class HierarchicalQueryTest extends TestCase {
             results = (Vector)getSession().executeQuery(getQuery());
         } catch (Exception ex) {
             ex.printStackTrace();
-            if ((ex.getMessage().indexOf("missing BY keyword") != -1) || (ex.getMessage().indexOf("cannot have join with CONNECT BY") != -1)) {
+            if ((ex.getMessage().contains("missing BY keyword")) || (ex.getMessage().contains("cannot have join with CONNECT BY"))) {
                 throw new TestWarningException("This test is indended for Oracle 9i and up");
             }
             ex.printStackTrace();
@@ -71,9 +71,7 @@ public abstract class HierarchicalQueryTest extends TestCase {
         if (expectedResults.size() != results.size()) {
             throw new TestErrorException(ERROR_1);
         }
-        Iterator res = results.iterator();
-        while (res.hasNext()) {
-            Object next = res.next();
+        for (Object next : results) {
             if (!expectedResults.contains(next)) {
                 throw new TestErrorException(ERROR_2 + next);
             }

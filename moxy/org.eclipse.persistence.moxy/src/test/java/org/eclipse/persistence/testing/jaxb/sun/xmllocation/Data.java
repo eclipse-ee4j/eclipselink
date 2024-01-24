@@ -52,10 +52,10 @@ public class Data {
             loc = " L" + locator.getLineNumber() + " C" + locator.getColumnNumber() + " " + locator.getSystemId();
         }
 
-        String subDataS = "\n";
+        StringBuilder subDataS = new StringBuilder("\n");
         for (Iterator<SubData> iterator = subData.iterator(); iterator.hasNext();) {
             SubData type = iterator.next();
-            subDataS += "\t" + type.toString() + "\n";
+            subDataS.append("\t").append(type.toString()).append("\n");
         }
 
         return "\nData(" + key + ")" + loc + subDataS;

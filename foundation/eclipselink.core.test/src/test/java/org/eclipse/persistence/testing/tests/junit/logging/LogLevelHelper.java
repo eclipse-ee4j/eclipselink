@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,9 @@
 package org.eclipse.persistence.testing.tests.junit.logging;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.persistence.logging.LogLevel;
@@ -64,7 +67,7 @@ public class LogLevelHelper {
         for (String invalidName : invalidNames) {
             LogLevel level = LogLevel.toValue(invalidName);
             String levelName = level != null ? level.getName() : "null";
-            assertEquals("Log level \"" + levelName + "\" was found for name: " + invalidName, null, level);
+            assertNull("Log level \"" + levelName + "\" was found for name: " + invalidName, level);
         }
     }
 
@@ -118,13 +121,11 @@ public class LogLevelHelper {
             for (LogLevel toLog : LogLevel.values()) {
                 boolean result = level.shouldLog(toLog);
                 if (toLog.getId() >= level.getId()) {
-                    assertEquals(
-                            "Message with " + toLog.getName() + " level should be logged on level "
-                            + level.getName(), true, result);
+                    assertTrue("Message with " + toLog.getName() + " level should be logged on level "
+                            + level.getName(), result);
                 } else  {
-                    assertEquals(
-                            "Message with " + toLog.getName() + " level should not be logged on level "
-                            + level.getName(), false, result);
+                    assertFalse("Message with " + toLog.getName() + " level should not be logged on level "
+                            + level.getName(), result);
                 }
             }
         }
@@ -138,13 +139,11 @@ public class LogLevelHelper {
             for (LogLevel toLog : LogLevel.values()) {
                 boolean result = level.shouldLog(toLog.getId());
                 if (toLog.getId() >= level.getId()) {
-                    assertEquals(
-                            "Message with " + toLog.getName() + " level should be logged on level "
-                            + level.getName(), true, result);
+                    assertTrue("Message with " + toLog.getName() + " level should be logged on level "
+                            + level.getName(), result);
                 } else  {
-                    assertEquals(
-                            "Message with " + toLog.getName() + " level should not be logged on level "
-                            + level.getName(), false, result);
+                    assertFalse("Message with " + toLog.getName() + " level should not be logged on level "
+                            + level.getName(), result);
                 }
             }
         }

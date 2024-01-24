@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,6 @@
 // Contributors:
 //     tware - initial implementation
 package org.eclipse.persistence.testing.tests.collections.map;
-
-import java.util.Iterator;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -134,9 +132,8 @@ public class TestUpdateAggregateEntityMapMapping extends TestCase {
     @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        Iterator j = holder.getAggregateToEntityMap().keySet().iterator();
-        while (j.hasNext()){
-            uow.deleteObject(holder.getAggregateToEntityMap().get(j.next()));
+        for (Object o : holder.getAggregateToEntityMap().keySet()) {
+            uow.deleteObject(holder.getAggregateToEntityMap().get(o));
         }
         uow.deleteObject(holder);
         uow.commit();

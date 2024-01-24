@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ public class IsSetAndUnsetTestCases extends SDOTestCase {
         root1.getList(childManyProp).add(child2);
         root1.unset(childManyProp);
 
-        assertTrue(root1.getList(childManyProp).size() == 0);
+        assertTrue(root1.getList(childManyProp).isEmpty());
         assertFalse(root1.isSet(childManyProp));
 
         root1.set(childProp, child2);
@@ -110,7 +110,7 @@ public class IsSetAndUnsetTestCases extends SDOTestCase {
         root1.getList(childManyProp).add(child2);
         root1.unset(childManyProp);
 
-        assertTrue(root1.getList(childManyProp).size() == 0);
+        assertTrue(root1.getList(childManyProp).isEmpty());
         assertFalse(root1.isSet(childManyProp));
 
         root1.set(childProp, child2);

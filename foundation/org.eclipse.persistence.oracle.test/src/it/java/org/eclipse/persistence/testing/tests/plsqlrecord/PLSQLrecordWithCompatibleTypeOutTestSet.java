@@ -24,6 +24,8 @@ import org.w3c.dom.Document;
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -264,13 +266,13 @@ public class PLSQLrecordWithCompatibleTypeOutTestSet  {
         }
         assertTrue("invocation rec_test_out failed: " + msg, worked);
         assertNotNull("result is supposed to be not-null", result);
-        assertTrue("incorrect EMPNO" , result.employeeNumber.equals(new BigDecimal(1234)));
-        assertTrue("incorrect ENAME" , result.name.equals("GOOFY"));
-        assertTrue("incorrect JOB" , result.job.equals("ACTOR"));
+        assertEquals("incorrect EMPNO", result.employeeNumber, new BigDecimal(1234));
+        assertEquals("incorrect ENAME", "GOOFY", result.name);
+        assertEquals("incorrect JOB", "ACTOR", result.job);
         assertNull("MGR is supposed to be null",  result.manager);
-        assertTrue("incorrect SAL" , result.salary.equals(6000F));
+        assertEquals("incorrect SAL", 6000F, result.salary, 0.0);
         assertNull("COMM is supposed to be null", result.commission);
-        assertTrue("incorrect DEPTNO" , result.department.equals(new BigDecimal(20)));
+        assertEquals("incorrect DEPTNO", result.department, new BigDecimal(20));
         s.logout();
     }
 }

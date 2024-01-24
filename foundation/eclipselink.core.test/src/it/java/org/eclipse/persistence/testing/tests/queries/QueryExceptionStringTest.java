@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class QueryExceptionStringTest extends MultiNameQueriesTestCase {
         // executeQuery(String, Object, Object, Object)
         // executeQuery(String, Vector)
         try {
-            session.executeQuery(bogusQueryName, new String("Jill"));
+            session.executeQuery(bogusQueryName, "Jill");
         } catch (Exception e) {
             exception1 = e.getMessage();
         }
@@ -68,7 +68,7 @@ public class QueryExceptionStringTest extends MultiNameQueriesTestCase {
         // executeQuery(String, Class, Object, Object, Object)
         // executeQuery(String, Class, Vector)
         try {
-            session.executeQuery(bogusQueryName, Employee.class, new String("Jill"));
+            session.executeQuery(bogusQueryName, Employee.class, "Jill");
         } catch (Exception e) {
             exception2 = e.getMessage();
         }
@@ -97,19 +97,19 @@ public class QueryExceptionStringTest extends MultiNameQueriesTestCase {
 
     @Override
     public void verify() {
-        if (exception1.indexOf(bogusQueryName) == -1) {
+        if (!exception1.contains(bogusQueryName)) {
             throw new TestErrorException("Test failed on exception1 ... see testcase");
         }
 
-        if (exception2.indexOf(bogusQueryName) == -1) {
+        if (!exception2.contains(bogusQueryName)) {
             throw new TestErrorException("Test failed on exception2 ... see testcase");
         }
 
-        if (exception3.indexOf(bogusQueryName) == -1) {
+        if (!exception3.contains(bogusQueryName)) {
             throw new TestErrorException("Test failed on exception3 ... see testcase");
         }
 
-        if (exception4.indexOf(bogusQueryName) == -1) {
+        if (!exception4.contains(bogusQueryName)) {
             throw new TestErrorException("Test failed on exception4 ... see testcase");
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 public class NoSuchMethodOnInitializingAttributeMethodTest extends ExceptionTest {
     public NoSuchMethodOnInitializingAttributeMethodTest() {
         super();
-        setDescription("This tests No Such Method On Initializing Attribute Method (TL-ERROR 56) " + "");
+        setDescription("This tests No Such Method On Initializing Attribute Method (TL-ERROR 56) ");
     }
 
     @Override

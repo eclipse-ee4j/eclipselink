@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -215,7 +215,7 @@ public abstract class JUnitTestCase extends TestCase {
         if (shouldRunTestOnServer == null) {
             String property = System.getProperty(RUN_ON_SERVER);
             if (property != null) {
-                shouldRunTestOnServer = property.toUpperCase().equals("TRUE");
+                shouldRunTestOnServer = property.equalsIgnoreCase("TRUE");
             } else {
                 shouldRunTestOnServer = false;
             }
@@ -228,7 +228,7 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public static boolean isJTA() {
         String property =System.getProperty("is.JTA");
-        if (property != null && property.toUpperCase().equals("FALSE")) {
+        if (property != null && property.equalsIgnoreCase("FALSE")) {
             isJTA = false;
         } else {
             isJTA = true;

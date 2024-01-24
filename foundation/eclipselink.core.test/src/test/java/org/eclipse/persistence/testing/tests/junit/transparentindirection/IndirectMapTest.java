@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,9 @@ package org.eclipse.persistence.testing.tests.junit.transparentindirection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -29,7 +31,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -91,12 +92,11 @@ public class IndirectMapTest {
             return;
         }
         if (expected.size() != actual.size()) {
-            assertTrue(ZTestCase.notEqualsMessage(message, expected, actual), false);
+            fail(ZTestCase.notEqualsMessage(message, expected, actual));
         }
-        for (Iterator stream = expected.keySet().iterator(); stream.hasNext();) {
-            Object key = stream.next();
+        for (Object key : expected.keySet()) {
             if (!expected.get(key).equals(actual.get(key))) {
-                assertTrue(ZTestCase.notEqualsMessage(message, expected, actual), false);
+                fail(ZTestCase.notEqualsMessage(message, expected, actual));
             }
         }
     }
@@ -275,9 +275,7 @@ public class IndirectMapTest {
         Set<Map.Entry<String, String>> entrySet = map.entrySet();
         Set<Map.Entry<String, String>> testEntrySet = testMap.entrySet();
         Map.Entry<String, String> toRemove = null;
-        Iterator<Entry<String, String>> iterator = entrySet.iterator();
-        while (iterator.hasNext()) {
-            Entry<String, String> next = iterator.next();
+        for (Entry<String, String> next : entrySet) {
             if ("one".equals(next.getKey())) {
                 toRemove = next;
                 break;
@@ -296,9 +294,7 @@ public class IndirectMapTest {
         Set<Map.Entry<String, String>> entrySet = map.entrySet();
         Set<Map.Entry<String, String>> testEntrySet = testMap.entrySet();
         Collection<Map.Entry<String, String>> toRemove = new HashSet<>();
-        Iterator<Entry<String, String>> iterator = entrySet.iterator();
-        while (iterator.hasNext()) {
-            Entry<String, String> next = iterator.next();
+        for (Entry<String, String> next : entrySet) {
             if ("one".equals(next.getKey()) || "two".equals(next.getKey())) {
                 toRemove.add(next);
             }
@@ -331,9 +327,7 @@ public class IndirectMapTest {
         Set<Map.Entry<String, String>> entrySet = map.entrySet();
         Set<Map.Entry<String, String>> testEntrySet = testMap.entrySet();
         Collection<Map.Entry<String, String>> toRetain = new HashSet<>();
-        Iterator<Entry<String, String>> iterator = entrySet.iterator();
-        while (iterator.hasNext()) {
-            Entry<String, String> next = iterator.next();
+        for (Entry<String, String> next : entrySet) {
             if ("one".equals(next.getKey()) || "two".equals(next.getKey())) {
                 toRetain.add(next);
             }
@@ -352,8 +346,8 @@ public class IndirectMapTest {
 
     @Test
     public void testEquals() {
-        assertFalse(testMap == map);
-        assertTrue(testMap.equals(map));
+        assertNotSame(testMap, map);
+        assertEquals(testMap, map);
         assertNoEvents();
     }
 
@@ -371,7 +365,7 @@ public class IndirectMapTest {
 
     @Test
     public void testIsEmpty() {
-        assertTrue(!testMap.isEmpty());
+        assertFalse(testMap.isEmpty());
         assertNoEvents();
     }
 
@@ -550,7 +544,7 @@ public class IndirectMapTest {
         assertEquals(map, testMap);
         assertEquals(result1, result2);
         assertNotNull(result2);
-        assertTrue(!testMap.containsKey(temp));
+        assertFalse(testMap.containsKey(temp));
         assertRemoveEvents(1);
     }
 
@@ -564,8 +558,8 @@ public class IndirectMapTest {
     public void testValues() {
         assertEquals(map.size(), testMap.values().size());
 
-        for (Iterator<String> stream = testMap.values().iterator(); stream.hasNext();) {
-            assertTrue(map.contains(stream.next()));
+        for (String s : testMap.values()) {
+            assertTrue(map.contains(s));
         }
         map.values().removeAll(testMap.values());
         assertTrue(map.values().isEmpty());
@@ -836,7 +830,7 @@ public class IndirectMapTest {
         assertEquals(s1, s2);
         assertEquals(map, testMap);
         assertNull(testMap.get("notExist"));
-        assertNoEvents();;
+        assertNoEvents();
     }
 
     @Test
@@ -915,8 +909,7 @@ public class IndirectMapTest {
                 MapChangeEvent addEvent = testMapLsn.events.get(i++);
                 assertEquals("expected remove event", CollectionChangeEvent.REMOVE, removeEvent.getChangeType());
                 assertEquals("expected add event", CollectionChangeEvent.ADD, addEvent.getChangeType());
-                assertFalse("removed: '" + removeEvent.getNewValue() + "', new: '" + addEvent.getNewValue() + "'",
-                        removeEvent.getNewValue().equals(addEvent.getNewValue()));
+                assertNotEquals("removed: '" + removeEvent.getNewValue() + "', new: '" + addEvent.getNewValue() + "'", removeEvent.getNewValue(), addEvent.getNewValue());
             }
         }
     }

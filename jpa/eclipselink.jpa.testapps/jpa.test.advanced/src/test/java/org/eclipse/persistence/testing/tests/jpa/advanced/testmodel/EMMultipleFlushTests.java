@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -183,7 +183,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Project not added");
         }
 
-        if (employee.getPhoneNumbers().size() != 0){
+        if (!employee.getPhoneNumbers().isEmpty()){
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Phones Not Deleted");
         }
 
@@ -211,7 +211,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Project not added on Database");
         }
 
-        if (employee.getPhoneNumbers().size() != 0){
+        if (!employee.getPhoneNumbers().isEmpty()){
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Phones Not Deleted on Database");
         }
 

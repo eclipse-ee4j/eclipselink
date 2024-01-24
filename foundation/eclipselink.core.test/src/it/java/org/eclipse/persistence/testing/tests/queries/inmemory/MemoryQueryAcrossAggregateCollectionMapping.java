@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,8 +55,8 @@ public class MemoryQueryAcrossAggregateCollectionMapping extends TestCase {
         getSession().removeQuery("getAllCustomers");
         getSession().addQuery("getAllCustomers", queryAll);
         allCustomers = (Vector)getSession().executeQuery("getAllCustomers");
-        for(int i=0; i < allCustomers.size(); i++) {
-            List eachCustomer = AgentBuilderHelper.getCustomers(allCustomers.get(i));
+        for (Object allCustomer : allCustomers) {
+            List eachCustomer = AgentBuilderHelper.getCustomers(allCustomer);
             customers.addAll(eachCustomer);
             //trigger all the value holders of customers
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
 
     @Override
     public void verify() {
-        if (testFailures.length() > 0) {
+        if (!testFailures.isEmpty()) {
             throw new TestErrorException("Tests failures from VariableOneToOneMapping: " + testFailures);
         }
     }
@@ -71,9 +71,9 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
 
         /**************************************************************************/
         Vector vectorIn = new Vector();
-        vectorIn.add(new Association(Actor.class, new String("ASHLEY JUDD")));
-        vectorIn.add(new Association(Secretary.class, new String("DARTH VADER")));
-        vectorIn.add(new Association(Broadcastor.class, new String("RED KELLY")));
+        vectorIn.add(new Association(Actor.class, "ASHLEY JUDD"));
+        vectorIn.add(new Association(Secretary.class, "DARTH VADER"));
+        vectorIn.add(new Association(Broadcastor.class, "RED KELLY"));
 
         mapping.setClassIndicatorAssociations(vectorIn);
 
@@ -104,7 +104,7 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
         }
 
         /**************************************************************************/
-        Association assoc = new Association(new String("key"), new String("value"));
+        Association assoc = new Association("key", "value");
         Vector in = new Vector();
         in.add(assoc);
         mapping.setSourceToTargetQueryKeyFieldAssociations(in);

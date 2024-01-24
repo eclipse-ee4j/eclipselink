@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2017, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2017, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2017, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -352,7 +352,7 @@ public class TestQueryHints implements PUPropertiesProvider {
 
     @Override
     public Map<String, Object> getAdditionalPersistenceProperties(String puName) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put(PersistenceUnitProperties.SESSION_CUSTOMIZER, Customizer.class.getName());
         return map;
     }

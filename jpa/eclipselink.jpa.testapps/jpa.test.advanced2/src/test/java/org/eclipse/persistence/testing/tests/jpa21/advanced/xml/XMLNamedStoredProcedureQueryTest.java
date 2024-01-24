@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -223,19 +223,19 @@ public class XMLNamedStoredProcedureQueryTest extends JUnitTestCase {
             // Verify first result set mapping --> Employee
             List<?> results = multipleResultSetQuery.getResultList();
             assertNotNull("No Employee results returned", results);
-            assertTrue("Empty Employee results returned", results.size() > 0);
+            assertTrue("Empty Employee results returned", !results.isEmpty());
 
             // Verify second result set mapping --> Address
             assertTrue("Address results not available", multipleResultSetQuery.hasMoreResults());
             results = multipleResultSetQuery.getResultList();
             assertNotNull("No Address results returned", results);
-            assertTrue("Empty Address results returned", results.size() > 0);
+            assertTrue("Empty Address results returned", !results.isEmpty());
 
             // Verify third result set mapping --> Project
             assertTrue("Projects results not available", multipleResultSetQuery.hasMoreResults());
             results = multipleResultSetQuery.getResultList();
             assertNotNull("No Project results returned", results);
-            assertTrue("Empty Project results returned", results.size() > 0);
+            assertTrue("Empty Project results returned", !results.isEmpty());
 
             for (Object result : results) {
                 Object[] resultElement = (Object[]) result;
@@ -254,7 +254,7 @@ public class XMLNamedStoredProcedureQueryTest extends JUnitTestCase {
             assertTrue("Employee constructor results not available", multipleResultSetQuery.hasMoreResults());
             results = multipleResultSetQuery.getResultList();
             assertNotNull("No Employee constructor results returned", results);
-            assertTrue("Empty Employee constructor results returned", results.size() > 0);
+            assertTrue("Empty Employee constructor results returned", !results.isEmpty());
 
             // Verify there as no more results available
             assertFalse("More results available", multipleResultSetQuery.hasMoreResults());

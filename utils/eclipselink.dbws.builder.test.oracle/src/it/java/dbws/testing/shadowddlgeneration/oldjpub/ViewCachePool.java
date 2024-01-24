@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ class ViewCachePool {
 
     ViewCachePool(int capacity) {
         m_capacity = capacity;
-        m_pool = new ArrayList<ViewCache>();
+        m_pool = new ArrayList<>();
     }
 
     void setCapacity(int size) {
@@ -56,8 +56,7 @@ class ViewCachePool {
     }
 
     ViewCache get(String userName) {
-        for (int i = 0; i < m_pool.size(); i++) {
-            ViewCache v = m_pool.get(i);
+        for (ViewCache v : m_pool) {
             if (v.getUser().equalsIgnoreCase(userName)) {
                 return v;
             }
@@ -74,7 +73,7 @@ class ViewCachePool {
     }
 
     synchronized ViewCache remove() {
-        if (m_pool.size() == 0) {
+        if (m_pool.isEmpty()) {
             return null;
         }
         return m_pool.remove(0);
@@ -86,8 +85,8 @@ class ViewCachePool {
 
     void refresh() {
         int len = m_pool.size();
-        for (int i = 0; i < len; i++) {
-            m_pool.get(i).refresh();
+        for (ViewCache viewCache : m_pool) {
+            viewCache.refresh();
         }
     }
 }

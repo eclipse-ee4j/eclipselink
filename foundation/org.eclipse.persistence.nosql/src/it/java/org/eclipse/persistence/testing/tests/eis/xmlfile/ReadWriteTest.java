@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class ReadWriteTest extends AutoVerifyTestCase {
         session.deleteObject(order);
         orders = session.readAllObjects(org.eclipse.persistence.testing.models.order.Order.class);
         session.logMessage(String.valueOf(orders));
-        if (orders.size() != 0) {
+        if (!orders.isEmpty()) {
             throw new TestErrorException("should be 0 orders");
         }
 

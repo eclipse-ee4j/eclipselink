@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,8 +35,6 @@ import org.eclipse.persistence.testing.models.jpa.privateowned.Vehicle;
 import org.eclipse.persistence.testing.models.jpa.privateowned.Wheel;
 import org.eclipse.persistence.testing.models.jpa.privateowned.WheelNut;
 import org.eclipse.persistence.testing.models.jpa.privateowned.WheelRim;
-
-import java.util.Iterator;
 
 public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
 
@@ -325,13 +323,11 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         // chassis removed automatically
         // wheels removed automatically
 
-        for (Iterator<WheelNut> nuts = wheel1Read.getWheelNuts().iterator(); nuts.hasNext();) {
-            WheelNut nut = nuts.next();
+        for (WheelNut nut : wheel1Read.getWheelNuts()) {
             em.remove(nut);
         }
 
-        for (Iterator<WheelNut> nuts = wheel2Read.getWheelNuts().iterator(); nuts.hasNext();) {
-            WheelNut nut = nuts.next();
+        for (WheelNut nut : wheel2Read.getWheelNuts()) {
             em.remove(nut);
         }
 
@@ -777,9 +773,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         Vehicle vehicleClone = (Vehicle) uow.registerObject(vehicle);
 
         Wheel theFifthWheel = null;
-        Iterator<Wheel> wheelsIterator = vehicleClone.getChassis().getWheels().iterator();
-        while (wheelsIterator.hasNext()) {
-            Wheel wheel = wheelsIterator.next();
+        for (Wheel wheel : vehicleClone.getChassis().getWheels()) {
             if (wheel.getSerialNumber() == wheel5.getSerialNumber()) {
                 theFifthWheel = wheel;
             }

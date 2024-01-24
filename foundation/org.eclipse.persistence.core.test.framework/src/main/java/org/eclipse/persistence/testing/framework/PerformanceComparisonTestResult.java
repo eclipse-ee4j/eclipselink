@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -295,8 +295,7 @@ public class PerformanceComparisonTestResult extends TestResult {
      */
     public static Number maxResults(List<Number> times) {
         Number testMax = (double) 0;
-        for (int index = 0; index < times.size(); index++) {
-            Number time = times.get(index);
+        for (Number time : times) {
             if (time.doubleValue() > testMax.doubleValue()) {
                 testMax = time;
             }
@@ -309,8 +308,7 @@ public class PerformanceComparisonTestResult extends TestResult {
      */
     public static Number minResults(List<Number> times) {
         Number testMin = (double) 0;
-        for (int index = 0; index < times.size(); index++) {
-            Number time = times.get(index);
+        for (Number time : times) {
             if ((testMin.doubleValue() == 0) || (time.doubleValue() < testMin.doubleValue())) {
                 testMin = time;
             }
@@ -337,8 +335,8 @@ public class PerformanceComparisonTestResult extends TestResult {
         // Compute the average reject the min and max to improve consistency.
         List<Number> times = filterMaxMinResults(allTimes);
         double testAverage = 0;
-        for (int index = 0; index < times.size(); index++) {
-            double time = times.get(index).doubleValue();
+        for (Number number : times) {
+            double time = number.doubleValue();
             testAverage = testAverage + time;
         }
         testAverage = testAverage / times.size();
@@ -355,8 +353,8 @@ public class PerformanceComparisonTestResult extends TestResult {
         // Compute the standard deviation reject the min and max to improve consistency.
         List<Number> times = filterMaxMinResults(allTimes);
         double testStandardDeviation = 0;
-        for (int index = 0; index < times.size(); index++) {
-            double time = times.get(index).doubleValue();
+        for (Number number : times) {
+            double time = number.doubleValue();
             testStandardDeviation = testStandardDeviation + Math.pow(time - testAverage, 2);
         }
         testStandardDeviation = testStandardDeviation / times.size();

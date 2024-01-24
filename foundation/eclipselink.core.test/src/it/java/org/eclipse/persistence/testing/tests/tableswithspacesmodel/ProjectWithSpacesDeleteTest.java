@@ -44,7 +44,7 @@ public class ProjectWithSpacesDeleteTest extends DeleteObjectTest {
         super.setup();
         // CR2114; Project.class passed as an argument
         String appendString = getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class).getTableQualifier();
-        if (appendString.length() != 0) {
+        if (!appendString.isEmpty()) {
             appendString = appendString + ".";
         }
         String startQuoteChar = getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class).getStartDelimiter();

@@ -24,8 +24,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import junit.textui.TestRunner;
 
-import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestCases;
-
 import commonj.sdo.helper.XMLDocument;
 
 public class SDOXMLHelperExceptionTestCases extends SDOXMLHelperTestCases {

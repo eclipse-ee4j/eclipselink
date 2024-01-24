@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,7 +70,7 @@ public class ShouldPrepareTest extends AutoVerifyTestCase {
 
     @Override
     public void verify() {
-        if (queryCopy.getCall().getSQLString().indexOf("NULL") != -1) {
+        if (queryCopy.getCall().getSQLString().contains("NULL")) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("shouldPrepareTest failed, SQL was:" +
                                                                           queryCopy.getCall().getSQLString());
         }

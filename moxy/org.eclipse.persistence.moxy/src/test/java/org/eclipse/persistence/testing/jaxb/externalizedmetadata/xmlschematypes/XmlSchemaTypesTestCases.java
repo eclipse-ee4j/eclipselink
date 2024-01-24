@@ -29,7 +29,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes.Employee;
 
 /**
  * Tests XmlSchemaTypes via eclipselink-oxm.xml

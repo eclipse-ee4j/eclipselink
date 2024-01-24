@@ -12,7 +12,6 @@
 
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nillable;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -97,7 +96,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             List<SDOType> types = ((SDOXSDHelper) aHelperContext.getXSDHelper()).define(new DOMSource(schemas[0], getSchemaName()), resolver);
             assertEquals(3, types.size());
 
-            XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(new File(getControlFileName())));
+            XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(getControlFileName()));
 
             DataObject rootObj = doc.getRootObject();
             DataObject childDo = rootObj.getDataObject("childContain");
@@ -131,7 +130,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             List<SDOType> types = ((SDOXSDHelper) aHelperContext.getXSDHelper()).define(new DOMSource(schemas[0], getSchemaName()), resolver);
             assertEquals(3, types.size());
 
-            XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(new File(getControlFileName())));
+            XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(getControlFileName()));
 
             DataObject rootObj = doc.getRootObject();
             DataObject childDo = rootObj.getDataObject("childContain");
@@ -168,7 +167,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             List<SDOType> types = ((SDOXSDHelper) aHelperContext.getXSDHelper()).define(new DOMSource(schemas[0], getSchemaName()), resolver);
             assertEquals(3, types.size());
 
-            XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(new File(getControlFileName())));
+            XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(getControlFileName()));
 
             DataObject rootObj = doc.getRootObject();
             DataObject childDo = rootObj.getDataObject("childContain");
@@ -207,7 +206,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             List<SDOType> types = ((SDOXSDHelper) aHelperContext.getXSDHelper()).define(new DOMSource(schemas[0], getSchemaName()), resolver);
             assertEquals(3, types.size());
 
-            XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(new File(getControlFileName())));
+            XMLDocument doc = aHelperContext.getXMLHelper().load(new FileInputStream(getControlFileName()));
 
             DataObject rootObj = doc.getRootObject();
             DataObject childDo = rootObj.getDataObject("childContain");

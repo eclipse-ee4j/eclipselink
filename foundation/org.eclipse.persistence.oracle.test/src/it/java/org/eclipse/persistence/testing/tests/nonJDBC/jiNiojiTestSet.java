@@ -23,6 +23,8 @@ import org.w3c.dom.Document;
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -204,7 +206,7 @@ public class jiNiojiTestSet {
         Vector results = (Vector)o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         BigDecimal y = (BigDecimal)record.get("Y");
-        assertTrue("wrong y value", y.intValue() == 149);
+        assertEquals("wrong y value", 149, y.intValue());
         s.logout();
     }
 }

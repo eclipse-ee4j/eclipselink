@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -158,7 +158,7 @@ public class TestOracleLOBLocatorFeature {
         // So the test should fail because Eclipselink will try store a null value instead of an empty_blob()/empty_clob()
         // and violate the NOT NULL constraint.
         // In Oracle23Platform case when empty String ("") is stored into CLOB column is handled by java.sql.Clob
-        Set<String> notAllowedPlatforms = new HashSet<String>();
+        Set<String> notAllowedPlatforms = new HashSet<>();
         notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle8Platform");
         notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle9Platform");
         notAllowedPlatforms.add("org.eclipse.persistence.platform.database.Oracle10Platform");
@@ -188,7 +188,7 @@ public class TestOracleLOBLocatorFeature {
                 em.persist(blobEntity);
                 em.getTransaction().commit();
             } catch (jakarta.persistence.RollbackException re) {
-                Throwable t = (Throwable) re;
+                Throwable t = re;
                 while (t != null) {
                     if (t instanceof java.sql.SQLIntegrityConstraintViolationException) {
                         return;

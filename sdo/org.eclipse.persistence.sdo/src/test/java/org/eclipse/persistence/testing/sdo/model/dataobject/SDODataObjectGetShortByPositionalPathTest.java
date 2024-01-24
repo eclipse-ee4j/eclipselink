@@ -227,7 +227,7 @@ public class SDODataObjectGetShortByPositionalPathTest extends SDODataObjectGetB
     public void testGetShortFromBytes() {
         SDOProperty property = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject_c.set(property, new String("eee").getBytes());
+        dataObject_c.set(property, "eee".getBytes());
         try {
             dataObject_a.getShort(propertyPath_a_b_c);
         } catch (Exception e) {

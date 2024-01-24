@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,9 +48,9 @@ public class WriteLockValueSerializationTest extends AutoVerifyTestCase {
             ObjectInputStream ois = new ObjectInputStream(bais);
             changeSet = (ObjectChangeSet)ois.readObject();
         } catch (java.io.IOException exception) {
-            throw new TestErrorException("The change set did not serialize properly. IOException:" + exception.toString());
+            throw new TestErrorException("The change set did not serialize properly. IOException:" + exception);
         } catch (ClassNotFoundException exception) {
-            throw new TestErrorException("The change set did not serialize properly. ClassNotFoundException:" + exception.toString());
+            throw new TestErrorException("The change set did not serialize properly. ClassNotFoundException:" + exception);
         }
         if (changeSet.hasChanges()) {
             serializationError = true;

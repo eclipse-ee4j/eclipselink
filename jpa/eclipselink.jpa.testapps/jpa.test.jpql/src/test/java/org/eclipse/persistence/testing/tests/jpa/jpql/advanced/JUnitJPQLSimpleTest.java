@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -367,13 +366,13 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
 
         stream.writeObject(result);
         stream.flush();
-        byte arr[] = byteStream.toByteArray();
+        byte[] arr = byteStream.toByteArray();
         ByteArrayInputStream inByteStream = new ByteArrayInputStream(arr);
         ObjectInputStream inObjStream = new ObjectInputStream(inByteStream);
 
         List deserialResult = (List)inObjStream.readObject();
-        for (Iterator iterator = deserialResult.iterator(); iterator.hasNext(); ) {
-            Employee emp = (Employee)iterator.next();
+        for (Object object : deserialResult) {
+            Employee emp = (Employee) object;
             emp.getPhoneNumbers().size();
         }
 
@@ -406,8 +405,8 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         inObjStream = new ObjectInputStream(inByteStream);
 
         deserialResult = (List)inObjStream.readObject();
-        for (Iterator iterator = deserialResult.iterator(); iterator.hasNext(); ) {
-            Employee emp = (Employee)iterator.next();
+        for (Object o : deserialResult) {
+            Employee emp = (Employee) o;
             emp.getPhoneNumbers().size();
         }
 
@@ -637,8 +636,8 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         String ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN FETCH e.phoneNumbers ";
         List result = em.createQuery(ejbqlString).getResultList();
         Set testSet = new HashSet();
-        for (Iterator iterator = result.iterator(); iterator.hasNext(); ) {
-            Employee emp = (Employee)iterator.next();
+        for (Object o : result) {
+            Employee emp = (Employee) o;
             assertFalse("Result was not distinct", testSet.contains(emp));
             testSet.add(emp);
         }
@@ -686,11 +685,11 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         String ejbqlString = "SELECT DISTINCT e, e.firstName FROM Employee e JOIN FETCH e.phoneNumbers ";
         List result = em.createQuery(ejbqlString).getResultList();
         Set testSet = new HashSet();
-        for (Iterator iterator = result.iterator(); iterator.hasNext(); ) {
+        for (Object o : result) {
             String ids = "";
-            Object[] row = (Object[])iterator.next();
-            Employee emp = (Employee)row[0];
-            String string = (String)row[1];
+            Object[] row = (Object[]) o;
+            Employee emp = (Employee) row[0];
+            String string = (String) row[1];
             ids = "_" + emp.getId() + "_" + string;
             assertFalse("Result was not distinct", testSet.contains(ids));
             testSet.add(ids);
@@ -876,7 +875,7 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         String ejbqlString = "Select AVG(emp.salary)from Employee emp";
         Object result = em.createQuery(ejbqlString).getSingleResult();
 
-        Assert.assertTrue("AVG result type [" + result.getClass() + "] not of type Double", result.getClass() == Double.class);
+        Assert.assertSame("AVG result type [" + result.getClass() + "] not of type Double", result.getClass(), Double.class);
     }
 
     public void simpleInTest() {
@@ -1547,7 +1546,7 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT DISTINCT OBJECT(emp) FROM Employee emp WHERE emp.lastName = \'Smith\'";
+        String ejbqlString = "SELECT DISTINCT OBJECT(emp) FROM Employee emp WHERE emp.lastName = 'Smith'";
         List result = em.createQuery(ejbqlString).getResultList();
 
         Assert.assertTrue("Distinct test failed", comparer.compareObjects(result, expectedResult));
@@ -1697,10 +1696,9 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
 
         Address expectedResult = new Address();
 
-        Iterator addressesIterator = addresses.iterator();
-        while (addressesIterator.hasNext()) {
-            expectedResult = (Address)addressesIterator.next();
-            if (expectedResult.getStreet().indexOf("Lost") != -1) {
+        for (Object address : addresses) {
+            expectedResult = (Address) address;
+            if (expectedResult.getStreet().contains("Lost")) {
                 break;
             }
         }
@@ -1821,7 +1819,7 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Select Count One To One test failed", expectedResult.elementAt(0).equals(result.get(0)));
+        Assert.assertEquals("Simple Select Count One To One test failed", expectedResult.elementAt(0), result.get(0));
 
     }
 
@@ -2063,33 +2061,33 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
 
         String all = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL";
         List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();
-        Assert.assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
+        Assert.assertFalse("No projects with team leaders.", allProjectsWithTeamLeader.isEmpty());
         PhoneNumber phone = null;
         for (Project project : allProjectsWithTeamLeader) {
-            if (project.getTeamLeader().getPhoneNumbers().size() > 0) {
+            if (!project.getTeamLeader().getPhoneNumbers().isEmpty()) {
                 phone = project.getTeamLeader().getPhoneNumbers().iterator().next();
                 break;
             }
         }
-        Assert.assertTrue("Not a single teamLeader has a phone!", phone != null);
+        Assert.assertNotNull("Not a single teamLeader has a phone!", phone);
 
         String ejbqlString1 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 MEMBER OF p.teamLeader.phoneNumbers";
         List result1 = em.createQuery(ejbqlString1).setParameter("1", phone).getResultList();
-        Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
+        Assert.assertFalse("MEMBER OF result is empty", result1.isEmpty());
 
         String ejbqlString2 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 NOT MEMBER OF p.teamLeader.phoneNumbers";
         List result2 = em.createQuery(ejbqlString2).setParameter("1", phone).getResultList();
-        Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
+        Assert.assertFalse("NOT MEMBER OF result is empty", result2.isEmpty());
 
         List union = new ArrayList(result1);
         union.addAll(result2);
         Assert.assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
 
-        for (int i=0; i < result2.size(); i++) {
-            if (result1.contains(result2.get(i))) {
+        for (Object o : result2) {
+            if (result1.contains(o)) {
                 fail("results of MEMBER OF and NON MEMBER OF intersect");
             }
-         }
+        }
     }
 
     public void selectDirectCollectionNotMemberTest() {
@@ -2098,21 +2096,21 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         Collection allEmps = getPersistenceUnitServerSession().readAllObjects(Employee.class);
         String ejbqlString1 = "SELECT e FROM Employee e WHERE 'Clean the kitchen.' MEMBER OF e.responsibilities";
         List result1 = em.createQuery(ejbqlString1).getResultList();
-        Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
+        Assert.assertFalse("MEMBER OF result is empty", result1.isEmpty());
 
         String ejbqlString2 = "SELECT e FROM Employee e WHERE 'Clean the kitchen.' NOT MEMBER OF e.responsibilities";
         List result2 = em.createQuery(ejbqlString2).getResultList();
-        Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
+        Assert.assertFalse("NOT MEMBER OF result is empty", result2.isEmpty());
 
         List union = new ArrayList(result1);
         union.addAll(result2);
         Assert.assertTrue("Union of results of MEMBER OF and NOT MEMBER OF not equal to all employees", comparer.compareObjects(union, allEmps));
 
-        for (int i=0; i < result2.size(); i++) {
-            if (result1.contains(result2.get(i))) {
+        for (Object o : result2) {
+            if (result1.contains(o)) {
                 fail("results of MEMBER OF and NOT MEMBER OF intersect");
             }
-         }
+        }
     }
 
     public void selectDirectCollectionNonMemberNestedTest() {
@@ -2120,33 +2118,33 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
 
         String all = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL";
         List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();
-        Assert.assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
+        Assert.assertFalse("No projects with team leaders.", allProjectsWithTeamLeader.isEmpty());
         String responsibility = null;
         for (Project project : allProjectsWithTeamLeader) {
-            if (project.getTeamLeader().getResponsibilities().size() > 0) {
+            if (!project.getTeamLeader().getResponsibilities().isEmpty()) {
                 responsibility = (String)project.getTeamLeader().getResponsibilities().iterator().next();
                 break;
             }
         }
-        Assert.assertTrue("Not a single teamLeader has any responsibilities!", responsibility != null);
+        Assert.assertNotNull("Not a single teamLeader has any responsibilities!", responsibility);
 
         String ejbqlString1 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 MEMBER OF p.teamLeader.responsibilities";
         List result1 = em.createQuery(ejbqlString1).setParameter("1", responsibility).getResultList();
-        Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
+        Assert.assertFalse("MEMBER OF result is empty", result1.isEmpty());
 
         String ejbqlString2 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 NOT MEMBER OF p.teamLeader.responsibilities";
         List result2 = em.createQuery(ejbqlString2).setParameter("1", responsibility).getResultList();
-        Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
+        Assert.assertFalse("NOT MEMBER OF result is empty", result2.isEmpty());
 
         List union = new ArrayList(result1);
         union.addAll(result2);
         Assert.assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
 
-        for (int i=0; i < result2.size(); i++) {
-            if (result1.contains(result2.get(i))) {
+        for (Object o : result2) {
+            if (result1.contains(o)) {
                 fail("results of MEMBER OF and NON MEMBER OF intersect");
             }
-         }
+        }
     }
 
     public void selectUsingLockModeQueryHintTest() {
@@ -2168,7 +2166,7 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         }
 
         Assert.assertNull("An exception was caught: " + exception, exception);
-        Assert.assertTrue("The query did not return the same employee.", emp1.getId() == emp2.getId());
+        Assert.assertSame("The query did not return the same employee.", emp1.getId(), emp2.getId());
     }
 
     public void selectSimpleBetweenWithParameterTest() {
@@ -2350,9 +2348,8 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.responsibilities IS NOT EMPTY");
         List results  = query.getResultList();
-        Iterator i = results.iterator();
-        while (i.hasNext()){
-            Employee emp = (Employee)i.next();
+        for (Object result : results) {
+            Employee emp = (Employee) result;
             assertTrue(emp.getResponsibilities() != null && !emp.getResponsibilities().isEmpty());
         }
     }
@@ -2362,9 +2359,8 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("SELECT distinct o FROM PhoneNumber p join p.owner o WHERE o.responsibilities IS NOT EMPTY");
         List results  = query.getResultList();
-        Iterator i = results.iterator();
-        while (i.hasNext()){
-            Employee emp = (Employee)i.next();
+        for (Object result : results) {
+            Employee emp = (Employee) result;
             assertTrue(emp.getResponsibilities() != null && !emp.getResponsibilities().isEmpty());
         }
     }
@@ -2382,7 +2378,7 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         clearCache();
         Query query = em.createQuery("SELECT e from Employee e where e.payScale = org.eclipse.persistence.testing.models.jpa.advanced.Employee.SalaryRate.SENIOR");
         emp = (Employee)query.getSingleResult();
-        assertTrue("Enumeration not properly returned", emp.getPayScale() == Employee.SalaryRate.SENIOR);
+        assertSame("Enumeration not properly returned", emp.getPayScale(), Employee.SalaryRate.SENIOR);
         rollbackTransaction(em);
     }
 

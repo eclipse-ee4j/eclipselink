@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,6 @@
 package org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingelement;
 
 
-/**
- *  @version $Header: AnyObjectComplexChildNSTestCases.java 07-oct-2005.21:46:02 pkrogh Exp $
- *  @author  mmacivor
- *  @since   release specific (what release of product did this appear in)
- */
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 public class AnyObjectComplexChildNSTestCases extends XMLWithJSONMappingTestCases {

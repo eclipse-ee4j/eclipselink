@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public class OuterJoinSystem extends TestSystem {
         Student instance;
         PopulationManager manager = PopulationManager.getDefaultManager();
         String appendString = session.getLogin().getPlatform().getTableQualifier();
-        if (appendString.length() != 0) {
+        if (!appendString.isEmpty()) {
             appendString = appendString + ".";
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class ObjectTypeMappingDefaultNullValues extends TransactionalTestCase {
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Vector computers = getSession().readAllObjects(Computer.class, new ExpressionBuilder().get("isMacintosh").equal(null));
-        if (computers.size() == 0) {
+        if (computers.isEmpty()) {
             throw new TestErrorException("Field is empty instead of Null in Object Type Mapping");
         }
     }

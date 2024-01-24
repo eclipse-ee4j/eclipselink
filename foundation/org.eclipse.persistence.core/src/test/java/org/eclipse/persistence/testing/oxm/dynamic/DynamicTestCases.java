@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,6 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class DynamicTestCases extends XMLMappingTestCases {
@@ -202,10 +201,7 @@ public class DynamicTestCases extends XMLMappingTestCases {
         }
 
         List<String> propNames = dynamicControl.getType().getPropertiesNames();
-        Iterator<String> it = propNames.iterator();
-        while (it.hasNext()) {
-            String propName = it.next();
-
+        for (String propName : propNames) {
             Object controlValue = getValue(dynamicControl, propName);
             Object testValue = getValue(dynamicTest, propName);
 

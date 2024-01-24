@@ -38,7 +38,7 @@ public class ReportQueryRetrievePrimaryKeysCursorTest extends TestCase {
     }
 
     protected void queryForExpectedResults() {
-        expectedResults = new HashMap<Object, ReportQueryResult>();
+        expectedResults = new HashMap<>();
         ReportQuery expectedResultsReportQuery = new ReportQuery(Employee.class, new ExpressionBuilder());
         ExpressionBuilder builder = expectedResultsReportQuery.getExpressionBuilder();
 
@@ -57,7 +57,7 @@ public class ReportQueryRetrievePrimaryKeysCursorTest extends TestCase {
     }
 
     protected void buildCursoredResultsReportQuery() {
-        cursoredResults = new HashMap<Object, ReportQueryResult>();
+        cursoredResults = new HashMap<>();
         reportQuery = new ReportQuery(Employee.class, new ExpressionBuilder());
         ExpressionBuilder builder = reportQuery.getExpressionBuilder();
 
@@ -97,10 +97,10 @@ public class ReportQueryRetrievePrimaryKeysCursorTest extends TestCase {
     @Override
     public void verify() {
         assertNotNull("Expected results should be non-null", expectedResults);
-        assertFalse("Expected results should not be zero", expectedResults.size() == 0);
+        assertFalse("Expected results should not be zero", expectedResults.isEmpty());
 
         assertNotNull("Cursored results should be non-null", cursoredResults);
-        assertFalse("Cursored results should not be zero", cursoredResults.size() == 0);
+        assertFalse("Cursored results should not be zero", cursoredResults.isEmpty());
 
         assertEquals("Cursored results differs from expected results", expectedResults.size(), cursoredResults.size());
 

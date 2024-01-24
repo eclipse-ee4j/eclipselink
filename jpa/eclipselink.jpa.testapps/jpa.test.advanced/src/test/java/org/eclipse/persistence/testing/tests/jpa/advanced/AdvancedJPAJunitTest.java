@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -542,7 +542,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // get declared attributes
         EntityType<LargeProject> entityLargeProject = metamodel.entity(LargeProject.class);
         Set<Attribute<LargeProject, ?>> declaredAttributes = entityLargeProject.getDeclaredAttributes();
-        assertTrue(declaredAttributes.size() > 0); // instead of a assertEquals(1, size) for future compatibility with changes to Buyer
+        assertTrue(!declaredAttributes.isEmpty()); // instead of a assertEquals(1, size) for future compatibility with changes to Buyer
 
         // check that getDeclaredAttribute and getDeclaredAttributes return the same attribute
         Attribute<LargeProject, ?> budgetAttribute = entityLargeProject.getDeclaredAttribute("budget");
@@ -1954,7 +1954,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        if (errorMsg.length() != 0 ) {
+        if (!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -2014,7 +2014,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
         }
         if(calendarEnd.get(Calendar.HOUR_OF_DAY) != endHour || calendarEnd.get(Calendar.MINUTE) != endMin || calendarEnd.get(Calendar.SECOND) != endSec) {
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 errorMsg = errorMsg + "; ";
             }
             if(attributeName.equals("normalHours")) {
@@ -2037,7 +2037,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -2136,52 +2136,52 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         closeEntityManager(em);
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
 
         if (descriptor == null) {
-            errorMsg += " Descriptor for Employee alias was not found;";
+            errorMsg.append(" Descriptor for Employee alias was not found;");
         }
         if (aggregateDescriptor == null) {
-            errorMsg += " Descriptor for EmploymentPeriod.class was not found;";
+            errorMsg.append(" Descriptor for EmploymentPeriod.class was not found;");
         }
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
 
         // verify properties set on Employee instance
-        errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "Employee");
-        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1);
+        errorMsg.append(verifyPropertyValue(descriptor, "entityName", String.class, "Employee"));
+        errorMsg.append(verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1));
 
         // each attribute of Employee was assigned a property attributeName with the value attribute name.
         for(DatabaseMapping mapping : descriptor.getMappings()) {
-            errorMsg += verifyPropertyValue(mapping, "attributeName", String.class, mapping.getAttributeName());
+            errorMsg.append(verifyPropertyValue(mapping, "attributeName", String.class, mapping.getAttributeName()));
         }
 
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
-        errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1);
-        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A');
-        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0);
-        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F);
-        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1);
-        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, 1L);
-        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1);
-        errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
-        errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
-        errorMsg += verifyPropertyValue(mapping, "byte[]Property", byte[].class, new byte[]{1, 2, 3, 4});
-        errorMsg += verifyPropertyValue(mapping, "char[]Property", char[].class, new char[]{'a', 'b', 'c'});
-        errorMsg += verifyPropertyValue(mapping, "Byte[]Property", Byte[].class, new byte[]{1, 2, 3, 4});
-        errorMsg += verifyPropertyValue(mapping, "Character[]Property", Character[].class, new char[]{'a', 'b', 'c'});
-        errorMsg += verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59"));
-        errorMsg += verifyPropertyValue(mapping, "TimeStampProperty", java.sql.Timestamp.class, Helper.timestampFromString("2008-04-10 13:59:59"));
-        errorMsg += verifyPropertyValue(mapping, "DateProperty", java.sql.Date.class, Helper.dateFromString("2008-04-10"));
+        errorMsg.append(verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE));
+        errorMsg.append(verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1));
+        errorMsg.append(verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A'));
+        errorMsg.append(verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0));
+        errorMsg.append(verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F));
+        errorMsg.append(verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1));
+        errorMsg.append(verifyPropertyValue(mapping, "LongProperty", Long.class, 1L));
+        errorMsg.append(verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1));
+        errorMsg.append(verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE));
+        errorMsg.append(verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE));
+        errorMsg.append(verifyPropertyValue(mapping, "byte[]Property", byte[].class, new byte[]{1, 2, 3, 4}));
+        errorMsg.append(verifyPropertyValue(mapping, "char[]Property", char[].class, new char[]{'a', 'b', 'c'}));
+        errorMsg.append(verifyPropertyValue(mapping, "Byte[]Property", Byte[].class, new byte[]{1, 2, 3, 4}));
+        errorMsg.append(verifyPropertyValue(mapping, "Character[]Property", Character[].class, new char[]{'a', 'b', 'c'}));
+        errorMsg.append(verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59")));
+        errorMsg.append(verifyPropertyValue(mapping, "TimeStampProperty", java.sql.Timestamp.class, Helper.timestampFromString("2008-04-10 13:59:59")));
+        errorMsg.append(verifyPropertyValue(mapping, "DateProperty", java.sql.Date.class, Helper.dateFromString("2008-04-10")));
 
         // verify property set on EmploymentPeriod embeddable
-        errorMsg += verifyPropertyValue(aggregateDescriptor, "embeddableClassName", String.class, "EmploymentPeriod");
+        errorMsg.append(verifyPropertyValue(aggregateDescriptor, "embeddableClassName", String.class, "EmploymentPeriod"));
 
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
     protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
@@ -2244,12 +2244,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         // verify that the persisted and read objects are equal
         ServerSession session = JUnitTestCase.getServerSession();
-        String errorMsg = "";
-        for(int i=0; i<employeesPersisted.size(); i++) {
-            for(int j=0; j<employeesRead.size(); j++) {
-                if(employeesPersisted.get(i).getFirstName().equals(employeesRead.get(j).getFirstName())) {
-                    if(!session.compareObjects(employeesPersisted.get(i), employeesRead.get(j))) {
-                        errorMsg += "Employee " + employeesPersisted.get(i).getFirstName() +"  was not persisted correctly.";
+        StringBuilder errorMsg = new StringBuilder();
+        for (Employee value : employeesPersisted) {
+            for (Employee employee : employeesRead) {
+                if (value.getFirstName().equals(employee.getFirstName())) {
+                    if (!session.compareObjects(value, employee)) {
+                        errorMsg.append("Employee ").append(value.getFirstName()).append("  was not persisted correctly.");
                     }
                 }
             }
@@ -2260,7 +2260,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -2305,22 +2305,22 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // verify that the persisted and read objects are equal
         ServerSession session = JUnitTestCase.getServerSession();
         beginTransaction(em);
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         try{
-            for(int i=0; i<employeesPersisted.size(); i++) {
-                for(int j=0; j<employeesRead.size(); j++) {
+            for (Employee value : employeesPersisted) {
+                for (Employee employee : employeesRead) {
                     if (isOnServer()) {
-                        Employee emp1 = em.find(Employee.class, employeesPersisted.get(i).getId());
-                        Employee emp2 = em.find(Employee.class, employeesRead.get(j).getId());
-                        if(emp1.getFirstName().equals(emp2.getFirstName())) {
-                            if(!session.compareObjects(emp1, emp2)) {
-                                errorMsg += "Employee " + emp1.getFirstName() +"  was not updated correctly.";
+                        Employee emp1 = em.find(Employee.class, value.getId());
+                        Employee emp2 = em.find(Employee.class, employee.getId());
+                        if (emp1.getFirstName().equals(emp2.getFirstName())) {
+                            if (!session.compareObjects(emp1, emp2)) {
+                                errorMsg.append("Employee ").append(emp1.getFirstName()).append("  was not updated correctly.");
                             }
                         }
                     } else {
-                        if(employeesPersisted.get(i).getFirstName().equals(employeesRead.get(j).getFirstName())) {
-                            if(!session.compareObjects(employeesPersisted.get(i), employeesRead.get(j))) {
-                                errorMsg += "Employee " + employeesPersisted.get(i).getFirstName() +"  was not updated correctly.";
+                        if (value.getFirstName().equals(employee.getFirstName())) {
+                            if (!session.compareObjects(value, employee)) {
+                                errorMsg.append("Employee ").append(value.getFirstName()).append("  was not updated correctly.");
                             }
                         }
                     }
@@ -2338,7 +2338,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -2370,10 +2370,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // The expected result of join fetch query is Employee.dealers being triggered - so need to trigger it on the control collection (getDealers.size() does that);
         // also the expected result should have an object for each row returned - therefore number of inclusions of each Employee equals its dealers.size()
         List<Employee> employeesControl = new ArrayList<>();
-        for(int i=0; i<employeesRead.size(); i++) {
-            int nDialers = employeesRead.get(i).getDealers().size();
-            for(int j=0; j<nDialers; j++) {
-                employeesControl.add(employeesRead.get(i));
+        for (Employee employee : employeesRead) {
+            int nDialers = employee.getDealers().size();
+            for (int j = 0; j < nDialers; j++) {
+                employeesControl.add(employee);
             }
         }
         ServerSession session = JUnitTestCase.getServerSession();
@@ -2383,7 +2383,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         deleteEmployeesWithUnidirectionalMappings(lastName);
 
         // non-empty error message means the test has failed
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -2469,7 +2469,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         deleteEmployeesWithUnidirectionalMappings(lastName);
 
         // non-empty error message means the test has failed
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -2481,9 +2481,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         List<Employee> persistedEmployees = persistEmployeesWithUnidirectionalMappings(lastName);
         // cache their dealers' ids
         ArrayList<Integer> dealersIds = new ArrayList<>();
-        for(int i=0; i<persistedEmployees.size(); i++) {
-            Employee emp = persistedEmployees.get(i);
-            for(int j=0; j<emp.getDealers().size(); j++) {
+        for (Employee emp : persistedEmployees) {
+            for (int j = 0; j < emp.getDealers().size(); j++) {
                 dealersIds.add(emp.getDealers().get(j).getId());
             }
         }
@@ -2514,21 +2513,21 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         // find employees' dealers and verify their versions - all should be 2.
         beginTransaction(em);
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         try{
-            for(int i=0; i<dealersIds.size(); i++) {
-                Dealer dealer = em.find(Dealer.class, dealersIds.get(i));
+            for (Integer dealersId : dealersIds) {
+                Dealer dealer = em.find(Dealer.class, dealersId);
 
                 // verify the version both in the cache and in the db
                 int version2 = getVersion(em, dealer);
-                if(version2 != 2) {
-                    errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                if (version2 != 2) {
+                    errorMsg.append("In the cache dealer ").append(dealer.getFirstName()).append("'s version is ").append(version2).append(" (2 was expected); ");
                 }
                 em.refresh(dealer);
 
                 version2 = getVersion(em, dealer);
-                if(version2 != 2) {
-                    errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                if (version2 != 2) {
+                    errorMsg.append("In the db dealer ").append(dealer.getFirstName()).append("'s version is ").append(version2).append(" (2 was expected); ");
                 }
             }
         } finally {
@@ -2544,7 +2543,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -2879,14 +2878,14 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             @SuppressWarnings({"unchecked"})
             List<Oyster> oysters = (List<Oyster>)historical.readAllObjects(Oyster.class);
-            assertTrue("Historical query: Oysters should be non-empty", oysters.size() > 0);
+            assertTrue("Historical query: Oysters should be non-empty", !oysters.isEmpty());
             for (Oyster oysterElem : oysters) {
                 assertNull("Historical query: Oyster should not have a pearl", oysterElem.getPearl());
             }
             
             // execute a non historical query through JPQL against the Oyster entity
             oysters = em.createQuery("SELECT e FROM Oyster e", Oyster.class).getResultList();
-            assertTrue("Jakarta Persistence query: Oysters should be non-empty", oysters.size() > 0);
+            assertTrue("Jakarta Persistence query: Oysters should be non-empty", !oysters.isEmpty());
             for (Oyster oysterElem : oysters) {
                 assertNotNull("Jakarta Persistence query: Oyster should have a pearl, historical query executed", oysterElem.getPearl());
             }
@@ -3016,7 +3015,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             query.setParameter("firstName", dealer.getFirstName());
             query.setParameter("lastName", dealer.getLastName());
             List<Dealer> resultsList = query.getResultList();
-            assertTrue("List returned should be non-empty", resultsList.size() > 0);
+            assertTrue("List returned should be non-empty", !resultsList.isEmpty());
             
             Dealer dealerFound = resultsList.get(0);
             emp.addDealer(dealerFound);
@@ -3642,8 +3641,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         List<Employee> employees = createEmployeesWithUnidirectionalMappings(lastName);
         beginTransaction(em);
         try {
-            for(int i=0; i<employees.size(); i++) {
-                em.persist(employees.get(i));
+            for (Employee employee : employees) {
+                em.persist(employee);
             }
             commitTransaction(em);
         } finally {

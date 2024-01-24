@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -164,12 +164,7 @@ public class TestRunModel extends TestModel {
         }
 
         // Sort the tests alphabetically.
-        this.getTests().sort(new Comparator<Test>() {
-            @Override
-            public int compare(Test left, Test right) {
-                return left.getClass().getSimpleName().compareTo(right.getClass().getSimpleName());
-            }
-        });
+        this.getTests().sort(Comparator.comparing(left -> left.getClass().getSimpleName()));
         testList = tests;
     }
 
@@ -222,11 +217,11 @@ public class TestRunModel extends TestModel {
 
         TestModel model = new TestModel();
         model.setName("JPA Tests");
-        for (int index = 0; index < tests.size(); ++index) {
+        for (String test : tests) {
             try {
-                model.addTest((TestModel)Class.forName(tests.get(index)).getConstructor().newInstance());
+                model.addTest((TestModel) Class.forName(test).getConstructor().newInstance());
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+                System.out.println("Failed to set up " + test + " \n" + exception);
             }
         }
         return model;
@@ -246,18 +241,18 @@ public class TestRunModel extends TestModel {
 
         TestModel model = new TestModel();
         model.setName("Oracle Tests");
-        for (int index = 0; index < tests.size(); ++index) {
+        for (String test : tests) {
             Class<?> cls;
             try {
-                cls = Class.forName(tests.get(index));
-                if(TestModel.class.isAssignableFrom(cls)) {
-                    model.addTest((TestModel)cls.getConstructor().newInstance());
+                cls = Class.forName(test);
+                if (TestModel.class.isAssignableFrom(cls)) {
+                    model.addTest((TestModel) cls.getConstructor().newInstance());
                 } else {
                     Method suite = cls.getDeclaredMethod("suite");
-                    model.addTest((Test)suite.invoke(null, new Object[]{}));
+                    model.addTest((Test) suite.invoke(null, new Object[]{}));
                 }
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+                System.out.println("Failed to set up " + test + " \n" + exception);
             }
         }
         return model;
@@ -275,18 +270,18 @@ public class TestRunModel extends TestModel {
 
         TestModel model = new TestModel();
         model.setName("Oracle NoSQL Tests");
-        for (int index = 0; index < tests.size(); ++index) {
+        for (String test : tests) {
             Class<?> cls;
             try {
-                cls = Class.forName(tests.get(index));
-                if(TestModel.class.isAssignableFrom(cls)) {
-                    model.addTest((TestModel)cls.getConstructor().newInstance());
+                cls = Class.forName(test);
+                if (TestModel.class.isAssignableFrom(cls)) {
+                    model.addTest((TestModel) cls.getConstructor().newInstance());
                 } else {
                     Method suite = cls.getDeclaredMethod("suite");
-                    model.addTest((Test)suite.invoke(null, new Object[]{}));
+                    model.addTest((Test) suite.invoke(null, new Object[]{}));
                 }
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+                System.out.println("Failed to set up " + test + " \n" + exception);
             }
         }
         return model;
@@ -303,18 +298,18 @@ public class TestRunModel extends TestModel {
 
         TestModel model = new TestModel();
         model.setName("NoSQL Tests");
-        for (int index = 0; index < tests.size(); ++index) {
+        for (String test : tests) {
             Class<?> cls;
             try {
-                cls = Class.forName(tests.get(index));
-                if(TestModel.class.isAssignableFrom(cls)) {
-                    model.addTest((TestModel)cls.getConstructor().newInstance());
+                cls = Class.forName(test);
+                if (TestModel.class.isAssignableFrom(cls)) {
+                    model.addTest((TestModel) cls.getConstructor().newInstance());
                 } else {
                     Method suite = cls.getDeclaredMethod("suite");
-                    model.addTest((Test)suite.invoke(null, new Object[]{}));
+                    model.addTest((Test) suite.invoke(null, new Object[]{}));
                 }
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+                System.out.println("Failed to set up " + test + " \n" + exception);
             }
         }
         return model;

@@ -71,15 +71,13 @@ public class TestQueryOrderBy {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1", Integer.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1", Integer.class);
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
             assertEquals(4, dto01.size());
 
-            query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1 ASC", Integer.class);
+            query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1 ASC", Integer.class);
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
@@ -125,15 +123,13 @@ public class TestQueryOrderBy {
         }
 
         try {
-            TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1", Integer.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1", Integer.class);
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
             assertEquals(4, dto01.size());
 
-            query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1 ASC", Integer.class);
+            query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY 1 ASC", Integer.class);
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
@@ -173,8 +169,7 @@ public class TestQueryOrderBy {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = 'B' ORDER BY 1", Integer.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = 'B' ORDER BY 1", Integer.class);
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
@@ -186,8 +181,7 @@ public class TestQueryOrderBy {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ?", _sql.remove(0));
             }
 
-            query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = 'B' ORDER BY 1 ASC", Integer.class);
+            query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = 'B' ORDER BY 1 ASC", Integer.class);
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
@@ -245,8 +239,7 @@ public class TestQueryOrderBy {
         }
 
         try {
-            TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = 'B' ORDER BY 1", Integer.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = 'B' ORDER BY 1", Integer.class);
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
@@ -258,8 +251,7 @@ public class TestQueryOrderBy {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ?", _sql2.remove(0));
             }
 
-            query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = 'B' ORDER BY 1 ASC", Integer.class);
+            query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = 'B' ORDER BY 1 ASC", Integer.class);
 
             dto01 = query.getResultList();
             assertNotNull(dto01);
@@ -316,16 +308,14 @@ public class TestQueryOrderBy {
         }
 
         try {
-            TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY ?1", Integer.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY ?1", Integer.class);
             query.setParameter(1, 1);
 
             List<Integer> dto01 = query.getResultList();
             assertNotNull(dto01);
             assertEquals(4, dto01.size());
 
-            query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY ?1 ASC", Integer.class);
+            query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t ORDER BY ?1 ASC", Integer.class);
             query.setParameter(1, 1);
 
             dto01 = query.getResultList();
@@ -373,8 +363,7 @@ public class TestQueryOrderBy {
         }
 
         try {
-            TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY ?2", Integer.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY ?2", Integer.class);
             query.setParameter(1, "B");
             query.setParameter(2, 1);
 
@@ -388,8 +377,7 @@ public class TestQueryOrderBy {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ?", _sql.remove(0));
             }
 
-            query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY ?2 ASC", Integer.class);
+            query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY ?2 ASC", Integer.class);
             query.setParameter(1, "B");
             query.setParameter(2, 1);
 
@@ -447,8 +435,7 @@ public class TestQueryOrderBy {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY 1", Integer.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY 1", Integer.class);
             query.setParameter(1, "B");
 
             List<Integer> dto01 = query.getResultList();
@@ -461,8 +448,7 @@ public class TestQueryOrderBy {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ?", _sql.remove(0));
             }
 
-            query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY 1 ASC", Integer.class);
+            query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY 1 ASC", Integer.class);
             query.setParameter(1, "B");
 
             dto01 = query.getResultList();
@@ -523,8 +509,7 @@ public class TestQueryOrderBy {
         }
 
         try {
-            TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY 1", Integer.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY 1", Integer.class);
             query.setParameter(1, "B");
 
             List<Integer> dto01 = query.getResultList();
@@ -537,8 +522,7 @@ public class TestQueryOrderBy {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ?", _sql2.remove(0));
             }
 
-            query = em.createQuery(""
-                    + "SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY 1 ASC", Integer.class);
+            query = em.createQuery("SELECT t.itemInteger1 FROM EntityTbl01 t WHERE t.itemString2 = ?1 ORDER BY 1 ASC", Integer.class);
             query.setParameter(1, "B");
 
             dto01 = query.getResultList();

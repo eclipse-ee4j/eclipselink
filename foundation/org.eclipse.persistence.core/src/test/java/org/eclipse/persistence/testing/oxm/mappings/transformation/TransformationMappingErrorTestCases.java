@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class TransformationMappingErrorTestCases extends TestCase {
         try {
             mapping.initialize((AbstractSession)context.getSession(0));
         } catch (DescriptorException ex) {
-            assertTrue("The incorrect exception was thrown. [Expected] " + expected + " [Found] " + ex, ex.getErrorCode() == expected.getErrorCode());
+            assertEquals("The incorrect exception was thrown. [Expected] " + expected + " [Found] " + ex, ex.getErrorCode(), expected.getErrorCode());
         }
     }
 
@@ -63,7 +63,7 @@ public class TransformationMappingErrorTestCases extends TestCase {
         try {
             mapping.initialize((AbstractSession)context.getSession(0));
         } catch (DescriptorException ex) {
-            assertTrue("The incorrect exception was thrown. [Expected] " + expected + " [Found] " + ex, ex.getErrorCode() == expected.getErrorCode());
+            assertEquals("The incorrect exception was thrown. [Expected] " + expected + " [Found] " + ex, ex.getErrorCode(), expected.getErrorCode());
         }
     }
 

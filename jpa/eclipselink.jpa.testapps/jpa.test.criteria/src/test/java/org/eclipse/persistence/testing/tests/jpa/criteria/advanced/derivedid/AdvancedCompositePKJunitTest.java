@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,8 +112,8 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
 
             MasterCorporal refreshedMasterCorporal = em.find(MasterCorporal.class, masterCorporalId);
             assertTrue("The master corporal read back did not match the original", getPersistenceUnitServerSession().compareObjects(masterCorporal, refreshedMasterCorporal));
-            assertTrue("The master corporal read using criteria expression1 is not the same instance as returned by the finder", refreshedMasterCorporal==results1);
-            assertTrue("The master corporal read using criteria expression2 is not the same instance as returned by the finder", refreshedMasterCorporal==results2);
+            assertSame("The master corporal read using criteria expression1 is not the same instance as returned by the finder", refreshedMasterCorporal, results1);
+            assertSame("The master corporal read using criteria expression2 is not the same instance as returned by the finder", refreshedMasterCorporal, results2);
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

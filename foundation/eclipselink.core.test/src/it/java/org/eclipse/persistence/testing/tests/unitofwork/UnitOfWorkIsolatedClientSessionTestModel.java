@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
-
-import java.util.Iterator;
 
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -35,8 +33,7 @@ public class UnitOfWorkIsolatedClientSessionTestModel extends UnitOfWorkClientSe
 
     @Override
     public void setup() {
-        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
-            ClassDescriptor descriptor = descriptors.next();
+        for (ClassDescriptor descriptor : getSession().getDescriptors().values()) {
             descriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
         }
         getSession().getProject().setHasIsolatedClasses(true);
@@ -45,8 +42,7 @@ public class UnitOfWorkIsolatedClientSessionTestModel extends UnitOfWorkClientSe
 
     @Override
     public void reset() {
-        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
-            ClassDescriptor descriptor = descriptors.next();
+        for (ClassDescriptor descriptor : getSession().getDescriptors().values()) {
             descriptor.setCacheIsolation(CacheIsolationType.SHARED);
         }
         getSession().getProject().setHasIsolatedClasses(false);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public class OneToManyBatchReadingCustomSelectionQueryTest extends TestCase {
         Enumeration enumtr = shipments.elements();
         while (enumtr.hasMoreElements()) {
             Shipment shipment = (Shipment)enumtr.nextElement();
-            if (shipment.orders.size() == 0) {
+            if (shipment.orders.isEmpty()) {
                 throw new TestErrorException("Test failed. Batched objects were not read");
             }
         }

@@ -42,7 +42,7 @@ public class EmployeeWithSpacesDeleteTest extends DeleteObjectTest {
         String appendString = ((AbstractSession)session).getPlatform(employee.getClass()).getTableQualifier();
         String startQuoteChar = ((AbstractSession)session).getPlatform(employee.getClass()).getStartDelimiter();
         String endQuoteChar = ((AbstractSession)session).getPlatform(employee.getClass()).getEndDelimiter();
-        if (appendString.length() != 0)
+        if (!appendString.isEmpty())
             appendString = appendString + ".";
 
         org.eclipse.persistence.sessions.Session psession = ((AbstractSession)session).getSessionForClass(Project.class);

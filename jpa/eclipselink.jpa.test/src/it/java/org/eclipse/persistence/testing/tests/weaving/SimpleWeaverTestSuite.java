@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -217,8 +217,7 @@ public class SimpleWeaverTestSuite extends TestCase {
         boolean containsSerializable = false;
         boolean containsTopLinkWeaved = false;
         boolean containsChangeTracker = false;
-        for (int i = 0; i < interfaces.length; i++) {
-            Class<?> c = interfaces[i];
+        for (Class<?> c : interfaces) {
             if (c.equals(Serializable.class)) {
                 containsSerializable = true;
             }

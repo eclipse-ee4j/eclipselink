@@ -69,7 +69,7 @@ public class Whitespace {
 
     @Override
     public String toString() {
-        return this.id + "|" + (this.idref != null) + "|" + (this.idrefs.size() > 0);
+        return this.id + "|" + (this.idref != null) + "|" + (!this.idrefs.isEmpty());
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,7 +80,7 @@ public abstract class AbstractSchemaManager extends JUnitTestCase  {
                                           schemaManager,
                                           new Class<?>[] {boolean.class},
                                           TableCreator.class,
-                                          new Object[] {Boolean.TRUE});
+                    Boolean.TRUE);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Invocation of getDefaultTableCreator failed", e);
         }
@@ -120,9 +120,9 @@ public abstract class AbstractSchemaManager extends JUnitTestCase  {
             }
             sb.append(']');
             if (checked.contains(table)) {
-                fail(String.format("Duplicate table %s entry was found in expected tables Set %s", table, sb.toString()));
+                fail(String.format("Duplicate table %s entry was found in expected tables Set %s", table, sb));
             } else {
-                fail(String.format("Table %s was not found in expected tables Set %s", table, sb.toString()));
+                fail(String.format("Table %s was not found in expected tables Set %s", table, sb));
             }
         }
     }

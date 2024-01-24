@@ -78,10 +78,7 @@ public class OXMXMLComparer extends XMLComparer{
                 NamedNodeMap testChildAttributes = next.getAttributes();
                 numberOfControlAttributes = controlChildAttributes.getLength();
                 numberOfTestAttributes = testChildAttributes.getLength();
-                boolean equalAttributes = true;
-                if(numberOfControlAttributes != numberOfTestAttributes) {
-                    equalAttributes = false;
-                }
+                boolean equalAttributes = numberOfControlAttributes == numberOfTestAttributes;
                 for (int x = 0; x < numberOfControlAttributes; x++) {
                     controlAttribute = (Attr)controlChildAttributes.item(x);
                     if (null == controlAttribute.getNamespaceURI()) {

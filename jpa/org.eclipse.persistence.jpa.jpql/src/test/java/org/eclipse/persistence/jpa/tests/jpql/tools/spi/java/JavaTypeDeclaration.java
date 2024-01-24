@@ -146,7 +146,7 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
             }
         }
 
-        return parameterTypes.toArray(new ITypeDeclaration[parameterTypes.size()]);
+        return parameterTypes.toArray(new ITypeDeclaration[0]);
     }
 
     protected JavaTypeDeclaration buildTypeDeclaration(Class<?> javaType) {

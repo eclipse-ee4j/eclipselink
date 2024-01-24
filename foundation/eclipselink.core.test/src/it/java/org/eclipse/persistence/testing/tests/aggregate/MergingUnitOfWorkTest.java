@@ -236,11 +236,9 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
 
     @Override
     protected void test() {
-        return;
     }
 
     @Override
     protected void verify() {
-        return;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -98,9 +98,11 @@ public abstract class OXTestCase extends XMLTestCase {
     }
 
     public boolean useLogging = false;
-    public static enum Platform { DOM, SAX, DOC_PRES };
-    public static enum Metadata { JAVA, XML_TOPLINK, XML_ECLIPSELINK };
-    public static Platform platform;;
+    public enum Platform { DOM, SAX, DOC_PRES }
+
+    public enum Metadata { JAVA, XML_TOPLINK, XML_ECLIPSELINK }
+
+    public static Platform platform;
     public static Metadata metadata;
     // Constants
     public static final String PLATFORM_KEY = "platformType";
@@ -169,7 +171,7 @@ public abstract class OXTestCase extends XMLTestCase {
                 if (useLogging) {
                     StringWriter stringWriter = new StringWriter();
                     write(originalProject, stringWriter);
-                    log("DEPLOYMENT XML " + stringWriter.toString());
+                    log("DEPLOYMENT XML " + stringWriter);
                 }
                 // Read the deploymentXML-file.xml back in with XMLProjectReader
                 FileInputStream inStream = new FileInputStream(fileName);
@@ -184,7 +186,7 @@ public abstract class OXTestCase extends XMLTestCase {
                 StringWriter stringWriter = new StringWriter();
                 write(originalProject, stringWriter);
                 StringReader reader = new StringReader(stringWriter.toString());
-                log("DEPLOYMENT XML" + stringWriter.toString());
+                log("DEPLOYMENT XML" + stringWriter);
                 newProject = XMLProjectReader.read(reader, classLoader);
             }
         }
@@ -270,7 +272,7 @@ public abstract class OXTestCase extends XMLTestCase {
         for (int x = nodeList.getLength() - 1; x >= 0; x--) {
             childNode = nodeList.item(x);
             if (childNode.getNodeType() == Node.TEXT_NODE) {
-                if (childNode.getNodeValue().trim().equals("")) {
+                if (childNode.getNodeValue().trim().isEmpty()) {
                     node.removeChild(childNode);
                 }
             } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {

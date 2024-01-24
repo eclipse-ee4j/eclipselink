@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,21 +55,21 @@ public class QNameHolder {
 
      public String toString()
       {
-        String returnString =  "QNameHolder theQName--> ";
+        StringBuilder returnString = new StringBuilder("QNameHolder theQName--> ");
         String qnameString = theQName.getNamespaceURI() + ":" + theQName.getLocalPart();
-        returnString += qnameString;
-        returnString += " theQNames-->";
-                for(int i=0; i<theQNames.size(); i++){
+        returnString.append(qnameString);
+        returnString.append(" theQNames-->");
+          for (QName name : theQNames) {
 
-                    qnameString = theQNames.get(i).getNamespaceURI() + ":" + theQNames.get(i).getLocalPart();
-                    returnString += qnameString;
-                }
-         returnString += " theQNames2-->";
-        for(int i=0; i<theQNames2.size(); i++){
-            qnameString = theQNames2.get(i).getNamespaceURI() + ":" + theQNames2.get(i).getLocalPart();
-            returnString += qnameString;
-        }
-            return returnString;
+              qnameString = name.getNamespaceURI() + ":" + name.getLocalPart();
+              returnString.append(qnameString);
+          }
+         returnString.append(" theQNames2-->");
+          for (QName qName : theQNames2) {
+              qnameString = qName.getNamespaceURI() + ":" + qName.getLocalPart();
+              returnString.append(qnameString);
+          }
+            return returnString.toString();
       }
 
     public QName getTheQName() {

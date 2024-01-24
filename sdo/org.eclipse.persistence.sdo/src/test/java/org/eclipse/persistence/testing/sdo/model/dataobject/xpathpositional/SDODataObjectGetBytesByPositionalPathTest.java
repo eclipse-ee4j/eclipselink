@@ -108,7 +108,6 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
         dataObject_c._setType(type_c);
         float value = 2;
         dataObject_c.set(property_c, value);
-        ;
 
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);

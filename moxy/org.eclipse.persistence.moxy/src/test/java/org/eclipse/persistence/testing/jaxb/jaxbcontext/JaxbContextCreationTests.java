@@ -192,7 +192,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         boolean hasArgs = javaClass.hasActualTypeArguments();
         Collection getArgs = javaClass.getActualTypeArguments();
         assertFalse(hasArgs);
-        assertTrue(getArgs.size()== 0);
+        assertTrue(getArgs.isEmpty());
     }
 
     /**

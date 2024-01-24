@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import jakarta.xml.bind.Marshaller;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -77,13 +78,13 @@ public class NoBeanValidationTest extends BaseBeanValidationTest {
     public void testUnmarshalValid() throws JAXBException {
         StringReader xml = new StringReader(CUSTOMER_VALID_XML);
         Customer testCustomer = (Customer) jaxbContext.createUnmarshaller().unmarshal(xml);
-        assertTrue(createValidCustomer().equals(testCustomer));
+        assertEquals(createValidCustomer(), testCustomer);
     }
 
     @Test
     public void testUnmarshalInvalid() throws JAXBException {
         StringReader xml = new StringReader(CUSTOMER_INVALID_XML);
         Customer testCustomer = (Customer) jaxbContext.createUnmarshaller().unmarshal(xml);
-        assertTrue(createInvalidCustomer().equals(testCustomer));
+        assertEquals(createInvalidCustomer(), testCustomer);
     }
 }

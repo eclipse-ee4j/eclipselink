@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.tests.validation;
 
 import java.lang.reflect.Method;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -263,9 +262,8 @@ public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
         if (caughtException != null) {
             throw new TestErrorException("An exception was thrown:" + System.lineSeparator() + "caught exception was not null! \n\n[EXPECTING] no Exceptions ");
         }
-        Iterator iteratorResults = testResults.iterator();
-        while (iteratorResults.hasNext()) {
-            String item = (String)iteratorResults.next();
+        for (Object testResult : testResults) {
+            String item = (String) testResult;
             if (!item.equalsIgnoreCase("passed")) {
                 throw new TestErrorException("The proper exception was not created:" + System.lineSeparator() + "[Problem with METHOD] " + item);
             }

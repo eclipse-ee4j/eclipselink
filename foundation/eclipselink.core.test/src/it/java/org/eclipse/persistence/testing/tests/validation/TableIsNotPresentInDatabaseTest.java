@@ -32,7 +32,7 @@ import java.util.List;
 public class TableIsNotPresentInDatabaseTest extends ExceptionTest {
     public TableIsNotPresentInDatabaseTest() {
         super();
-        setDescription("This tests Table Is Not Present In Database (TL-ERROR 142) " + "");
+        setDescription("This tests Table Is Not Present In Database (TL-ERROR 142) ");
     }
 
     @Override

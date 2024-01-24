@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,6 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumb
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -83,12 +82,10 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
 
             uow.executeQuery(new DeleteAllQuery(Employee.class));
         } else {
-            Iterator<Employee> emps = uow.readAllObjects(Employee.class).iterator();
-            while (emps.hasNext()){
-              Employee emp = emps.next();
-              emp.setManager(null);
-              emp.setAddress(null);
-              uow.deleteObject(emp);
+            for (Employee emp : (Iterable<Employee>) uow.readAllObjects(Employee.class)) {
+                emp.setManager(null);
+                emp.setAddress(null);
+                uow.deleteObject(emp);
             }
         }
 
@@ -169,7 +166,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("teamMembers"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -187,7 +184,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(teamLeaderAddress);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -204,7 +201,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(teamMembersAddress);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -221,7 +218,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(teamMembersAddress);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -238,7 +235,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(teamMembersAddress);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -255,7 +252,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(teamMembersAddress);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -273,7 +270,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(teamMembersAddress);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -286,7 +283,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("projects"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -305,7 +302,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(teamLeaderAddress);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -330,7 +327,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(teamMembersPhones);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -362,7 +359,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.addJoinedAttribute(teamMembersPhones);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -383,7 +380,7 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         query.addJoinedAttribute(managersManager.get("address"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -398,16 +395,16 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("lastName").equal("Way").or(raq.getExpressionBuilder().get("lastName").equal("Jones")));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
         emp.getPhoneNumbers();
-        for (Iterator<PhoneNumber> iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
-            iterator.next().getOwner();
+        for (PhoneNumber phoneNumber : emp.getPhoneNumbers()) {
+            phoneNumber.getOwner();
         }
 
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            iterator.next().getAddress();
+        for (Employee employee : addr.getEmployees()) {
+            employee.getAddress();
         }
 
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -463,16 +460,15 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().notEmpty("phoneNumbers"));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
         emp.getPhoneNumbers();
-        for (Iterator<PhoneNumber> iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
-            iterator.next().getOwner();
+        for (PhoneNumber phoneNumber : emp.getPhoneNumbers()) {
+            phoneNumber.getOwner();
         }
 
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            Employee addrEmp = iterator.next();
+        for (Employee addrEmp : addr.getEmployees()) {
             addrEmp.getAddress();
             addrEmp.getPhoneNumbers().size(); // as the report query will join in all phones to all emps, make sure we can compare.
         }
@@ -513,11 +509,11 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         try {
             Employee emp2 = null;
             Address addr2 = null;
-            for (Iterator iterator = result.iterator(); iterator.hasNext();){
-                Object [] items = (Object[])iterator.next();
-                emp2 = (Employee)items[0];
-                if (emp2.getId().equals(emp.getId())){
-                    addr2 = (Address)items[1];
+            for (Object o : result) {
+                Object[] items = (Object[]) o;
+                emp2 = (Employee) items[0];
+                if (emp2.getId().equals(emp.getId())) {
+                    addr2 = (Address) items[1];
                     break;
                 }
             }
@@ -544,8 +540,8 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            iterator.next().getAddress();
+        for (Employee employee : addr.getEmployees()) {
+            employee.getAddress();
         }
 
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -607,8 +603,8 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            iterator.next().getAddress();
+        for (Employee employee : addr.getEmployees()) {
+            employee.getAddress();
         }
 
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();

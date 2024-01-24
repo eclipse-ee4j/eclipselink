@@ -33,7 +33,7 @@ public class XPathHelperRelationalOPTestCases extends XPathHelperTestCases {
         assertTrue(returnValue != null && returnValue.size() == 1);
         DataObject customer = (DataObject) returnValue.get(0);
         returnValue = xpathHelper.evaluate("name", customer);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String name = (String) returnValue.get(0);
         assertEquals("Sally", name);
     }
@@ -45,12 +45,12 @@ public class XPathHelperRelationalOPTestCases extends XPathHelperTestCases {
         DataObject monitor = (DataObject) returnValue.get(1);
 
         returnValue = xpathHelper.evaluate("productName", mower);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
 
         returnValue = xpathHelper.evaluate("productName", monitor);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Baby Monitor", pName);
     }
@@ -62,12 +62,12 @@ public class XPathHelperRelationalOPTestCases extends XPathHelperTestCases {
         DataObject rake = (DataObject) returnValue.get(1);
 
         returnValue = xpathHelper.evaluate("productName", battery);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Battery", pName);
 
         returnValue = xpathHelper.evaluate("productName", rake);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Rake", pName);
     }
@@ -79,12 +79,12 @@ public class XPathHelperRelationalOPTestCases extends XPathHelperTestCases {
         DataObject monitor = (DataObject) returnValue.get(1);
 
         returnValue = xpathHelper.evaluate("productName", mower);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
 
         returnValue = xpathHelper.evaluate("productName", monitor);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Baby Monitor", pName);
     }
@@ -110,7 +110,7 @@ public class XPathHelperRelationalOPTestCases extends XPathHelperTestCases {
         assertTrue(returnValue != null && returnValue.size() == 1);
         DataObject monitor = (DataObject) returnValue.get(0);
         returnValue = xpathHelper.evaluate("productName", monitor);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Baby Monitor", pName);
     }

@@ -179,7 +179,7 @@ public class SDODataObjectGetFloatWithIndexConversionTest extends SDODataObjectC
     public void testGetFloatFromBytes() {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("eee").getBytes());
+        dataObject.set(property, "eee".getBytes());
         try {
             dataObject.getFloat(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");

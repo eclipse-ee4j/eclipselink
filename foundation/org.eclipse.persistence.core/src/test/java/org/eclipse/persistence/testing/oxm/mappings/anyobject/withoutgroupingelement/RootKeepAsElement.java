@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,10 +41,7 @@ public class RootKeepAsElement {
             if ((value1 instanceof Element) && (value2 instanceof Element)) {
                 Element elem1 = (Element )value1;
                 Element elem2 = (Element) value2;
-                if(!(elem1.getLocalName().equals(elem2.getLocalName()))) {
-                    return false;
-                }
-                return true;
+                return elem1.getLocalName().equals(elem2.getLocalName());
             }
             return this.t1.equals(((RootKeepAsElement) object).getT1());
         }

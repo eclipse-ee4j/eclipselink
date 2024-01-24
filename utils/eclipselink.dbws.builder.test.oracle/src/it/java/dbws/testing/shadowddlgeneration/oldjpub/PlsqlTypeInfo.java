@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,13 +35,13 @@ public class PlsqlTypeInfo {
     }
 
     public static PlsqlTypeInfo[] getPlsqlTypeInfo(ArrayList<ViewRow> viewRows) throws SQLException {
-        ArrayList<PlsqlTypeInfo> a = new ArrayList<PlsqlTypeInfo>();
-        for (int i = 0; i < viewRows.size(); i++) {
-            a.add(new PlsqlTypeInfo((UserArguments)viewRows.get(i)));
+        ArrayList<PlsqlTypeInfo> a = new ArrayList<>();
+        for (ViewRow viewRow : viewRows) {
+            a.add(new PlsqlTypeInfo((UserArguments) viewRow));
         }
-        if (a.size() == 0) {
+        if (a.isEmpty()) {
             return null;
         }
-        return a.toArray(new PlsqlTypeInfo[a.size()]);
+        return a.toArray(new PlsqlTypeInfo[0]);
     }
 }

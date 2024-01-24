@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2010, 2022 IBM Corporation.
- * Copyright (c) 2010, 2022 Dies Koper (Fujitsu).
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2024 IBM Corporation.
+ * Copyright (c) 2010, 2024 Dies Koper (Fujitsu).
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -155,9 +155,7 @@ public class TogglingFastTableCreator extends TableCreator {
      */
     protected static String buildFullColumnName(
             final String tableName, final String columnName) {
-        final StringBuilder sb = new StringBuilder(tableName.length() + columnName.length() + 1);
-        sb.append(tableName).append(TABLE_FIELD_SEPARATOR).append(columnName);
-        return sb.toString();
+        return tableName + TABLE_FIELD_SEPARATOR + columnName;
 
     }
 

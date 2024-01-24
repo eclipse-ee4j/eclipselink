@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,8 +48,8 @@ public class BatchTestRunner {
         if (args.length < 2) {
             this.printUsageAndExit();
         }
-        for (int i = 0; i < args.length; i++) {
-            processArguments(args[i]);
+        for (String arg : args) {
+            processArguments(arg);
         }
 
         long startTime = System.currentTimeMillis();

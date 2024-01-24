@@ -2821,7 +2821,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
                     "Expecting %s but was %s for %s",
                     expressionType.getSimpleName(),
                     expressionClass.getSimpleName(),
-                    stateObject.toString()
+                        stateObject
                 ));
             }
         }

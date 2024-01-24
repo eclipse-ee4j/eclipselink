@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -647,7 +647,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
 
     registerObject(EmployeeTLIC.class, employeeTLIC, "0001");
 
@@ -673,7 +673,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0010");
 
     return employeeTLIC;
@@ -699,7 +699,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0011");
 
     return employeeTLIC;
@@ -724,7 +724,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0012");
 
     return employeeTLIC;
@@ -749,7 +749,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0002");
 
     return employeeTLIC;
@@ -774,7 +774,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0003");
 
     return employeeTLIC;
@@ -801,7 +801,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0004");
 
     return employeeTLIC;
@@ -827,7 +827,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0005");
 
     return employeeTLIC;
@@ -852,7 +852,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0006");
 
     return employeeTLIC;
@@ -876,7 +876,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0007");
 
     return employeeTLIC;
@@ -901,7 +901,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0008");
 
     return employeeTLIC;
@@ -927,7 +927,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIC employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIC.class, employeeTLIC, "0009");
 
     return employeeTLIC;
@@ -951,7 +951,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
 
     registerObject(EmployeeTLIO.class, employeeTLIO, "0001");
 
@@ -977,7 +977,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0010");
 
     return employeeTLIO;
@@ -1003,7 +1003,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0011");
 
     return employeeTLIO;
@@ -1028,7 +1028,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0012");
 
     return employeeTLIO;
@@ -1053,7 +1053,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0002");
 
     return employeeTLIO;
@@ -1078,7 +1078,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0003");
 
     return employeeTLIO;
@@ -1105,7 +1105,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0004");
 
     return employeeTLIO;
@@ -1131,7 +1131,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0005");
 
     return employeeTLIO;
@@ -1156,7 +1156,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0006");
 
     return employeeTLIO;
@@ -1180,7 +1180,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0007");
 
     return employeeTLIO;
@@ -1205,7 +1205,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0008");
 
     return employeeTLIO;
@@ -1231,7 +1231,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeTLIO employeeT
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeTLIO.class, employeeTLIO, "0009");
 
     return employeeTLIO;
@@ -1255,7 +1255,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
 
     registerObject(EmployeeVLIC.class, employeeVLIC, "0001");
 
@@ -1281,7 +1281,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0010");
 
     return employeeVLIC;
@@ -1307,7 +1307,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0011");
 
     return employeeVLIC;
@@ -1332,7 +1332,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0012");
 
     return employeeVLIC;
@@ -1357,7 +1357,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0002");
 
     return employeeVLIC;
@@ -1382,7 +1382,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0003");
 
     return employeeVLIC;
@@ -1409,7 +1409,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0004");
 
     return employeeVLIC;
@@ -1435,7 +1435,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0005");
 
     return employeeVLIC;
@@ -1460,7 +1460,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0006");
 
     return employeeVLIC;
@@ -1484,7 +1484,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0007");
 
     return employeeVLIC;
@@ -1509,7 +1509,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0008");
 
     return employeeVLIC;
@@ -1535,7 +1535,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIC employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIC.class, employeeVLIC, "0009");
 
     return employeeVLIC;
@@ -1559,7 +1559,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
 
     registerObject(EmployeeVLIO.class, employeeVLIO, "0001");
 
@@ -1585,7 +1585,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0010");
 
     return employeeVLIO;
@@ -1611,7 +1611,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0011");
 
     return employeeVLIO;
@@ -1636,7 +1636,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0012");
 
     return employeeVLIO;
@@ -1661,7 +1661,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0002");
 
     return employeeVLIO;
@@ -1686,7 +1686,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0003");
 
     return employeeVLIO;
@@ -1713,7 +1713,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0004");
 
     return employeeVLIO;
@@ -1739,7 +1739,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0005");
 
     return employeeVLIO;
@@ -1764,7 +1764,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0006");
 
     return employeeVLIO;
@@ -1788,7 +1788,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0007");
 
     return employeeVLIO;
@@ -1813,7 +1813,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0008");
 
     return employeeVLIO;
@@ -1839,7 +1839,7 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
 
     } catch (Exception exception) {
         throw new RuntimeException(exception.toString());
-    };
+    }
     registerObject(EmployeeVLIO.class, employeeVLIO, "0009");
 
     return employeeVLIO;

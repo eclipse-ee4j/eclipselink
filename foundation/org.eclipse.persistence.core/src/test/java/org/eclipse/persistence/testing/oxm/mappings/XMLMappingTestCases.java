@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -281,7 +281,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         assertEquals(controlObj.getLocalName(), testObj.getLocalName());
         assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
         if (null != controlObj.getObject() && null != testObj.getObject() && controlObj.getObject() instanceof java.util.Calendar && testObj.getObject() instanceof java.util.Calendar) {
-            assertTrue(((Calendar)controlObj.getObject()).getTimeInMillis() == ((Calendar)testObj.getObject()).getTimeInMillis());
+            assertEquals(((Calendar) controlObj.getObject()).getTimeInMillis(), ((Calendar) testObj.getObject()).getTimeInMillis());
         } else {
             assertEquals(controlObj.getObject(), testObj.getObject());
         }

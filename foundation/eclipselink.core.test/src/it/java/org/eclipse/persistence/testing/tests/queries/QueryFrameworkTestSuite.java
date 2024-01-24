@@ -392,7 +392,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
                 query.addUnionExpression(e.exceptAll(e.subQuery(exceptAll)));*/
 
                 List result = (List)getSession().executeQuery(query);
-                if (result.size() > 0) {
+                if (!result.isEmpty()) {
                     throwError("Expected 0 elements: " + result);
                 }
             }
@@ -440,7 +440,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
                 DataRecord dataRecord = new DatabaseRecord();
                 dataRecord.put("name", "Bob");
                 String sql = query.getTranslatedSQLString(getSession(), dataRecord);
-                if (sql.indexOf("?") != -1) {
+                if (sql.contains("?")) {
                     throwError("SQL was not translated.");
                 }
             }

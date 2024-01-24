@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.testing.models.orderedlist;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -573,9 +572,8 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 
     List<CollectionMapping> getListOrderMappings() {
         List<CollectionMapping> list = new ArrayList();
-        Iterator<ClassDescriptor> it = this.getDescriptors().values().iterator();
-        while(it.hasNext()) {
-            list.addAll(getListOrderMappings(it.next()));
+        for (ClassDescriptor classDescriptor : this.getDescriptors().values()) {
+            list.addAll(getListOrderMappings(classDescriptor));
         }
         return list;
     }
@@ -590,13 +588,13 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
     static List<CollectionMapping> getListOrderMappings(ClassDescriptor desc) {
         List<CollectionMapping> list = new ArrayList();
         List<DatabaseMapping> mappings = desc.getMappings();
-        for(int i=0; i < mappings.size(); i++) {
-            if(mappings.get(i).isCollectionMapping()) {
-                CollectionMapping collectionMapping = (CollectionMapping)mappings.get(i);
-                if(collectionMapping.getListOrderField() != null) {
+        for (DatabaseMapping mapping : mappings) {
+            if (mapping.isCollectionMapping()) {
+                CollectionMapping collectionMapping = (CollectionMapping) mapping;
+                if (collectionMapping.getListOrderField() != null) {
                     list.add(collectionMapping);
                 }
-             }
+            }
         }
         return list;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public class CustomErrorHandler extends DefaultHandler {
     public void error(SAXParseException ex) throws SAXException {
         String message = ex.getMessage();
         System.out.println("Error with message " + message + " being handled...");
-        if(message.indexOf("Element \'b\'") != -1) {
+        if(message.contains("Element 'b'")) {
             System.out.println("Ignoring error...");
             ignoredError = true;
         }
@@ -42,7 +42,7 @@ public class CustomErrorHandler extends DefaultHandler {
         System.out.println("Fatal Error Raised: " + ex.getMessage());
         String message = ex.getMessage();
         System.out.println("Error with message " + message + " being handled...");
-        if(message.indexOf("Element \'b\'") != -1) {
+        if(message.contains("Element 'b'")) {
             System.out.println("Ignoring error...");
             ignoredError = true;
         }

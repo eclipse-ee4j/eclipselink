@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -499,8 +499,8 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         ListWrapper do2 = (ListWrapper)copy.get("rootWork");
 
         // verify we are not just getting back empty lists for a null object lookup
-        assertTrue(do1.size() > 0);
-        assertTrue(do2.size() > 0);
+        assertTrue(!do1.isEmpty());
+        assertTrue(!do2.isEmpty());
         // verify lists are different (shallow check)
         assertNotSame(do1, do2);
         // verify list elements are different (deep check)
@@ -567,8 +567,8 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         ListWrapper do2 = (ListWrapper)copy.get("rootWork");
 
         // verify we are not just getting back empty lists for a null object lookup
-        assertTrue(do1.size() > 0);
-        assertTrue(do2.size() > 0);
+        assertTrue(!do1.isEmpty());
+        assertTrue(!do2.isEmpty());
         // verify lists are different (shallow check)
         assertNotSame(do1, do2);
         // verify list elements are different (deep check)
@@ -637,8 +637,8 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         ListWrapper do2 = (ListWrapper)copy.get("rootWork");
 
         // Verify that bidirectional outside the copytree is not set
-        assertTrue(do2.size() == 0);
-        assertTrue(do1.size() == 0);
+        assertTrue(do2.isEmpty());
+        assertTrue(do1.isEmpty());
         // verify lists are different (shallow check)
         assertNotSame(do1, do2);
         // verify list elements are different (deep check)
@@ -888,7 +888,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         List sL = (List)root.get(rootProperty4);
         assertFalse(cL == sL);
         //System.out.println(cL.size());
-        assertTrue(sL.size() > 0);
+        assertTrue(!sL.isEmpty());
         assertEquals(sL.size(), cL.size());
         assertEquals(sL.get(0), cL.get(0));
         // check that items in the copied list are not distinct objects from their original - same as .equals

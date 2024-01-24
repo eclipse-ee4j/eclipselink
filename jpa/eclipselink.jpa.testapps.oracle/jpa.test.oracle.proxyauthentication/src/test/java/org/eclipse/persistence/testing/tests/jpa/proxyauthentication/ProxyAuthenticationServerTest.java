@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -154,7 +154,7 @@ public class ProxyAuthenticationServerTest extends JUnitTestCase {
         // verifies that all the users correctly setup in the db.
         serverSession = getServerSession(PROXY_PU, createConnProperties());
         String errorMsg = ProxyAuthenticationUsersAndProperties.verify(serverSession);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
         
@@ -301,7 +301,7 @@ public class ProxyAuthenticationServerTest extends JUnitTestCase {
             empId = employee.getId();
             commitTransaction(em);
         } catch (Exception ex) {
-            if (ex.getMessage().indexOf("ORA-00942: table or view does not exist") == -1){
+            if (!ex.getMessage().contains("ORA-00942: table or view does not exist")){
                 ex.printStackTrace();
                 fail("it's not the right exception");
             }
@@ -363,7 +363,7 @@ public class ProxyAuthenticationServerTest extends JUnitTestCase {
             em.persist(employee);
             em.flush();
         } catch (Exception ex) {
-            if (ex.getMessage().indexOf("ORA-00942: table or view does not exist") == -1){
+            if (!ex.getMessage().contains("ORA-00942: table or view does not exist")){
                 ex.printStackTrace();
                 fail("it's not the right exception");
             }

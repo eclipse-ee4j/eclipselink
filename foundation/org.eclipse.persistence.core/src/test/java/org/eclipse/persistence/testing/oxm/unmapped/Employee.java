@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,15 +76,10 @@ public class Employee {
                 }
             }
             if (null == any) {
-                if (null != testEmployee.getAny()) {
-                    return false;
-                }
+                return null == testEmployee.getAny();
             } else {
-                if (!any.equals(testEmployee.getAny())) {
-                    return false;
-                }
+                return any.equals(testEmployee.getAny());
             }
-            return true;
         } catch (ClassCastException e) {
             return false;
         }

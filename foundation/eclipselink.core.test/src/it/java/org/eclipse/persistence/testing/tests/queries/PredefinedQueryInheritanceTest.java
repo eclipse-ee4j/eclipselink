@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,7 +78,7 @@ public class PredefinedQueryInheritanceTest extends org.eclipse.persistence.test
 
         // Get a handle on the descriptor of Project.class
     if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
-        descriptor = org.eclipse.persistence.testing.tests.remote.RemoteModel.getServerSession().getDescriptor(Project.class);;
+        descriptor = org.eclipse.persistence.testing.tests.remote.RemoteModel.getServerSession().getDescriptor(Project.class);
     } else {
         descriptor = getSession().getDescriptor(Project.class);
     }
@@ -122,7 +122,6 @@ public class PredefinedQueryInheritanceTest extends org.eclipse.persistence.test
         }
         if (subclassTestObjectRead == null) {
             setStoredException(new TestErrorException("Inherited named query returned null object in test:" + TEST_NAME));
-            return;
         }
     }
 

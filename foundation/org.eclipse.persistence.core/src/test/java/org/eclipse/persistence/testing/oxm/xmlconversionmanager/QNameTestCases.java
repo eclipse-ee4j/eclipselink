@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -120,7 +120,7 @@ public class QNameTestCases extends OXTestCase {
             Integer integer = 1;
             xcm.convertObject(integer, QName.class);
         } catch (ConversionException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.COULD_NOT_BE_CONVERTED);
+            assertEquals("The incorrect exception was thrown", ConversionException.COULD_NOT_BE_CONVERTED, e.getErrorCode());
         }
     }
 
@@ -129,7 +129,7 @@ public class QNameTestCases extends OXTestCase {
             Integer integer = 1;
             xcm.convertObject(integer, QName.class, XMLConstants.QNAME_QNAME);
         } catch (ConversionException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.COULD_NOT_BE_CONVERTED);
+            assertEquals("The incorrect exception was thrown", ConversionException.COULD_NOT_BE_CONVERTED, e.getErrorCode());
         }
     }
 }

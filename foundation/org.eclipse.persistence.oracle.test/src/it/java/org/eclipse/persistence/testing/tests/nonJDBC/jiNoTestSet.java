@@ -22,6 +22,8 @@ import org.w3c.dom.Document;
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -185,7 +187,7 @@ public class jiNoTestSet {
         Vector results = (Vector)o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         Integer bool2int = (Integer)record.get("Y");
-        assertTrue("wrong bool2int value", bool2int == 0);
+        assertEquals("wrong bool2int value", 0, (int) bool2int);
         s.logout();
     }
 }

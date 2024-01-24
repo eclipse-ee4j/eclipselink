@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.tests.isolatedsession;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -57,12 +56,11 @@ public class ClientServerTest extends AutoVerifyTestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            ClassDescriptor desc = iterator.next();
+        for (ClassDescriptor desc : session.getDescriptors().values()) {
             descriptors.addElement(desc);
             // it's an isolated descriptor, but the test requires no isolation.
             // switch isolation off, cache the descriptor to restore isolation after the test is complete.
-            if(!isIsolated && desc.isIsolated()) {
+            if (!isIsolated && desc.isIsolated()) {
                 // uowCacheIsolationLevel seems to be the only attribute affected by isolation,
                 // cache the original one in the map.
                 isolatedDescriptors.put(desc, desc.getUnitOfWorkCacheIsolationLevel());
@@ -88,12 +86,11 @@ public class ClientServerTest extends AutoVerifyTestCase {
 
             // restore descriptors' isolation removed in setup
             if(!isIsolated) {
-                Iterator it = isolatedDescriptors.entrySet().iterator();
-                while(it.hasNext()) {
-                    Map.Entry entry = (Map.Entry)it.next();
-                    ClassDescriptor desc = (ClassDescriptor)entry.getKey();
+                for (Object o : isolatedDescriptors.entrySet()) {
+                    Map.Entry entry = (Map.Entry) o;
+                    ClassDescriptor desc = (ClassDescriptor) entry.getKey();
                     desc.setCacheIsolation(CacheIsolationType.ISOLATED);
-                    desc.setUnitOfWorkCacheIsolationLevel((Integer)entry.getValue());
+                    desc.setUnitOfWorkCacheIsolationLevel((Integer) entry.getValue());
                 }
                 isolatedDescriptors.clear();
             }

@@ -286,7 +286,7 @@ public class CustomSQLTestModel extends TestModel {
                 uow.commit();
                 try {
                     if (getAbstractSession().isInTransaction()
-                            || (getSession().executeSQL("Select * from ADDRESS where ADDRESS_ID = 999999").size() == 0)) {
+                            || (getSession().executeSQL("Select * from ADDRESS where ADDRESS_ID = 999999").isEmpty())) {
                         throwError("Database transaction not committed.");
                     }
                 } finally {

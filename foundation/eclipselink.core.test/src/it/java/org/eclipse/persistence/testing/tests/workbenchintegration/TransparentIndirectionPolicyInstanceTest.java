@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.util.Iterator;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -42,12 +40,11 @@ public class TransparentIndirectionPolicyInstanceTest extends ProjectClassGenera
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         descriptorToModify = project.getDescriptors().get(Employee.class);
-        for (Iterator<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).iterator();
-             mappingsEnum.hasNext(); ) {
-            mappingToModify = mappingsEnum.next();
+        for (DatabaseMapping databaseMapping : descriptorToModify.getMappings()) {
+            mappingToModify = databaseMapping;
 
             if (mappingToModify.isForeignReferenceMapping()) {
-                ((ForeignReferenceMapping)mappingToModify).setIndirectionPolicy(new TransparentIndirectionPolicy());
+                ((ForeignReferenceMapping) mappingToModify).setIndirectionPolicy(new TransparentIndirectionPolicy());
             }
         }
     }

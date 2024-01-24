@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public class DeploymentXMLTestCases extends TestCase {
             ClassDescriptor customerDescriptor = project.getDescriptorForAlias("Customer");
             List<DatabaseField> pkFields = customerDescriptor.getPrimaryKeyFields();
 
-            assertTrue("PK fields not set as expected.", pkFields.size() == 1);
+            assertEquals("PK fields not set as expected.", 1, pkFields.size());
         } catch (IntegrityException e) {
             fail("Error initializing project from Deployment XML.");
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         for (int i = 0; i < verifyNodes.getLength(); i++) {
             Element next = (Element) verifyNodes.item(i);
             String type = next.getAttribute("type");
-            assertTrue("XPath did not replace all of the attribute values.", type.equals("FOO"));
+            assertEquals("XPath did not replace all of the attribute values.", "FOO", type);
         }
 
         searchNode = backupNode;
@@ -91,7 +91,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         for (int i = 0; i < verifyNodes.getLength(); i++) {
             Element next = (Element) verifyNodes.item(i);
             String type = next.getAttribute("area-code");
-            assertTrue("XPath did not replace all of the attribute values.", type.equals("902"));
+            assertEquals("XPath did not replace all of the attribute values.", "902", type);
         }
 
         searchNode = backupNode;
@@ -109,7 +109,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         for (int i = 0; i < verifyNodes.getLength(); i++) {
             Element next = (Element) verifyNodes.item(i);
             String type = next.getFirstChild().getNodeValue();
-            assertTrue("XPath did not replace all of the element values.", type.equals("90210"));
+            assertEquals("XPath did not replace all of the element values.", "90210", type);
         }
 
         searchNode = backupNode;
@@ -141,7 +141,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, cityElement, session).getLength();
 
         NodeList verifyNodes = searchNode.getElementsByTagName("city");
-        assertTrue("XPath did not replace all of the element values.", verifyNodes.getLength() == nodesReplaced);
+        assertEquals("XPath did not replace all of the element values.", verifyNodes.getLength(), nodesReplaced);
 
         StringWriter stringWriter2 = new StringWriter();
         PrintWriter writer2 = new PrintWriter(stringWriter2);
@@ -164,7 +164,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
                 fail("An XMLPlatformException was thrown");
                 return;
             }
-            assertTrue(stringWriter1.toString().equals(stringWriter2.toString()));
+            assertEquals(stringWriter1.toString(), stringWriter2.toString());
         }
 
         searchNode = backupNode;
@@ -202,7 +202,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, townElement, session).getLength();
 
         NodeList verifyNodes = searchNode.getElementsByTagName("city");
-        assertTrue("XPath did not replace all of the element values.", verifyNodes.getLength() == nodesReplaced);
+        assertEquals("XPath did not replace all of the element values.", verifyNodes.getLength(), nodesReplaced);
 
         StringWriter stringWriter2 = new StringWriter();
         PrintWriter writer2 = new PrintWriter(stringWriter2);
@@ -225,7 +225,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
                 fail("An XMLPlatformException was thrown");
                 return;
             }
-            assertTrue(stringWriter1.toString().equals(stringWriter2.toString()));
+            assertEquals(stringWriter1.toString(), stringWriter2.toString());
         }
 
         searchNode = backupNode;
@@ -242,11 +242,11 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
 
         NodeList verifyNodes = searchNode.getElementsByTagName("city");
 
-        assertTrue("XPath did not replace all of the element values.", verifyNodes.getLength() == nodesReplaced);
+        assertEquals("XPath did not replace all of the element values.", verifyNodes.getLength(), nodesReplaced);
 
         verifyNodes = searchNode.getElementsByTagName("code");
 
-        assertTrue("XPath did not replace all children.", verifyNodes.getLength() == 0);
+        assertEquals("XPath did not replace all children.", 0, verifyNodes.getLength());
 
         searchNode = backupNode;
     }
@@ -264,7 +264,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         NodeList verifyNodes = searchNode.getElementsByTagName("phone");
         Element verifyElement = (Element) verifyNodes.item(2);
         String verifyNumber = verifyElement.getFirstChild().getNodeValue();
-        assertTrue("XPath did not replace all of the attribute values.", verifyNumber == "123-4567");
+        assertSame("XPath did not replace all of the attribute values.", "123-4567", verifyNumber);
 
         searchNode = backupNode;
     }

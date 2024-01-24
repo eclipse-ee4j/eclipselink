@@ -309,7 +309,7 @@ public class SetAndGetWithManyPropertyTestCases extends SDOTestCase {
             myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
             SDOProperty prop = (SDOProperty) myDOType.getProperty("myString");
-            String s = new String("This is my string.");
+            String s = "This is my string.";
             myDO.setString(prop, s);
             String mystring = myDO.getString(prop);
             assertTrue("Expected string [" + s + "], but was [" + mystring + "]", mystring.equals(s));

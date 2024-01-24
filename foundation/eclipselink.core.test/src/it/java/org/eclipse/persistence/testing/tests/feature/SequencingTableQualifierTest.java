@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,7 +103,7 @@ public class SequencingTableQualifierTest extends AutoVerifyTestCase {
         }
         // might as well do an additional Oracle error code check
         if (getSession().getPlatform().isOracle()) {
-            if (storedException.getMessage().indexOf("ORA-00942") == -1) {
+            if (!storedException.getMessage().contains("ORA-00942")) {
                 throw new TestErrorException("Unexpected Oracle exception: " + storedException.getMessage());
             }
         }

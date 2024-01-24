@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,9 +62,9 @@ public class STI_JoinedAttributeTest extends TestCase {
         suite.setName("STI_JoinedAttributeTest");
         suite.setDescription("This suite tests join attribute on a Single Table Inheritance version of Employee/Project.");
         Method[] methods= STI_JoinedAttributeTest.class.getDeclaredMethods();
-        for (int i= 0; i < methods.length; i++) {
-            if(isPublicTestMethod(methods[i])) {
-                suite.addTest(new STI_JoinedAttributeTest(methods[i].getName()));
+        for (Method method : methods) {
+            if (isPublicTestMethod(method)) {
+                suite.addTest(new STI_JoinedAttributeTest(method.getName()));
             }
         }
         return suite;
@@ -149,7 +149,7 @@ public class STI_JoinedAttributeTest extends TestCase {
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("teamMembers"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             failTest(errorMsg);
         }
     }
@@ -165,7 +165,7 @@ public class STI_JoinedAttributeTest extends TestCase {
         query.addJoinedAttribute(teamLeader);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             failTest(errorMsg);
         }
     }
@@ -180,7 +180,7 @@ public class STI_JoinedAttributeTest extends TestCase {
         query.addJoinedAttribute(teamMembers);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             failTest(errorMsg);
         }
     }
@@ -196,7 +196,7 @@ public class STI_JoinedAttributeTest extends TestCase {
         query.addJoinedAttribute(teamMembers);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             failTest(errorMsg);
         }
     }
@@ -209,7 +209,7 @@ public class STI_JoinedAttributeTest extends TestCase {
         query.addJoinedAttribute(query.getExpressionBuilder().anyOf("projects"));
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             failTest(errorMsg);
         }
     }
@@ -226,7 +226,7 @@ public class STI_JoinedAttributeTest extends TestCase {
         query.addJoinedAttribute(teamLeader);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             failTest(errorMsg);
         }
     }
@@ -245,7 +245,7 @@ public class STI_JoinedAttributeTest extends TestCase {
         query.addJoinedAttribute(teamMembers);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             failTest(errorMsg);
         }
     }
@@ -264,7 +264,7 @@ public class STI_JoinedAttributeTest extends TestCase {
         query.addJoinedAttribute(teamMembers);
 
         String errorMsg = executeQueriesAndCompareResults(controlQuery, query);
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             failTest(errorMsg);
         }
     }

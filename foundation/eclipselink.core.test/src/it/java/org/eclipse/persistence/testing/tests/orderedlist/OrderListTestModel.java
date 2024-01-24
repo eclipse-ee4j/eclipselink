@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.orderedlist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -235,11 +234,7 @@ public class OrderListTestModel extends TestModel {
                 return false;
             }
         }
-        if (useVarcharOrder && !platform.supportsAutoConversionToNumericForArithmeticOperations()) {
-            return false;
-        }
-
-        return true;
+        return !useVarcharOrder || platform.supportsAutoConversionToNumericForArithmeticOperations();
     }
 
     public OrderListTestModel(boolean useListOrderField, boolean useIndirection, boolean isPrivatelyOwned, boolean useSecondaryTable, boolean useVarcharOrder, ChangeTracking changeTracking, OrderCorrectionType orderCorrectionType, boolean shouldOverrideContainerPolicy, JoinFetchOrBatchRead joinFetchOrBatchRead) {
@@ -268,7 +263,7 @@ public class OrderListTestModel extends TestModel {
     }
 
     void addToName(String strToAdd) {
-        if(strToAdd.length() > 0) {
+        if(!strToAdd.isEmpty()) {
             setName(getName() + " " + strToAdd);
         }
     }
@@ -387,9 +382,7 @@ public class OrderListTestModel extends TestModel {
         if(!isTopLevel) {
             // restore original change policies.
             if(originalChangeTrackingPolicies != null) {
-                Iterator<Map.Entry<Class<?>, ObjectChangeTrackingPolicy>> it = originalChangeTrackingPolicies.entrySet().iterator();
-                while(it.hasNext()) {
-                    Map.Entry<Class<?>, ObjectChangeTrackingPolicy> entry = it.next();
+                for (Map.Entry<Class<?>, ObjectChangeTrackingPolicy> entry : originalChangeTrackingPolicies.entrySet()) {
                     getSession().getDescriptor(entry.getKey()).setObjectChangePolicy(entry.getValue());
                 }
                 originalChangeTrackingPolicies = null;
@@ -467,7 +460,7 @@ public class OrderListTestModel extends TestModel {
                     errorMsg += "JoinFetchOrBatchRead.INNER_JOIN requires useManagedEmployees==false; ";
                 }
             }
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 throw new TestProblemException(errorMsg);
             }
         }
@@ -774,13 +767,13 @@ public class OrderListTestModel extends TestModel {
                 List<Employee> oldList = empManager.getManagedEmployees();
                 empManager.setManagedEmployees(newList);
                 if(oldList != null) {
-                    for(int j=0; j < oldList.size(); j++) {
-                        oldList.get(j).setManager(null);
+                    for (Employee employee : oldList) {
+                        employee.setManager(null);
                     }
                 }
                 if(newList != null) {
-                    for(int j=0; j < newList.size(); j++) {
-                        newList.get(j).setManager(empManager);
+                    for (Employee employee : newList) {
+                        employee.setManager(empManager);
                     }
                 }
             }
@@ -792,13 +785,13 @@ public class OrderListTestModel extends TestModel {
                 List<Project> oldList = empManager.getProjects();
                 empManager.setProjects(newList);
                 if(oldList != null) {
-                    for(int j=0; j < oldList.size(); j++) {
-                        oldList.get(j).getEmployees().remove(empManager);
+                    for (Project project : oldList) {
+                        project.getEmployees().remove(empManager);
                     }
                 }
                 if(newList != null) {
-                    for(int j=0; j < newList.size(); j++) {
-                        newList.get(j).getEmployees().add(empManager);
+                    for (Project project : newList) {
+                        project.getEmployees().add(empManager);
                     }
                 }
             }
@@ -1064,7 +1057,7 @@ public class OrderListTestModel extends TestModel {
             if(usePhones) {
                 localErrorMsg += verifyIsListOrderBrokenInDb(empManager, expected, "phoneNumbers");
             }
-            if(localErrorMsg.length() > 0) {
+            if(!localErrorMsg.isEmpty()) {
                 localErrorMsg = "isListOrderBrokenInDb expected to be " + expected + ". For the following attributes it is " + !expected +": " + localErrorMsg;
             }
             return localErrorMsg;
@@ -1119,10 +1112,10 @@ public class OrderListTestModel extends TestModel {
                 str = (isInstantiated ? instantiatedStr : notInstantiatedStr);
                 str += "phoneNumbers; ";
             }
-            if(instantiatedStr.length() > 0 && notInstantiatedStr.length() > 0) {
+            if(!instantiatedStr.isEmpty() && !notInstantiatedStr.isEmpty()) {
                 throw new TestProblemException("Some attributes are instantiated: " + instantiatedStr + " and some are not: " + notInstantiatedStr);
             } else {
-                return instantiatedStr.length() > 0;
+                return !instantiatedStr.isEmpty();
             }
         }
         boolean isInstantiated(List list) {
@@ -1193,7 +1186,7 @@ public class OrderListTestModel extends TestModel {
                     errorMsg += textNameExt + ": " + "objects not equal\n";
                 }
             }
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 throw new TestErrorException('\n' + errorMsg);
             }
         }
@@ -1238,12 +1231,12 @@ public class OrderListTestModel extends TestModel {
                 if(k == 0) {
                     textNameExt = "Cache";
 
-                    for(int i=0; i < size; i++) {
+                    for (Object o : listToVerify) {
                         ReadObjectQuery query = new ReadObjectQuery();
-                        query.setSelectionObject(listToVerify.get(i));
+                        query.setSelectionObject(o);
                         query.checkCacheOnly();
                         Object readObject = getSession().executeQuery(query);
-                        if(readObject != null) {
+                        if (readObject != null) {
                             errorMsg += textNameExt + ": " + readObject + " was not removed\n";
                         }
                     }
@@ -1370,8 +1363,8 @@ public class OrderListTestModel extends TestModel {
             for(int i=0; i < oldIndexes.length; i++) {
                 int oldIndex = oldIndexes[i];
                 boolean found = false;
-                for(int j=0; j < newIndexes.length; j++) {
-                    if(oldIndex == newIndexes[j]) {
+                for (int newIndex : newIndexes) {
+                    if (oldIndex == newIndex) {
                         found = true;
                         break;
                     }
@@ -1382,16 +1375,16 @@ public class OrderListTestModel extends TestModel {
             }
         }
         String toString(int[] array) {
-            String str = "[";
+            StringBuilder str = new StringBuilder("[");
             for(int i=0; i<array.length; i++) {
-                str += Integer.toString(array[i]);
+                str.append(array[i]);
                 if(i < array.length-1) {
-                    str += ", ";
+                    str.append(", ");
                 } else {
-                    str += "]";
+                    str.append("]");
                 }
             }
-            return str;
+            return str.toString();
         }
         void setName() {
             setName(getName() + " " + toString(oldIndexes) + " -> " + toString(newIndexes) + (useSet ? " set" : " remove/add"));
@@ -1525,7 +1518,7 @@ public class OrderListTestModel extends TestModel {
             } else {
                 verifyList(removedList, removedListClone);
             }
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 throw new TestErrorException('\n' + errorMsg);
             }
         }
@@ -1667,8 +1660,7 @@ public class OrderListTestModel extends TestModel {
             ArrayList indexesRead = new ArrayList(nExpected);
             boolean error = false;
             List<ReportQueryResult> results = (List)getSession().executeQuery(query);
-            for(int i=0; i < results.size(); i++) {
-                ReportQueryResult result = results.get(i);
+            for (ReportQueryResult result : results) {
                 int index = getIndex(result.getResults().get(0), attributeName);
                 error |= max < index || index < min;
                 indexesRead.add(index);
@@ -1684,7 +1676,7 @@ public class OrderListTestModel extends TestModel {
                 }
             }
 
-            if(localErrorMsg.length() > 0) {
+            if(!localErrorMsg.isEmpty()) {
                 localErrorMsg = attributeName + ": " + localErrorMsg + "\n";
                 errorMsg += localErrorMsg;
             }
@@ -1722,7 +1714,7 @@ public class OrderListTestModel extends TestModel {
 
         @Override
         protected void verify() {
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 errorMsg = "\n" + errorMsg;
                 throw new TestErrorException(errorMsg);
             }
@@ -1871,7 +1863,6 @@ public class OrderListTestModel extends TestModel {
             } catch (QueryException queryException) {
                 if(queryException.getErrorCode() == QueryException.LIST_ORDER_FIELD_WRONG_VALUE) {
                     // expected query exception on attempt to read broken order list
-                    return;
                 } else {
                     throw queryException;
                 }
@@ -1944,7 +1935,7 @@ public class OrderListTestModel extends TestModel {
                 if(isInstantiated(manager)) {
                     // verify that all attribute values are marked as having broken order
                     errorMsg = this.verifyIsListOrderBrokenInDb(manager, true);
-                    if(errorMsg.length() > 0) {
+                    if(!errorMsg.isEmpty()) {
                         errorMsg = "manager in test: " + errorMsg;
                         throw new TestErrorException(errorMsg);
                     }
@@ -1963,7 +1954,7 @@ public class OrderListTestModel extends TestModel {
             // verify that all attribute values are marked as having broken order,
             // at this point they should be instantiated
             errorMsg = this.verifyIsListOrderBrokenInDb(managerClone, true);
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 errorMsg = "managerClone in test: " + errorMsg;
                 uow.release();
                 throw new TestErrorException(errorMsg);
@@ -2006,7 +1997,7 @@ public class OrderListTestModel extends TestModel {
                 if(isInstantiated(manager)) {
                     // verify that all attribute values are marked as having broken order
                     errorMsg = this.verifyIsListOrderBrokenInDb(manager, true);
-                    if(errorMsg.length() > 0) {
+                    if(!errorMsg.isEmpty()) {
                         errorMsg = "manager in test: " + errorMsg;
                         throw new TestErrorException(errorMsg);
                     }
@@ -2025,7 +2016,7 @@ public class OrderListTestModel extends TestModel {
             // verify that all attribute values are marked as having broken order,
             // at this point they should be instantiated
             errorMsg = this.verifyIsListOrderBrokenInDb(managerClone, true);
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 errorMsg = "managerClone in test: " + errorMsg;
                 uow.release();
                 throw new TestErrorException(errorMsg);
@@ -2051,11 +2042,11 @@ public class OrderListTestModel extends TestModel {
                 }
                 // verify that all attribute values are marked as having NOT broken order
                 errorMsg = this.verifyIsListOrderBrokenInDb(manager, false);
-                if(errorMsg.length() > 0) {
+                if(!errorMsg.isEmpty()) {
                     errorMsg = "manager in verify: " + errorMsg;
                 }
                 String localErrorMsg = this.verifyIsListOrderBrokenInDb(managerClone, false);
-                if(localErrorMsg.length() > 0) {
+                if(!localErrorMsg.isEmpty()) {
                     localErrorMsg = "managerClone in verify: " + localErrorMsg;
                     errorMsg += localErrorMsg;
                 }
@@ -2149,7 +2140,7 @@ public class OrderListTestModel extends TestModel {
                     }
                 }
             }
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 throw new TestErrorException(errorMsg);
             }
         }
@@ -2196,26 +2187,25 @@ public class OrderListTestModel extends TestModel {
         }
         @Override
         public void verify() {
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             List<CollectionMapping> listOrderMappings = EmployeeSystem.getListOrderMappings(getDatabaseSession());
-            for(int i=0; i < listOrderMappings.size(); i++) {
-                CollectionMapping mapping = listOrderMappings.get(i);
-                if(!mapping.getContainerPolicy().getClass().equals(expectedClass)) {
-                    errorMsg += mapping.getAttributeName() + ".containerPolicy type is wrong; ";
+            for (CollectionMapping mapping : listOrderMappings) {
+                if (!mapping.getContainerPolicy().getClass().equals(expectedClass)) {
+                    errorMsg.append(mapping.getAttributeName()).append(".containerPolicy type is wrong; ");
                 }
                 ReadQuery selectQuery = mapping.getSelectionQuery();
-                if(selectQuery.isReadAllQuery()) {
-                    if(!((ReadAllQuery)selectQuery).getContainerPolicy().getClass().equals(expectedClass)) {
-                        errorMsg += mapping.getAttributeName() + ".queryContainerPolicy type is wrong; ";
+                if (selectQuery.isReadAllQuery()) {
+                    if (!((ReadAllQuery) selectQuery).getContainerPolicy().getClass().equals(expectedClass)) {
+                        errorMsg.append(mapping.getAttributeName()).append(".queryContainerPolicy type is wrong; ");
                     }
                 } else {
-                    if(!((DataReadQuery)selectQuery).getContainerPolicy().getClass().equals(expectedClass)) {
-                        errorMsg += mapping.getAttributeName() + ".queryContainerPolicy type is wrong; ";
+                    if (!((DataReadQuery) selectQuery).getContainerPolicy().getClass().equals(expectedClass)) {
+                        errorMsg.append(mapping.getAttributeName()).append(".queryContainerPolicy type is wrong; ");
                     }
                 }
             }
-            if(errorMsg.length() > 0) {
-                throw new TestErrorException(errorMsg);
+            if(!errorMsg.isEmpty()) {
+                throw new TestErrorException(errorMsg.toString());
             }
         }
     }

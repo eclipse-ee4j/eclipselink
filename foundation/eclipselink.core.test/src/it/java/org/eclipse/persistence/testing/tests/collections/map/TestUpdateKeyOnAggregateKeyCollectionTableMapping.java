@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     tware - initial implementation
 package org.eclipse.persistence.testing.tests.collections.map;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -56,9 +55,8 @@ public class TestUpdateKeyOnAggregateKeyCollectionTableMapping extends TestCase 
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = (AggregateEntityMapHolder)uow.readObject(holder);
 
-        Iterator i = holder.getAggregateToEntityMap().keySet().iterator();
-        while (i.hasNext()){
-            AggregateMapKey key = (AggregateMapKey)i.next();
+        for (Object o : holder.getAggregateToEntityMap().keySet()) {
+            AggregateMapKey key = (AggregateMapKey) o;
             key.setKey(key.getKey() + 1);
         }
         uow.commit();

@@ -26,7 +26,7 @@ class MelonRef {
     @Override
     public String toString() {
         if (ref == null) return "null";
-        return "ref" + ref.toString();
+        return "ref" + ref;
     }
 
     @Override

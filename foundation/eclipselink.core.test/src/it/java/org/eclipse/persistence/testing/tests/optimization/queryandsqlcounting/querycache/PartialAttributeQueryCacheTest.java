@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,9 +42,8 @@ public class PartialAttributeQueryCacheTest extends NamedQueryQueryCacheTest {
     @Override
     public void verify() {
         super.verify();
-        Iterator employees = ((Vector)results).iterator();
-        while (employees.hasNext()) {
-            Employee emp = (Employee)employees.next();
+        for (Object o : (Vector) results) {
+            Employee emp = (Employee) o;
             if ((emp.getFirstName() == null) || (emp.getLastName() == null)) {
                 throw new TestErrorException("Returned query result was missing data for partial object " + "query with query caching turned on.");
             }

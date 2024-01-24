@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -189,7 +189,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
                 query.setParameter("eId", employee.getId());
                 query.setParameter("dId", employee.getDepartment().getId());
                 List<Employee> results = query.getResultList();
-                assertTrue("No records found", results.size() > 0);
+                assertTrue("No records found", !results.isEmpty());
                 for (Employee e : results) {
                     assertEquals("Returned Employee.id does not match ID from query", employee.getId(), e.getId());
                     assertEquals("Returned Department.id does not match ID from query", employee.getDepartment().getId(), e.getDepartment().getId());
@@ -199,7 +199,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
                 query.setParameter("dId", employee.getDepartment().getId());
                 query.setParameter("eId", employee.getId());
                 results = query.getResultList();
-                assertTrue("No records found", results.size() > 0);
+                assertTrue("No records found", !results.isEmpty());
                 for (Employee e : results) {
                     assertEquals("Returned Employee.id does not match ID from query", employee.getId(), e.getId());
                     assertEquals("Returned Department.id does not match ID from query", employee.getDepartment().getId(), e.getDepartment().getId());
@@ -235,7 +235,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
                 query.setParameter("eId", employee.getId());
                 query.setParameter("dId", employee.getDepartment().getId());
                 List<Employee> results = query.getResultList();
-                assertTrue("No records found", results.size() > 0);
+                assertTrue("No records found", !results.isEmpty());
                 for (Employee e : results) {
                     assertEquals("Returned Employee.id does not match ID from query", employee.getId(), e.getId());
                     assertEquals("Returned Department.id does not match ID from query", employee.getDepartment().getId(), e.getDepartment().getId());
@@ -245,7 +245,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
                 query.setParameter("dId", employee.getDepartment().getId());
                 query.setParameter("eId", employee.getId());
                 results = query.getResultList();
-                assertTrue("No records found", results.size() > 0);
+                assertTrue("No records found", !results.isEmpty());
                 for (Employee e : results) {
                     assertEquals("Returned Employee.id does not match ID from query", employee.getId(), e.getId());
                     assertEquals("Returned Department.id does not match ID from query", employee.getDepartment().getId(), e.getDepartment().getId());
@@ -280,7 +280,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
                 query.setParameter(1, employee.getId());
                 query.setParameter(2, employee.getDepartment().getId());
                 List<Employee> results = query.getResultList();
-                assertTrue("No records found", results.size() > 0);
+                assertTrue("No records found", !results.isEmpty());
                 for (Employee e : results) {
                     assertEquals("Returned Employee.id does not match ID from query", employee.getId(), e.getId());
                     assertEquals("Returned Department.id does not match ID from query", employee.getDepartment().getId(), e.getDepartment().getId());
@@ -290,7 +290,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
                 query.setParameter(2, employee.getDepartment().getId());
                 query.setParameter(1, employee.getId());
                 results = query.getResultList();
-                assertTrue("No records found", results.size() > 0);
+                assertTrue("No records found", !results.isEmpty());
                 for (Employee e : results) {
                     assertEquals("Returned Employee.id does not match ID from query", employee.getId(), e.getId());
                     assertEquals("Returned Department.id does not match ID from query", employee.getDepartment().getId(), e.getDepartment().getId());
@@ -326,7 +326,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
                 query.setParameter(2, employee.getId());
                 query.setParameter(1, employee.getDepartment().getId());
                 List<Employee> results = query.getResultList();
-                assertTrue("No records found", results.size() > 0);
+                assertTrue("No records found", !results.isEmpty());
                 for (Employee e : results) {
                     assertEquals("Returned Employee.id does not match ID from query", employee.getId(), e.getId());
                     assertEquals("Returned Department.id does not match ID from query", employee.getDepartment().getId(), e.getDepartment().getId());
@@ -336,7 +336,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
                 query.setParameter(1, employee.getDepartment().getId());
                 query.setParameter(2, employee.getId());
                 results = query.getResultList();
-                assertTrue("No records found", results.size() > 0);
+                assertTrue("No records found", !results.isEmpty());
                 for (Employee e : results) {
                     assertEquals("Returned Employee.id does not match ID from query", employee.getId(), e.getId());
                     assertEquals("Returned Department.id does not match ID from query", employee.getDepartment().getId(), e.getDepartment().getId());

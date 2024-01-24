@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -184,11 +184,11 @@ public class DynamicEmployeeSystem {
         addProjects(ds, employees, projects, 6, new int[]{});
 
         UnitOfWork uow = dynamicHelper.getSession().acquireUnitOfWork();
-        for (int index = 0; index < employees.length; index++) {
-            uow.registerNewObject(employees[index]);
+        for (DynamicEntity employee : employees) {
+            uow.registerNewObject(employee);
         }
-        for (int index = 0; index < projects.length; index++) {
-            uow.registerNewObject(projects[index]);
+        for (DynamicEntity project : projects) {
+            uow.registerNewObject(project);
         }
         uow.commit();
     }
@@ -508,8 +508,8 @@ public class DynamicEmployeeSystem {
         int managerIndex, int[] employeeIndeces) {
         DynamicEntity manager = employees[managerIndex];
         if (manager.<Collection> get("managedEmployees").isEmpty()) {
-            for (int index = 0; index < employeeIndeces.length; index++) {
-                manager.<Collection> get("managedEmployees").add(employees[employeeIndeces[index]]);
+            for (int employeeIndece : employeeIndeces) {
+                manager.<Collection>get("managedEmployees").add(employees[employeeIndece]);
             }
         }
     }
@@ -518,8 +518,8 @@ public class DynamicEmployeeSystem {
     protected void addProjects(DatabaseSession ds, DynamicEntity[] employees,
         DynamicEntity[] projects, int empIndex, int[] projIndeces) {
         DynamicEntity employee = employees[empIndex];
-        for (int index = 0; index < projIndeces.length; index++) {
-            employee.<Collection> get("projects").add(projects[projIndeces[index]]);
+        for (int projIndece : projIndeces) {
+            employee.<Collection>get("projects").add(projects[projIndece]);
         }
     }
 

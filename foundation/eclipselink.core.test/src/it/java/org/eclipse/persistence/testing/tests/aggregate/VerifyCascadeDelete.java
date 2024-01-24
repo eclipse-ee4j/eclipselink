@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,10 +48,10 @@ public class VerifyCascadeDelete extends TransactionalTestCase {
         java.util.List objects = getSession().readAllObjects(cls);
 
         // Find an agent with a customer.
-        for (int index = 0; index < objects.size(); index++) {
-            object = objects.get(index);
-            if (AgentBuilderHelper.getCustomers(object).size() > 0) {
-                company = ((Customer)AgentBuilderHelper.getCustomers(object).get(0)).getCompany();
+        for (Object o : objects) {
+            object = o;
+            if (!AgentBuilderHelper.getCustomers(object).isEmpty()) {
+                company = ((Customer) AgentBuilderHelper.getCustomers(object).get(0)).getCompany();
                 // Found one.
                 break;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -145,7 +145,7 @@ public class SingleElementKeyUsingMapTestCases extends KeyBasedMappingTestCases 
         // address-id elements being written out
         org.w3c.dom.NodeList controlIds = getWriteControlDocument().getElementsByTagName("address-id");
         org.w3c.dom.NodeList testIds = testDocument.getElementsByTagName("address-id");
-        assertTrue(controlIds.getLength() == testIds.getLength());
+        assertEquals(controlIds.getLength(), testIds.getLength());
     }
 
     @Override
@@ -167,6 +167,6 @@ public class SingleElementKeyUsingMapTestCases extends KeyBasedMappingTestCases 
         // address-id elements being written out
         NodeList controlIds = controlDocument.getElementsByTagName("address-id");
         NodeList testIds = testDocument.getElementsByTagName("address-id");
-        assertTrue(controlIds.getLength() == testIds.getLength());
+        assertEquals(controlIds.getLength(), testIds.getLength());
     }
 }

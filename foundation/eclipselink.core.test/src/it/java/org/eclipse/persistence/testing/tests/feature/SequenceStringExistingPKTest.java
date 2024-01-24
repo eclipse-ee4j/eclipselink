@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,7 +77,6 @@ public class SequenceStringExistingPKTest extends org.eclipse.persistence.testin
             uow.commit();
         } catch (Exception e) {
             setStoredException(new TestErrorException("Unable to assign String sequence number in test:" + TEST_NAME));
-            return;
         }
     }
 

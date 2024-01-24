@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class InMemoryCacheMissTest extends CacheMissTest {
 
     @Override
     protected void verify() {
-        if (tempStream.toString().length() == 0) {
+        if (tempStream.toString().isEmpty()) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("Cache hit occurred, but should not have.");
         }
     }

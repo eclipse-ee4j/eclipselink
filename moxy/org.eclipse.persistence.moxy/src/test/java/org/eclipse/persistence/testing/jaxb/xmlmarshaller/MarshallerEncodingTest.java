@@ -107,7 +107,7 @@ public class MarshallerEncodingTest extends OXTestCase {
 
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
         marshaller.marshal(controlObject, byteOutStream);
-        log("TESTING_STRING:" + byteOutStream.toString());
+        log("TESTING_STRING:" + byteOutStream);
 
         byte[] testBytes = byteOutStream.toByteArray();
 
@@ -129,7 +129,7 @@ public class MarshallerEncodingTest extends OXTestCase {
 
         StringWriter writer = new StringWriter();
         marshaller.marshal(controlObject, writer);
-        log("TESTING_STRING:" + writer.toString());
+        log("TESTING_STRING:" + writer);
         byte[] testBytes = writer.toString().getBytes();
 
         log("CONTROL_BYTES");
@@ -151,7 +151,7 @@ public class MarshallerEncodingTest extends OXTestCase {
         OutputStreamWriter outStream = new OutputStreamWriter(new FileOutputStream(filename));
 
         marshaller.marshal(controlObject, outStream);
-        log("TESTING_STRING:" + outStream.toString());
+        log("TESTING_STRING:" + outStream);
 
         FileInputStream inStream = new FileInputStream(filename);
         byte[] testBytes = new byte[inStream.available()];

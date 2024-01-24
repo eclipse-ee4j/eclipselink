@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,8 +69,7 @@ public class MemoryQueryAcrossManyToManyAcrossOneToManyMapping extends org.eclip
         }
         for (Enumeration enumtr = leaders.elements(); enumtr.hasMoreElements();) {
             Vector phones = ((Employee)enumtr.nextElement()).getPhoneNumbers();
-            Vector allPhones = new Vector();
-            allPhones.addAll(phones);
+            Vector allPhones = new Vector(phones);
 
             //trigger all the value holders of phones
         }

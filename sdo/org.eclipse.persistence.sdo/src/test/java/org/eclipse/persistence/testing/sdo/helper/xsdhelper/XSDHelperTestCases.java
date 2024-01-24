@@ -29,7 +29,7 @@ public class XSDHelperTestCases extends SDOTestCase {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
             return is;
         } catch (Exception e) {
-            log(getClass().toString() + ": Reading error for : " + fileName + " message: " + e.getMessage());
+            log(getClass() + ": Reading error for : " + fileName + " message: " + e.getMessage());
             return null;
         }
     }

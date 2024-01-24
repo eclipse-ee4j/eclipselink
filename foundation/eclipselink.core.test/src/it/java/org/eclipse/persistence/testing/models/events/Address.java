@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,14 +46,14 @@ public class Address {
     public static Address example1() {
         Address address = new Address();
 
-        address.address = new String("ABC Av, Someplace");
+        address.address = "ABC Av, Someplace";
         return address;
     }
 
     public static Address example2() {
         Address address = new Address();
 
-        address.address = new String("XYZ Av, Whichplace");
+        address.address = "XYZ Av, Whichplace";
         return address;
     }
 

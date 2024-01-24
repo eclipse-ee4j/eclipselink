@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,19 +117,17 @@ public class Employee {
         writer.write(" " + lastName);
         TransformerFactory factory = TransformerFactory.newInstance();
         if(xmlnodes != null){
-          Iterator<Node> iter = xmlnodes.iterator();
-          while(iter.hasNext()){
-            Node xmlNode = iter.next();
-            try {
-                Transformer tf = factory.newTransformer();
-                DOMSource source = new DOMSource(xmlNode);
-                StreamResult result = new StreamResult(writer);
-                tf.transform(source, result);
+            for (Node xmlNode : xmlnodes) {
+                try {
+                    Transformer tf = factory.newTransformer();
+                    DOMSource source = new DOMSource(xmlNode);
+                    StreamResult result = new StreamResult(writer);
+                    tf.transform(source, result);
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
-          }
         }
         return writer.toString();
     }

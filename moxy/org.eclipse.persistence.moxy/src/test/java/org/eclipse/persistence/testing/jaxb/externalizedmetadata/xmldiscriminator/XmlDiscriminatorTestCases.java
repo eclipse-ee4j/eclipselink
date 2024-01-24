@@ -96,6 +96,6 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
     }
 
     @Override
-    public void testRoundTrip(){};
+    public void testRoundTrip(){}
 
 }

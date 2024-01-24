@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,18 +112,18 @@ public class CalendarDaylightSavingsTest extends TestCase {
             };
 
             testCalendars = new ArrayList<Calendar>(timeZones.length * 4);
-            for (int i = 0; i < timeZones.length; i++) {
+            for (String zone : timeZones) {
 
-                int[] months = new int[] { 0, -6 }; // - 6 months and current month
-                for (int j = 0; j < months.length; j++) {
+                int[] months = new int[]{0, -6}; // - 6 months and current month
+                for (int month : months) {
 
-                    int[] years = new int[] { -10, 0, 10 }; // -10 years, current year and +10 years
-                    for (int k = 0; k < years.length; k++) {
-                        TimeZone timeZone = TimeZone.getTimeZone(timeZones[i]);
+                    int[] years = new int[]{-10, 0, 10}; // -10 years, current year and +10 years
+                    for (int year : years) {
+                        TimeZone timeZone = TimeZone.getTimeZone(zone);
                         Calendar cal = Calendar.getInstance(timeZone);
                         cal.set(Calendar.DATE, 1);
-                        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + months[j]);
-                        cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) + years[k]);
+                        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + month);
+                        cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) + year);
                         cal.set(Calendar.HOUR, 1);
                         cal.set(Calendar.MINUTE, 0);
                         cal.set(Calendar.SECOND, 0);

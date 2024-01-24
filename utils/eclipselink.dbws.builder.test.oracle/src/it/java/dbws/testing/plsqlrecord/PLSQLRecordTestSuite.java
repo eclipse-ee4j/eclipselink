@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -180,8 +180,8 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_EMPTYPE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_EMPTYPE_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_EMPTYPE_TABLE[i]);
+                for (String s : POPULATE_EMPTYPE_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             } catch (SQLException e) {
@@ -245,7 +245,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
           DBWSTestSuite.setUp(".");
 
           // execute shadow type ddl to generate JDBC equivalents of PL/SQL types
-          ArrayList<String> ddls = new ArrayList<String>();
+          ArrayList<String> ddls = new ArrayList<>();
           for (String ddl : builder.getTypeDDL()) {
               ddls.add(ddl);
           }
@@ -273,8 +273,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
      *
      */
     protected static void executeDDLForString(List<String> ddls, String ddlString) {
-        for (int i = 0; i < ddls.size(); i++) {
-            String ddl = ddls.get(i);
+        for (String ddl : ddls) {
             if (ddl.contains(ddlString)) {
                 runDdl(conn, ddl, ddlDebug);
                 break;

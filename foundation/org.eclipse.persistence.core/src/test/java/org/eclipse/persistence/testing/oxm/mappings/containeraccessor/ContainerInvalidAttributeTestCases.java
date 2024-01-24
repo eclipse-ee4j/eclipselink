@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,9 @@ public class ContainerInvalidAttributeTestCases extends OXTestCase {
         try {
             getXMLContext(new EmployeeInvalidContainerAttributeProject(false));
         } catch(IntegrityException ex) {
-            assertTrue("incorrect number of errors", ex.getIntegrityChecker().getCaughtExceptions().size() == 1);
+            assertEquals("incorrect number of errors", 1, ex.getIntegrityChecker().getCaughtExceptions().size());
             DescriptorException caughtException = (DescriptorException)ex.getIntegrityChecker().getCaughtExceptions().elementAt(0);
-            assertTrue(caughtException.getErrorCode() == 59);
+            assertEquals(59, caughtException.getErrorCode());
         }
     }
 
@@ -35,9 +35,9 @@ public class ContainerInvalidAttributeTestCases extends OXTestCase {
         try {
             getXMLContext(new EmployeeInvalidContainerAttributeProject(true));
         } catch(IntegrityException ex) {
-            assertTrue("incorrect number of errors", ex.getIntegrityChecker().getCaughtExceptions().size() == 1);
+            assertEquals("incorrect number of errors", 1, ex.getIntegrityChecker().getCaughtExceptions().size());
             DescriptorException caughtException = (DescriptorException)ex.getIntegrityChecker().getCaughtExceptions().elementAt(0);
-            assertTrue(caughtException.getErrorCode() == 60);
+            assertEquals(60, caughtException.getErrorCode());
         }
     }
 }

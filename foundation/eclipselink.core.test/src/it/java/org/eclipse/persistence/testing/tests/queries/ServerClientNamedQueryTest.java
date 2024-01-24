@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,7 +72,7 @@ public class ServerClientNamedQueryTest extends org.eclipse.persistence.testing.
     @Override
     public void verify() {
         if (caughtException != null) {
-            throw new TestErrorException("A query added to the Server Session could not be " + "found on the Client Session. Error message: " + caughtException.toString());
+            throw new TestErrorException("A query added to the Server Session could not be " + "found on the Client Session. Error message: " + caughtException);
         }
     }
 

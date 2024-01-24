@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class CORBAConnectionExceptionsTest extends RemoteConnectionExceptionsTes
         org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
         NamingContext ncRef = NamingContextHelper.narrow(objRef);
         NameComponent nc = new NameComponent(getNameToBind(), "");
-        NameComponent path[] = { nc };
+        NameComponent[] path = { nc };
         CORBAServerManager manager = CORBAServerManagerHelper.narrow(ncRef.resolve(path));
         CORBAConnection corbaConnection = new CORBAConnection(manager.createRemoteSessionController());
         setRemoteConnection(corbaConnection);
@@ -54,7 +54,7 @@ public class CORBAConnectionExceptionsTest extends RemoteConnectionExceptionsTes
         org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
         NamingContext ncRef = NamingContextHelper.narrow(objRef);
         NameComponent nc = new NameComponent(getNameToBind(), "");
-        NameComponent path[] = { nc };
+        NameComponent[] path = { nc };
         ncRef.unbind(path);
     }
 

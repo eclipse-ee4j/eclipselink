@@ -18,7 +18,6 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
 import org.eclipse.persistence.internal.jpa.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.Server;
