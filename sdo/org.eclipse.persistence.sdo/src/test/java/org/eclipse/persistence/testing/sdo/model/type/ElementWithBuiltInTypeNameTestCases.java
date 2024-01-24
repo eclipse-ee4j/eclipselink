@@ -93,7 +93,11 @@ public class ElementWithBuiltInTypeNameTestCases extends SDOTestCase {
             fail("An exception occurred defining types for schema [" + SCHEMA_PATH + "schema2.xsd]");
         }
 
-        String testMsg1 = " <tns:RetUri xmlns:tns=\"http://tempuri.org/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + "   <tns:inUri>http://test/wsip</tns:inUri>\n" + "  </tns:RetUri>";
+        String testMsg1 = """
+                 <tns:RetUri xmlns:tns="http://tempuri.org/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                   <tns:inUri>http://test/wsip</tns:inUri>
+                  </tns:RetUri>\
+                """;
         try {
             XMLDocument doc = hc.getXMLHelper().load(testMsg1);
             if (!doc.getRootElementName().equals("RetUri")) {

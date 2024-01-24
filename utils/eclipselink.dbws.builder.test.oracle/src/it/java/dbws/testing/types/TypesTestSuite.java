@@ -52,142 +52,144 @@ import dbws.testing.DBWSTestSuite;
 public class TypesTestSuite extends DBWSTestSuite {
 
     static final String CREATE_PACKAGE_TEST_TYPES =
-        "CREATE OR REPLACE PACKAGE TEST_TYPES AS" +
-          "\nFUNCTION ECHO_INTEGER (PINTEGER IN INTEGER) RETURN INTEGER;" +
-          "\nFUNCTION ECHO_SMALLINT(PSMALLINT IN SMALLINT) RETURN SMALLINT;" +
-          "\nFUNCTION ECHO_NUMERIC (PNUMERIC IN NUMERIC) RETURN NUMERIC;" +
-          "\nFUNCTION ECHO_DEC (PDEC IN DEC) RETURN DEC;" +
-          "\nFUNCTION ECHO_DECIMAL (PDECIMAL IN DECIMAL) RETURN DECIMAL;" +
-          "\nFUNCTION ECHO_NUMBER (PNUMBER IN NUMBER) RETURN NUMBER;" +
-          "\nFUNCTION ECHO_VARCHAR(PVARCHAR IN VARCHAR) RETURN VARCHAR;" +
-          "\nFUNCTION ECHO_VARCHAR2 (PINPUTVARCHAR IN VARCHAR2) RETURN VARCHAR2;" +
-          "\nFUNCTION ECHO_CHAR (PINPUTCHAR IN CHAR) RETURN CHAR;" +
-          "\nFUNCTION ECHO_REAL (PREAL IN REAL) RETURN REAL;" +
-          "\nFUNCTION ECHO_FLOAT (PINPUTFLOAT IN FLOAT) RETURN FLOAT;" +
-          "\nFUNCTION ECHO_DOUBLE (PDOUBLE IN DOUBLE PRECISION) RETURN DOUBLE PRECISION;" +
-          "\nFUNCTION ECHO_DATE (PINPUTDATE IN DATE) RETURN DATE;" +
-          "\nFUNCTION ECHO_TIMESTAMP (PINPUTTS IN TIMESTAMP) RETURN TIMESTAMP;" +
-          "\nFUNCTION ECHO_CLOB (PINPUTCLOB IN CLOB) RETURN CLOB;" +
-          "\nFUNCTION ECHO_BLOB (PINPUTBLOB IN BLOB) RETURN BLOB;" +
-          "\nFUNCTION ECHO_LONG (PLONG IN LONG) RETURN LONG;" +
-          "\nFUNCTION ECHO_LONG_RAW (PLONGRAW IN LONG RAW) RETURN LONG RAW;" +
-          "\nFUNCTION ECHO_RAW(PRAW IN RAW) RETURN RAW;" +
-          "\nFUNCTION ECHO_ROWID(PROWID IN ROWID) RETURN ROWID;" +
-          "\nFUNCTION ECHO_BOOLEAN(P1 IN BOOLEAN) RETURN BOOLEAN;" +
-          "\nPROCEDURE ECHO_BOOLEAN2(P1 IN BOOLEAN, P2 OUT BOOLEAN);" +
-          "\nFUNCTION ECHO_NVARCHAR2 (PNVARCHAR IN NVARCHAR2) RETURN NVARCHAR2;" +
-          "\nPROCEDURE pEchoNchar(p_nchar in nchar);" +
-          "\nFUNCTION fEchoNchar(p_nchar in nchar) return nchar;" +
-          "\nPROCEDURE pEchoNvarchar2(p_nvarchar2 in nvarchar2, p_nvarchar22 OUT nvarchar2);" +
-        "\nEND;" ;
+            """
+                    CREATE OR REPLACE PACKAGE TEST_TYPES AS
+                    FUNCTION ECHO_INTEGER (PINTEGER IN INTEGER) RETURN INTEGER;
+                    FUNCTION ECHO_SMALLINT(PSMALLINT IN SMALLINT) RETURN SMALLINT;
+                    FUNCTION ECHO_NUMERIC (PNUMERIC IN NUMERIC) RETURN NUMERIC;
+                    FUNCTION ECHO_DEC (PDEC IN DEC) RETURN DEC;
+                    FUNCTION ECHO_DECIMAL (PDECIMAL IN DECIMAL) RETURN DECIMAL;
+                    FUNCTION ECHO_NUMBER (PNUMBER IN NUMBER) RETURN NUMBER;
+                    FUNCTION ECHO_VARCHAR(PVARCHAR IN VARCHAR) RETURN VARCHAR;
+                    FUNCTION ECHO_VARCHAR2 (PINPUTVARCHAR IN VARCHAR2) RETURN VARCHAR2;
+                    FUNCTION ECHO_CHAR (PINPUTCHAR IN CHAR) RETURN CHAR;
+                    FUNCTION ECHO_REAL (PREAL IN REAL) RETURN REAL;
+                    FUNCTION ECHO_FLOAT (PINPUTFLOAT IN FLOAT) RETURN FLOAT;
+                    FUNCTION ECHO_DOUBLE (PDOUBLE IN DOUBLE PRECISION) RETURN DOUBLE PRECISION;
+                    FUNCTION ECHO_DATE (PINPUTDATE IN DATE) RETURN DATE;
+                    FUNCTION ECHO_TIMESTAMP (PINPUTTS IN TIMESTAMP) RETURN TIMESTAMP;
+                    FUNCTION ECHO_CLOB (PINPUTCLOB IN CLOB) RETURN CLOB;
+                    FUNCTION ECHO_BLOB (PINPUTBLOB IN BLOB) RETURN BLOB;
+                    FUNCTION ECHO_LONG (PLONG IN LONG) RETURN LONG;
+                    FUNCTION ECHO_LONG_RAW (PLONGRAW IN LONG RAW) RETURN LONG RAW;
+                    FUNCTION ECHO_RAW(PRAW IN RAW) RETURN RAW;
+                    FUNCTION ECHO_ROWID(PROWID IN ROWID) RETURN ROWID;
+                    FUNCTION ECHO_BOOLEAN(P1 IN BOOLEAN) RETURN BOOLEAN;
+                    PROCEDURE ECHO_BOOLEAN2(P1 IN BOOLEAN, P2 OUT BOOLEAN);
+                    FUNCTION ECHO_NVARCHAR2 (PNVARCHAR IN NVARCHAR2) RETURN NVARCHAR2;
+                    PROCEDURE pEchoNchar(p_nchar in nchar);
+                    FUNCTION fEchoNchar(p_nchar in nchar) return nchar;
+                    PROCEDURE pEchoNvarchar2(p_nvarchar2 in nvarchar2, p_nvarchar22 OUT nvarchar2);
+                    END;""";
 
     static final String CREATE_PACKAGE_BODY_TEST_TYPES =
-        "CREATE OR REPLACE PACKAGE BODY TEST_TYPES AS" +
-          "\nFUNCTION ECHO_INTEGER (PINTEGER IN INTEGER) RETURN INTEGER IS" +
-          "\nBEGIN" +
-            "\nRETURN PINTEGER;" +
-          "\nEND ECHO_INTEGER;" +
-          "\nFUNCTION ECHO_SMALLINT(PSMALLINT IN SMALLINT) RETURN SMALLINT IS" +
-          "\nBEGIN" +
-            "\nRETURN PSMALLINT;" +
-          "\nEND ECHO_SMALLINT;" +
-          "\nFUNCTION ECHO_NUMERIC (PNUMERIC IN NUMERIC) RETURN NUMERIC IS" +
-          "\nBEGIN" +
-            "\nRETURN PNUMERIC;" +
-          "\nEND ECHO_NUMERIC;" +
-          "\nFUNCTION ECHO_DEC (PDEC IN DEC) RETURN DEC IS" +
-          "\nBEGIN" +
-            "\nRETURN PDEC;" +
-          "\nEND ECHO_DEC;" +
-          "\nFUNCTION ECHO_DECIMAL (PDECIMAL IN DECIMAL) RETURN DECIMAL IS" +
-          "\nBEGIN" +
-            "\nRETURN PDECIMAL;" +
-          "\nEND ECHO_DECIMAL;" +
-          "\nFUNCTION ECHO_NUMBER (PNUMBER IN NUMBER) RETURN NUMBER IS" +
-          "\nBEGIN" +
-            "\nRETURN PNUMBER;" +
-          "\nEND ECHO_NUMBER;" +
-          "\nFUNCTION ECHO_VARCHAR(PVARCHAR IN VARCHAR) RETURN VARCHAR IS" +
-          "\nBEGIN" +
-            "\nRETURN PVARCHAR;" +
-          "\nEND ECHO_VARCHAR;" +
-          "\nFUNCTION ECHO_VARCHAR2 (PINPUTVARCHAR IN VARCHAR2) RETURN VARCHAR2 IS" +
-          "\nBEGIN" +
-            "\nRETURN PINPUTVARCHAR;" +
-          "\nEND ECHO_VARCHAR2;" +
-          "\nFUNCTION ECHO_NVARCHAR2 (PNVARCHAR IN NVARCHAR2) RETURN NVARCHAR2 IS" +
-          "\nBEGIN" +
-            "\nRETURN PNVARCHAR;" +
-          "\nEND ECHO_NVARCHAR2;" +
-          "\nFUNCTION ECHO_CHAR (PINPUTCHAR IN CHAR) RETURN CHAR IS" +
-          "\nBEGIN" +
-            "\nRETURN PINPUTCHAR;" +
-          "\nEND ECHO_CHAR;" +
-          "\nFUNCTION ECHO_REAL (PREAL IN REAL) RETURN REAL IS" +
-          "\nBEGIN" +
-              "\nRETURN PREAL;" +
-          "\nEND ECHO_REAL;" +
-          "\nFUNCTION ECHO_FLOAT (PINPUTFLOAT IN FLOAT) RETURN FLOAT IS" +
-          "\nBEGIN" +
-            "\nRETURN PINPUTFLOAT;" +
-          "\nEND ECHO_FLOAT;" +
-          "\nFUNCTION ECHO_DOUBLE (PDOUBLE IN DOUBLE PRECISION) RETURN DOUBLE PRECISION IS" +
-          "\nBEGIN" +
-            "\nRETURN PDOUBLE;" +
-          "\nEND ECHO_DOUBLE;" +
-          "\nFUNCTION ECHO_DATE (PINPUTDATE IN DATE) RETURN DATE IS" +
-          "\nBEGIN" +
-            "\nRETURN PINPUTDATE;" +
-          "\nEND ECHO_DATE;" +
-          "\nFUNCTION ECHO_TIMESTAMP (PINPUTTS IN TIMESTAMP) RETURN TIMESTAMP IS" +
-          "\nBEGIN" +
-            "\nRETURN PINPUTTS;" +
-          "\nEND ECHO_TIMESTAMP;" +
-          "\nFUNCTION ECHO_CLOB (PINPUTCLOB IN CLOB) RETURN CLOB IS" +
-          "\nBEGIN" +
-            "\nRETURN PINPUTCLOB;" +
-          "\nEND ECHO_CLOB;" +
-          "\nFUNCTION ECHO_BLOB (PINPUTBLOB IN BLOB) RETURN BLOB IS" +
-          "\nBEGIN" +
-            "\nRETURN PINPUTBLOB;" +
-          "\nEND ECHO_BLOB;" +
-          "\nFUNCTION ECHO_LONG (PLONG IN LONG) RETURN LONG IS" +
-          "\nBEGIN" +
-            "\nRETURN PLONG;" +
-          "\nEND ECHO_LONG;" +
-          "\nFUNCTION ECHO_LONG_RAW (PLONGRAW IN LONG RAW) RETURN LONG RAW IS" +
-          "\nBEGIN" +
-            "\nRETURN PLONGRAW;" +
-          "\nEND ECHO_LONG_RAW;" +
-          "\nFUNCTION ECHO_RAW(PRAW IN RAW) RETURN RAW IS" +
-          "\nBEGIN" +
-            "\nRETURN PRAW;" +
-          "\nEND ECHO_RAW;" +
-          "\nFUNCTION ECHO_ROWID(PROWID IN ROWID) RETURN ROWID IS" +
-          "\nBEGIN" +
-              "\nRETURN PROWID;" +
-          "\nEND ECHO_ROWID;" +
-          "\nFUNCTION ECHO_BOOLEAN(P1 IN BOOLEAN) RETURN BOOLEAN IS" +
-          "\nBEGIN" +
-              "\nRETURN P1;" +
-          "\nEND ECHO_BOOLEAN;" +
-          "\nPROCEDURE ECHO_BOOLEAN2(P1 IN BOOLEAN, P2 OUT BOOLEAN) IS" +
-          "\nBEGIN" +
-              "\nP2 := P1;" +
-          "\nEND ECHO_BOOLEAN2;" +
-          "\nPROCEDURE pEchoNchar(p_nchar in nchar) AS" +
-          "\nBEGIN" +
-              "\nNULL;" +
-          "\nEND pEchoNchar;" +
-          "\nFUNCTION fEchoNchar(p_nchar in nchar) return nchar AS" +
-          "\nBEGIN" +
-              "\nreturn p_nchar;" +
-          "\nEND fEchoNchar;" +
-          "\nPROCEDURE pEchoNvarchar2(p_nvarchar2 in nvarchar2, p_nvarchar22 OUT nvarchar2) AS" +
-          "\nBEGIN" +
-              "\np_nvarchar22 := p_nvarchar2;" +
-          "\nEND pEchoNvarchar2;" +
-        "\nEND;" ;
+            """
+                    CREATE OR REPLACE PACKAGE BODY TEST_TYPES AS
+                    FUNCTION ECHO_INTEGER (PINTEGER IN INTEGER) RETURN INTEGER IS
+                    BEGIN
+                    RETURN PINTEGER;
+                    END ECHO_INTEGER;
+                    FUNCTION ECHO_SMALLINT(PSMALLINT IN SMALLINT) RETURN SMALLINT IS
+                    BEGIN
+                    RETURN PSMALLINT;
+                    END ECHO_SMALLINT;
+                    FUNCTION ECHO_NUMERIC (PNUMERIC IN NUMERIC) RETURN NUMERIC IS
+                    BEGIN
+                    RETURN PNUMERIC;
+                    END ECHO_NUMERIC;
+                    FUNCTION ECHO_DEC (PDEC IN DEC) RETURN DEC IS
+                    BEGIN
+                    RETURN PDEC;
+                    END ECHO_DEC;
+                    FUNCTION ECHO_DECIMAL (PDECIMAL IN DECIMAL) RETURN DECIMAL IS
+                    BEGIN
+                    RETURN PDECIMAL;
+                    END ECHO_DECIMAL;
+                    FUNCTION ECHO_NUMBER (PNUMBER IN NUMBER) RETURN NUMBER IS
+                    BEGIN
+                    RETURN PNUMBER;
+                    END ECHO_NUMBER;
+                    FUNCTION ECHO_VARCHAR(PVARCHAR IN VARCHAR) RETURN VARCHAR IS
+                    BEGIN
+                    RETURN PVARCHAR;
+                    END ECHO_VARCHAR;
+                    FUNCTION ECHO_VARCHAR2 (PINPUTVARCHAR IN VARCHAR2) RETURN VARCHAR2 IS
+                    BEGIN
+                    RETURN PINPUTVARCHAR;
+                    END ECHO_VARCHAR2;
+                    FUNCTION ECHO_NVARCHAR2 (PNVARCHAR IN NVARCHAR2) RETURN NVARCHAR2 IS
+                    BEGIN
+                    RETURN PNVARCHAR;
+                    END ECHO_NVARCHAR2;
+                    FUNCTION ECHO_CHAR (PINPUTCHAR IN CHAR) RETURN CHAR IS
+                    BEGIN
+                    RETURN PINPUTCHAR;
+                    END ECHO_CHAR;
+                    FUNCTION ECHO_REAL (PREAL IN REAL) RETURN REAL IS
+                    BEGIN
+                    RETURN PREAL;
+                    END ECHO_REAL;
+                    FUNCTION ECHO_FLOAT (PINPUTFLOAT IN FLOAT) RETURN FLOAT IS
+                    BEGIN
+                    RETURN PINPUTFLOAT;
+                    END ECHO_FLOAT;
+                    FUNCTION ECHO_DOUBLE (PDOUBLE IN DOUBLE PRECISION) RETURN DOUBLE PRECISION IS
+                    BEGIN
+                    RETURN PDOUBLE;
+                    END ECHO_DOUBLE;
+                    FUNCTION ECHO_DATE (PINPUTDATE IN DATE) RETURN DATE IS
+                    BEGIN
+                    RETURN PINPUTDATE;
+                    END ECHO_DATE;
+                    FUNCTION ECHO_TIMESTAMP (PINPUTTS IN TIMESTAMP) RETURN TIMESTAMP IS
+                    BEGIN
+                    RETURN PINPUTTS;
+                    END ECHO_TIMESTAMP;
+                    FUNCTION ECHO_CLOB (PINPUTCLOB IN CLOB) RETURN CLOB IS
+                    BEGIN
+                    RETURN PINPUTCLOB;
+                    END ECHO_CLOB;
+                    FUNCTION ECHO_BLOB (PINPUTBLOB IN BLOB) RETURN BLOB IS
+                    BEGIN
+                    RETURN PINPUTBLOB;
+                    END ECHO_BLOB;
+                    FUNCTION ECHO_LONG (PLONG IN LONG) RETURN LONG IS
+                    BEGIN
+                    RETURN PLONG;
+                    END ECHO_LONG;
+                    FUNCTION ECHO_LONG_RAW (PLONGRAW IN LONG RAW) RETURN LONG RAW IS
+                    BEGIN
+                    RETURN PLONGRAW;
+                    END ECHO_LONG_RAW;
+                    FUNCTION ECHO_RAW(PRAW IN RAW) RETURN RAW IS
+                    BEGIN
+                    RETURN PRAW;
+                    END ECHO_RAW;
+                    FUNCTION ECHO_ROWID(PROWID IN ROWID) RETURN ROWID IS
+                    BEGIN
+                    RETURN PROWID;
+                    END ECHO_ROWID;
+                    FUNCTION ECHO_BOOLEAN(P1 IN BOOLEAN) RETURN BOOLEAN IS
+                    BEGIN
+                    RETURN P1;
+                    END ECHO_BOOLEAN;
+                    PROCEDURE ECHO_BOOLEAN2(P1 IN BOOLEAN, P2 OUT BOOLEAN) IS
+                    BEGIN
+                    P2 := P1;
+                    END ECHO_BOOLEAN2;
+                    PROCEDURE pEchoNchar(p_nchar in nchar) AS
+                    BEGIN
+                    NULL;
+                    END pEchoNchar;
+                    FUNCTION fEchoNchar(p_nchar in nchar) return nchar AS
+                    BEGIN
+                    return p_nchar;
+                    END fEchoNchar;
+                    PROCEDURE pEchoNvarchar2(p_nvarchar2 in nvarchar2, p_nvarchar22 OUT nvarchar2) AS
+                    BEGIN
+                    p_nvarchar22 := p_nvarchar2;
+                    END pEchoNvarchar2;
+                    END;""";
 
     static final String CREATE_XMLTYPEDATA_TABLE =
         "CREATE TABLE XMLTYPEDATA (" +

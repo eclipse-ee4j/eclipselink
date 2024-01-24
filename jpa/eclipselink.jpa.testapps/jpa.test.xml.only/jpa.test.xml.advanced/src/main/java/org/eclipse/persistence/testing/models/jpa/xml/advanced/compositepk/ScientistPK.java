@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,8 +29,7 @@ public class ScientistPK {
     }
 
     public boolean equals(Object other) {
-        if (other instanceof ScientistPK) {
-            final ScientistPK otherScientistPK = (ScientistPK) other;
+        if (other instanceof ScientistPK otherScientistPK) {
             return (otherScientistPK.firstName.equals(firstName) && otherScientistPK.lastName.equals(lastName) && otherScientistPK.idNumber == idNumber);
         }
 

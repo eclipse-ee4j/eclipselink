@@ -72,8 +72,7 @@ public class CustomCopyPolicyMetadata extends CopyPolicyMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof CustomCopyPolicyMetadata) {
-            CustomCopyPolicyMetadata customCopyPoliy = (CustomCopyPolicyMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof CustomCopyPolicyMetadata customCopyPoliy) {
             return valuesMatch(copyPolicyClassName, customCopyPoliy.getCopyPolicyClassName());
         }
 

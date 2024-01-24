@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,9 +39,8 @@ public class TimestampNewObjectInCache extends TestCase {
         ReadObjectQuery queryObject = new ReadObjectQuery();
         queryObject.checkCacheOnly();
 
-        if (lockingObject instanceof TimestampInObject) {
+        if (lockingObject instanceof TimestampInObject tio) {
             isTio = true;
-            TimestampInObject tio = (TimestampInObject)lockingObject;
             uow.registerObject(tio);
             uow.commit();
             Expression exp = bldr.get("id").equal(tio.id);
@@ -49,9 +48,8 @@ public class TimestampNewObjectInCache extends TestCase {
             queryObject.setReferenceClass(TimestampInObject.class);
             objectToBeRead = getSession().executeQuery(queryObject);
 
-        } else if (lockingObject instanceof LockInObject) {
+        } else if (lockingObject instanceof LockInObject ov) {
             isTio = false;
-            LockInObject ov = (LockInObject)lockingObject;
             uow.registerObject(ov);
             uow.commit();
             Expression exp = bldr.get("id").equal(ov.id);

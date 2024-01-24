@@ -85,8 +85,7 @@ public class LocalizationResourcesTest {
         }
         if (bundle != null) {
             for (Object[] message : bundle) {
-                if (message[0] instanceof String) {
-                    String key = (String)message[0];
+                if (message[0] instanceof String key) {
                     //log.log(SessionLog.INFO, "  - Checking key [{0}]", new Object[] {key}, false);
                     if (keys.contains(key)) {
                         String sb = bundleName +

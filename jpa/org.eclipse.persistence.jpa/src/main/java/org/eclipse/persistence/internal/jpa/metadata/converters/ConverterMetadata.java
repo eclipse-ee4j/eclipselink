@@ -74,8 +74,7 @@ public class ConverterMetadata extends AbstractConverterMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof ConverterMetadata) {
-            ConverterMetadata converter = (ConverterMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof ConverterMetadata converter) {
 
             if (! valuesMatch(getName(), converter.getName())) {
                 return false;

@@ -74,8 +74,7 @@ public class SerializedObjectPolicyMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof SerializedObjectPolicyMetadata) {
-            SerializedObjectPolicyMetadata serializedObjectToCompare = (SerializedObjectPolicyMetadata) objectToCompare;
+        if (objectToCompare instanceof SerializedObjectPolicyMetadata serializedObjectToCompare) {
             return valuesMatch(m_className, serializedObjectToCompare.getClassName()) && valuesMatch(m_column, serializedObjectToCompare.getColumn());
         }
 

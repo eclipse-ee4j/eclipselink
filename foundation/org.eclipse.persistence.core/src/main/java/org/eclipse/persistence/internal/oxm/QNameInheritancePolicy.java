@@ -180,10 +180,9 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             while (entries.hasNext()) {
                 Map.Entry entry = entries.next();
                 Object key = entry.getKey();
-                if (key instanceof String) {
+                if (key instanceof String indicatorValue) {
                     XPathQName qname;
 
-                    String indicatorValue = (String) key;
                     if (!usesXsiType || namespaceResolver == null) {
                         qname = new XPathQName(indicatorValue, true);
                     } else {
@@ -246,9 +245,8 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         }
 
         Class<?> concreteClass;
-        if (indicator instanceof String) {
+        if (indicator instanceof String indicatorValue) {
             boolean namespaceAware = ((XMLRecord) rowFromDatabase).isNamespaceAware();
-            String indicatorValue = (String)indicator;
             int index = -1;
             if(namespaceAware){
               index = indicatorValue.indexOf(((XMLRecord)rowFromDatabase).getNamespaceSeparator());

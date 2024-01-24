@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,8 +115,7 @@ public class SchemaMetadata extends Metadata {
             schemaCompiler.parseSchema(schemaInputSource);
         } catch (XMLPlatformException xpe) {
             // This will occur when trying to refreshMetadata from a closed stream (non-XML Node metadata)
-            if (xpe.getCause() instanceof TransformerException) {
-                TransformerException te = (TransformerException) xpe.getCause();
+            if (xpe.getCause() instanceof TransformerException te) {
                 if (te.getCause() instanceof IOException) {
                     throw org.eclipse.persistence.exceptions.JAXBException.cannotRefreshMetadata();
                 }

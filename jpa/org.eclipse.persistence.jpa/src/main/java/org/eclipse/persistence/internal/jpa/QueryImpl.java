@@ -696,8 +696,7 @@ public class QueryImpl {
      * Define the query arguments based on the procedure call.
      */
     protected static void applyArguments(StoredProcedureCall call, DatabaseQuery query) {
-        if (call instanceof PLSQLStoredProcedureCall) {
-            PLSQLStoredProcedureCall plsqlCall = (PLSQLStoredProcedureCall)call;
+        if (call instanceof PLSQLStoredProcedureCall plsqlCall) {
             for (int index = 0; index < plsqlCall.getArguments().size(); index++) {
                 PLSQLargument argument = plsqlCall.getArguments().get(index);
                 org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType type = argument.direction;

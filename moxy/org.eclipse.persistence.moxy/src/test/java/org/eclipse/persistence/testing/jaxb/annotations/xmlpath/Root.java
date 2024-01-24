@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,9 @@ public class Root {
     public List<Address> addresses;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof Root)) {
+        if(!(obj instanceof Root root)) {
             return false;
         } else {
-            Root root = (Root)obj;
             if(root.employees.size() != employees.size() || root.addresses.size() != addresses.size()) {
                 return false;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -231,8 +231,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     private void processBidirectionalRelationships(PersistenceContext context, ClassDescriptor descriptor, Object entity) {
         final List<DatabaseMapping> mappings = descriptor.getMappings();
         for (DatabaseMapping mapping : mappings) {
-            if (mapping instanceof ForeignReferenceMapping) {
-                final ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) mapping;
+            if (mapping instanceof ForeignReferenceMapping jpaMapping) {
                 final Object attributeValue = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
                 if (jpaMapping.isCascadePersist()) {
                     if (jpaMapping.getMappedBy() != null) {
@@ -241,14 +240,12 @@ public abstract class AbstractEntityResource extends AbstractResource {
                             final DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
                             if (inverseMapping != null) {
                                 if (attributeValue != null) {
-                                    if (attributeValue instanceof ValueHolder) {
-                                        final ValueHolder<?> holder = (ValueHolder<?>) attributeValue;
+                                    if (attributeValue instanceof ValueHolder<?> holder) {
                                         final Object obj = holder.getValue();
                                         if (obj != null) {
                                             inverseMapping.setAttributeValueInObject(obj, entity);
                                         }
-                                    } else if (attributeValue instanceof Collection) {
-                                        final Collection<?> collection = (Collection<?>) attributeValue;
+                                    } else if (attributeValue instanceof Collection<?> collection) {
                                         if (!collection.isEmpty()) {
                                             for (Object obj : collection) {
                                                 inverseMapping.setAttributeValueInObject(obj, entity);
@@ -275,19 +272,16 @@ public abstract class AbstractEntityResource extends AbstractResource {
         final List<DatabaseMapping> mappings = descriptor.getMappings();
         if ((mappings != null) && (!mappings.isEmpty())) {
             for (DatabaseMapping mapping : mappings) {
-                if (mapping instanceof ForeignReferenceMapping) {
-                    final ForeignReferenceMapping fkMapping = (ForeignReferenceMapping) mapping;
+                if (mapping instanceof ForeignReferenceMapping fkMapping) {
                     if ((fkMapping.isCascadePersist()) || (fkMapping.isCascadeMerge())) {
                         final ClassDescriptor referenceDescriptor = fkMapping.getReferenceDescriptor();
                         if (referenceDescriptor != null) {
-                            if (referenceDescriptor instanceof RelationalDescriptor) {
-                                final RelationalDescriptor relDesc = (RelationalDescriptor) referenceDescriptor;
+                            if (referenceDescriptor instanceof RelationalDescriptor relDesc) {
                                 final AbstractDirectMapping relSequenceMapping = relDesc.getObjectBuilder().getSequenceMapping();
                                 if (relSequenceMapping != null) {
                                     final Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
                                     if (value != null) {
-                                        if (value instanceof ValueHolder) {
-                                            final ValueHolder<?> holder = (ValueHolder<?>) value;
+                                        if (value instanceof ValueHolder<?> holder) {
                                             if (holder.getValue() != null) {
                                                 return false;
                                             }

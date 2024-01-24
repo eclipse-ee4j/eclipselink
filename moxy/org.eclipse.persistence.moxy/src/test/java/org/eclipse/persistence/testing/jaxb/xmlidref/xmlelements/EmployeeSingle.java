@@ -35,10 +35,9 @@ public class EmployeeSingle {
     public Object addressOrPhone;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof EmployeeSingle)) {
+        if (obj == null || !(obj instanceof EmployeeSingle emp)) {
             return false;
         }
-        EmployeeSingle emp = (EmployeeSingle) obj;
 
         return addressOrPhone.equals(emp.addressOrPhone);
    }

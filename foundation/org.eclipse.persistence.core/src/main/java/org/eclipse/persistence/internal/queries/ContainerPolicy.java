@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -580,8 +580,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Both of the containers must use the same container policy (namely, this one).
      */
     public Object concatenateContainers(Object firstContainer, Object secondContainer, AbstractSession session) {
-        if (firstContainer instanceof ComplexQueryResult) {
-            ComplexQueryResult firstResult = (ComplexQueryResult)firstContainer;
+        if (firstContainer instanceof ComplexQueryResult firstResult) {
             ComplexQueryResult secondResult = (ComplexQueryResult)secondContainer;
             firstResult.setResult(concatenateContainers(
                     firstResult.getResult(), secondResult.getResult(), session));

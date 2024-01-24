@@ -86,8 +86,7 @@ public class CollectionTableMetadata extends RelationalTableMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare)&& objectToCompare instanceof CollectionTableMetadata) {
-            CollectionTableMetadata collectionTable = (CollectionTableMetadata) objectToCompare;
+        if (super.equals(objectToCompare)&& objectToCompare instanceof CollectionTableMetadata collectionTable) {
 
             return valuesMatch(m_primaryKeyJoinColumns, collectionTable.getPrimaryKeyJoinColumns());
         }

@@ -79,11 +79,10 @@ public class Employee  {
 
   public boolean equals(Object object)
   {
-    if(!(object instanceof Employee))
+    if(!(object instanceof Employee employeeObject))
       return false;
-    Employee employeeObject = (Employee)object;
 
-    if(this.getResponsibilities()==null && employeeObject.getResponsibilities()!=null)
+      if(this.getResponsibilities()==null && employeeObject.getResponsibilities()!=null)
     {
       return false;
     }

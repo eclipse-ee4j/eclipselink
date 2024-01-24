@@ -89,8 +89,7 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof AssociationOverrideMetadata) {
-            AssociationOverrideMetadata associationOverride = (AssociationOverrideMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof AssociationOverrideMetadata associationOverride) {
 
             if (! valuesMatch(m_joinColumns, associationOverride.getJoinColumns())) {
                 return false;

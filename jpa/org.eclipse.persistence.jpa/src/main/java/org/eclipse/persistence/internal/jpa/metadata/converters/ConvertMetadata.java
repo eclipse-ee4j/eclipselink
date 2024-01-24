@@ -92,8 +92,7 @@ public class ConvertMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ConvertMetadata) {
-            ConvertMetadata convert = (ConvertMetadata) objectToCompare;
+        if (objectToCompare instanceof ConvertMetadata convert) {
 
             if (! valuesMatch(m_text, convert.getText())) {
                 return false;

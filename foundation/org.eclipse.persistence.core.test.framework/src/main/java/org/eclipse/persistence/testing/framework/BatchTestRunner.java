@@ -77,9 +77,15 @@ public class BatchTestRunner {
         log("\n\t\t\t" + "# properties for DatabseSession");
         log("\n\t\t\t" + "session.log=c:\\temp.txt");
         log("\n\t\t\t" + "session.logMessages=false");
-        log("\n\n\t\t\t" + "# properties for TestExecutor");
+        log("""
+
+
+                \t\t\t# properties for TestExecutor""");
         log("\n\t\t\t" + "executor.handleErrors=true");
-        log("\n\n\t\t\t" + "# properties for DatabaseLogin");
+        log("""
+
+
+                \t\t\t# properties for DatabaseLogin""");
         log("\n\t\t\t" + "login.databaseplatform=ORACLE");
         log("\n\t\t\t" + "login.driverClass=oracle.jdbc.OracleDriver");
         log("\n\t\t\t" + "login.databaseURL=jdbc:oracle:thin:@localhost:1521:ORCL");

@@ -45,10 +45,9 @@ public class ClassAWithElementRef {
     }
 
     public boolean equals(Object obj){
-        if(!(obj instanceof ClassAWithElementRef)){
+        if(!(obj instanceof ClassAWithElementRef classAObj)){
             return false;
         }
-        ClassAWithElementRef classAObj = (ClassAWithElementRef)obj;
 
         if(theValue == null){
             if(classAObj.getTheValue() != null){
@@ -59,11 +58,10 @@ public class ClassAWithElementRef {
                 return false;
             }
             if(getTheValue() instanceof JAXBElement){
-                if(!(classAObj.getTheValue() instanceof JAXBElement)){
+                if(!(classAObj.getTheValue() instanceof JAXBElement jb2)){
                     return false;
                 }else{
                     JAXBElement jb1 = (JAXBElement)getTheValue();
-                    JAXBElement jb2 = (JAXBElement)classAObj.getTheValue();
                     if(!jb1.getValue().equals(jb2.getValue())){
                         return false;
                     }

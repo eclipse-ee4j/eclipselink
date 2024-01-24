@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -681,9 +681,8 @@ public class DB2ZPlatform extends DB2Platform {
                 boolean firstBound = true;
                 if(second instanceof CollectionExpression) {
                     Object val = ((CollectionExpression) second).getValue();
-                    if (val instanceof Collection) {
+                    if (val instanceof Collection values) {
                         firstBound = false;
-                        Collection values = (Collection)val;
                         for(Object value : values) {
                             // If the value isn't a Constant/Parameter, this will suffice and the first should bind
                             if(value instanceof Expression && !((Expression)value).isValueExpression()) {
@@ -726,9 +725,8 @@ public class DB2ZPlatform extends DB2Platform {
                 boolean firstBound = true;
                 if(second instanceof CollectionExpression) {
                     Object val = ((CollectionExpression) second).getValue();
-                    if (val instanceof Collection) {
+                    if (val instanceof Collection values) {
                         firstBound = false;
-                        Collection values = (Collection)val;
                         for(Object value : values) {
                             // If the value isn't a Constant/Parameter, this will suffice and the first should bind
                             if(value instanceof Expression && !((Expression)value).isValueExpression()) {
@@ -1001,8 +999,7 @@ public class DB2ZPlatform extends DB2Platform {
                 methodArgs = new Class<?>[] {String.class, String.class};
                 parameters = new Object[] {name, parameter};
             }
-        } else if (parameter instanceof Number) {
-            Number number = (Number) parameter;
+        } else if (parameter instanceof Number number) {
             if (number instanceof Integer) {
                 methodName = "setJccIntAtName";
                 methodArgs = new Class<?>[] {String.class, int.class};
@@ -1068,14 +1065,12 @@ public class DB2ZPlatform extends DB2Platform {
             methodName = "setJccTimeAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Time.class};
             parameters = new Object[] {name, parameter};
-        } else if (parameter instanceof java.time.LocalTime){
-            java.time.LocalTime lt = (java.time.LocalTime) parameter;
+        } else if (parameter instanceof java.time.LocalTime lt){
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
             methodName = "setJccTimestampAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, ts};
-        } else if (parameter instanceof java.time.OffsetTime) {
-            java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
+        } else if (parameter instanceof java.time.OffsetTime ot) {
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             methodName = "setJccTimestampAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Timestamp.class};
@@ -1183,8 +1178,7 @@ public class DB2ZPlatform extends DB2Platform {
         String methodName;
         Class<?>[] methodArgs;
         Object[] parameters;
-        if (databaseField instanceof ObjectRelationalDatabaseField) {
-            ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
+        if (databaseField instanceof ObjectRelationalDatabaseField field) {
             methodName = "setJccNullAtName";
             methodArgs = new Class<?>[] {String.class, int.class, String.class};
             parameters = new Object[] {name, field.getSqlType(), field.getSqlTypeName()};

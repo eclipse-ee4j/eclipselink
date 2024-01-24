@@ -27,10 +27,9 @@ public class TransportType {
     public double transportCost;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof TransportType)) {
+        if (obj == null || !(obj instanceof TransportType t)) {
             return false;
         }
-        TransportType t = (TransportType) obj;
 
         return t.transportTypeID == this.transportTypeID && t.transportCost == this.transportCost;
     }

@@ -63,9 +63,8 @@ public class EmployeeWithObjects  {
 
   public boolean equals(Object object)
   {
-    if(!(object instanceof EmployeeWithObjects))
+    if(!(object instanceof EmployeeWithObjects employeeObject))
       return false;
-    EmployeeWithObjects employeeObject = (EmployeeWithObjects)object;
       return (this.getID() == employeeObject.getID()) &&
               ((this.getEmailAddress() == null && employeeObject.getEmailAddress() == null) || (this.getEmailAddress().equals(employeeObject.getEmailAddress()))) &&
               ((this.getSalary() == null && employeeObject.getSalary() == null) || (this.getSalary().equals(employeeObject.getSalary()))) &&

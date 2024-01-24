@@ -27,10 +27,9 @@ public class PurchaseOrder {
     public TransportType shipBy;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof PurchaseOrder)) {
+        if (obj == null || !(obj instanceof PurchaseOrder order)) {
             return false;
         }
-        PurchaseOrder order = (PurchaseOrder) obj;
 
         return order.shipBy.equals(this.shipBy);
     }

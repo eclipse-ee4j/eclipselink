@@ -89,8 +89,7 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof RelationalColumnMetadata) {
-            RelationalColumnMetadata relationalColumn = (RelationalColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof RelationalColumnMetadata relationalColumn) {
 
             if (! valuesMatch(m_foreignKey, relationalColumn.getForeignKey())) {
                 return false;

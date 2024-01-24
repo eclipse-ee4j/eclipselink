@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -271,10 +271,9 @@ public class DatasourcePlatform implements Platform {
      */
     @Override
     public void copyInto(Platform platform) {
-        if (!(platform instanceof DatasourcePlatform)) {
+        if (!(platform instanceof DatasourcePlatform datasourcePlatform)) {
             return;
         }
-        DatasourcePlatform datasourcePlatform = (DatasourcePlatform)platform;
         datasourcePlatform.setTableQualifier(getTableQualifier());
         datasourcePlatform.setTimestampQuery(this.timestampQuery);
         datasourcePlatform.setUUIDQuery(this.uuidQuery);

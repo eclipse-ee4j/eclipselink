@@ -88,8 +88,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof TenantDiscriminatorColumnMetadata) {
-            TenantDiscriminatorColumnMetadata tenantDiscriminator = (TenantDiscriminatorColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof TenantDiscriminatorColumnMetadata tenantDiscriminator) {
 
             if (! valuesMatch(m_primaryKey, tenantDiscriminator.getPrimaryKey())) {
                 return false;

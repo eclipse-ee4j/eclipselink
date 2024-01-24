@@ -861,8 +861,7 @@ public class SchemaModelGenerator {
             //schemaTypeString = Constants.SCHEMA_PREFIX + COLON + IDREF;
             for (Iterator mappingsNum = mappings.iterator(); mappingsNum.hasNext();) {
                 Mapping nextMapping = (Mapping)mappingsNum.next();
-                if (nextMapping.getField() != null && nextMapping.getField() instanceof Field) {
-                    Field xFld = (Field) nextMapping.getField();
+                if (nextMapping.getField() != null && nextMapping.getField() instanceof Field xFld) {
                     if (xFld == tgtField) {
                         schemaTypeString = getSchemaTypeForElement(tgtField, nextMapping.getAttributeClassification(), workingSchema);
                     }

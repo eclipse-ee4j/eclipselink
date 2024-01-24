@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,15 +67,12 @@ public class MongoInteraction implements Interaction {
      */
     @Override
     public boolean execute(InteractionSpec spec, jakarta.resource.cci.Record input, jakarta.resource.cci.Record output) throws ResourceException {
-        if (!(spec instanceof MongoInteractionSpec)) {
+        if (!(spec instanceof MongoInteractionSpec mongoSpec)) {
             throw EISException.invalidInteractionSpecType();
         }
-        if (!(input instanceof MongoRecord) || !(output instanceof MongoRecord)) {
+        if (!(input instanceof MongoRecord record) || !(output instanceof MongoRecord translationRecord)) {
             throw EISException.invalidRecordType();
         }
-        MongoInteractionSpec mongoSpec = (MongoInteractionSpec)spec;
-        MongoRecord record = (MongoRecord) input;
-        MongoRecord translationRecord = (MongoRecord) output;
         MongoOperation operation = mongoSpec.getOperation();
         String collectionName = mongoSpec.getCollection();
         if (operation == null) {
@@ -112,14 +109,12 @@ public class MongoInteraction implements Interaction {
      */
     @Override
     public jakarta.resource.cci.Record execute(InteractionSpec spec, jakarta.resource.cci.Record record) throws ResourceException {
-        if (!(spec instanceof MongoInteractionSpec)) {
+        if (!(spec instanceof MongoInteractionSpec mongoSpec)) {
             throw EISException.invalidInteractionSpecType();
         }
-        if (!(record instanceof MongoRecord)) {
+        if (!(record instanceof MongoRecord input)) {
             throw EISException.invalidRecordType();
         }
-        MongoInteractionSpec mongoSpec = (MongoInteractionSpec)spec;
-        MongoRecord input = (MongoRecord) record;
         MongoOperation operation = mongoSpec.getOperation();
         String collectionName = mongoSpec.getCollection();
         if (operation == null) {

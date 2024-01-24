@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -209,8 +209,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
         try {
             if (message instanceof ObjectMessage) {
                 object = ((ObjectMessage)message).getObject();
-            } else if (message instanceof BytesMessage) {
-                BytesMessage byteMessage = (BytesMessage)message;
+            } else if (message instanceof BytesMessage byteMessage) {
                 byte[] bytes = new byte[(int)byteMessage.getBodyLength()];
                 byteMessage.readBytes(bytes);
                 Serializer serializer = this.rcm.getSerializer();

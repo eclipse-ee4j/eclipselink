@@ -21,10 +21,9 @@ public class Customer {
     public String phoneNumber;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof Customer)) {
+        if(!(obj instanceof Customer cust)) {
             return false;
         }
-        Customer cust = (Customer)obj;
 
         return firstName.equals(cust.firstName) && lastName.equals(cust.lastName) && phoneNumber.equals(cust.phoneNumber);
     }

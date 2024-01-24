@@ -1256,8 +1256,7 @@ public class SqlReflector {
         }
         JavaType jt = null;
         for (TypeClass mUserType : m_userTypes) {
-            if (mUserType instanceof JavaType) {
-                JavaType jTypeTmp = (JavaType) mUserType;
+            if (mUserType instanceof JavaType jTypeTmp) {
                 JavaName jNameTmp = new JavaName(null, typeName, null, null, null);
                 if (jTypeTmp.getJavaName().equals(jNameTmp)) {
                     jt = jTypeTmp;
@@ -1282,10 +1281,9 @@ public class SqlReflector {
      */
     public boolean hasMethodsInSubclasses(TypeClass who) throws SQLException, PublisherException {
         for (TypeClass t : m_userTypes) {
-            if (!(t instanceof SqlType)) {
+            if (!(t instanceof SqlType st)) {
                 continue;
             }
-            SqlType st = (SqlType) t;
             boolean stHasMethods = st.hasMethods();
             while ((st = (SqlType) st.getSupertype()) != null) {
                 if (who.getName() != null && who.getName().equals(st.getName())) {

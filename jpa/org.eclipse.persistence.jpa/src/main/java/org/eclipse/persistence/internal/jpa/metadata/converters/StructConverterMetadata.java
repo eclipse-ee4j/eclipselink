@@ -79,8 +79,7 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof StructConverterMetadata) {
-            StructConverterMetadata structConverter = (StructConverterMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof StructConverterMetadata structConverter) {
             return valuesMatch(m_converter, structConverter.getConverter());
         }
 

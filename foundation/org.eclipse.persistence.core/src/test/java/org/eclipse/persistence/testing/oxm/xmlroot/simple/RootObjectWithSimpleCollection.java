@@ -33,9 +33,8 @@ public class RootObjectWithSimpleCollection {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof RootObjectWithSimpleCollection))
+        if (!(object instanceof RootObjectWithSimpleCollection theObject))
             return false;
-        RootObjectWithSimpleCollection theObject = (RootObjectWithSimpleCollection) object;
 
         if (this.getTheList() == null && theObject.getTheList() != null) {
             return false;

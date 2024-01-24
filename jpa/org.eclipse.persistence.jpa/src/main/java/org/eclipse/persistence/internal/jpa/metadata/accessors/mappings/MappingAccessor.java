@@ -331,8 +331,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof MappingAccessor) {
-            MappingAccessor mappingAccessor = (MappingAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof MappingAccessor mappingAccessor) {
 
             // For extra safety compare that the owning class accessors of these
             // mapping accessors are the same.

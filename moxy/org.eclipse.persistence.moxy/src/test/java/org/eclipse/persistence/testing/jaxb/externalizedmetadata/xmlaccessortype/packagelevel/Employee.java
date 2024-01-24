@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,8 +38,7 @@ public class Employee {
         return true;
     }
     public boolean equals(Object obj){
-        if(obj instanceof Employee){
-            Employee empObj = (Employee)obj;
+        if(obj instanceof Employee empObj){
             if(firstName == null){
                 if(empObj.firstName !=null){
                     return false;

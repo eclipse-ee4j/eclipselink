@@ -45,9 +45,8 @@ public class EmailAddress  {
 
   public boolean equals(Object object)
   {
-    if(!(object instanceof EmailAddress))
+    if(!(object instanceof EmailAddress emailObject))
       return false;
-    EmailAddress emailObject = (EmailAddress)object;
       return (((this.getUserID() == null) && (emailObject.getUserID() == null)) || this.getUserID().equals(emailObject.getUserID())) &&
               (((this.getDomain() == null) && (emailObject.getDomain() == null)) || this.getDomain().equals(emailObject.getDomain()));
   }

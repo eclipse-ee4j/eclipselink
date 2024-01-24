@@ -81,8 +81,7 @@ public class GeneratedValueMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof GeneratedValueMetadata) {
-            GeneratedValueMetadata generatedValue = (GeneratedValueMetadata) objectToCompare;
+        if (objectToCompare instanceof GeneratedValueMetadata generatedValue) {
 
             if (! valuesMatch(m_generator, generatedValue.getGenerator())) {
                 return false;

@@ -25,10 +25,9 @@ public class Address {
     public Employee owningEmployee;
 
     public boolean equals(Object o) {
-        if(!(o instanceof Address)) {
+        if(!(o instanceof Address obj)) {
             return false;
         }
-        Address obj = (Address)o;
         boolean equal = true;
 
         equal = equal && street.equals(obj.street);

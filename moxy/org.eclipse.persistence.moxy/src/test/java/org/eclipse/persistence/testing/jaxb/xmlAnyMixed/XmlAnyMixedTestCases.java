@@ -23,16 +23,17 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.StringWriter;
 
 public class XmlAnyMixedTestCases extends TestCase {
-    private static final String EXPECTED = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><main><RootAnyMixed>\n" +
-            "        <SomeTag>\n" +
-            "            <AChildTag>\n" +
-            "                <AnotherChildTag/>\n" +
-            "                <AnotherChildTag/>\n" +
-            "            </AChildTag>\n" +
-            "        </SomeTag>\n" +
-            "    </RootAnyMixed><RootAny><VeryGood><TheBest><MegaSuper/><MegaSuper/>\n" +
-            "            </TheBest>\n" +
-            "        </VeryGood></RootAny></main>";
+    private static final String EXPECTED = """
+            <?xml version="1.0" encoding="UTF-8"?><main><RootAnyMixed>
+                    <SomeTag>
+                        <AChildTag>
+                            <AnotherChildTag/>
+                            <AnotherChildTag/>
+                        </AChildTag>
+                    </SomeTag>
+                </RootAnyMixed><RootAny><VeryGood><TheBest><MegaSuper/><MegaSuper/>
+                        </TheBest>
+                    </VeryGood></RootAny></main>""";
 
     public static void main(String[] args) {
         String[] arguments = {"-c", "org.eclipse.persistence.testing.jaxb.xmlAnyMixed.XmlAnyMixedTestCases"};

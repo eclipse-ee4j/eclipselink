@@ -22,8 +22,7 @@ public class Address {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Address) {
-            Address addObj = (Address) obj;
+        if (obj instanceof Address addObj) {
             if (this.id != addObj.id) {
                 return false;
             }

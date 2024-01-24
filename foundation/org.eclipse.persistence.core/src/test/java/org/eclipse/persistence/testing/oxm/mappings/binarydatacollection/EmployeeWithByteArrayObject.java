@@ -92,10 +92,9 @@ public class EmployeeWithByteArrayObject {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof EmployeeWithByteArrayObject)) {
+        if (!(object instanceof EmployeeWithByteArrayObject employeeObject)) {
             return false;
         }
-        EmployeeWithByteArrayObject employeeObject = (EmployeeWithByteArrayObject)object;
 
         if ((this.getPhotos() == null) && (employeeObject.getPhotos() != null)) {
             return false;
@@ -135,9 +134,7 @@ public class EmployeeWithByteArrayObject {
         try {
             Object obj1 =  data.getContent();
             Object obj2 =  data2.getContent();
-            if(data.getContent() instanceof ByteArrayInputStream && data2.getContent() instanceof ByteArrayInputStream){
-                ByteArrayInputStream controlStream = ((ByteArrayInputStream)data.getContent());
-                ByteArrayInputStream testStream = ((ByteArrayInputStream)data2.getContent());
+            if(data.getContent() instanceof ByteArrayInputStream controlStream && data2.getContent() instanceof ByteArrayInputStream testStream){
                 if(controlStream.available() != testStream.available()){
                     return false;
                 }

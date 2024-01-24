@@ -52,28 +52,31 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
         "CREATE OR REPLACE TYPE NUMTAB IS TABLE OF NUMBER";
 
     static final String CREATE_NUMBER_WRAPPER =
-        "CREATE OR REPLACE TYPE WRAPPER_NUMTAB AS OBJECT (" +
-            "\nNUMBTABLIST NUMTAB" +
-        "\n);";
+            """
+                    CREATE OR REPLACE TYPE WRAPPER_NUMTAB AS OBJECT (
+                    NUMBTABLIST NUMTAB
+                    );""";
 
     static final String CREATE_TEST_NUMBER_PACKAGE =
-        "CREATE OR REPLACE PACKAGE TEST_NUMBER_LIST_PKG AS" +
-            "\nFUNCTION TEST_NUM RETURN WRAPPER_NUMTAB;" +
-        "\nEND TEST_NUMBER_LIST_PKG;";
+            """
+                    CREATE OR REPLACE PACKAGE TEST_NUMBER_LIST_PKG AS
+                    FUNCTION TEST_NUM RETURN WRAPPER_NUMTAB;
+                    END TEST_NUMBER_LIST_PKG;""";
 
     static final String CREATE_TEST_NUMBER_PACKAGE_BODY =
-        "CREATE OR REPLACE PACKAGE BODY TEST_NUMBER_LIST_PKG AS" +
-            "\nFUNCTION TEST_NUM RETURN WRAPPER_NUMTAB IS" +
-            "\nL_WRAPPER_NUMTAB WRAPPER_NUMTAB;" +
-            "\nL_NUMTAB NUMTAB;" +
-            "\nBEGIN" +
-                "\nL_NUMTAB := NUMTAB();" +
-                "\nL_NUMTAB.EXTEND(1);" +
-                "\nL_NUMTAB(1) := 115;" +
-                "\nL_WRAPPER_NUMTAB := WRAPPER_NUMTAB(L_NUMTAB);" +
-                "\nRETURN L_WRAPPER_NUMTAB;" +
-            "\nEND;" +
-        "\nEND TEST_NUMBER_LIST_PKG;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY TEST_NUMBER_LIST_PKG AS
+                    FUNCTION TEST_NUM RETURN WRAPPER_NUMTAB IS
+                    L_WRAPPER_NUMTAB WRAPPER_NUMTAB;
+                    L_NUMTAB NUMTAB;
+                    BEGIN
+                    L_NUMTAB := NUMTAB();
+                    L_NUMTAB.EXTEND(1);
+                    L_NUMTAB(1) := 115;
+                    L_WRAPPER_NUMTAB := WRAPPER_NUMTAB(L_NUMTAB);
+                    RETURN L_WRAPPER_NUMTAB;
+                    END;
+                    END TEST_NUMBER_LIST_PKG;""";
 
     static final String DROP_TEST_NUMBER_BODY =
         "DROP PACKAGE BODY TEST_NUMBER_LIST_PKG";
@@ -85,11 +88,12 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
         "DROP TYPE NUMTAB";
 
     static final String CREATE_USERS_TABLE =
-        "CREATE TABLE USERS_TABLE(" +
-            "\nU_ID VARCHAR2(8)," +
-            "\nU_NAME VARCHAR2(10)," +
-            "\nPRIMARY KEY (U_ID)" +
-        "\n)";
+            """
+                    CREATE TABLE USERS_TABLE(
+                    U_ID VARCHAR2(8),
+                    U_NAME VARCHAR2(10),
+                    PRIMARY KEY (U_ID)
+                    )""";
     static final String[] POPULATE_TABLE = new String[] {
         "INSERT INTO USERS_TABLE (U_ID, U_NAME) VALUES ('abc123', 'Ricky')",
         "INSERT INTO USERS_TABLE (U_ID, U_NAME) VALUES ('xxx666', 'Julian')",
@@ -100,27 +104,29 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
     };
 
     static final String CREATE_USERS_PKG =
-        "CREATE OR REPLACE PACKAGE USERS_PKG AS" +
-            "\nFUNCTION GET_USERS_NAME_test(in_users_id_list IN USERS_ID_LIST_TYPE) RETURN VARCHAR2;" +
-        "\nEND USERS_PKG;";
+            """
+                    CREATE OR REPLACE PACKAGE USERS_PKG AS
+                    FUNCTION GET_USERS_NAME_test(in_users_id_list IN USERS_ID_LIST_TYPE) RETURN VARCHAR2;
+                    END USERS_PKG;""";
     static final String CREATE_USERS_BODY =
-        "CREATE OR REPLACE PACKAGE BODY USERS_PKG AS" +
-            "\nFUNCTION GET_USERS_NAME_TEST(in_users_id_list IN  USERS_ID_LIST_TYPE) RETURN VARCHAR2 AS" +
-              "\nout_usersname VARCHAR2(255);" +
-              "\nUSER_NAME VARCHAR2(10);" +
-              "\nNUM NUMBER;" +
-            "\nBEGIN" +
-                "\nNUM := in_users_id_list.COUNT;" +
-                "\nFOR I IN 1..NUM LOOP" +
-                    "\nSELECT U_NAME INTO USER_NAME FROM USERS_TABLE WHERE U_ID LIKE in_users_id_list(I);" +
-                    "\nout_usersname := CONCAT(out_usersname, USER_NAME);" +
-                    "\nIF I < NUM THEN" +
-                        "\nout_usersname := CONCAT(out_usersname, ', ');" +
-                    "\nEND IF;" +
-                "\nEND LOOP;" +
-                "\nRETURN out_usersname;" +
-             "\nEND;" +
-         "\nEND USERS_PKG;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY USERS_PKG AS
+                    FUNCTION GET_USERS_NAME_TEST(in_users_id_list IN  USERS_ID_LIST_TYPE) RETURN VARCHAR2 AS
+                    out_usersname VARCHAR2(255);
+                    USER_NAME VARCHAR2(10);
+                    NUM NUMBER;
+                    BEGIN
+                    NUM := in_users_id_list.COUNT;
+                    FOR I IN 1..NUM LOOP
+                    SELECT U_NAME INTO USER_NAME FROM USERS_TABLE WHERE U_ID LIKE in_users_id_list(I);
+                    out_usersname := CONCAT(out_usersname, USER_NAME);
+                    IF I < NUM THEN
+                    out_usersname := CONCAT(out_usersname, ', ');
+                    END IF;
+                    END LOOP;
+                    RETURN out_usersname;
+                    END;
+                    END USERS_PKG;""";
     static final String CREATE_USERS_ID_LIST_TYPE =
         "CREATE OR REPLACE TYPE USERS_ID_LIST_TYPE AS TABLE OF varchar2(8);";
 

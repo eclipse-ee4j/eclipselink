@@ -23,8 +23,7 @@ public class Root {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Root) {
-            Root rootObj = (Root) obj;
+        if (obj instanceof Root rootObj) {
             if (!(this.employee.equals(rootObj.employee))) {
                 return false;
             }

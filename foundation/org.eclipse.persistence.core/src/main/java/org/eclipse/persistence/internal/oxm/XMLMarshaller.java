@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -912,9 +912,8 @@ public abstract class XMLMarshaller<
             }
         }
 
-        if (object instanceof Root) {
+        if (object instanceof Root xroot) {
             isXMLRoot = true;
-            Root xroot = (Root) object;
             encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
         }
 
@@ -985,8 +984,7 @@ public abstract class XMLMarshaller<
         }
 
         //if this is a simple xml root, the session and descriptor will be null
-        if (result instanceof StreamResult) {
-            StreamResult streamResult = (StreamResult) result;
+        if (result instanceof StreamResult streamResult) {
             Writer writer = streamResult.getWriter();
             if (writer != null) {
                 marshal(object, writer, session, xmlDescriptor);
@@ -1014,16 +1012,14 @@ public abstract class XMLMarshaller<
                     throw XMLMarshalException.marshalException(e);
                 }
             }
-        }else if (result instanceof DOMResult) {
-            DOMResult domResult = (DOMResult) result;
+        }else if (result instanceof DOMResult domResult) {
             // handle case where the node is null
             if (domResult.getNode() == null) {
                 domResult.setNode(this.objectToXML(object));
             } else {
                 marshal(object, domResult.getNode());
             }
-        } else if (result instanceof SAXResult) {
-            SAXResult saxResult = (SAXResult) result;
+        } else if (result instanceof SAXResult saxResult) {
             marshal(object, saxResult.getHandler());
         } else if (result instanceof ExtendedResult){
             marshal(object, ((ExtendedResult)result).createRecord(), session, xmlDescriptor, isXMLRoot);
@@ -1087,9 +1083,8 @@ public abstract class XMLMarshaller<
             }
         }
 
-        if (object instanceof Root) {
+        if (object instanceof Root xroot) {
             isXMLRoot = true;
-            Root xroot = (Root) object;
             version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
             encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
         }

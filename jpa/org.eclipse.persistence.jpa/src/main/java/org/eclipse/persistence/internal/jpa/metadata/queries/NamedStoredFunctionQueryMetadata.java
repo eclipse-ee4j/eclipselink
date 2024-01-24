@@ -77,8 +77,7 @@ public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryM
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof NamedStoredFunctionQueryMetadata) {
-            NamedStoredFunctionQueryMetadata query = (NamedStoredFunctionQueryMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedStoredFunctionQueryMetadata query) {
 
             return valuesMatch(this.returnParameter, query.getReturnParameter());
         }

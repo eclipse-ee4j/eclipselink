@@ -338,8 +338,7 @@ public class TestModel extends TestCollection {
             if (this.sessionLog.getLevel() != getSession().getSessionLog().getLevel()) {
                 System.out.println("Log level changed by test model:" + this);
             }
-            if (this.login instanceof DatabaseLogin) {
-                DatabaseLogin login = (DatabaseLogin)this.login;
+            if (this.login instanceof DatabaseLogin login) {
                 if (login.shouldBindAllParameters() != getSession().getLogin().shouldBindAllParameters()) {
                     System.out.println("Binding changed by test model:" + this);
                 }

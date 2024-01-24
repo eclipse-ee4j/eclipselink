@@ -49,17 +49,18 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
         ")";
 
     static final String CREATE_SIMPLESF_TABLE =
-        "CREATE TABLE SIMPLESF (" +
-            "\nEMPNO DECIMAL(4,0) NOT NULL," +
-            "\nENAME VARCHAR(10)," +
-            "\nJOB VARCHAR(9)," +
-            "\nMGR DECIMAL(4,0)," +
-            "\nHIREDATE DATE," +
-            "\nSAL DECIMAL(7,2)," +
-            "\nCOMM DECIMAL(7,2)," +
-            "\nDEPTNO DECIMAL(2,0)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE SIMPLESF (
+                    EMPNO DECIMAL(4,0) NOT NULL,
+                    ENAME VARCHAR(10),
+                    JOB VARCHAR(9),
+                    MGR DECIMAL(4,0),
+                    HIREDATE DATE,
+                    SAL DECIMAL(7,2),
+                    COMM DECIMAL(7,2),
+                    DEPTNO DECIMAL(2,0),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String[] POPULATE_SIMPLESF_TABLE = new String[] {
         "INSERT INTO SIMPLESF VALUES (7369,'SMITH','CLERK',7902," +
             "TO_DATE('1980-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),800,NULL,20)",
@@ -91,39 +92,41 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
             "TO_DATE('1982-01-23 00:00:00','YYYY-MM-DD HH24:MI:SS'),1300,NULL,10)"
     };
     static final String CREATE_SIMPLEPACKAGE2_PACKAGE =
-        "CREATE OR REPLACE PACKAGE SIMPLEPACKAGE2 AS" +
-            "\nFUNCTION FINDPLSQLMAXSAL RETURN DECIMAL;" +
-            "\nFUNCTION FINDPLSQLMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL;" +
-            "\nFUNCTION TEST_MULTI_OUT(P1 IN NUMBER, P2 OUT NUMBER, P3 OUT NUMBER) RETURN NUMBER;" +
-            "\nFUNCTION GET_XMLTYPE(W IN DBWS_XML_WRAPPER) RETURN XMLTYPE;" +
-        "\nEND SIMPLEPACKAGE2;";
+            """
+                    CREATE OR REPLACE PACKAGE SIMPLEPACKAGE2 AS
+                    FUNCTION FINDPLSQLMAXSAL RETURN DECIMAL;
+                    FUNCTION FINDPLSQLMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL;
+                    FUNCTION TEST_MULTI_OUT(P1 IN NUMBER, P2 OUT NUMBER, P3 OUT NUMBER) RETURN NUMBER;
+                    FUNCTION GET_XMLTYPE(W IN DBWS_XML_WRAPPER) RETURN XMLTYPE;
+                    END SIMPLEPACKAGE2;""";
     static final String CREATE_SIMPLEPACKAGE2_BODY =
-        "CREATE OR REPLACE PACKAGE BODY SIMPLEPACKAGE2 AS" +
-            "\nFUNCTION FINDPLSQLMAXSAL RETURN DECIMAL AS" +
-            "\nMAXSAL DECIMAL(7,2);" +
-            "\nBEGIN" +
-                "\nSELECT max(SAL) INTO MAXSAL FROM SIMPLESF;" +
-                "\nRETURN(MAXSAL);" +
-            "\nEND FINDPLSQLMAXSAL;" +
-            "\nFUNCTION FINDPLSQLMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL AS" +
-            "\nMAXSAL DECIMAL(7,2);" +
-            "\nBEGIN" +
-                "\nSELECT max(SAL) INTO MAXSAL FROM SIMPLESF WHERE DEPTNO = DEPT;" +
-                "\nRETURN(MAXSAL);" +
-            "\nEND FINDPLSQLMAXSALFORDEPT;" +
-            "\nFUNCTION TEST_MULTI_OUT(P1 IN NUMBER, P2 OUT NUMBER, P3 OUT NUMBER) RETURN NUMBER AS" +
-            "\nBEGIN" +
-                "\nP2 := P1 + 1;" +
-                "\nP3 := P2 + 1;" +
-                "\nRETURN 666;" +
-            "\nEND TEST_MULTI_OUT;" +
-            "\nFUNCTION GET_XMLTYPE(W IN DBWS_XML_WRAPPER) RETURN XMLTYPE AS" +
-            "\nX XMLTYPE;" +
-            "\nBEGIN" +
-                "\nX := XMLTYPE(CONCAT(CONCAT('<some>', W.xmltext), '</some>'));" +
-                "\nRETURN X;" +
-            "\nEND GET_XMLTYPE;" +
-        "\nEND SIMPLEPACKAGE2;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY SIMPLEPACKAGE2 AS
+                    FUNCTION FINDPLSQLMAXSAL RETURN DECIMAL AS
+                    MAXSAL DECIMAL(7,2);
+                    BEGIN
+                    SELECT max(SAL) INTO MAXSAL FROM SIMPLESF;
+                    RETURN(MAXSAL);
+                    END FINDPLSQLMAXSAL;
+                    FUNCTION FINDPLSQLMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL AS
+                    MAXSAL DECIMAL(7,2);
+                    BEGIN
+                    SELECT max(SAL) INTO MAXSAL FROM SIMPLESF WHERE DEPTNO = DEPT;
+                    RETURN(MAXSAL);
+                    END FINDPLSQLMAXSALFORDEPT;
+                    FUNCTION TEST_MULTI_OUT(P1 IN NUMBER, P2 OUT NUMBER, P3 OUT NUMBER) RETURN NUMBER AS
+                    BEGIN
+                    P2 := P1 + 1;
+                    P3 := P2 + 1;
+                    RETURN 666;
+                    END TEST_MULTI_OUT;
+                    FUNCTION GET_XMLTYPE(W IN DBWS_XML_WRAPPER) RETURN XMLTYPE AS
+                    X XMLTYPE;
+                    BEGIN
+                    X := XMLTYPE(CONCAT(CONCAT('<some>', W.xmltext), '</some>'));
+                    RETURN X;
+                    END GET_XMLTYPE;
+                    END SIMPLEPACKAGE2;""";
     static final String DROP_SIMPLESF_TABLE =
         "DROP TABLE SIMPLESF";
     static final String DROP_SIMPLEPACKAGE2_PACKAGE =

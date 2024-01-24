@@ -42,10 +42,9 @@ public class Employee {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Employee)) {
+        if (obj == null || !(obj instanceof Employee emp)) {
             return false;
         }
-        Employee emp = (Employee) obj;
         if (this.address == null && emp.address != null) {
             return false;
         }
@@ -74,10 +73,9 @@ public class Employee {
     }
 
     public boolean equalsWithoutCyclicDependency(Object obj) {
-        if (obj == null || !(obj instanceof Employee)) {
+        if (obj == null || !(obj instanceof Employee emp)) {
             return false;
         }
-        Employee emp = (Employee) obj;
         if (this.address == null && emp.address != null) {
             return false;
         }

@@ -80,8 +80,7 @@ public class FetchGroupMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof FetchGroupMetadata) {
-            FetchGroupMetadata fetchGroup = (FetchGroupMetadata) objectToCompare;
+        if (objectToCompare instanceof FetchGroupMetadata fetchGroup) {
 
             if (! valuesMatch(m_name, fetchGroup.getName())) {
                 return false;

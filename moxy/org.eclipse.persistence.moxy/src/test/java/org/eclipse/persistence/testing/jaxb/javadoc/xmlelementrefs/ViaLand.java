@@ -24,10 +24,9 @@ public class ViaLand extends TransportType{
     public String truckCompany;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof ViaLand)) {
+        if (obj == null || !(obj instanceof ViaLand t)) {
             return false;
         }
-        ViaLand t = (ViaLand) obj;
 
         return t.transportTypeID == this.transportTypeID && t.transportCost == this.transportCost && t.truckCompany.equals(this.truckCompany);
     }

@@ -28,10 +28,9 @@ public class MyCalendarWithArray {
     public MyCalendarType[] date;
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof MyCalendarWithArray)) {
+        if (!(obj instanceof MyCalendarWithArray myCal)) {
             return false;
         }
-        MyCalendarWithArray myCal = (MyCalendarWithArray) obj;
         for (int i = 0; i < date.length; i++) {
             if(!(date[i].equals(myCal.date[i]))) {
                 return false;

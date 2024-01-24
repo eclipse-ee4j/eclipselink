@@ -35,14 +35,13 @@ public class JavaLogSessionNamespaceTest extends SessionsXMLValidationTest {
     public void verify() {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader(getSessionXmlFileName());
         Session session = SessionManager.getManager().getSession(loader, getSessionName(), this.getClass().getClassLoader(), false, false);
-        if (!(session.getSessionLog() instanceof JavaLog)) {
+        if (!(session.getSessionLog() instanceof JavaLog log)) {
             throw new TestErrorException("Failed to create TopLink Session Log");
         }
 
         String sessionName = session.getName(); // JavaLogSession
         String sessionNamespace = JavaLog.SESSION_TOPLINK_NAMESPACE + "." + sessionName;
 
-        JavaLog log = (JavaLog)session.getSessionLog();
         if (!log.getCategoryLoggers().containsKey(sessionNamespace)) {
             throw new TestErrorException("JavaLog did not contain expected session namespace: [" + sessionNamespace + "] for session name: [" + sessionName + "]");
         }

@@ -138,12 +138,13 @@ import static dbws.testing.DBWSTestSuite.runDdl;
 public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
     static final String CREATE_SOAP12_TABLE =
-        "CREATE TABLE IF NOT EXISTS soap12 (" +
-            "\nID DECIMAL(7,0) NOT NULL," +
-            "\nDESCRIPT VARCHAR(80)," +
-            "\nSTUFF MEDIUMBLOB," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS soap12 (
+                    ID DECIMAL(7,0) NOT NULL,
+                    DESCRIPT VARCHAR(80),
+                    STUFF MEDIUMBLOB,
+                    PRIMARY KEY (ID)
+                    )""";
     static final String DROP_SOAP12_TABLE =
         "DROP TABLE soap12";
 

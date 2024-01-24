@@ -98,9 +98,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof BasicMapAccessor) {
-
-            BasicMapAccessor basicMapAccessor = (BasicMapAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof BasicMapAccessor basicMapAccessor) {
 
             if (! valuesMatch(m_keyColumn, basicMapAccessor.getKeyColumn())) {
                 return false;

@@ -30,8 +30,7 @@ public abstract class SellingPoint {
         if (object == null) {
             return false;
         }
-        if (object instanceof SellingPoint) {
-            SellingPoint sellingPoint = (SellingPoint)object;
+        if (object instanceof SellingPoint sellingPoint) {
             if (description == null) {
                 if (sellingPoint.getDescription() != null) {
                     return false;

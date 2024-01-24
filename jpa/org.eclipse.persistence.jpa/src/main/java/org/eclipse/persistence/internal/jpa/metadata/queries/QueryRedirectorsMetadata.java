@@ -92,8 +92,7 @@ public class QueryRedirectorsMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof QueryRedirectorsMetadata) {
-            QueryRedirectorsMetadata queryRedirectors = (QueryRedirectorsMetadata) objectToCompare;
+        if (objectToCompare instanceof QueryRedirectorsMetadata queryRedirectors) {
 
             if (! valuesMatch(defaultQueryRedirectorName, queryRedirectors.getDefaultQueryRedirectorName())) {
                 return false;

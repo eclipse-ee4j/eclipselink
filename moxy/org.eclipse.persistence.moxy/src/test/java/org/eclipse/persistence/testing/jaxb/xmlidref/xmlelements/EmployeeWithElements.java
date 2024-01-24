@@ -38,10 +38,9 @@ public class EmployeeWithElements {
     public List<Object> addressOrPhone;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof EmployeeWithElements)) {
+        if (obj == null || !(obj instanceof EmployeeWithElements emp)) {
             return false;
         }
-        EmployeeWithElements emp = (EmployeeWithElements) obj;
         if(addressOrPhone.size() != emp.addressOrPhone.size()) {
             return false;
         }

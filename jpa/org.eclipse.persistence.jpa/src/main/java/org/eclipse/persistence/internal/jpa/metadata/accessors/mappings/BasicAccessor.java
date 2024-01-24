@@ -201,8 +201,7 @@ public class BasicAccessor extends DirectAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof BasicAccessor) {
-            BasicAccessor basicAccessor = (BasicAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof BasicAccessor basicAccessor) {
 
             if (! valuesMatch(m_mutable, basicAccessor.getMutable())) {
                 return false;

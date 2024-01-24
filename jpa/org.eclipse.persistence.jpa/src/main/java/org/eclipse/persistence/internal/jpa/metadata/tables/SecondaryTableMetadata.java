@@ -89,8 +89,7 @@ public class SecondaryTableMetadata extends TableMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof SecondaryTableMetadata) {
-            SecondaryTableMetadata secondaryTable = (SecondaryTableMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof SecondaryTableMetadata secondaryTable) {
 
             if (! valuesMatch(m_primaryKeyForeignKey, secondaryTable.getPrimaryKeyForeignKey())) {
                 return false;

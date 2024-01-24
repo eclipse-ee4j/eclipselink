@@ -74,8 +74,7 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof SerializedConverterMetadata) {
-            SerializedConverterMetadata serializer = (SerializedConverterMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof SerializedConverterMetadata serializer) {
 
             if (!valuesMatch(m_className, serializer.getClassName())) {
                 return false;

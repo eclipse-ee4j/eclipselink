@@ -22,11 +22,10 @@ public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keyba
     public ArrayList addresses;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Employee)) {
+        if (obj == null || !(obj instanceof Employee tgtEmp)) {
             return false;
         }
 
-        Employee tgtEmp = ((Employee) obj);
         ArrayList tgtAddresses = tgtEmp.addresses;
 
         if (this.addresses == null) {

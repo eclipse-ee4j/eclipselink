@@ -784,14 +784,12 @@ public class ExpressionOperator implements Serializable {
         if ((right == null) && (left == null)) {
             return true;
         }
-        if (!(right instanceof String) || !(left instanceof String)) {
+        if (!(right instanceof String likeString) || !(left instanceof String value)) {
             throw QueryException.cannotConformExpression();
         }
-        String likeString = (String)right;
         if (likeString.indexOf('_') != -1) {
             throw QueryException.cannotConformExpression();
         }
-        String value = (String)left;
         if (likeString.indexOf('%') == -1) {
             // No % symbols
             return left.equals(right);

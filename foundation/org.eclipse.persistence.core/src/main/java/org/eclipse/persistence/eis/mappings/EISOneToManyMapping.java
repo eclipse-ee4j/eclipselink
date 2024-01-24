@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1058,8 +1058,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                 Object values = row.getValues(this.getSourceForeignKeyFields().get(0));
 
                 if (values != null) {
-                    if (values instanceof Vector) {
-                        Vector<?> vals = (Vector<?>) values;
+                    if (values instanceof Vector<?> vals) {
                         int valuesSize = vals.size();
                         for (int j = 0; j < valuesSize; j++) {
                             AbstractRecord newRecord = this.descriptor.getObjectBuilder().createRecord(session);

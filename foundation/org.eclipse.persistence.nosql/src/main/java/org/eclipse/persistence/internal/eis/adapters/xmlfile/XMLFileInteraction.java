@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -114,8 +114,7 @@ public class XMLFileInteraction implements Interaction {
             // Either a value/string or list of element records is returned
             Object result = fileRecord.getValues(buildField(spec));
             EISDOMRecord output = new EISDOMRecord();
-            if (result instanceof List) {
-                List<?> results = (List<?>)result;
+            if (result instanceof List<?> results) {
                 output.setDOM(output.createNewDocument("results"));
                 for (int index = 0; index < results.size(); index++) {
                     output.add(new DatabaseField("result"), results.get(index));

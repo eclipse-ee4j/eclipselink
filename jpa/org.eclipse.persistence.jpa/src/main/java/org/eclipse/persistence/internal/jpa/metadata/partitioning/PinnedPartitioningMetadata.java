@@ -59,8 +59,7 @@ public class PinnedPartitioningMetadata extends AbstractPartitioningMetadata {
 
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof PinnedPartitioningMetadata)) {
-            PinnedPartitioningMetadata policy = (PinnedPartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof PinnedPartitioningMetadata policy)) {
 
             return valuesMatch(this.connectionPool, policy.getConnectionPool());
         }

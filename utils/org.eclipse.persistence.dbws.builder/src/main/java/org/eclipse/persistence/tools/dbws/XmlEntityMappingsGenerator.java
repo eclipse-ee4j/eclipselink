@@ -192,8 +192,7 @@ public class XmlEntityMappingsGenerator {
         // process database queries set on the descriptor
         for (DatabaseQuery query : queries) {
             if (query.getCall().isStoredFunctionCall()) {
-                if (query.getCall() instanceof PLSQLStoredFunctionCall) {
-                    PLSQLStoredFunctionCall call = (PLSQLStoredFunctionCall)query.getCall();
+                if (query.getCall() instanceof PLSQLStoredFunctionCall call) {
                     NamedPLSQLStoredFunctionQueryMetadata metadata = new NamedPLSQLStoredFunctionQueryMetadata();
 
                     metadata.setName(query.getName());
@@ -286,8 +285,7 @@ public class XmlEntityMappingsGenerator {
                     storedFuncs.add(metadata);
                 }
             } else if (query.getCall().isStoredProcedureCall()) {
-                if (query.getCall() instanceof PLSQLStoredProcedureCall) {
-                    PLSQLStoredProcedureCall call = (PLSQLStoredProcedureCall)query.getCall();
+                if (query.getCall() instanceof PLSQLStoredProcedureCall call) {
                     if (plsqlStoredProcs == null) {
                         plsqlStoredProcs = new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>();
                     }

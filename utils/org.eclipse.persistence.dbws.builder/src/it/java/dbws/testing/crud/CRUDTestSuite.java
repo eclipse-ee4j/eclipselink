@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,11 +47,12 @@ import dbws.testing.DBWSTestSuite;
 public class CRUDTestSuite extends DBWSTestSuite {
 
     static final String CREATE_CRUD_TABLE =
-        "CREATE TABLE IF NOT EXISTS crud_table (" +
-            "\nID NUMERIC NOT NULL," +
-            "\nNAME VARCHAR(80)," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS crud_table (
+                    ID NUMERIC NOT NULL,
+                    NAME VARCHAR(80),
+                    PRIMARY KEY (ID)
+                    )""";
     static final String[] POPULATE_CRUD_TABLE = new String[] {
         "insert into crud_table values (1, 'crud1')",
         "insert into crud_table values (2, 'crud2')",

@@ -101,48 +101,51 @@ public class LoadBuildSystem {
      * Creates MySQL tables used to store performance data.
      */
     public void createTables() {
-        session.executeNonSelectingCall(new SQLCall("Create table LOADBUILD (\n" +
-                "id int not null auto_increment, \n" +
-                "lbtimestamp date, \n" +
-                "lberrors int, \n" +
-                "fatalErrors int, \n" +
-                "loginChoice varchar(100), \n" +
-                "os varchar(100), \n" +
-                "toplink_version varchar(100), \n" +
-                "jvm varchar(100), \n" +
-                "machine varchar(100), \n" +
-                "numberOfTests int, \n" +
-                "lbuserName varchar(50), \n" +
-                "primary key (id))"));
+        session.executeNonSelectingCall(new SQLCall("""
+                Create table LOADBUILD (
+                id int not null auto_increment,\s
+                lbtimestamp date,\s
+                lberrors int,\s
+                fatalErrors int,\s
+                loginChoice varchar(100),\s
+                os varchar(100),\s
+                toplink_version varchar(100),\s
+                jvm varchar(100),\s
+                machine varchar(100),\s
+                numberOfTests int,\s
+                lbuserName varchar(50),\s
+                primary key (id))"""));
 
-        session.executeNonSelectingCall(new SQLCall("Create table RESULT (\n" +
-                "id int not null auto_increment, \n" +
-                "description varchar(2000), \n" +
-                "exception varchar(2000), \n" +
-                "name varchar(1000), \n" +
-                "outcome varchar(100), \n" +
-                "test_time int, \n" +
-                "total_time int, \n" +
-                "summaryId int, \n" +
-                "lbuildId int, \n" +
-                "primary key (id))"));
+        session.executeNonSelectingCall(new SQLCall("""
+                Create table RESULT (
+                id int not null auto_increment,\s
+                description varchar(2000),\s
+                exception varchar(2000),\s
+                name varchar(1000),\s
+                outcome varchar(100),\s
+                test_time int,\s
+                total_time int,\s
+                summaryId int,\s
+                lbuildId int,\s
+                primary key (id))"""));
 
-        session.executeNonSelectingCall(new SQLCall("Create table SUMMARY (\n" +
-                "id int not null auto_increment, \n" +
-                "description varchar(2000), \n" +
-                "setup_failures int, \n" +
-                "errors int, \n" +
-                "fatalErrors int, \n" +
-                "name varchar(1000), \n" +
-                "passed int, \n" +
-                "problems int, \n" +
-                "setupException varchar(2000), \n" +
-                "total_time int, \n" +
-                "totalTests int, \n" +
-                "warnings int, \n" +
-                "lbuildId int, \n" +
-                "parentId int, \n" +
-                "primary key (id))"));
+        session.executeNonSelectingCall(new SQLCall("""
+                Create table SUMMARY (
+                id int not null auto_increment,\s
+                description varchar(2000),\s
+                setup_failures int,\s
+                errors int,\s
+                fatalErrors int,\s
+                name varchar(1000),\s
+                passed int,\s
+                problems int,\s
+                setupException varchar(2000),\s
+                total_time int,\s
+                totalTests int,\s
+                warnings int,\s
+                lbuildId int,\s
+                parentId int,\s
+                primary key (id))"""));
 
         if (session.getPlatform().supportsUniqueKeyConstraints()
                 && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {

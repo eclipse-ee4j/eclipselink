@@ -87,8 +87,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof PrimaryKeyMetadata) {
-            PrimaryKeyMetadata primaryKey = (PrimaryKeyMetadata) objectToCompare;
+        if (objectToCompare instanceof PrimaryKeyMetadata primaryKey) {
 
             if (! valuesMatch(m_validation, primaryKey.getValidation())) {
                 return false;

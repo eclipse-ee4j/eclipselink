@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,10 +45,9 @@ public class LogFormatter extends SimpleFormatter {
      */
     @Override
     public synchronized String format(LogRecord record0) {
-        if (!(record0 instanceof EclipseLinkLogRecord)) {
+        if (!(record0 instanceof EclipseLinkLogRecord record)) {
             return super.format(record0);
         } else {
-            EclipseLinkLogRecord record = (EclipseLinkLogRecord)record0;
 
             //method is synchronized
             StringBuilder sb = new StringBuilder();

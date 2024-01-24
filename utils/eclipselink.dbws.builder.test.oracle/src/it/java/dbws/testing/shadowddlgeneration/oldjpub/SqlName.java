@@ -712,7 +712,7 @@ public class SqlName extends Name {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof SqlName)) {
+        if (!(obj instanceof SqlName n)) {
             return false;
         }
         boolean eq = (m_context == null || n.m_context == null || m_context.isEmpty() || n.m_context.isEmpty()) ? m_sourceName.equalsIgnoreCase(n.m_sourceName) : (m_context

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * Copyright (c) 2005, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2024 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -515,12 +515,10 @@ public class TestCascadeMerge extends JPA1Base {
     }
 
     private void verifyExistence(EntityManager em, Object entity) {
-        if (entity instanceof CascadingNode) {
-            CascadingNode node = (CascadingNode) entity;
+        if (entity instanceof CascadingNode node) {
             CascadingNode found = em.find(CascadingNode.class, node.getId());
             verify(found != null, "cascading node with id " + node.getId() + " not found");
-        } else if (entity instanceof CascadingNodeDescription) {
-            CascadingNodeDescription desc = (CascadingNodeDescription) entity;
+        } else if (entity instanceof CascadingNodeDescription desc) {
             CascadingNodeDescription found = em.find(CascadingNodeDescription.class, desc.getId());
             verify(found != null, "cascading node description with id " + desc.getId() + " not found");
         } else {
@@ -529,12 +527,10 @@ public class TestCascadeMerge extends JPA1Base {
     }
 
     private void verifyAbsence(EntityManager em, Object entity) {
-        if (entity instanceof CascadingNode) {
-            CascadingNode node = (CascadingNode) entity;
+        if (entity instanceof CascadingNode node) {
             CascadingNode found = em.find(CascadingNode.class, node.getId());
             verify(found == null, "cascading node with id " + node.getId() + " found");
-        } else if (entity instanceof CascadingNodeDescription) {
-            CascadingNodeDescription desc = (CascadingNodeDescription) entity;
+        } else if (entity instanceof CascadingNodeDescription desc) {
             CascadingNodeDescription found = em.find(CascadingNodeDescription.class, desc.getId());
             verify(found == null, "cascading node description with id " + desc.getId() + " found");
         } else {

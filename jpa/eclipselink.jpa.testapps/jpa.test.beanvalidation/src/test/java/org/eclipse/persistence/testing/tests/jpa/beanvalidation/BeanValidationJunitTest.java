@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -267,8 +267,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             assertFalse("Transaction not marked for roll back when ConstraintViolation is thrown", isTransactionActive(em));
             Throwable cause = e.getCause();
             while(cause != null) {
-                if (cause instanceof ConstraintViolationException){
-                    ConstraintViolationException cve = (ConstraintViolationException)cause;
+                if (cause instanceof ConstraintViolationException cve){
                     Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
                     ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
                     assertEquals("Invalid value should be " + invalidName, invalidName, constraintViolation.getInvalidValue());

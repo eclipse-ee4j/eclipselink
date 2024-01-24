@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -132,15 +132,13 @@ public class IndexedInteraction extends EISInteraction {
     @Override
     public AbstractRecord buildRow(jakarta.resource.cci.Record record, EISAccessor accessor) {
         AbstractRecord row = null;
-        if (record instanceof IndexedRecord) {
-            IndexedRecord indexedRecord = (IndexedRecord)record;
+        if (record instanceof IndexedRecord indexedRecord) {
             row = new DatabaseRecord(indexedRecord.size());
             for (int index = 0; index < indexedRecord.size(); index++) {
                 DatabaseField field = getOutputArguments().get(index);
                 row.put(field, indexedRecord.get(index));
             }
-        } else if (record instanceof MappedRecord) {
-            MappedRecord mappedRecord = (MappedRecord)record;
+        } else if (record instanceof MappedRecord mappedRecord) {
 
             // Handle the case of a single output argument of the entire row contained within the return record.
             if (getOutputArgumentNames().size() == 1) {

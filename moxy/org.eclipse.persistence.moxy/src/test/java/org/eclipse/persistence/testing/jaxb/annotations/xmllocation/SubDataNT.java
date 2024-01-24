@@ -39,11 +39,9 @@ public class SubDataNT {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof SubDataNT)) {
+        if (obj == null || !(obj instanceof SubDataNT d)) {
             return false;
         }
-
-        SubDataNT d = (SubDataNT) obj;
 
         if (!(d.info.equals(this.info))) {
             return false;

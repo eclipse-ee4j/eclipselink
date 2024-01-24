@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,24 +32,27 @@ import dbws.testing.DBWSTestSuite;
 public class ObjectTypeInLowercaseTestSuite extends DBWSTestSuite {
 
     static final String CREATE_ADDRESS_TYPE =
-        "create or replace\n" +
-        "TYPE address AS OBJECT(\n" +
-        "   street  VARCHAR2(100 BYTE),\n" +
-        "   houseNo VARCHAR2(100 BYTE),\n" +
-        "   city    VARCHAR2(100 BYTE)\n" +
-        ")";
+            """
+                    create or replace
+                    TYPE address AS OBJECT(
+                       street  VARCHAR2(100 BYTE),
+                       houseNo VARCHAR2(100 BYTE),
+                       city    VARCHAR2(100 BYTE)
+                    )""";
     static final String CREATE_PARTNER_TYPE =
-        "create or replace\n" +
-        "TYPE partner AS OBJECT(\n" +
-        "   firstname   VARCHAR2(50 BYTE),\n" +
-        "   surname     VARCHAR2(50 BYTE),\n" +
-        "   paddress    address\n" +
-        ")";
+            """
+                    create or replace
+                    TYPE partner AS OBJECT(
+                       firstname   VARCHAR2(50 BYTE),
+                       surname     VARCHAR2(50 BYTE),
+                       paddress    address
+                    )""";
     static final String CREATE_PROCEDURE =
-        "create or replace procedure getUserId(userId IN varchar2, userData OUT partner) as\n" +
-        "begin\n" +
-        "    userData := partner('John', userId, address('Sesame Street', '42', 'Duckburgh'));\n" +
-        "end getUserId;";
+            """
+                    create or replace procedure getUserId(userId IN varchar2, userData OUT partner) as
+                    begin
+                        userData := partner('John', userId, address('Sesame Street', '42', 'Duckburgh'));
+                    end getUserId;""";
     static final String DROP_ADDRESS_TYPE =
         "DROP TYPE address";
     static final String DROP_PARTNER_TYPE =

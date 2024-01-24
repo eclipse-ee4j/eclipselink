@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 2005, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -776,9 +776,8 @@ public class DerbyPlatform extends DB2Platform {
                 boolean firstBound = true;
                 if(second instanceof CollectionExpression) {
                     Object val = ((CollectionExpression) second).getValue();
-                    if (val instanceof Collection) {
+                    if (val instanceof Collection values) {
                         firstBound = false;
-                        Collection values = (Collection)val;
                         for(Object value : values) {
                             // If the value isn't a Constant/Parameter, this will suffice and the first should bind
                             if(value instanceof Expression && !((Expression)value).isValueExpression()) {
@@ -821,9 +820,8 @@ public class DerbyPlatform extends DB2Platform {
                 boolean firstBound = true;
                 if(second instanceof CollectionExpression) {
                     Object val = ((CollectionExpression) second).getValue();
-                    if (val instanceof Collection) {
+                    if (val instanceof Collection values) {
                         firstBound = false;
-                        Collection values = (Collection)val;
                         for(Object value : values) {
                             // If the value isn't a Constant/Parameter, this will suffice and the first should bind
                             if(value instanceof Expression && !((Expression)value).isValueExpression()) {

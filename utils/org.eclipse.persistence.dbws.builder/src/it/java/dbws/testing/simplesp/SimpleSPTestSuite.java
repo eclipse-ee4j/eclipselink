@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,17 +46,18 @@ import dbws.testing.DBWSTestSuite;
 public class SimpleSPTestSuite extends DBWSTestSuite {
 
     static final String CREATE_SIMPLESP_TABLE =
-        "CREATE TABLE IF NOT EXISTS simplesp (" +
-            "\nEMPNO decimal(4,0)," +
-            "\nENAME varchar(10)," +
-            "\nJOB varchar(9)," +
-            "\nMGR decimal(4,0)," +
-            "\nHIREDATE date," +
-            "\nSAL decimal(7,2)," +
-            "\nCOMM decimal(7,2)," +
-            "\nDEPTNO decimal(2)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS simplesp (
+                    EMPNO decimal(4,0),
+                    ENAME varchar(10),
+                    JOB varchar(9),
+                    MGR decimal(4,0),
+                    HIREDATE date,
+                    SAL decimal(7,2),
+                    COMM decimal(7,2),
+                    DEPTNO decimal(2),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static String[] POPULATE_SIMPLESP_TABLE = new String[] {
         "INSERT INTO simplesp VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20)",
         "INSERT INTO simplesp VALUES (7499,'ALLEN','SALESMAN',7698,'1981-2-20',1600,300,30)",
@@ -74,36 +75,42 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         "INSERT INTO simplesp VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10)"
     };
     static final String CREATE_NOARGSP_PROC =
-        "CREATE PROCEDURE NoArgSP()" +
-        "\nBEGIN" +
-        "\nEND";
+            """
+                    CREATE PROCEDURE NoArgSP()
+                    BEGIN
+                    END""";
     static final String CREATE_VARCHARSP_PROC =
-        "CREATE PROCEDURE VarcharSP(IN X VARCHAR(20))" +
-        "\nBEGIN" +
-        "\nEND";
+            """
+                    CREATE PROCEDURE VarcharSP(IN X VARCHAR(20))
+                    BEGIN
+                    END""";
     static final String CREATE_GETALL_PROC =
-        "CREATE PROCEDURE GetAll()" +
-        "\nBEGIN" +
-            "\nSELECT * FROM simplesp;" +
-        "\nEND";
+            """
+                    CREATE PROCEDURE GetAll()
+                    BEGIN
+                    SELECT * FROM simplesp;
+                    END""";
     static final String CREATE_FINDBYJOB_PROC =
-        "CREATE PROCEDURE FindByJob(IN J VARCHAR(29))" +
-        "\nBEGIN" +
-            "\nSELECT * FROM simplesp WHERE JOB LIKE J;" +
-        "\nEND";
+            """
+                    CREATE PROCEDURE FindByJob(IN J VARCHAR(29))
+                    BEGIN
+                    SELECT * FROM simplesp WHERE JOB LIKE J;
+                    END""";
     static final String CREATE_INOUTARGSP_PROC =
-        "CREATE PROCEDURE InOutArgsSP(IN T VARCHAR(20), OUT U VARCHAR(20), OUT V NUMERIC)" +
-        "\nBEGIN" +
-            "\nset U = CONCAT('barf-' , T);" +
-            "\nset V = 55;" +
-        "\nEND";
+            """
+                    CREATE PROCEDURE InOutArgsSP(IN T VARCHAR(20), OUT U VARCHAR(20), OUT V NUMERIC)
+                    BEGIN
+                    set U = CONCAT('barf-' , T);
+                    set V = 55;
+                    END""";
     static final String CREATE_GETSALARYBYID_PROC =
-        "CREATE PROCEDURE GetSalaryById(INOUT S NUMERIC)" +
-        "\nBEGIN" +
-            "\nDECLARE VAL NUMERIC;" +
-            "\nSELECT SAL INTO VAL FROM simplesp WHERE EMPNO LIKE S;" +
-            "\nSET S = VAL;" +
-        "\nEND";
+            """
+                    CREATE PROCEDURE GetSalaryById(INOUT S NUMERIC)
+                    BEGIN
+                    DECLARE VAL NUMERIC;
+                    SELECT SAL INTO VAL FROM simplesp WHERE EMPNO LIKE S;
+                    SET S = VAL;
+                    END""";
     static final String DROP_SIMPLESP_TABLE =
         "DROP TABLE simplesp";
     static final String DROP_NOARGSP_PROC =

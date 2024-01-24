@@ -64,8 +64,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
     }
 
     public static void uninstall(Session session) {
-        if (session.getSessionLog() instanceof SQLTrackingSessionLog) {
-            SQLTrackingSessionLog trackingLog = (SQLTrackingSessionLog) session.getSessionLog();
+        if (session.getSessionLog() instanceof SQLTrackingSessionLog trackingLog) {
             QuerySQLTracker tracker = trackingLog.getTracker();
             session.getEventManager().removeListener(tracker);
             session.setSessionLog(trackingLog.originalLog);
@@ -210,8 +209,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
             if (result == null) {
                 writer.write("NONE");
             } else {
-                if (result instanceof Object[]) {
-                    Object[] results = (Object[]) result;
+                if (result instanceof Object[] results) {
                     writer.write("<" + results.length + "> [");
                     for (int index = 0; index < results.length; index++) {
                         if (index > 0) {
@@ -222,8 +220,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
                         // if session is provided then may extract pk from
                         // object
                         if (session != null) {
-                            if (object instanceof FetchGroupTracker) {
-                                FetchGroupTracker tracker = (FetchGroupTracker) object;
+                            if (object instanceof FetchGroupTracker tracker) {
                                 // object.toString may trigger loading of the
                                 // whole object. To avoid that write the pk
                                 // only.

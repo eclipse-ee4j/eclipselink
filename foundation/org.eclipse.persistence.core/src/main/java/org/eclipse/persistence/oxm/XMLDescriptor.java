@@ -333,11 +333,10 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         }
 
         // BUG#2667762 - If the tag was empty this could be a string of whitespace.
-        if (!(fieldValue instanceof Vector)) {
+        if (!(fieldValue instanceof Vector nestedRows)) {
             return getObjectBuilder().createRecord(null);
         }
 
-        Vector nestedRows = (Vector) fieldValue;
         if (nestedRows.isEmpty()) {
             return getObjectBuilder().createRecord(null);
         } else {
@@ -764,16 +763,14 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             if(mapping.isObjectReferenceMapping()) {
                 this.hasReferenceMappings = true;
             }
-            if(mapping instanceof XMLChoiceObjectMapping) {
-                XMLChoiceObjectMapping choiceMapping = ((XMLChoiceObjectMapping)mapping);
+            if(mapping instanceof XMLChoiceObjectMapping choiceMapping) {
                 for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
                     if(((DatabaseMapping)next).isObjectReferenceMapping()) {
                         this.hasReferenceMappings = true;
                     }
                 }
             }
-            if(mapping instanceof XMLChoiceCollectionMapping) {
-                XMLChoiceCollectionMapping choiceMapping = ((XMLChoiceCollectionMapping)mapping);
+            if(mapping instanceof XMLChoiceCollectionMapping choiceMapping) {
                 for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
                     if(((DatabaseMapping)next).isObjectReferenceMapping()) {
                         this.hasReferenceMappings = true;

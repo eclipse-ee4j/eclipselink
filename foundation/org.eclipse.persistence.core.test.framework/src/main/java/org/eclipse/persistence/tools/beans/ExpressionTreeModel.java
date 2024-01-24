@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,15 +39,13 @@ public class ExpressionTreeModel implements TreeModel {
     @Override
     public Object getChild(Object parent, int index) {
         parent = ((ExpressionNode)parent).getExpression();
-        if (parent instanceof CompoundExpression) {
-            CompoundExpression expression = (CompoundExpression)parent;
+        if (parent instanceof CompoundExpression expression) {
             if (index == 0) {
                 return new ExpressionNode(expression.getFirstChild());
             } else if (index == 1) {
                 return new ExpressionNode(expression.getSecondChild());
             }
-        } else if (parent instanceof FunctionExpression) {
-            FunctionExpression expression = (FunctionExpression)parent;
+        } else if (parent instanceof FunctionExpression expression) {
             return new ExpressionNode(expression.getChildren().elementAt(index));
         }
 
@@ -59,8 +57,7 @@ public class ExpressionTreeModel implements TreeModel {
         parent = ((ExpressionNode)parent).getExpression();
         if (parent instanceof CompoundExpression) {
             return 2;
-        } else if (parent instanceof FunctionExpression) {
-            FunctionExpression expression = (FunctionExpression)parent;
+        } else if (parent instanceof FunctionExpression expression) {
             return expression.getChildren().size();
         } else {
             return 0;
@@ -71,15 +68,13 @@ public class ExpressionTreeModel implements TreeModel {
     public int getIndexOfChild(Object parent, Object child) {
         parent = ((ExpressionNode)parent).getExpression();
         child = ((ExpressionNode)child).getExpression();
-        if (parent instanceof CompoundExpression) {
-            CompoundExpression expression = (CompoundExpression)parent;
+        if (parent instanceof CompoundExpression expression) {
             if (expression.getFirstChild() == child) {
                 return 0;
             } else if (expression.getSecondChild() == child) {
                 return 1;
             }
-        } else if (parent instanceof FunctionExpression) {
-            FunctionExpression expression = (FunctionExpression)parent;
+        } else if (parent instanceof FunctionExpression expression) {
             return expression.getChildren().indexOf(child);
         }
 

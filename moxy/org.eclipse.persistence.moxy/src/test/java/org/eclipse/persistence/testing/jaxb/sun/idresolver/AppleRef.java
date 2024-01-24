@@ -35,10 +35,9 @@ class AppleRef {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof AppleRef)) {
+        if (obj == null || !(obj instanceof AppleRef a)) {
             return false;
         }
-        AppleRef a = (AppleRef) obj;
 
         return this.ref.equals(a.ref);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -410,8 +410,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      */
     @Override
     protected Calendar convertObjectToCalendar(Object sourceObject) throws ConversionException {
-        if (sourceObject instanceof String) {
-            String sourceString = (String) sourceObject;
+        if (sourceObject instanceof String sourceString) {
             if (sourceString.lastIndexOf('T') != -1) {
                 return convertStringToCalendar((String) sourceObject, Constants.DATE_TIME_QNAME);
             } else {
@@ -614,8 +613,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
    @Override
    protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {
-       if(sourceObject instanceof String) {
-           String sourceString = (String) sourceObject;
+       if(sourceObject instanceof String sourceString) {
            if(sourceString.length() == 0) {
                return 0;
            } else if(sourceString.charAt(0) == PLUS) {
@@ -633,8 +631,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
   @Override
   protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
-      if(sourceObject instanceof String) {
-          String sourceString = (String) sourceObject;
+      if(sourceObject instanceof String sourceString) {
           if(sourceString.length() == 0) {
               return 0L;
           } else if(sourceString.charAt(0) == PLUS) {
@@ -652,8 +649,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    */
   @Override
   protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
-      if(sourceObject instanceof String) {
-          String sourceString = (String) sourceObject;
+      if(sourceObject instanceof String sourceString) {
           if(sourceString.length() == 0) {
               return 0;
           } else if(sourceString.charAt(0) == PLUS) {
@@ -673,8 +669,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    */
   @Override
   protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {
-      if(sourceObject instanceof String) {
-          String sourceString = (String) sourceObject;
+      if(sourceObject instanceof String sourceString) {
           if(sourceString.length() == 0) {
               return BigDecimal.ZERO;
           } else if(sourceString.charAt(0) == PLUS) {
@@ -690,8 +685,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
    @Override
    protected BigInteger convertObjectToBigInteger(Object sourceObject) throws ConversionException {
-       if(sourceObject instanceof String) {
-           String sourceString = (String) sourceObject;
+       if(sourceObject instanceof String sourceString) {
            if(sourceString.length() == 0) {
                return null;
            } else if(sourceString.charAt(0) == PLUS) {
@@ -707,8 +701,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
    @Override
    protected BigDecimal convertObjectToBigDecimal(Object sourceObject) throws ConversionException {
-       if(sourceObject instanceof String) {
-           String sourceString = (String) sourceObject;
+       if(sourceObject instanceof String sourceString) {
            if(sourceString.length() == 0) {
                return null;
            }
@@ -739,8 +732,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
     @Override
     protected Byte convertObjectToByte(Object sourceObject) throws ConversionException {
-        if(sourceObject instanceof String) {
-            String sourceString = (String) sourceObject;
+        if(sourceObject instanceof String sourceString) {
             if(sourceString.length() == 0) {
                 return 0;
             } else if(sourceString.charAt(0) == PLUS) {
@@ -1702,8 +1694,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
     public String convertListToString(Object sourceObject, QName schemaType) throws ConversionException {
         StringBuilder returnStringBuilder = new StringBuilder();
-        if (sourceObject instanceof List) {
-            List<?> list = (List<?>) sourceObject;
+        if (sourceObject instanceof List<?> list) {
             for (int i = 0, listSize = list.size(); i < listSize; i++) {
                 Object next = list.get(i);
                 if (i > 0) {

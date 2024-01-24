@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,11 +33,9 @@ public class Person2 {
             return false;
         }
 
-        if (!(arg0 instanceof Person2)) {
+        if (!(arg0 instanceof Person2 aPerson)) {
             return false;
         }
-
-        Person2 aPerson = (Person2) arg0;
 
         if (this.name == null && aPerson.name != null) {
             return false;

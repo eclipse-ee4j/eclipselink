@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,8 +81,7 @@ public class CollectionHolderNillable {
     }
     public boolean equals(Object compareObject){
 
-         if(compareObject instanceof CollectionHolderNillable){
-             CollectionHolderNillable compareCollectionHolder = ((CollectionHolderNillable)compareObject);
+         if(compareObject instanceof CollectionHolderNillable compareCollectionHolder){
              return compareCollections(collection1, compareCollectionHolder.collection1)
                     && compareCollections(collection2, compareCollectionHolder.collection2)
                     && compareCollections(collection3, compareCollectionHolder.collection3)

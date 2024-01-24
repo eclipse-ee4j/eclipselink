@@ -1121,9 +1121,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
         CopyGroup copyGroup = group.toCopyGroup();
         copyGroup.setSession(this);
-        if(originalObjectOrObjects instanceof Collection) {
+        if(originalObjectOrObjects instanceof Collection originalCollection) {
             // it's a collection - make sure all elements use the same instance of CopyGroup.
-            Collection originalCollection = (Collection)originalObjectOrObjects;
             Collection copies;
             if(originalCollection instanceof List) {
                 copies = new ArrayList();
@@ -1846,8 +1845,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             }
             return result;
         } catch (RuntimeException exception) {
-            if (exception instanceof QueryException) {
-                QueryException queryException = (QueryException)exception;
+            if (exception instanceof QueryException queryException) {
                 if (queryException.getQuery() == null) {
                     queryException.setQuery(query);
                 }
@@ -1857,8 +1855,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 if (queryException.getSession() == null) {
                     queryException.setSession(this);
                 }
-            } else if (exception instanceof DatabaseException) {
-                DatabaseException databaseException = (DatabaseException)exception;
+            } else if (exception instanceof DatabaseException databaseException) {
                 if (databaseException.getQuery() == null) {
                     databaseException.setQuery(query);
                 }
@@ -3189,8 +3186,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object handleException(RuntimeException exception) throws RuntimeException {
-        if ((exception instanceof EclipseLinkException)) {
-            EclipseLinkException eclipseLinkException = (EclipseLinkException)exception;
+        if ((exception instanceof EclipseLinkException eclipseLinkException)) {
             if (eclipseLinkException.getSession() == null) {
                 eclipseLinkException.setSession(this);
             }

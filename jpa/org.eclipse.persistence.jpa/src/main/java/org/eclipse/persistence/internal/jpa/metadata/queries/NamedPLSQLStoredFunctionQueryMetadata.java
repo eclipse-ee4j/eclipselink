@@ -74,8 +74,7 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof NamedPLSQLStoredFunctionQueryMetadata) {
-            NamedPLSQLStoredFunctionQueryMetadata query = (NamedPLSQLStoredFunctionQueryMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedPLSQLStoredFunctionQueryMetadata query) {
 
             return valuesMatch(returnParameter, query.getReturnParameter());
         }

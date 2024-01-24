@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,8 +104,7 @@ public class JavaFieldImpl implements JavaField {
         Class<?> fieldType = jField.getType();
         Type genericType = jField.getGenericType();
 
-        if (genericType instanceof ParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) genericType;
+        if (genericType instanceof ParameterizedType pType) {
             return new JavaClassImpl(pType, (Class) pType.getRawType(), javaModelImpl);
         }
         return javaModelImpl.getClass(fieldType);

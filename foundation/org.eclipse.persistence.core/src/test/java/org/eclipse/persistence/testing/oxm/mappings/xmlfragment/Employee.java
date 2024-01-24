@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,10 +37,9 @@ public class Employee {
     public org.w3c.dom.Node xmlNode;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof Employee)) {
+        if(!(obj instanceof Employee emp)) {
             return false;
         }
-        Employee emp = (Employee)obj;
         boolean equal = this.firstName.equals(emp.firstName);
         equal = equal && this.lastName.equals(emp.lastName);
         try {

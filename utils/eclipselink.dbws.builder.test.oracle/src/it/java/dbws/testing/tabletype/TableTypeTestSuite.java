@@ -75,21 +75,22 @@ import dbws.testing.DBWSTestSuite;
 public class TableTypeTestSuite extends DBWSTestSuite {
 
     static final String CREATE_TABLETYPE_TABLE =
-        "CREATE TABLE TABLETYPE (" +
-            "\nID NUMERIC(4) NOT NULL," +
-            "\nNAME VARCHAR(25)," +
-            "\nDEPTNO DECIMAL(2,0)," +
-            "\nDEPTNAME VARCHAR2(40)," +
-            "\nSECTION CHAR(1)," +
-            "\nSAL FLOAT," +
-            "\nCOMMISSION REAL," +
-            "\nSALES DOUBLE PRECISION," +
-            "\nBINID BLOB," +
-            "\nB BLOB," +
-            "\nC CLOB," +
-            "\nR RAW(3)," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE TABLETYPE (
+                    ID NUMERIC(4) NOT NULL,
+                    NAME VARCHAR(25),
+                    DEPTNO DECIMAL(2,0),
+                    DEPTNAME VARCHAR2(40),
+                    SECTION CHAR(1),
+                    SAL FLOAT,
+                    COMMISSION REAL,
+                    SALES DOUBLE PRECISION,
+                    BINID BLOB,
+                    B BLOB,
+                    C CLOB,
+                    R RAW(3),
+                    PRIMARY KEY (ID)
+                    )""";
     static final String[] POPULATE_TABLETYPE_TABLE = new String[] {
         "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R) VALUES (1, 'mike', 99, 'sales', 'a', 100000.80, 450.80, 10000.80, '1010', '010101010101010101010101010101', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '010101')",
         "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R) VALUES (2, 'merrick', 98, 'delivery', 'f', 20000, 0, 0, '0101', '020202020202020202020202020202', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', '020202')",
@@ -99,11 +100,12 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "DROP TABLE TABLETYPE";
 
     static final String CREATE_TABLETYPE2_TABLE =
-        "CREATE TABLE TABLETYPE2 (" +
-            "\nID NUMERIC(4) NOT NULL," +
-            "\nLR LONG RAW," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE TABLETYPE2 (
+                    ID NUMERIC(4) NOT NULL,
+                    LR LONG RAW,
+                    PRIMARY KEY (ID)
+                    )""";
     static final String[] POPULATE_TABLETYPE2_TABLE = new String[] {
         "INSERT INTO TABLETYPE2 (ID, LR) VALUES (66, '010101010101010101')",
         "INSERT INTO TABLETYPE2 (ID, LR) VALUES (67, '020202020202020202')",
@@ -602,486 +604,532 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     }
 
     protected static final String XSD =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\" targetNamespace=\"urn:tabletype\" xmlns=\"urn:tabletype\" elementFormDefault=\"qualified\">\n" +
-           "<xsd:complexType name=\"tabletype2Type\">\n" +
-              "<xsd:sequence>\n" +
-                "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
-                "<xsd:element name=\"lr\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>\n" +
-              "</xsd:sequence>\n" +
-           "</xsd:complexType>\n" +
-           "<xsd:complexType name=\"tabletypeType\">\n" +
-              "<xsd:sequence>\n" +
-                 "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
-                 "<xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"deptno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"deptname\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"section\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"sal\" type=\"xsd:double\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"commission\" type=\"xsd:double\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"sales\" type=\"xsd:double\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"binid\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>\n" +
-                 "<xsd:element name=\"b\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>\n" +
-                 "<xsd:element name=\"c\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"r\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>\n" +
-              "</xsd:sequence>\n" +
-           "</xsd:complexType>\n" +
-           "<xsd:element name=\"tabletype2Type\" type=\"tabletype2Type\"/>\n" +
-           "<xsd:element name=\"tabletypeType\" type=\"tabletypeType\"/>\n" +
-        "</xsd:schema>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" targetNamespace="urn:tabletype" xmlns="urn:tabletype" elementFormDefault="qualified">
+                    <xsd:complexType name="tabletype2Type">
+                    <xsd:sequence>
+                    <xsd:element name="id" type="xsd:decimal"/>
+                    <xsd:element name="lr" type="xsd:base64Binary" minOccurs="0" nillable="true" xmime:expectedContentTypes="application/octet-stream"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="tabletypeType">
+                    <xsd:sequence>
+                    <xsd:element name="id" type="xsd:decimal"/>
+                    <xsd:element name="name" type="xsd:string" minOccurs="0" nillable="true"/>
+                    <xsd:element name="deptno" type="xsd:decimal" minOccurs="0" nillable="true"/>
+                    <xsd:element name="deptname" type="xsd:string" minOccurs="0" nillable="true"/>
+                    <xsd:element name="section" type="xsd:string" minOccurs="0" nillable="true"/>
+                    <xsd:element name="sal" type="xsd:double" minOccurs="0" nillable="true"/>
+                    <xsd:element name="commission" type="xsd:double" minOccurs="0" nillable="true"/>
+                    <xsd:element name="sales" type="xsd:double" minOccurs="0" nillable="true"/>
+                    <xsd:element name="binid" type="xsd:base64Binary" minOccurs="0" nillable="true" xmime:expectedContentTypes="application/octet-stream"/>
+                    <xsd:element name="b" type="xsd:base64Binary" minOccurs="0" nillable="true" xmime:expectedContentTypes="application/octet-stream"/>
+                    <xsd:element name="c" type="xsd:string" minOccurs="0" nillable="true"/>
+                    <xsd:element name="r" type="xsd:base64Binary" minOccurs="0" nillable="true" xmime:expectedContentTypes="application/octet-stream"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:element name="tabletype2Type" type="tabletype2Type"/>
+                    <xsd:element name="tabletypeType" type="tabletypeType"/>
+                    </xsd:schema>""";
 
     protected static final String WSDL =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<wsdl:definitions\n" +
-             "name=\"tabletypeService\"\n" +
-             "targetNamespace=\"urn:tabletypeService\"\n" +
-             "xmlns:ns1=\"urn:tabletype\"\n" +
-             "xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n" +
-             "xmlns:tns=\"urn:tabletypeService\"\n" +
-             "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-             "xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n" +
-             ">\n" +
-             "<wsdl:types>\n" +
-                "<xsd:schema elementFormDefault=\"qualified\" targetNamespace=\"urn:tabletypeService\" xmlns:tns=\"urn:tabletypeService\"\n" +
-                "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                "<xsd:import namespace=\"urn:tabletype\" schemaLocation=\"eclipselink-dbws-schema.xsd\"/>\n" +
-                "<xsd:complexType name=\"findByPrimaryKey_Tabletype2TypeResponseType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"result\">\n" +
-                         "<xsd:complexType>\n" +
-                            "<xsd:sequence>\n" +
-                               "<xsd:element ref=\"ns1:tabletype2Type\" minOccurs=\"0\"/>\n" +
-                            "</xsd:sequence>\n" +
-                         "</xsd:complexType>\n" +
-                      "</xsd:element>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"create_Tabletype2TypeRequestType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"theInstance\">\n" +
-                         "<xsd:complexType>\n" +
-                            "<xsd:sequence>\n" +
-                               "<xsd:element ref=\"ns1:tabletype2Type\"/>\n" +
-                            "</xsd:sequence>\n" +
-                         "</xsd:complexType>\n" +
-                      "</xsd:element>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findByPrimaryKey_Tabletype2TypeRequestType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findAll_TabletypeTypeRequestType\"/>\n" +
-                "<xsd:complexType name=\"findAll_Tabletype2TypeRequestType\"/>\n" +
-                "<xsd:complexType name=\"delete_Tabletype2TypeRequestType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"update_TabletypeTypeRequestType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"theInstance\">\n" +
-                         "<xsd:complexType>\n" +
-                            "<xsd:sequence>\n" +
-                               "<xsd:element ref=\"ns1:tabletypeType\"/>\n" +
-                            "</xsd:sequence>\n" +
-                         "</xsd:complexType>\n" +
-                      "</xsd:element>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findAll_TabletypeTypeResponseType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"result\">\n" +
-                         "<xsd:complexType>\n" +
-                            "<xsd:sequence>\n" +
-                               "<xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" ref=\"ns1:tabletypeType\"/>\n" +
-                            "</xsd:sequence>\n" +
-                         "</xsd:complexType>\n" +
-                      "</xsd:element>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"delete_TabletypeTypeRequestType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findByPrimaryKey_TabletypeTypeResponseType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"result\">\n" +
-                         "<xsd:complexType>\n" +
-                            "<xsd:sequence>\n" +
-                               "<xsd:element minOccurs=\"0\" ref=\"ns1:tabletypeType\"/>\n" +
-                            "</xsd:sequence>\n" +
-                         "</xsd:complexType>\n" +
-                      "</xsd:element>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findAll_Tabletype2TypeResponseType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"result\">\n" +
-                         "<xsd:complexType>\n" +
-                            "<xsd:sequence>\n" +
-                               "<xsd:element ref=\"ns1:tabletype2Type\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n" +
-                            "</xsd:sequence>\n" +
-                         "</xsd:complexType>\n" +
-                      "</xsd:element>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"update_Tabletype2TypeRequestType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"theInstance\">\n" +
-                         "<xsd:complexType>\n" +
-                            "<xsd:sequence>\n" +
-                               "<xsd:element ref=\"ns1:tabletype2Type\"/>\n" +
-                            "</xsd:sequence>\n" +
-                         "</xsd:complexType>\n" +
-                      "</xsd:element>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findByPrimaryKey_TabletypeTypeRequestType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"create_TabletypeTypeRequestType\">\n" +
-                   "<xsd:sequence>\n" +
-                      "<xsd:element name=\"theInstance\">\n" +
-                         "<xsd:complexType>\n" +
-                            "<xsd:sequence>\n" +
-                               "<xsd:element ref=\"ns1:tabletypeType\"/>\n" +
-                            "</xsd:sequence>\n" +
-                         "</xsd:complexType>\n" +
-                      "</xsd:element>\n" +
-                   "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-                "<xsd:element name=\"update_TabletypeType\" type=\"tns:update_TabletypeTypeRequestType\"/>\n" +
-                "<xsd:element name=\"create_Tabletype2Type\" type=\"tns:create_Tabletype2TypeRequestType\"/>\n" +
-                "<xsd:element name=\"findAll_TabletypeTypeResponse\" type=\"tns:findAll_TabletypeTypeResponseType\"/>\n" +
-                "<xsd:element name=\"update_Tabletype2Type\" type=\"tns:update_Tabletype2TypeRequestType\"/>\n" +
-                "<xsd:element name=\"findByPrimaryKey_TabletypeType\" type=\"tns:findByPrimaryKey_TabletypeTypeRequestType\"/>\n" +
-                "<xsd:element name=\"findAll_Tabletype2TypeResponse\" type=\"tns:findAll_Tabletype2TypeResponseType\"/>\n" +
-                "<xsd:element name=\"delete_Tabletype2Type\" type=\"tns:delete_Tabletype2TypeRequestType\"/>\n" +
-                "<xsd:element name=\"findAll_Tabletype2Type\" type=\"tns:findAll_Tabletype2TypeRequestType\"/>\n" +
-                "<xsd:element name=\"create_TabletypeType\" type=\"tns:create_TabletypeTypeRequestType\"/>\n" +
-                "<xsd:element name=\"findAll_TabletypeType\" type=\"tns:findAll_TabletypeTypeRequestType\"/>\n" +
-                "<xsd:element name=\"findByPrimaryKey_TabletypeTypeResponse\" type=\"tns:findByPrimaryKey_TabletypeTypeResponseType\"/>\n" +
-                "<xsd:element name=\"FaultType\">\n" +
-                   "<xsd:complexType>\n" +
-                      "<xsd:sequence>\n" +
-                         "<xsd:element name=\"faultCode\" type=\"xsd:string\"/>\n" +
-                         "<xsd:element name=\"faultString\" type=\"xsd:string\"/>\n" +
-                      "</xsd:sequence>\n" +
-                   "</xsd:complexType>\n" +
-                "</xsd:element>\n" +
-                "<xsd:element name=\"findByPrimaryKey_Tabletype2Type\" type=\"tns:findByPrimaryKey_Tabletype2TypeRequestType\"/>\n" +
-                "<xsd:element name=\"EmptyResponse\">\n" +
-                   "<xsd:complexType/>\n" +
-                "</xsd:element>\n" +
-                "<xsd:element name=\"findByPrimaryKey_Tabletype2TypeResponse\" type=\"tns:findByPrimaryKey_Tabletype2TypeResponseType\"/>\n" +
-                "<xsd:element name=\"delete_TabletypeType\" type=\"tns:delete_TabletypeTypeRequestType\"/>\n" +
-                "</xsd:schema>\n" +
-              "</wsdl:types>\n" +
-              "<wsdl:message name=\"delete_Tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"delete_Tabletype2TypeRequest\" element=\"tns:delete_Tabletype2Type\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"update_TabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"update_TabletypeTypeRequest\" element=\"tns:update_TabletypeType\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"findByPrimaryKey_TabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"findByPrimaryKey_TabletypeTypeRequest\" element=\"tns:findByPrimaryKey_TabletypeType\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"create_TabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"create_TabletypeTypeRequest\" element=\"tns:create_TabletypeType\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"findAll_Tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"findAll_Tabletype2TypeRequest\" element=\"tns:findAll_Tabletype2Type\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"update_Tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"update_Tabletype2TypeRequest\" element=\"tns:update_Tabletype2Type\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"create_Tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"create_Tabletype2TypeRequest\" element=\"tns:create_Tabletype2Type\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"findAll_TabletypeTypeResponse\">\n" +
-                 "<wsdl:part name=\"findAll_TabletypeTypeResponse\" element=\"tns:findAll_TabletypeTypeResponse\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"FaultType\">\n" +
-                 "<wsdl:part name=\"fault\" element=\"tns:FaultType\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"findByPrimaryKey_TabletypeTypeResponse\">\n" +
-                 "<wsdl:part name=\"findByPrimaryKey_TabletypeTypeResponse\" element=\"tns:findByPrimaryKey_TabletypeTypeResponse\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"findByPrimaryKey_Tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"findByPrimaryKey_Tabletype2TypeRequest\" element=\"tns:findByPrimaryKey_Tabletype2Type\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"findByPrimaryKey_Tabletype2TypeResponse\">\n" +
-                 "<wsdl:part name=\"findByPrimaryKey_Tabletype2TypeResponse\" element=\"tns:findByPrimaryKey_Tabletype2TypeResponse\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"EmptyResponse\">\n" +
-                 "<wsdl:part name=\"emptyResponse\" element=\"tns:EmptyResponse\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"findAll_Tabletype2TypeResponse\">\n" +
-                 "<wsdl:part name=\"findAll_Tabletype2TypeResponse\" element=\"tns:findAll_Tabletype2TypeResponse\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"findAll_TabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"findAll_TabletypeTypeRequest\" element=\"tns:findAll_TabletypeType\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:message name=\"delete_TabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"delete_TabletypeTypeRequest\" element=\"tns:delete_TabletypeType\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
-              "<wsdl:portType name=\"tabletypeService_Interface\">\n" +
-                 "<wsdl:operation name=\"update_TabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:update_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"update_TabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
-                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
-                 "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"delete_Tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:delete_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"delete_Tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
-                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
-                 "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"create_Tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:create_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"create_Tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
-                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
-                 "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"findAll_Tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:findAll_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output message=\"tns:findAll_Tabletype2TypeResponse\">\n" +"</wsdl:output>\n" +
-                 "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"create_TabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:create_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"create_TabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
-                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
-                 "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"findAll_TabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:findAll_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output message=\"tns:findAll_TabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
-                 "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"update_Tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:update_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"update_Tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
-                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
-                 "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"findByPrimaryKey_TabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:findByPrimaryKey_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output message=\"tns:findByPrimaryKey_TabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
-                 "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"findByPrimaryKey_Tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:findByPrimaryKey_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output message=\"tns:findByPrimaryKey_Tabletype2TypeResponse\">\n" +"</wsdl:output>\n" +
-                 "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"delete_TabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:delete_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"delete_TabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
-                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
-                 "</wsdl:operation>\n" +
-             "</wsdl:portType>\n" +
-             "<wsdl:binding name=\"tabletypeService_SOAP_HTTP\" type=\"tns:tabletypeService_Interface\">\n" +
-                "<soap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/>\n" +
-                "<wsdl:operation name=\"update_TabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:update_TabletypeType\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                   "<wsdl:fault name=\"FaultException\">\n" +
-                       "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
-                   "</wsdl:fault>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"delete_Tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:delete_Tabletype2Type\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                   "<wsdl:fault name=\"FaultException\">\n" +
-                      "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
-                   "</wsdl:fault>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"create_Tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:create_Tabletype2Type\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                   "<wsdl:fault name=\"FaultException\">\n" +
-                      "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
-                   "</wsdl:fault>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findAll_Tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:findAll_Tabletype2Type\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"create_TabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:create_TabletypeType\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                   "<wsdl:fault name=\"FaultException\">\n" +
-                      "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
-                   "</wsdl:fault>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findAll_TabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:findAll_TabletypeType\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"update_Tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:update_Tabletype2Type\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                   "<wsdl:fault name=\"FaultException\">\n" +
-                       "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
-                   "</wsdl:fault>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findByPrimaryKey_TabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:findByPrimaryKey_TabletypeType\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findByPrimaryKey_Tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:findByPrimaryKey_Tabletype2Type\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"delete_TabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:delete_TabletypeType\"/>\n" +
-                   "<wsdl:input>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:input>\n" +
-                   "<wsdl:output>\n" +
-                      "<soap:body use=\"literal\"/>\n" +
-                   "</wsdl:output>\n" +
-                   "<wsdl:fault name=\"FaultException\">\n" +
-                      "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
-                   "</wsdl:fault>\n" +
-                "</wsdl:operation>\n" +
-             "</wsdl:binding>\n" +
-             "<wsdl:service name=\"tabletypeService\">\n" +
-                "<wsdl:port name=\"tabletypeServicePort\" binding=\"tns:tabletypeService_SOAP_HTTP\">\n" +
-                   "<soap:address location=\"REPLACE_WITH_ENDPOINT_ADDRESS\"/>\n" +
-                "</wsdl:port>\n" +
-             "</wsdl:service>\n" +
-        "</wsdl:definitions>\n";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <wsdl:definitions
+                    name="tabletypeService"
+                    targetNamespace="urn:tabletypeService"
+                    xmlns:ns1="urn:tabletype"
+                    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                    xmlns:tns="urn:tabletypeService"
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                    >
+                    <wsdl:types>
+                    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:tabletypeService" xmlns:tns="urn:tabletypeService"
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                    <xsd:import namespace="urn:tabletype" schemaLocation="eclipselink-dbws-schema.xsd"/>
+                    <xsd:complexType name="findByPrimaryKey_Tabletype2TypeResponseType">
+                    <xsd:sequence>
+                    <xsd:element name="result">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element ref="ns1:tabletype2Type" minOccurs="0"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="create_Tabletype2TypeRequestType">
+                    <xsd:sequence>
+                    <xsd:element name="theInstance">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element ref="ns1:tabletype2Type"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="findByPrimaryKey_Tabletype2TypeRequestType">
+                    <xsd:sequence>
+                    <xsd:element name="id" type="xsd:decimal"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="findAll_TabletypeTypeRequestType"/>
+                    <xsd:complexType name="findAll_Tabletype2TypeRequestType"/>
+                    <xsd:complexType name="delete_Tabletype2TypeRequestType">
+                    <xsd:sequence>
+                    <xsd:element name="id" type="xsd:decimal"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="update_TabletypeTypeRequestType">
+                    <xsd:sequence>
+                    <xsd:element name="theInstance">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element ref="ns1:tabletypeType"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="findAll_TabletypeTypeResponseType">
+                    <xsd:sequence>
+                    <xsd:element name="result">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ns1:tabletypeType"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="delete_TabletypeTypeRequestType">
+                    <xsd:sequence>
+                    <xsd:element name="id" type="xsd:decimal"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="findByPrimaryKey_TabletypeTypeResponseType">
+                    <xsd:sequence>
+                    <xsd:element name="result">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element minOccurs="0" ref="ns1:tabletypeType"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="findAll_Tabletype2TypeResponseType">
+                    <xsd:sequence>
+                    <xsd:element name="result">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element ref="ns1:tabletype2Type" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="update_Tabletype2TypeRequestType">
+                    <xsd:sequence>
+                    <xsd:element name="theInstance">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element ref="ns1:tabletype2Type"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="findByPrimaryKey_TabletypeTypeRequestType">
+                    <xsd:sequence>
+                    <xsd:element name="id" type="xsd:decimal"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="create_TabletypeTypeRequestType">
+                    <xsd:sequence>
+                    <xsd:element name="theInstance">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element ref="ns1:tabletypeType"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:element name="update_TabletypeType" type="tns:update_TabletypeTypeRequestType"/>
+                    <xsd:element name="create_Tabletype2Type" type="tns:create_Tabletype2TypeRequestType"/>
+                    <xsd:element name="findAll_TabletypeTypeResponse" type="tns:findAll_TabletypeTypeResponseType"/>
+                    <xsd:element name="update_Tabletype2Type" type="tns:update_Tabletype2TypeRequestType"/>
+                    <xsd:element name="findByPrimaryKey_TabletypeType" type="tns:findByPrimaryKey_TabletypeTypeRequestType"/>
+                    <xsd:element name="findAll_Tabletype2TypeResponse" type="tns:findAll_Tabletype2TypeResponseType"/>
+                    <xsd:element name="delete_Tabletype2Type" type="tns:delete_Tabletype2TypeRequestType"/>
+                    <xsd:element name="findAll_Tabletype2Type" type="tns:findAll_Tabletype2TypeRequestType"/>
+                    <xsd:element name="create_TabletypeType" type="tns:create_TabletypeTypeRequestType"/>
+                    <xsd:element name="findAll_TabletypeType" type="tns:findAll_TabletypeTypeRequestType"/>
+                    <xsd:element name="findByPrimaryKey_TabletypeTypeResponse" type="tns:findByPrimaryKey_TabletypeTypeResponseType"/>
+                    <xsd:element name="FaultType">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element name="faultCode" type="xsd:string"/>
+                    <xsd:element name="faultString" type="xsd:string"/>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="findByPrimaryKey_Tabletype2Type" type="tns:findByPrimaryKey_Tabletype2TypeRequestType"/>
+                    <xsd:element name="EmptyResponse">
+                    <xsd:complexType/>
+                    </xsd:element>
+                    <xsd:element name="findByPrimaryKey_Tabletype2TypeResponse" type="tns:findByPrimaryKey_Tabletype2TypeResponseType"/>
+                    <xsd:element name="delete_TabletypeType" type="tns:delete_TabletypeTypeRequestType"/>
+                    </xsd:schema>
+                    </wsdl:types>
+                    <wsdl:message name="delete_Tabletype2TypeRequest">
+                    <wsdl:part name="delete_Tabletype2TypeRequest" element="tns:delete_Tabletype2Type">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="update_TabletypeTypeRequest">
+                    <wsdl:part name="update_TabletypeTypeRequest" element="tns:update_TabletypeType">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="findByPrimaryKey_TabletypeTypeRequest">
+                    <wsdl:part name="findByPrimaryKey_TabletypeTypeRequest" element="tns:findByPrimaryKey_TabletypeType">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="create_TabletypeTypeRequest">
+                    <wsdl:part name="create_TabletypeTypeRequest" element="tns:create_TabletypeType">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="findAll_Tabletype2TypeRequest">
+                    <wsdl:part name="findAll_Tabletype2TypeRequest" element="tns:findAll_Tabletype2Type">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="update_Tabletype2TypeRequest">
+                    <wsdl:part name="update_Tabletype2TypeRequest" element="tns:update_Tabletype2Type">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="create_Tabletype2TypeRequest">
+                    <wsdl:part name="create_Tabletype2TypeRequest" element="tns:create_Tabletype2Type">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="findAll_TabletypeTypeResponse">
+                    <wsdl:part name="findAll_TabletypeTypeResponse" element="tns:findAll_TabletypeTypeResponse">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="FaultType">
+                    <wsdl:part name="fault" element="tns:FaultType">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="findByPrimaryKey_TabletypeTypeResponse">
+                    <wsdl:part name="findByPrimaryKey_TabletypeTypeResponse" element="tns:findByPrimaryKey_TabletypeTypeResponse">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="findByPrimaryKey_Tabletype2TypeRequest">
+                    <wsdl:part name="findByPrimaryKey_Tabletype2TypeRequest" element="tns:findByPrimaryKey_Tabletype2Type">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="findByPrimaryKey_Tabletype2TypeResponse">
+                    <wsdl:part name="findByPrimaryKey_Tabletype2TypeResponse" element="tns:findByPrimaryKey_Tabletype2TypeResponse">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="EmptyResponse">
+                    <wsdl:part name="emptyResponse" element="tns:EmptyResponse">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="findAll_Tabletype2TypeResponse">
+                    <wsdl:part name="findAll_Tabletype2TypeResponse" element="tns:findAll_Tabletype2TypeResponse">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="findAll_TabletypeTypeRequest">
+                    <wsdl:part name="findAll_TabletypeTypeRequest" element="tns:findAll_TabletypeType">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:message name="delete_TabletypeTypeRequest">
+                    <wsdl:part name="delete_TabletypeTypeRequest" element="tns:delete_TabletypeType">
+                    </wsdl:part>
+                    </wsdl:message>
+                    <wsdl:portType name="tabletypeService_Interface">
+                    <wsdl:operation name="update_TabletypeType">
+                    <wsdl:input message="tns:update_TabletypeTypeRequest">
+                    </wsdl:input>
+                    <wsdl:output name="update_TabletypeTypeEmptyResponse" message="tns:EmptyResponse">
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException" message="tns:FaultType">
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="delete_Tabletype2Type">
+                    <wsdl:input message="tns:delete_Tabletype2TypeRequest">
+                    </wsdl:input>
+                    <wsdl:output name="delete_Tabletype2TypeEmptyResponse" message="tns:EmptyResponse">
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException" message="tns:FaultType">
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="create_Tabletype2Type">
+                    <wsdl:input message="tns:create_Tabletype2TypeRequest">
+                    </wsdl:input>
+                    <wsdl:output name="create_Tabletype2TypeEmptyResponse" message="tns:EmptyResponse">
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException" message="tns:FaultType">
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="findAll_Tabletype2Type">
+                    <wsdl:input message="tns:findAll_Tabletype2TypeRequest">
+                    </wsdl:input>
+                    <wsdl:output message="tns:findAll_Tabletype2TypeResponse">
+                    </wsdl:output>
+                    </wsdl:operation>
+                    <wsdl:operation name="create_TabletypeType">
+                    <wsdl:input message="tns:create_TabletypeTypeRequest">
+                    </wsdl:input>
+                    <wsdl:output name="create_TabletypeTypeEmptyResponse" message="tns:EmptyResponse">
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException" message="tns:FaultType">
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="findAll_TabletypeType">
+                    <wsdl:input message="tns:findAll_TabletypeTypeRequest">
+                    </wsdl:input>
+                    <wsdl:output message="tns:findAll_TabletypeTypeResponse">
+                    </wsdl:output>
+                    </wsdl:operation>
+                    <wsdl:operation name="update_Tabletype2Type">
+                    <wsdl:input message="tns:update_Tabletype2TypeRequest">
+                    </wsdl:input>
+                    <wsdl:output name="update_Tabletype2TypeEmptyResponse" message="tns:EmptyResponse">
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException" message="tns:FaultType">
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="findByPrimaryKey_TabletypeType">
+                    <wsdl:input message="tns:findByPrimaryKey_TabletypeTypeRequest">
+                    </wsdl:input>
+                    <wsdl:output message="tns:findByPrimaryKey_TabletypeTypeResponse">
+                    </wsdl:output>
+                    </wsdl:operation>
+                    <wsdl:operation name="findByPrimaryKey_Tabletype2Type">
+                    <wsdl:input message="tns:findByPrimaryKey_Tabletype2TypeRequest">
+                    </wsdl:input>
+                    <wsdl:output message="tns:findByPrimaryKey_Tabletype2TypeResponse">
+                    </wsdl:output>
+                    </wsdl:operation>
+                    <wsdl:operation name="delete_TabletypeType">
+                    <wsdl:input message="tns:delete_TabletypeTypeRequest">
+                    </wsdl:input>
+                    <wsdl:output name="delete_TabletypeTypeEmptyResponse" message="tns:EmptyResponse">
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException" message="tns:FaultType">
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    </wsdl:portType>
+                    <wsdl:binding name="tabletypeService_SOAP_HTTP" type="tns:tabletypeService_Interface">
+                    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+                    <wsdl:operation name="update_TabletypeType">
+                    <soap:operation soapAction="urn:tabletypeService:update_TabletypeType"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException">
+                    <soap:fault name="FaultException" use="literal"/>
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="delete_Tabletype2Type">
+                    <soap:operation soapAction="urn:tabletypeService:delete_Tabletype2Type"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException">
+                    <soap:fault name="FaultException" use="literal"/>
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="create_Tabletype2Type">
+                    <soap:operation soapAction="urn:tabletypeService:create_Tabletype2Type"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException">
+                    <soap:fault name="FaultException" use="literal"/>
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="findAll_Tabletype2Type">
+                    <soap:operation soapAction="urn:tabletypeService:findAll_Tabletype2Type"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    </wsdl:operation>
+                    <wsdl:operation name="create_TabletypeType">
+                    <soap:operation soapAction="urn:tabletypeService:create_TabletypeType"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException">
+                    <soap:fault name="FaultException" use="literal"/>
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="findAll_TabletypeType">
+                    <soap:operation soapAction="urn:tabletypeService:findAll_TabletypeType"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    </wsdl:operation>
+                    <wsdl:operation name="update_Tabletype2Type">
+                    <soap:operation soapAction="urn:tabletypeService:update_Tabletype2Type"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException">
+                    <soap:fault name="FaultException" use="literal"/>
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    <wsdl:operation name="findByPrimaryKey_TabletypeType">
+                    <soap:operation soapAction="urn:tabletypeService:findByPrimaryKey_TabletypeType"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    </wsdl:operation>
+                    <wsdl:operation name="findByPrimaryKey_Tabletype2Type">
+                    <soap:operation soapAction="urn:tabletypeService:findByPrimaryKey_Tabletype2Type"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    </wsdl:operation>
+                    <wsdl:operation name="delete_TabletypeType">
+                    <soap:operation soapAction="urn:tabletypeService:delete_TabletypeType"/>
+                    <wsdl:input>
+                    <soap:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output>
+                    <soap:body use="literal"/>
+                    </wsdl:output>
+                    <wsdl:fault name="FaultException">
+                    <soap:fault name="FaultException" use="literal"/>
+                    </wsdl:fault>
+                    </wsdl:operation>
+                    </wsdl:binding>
+                    <wsdl:service name="tabletypeService">
+                    <wsdl:port name="tabletypeServicePort" binding="tns:tabletypeService_SOAP_HTTP">
+                    <soap:address location="REPLACE_WITH_ENDPOINT_ADDRESS"/>
+                    </wsdl:port>
+                    </wsdl:service>
+                    </wsdl:definitions>
+                    """;
 
     protected static final String OR_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        "\n<orm:entity-mappings xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\">" +
-        "\n  <orm:entity access=\"VIRTUAL\" class=\"tabletype.Tabletype\">" +
-        "\n    <orm:table name=\"TABLETYPE\"/>" +
-        "\n    <orm:named-native-query name=\"findByPrimaryKey_TabletypeType\" result-class=\"tabletype.Tabletype\">" +
-        "\n      <orm:query>SELECT * FROM TABLETYPE WHERE (ID = ?1)</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"findAll_TabletypeType\" result-class=\"tabletype.Tabletype\">" +
-        "\n      <orm:query>SELECT * FROM TABLETYPE</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"update_TabletypeType\">" +
-        "\n      <orm:query>UPDATE TABLETYPE SET NAME = ?2, DEPTNO = ?3, DEPTNAME = ?4, SECTION = ?5, SAL = ?6, COMMISSION = ?7, SALES = ?8, BINID = ?9, B = ?10, C = ?11, R = ?12 WHERE (ID = ?1)</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"create_TabletypeType\">" +
-        "\n      <orm:query>INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"delete_TabletypeType\">" +
-        "\n      <orm:query>DELETE FROM TABLETYPE WHERE (ID = ?1)</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:attributes>" +
-        "\n      <orm:id attribute-type=\"java.math.BigInteger\" name=\"id\">" +
-        "\n        <orm:column name=\"ID\"/>" +
-        "\n      </orm:id>" +
-        "\n      <orm:basic attribute-type=\"java.lang.String\" name=\"name\">" +
-        "\n        <orm:column name=\"NAME\"/>" +
-        "\n      </orm:basic>" +
-        "\n      <orm:basic attribute-type=\"java.math.BigInteger\" name=\"deptno\">" +
-        "\n        <orm:column name=\"DEPTNO\"/>" +
-        "\n      </orm:basic>" +
-        "\n      <orm:basic attribute-type=\"java.lang.String\" name=\"deptname\">" +
-        "\n        <orm:column name=\"DEPTNAME\"/>" +
-        "\n      </orm:basic>" +
-        "\n      <orm:basic attribute-type=\"java.lang.Character\" name=\"section\">" +
-        "\n        <orm:column name=\"SECTION\"/>" +
-        "\n      </orm:basic>" +
-        "\n        <orm:basic attribute-type=\"java.lang.Float\" name=\"sal\">" +
-        "\n        <orm:column name=\"SAL\"/>" +
-        "\n      </orm:basic>" +
-        "\n      <orm:basic attribute-type=\"java.lang.Float\" name=\"commission\">" +
-        "\n        <orm:column name=\"COMMISSION\"/>" +
-        "\n      </orm:basic>" +
-        "\n      <orm:basic attribute-type=\"java.lang.Float\" name=\"sales\">" +
-        "\n        <orm:column name=\"SALES\"/>" +
-        "\n      </orm:basic>" +
-        "\n      <orm:basic attribute-type=\"[B\" name=\"binid\">" +
-        "\n        <orm:column name=\"BINID\"/>" +
-        "\n      </orm:basic>" +
-        "\n      <orm:basic attribute-type=\"[B\" name=\"b\">" +
-        "\n        <orm:column name=\"B\"/>" +
-        "\n      </orm:basic>" +
-        "\n      <orm:basic attribute-type=\"[Ljava.lang.Character;\" name=\"c\">" +
-        "\n        <orm:column name=\"C\"/>" +
-        "\n      </orm:basic>" +
-        "\n      <orm:basic attribute-type=\"[B\" name=\"r\">" +
-        "\n        <orm:column name=\"R\"/>" +
-        "\n      </orm:basic>" +
-        "\n    </orm:attributes>" +
-        "\n  </orm:entity>" +
-        "\n  <orm:entity access=\"VIRTUAL\" class=\"tabletype.Tabletype2\">" +
-        "\n    <orm:table name=\"TABLETYPE2\"/>" +
-        "\n    <orm:named-native-query name=\"findByPrimaryKey_Tabletype2Type\" result-class=\"tabletype.Tabletype2\">" +
-        "\n      <orm:query>SELECT * FROM TABLETYPE2 WHERE (ID = ?1)</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"findAll_Tabletype2Type\" result-class=\"tabletype.Tabletype2\">" +
-        "\n      <orm:query>SELECT * FROM TABLETYPE2</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"delete_Tabletype2Type\">" +
-        "\n      <orm:query>DELETE FROM TABLETYPE2 WHERE (ID = ?1)</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"create_Tabletype2Type\">" +
-        "\n      <orm:query>INSERT INTO TABLETYPE2 (ID, LR) VALUES (?1, ?2)</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"update_Tabletype2Type\">" +
-        "\n      <orm:query>UPDATE TABLETYPE2 SET LR = ?2 WHERE (ID = ?1)</orm:query>" +
-        "\n    </orm:named-native-query>" +
-        "\n    <orm:attributes>" +
-        "\n      <orm:id attribute-type=\"java.math.BigInteger\" name=\"id\">" +
-        "\n        <orm:column name=\"ID\"/>" +
-        "\n      </orm:id>" +
-        "\n      <orm:basic attribute-type=\"[B\" name=\"lr\">" +
-        "\n        <orm:column name=\"LR\"/>" +
-        "\n      </orm:basic>" +
-        "\n    </orm:attributes>" +
-        "\n  </orm:entity>" +
-        "\n</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+                    <orm:entity-mappings xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd">
+                      <orm:entity access="VIRTUAL" class="tabletype.Tabletype">
+                        <orm:table name="TABLETYPE"/>
+                        <orm:named-native-query name="findByPrimaryKey_TabletypeType" result-class="tabletype.Tabletype">
+                          <orm:query>SELECT * FROM TABLETYPE WHERE (ID = ?1)</orm:query>
+                        </orm:named-native-query>
+                        <orm:named-native-query name="findAll_TabletypeType" result-class="tabletype.Tabletype">
+                          <orm:query>SELECT * FROM TABLETYPE</orm:query>
+                        </orm:named-native-query>
+                        <orm:named-native-query name="update_TabletypeType">
+                          <orm:query>UPDATE TABLETYPE SET NAME = ?2, DEPTNO = ?3, DEPTNAME = ?4, SECTION = ?5, SAL = ?6, COMMISSION = ?7, SALES = ?8, BINID = ?9, B = ?10, C = ?11, R = ?12 WHERE (ID = ?1)</orm:query>
+                        </orm:named-native-query>
+                        <orm:named-native-query name="create_TabletypeType">
+                          <orm:query>INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)</orm:query>
+                        </orm:named-native-query>
+                        <orm:named-native-query name="delete_TabletypeType">
+                          <orm:query>DELETE FROM TABLETYPE WHERE (ID = ?1)</orm:query>
+                        </orm:named-native-query>
+                        <orm:attributes>
+                          <orm:id attribute-type="java.math.BigInteger" name="id">
+                            <orm:column name="ID"/>
+                          </orm:id>
+                          <orm:basic attribute-type="java.lang.String" name="name">
+                            <orm:column name="NAME"/>
+                          </orm:basic>
+                          <orm:basic attribute-type="java.math.BigInteger" name="deptno">
+                            <orm:column name="DEPTNO"/>
+                          </orm:basic>
+                          <orm:basic attribute-type="java.lang.String" name="deptname">
+                            <orm:column name="DEPTNAME"/>
+                          </orm:basic>
+                          <orm:basic attribute-type="java.lang.Character" name="section">
+                            <orm:column name="SECTION"/>
+                          </orm:basic>
+                            <orm:basic attribute-type="java.lang.Float" name="sal">
+                            <orm:column name="SAL"/>
+                          </orm:basic>
+                          <orm:basic attribute-type="java.lang.Float" name="commission">
+                            <orm:column name="COMMISSION"/>
+                          </orm:basic>
+                          <orm:basic attribute-type="java.lang.Float" name="sales">
+                            <orm:column name="SALES"/>
+                          </orm:basic>
+                          <orm:basic attribute-type="[B" name="binid">
+                            <orm:column name="BINID"/>
+                          </orm:basic>
+                          <orm:basic attribute-type="[B" name="b">
+                            <orm:column name="B"/>
+                          </orm:basic>
+                          <orm:basic attribute-type="[Ljava.lang.Character;" name="c">
+                            <orm:column name="C"/>
+                          </orm:basic>
+                          <orm:basic attribute-type="[B" name="r">
+                            <orm:column name="R"/>
+                          </orm:basic>
+                        </orm:attributes>
+                      </orm:entity>
+                      <orm:entity access="VIRTUAL" class="tabletype.Tabletype2">
+                        <orm:table name="TABLETYPE2"/>
+                        <orm:named-native-query name="findByPrimaryKey_Tabletype2Type" result-class="tabletype.Tabletype2">
+                          <orm:query>SELECT * FROM TABLETYPE2 WHERE (ID = ?1)</orm:query>
+                        </orm:named-native-query>
+                        <orm:named-native-query name="findAll_Tabletype2Type" result-class="tabletype.Tabletype2">
+                          <orm:query>SELECT * FROM TABLETYPE2</orm:query>
+                        </orm:named-native-query>
+                        <orm:named-native-query name="delete_Tabletype2Type">
+                          <orm:query>DELETE FROM TABLETYPE2 WHERE (ID = ?1)</orm:query>
+                        </orm:named-native-query>
+                        <orm:named-native-query name="create_Tabletype2Type">
+                          <orm:query>INSERT INTO TABLETYPE2 (ID, LR) VALUES (?1, ?2)</orm:query>
+                        </orm:named-native-query>
+                        <orm:named-native-query name="update_Tabletype2Type">
+                          <orm:query>UPDATE TABLETYPE2 SET LR = ?2 WHERE (ID = ?1)</orm:query>
+                        </orm:named-native-query>
+                        <orm:attributes>
+                          <orm:id attribute-type="java.math.BigInteger" name="id">
+                            <orm:column name="ID"/>
+                          </orm:id>
+                          <orm:basic attribute-type="[B" name="lr">
+                            <orm:column name="LR"/>
+                          </orm:basic>
+                        </orm:attributes>
+                      </orm:entity>
+                    </orm:entity-mappings>""";
 
     protected static final String OX_PROJECT =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +

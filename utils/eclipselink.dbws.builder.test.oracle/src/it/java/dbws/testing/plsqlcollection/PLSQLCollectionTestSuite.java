@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,65 +44,68 @@ import dbws.testing.DBWSTestSuite;
 public class PLSQLCollectionTestSuite extends DBWSTestSuite {
 
     static final String CREATE_PACKAGE2_PACKAGE =
-        "CREATE OR REPLACE PACKAGE PACKAGE2 AS" +
-            "\nTYPE tab1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
-            "\nTYPE ORECORD IS RECORD (" +
-                "\nO1 VARCHAR2(10)," +
-                "\nO2 DECIMAL(7,2)" +
-            "\n);" +
-            "\nTYPE TAB2 IS TABLE OF ORECORD INDEX BY BINARY_INTEGER;" +
-            "\nTYPE TAB3 IS TABLE OF BOOLEAN INDEX BY BINARY_INTEGER;" +
-            "\nPROCEDURE COPYTABLE(OLDTAB IN tab1, NEWTAB OUT tab1);" +
-            "\nPROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2);" +
-            "\nPROCEDURE COPYBOOLEANTABLE(OLDTAB IN TAB3, NEWTAB OUT TAB3);" +
-            "\nPROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT tab1);" +
-            "\nFUNCTION COPYTABLE2(OLDTAB IN tab1) RETURN tab1;" +
-            "\nFUNCTION SETRECORD2(INREC IN ORECORD) RETURN TAB2;" +
-        "\nEND PACKAGE2;";
+            """
+                    CREATE OR REPLACE PACKAGE PACKAGE2 AS
+                    TYPE tab1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;
+                    TYPE ORECORD IS RECORD (
+                    O1 VARCHAR2(10),
+                    O2 DECIMAL(7,2)
+                    );
+                    TYPE TAB2 IS TABLE OF ORECORD INDEX BY BINARY_INTEGER;
+                    TYPE TAB3 IS TABLE OF BOOLEAN INDEX BY BINARY_INTEGER;
+                    PROCEDURE COPYTABLE(OLDTAB IN tab1, NEWTAB OUT tab1);
+                    PROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2);
+                    PROCEDURE COPYBOOLEANTABLE(OLDTAB IN TAB3, NEWTAB OUT TAB3);
+                    PROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT tab1);
+                    FUNCTION COPYTABLE2(OLDTAB IN tab1) RETURN tab1;
+                    FUNCTION SETRECORD2(INREC IN ORECORD) RETURN TAB2;
+                    END PACKAGE2;""";
     static final String CREATE_PACKAGE2_BODY =
-        "CREATE OR REPLACE PACKAGE BODY PACKAGE2 AS" +
-            "\nPROCEDURE COPYTABLE(OLDTAB IN tab1, NEWTAB OUT tab1) AS" +
-            "\nBEGIN" +
-                "\nNEWTAB := OLDTAB;" +
-            "\nEND COPYTABLE;" +
-            "\nPROCEDURE COPYBOOLEANTABLE(OLDTAB IN TAB3, NEWTAB OUT TAB3) AS" +
-            "\nBEGIN" +
-                "\nNEWTAB := OLDTAB;" +
-            "\nEND COPYBOOLEANTABLE;" +
-            "\nPROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT tab1) AS" +
-            "\nBEGIN" +
-                "\nIF OLDTAB.COUNT > 0 THEN" +
-                    "\nFOR I IN OLDTAB.FIRST..OLDTAB.LAST LOOP" +
-                        "\nIF OLDTAB(I) = TRUE THEN" +
-                            "\nNEWTAB(I + 1 - OLDTAB.FIRST) := 'true';" +
-                        "\nELSE" +
-                            "\nNEWTAB(I + 1 - OLDTAB.FIRST) := 'false';" +
-                        "\nEND IF;"+
-                    "\nEND LOOP;" +
-                "\nEND IF;" +
-            "\nEND BOOLTOVARCHAR;" +
-            "\nPROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2) AS" +
-            "\nBEGIN" +
-                "\nNEWTAB(0) := INREC;" +
-            "\nEND SETRECORD;" +
-            "\nFUNCTION COPYTABLE2(OLDTAB IN tab1) RETURN tab1 IS NEWTAB tab1;" +
-            "\nBEGIN" +
-                "\nNEWTAB := OLDTAB;" +
-                "\nRETURN NEWTAB;" +
-            "\nEND COPYTABLE2;" +
-            "\nFUNCTION SETRECORD2(INREC IN ORECORD) RETURN TAB2 IS NEWTAB TAB2;" +
-            "\nBEGIN" +
-                "\nNEWTAB(0) := INREC;" +
-                "\nRETURN NEWTAB;" +
-            "\nEND SETRECORD2;" +
-        "\nEND PACKAGE2;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY PACKAGE2 AS
+                    PROCEDURE COPYTABLE(OLDTAB IN tab1, NEWTAB OUT tab1) AS
+                    BEGIN
+                    NEWTAB := OLDTAB;
+                    END COPYTABLE;
+                    PROCEDURE COPYBOOLEANTABLE(OLDTAB IN TAB3, NEWTAB OUT TAB3) AS
+                    BEGIN
+                    NEWTAB := OLDTAB;
+                    END COPYBOOLEANTABLE;
+                    PROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT tab1) AS
+                    BEGIN
+                    IF OLDTAB.COUNT > 0 THEN
+                    FOR I IN OLDTAB.FIRST..OLDTAB.LAST LOOP
+                    IF OLDTAB(I) = TRUE THEN
+                    NEWTAB(I + 1 - OLDTAB.FIRST) := 'true';
+                    ELSE
+                    NEWTAB(I + 1 - OLDTAB.FIRST) := 'false';
+                    END IF;
+                    END LOOP;
+                    END IF;
+                    END BOOLTOVARCHAR;
+                    PROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2) AS
+                    BEGIN
+                    NEWTAB(0) := INREC;
+                    END SETRECORD;
+                    FUNCTION COPYTABLE2(OLDTAB IN tab1) RETURN tab1 IS NEWTAB tab1;
+                    BEGIN
+                    NEWTAB := OLDTAB;
+                    RETURN NEWTAB;
+                    END COPYTABLE2;
+                    FUNCTION SETRECORD2(INREC IN ORECORD) RETURN TAB2 IS NEWTAB TAB2;
+                    BEGIN
+                    NEWTAB(0) := INREC;
+                    RETURN NEWTAB;
+                    END SETRECORD2;
+                    END PACKAGE2;""";
     static final String CREATE_PACKAGE2_TAB1_TYPE =
         "CREATE OR REPLACE TYPE PACKAGE2_tab1 AS TABLE OF VARCHAR2(111)";
     static final String CREATE_PACKAGE2_ORECORD_TYPE =
-        "CREATE OR REPLACE TYPE PACKAGE2_ORECORD AS OBJECT (" +
-            "\nO1 VARCHAR2(10)," +
-            "\nO2 DECIMAL(7,2)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE PACKAGE2_ORECORD AS OBJECT (
+                    O1 VARCHAR2(10),
+                    O2 DECIMAL(7,2)
+                    )""";
     static final String CREATE_PACKAGE2_TAB2_TYPE =
         "CREATE OR REPLACE TYPE PACKAGE2_TAB2 AS TABLE OF PACKAGE2_ORECORD";
     static final String CREATE_PACKAGE2_TAB3_TYPE =

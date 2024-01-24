@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -175,8 +175,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      */
     @Override
     public boolean addInto(Object element, Object container, AbstractSession session) {
-        if (element instanceof Map.Entry) {
-            Map.Entry record = (Map.Entry)element;
+        if (element instanceof Map.Entry record) {
             Object key = record.getKey();
             Object value = record.getValue();
             return addInto(key, value, container, session);

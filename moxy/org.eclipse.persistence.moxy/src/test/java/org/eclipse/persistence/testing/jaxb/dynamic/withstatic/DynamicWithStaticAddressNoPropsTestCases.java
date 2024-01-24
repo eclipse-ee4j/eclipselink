@@ -122,9 +122,7 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBWithJSONTestCa
   }
 
   private void compareDynamicEntities(Object testObject, Object controlObject) {
-      if(testObject instanceof DynamicEntity && controlObject instanceof DynamicEntity) {
-          DynamicEntity test = (DynamicEntity)testObject;
-          DynamicEntity control = (DynamicEntity)controlObject;
+      if(testObject instanceof DynamicEntity test && controlObject instanceof DynamicEntity control) {
           for(String key: ((DynamicEntityImpl)test).getPropertiesMap().keySet()) {
               Object testValue = test.get(key);
               Object controlValue = control.get(key);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -240,7 +240,13 @@ public class DefineAndGenerateAppInfoTNSTestCases extends DefineAndGenerateAppIn
 
     @Override
     protected String getTestControlString() {
-        String controlString = "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <someTag xmlns=\"theTNS\">blah blah itemTest</someTag>" + "\n" + "</xsd:appinfo>" + "\n" + "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <anotherTag xmlns=\"theTNS\">blah blah itemTest</anotherTag>" + "\n" + "</xsd:appinfo>";
+        String controlString = """
+                <xsd:appinfo source="itemTest" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                   <someTag xmlns="theTNS">blah blah itemTest</someTag>
+                </xsd:appinfo>
+                <xsd:appinfo source="itemTest" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                   <anotherTag xmlns="theTNS">blah blah itemTest</anotherTag>
+                </xsd:appinfo>""";
         return controlString;
     }
 }

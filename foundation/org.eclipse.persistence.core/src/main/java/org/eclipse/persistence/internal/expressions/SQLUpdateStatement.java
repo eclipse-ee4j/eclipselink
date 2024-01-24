@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,9 +76,8 @@ public class SQLUpdateStatement extends SQLModifyStatement {
                 DatabaseField field = (DatabaseField)fieldsForTable.elementAt(i);
                 writer.write(field.getNameDelimited(session.getPlatform()));
                 writer.write(" = ");
-                if(values.elementAt(i) instanceof Expression) {
+                if(values.elementAt(i) instanceof Expression exp) {
                     // the value in the modify row is an expression - assign it.
-                    Expression exp = (Expression)values.elementAt(i);
                     if(printer == null) {
                         printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false, getBuilder());
                         printer.setWriter(writer);

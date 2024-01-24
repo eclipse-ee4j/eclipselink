@@ -29,10 +29,9 @@ public class ClassC {
     }
 
     public boolean equals(Object obj){
-        if(!(obj instanceof ClassC)){
+        if(!(obj instanceof ClassC classCObj)){
             return false;
         }
-        ClassC classCObj = (ClassC)obj;
 
         if(classCValue == null){
             if(classCObj.getClassCValue() != null){

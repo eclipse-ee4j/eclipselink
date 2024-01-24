@@ -57,9 +57,8 @@ public class Project  {
 
   public boolean equals(Object object)
   {
-    if(!(object instanceof Project))
+    if(!(object instanceof Project projectObject))
       return false;
-    Project projectObject = (Project)object;
       return (this.getName().equals(projectObject.getName())) &&
               (this.getEmployees().containsAll(projectObject.getEmployees()));
   }

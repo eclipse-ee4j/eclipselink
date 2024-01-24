@@ -80,8 +80,7 @@ public class ValuePartitioningMetadata extends FieldPartitioningMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof ValuePartitioningMetadata)) {
-            ValuePartitioningMetadata policy = (ValuePartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof ValuePartitioningMetadata policy)) {
 
             if (!valuesMatch(this.defaultConnectionPool, policy.getDefaultConnectionPool())) {
                 return false;

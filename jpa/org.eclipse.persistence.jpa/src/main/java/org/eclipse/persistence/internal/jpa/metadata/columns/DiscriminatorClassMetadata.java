@@ -79,8 +79,7 @@ public class DiscriminatorClassMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof DiscriminatorClassMetadata) {
-            DiscriminatorClassMetadata discriminatorClass = (DiscriminatorClassMetadata) objectToCompare;
+        if (objectToCompare instanceof DiscriminatorClassMetadata discriminatorClass) {
 
             if (! valuesMatch(m_value, discriminatorClass.getValue())) {
                 return false;

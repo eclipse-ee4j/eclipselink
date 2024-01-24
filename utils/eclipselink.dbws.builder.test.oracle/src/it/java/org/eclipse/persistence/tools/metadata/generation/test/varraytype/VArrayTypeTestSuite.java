@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,14 +58,15 @@ public class VArrayTypeTestSuite {
     static final String CREATE_VCARRAY_VARRAY =
         "CREATE OR REPLACE TYPE VCARRAY AS VARRAY(4) OF VARCHAR2(20)";
     static final String CREATE_GETVCARRAY_PROC =
-        "CREATE OR REPLACE PROCEDURE GETVCARRAY(T IN VARCHAR, U OUT VCARRAY) AS" +
-        "\nBEGIN" +
-            "\nU := VCARRAY();" +
-            "\nU.EXTEND;" +
-            "\nU(1) := CONCAT('entry1-', T);" +
-            "\nU.EXTEND;" +
-            "\nU(2) := CONCAT('entry2-', T);" +
-        "\nEND GETVCARRAY;";
+            """
+                    CREATE OR REPLACE PROCEDURE GETVCARRAY(T IN VARCHAR, U OUT VCARRAY) AS
+                    BEGIN
+                    U := VCARRAY();
+                    U.EXTEND;
+                    U(1) := CONCAT('entry1-', T);
+                    U.EXTEND;
+                    U(2) := CONCAT('entry2-', T);
+                    END GETVCARRAY;""";
 
     static final String DROP_GETVCARRAY_PROC =
         "DROP PROCEDURE GETVCARRAY";
@@ -144,21 +145,20 @@ public class VArrayTypeTestSuite {
     }
 
     static final String typemetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:named-stored-procedure-query name=\"GETVCARRAY\" procedure-name=\"GETVCARRAY\" returns-result-set=\"false\">\n" +
-        "      <orm:parameter mode=\"IN\" name=\"T\" type=\"java.lang.String\" class=\"java.lang.String\" jdbc-type=\"12\" jdbc-type-name=\"VARCHAR\"/>\n" +
-        "      <orm:parameter mode=\"OUT\" name=\"U\" type=\"metadatagen.Vcarray\" class=\"metadatagen.Vcarray\" jdbc-type=\"2003\" jdbc-type-name=\"VCARRAY\"/>\n" +
-        "   </orm:named-stored-procedure-query>\n" +
-        "   <orm:oracle-array name=\"VCARRAY\" java-type=\"metadatagen.Vcarray\" nested-type=\"VARCHAR_TYPE\"/>\n" +
-        "   <orm:embeddable class=\"metadatagen.Vcarray\" access=\"VIRTUAL\">\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:array name=\"items\" target-class=\"VARCHAR2\" attribute-type=\"java.util.ArrayList\" database-type=\"VARCHAR2\">\n" +
-        "            <orm:column name=\"ITEMS\"/>\n" +
-        "         </orm:array>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:named-stored-procedure-query name="GETVCARRAY" procedure-name="GETVCARRAY" returns-result-set="false">
+                          <orm:parameter mode="IN" name="T" type="java.lang.String" class="java.lang.String" jdbc-type="12" jdbc-type-name="VARCHAR"/>
+                          <orm:parameter mode="OUT" name="U" type="metadatagen.Vcarray" class="metadatagen.Vcarray" jdbc-type="2003" jdbc-type-name="VCARRAY"/>
+                       </orm:named-stored-procedure-query>
+                       <orm:oracle-array name="VCARRAY" java-type="metadatagen.Vcarray" nested-type="VARCHAR_TYPE"/>
+                       <orm:embeddable class="metadatagen.Vcarray" access="VIRTUAL">
+                          <orm:attributes>
+                             <orm:array name="items" target-class="VARCHAR2" attribute-type="java.util.ArrayList" database-type="VARCHAR2">
+                                <orm:column name="ITEMS"/>
+                             </orm:array>
+                          </orm:attributes>
+                       </orm:embeddable>
+                    </orm:entity-mappings>""";
 }

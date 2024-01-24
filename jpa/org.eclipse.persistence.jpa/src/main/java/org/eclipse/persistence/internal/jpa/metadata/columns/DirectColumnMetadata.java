@@ -72,8 +72,7 @@ public class DirectColumnMetadata extends MetadataColumn {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof DirectColumnMetadata) {
-            DirectColumnMetadata directColumn = (DirectColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof DirectColumnMetadata directColumn) {
 
             if (! valuesMatch(m_nullable, directColumn.getNullable())) {
                 return false;

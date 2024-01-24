@@ -1041,8 +1041,7 @@ public class SQLSelectStatement extends SQLStatement {
 
         //check all fields for a match
         for (Object fieldOrExpression : fields) {
-            if (fieldOrExpression instanceof DatabaseField) {
-                DatabaseField field = (DatabaseField)fieldOrExpression;
+            if (fieldOrExpression instanceof DatabaseField field) {
                 DataExpression exp = (DataExpression)expression;
 
                 if (field.equals(orderByField)) {
@@ -1896,8 +1895,7 @@ public class SQLSelectStatement extends SQLStatement {
             Map.Entry entry = (Map.Entry)it.next();
             Object fieldOrExpression = entry.getValue();
 
-            if (fieldOrExpression instanceof Expression) {
-                Expression expression = (Expression)fieldOrExpression;
+            if (fieldOrExpression instanceof Expression expression) {
                 ExpressionBuilder originalBuilder = expression.getBuilder();
 
                 if (originalBuilder != primaryBuilder) {

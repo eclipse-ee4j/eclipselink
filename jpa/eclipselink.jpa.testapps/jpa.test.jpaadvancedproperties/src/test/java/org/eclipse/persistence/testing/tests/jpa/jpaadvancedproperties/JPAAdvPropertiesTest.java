@@ -97,9 +97,8 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
             List<SessionEventListener> listeners = session.getEventManager().getListeners();
             boolean doseCustomizedSessionEventListenerExists=false;
             for (Object aListener : listeners) {
-                if (aListener instanceof CustomizedSessionEventListener) {
+                if (aListener instanceof CustomizedSessionEventListener requiredListener) {
                     doseCustomizedSessionEventListenerExists = true;
-                    CustomizedSessionEventListener requiredListener = ((CustomizedSessionEventListener) aListener);
                     if (!requiredListener.preCommitTransaction) {
                         fail(" The preCommitTransaction event did not fire");
                     }

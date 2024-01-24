@@ -122,8 +122,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof StoredProcedureParameterMetadata) {
-            StoredProcedureParameterMetadata parameter = (StoredProcedureParameterMetadata) objectToCompare;
+        if (objectToCompare instanceof StoredProcedureParameterMetadata parameter) {
 
             if (! valuesMatch(m_type, parameter.getType())) {
                 return false;

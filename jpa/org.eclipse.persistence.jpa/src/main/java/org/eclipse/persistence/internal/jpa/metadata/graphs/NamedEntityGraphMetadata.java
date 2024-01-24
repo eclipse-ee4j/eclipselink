@@ -91,8 +91,7 @@ public class NamedEntityGraphMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof NamedEntityGraphMetadata) {
-            NamedEntityGraphMetadata entityGraph = (NamedEntityGraphMetadata) objectToCompare;
+        if (objectToCompare instanceof NamedEntityGraphMetadata entityGraph) {
 
             if (! valuesMatch(m_name, entityGraph.getName())) {
                 return false;

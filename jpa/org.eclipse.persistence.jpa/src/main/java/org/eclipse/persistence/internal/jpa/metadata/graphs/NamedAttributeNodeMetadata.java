@@ -70,8 +70,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof NamedAttributeNodeMetadata) {
-            NamedAttributeNodeMetadata attributeNode = (NamedAttributeNodeMetadata) objectToCompare;
+        if (objectToCompare instanceof NamedAttributeNodeMetadata attributeNode) {
 
             if (! valuesMatch(m_name, attributeNode.getName())) {
                 return false;

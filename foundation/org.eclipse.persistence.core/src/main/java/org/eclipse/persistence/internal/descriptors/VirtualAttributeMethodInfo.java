@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,10 +49,9 @@ public class VirtualAttributeMethodInfo implements Serializable{
 
     @Override
     public boolean equals(Object object){
-        if (object == null || !(object instanceof VirtualAttributeMethodInfo)){
+        if (object == null || !(object instanceof VirtualAttributeMethodInfo info)){
             return false;
         }
-        VirtualAttributeMethodInfo info = (VirtualAttributeMethodInfo)object;
         if (getMethodName == info.getGetMethodName() && setMethodName == info.getSetMethodName()){
             return true;
         }

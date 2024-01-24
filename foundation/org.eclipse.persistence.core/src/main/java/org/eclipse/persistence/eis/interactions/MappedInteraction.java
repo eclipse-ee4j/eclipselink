@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -183,8 +183,7 @@ public class MappedInteraction extends EISInteraction {
         }
         AbstractRecord row = null;
 
-        if (record instanceof IndexedRecord) {
-            IndexedRecord indexedRecord = (IndexedRecord)record;
+        if (record instanceof IndexedRecord indexedRecord) {
             if (indexedRecord.isEmpty()) {
                 return null;
             }
@@ -193,12 +192,11 @@ public class MappedInteraction extends EISInteraction {
             }
         }
         // If not a mapped record then just put it as a result value in the row.
-        if (!(record instanceof MappedRecord)) {
+        if (!(record instanceof MappedRecord mappedRecord)) {
             row = new DatabaseRecord(1);
             row.put(getOutputResultPath(), record);
             return row;
         }
-        MappedRecord mappedRecord = (MappedRecord)record;
 
         // The desired result is either the entire output record,
         // or a translation of the output with the output arguments.

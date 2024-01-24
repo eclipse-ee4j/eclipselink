@@ -72,10 +72,9 @@ public class Coffee implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Coffee)) {
+        if (!(object instanceof Coffee other)) {
             return false;
         }
-        Coffee other = (Coffee) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

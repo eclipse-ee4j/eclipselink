@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -187,10 +187,9 @@ public class Oracle9Platform extends Oracle8Platform {
     @Override
     public void copyInto(Platform platform) {
         super.copyInto(platform);
-        if (!(platform instanceof Oracle9Platform)) {
+        if (!(platform instanceof Oracle9Platform oracle9Platform)) {
             return;
         }
-        Oracle9Platform oracle9Platform = (Oracle9Platform)platform;
         oracle9Platform.setShouldTruncateDate(shouldTruncateDate());
     }
 
@@ -518,8 +517,7 @@ public class Oracle9Platform extends Oracle8Platform {
         // printCalendar for versions greater or equal 9 and less than 10.2.0.4
         this.shouldPrintCalendar = Helper.compareVersions("9", this.driverVersion) <= 0 && Helper.compareVersions(this.driverVersion, "10.2.0.4") < 0;
         if (Helper.compareVersions(this.driverVersion, "11.1.0.7") >= 0) {
-            if( connection instanceof OracleConnection ) {
-                final OracleConnection oraConn = (OracleConnection)connection;
+            if(connection instanceof OracleConnection oraConn) {
                 String timestampTzInGmtPropStr = oraConn.getProperties().getProperty("oracle.jdbc.timestampTzInGmt", "true");
                 this.connectionUserName = oraConn.getUserName();
                 this.isTimestampInGmt = timestampTzInGmtPropStr.equalsIgnoreCase("true");
@@ -545,8 +543,7 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     @Override
     public void clearOracleConnectionCache(Connection conn) {
-        if(conn instanceof OracleConnection){
-            OracleConnection oracleConnection = (OracleConnection)conn;
+        if(conn instanceof OracleConnection oracleConnection){
             try {
                 if(oracleConnection.getImplicitCachingEnabled()) {
                     oracleConnection.purgeImplicitCache();

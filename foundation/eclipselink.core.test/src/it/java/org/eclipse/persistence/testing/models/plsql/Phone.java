@@ -40,10 +40,9 @@ public class Phone {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof Phone)) {
+        if (!(object instanceof Phone address)) {
             return false;
         }
-        Phone address = (Phone)object;
         if (this.areaCode != null && !this.areaCode.equals(address.areaCode)) {
             return false;
         }

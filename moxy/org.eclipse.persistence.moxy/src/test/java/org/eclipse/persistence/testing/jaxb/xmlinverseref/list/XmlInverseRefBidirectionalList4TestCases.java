@@ -62,8 +62,7 @@ public class XmlInverseRefBidirectionalList4TestCases extends XmlInverseRefBidir
         public List<Address> addrs;
 
         public boolean equals(Object obj) {
-            if (obj instanceof Person2) {
-                Person2 comparePerson = (Person2) obj;
+            if (obj instanceof Person2 comparePerson) {
                 if (!name.equals(comparePerson.name)) {
                     return false;
                 }
@@ -101,8 +100,7 @@ public class XmlInverseRefBidirectionalList4TestCases extends XmlInverseRefBidir
        public Person2 owner;
 
        public boolean equals(Object obj){
-           if(obj instanceof Address){
-               Address compareAddr = (Address)obj;
+           if(obj instanceof Address compareAddr){
                if(! street.equals(compareAddr.street)){
                    return false;
                }

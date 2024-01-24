@@ -32,11 +32,10 @@ public class EmployeeArray {
     public Object[] elements;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof EmployeeArray)) {
+        if(!(obj instanceof EmployeeArray emp)) {
             return false;
         }
 
-        EmployeeArray emp = (EmployeeArray)obj;
         if(!(name.equals(emp.name))) {
             return false;
         }
@@ -53,9 +52,7 @@ public class EmployeeArray {
             Object next1 = elements[i];
             Object next2 = emp.elements[i];
 
-            if((next1 instanceof org.w3c.dom.Element) && (next2 instanceof Element)) {
-                Element nextElem1 = (Element)next1;
-                Element nextElem2 = (Element)next2;
+            if((next1 instanceof Element nextElem1) && (next2 instanceof Element nextElem2)) {
                 if(!(comparer.isNodeEqual(nextElem1, nextElem2))) {
                     return false;
                 }

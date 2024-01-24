@@ -126,8 +126,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof NamedStoredProcedureQueryMetadata) {
-            NamedStoredProcedureQueryMetadata query = (NamedStoredProcedureQueryMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedStoredProcedureQueryMetadata query) {
 
             if (! valuesMatch(m_returnsResultSet, query.getReturnsResultSet())) {
                 return false;

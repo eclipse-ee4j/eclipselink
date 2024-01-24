@@ -69,8 +69,7 @@ public class QueryHintMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof QueryHintMetadata) {
-            QueryHintMetadata hint = (QueryHintMetadata) objectToCompare;
+        if (objectToCompare instanceof QueryHintMetadata hint) {
 
             if (! valuesMatch(m_name, hint.getName())) {
                 return false;

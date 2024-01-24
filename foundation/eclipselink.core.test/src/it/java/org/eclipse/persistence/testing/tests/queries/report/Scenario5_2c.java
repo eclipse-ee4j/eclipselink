@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,11 +68,10 @@ public class Scenario5_2c extends ReportQueryTestCase {
     @Override
     protected void verify() {
         try {
-            if (results == null || results.size() != 1 || !(results.firstElement() instanceof QueryException)) {
+            if (results == null || results.size() != 1 || !(results.firstElement() instanceof QueryException qe)) {
                 throw new TestErrorException("Should have caught query exception: " +
                                              QueryException.REPORT_QUERY_RESULT_SIZE_MISMATCH);
             }
-            QueryException qe = (QueryException)results.firstElement();
             if (qe.getErrorCode() != QueryException.REPORT_QUERY_RESULT_SIZE_MISMATCH) {
                 throw new TestErrorException("Should have caught query exception: " +
                                              QueryException.REPORT_QUERY_RESULT_SIZE_MISMATCH +

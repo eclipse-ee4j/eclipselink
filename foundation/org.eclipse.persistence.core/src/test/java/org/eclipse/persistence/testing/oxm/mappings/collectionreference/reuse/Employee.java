@@ -25,8 +25,7 @@ public class Employee {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Employee) {
-            Employee empObj = (Employee) obj;
+        if (obj instanceof Employee empObj) {
             if (this.id != empObj.id) {
                 return false;
             }

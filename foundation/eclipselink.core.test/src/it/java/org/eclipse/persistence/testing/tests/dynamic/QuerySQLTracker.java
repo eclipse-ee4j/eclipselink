@@ -185,8 +185,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
             if (result == null) {
                 writer.write("NONE");
             } else {
-                if (result instanceof Object[]) {
-                    Object[] results = (Object[]) result;
+                if (result instanceof Object[] results) {
                     writer.write("<" + results.length + "> [");
                     for (int index = 0; index < results.length; index++) {
                         if (index > 0) {

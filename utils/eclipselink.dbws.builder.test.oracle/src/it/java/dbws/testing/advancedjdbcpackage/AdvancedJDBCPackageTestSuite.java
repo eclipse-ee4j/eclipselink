@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,62 +42,68 @@ import dbws.testing.DBWSTestSuite;
 public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
 
     static final String CREATE_REGION_TYPE =
-        "CREATE OR REPLACE TYPE DBWS_REGION AS OBJECT (" +
-            "\nREG_ID NUMBER(5)," +
-            "\nREG_NAME VARCHAR2(50)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_REGION AS OBJECT (
+                    REG_ID NUMBER(5),
+                    REG_NAME VARCHAR2(50)
+                    )""";
     static final String CREATE_EMP_ADDRESS_TYPE =
-        "CREATE OR REPLACE TYPE DBWS_EMP_ADDRESS AS OBJECT (" +
-            "\nSTREET VARCHAR2(100)," +
-            "\nSUBURB VARCHAR2(100)," +
-            "\nADDR_REGION DBWS_REGION," +
-            "\nPOSTCODE INTEGER" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_EMP_ADDRESS AS OBJECT (
+                    STREET VARCHAR2(100),
+                    SUBURB VARCHAR2(100),
+                    ADDR_REGION DBWS_REGION,
+                    POSTCODE INTEGER
+                    )""";
     static final String CREATE_EMP_OBJECT_TYPE =
-        "CREATE OR REPLACE TYPE DBWS_EMP_OBJECT AS OBJECT (" +
-            "\nEMPLOYEE_ID NUMBER(8)," +
-            "\nADDRESS DBWS_EMP_ADDRESS," +
-            "\nEMPLOYEE_NAME VARCHAR2(80)," +
-            "\nDATE_OF_HIRE  DATE" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_EMP_OBJECT AS OBJECT (
+                    EMPLOYEE_ID NUMBER(8),
+                    ADDRESS DBWS_EMP_ADDRESS,
+                    EMPLOYEE_NAME VARCHAR2(80),
+                    DATE_OF_HIRE  DATE
+                    )""";
     static final String CREATE_EMP_INFO_TYPE =
-        "CREATE OR REPLACE TYPE DBWS_EMP_INFO AS OBJECT (" +
-            "\nID NUMBER(5)," +
-            "\nNAME VARCHAR2(50)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_EMP_INFO AS OBJECT (
+                    ID NUMBER(5),
+                    NAME VARCHAR2(50)
+                    )""";
     static final String CREATE_EMP_INFO_ARRAY_TYPE =
         "CREATE OR REPLACE TYPE DBWS_EMP_INFO_ARRAY AS VARRAY(3) OF DBWS_EMP_INFO";
     static final String CREATE_ADVANCED_OBJECT_DEMO_PACKAGE =
-        "CREATE OR REPLACE PACKAGE DBWS_ADVANCED_OBJECT_DEMO AS" +
-            "\nFUNCTION ECHOREGION(AREGION IN DBWS_REGION) RETURN DBWS_REGION;" +
-            "\nFUNCTION ECHOEMPADDRESS(ANEMPADDRESS IN DBWS_EMP_ADDRESS) RETURN DBWS_EMP_ADDRESS;" +
-            "\nFUNCTION ECHOEMPOBJECT(ANEMPOBJECT IN DBWS_EMP_OBJECT) RETURN DBWS_EMP_OBJECT;" +
-            "\nFUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN DBWS_EMP_INFO_ARRAY;" +
-        "\nEND DBWS_ADVANCED_OBJECT_DEMO;";
+            """
+                    CREATE OR REPLACE PACKAGE DBWS_ADVANCED_OBJECT_DEMO AS
+                    FUNCTION ECHOREGION(AREGION IN DBWS_REGION) RETURN DBWS_REGION;
+                    FUNCTION ECHOEMPADDRESS(ANEMPADDRESS IN DBWS_EMP_ADDRESS) RETURN DBWS_EMP_ADDRESS;
+                    FUNCTION ECHOEMPOBJECT(ANEMPOBJECT IN DBWS_EMP_OBJECT) RETURN DBWS_EMP_OBJECT;
+                    FUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN DBWS_EMP_INFO_ARRAY;
+                    END DBWS_ADVANCED_OBJECT_DEMO;""";
     static final String CREATE_ADVANCED_OBJECT_DEMO_BODY =
-        "CREATE OR REPLACE PACKAGE BODY DBWS_ADVANCED_OBJECT_DEMO AS" +
-            "\nFUNCTION ECHOREGION(AREGION IN DBWS_REGION) RETURN DBWS_REGION AS" +
-            "\nBEGIN" +
-                "\nRETURN AREGION;" +
-            "\nEND ECHOREGION;" +
-            "\nFUNCTION ECHOEMPADDRESS(ANEMPADDRESS IN DBWS_EMP_ADDRESS) RETURN DBWS_EMP_ADDRESS AS" +
-            "\nBEGIN" +
-                "\nRETURN ANEMPADDRESS;" +
-            "\nEND ECHOEMPADDRESS;" +
-            "\nFUNCTION ECHOEMPOBJECT(ANEMPOBJECT IN DBWS_EMP_OBJECT) RETURN DBWS_EMP_OBJECT AS" +
-            "\nBEGIN" +
-                "\nRETURN ANEMPOBJECT;" +
-            "\nEND ECHOEMPOBJECT;" +
-            "\nFUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN DBWS_EMP_INFO_ARRAY AS" +
-            "\nL_DATA DBWS_EMP_INFO_ARRAY := DBWS_EMP_INFO_ARRAY();" +
-            "\nBEGIN" +
-                "\nFOR I IN 1 .. NUM LOOP" +
-                    "\nL_DATA.EXTEND;" +
-                    "\nL_DATA(I) := DBWS_EMP_INFO(I, 'entry ' || i);" +
-                "\nEND LOOP;" +
-                "\nRETURN L_DATA;" +
-            "\nEND BUILDEMPARRAY;" +
-        "\nEND DBWS_ADVANCED_OBJECT_DEMO;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY DBWS_ADVANCED_OBJECT_DEMO AS
+                    FUNCTION ECHOREGION(AREGION IN DBWS_REGION) RETURN DBWS_REGION AS
+                    BEGIN
+                    RETURN AREGION;
+                    END ECHOREGION;
+                    FUNCTION ECHOEMPADDRESS(ANEMPADDRESS IN DBWS_EMP_ADDRESS) RETURN DBWS_EMP_ADDRESS AS
+                    BEGIN
+                    RETURN ANEMPADDRESS;
+                    END ECHOEMPADDRESS;
+                    FUNCTION ECHOEMPOBJECT(ANEMPOBJECT IN DBWS_EMP_OBJECT) RETURN DBWS_EMP_OBJECT AS
+                    BEGIN
+                    RETURN ANEMPOBJECT;
+                    END ECHOEMPOBJECT;
+                    FUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN DBWS_EMP_INFO_ARRAY AS
+                    L_DATA DBWS_EMP_INFO_ARRAY := DBWS_EMP_INFO_ARRAY();
+                    BEGIN
+                    FOR I IN 1 .. NUM LOOP
+                    L_DATA.EXTEND;
+                    L_DATA(I) := DBWS_EMP_INFO(I, 'entry ' || i);
+                    END LOOP;
+                    RETURN L_DATA;
+                    END BUILDEMPARRAY;
+                    END DBWS_ADVANCED_OBJECT_DEMO;""";
     static final String DROP_REGION_TYPE =
         "DROP TYPE DBWS_REGION";
     static final String DROP_EMP_ADDRESS_TYPE =

@@ -78,8 +78,7 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof XMLPersistenceUnitDefaults) {
-            XMLPersistenceUnitDefaults persistenceUnitDefaults = (XMLPersistenceUnitDefaults) objectToCompare;
+        if (objectToCompare instanceof XMLPersistenceUnitDefaults persistenceUnitDefaults) {
 
             if (! valuesMatch(persistenceUnitDefaults.getAccess(), getAccess())) {
                 return false;

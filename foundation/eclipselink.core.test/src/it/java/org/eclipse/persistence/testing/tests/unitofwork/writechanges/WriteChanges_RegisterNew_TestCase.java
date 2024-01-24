@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,10 +44,9 @@ public class WriteChanges_RegisterNew_TestCase extends AutoVerifyTestCase {
     public void verify() {
         if (exception == null) {
             throw new TestErrorException("Exception not thrown attempting to registerNewObject after writeChanges.");
-        } else if (!(exception instanceof ValidationException)) {
+        } else if (!(exception instanceof ValidationException ve)) {
             throw new TestErrorException("Wrong exception type thrown.", exception);
         } else {
-            ValidationException ve = (ValidationException)exception;
             if (ve.getErrorCode() != ValidationException.UNIT_OF_WORK_IN_TRANSACTION_COMMIT_PENDING) {
                 throw new TestErrorException("Wrong exception thrown.", ve);
             }

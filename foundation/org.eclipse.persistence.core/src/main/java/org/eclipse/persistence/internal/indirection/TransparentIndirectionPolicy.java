@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -367,10 +367,9 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session) {
-        if (! (unitOfWorkIndirectionObject instanceof IndirectContainer)){
+        if (! (unitOfWorkIndirectionObject instanceof IndirectContainer container)){
             return new ValueHolder<>();
         }
-        IndirectContainer container = (IndirectContainer)unitOfWorkIndirectionObject;
         if (container.getValueHolder() instanceof WrappingValueHolder) {
             ValueHolderInterface<?> valueHolder = ((WrappingValueHolder<?>)container.getValueHolder()).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {

@@ -95,8 +95,7 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof DiscriminatorColumnMetadata) {
-            DiscriminatorColumnMetadata discriminatorColumn = (DiscriminatorColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof DiscriminatorColumnMetadata discriminatorColumn) {
 
             if (! valuesMatch(m_length, discriminatorColumn.getLength())) {
                 return false;

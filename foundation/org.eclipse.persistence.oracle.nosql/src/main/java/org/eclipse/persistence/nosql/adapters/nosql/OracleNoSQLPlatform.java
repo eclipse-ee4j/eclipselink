@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,8 +111,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             }
             if (consistency instanceof Consistency) {
                 noSqlSpec.setConsistency((Consistency)consistency);
-            } else if (consistency instanceof String) {
-                String constant = (String)consistency;
+            } else if (consistency instanceof String constant) {
                 if (constant.equals("ABSOLUTE")) {
                     noSqlSpec.setConsistency(Consistency.ABSOLUTE);
                 } else if (constant.equals("NONE_REQUIRED")) {
@@ -130,8 +129,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             }
             if (durability instanceof Durability) {
                 noSqlSpec.setDurability((Durability)durability);
-            } else if (durability instanceof String) {
-                String constant = (String)durability;
+            } else if (durability instanceof String constant) {
                 if (constant.equals("COMMIT_NO_SYNC")) {
                     noSqlSpec.setDurability(Durability.COMMIT_NO_SYNC);
                 } else if (constant.equals("COMMIT_SYNC")) {

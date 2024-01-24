@@ -31,11 +31,10 @@ public class EmployeeSingle {
     public Object element;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof EmployeeSingle)) {
+        if(!(obj instanceof EmployeeSingle emp)) {
             return false;
         }
 
-        EmployeeSingle emp = (EmployeeSingle)obj;
         if(!(name.equals(emp.name))) {
             return false;
         }
@@ -48,9 +47,7 @@ public class EmployeeSingle {
         Object next1 = element;
         Object next2 =  emp.element;
 
-        if((next1 instanceof org.w3c.dom.Element) && (next2 instanceof Element)) {
-            Element nextElem1 = (Element)next1;
-            Element nextElem2 = (Element)next2;
+        if((next1 instanceof Element nextElem1) && (next2 instanceof Element nextElem2)) {
             if(!(comparer.isNodeEqual(nextElem1, nextElem2))) {
                 return false;
             }

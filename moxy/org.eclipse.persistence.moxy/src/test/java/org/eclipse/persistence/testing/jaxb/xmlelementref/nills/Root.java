@@ -30,9 +30,8 @@ public class Root {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Root))
+        if (!(obj instanceof Root r))
             return false;
-        Root r = (Root) obj;
         return isEqual(foo, r.foo) && isEqual(bar, r.bar);
     }
 

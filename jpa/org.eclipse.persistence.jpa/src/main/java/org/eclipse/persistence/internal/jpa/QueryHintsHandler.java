@@ -176,8 +176,7 @@ public class QueryHintsHandler {
         DatabaseQuery hintQuery = query;
         for (Map.Entry<String, Object> entry : hints.entrySet()) {
             String hintName = entry.getKey();
-            if (entry.getValue() instanceof Object[]) {
-                Object[] values = (Object[])entry.getValue();
+            if (entry.getValue() instanceof Object[] values) {
                 for (int index = 0; index < values.length; index++) {
                     hintQuery = apply(hintName, values[index], hintQuery, loader, activeSession);
                 }
@@ -447,8 +446,7 @@ public class QueryHintsHandler {
         void initialize() {
             if(valueArray != null) {
                 valueMap = new HashMap<>(valueArray.length);
-                if(valueArray instanceof Object[][]) {
-                    Object[][] valueArray2 = (Object[][])valueArray;
+                if(valueArray instanceof Object[][] valueArray2) {
                     for(int i=0; i<valueArray2.length; i++) {
                         valueMap.put(getUpperCaseString(valueArray2[i][0]), valueArray2[i][1]);
                         if(valueArray2[i][1] == null) {

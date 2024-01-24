@@ -66,8 +66,7 @@ public class PartitioningMetadata extends AbstractPartitioningMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof PartitioningMetadata)) {
-            PartitioningMetadata policy = (PartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof PartitioningMetadata policy)) {
 
             return valuesMatch(this.className, policy.getClassName());
         }

@@ -109,8 +109,7 @@ public class TransformationAccessor extends BasicAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof TransformationAccessor) {
-            TransformationAccessor transformationAccessor = (TransformationAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof TransformationAccessor transformationAccessor) {
 
             if (! valuesMatch(m_readTransformer, transformationAccessor.getReadTransformer())) {
                 return false;

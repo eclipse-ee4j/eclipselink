@@ -54,64 +54,69 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
 
     //==============================================================================
     static final String CREATE_MYTYPE =
-        "CREATE OR REPLACE TYPE MYTYPE_1 AS OBJECT (" +
-            "\nid INTEGER," +
-            "\nname VARCHAR2(30)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE MYTYPE_1 AS OBJECT (
+                    id INTEGER,
+                    name VARCHAR2(30)
+                    )""";
 
     static final String CREATE_MYTYPE_ARRAY =
         "CREATE OR REPLACE TYPE MYTYPE_1_ARRAY AS VARRAY(10) OF MYTYPE_1;";
 
     static final String CREATE_MYTYPE_PKG =
-        "CREATE OR REPLACE PACKAGE USERTYPEINOUT AS" +
-            "\nPROCEDURE TEST_IN_AND_OUT(P1 IN MYTYPE_1, P2 OUT MYTYPE_1);" +
-            "\nPROCEDURE TEST_OUT(P1 OUT MYTYPE_1);" +
-            "\nPROCEDURE TEST_IN(P1 IN MYTYPE_1);" +
-            "\nPROCEDURE TEST_INOUT(P1 IN OUT MYTYPE_1);" +
-            "\nFUNCTION ECHO_MYTYPE_1_ARRAY(P1 MYTYPE_1_ARRAY) RETURN MYTYPE_1_ARRAY;" +
-            "\nPROCEDURE TEST_MULTI_IN_AND_OUT(P1 IN MYTYPE_1, P2 IN VARCHAR2, P3 IN INTEGER, P4 OUT MYTYPE_1);" +
-        "\nEND USERTYPEINOUT;";
+            """
+                    CREATE OR REPLACE PACKAGE USERTYPEINOUT AS
+                    PROCEDURE TEST_IN_AND_OUT(P1 IN MYTYPE_1, P2 OUT MYTYPE_1);
+                    PROCEDURE TEST_OUT(P1 OUT MYTYPE_1);
+                    PROCEDURE TEST_IN(P1 IN MYTYPE_1);
+                    PROCEDURE TEST_INOUT(P1 IN OUT MYTYPE_1);
+                    FUNCTION ECHO_MYTYPE_1_ARRAY(P1 MYTYPE_1_ARRAY) RETURN MYTYPE_1_ARRAY;
+                    PROCEDURE TEST_MULTI_IN_AND_OUT(P1 IN MYTYPE_1, P2 IN VARCHAR2, P3 IN INTEGER, P4 OUT MYTYPE_1);
+                    END USERTYPEINOUT;""";
 
     static final String CREATE_MYTYPE_PKG_BODY =
-        "CREATE OR REPLACE PACKAGE BODY USERTYPEINOUT AS" +
-            "\nPROCEDURE TEST_IN_AND_OUT(P1 IN MYTYPE_1, P2 OUT MYTYPE_1) AS" +
-            "\nBEGIN" +
-                "\nP2 := P1;" +
-            "\nEND TEST_IN_AND_OUT; " +
-            "\nPROCEDURE TEST_OUT(P1 OUT MYTYPE_1) AS" +
-            "\nBEGIN" +
-                "\nP1 := MYTYPE_1(66, 'Steve French');" +
-            "\nEND TEST_OUT; " +
-            "\nPROCEDURE TEST_IN(P1 IN MYTYPE_1) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND TEST_IN; " +
-            "\nPROCEDURE TEST_INOUT(P1 IN OUT MYTYPE_1) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND TEST_INOUT; " +
-            "\nFUNCTION ECHO_MYTYPE_1_ARRAY(P1 MYTYPE_1_ARRAY) RETURN MYTYPE_1_ARRAY AS" +
-            "\nBEGIN" +
-                "\nRETURN P1;" +
-            "\nEND ECHO_MYTYPE_1_ARRAY;" +
-            "\nPROCEDURE TEST_MULTI_IN_AND_OUT(P1 IN MYTYPE_1, P2 IN VARCHAR2, P3 IN INTEGER, P4 OUT MYTYPE_1) AS" +
-            "\nBEGIN" +
-                "\nP4 := MYTYPE_1(P1.id + P3, concat(P1.name, P2));" +
-            "\nEND TEST_MULTI_IN_AND_OUT; " +
-        "\nEND USERTYPEINOUT;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY USERTYPEINOUT AS
+                    PROCEDURE TEST_IN_AND_OUT(P1 IN MYTYPE_1, P2 OUT MYTYPE_1) AS
+                    BEGIN
+                    P2 := P1;
+                    END TEST_IN_AND_OUT;\s
+                    PROCEDURE TEST_OUT(P1 OUT MYTYPE_1) AS
+                    BEGIN
+                    P1 := MYTYPE_1(66, 'Steve French');
+                    END TEST_OUT;\s
+                    PROCEDURE TEST_IN(P1 IN MYTYPE_1) AS
+                    BEGIN
+                    NULL;
+                    END TEST_IN;\s
+                    PROCEDURE TEST_INOUT(P1 IN OUT MYTYPE_1) AS
+                    BEGIN
+                    NULL;
+                    END TEST_INOUT;\s
+                    FUNCTION ECHO_MYTYPE_1_ARRAY(P1 MYTYPE_1_ARRAY) RETURN MYTYPE_1_ARRAY AS
+                    BEGIN
+                    RETURN P1;
+                    END ECHO_MYTYPE_1_ARRAY;
+                    PROCEDURE TEST_MULTI_IN_AND_OUT(P1 IN MYTYPE_1, P2 IN VARCHAR2, P3 IN INTEGER, P4 OUT MYTYPE_1) AS
+                    BEGIN
+                    P4 := MYTYPE_1(P1.id + P3, concat(P1.name, P2));
+                    END TEST_MULTI_IN_AND_OUT;\s
+                    END USERTYPEINOUT;""";
     //==============================================================================
 
     static final String CREATE_PHONE_TYPE =
-        "CREATE OR REPLACE TYPE DBWS_PHONE_TYPE AS OBJECT (" +
-            "\nHOME VARCHAR2(20)," +
-            "\nCELL VARCHAR2(20)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_PHONE_TYPE AS OBJECT (
+                    HOME VARCHAR2(20),
+                    CELL VARCHAR2(20)
+                    )""";
     static final String CREATE_EMP_TYPE =
-        "CREATE OR REPLACE TYPE DBWS_EMP_TYPE AS OBJECT (" +
-            "\nID NUMBER," +
-            "\nNAME VARCHAR2(20)," +
-            "\nPHONE DBWS_PHONE_TYPE" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_EMP_TYPE AS OBJECT (
+                    ID NUMBER,
+                    NAME VARCHAR2(20),
+                    PHONE DBWS_PHONE_TYPE
+                    )""";
     static final String CREATE_EMP_TYPE_TABLE =
         "CREATE TABLE DBWS_EMP_TYPE_TABLE OF DBWS_EMP_TYPE";
     static final String[] POPULATE_EMP_TYPE_TABLE = new String[] {
@@ -123,32 +128,36 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
             "DBWS_EMP_TYPE(99, 'JULIAN', DBWS_PHONE_TYPE('(613) 424-0987', '(613) 555-8888')))"
         };
     static final String CREATE_GET_EMP_TYPE_BY_ID_PROC =
-        "CREATE OR REPLACE PROCEDURE GET_EMP_TYPE_BY_ID(EID IN NUMBER, ETYPE OUT DBWS_EMP_TYPE) AS" +
-        "\nBEGIN" +
-            "\nSELECT VALUE(E) INTO ETYPE FROM DBWS_EMP_TYPE_TABLE E WHERE E.ID = EID;" +
-        "\nEND GET_EMP_TYPE_BY_ID;";
+            """
+                    CREATE OR REPLACE PROCEDURE GET_EMP_TYPE_BY_ID(EID IN NUMBER, ETYPE OUT DBWS_EMP_TYPE) AS
+                    BEGIN
+                    SELECT VALUE(E) INTO ETYPE FROM DBWS_EMP_TYPE_TABLE E WHERE E.ID = EID;
+                    END GET_EMP_TYPE_BY_ID;""";
     static final String CREATE_GET_EMP_TYPE_BY_ID_2_FUNC =
-        "CREATE OR REPLACE FUNCTION GET_EMP_TYPE_BY_ID_2(EID IN NUMBER) RETURN DBWS_EMP_TYPE AS" +
-        "\nETYPE DBWS_EMP_TYPE;" +
-        "\nBEGIN" +
-            "\nSELECT VALUE(E) INTO ETYPE FROM DBWS_EMP_TYPE_TABLE E WHERE E.ID = EID;" +
-            "\nRETURN ETYPE;" +
-        "\nEND GET_EMP_TYPE_BY_ID_2;";
+            """
+                    CREATE OR REPLACE FUNCTION GET_EMP_TYPE_BY_ID_2(EID IN NUMBER) RETURN DBWS_EMP_TYPE AS
+                    ETYPE DBWS_EMP_TYPE;
+                    BEGIN
+                    SELECT VALUE(E) INTO ETYPE FROM DBWS_EMP_TYPE_TABLE E WHERE E.ID = EID;
+                    RETURN ETYPE;
+                    END GET_EMP_TYPE_BY_ID_2;""";
     static final String CREATE_ADD_EMP_TYPE_PROC =
-        "CREATE OR REPLACE PROCEDURE ADD_EMP_TYPE(ETYPE IN DBWS_EMP_TYPE, RESULT OUT DBWS_EMP_TYPE) AS" +
-        "\nBEGIN" +
-            "\nDELETE FROM DBWS_EMP_TYPE_TABLE WHERE ID = ETYPE.ID;" +
-            "\nINSERT INTO DBWS_EMP_TYPE_TABLE VALUES (ETYPE);" +
-            "\nSELECT VALUE(E) INTO RESULT FROM DBWS_EMP_TYPE_TABLE E WHERE E.ID = ETYPE.ID;" +
-            "\nDELETE FROM DBWS_EMP_TYPE_TABLE WHERE ID = ETYPE.ID;" +
-        "\nEND ADD_EMP_TYPE;";
+            """
+                    CREATE OR REPLACE PROCEDURE ADD_EMP_TYPE(ETYPE IN DBWS_EMP_TYPE, RESULT OUT DBWS_EMP_TYPE) AS
+                    BEGIN
+                    DELETE FROM DBWS_EMP_TYPE_TABLE WHERE ID = ETYPE.ID;
+                    INSERT INTO DBWS_EMP_TYPE_TABLE VALUES (ETYPE);
+                    SELECT VALUE(E) INTO RESULT FROM DBWS_EMP_TYPE_TABLE E WHERE E.ID = ETYPE.ID;
+                    DELETE FROM DBWS_EMP_TYPE_TABLE WHERE ID = ETYPE.ID;
+                    END ADD_EMP_TYPE;""";
     static final String CREATE_ADD_EMP_TYPE2_FUNC =
-        "CREATE OR REPLACE FUNCTION ADD_EMP_TYPE2(ETYPE IN DBWS_EMP_TYPE) RETURN DBWS_EMP_TYPE AS" +
-        "\nRESULT DBWS_EMP_TYPE;" +
-        "\nBEGIN" +
-            "\nADD_EMP_TYPE(ETYPE, RESULT);" +
-            "\nRETURN RESULT;" +
-        "\nEND ADD_EMP_TYPE2;";
+            """
+                    CREATE OR REPLACE FUNCTION ADD_EMP_TYPE2(ETYPE IN DBWS_EMP_TYPE) RETURN DBWS_EMP_TYPE AS
+                    RESULT DBWS_EMP_TYPE;
+                    BEGIN
+                    ADD_EMP_TYPE(ETYPE, RESULT);
+                    RETURN RESULT;
+                    END ADD_EMP_TYPE2;""";
     static final String DROP_PHONE_TYPE =
         "DROP TYPE DBWS_PHONE_TYPE FORCE";
     static final String DROP_EMP_TYPE =

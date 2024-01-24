@@ -42,11 +42,10 @@ public class Employee {
     }
 
      public boolean equals(Object obj) {
-        if(!(obj instanceof Employee)) {
+        if(!(obj instanceof Employee emp)) {
             return false;
         }
-        Employee emp = (Employee)obj;
-        boolean equal = this.firstName.equals(emp.firstName);
+         boolean equal = this.firstName.equals(emp.firstName);
         equal = equal && this.lastName.equals(emp.lastName);
 
         int size =emp.xmlnodes.size();

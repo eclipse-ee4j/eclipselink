@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -434,8 +434,7 @@ public class Typemap {
 
     private boolean isOpaque(TypeClass type) {
         boolean opaque = false;
-        if (type instanceof SqlType) {
-            SqlType sqlType = (SqlType)type;
+        if (type instanceof SqlType sqlType) {
             String name = sqlType.getSqlName().getFullTargetTypeName(Util.SCHEMA_ALWAYS);
             if ("SYS.XMLTYPE".equalsIgnoreCase(name)) {
                 opaque = true;

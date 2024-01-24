@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,10 +23,9 @@ public class Address {
     public String country;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof Address)) {
+        if(!(obj instanceof Address addr)) {
             return false;
         }
-        Address addr = (Address)obj;
         return ((addr.street ==null && street==null) || ( addr.street.equals(street)))
           &&((addr.city ==null && city==null) || ( addr.city.equals(city)))
           &&((addr.country ==null && country==null) || ( addr.country.equals(country)));

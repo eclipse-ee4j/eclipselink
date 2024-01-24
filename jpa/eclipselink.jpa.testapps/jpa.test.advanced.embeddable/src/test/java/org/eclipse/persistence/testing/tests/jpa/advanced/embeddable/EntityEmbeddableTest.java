@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -157,8 +157,7 @@ public class EntityEmbeddableTest extends JUnitTestCase {
             }
             assertEquals("Size of returned list with query results should be 1.", q.size(), 1);
             for (Object obj : q) {
-                if (obj instanceof Visitor) {
-                    Visitor custReturned = (Visitor) obj;
+                if (obj instanceof Visitor custReturned) {
                     assertEquals("Visitor object primary key is invalid.", "1", custReturned.getId());
                     assertEquals("Country code is invalid.", "USA", custReturned.getCountry().getCode());
                 } else {

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * Copyright (c) 2005, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2024 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -192,8 +192,7 @@ public class SimpleInheritanceTest extends JPA1Base {
             List<?> resultList = query.getResultList();
             verify(resultList.size() == 2, "result list has wrong size");
             for (Object object : resultList) {
-                if (object instanceof Vehicle) {
-                    Vehicle anyVehicle = (Vehicle) object;
+                if (object instanceof Vehicle anyVehicle) {
                     if (deutzId.equals(anyVehicle.getId())) {
                         verify(anyVehicle.getClass() == Vehicle.class, "vehicle has unexpected class: "
                                 + anyVehicle.getClass().getName());

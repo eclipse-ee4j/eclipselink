@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 Sei Syvalta. All rights reserved.
+ * Copyright (c) 1998, 2024 Sei Syvalta. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -557,8 +557,7 @@ public class DefaultTableGenerator {
         while (transIter.hasNext()) {
             FieldTransformation transformation = transIter.next();
 
-            if (transformation instanceof MethodBasedFieldTransformation) {
-                MethodBasedFieldTransformation methodTransformation = (MethodBasedFieldTransformation) transformation;
+            if (transformation instanceof MethodBasedFieldTransformation methodTransformation) {
                 try {
                     Class<?> returnType = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodTransformation.getMethodName(), null).getReturnType();
                     getFieldDefFromDBField(methodTransformation.getField()).setType(returnType);

@@ -151,8 +151,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
 
                         if (jpaDescriptor != null) {
                             DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
-                            if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping)) {
-                                ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
+                            if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping jpaMapping)) {
                                 if (jpaMapping.getMappedBy() != null) {
                                     ClassDescriptor inverseDescriptor = project.getDescriptorForAlias(jpaMapping.getReferenceDescriptor().getAlias());
                                     if (inverseDescriptor != null) {
@@ -203,17 +202,15 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                     if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
                         if (jpaDescriptor != null) {
                             DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
-                            if ((dbMapping instanceof ForeignReferenceMapping)) {
-                                ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
+                            if ((dbMapping instanceof ForeignReferenceMapping jpaMapping)) {
                                 ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
                                 convertMappingToXMLChoiceMapping(jaxbDescriptor, jpaMapping, cl, jpaSession);
                             }
-                        } else if (mapping instanceof XMLCompositeObjectMapping) {
+                        } else if (mapping instanceof XMLCompositeObjectMapping jpaMapping) {
                             // Fix for Bug 403113 - JPA-RS Isn't Serializing an Embeddable defined in an ElementCollection to JSON Correctly
                             // add choice mapping for one-to-one relationships within embeddables
                             // Based on (http://wiki.eclipse.org/EclipseLink/Examples/JPA/NoSQL#Step_2_:_Map_the_data),
                             // the mappedBy option on relationships is not supported for NoSQL data, so no need to add inverse mapping
-                            XMLCompositeObjectMapping jpaMapping = (XMLCompositeObjectMapping) mapping;
                             ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
                             if (jaxbDescriptor != null) {
                                 Class clazz = jpaMapping.getReferenceClass();

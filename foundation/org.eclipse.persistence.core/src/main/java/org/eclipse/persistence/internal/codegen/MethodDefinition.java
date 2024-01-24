@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -124,11 +124,9 @@ public abstract class MethodDefinition extends CodeDefinition {
             return true;
         }
 
-        if (!(object instanceof MethodDefinition)) {
+        if (!(object instanceof MethodDefinition methodDefinition)) {
             return false;
         }
-
-        MethodDefinition methodDefinition = (MethodDefinition)object;
 
         if ((this.name == null) && (methodDefinition.getName() != null)) {
             return false;

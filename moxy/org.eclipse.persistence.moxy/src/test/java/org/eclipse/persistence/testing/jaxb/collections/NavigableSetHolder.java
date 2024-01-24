@@ -162,8 +162,7 @@ public class NavigableSetHolder implements Comparable {
 
     public boolean equals(Object compareObject){
 
-         if(compareObject instanceof NavigableSetHolder){
-             NavigableSetHolder compareCollectionHolder = ((NavigableSetHolder)compareObject);
+         if(compareObject instanceof NavigableSetHolder compareCollectionHolder){
              return compareCollections(collection1, compareCollectionHolder.getCollection1())
                     && compareCollections(collection2, compareCollectionHolder.getCollection2())
                     && compareCollections(collection3, compareCollectionHolder.getCollection3())

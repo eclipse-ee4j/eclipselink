@@ -873,8 +873,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
             session.getIntegrityChecker().handleError(DescriptorException.returningPolicyFieldNotSupported(field.getName(), descriptor));
         } else if (descriptor.usesOptimisticLocking()) {
             OptimisticLockingPolicy optimisticLockingPolicy = descriptor.getOptimisticLockingPolicy();
-            if (optimisticLockingPolicy instanceof VersionLockingPolicy) {
-                VersionLockingPolicy versionLockingPolicy = (VersionLockingPolicy)optimisticLockingPolicy;
+            if (optimisticLockingPolicy instanceof VersionLockingPolicy versionLockingPolicy) {
                 if (field.equals(versionLockingPolicy.getWriteLockField())) {
                     ok = false;
                     session.getIntegrityChecker().handleError(DescriptorException.returningPolicyFieldNotSupported(field.getName(), descriptor));

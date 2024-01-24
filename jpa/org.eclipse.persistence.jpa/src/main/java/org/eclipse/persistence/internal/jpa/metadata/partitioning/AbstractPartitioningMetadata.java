@@ -71,8 +71,7 @@ public abstract class AbstractPartitioningMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof AbstractPartitioningMetadata) {
-            AbstractPartitioningMetadata policy = (AbstractPartitioningMetadata) objectToCompare;
+        if (objectToCompare instanceof AbstractPartitioningMetadata policy) {
 
             return valuesMatch(this.name, policy.getName());
         }

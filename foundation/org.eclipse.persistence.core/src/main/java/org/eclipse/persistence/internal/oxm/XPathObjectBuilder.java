@@ -425,8 +425,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         mappingNodeValue = new XMLFragmentMappingNodeValue((FragmentMapping)xmlMapping);
                     } else if (xmlMapping instanceof FragmentCollectionMapping) {
                         mappingNodeValue = new XMLFragmentCollectionMappingNodeValue((FragmentCollectionMapping)xmlMapping);
-                    } else if (xmlMapping instanceof CollectionReferenceMapping) {
-                        CollectionReferenceMapping xmlColMapping = (CollectionReferenceMapping)xmlMapping;
+                    } else if (xmlMapping instanceof CollectionReferenceMapping xmlColMapping) {
 
                         List fields = xmlColMapping.getFields();
                         Field xmlColMappingField = (Field) xmlColMapping.getField();
@@ -453,8 +452,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                             branchNode.addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                         }
                         continue;
-                    } else if (xmlMapping instanceof ObjectReferenceMapping) {
-                        ObjectReferenceMapping xmlORMapping = (ObjectReferenceMapping)xmlMapping;
+                    } else if (xmlMapping instanceof ObjectReferenceMapping xmlORMapping) {
                         Iterator fieldIt = xmlORMapping.getFields().iterator();
                         while (fieldIt.hasNext()) {
                             Field xmlFld = (Field)fieldIt.next();
@@ -462,8 +460,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                             addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                         }
                         continue;
-                    } else if (xmlMapping instanceof ChoiceObjectMapping) {
-                        ChoiceObjectMapping xmlChoiceMapping = (ChoiceObjectMapping)xmlMapping;
+                    } else if (xmlMapping instanceof ChoiceObjectMapping xmlChoiceMapping) {
                         Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
                         Field firstField = (Field)fields.next();
                         XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
@@ -476,8 +473,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                             addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
                         }
                         continue;
-                    } else if(xmlMapping instanceof ChoiceCollectionMapping) {
-                        ChoiceCollectionMapping xmlChoiceMapping = (ChoiceCollectionMapping)xmlMapping;
+                    } else if(xmlMapping instanceof ChoiceCollectionMapping xmlChoiceMapping) {
 
                         Iterator<Entry<Field, Mapping>> fields = xmlChoiceMapping.getChoiceElementMappings().entrySet().iterator();
                         Entry<Field, Mapping> firstEntry = fields.next();

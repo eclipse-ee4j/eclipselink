@@ -64,11 +64,10 @@ public class MailingAddress  {
 
   public boolean equals(Object object)
   {
-    if(!(object instanceof MailingAddress))
+    if(!(object instanceof MailingAddress addressObject))
       return false;
 
-    MailingAddress addressObject = (MailingAddress)object;
-    if((this.getCity()==null && addressObject.getCity()==null)||(this.getCity().equals(addressObject.getCity())))
+      if((this.getCity()==null && addressObject.getCity()==null)||(this.getCity().equals(addressObject.getCity())))
       if((this.getStreet()==null && addressObject.getStreet()==null)||(this.getStreet().equals(addressObject.getStreet())))
         if((this.getProvince()==null && addressObject.getProvince()==null)||(this.getProvince().equals(addressObject.getProvince())))
             return (this.getPostalCode() == null && addressObject.getPostalCode() == null) || (this.getPostalCode().equals(addressObject.getPostalCode()));

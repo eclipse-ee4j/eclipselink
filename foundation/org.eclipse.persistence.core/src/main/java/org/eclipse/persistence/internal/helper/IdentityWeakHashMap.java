@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -556,11 +556,10 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
                         @Override
                         public boolean contains(Object o) {
-                            if (!(o instanceof Map.Entry)) {
+                            if (!(o instanceof Map.Entry entry)) {
                                 return false;
                             }
 
-                            Map.Entry entry = (Map.Entry)o;
                             Object key = entry.getKey();
                             WeakEntry[] copyOfEntries = entries;
                             int hash = System.identityHashCode(key);
@@ -575,10 +574,9 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
                         @Override
                         public boolean remove(Object o) {
-                            if (!(o instanceof WeakEntry)) {
+                            if (!(o instanceof WeakEntry entry)) {
                                 return false;
                             }
-                            WeakEntry entry = (WeakEntry)o;
                             // remove the entry but and increment the modcount
                             // because this is a user action
                             return removeEntry(entry, true);
@@ -665,11 +663,10 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof Map.Entry)) {
+            if (!(o instanceof Map.Entry e)) {
                 return false;
             }
 
-            Map.Entry e = (Map.Entry)o;
             Object v = value.get();
             return (key == e.getKey()) && ((v == null) ? (e.getValue() == null) : v.equals(e.getValue()));
         }

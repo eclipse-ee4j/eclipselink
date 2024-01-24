@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -328,8 +328,7 @@ public final class AnnotationsProcessor {
                         if (annotations != null) {
                             for (Annotation nextAnnotation : annotations) {
                                 if (nextAnnotation != null) {
-                                    if (nextAnnotation instanceof XmlMimeType) {
-                                        XmlMimeType javaAnnotation = (XmlMimeType) nextAnnotation;
+                                    if (nextAnnotation instanceof XmlMimeType javaAnnotation) {
                                         xmlMimeType = javaAnnotation.value();
                                     } else if (nextAnnotation instanceof XmlAttachmentRef) {
                                         xmlAttachmentRef = true;
@@ -1218,8 +1217,7 @@ public final class AnnotationsProcessor {
             java.lang.annotation.Annotation[] annotations = getAnnotations(tmi);
             if (annotations != null) {
                 for (Annotation nextAnnotation : annotations) {
-                    if (nextAnnotation != null && nextAnnotation instanceof XmlElement) {
-                        XmlElement javaAnnotation = (XmlElement) nextAnnotation;
+                    if (nextAnnotation != null && nextAnnotation instanceof XmlElement javaAnnotation) {
                         if (javaAnnotation.type() != XmlElement.DEFAULT.class) {
                             xmlElementType = javaAnnotation.type();
                         }

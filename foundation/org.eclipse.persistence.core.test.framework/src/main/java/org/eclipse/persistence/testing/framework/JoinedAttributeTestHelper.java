@@ -110,8 +110,7 @@ public class JoinedAttributeTestHelper {
                         if (value == null) {
                             remove = true;
                             break;
-                        } else if (value instanceof Collection) {
-                            Collection<?> collection = (Collection<?>) value;
+                        } else if (value instanceof Collection<?> collection) {
                             if (collection.isEmpty()) {
                                 remove = true;
                                 break;

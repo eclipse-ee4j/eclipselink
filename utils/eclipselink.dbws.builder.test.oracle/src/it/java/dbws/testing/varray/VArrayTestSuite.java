@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,56 +53,63 @@ public class VArrayTestSuite extends DBWSTestSuite {
     static final String CREATE_VCARRAY_VARRAY =
         "CREATE OR REPLACE TYPE VCARRAY AS VARRAY(4) OF VARCHAR2(20)";
     static final String CREATE_GETVCARRAY_PROC =
-        "CREATE OR REPLACE PROCEDURE GETVCARRAY(T IN VARCHAR, U OUT VCARRAY) AS" +
-        "\nBEGIN" +
-            "\nU := VCARRAY();" +
-            "\nU.EXTEND;" +
-            "\nU(1) := CONCAT('entry1-', T);" +
-            "\nU.EXTEND;" +
-            "\nU(2) := CONCAT('entry2-', T);" +
-        "\nEND GETVCARRAY;";
+            """
+                    CREATE OR REPLACE PROCEDURE GETVCARRAY(T IN VARCHAR, U OUT VCARRAY) AS
+                    BEGIN
+                    U := VCARRAY();
+                    U.EXTEND;
+                    U(1) := CONCAT('entry1-', T);
+                    U.EXTEND;
+                    U(2) := CONCAT('entry2-', T);
+                    END GETVCARRAY;""";
     static final String CREATE_GETVCARRAY_PROC2 =
-         "CREATE OR REPLACE PROCEDURE GETVCARRAY_PROC2(T IN VARCHAR, U IN OUT VCARRAY) AS" +
-         "\nBEGIN" +
-             "\nU(1) := CONCAT('entry1-', T);" +
-             "\nU(2) := CONCAT('entry2-', T);" +
-         "\nEND GETVCARRAY_PROC2;";
+            """
+                    CREATE OR REPLACE PROCEDURE GETVCARRAY_PROC2(T IN VARCHAR, U IN OUT VCARRAY) AS
+                    BEGIN
+                    U(1) := CONCAT('entry1-', T);
+                    U(2) := CONCAT('entry2-', T);
+                    END GETVCARRAY_PROC2;""";
     static final String CREATE_GETVCARRAY2_FUNC =
-        "CREATE OR REPLACE FUNCTION GETVCARRAY2(T IN VARCHAR) RETURN VCARRAY AS" +
-        "\nL_DATA VCARRAY := VCARRAY();" +
-        "\nBEGIN" +
-            "\nL_DATA.EXTEND;" +
-            "\nL_DATA(1) := CONCAT('entry1-', T);" +
-            "\nL_DATA.EXTEND;" +
-            "\nL_DATA(2) := CONCAT('entry2-', T);" +
-            "\nRETURN L_DATA;" +
-        "\nEND GETVCARRAY2;";
+            """
+                    CREATE OR REPLACE FUNCTION GETVCARRAY2(T IN VARCHAR) RETURN VCARRAY AS
+                    L_DATA VCARRAY := VCARRAY();
+                    BEGIN
+                    L_DATA.EXTEND;
+                    L_DATA(1) := CONCAT('entry1-', T);
+                    L_DATA.EXTEND;
+                    L_DATA(2) := CONCAT('entry2-', T);
+                    RETURN L_DATA;
+                    END GETVCARRAY2;""";
     static final String CREATE_COPYVCARRAY_PROC =
-        "CREATE OR REPLACE PROCEDURE COPYVCARRAY(V IN VCARRAY, U OUT VCARRAY) AS" +
-        "\nBEGIN" +
-            "\nU := V;" +
-            "\nU.EXTEND;" +
-            "\nU(3) := 'copy';" +
-        "\nEND COPYVCARRAY;";
+            """
+                    CREATE OR REPLACE PROCEDURE COPYVCARRAY(V IN VCARRAY, U OUT VCARRAY) AS
+                    BEGIN
+                    U := V;
+                    U.EXTEND;
+                    U(3) := 'copy';
+                    END COPYVCARRAY;""";
     static final String CREATE_COPYVCARRAY2_FUNC =
-        "CREATE OR REPLACE FUNCTION COPYVCARRAY2(V IN VCARRAY) RETURN VCARRAY AS" +
-        "\nL_DATA VCARRAY := V;" +
-        "\nBEGIN" +
-            "\nL_DATA.EXTEND;" +
-            "\nL_DATA(3) := 'copy';" +
-            "\nRETURN L_DATA;" +
-        "\nEND COPYVCARRAY2;";
+            """
+                    CREATE OR REPLACE FUNCTION COPYVCARRAY2(V IN VCARRAY) RETURN VCARRAY AS
+                    L_DATA VCARRAY := V;
+                    BEGIN
+                    L_DATA.EXTEND;
+                    L_DATA(3) := 'copy';
+                    RETURN L_DATA;
+                    END COPYVCARRAY2;""";
     static final String CREATE_GETVALUEFROMVCARRAY_PROC =
-        "CREATE OR REPLACE PROCEDURE GETVALUEFROMVCARRAY(V IN VCARRAY, I IN INTEGER, U OUT VARCHAR2, O OUT VARCHAR2) AS" +
-        "\nBEGIN" +
-            "\nU := V(I);" +
-            "\nO := CONCAT('copy of ', V(I));" +
-        "\nEND GETVALUEFROMVCARRAY;";
+            """
+                    CREATE OR REPLACE PROCEDURE GETVALUEFROMVCARRAY(V IN VCARRAY, I IN INTEGER, U OUT VARCHAR2, O OUT VARCHAR2) AS
+                    BEGIN
+                    U := V(I);
+                    O := CONCAT('copy of ', V(I));
+                    END GETVALUEFROMVCARRAY;""";
     static final String CREATE_GETVALUEFROMVCARRAY2_FUNC =
-        "CREATE OR REPLACE FUNCTION GETVALUEFROMVCARRAY2(V IN VCARRAY, I IN INTEGER) RETURN VARCHAR2 AS" +
-        "\nBEGIN" +
-            "\nRETURN V(I);" +
-        "\nEND GETVALUEFROMVCARRAY2;";
+            """
+                    CREATE OR REPLACE FUNCTION GETVALUEFROMVCARRAY2(V IN VCARRAY, I IN INTEGER) RETURN VARCHAR2 AS
+                    BEGIN
+                    RETURN V(I);
+                    END GETVALUEFROMVCARRAY2;""";
     static final String DROP_VCARRAY_VARRAY =
         "DROP TYPE VCARRAY";
     static final String DROP_GETVCARRAY_PROC =

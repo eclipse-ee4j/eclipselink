@@ -76,9 +76,7 @@ public class Root {
                         return false;
                     } else if (!(value1 instanceof org.w3c.dom.Element) && (value2 instanceof org.w3c.dom.Element)) {
                         return false;
-                    } else if ((value1 instanceof org.w3c.dom.Element) && (value2 instanceof org.w3c.dom.Element)) {
-                        Element elem1 = (Element)value1;
-                        Element elem2 = (Element)value2;
+                    } else if ((value1 instanceof Element elem1) && (value2 instanceof Element elem2)) {
                         if(!(elem1.getLocalName().equals(elem2.getLocalName()))) {
                             return false;
                         }

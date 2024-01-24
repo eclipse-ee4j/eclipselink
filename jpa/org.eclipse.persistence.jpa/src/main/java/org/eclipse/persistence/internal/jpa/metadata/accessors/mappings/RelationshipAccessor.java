@@ -270,8 +270,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof RelationshipAccessor) {
-            RelationshipAccessor relationshipAccessor = (RelationshipAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof RelationshipAccessor relationshipAccessor) {
 
             if (! valuesMatch(m_orphanRemoval, relationshipAccessor.getOrphanRemoval())) {
                 return false;

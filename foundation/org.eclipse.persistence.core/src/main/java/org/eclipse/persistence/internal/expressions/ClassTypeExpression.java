@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -191,10 +191,9 @@ public class ClassTypeExpression extends DataExpression {
             return null;
         }
 
-        if (objectValue instanceof Collection) {
+        if (objectValue instanceof Collection values) {
                 // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
-                Collection values = (Collection)objectValue;
-                Vector fieldValues = new Vector(values.size());
+            Vector fieldValues = new Vector(values.size());
                 for (Iterator iterator = values.iterator(); iterator.hasNext();) {
                     Object value = iterator.next();
                     if (!(value instanceof Expression)){

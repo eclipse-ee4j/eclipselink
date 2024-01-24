@@ -87,8 +87,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof NamedNativeQueryMetadata) {
-            NamedNativeQueryMetadata query = (NamedNativeQueryMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedNativeQueryMetadata query) {
 
             if (! valuesMatch(m_resultClass, query.getResultClass())) {
                 return false;

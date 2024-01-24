@@ -74,8 +74,7 @@ public class PLSQLTest extends TestCase {
                 throwError("Results do not match: " + queryResult + " expected: " + this.result);
             }
         }
-        if (this.result instanceof DatabaseRecord) {
-            DatabaseRecord record = (DatabaseRecord)this.result;
+        if (this.result instanceof DatabaseRecord record) {
             DatabaseRecord queryRecord = (DatabaseRecord)queryResult;
             for (DatabaseField field : record.getFields()) {
                 Object value = record.get(field);

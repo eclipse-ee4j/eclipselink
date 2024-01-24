@@ -128,8 +128,7 @@ public class NamedQueryMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof NamedQueryMetadata) {
-            NamedQueryMetadata query = (NamedQueryMetadata) objectToCompare;
+        if (objectToCompare instanceof NamedQueryMetadata query) {
 
             if (! valuesMatch(m_name, query.getName())) {
                 return false;

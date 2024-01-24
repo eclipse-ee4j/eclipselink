@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,13 +39,11 @@ public class Handler implements ExceptionHandler, java.io.Serializable {
      */
     @Override
     public Object handleException(RuntimeException exception) {
-        if (exception instanceof QueryException) {
-            QueryException queryException = (QueryException)exception;
+        if (exception instanceof QueryException queryException) {
             Expression exp = new ExpressionBuilder().get("address").get("province").equal("ONT");
             queryException.getQuery().setSelectionCriteria(exp);
             return queryException.getSession().executeQuery(queryException.getQuery());
-        } else if (exception instanceof DatabaseException) {
-            DatabaseException databaseException = (DatabaseException)exception;
+        } else if (exception instanceof DatabaseException databaseException) {
             databaseException.getAccessor().disconnect(databaseException.getSession());
             databaseException.getAccessor().reestablishConnection(databaseException.getSession());
             if (databaseException.getQuery().getSQLString().equals("select * from employee")) {

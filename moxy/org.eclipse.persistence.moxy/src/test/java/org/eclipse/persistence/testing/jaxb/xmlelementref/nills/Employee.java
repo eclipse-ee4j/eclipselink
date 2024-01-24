@@ -35,20 +35,18 @@ public class Employee {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Task)) {
+            if (!(obj instanceof Task t)) {
                 return false;
             }
-            Task t = (Task) obj;
             return t.id.equals(this.id);
         }
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Employee)) {
+        if (!(obj instanceof Employee e)) {
             return false;
         }
-        Employee e = (Employee) obj;
         if (!isEqual(e.address, this.address)) {
             return false;
         }

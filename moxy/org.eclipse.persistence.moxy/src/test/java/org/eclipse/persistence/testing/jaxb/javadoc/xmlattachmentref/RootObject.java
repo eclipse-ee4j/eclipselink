@@ -31,10 +31,9 @@ public class RootObject {
     public DataHandler body;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof RootObject)) {
+        if (obj == null || !(obj instanceof RootObject rootObj)) {
             return false;
         }
-        RootObject rootObj = (RootObject) obj;
         return (rootObj.data.equals(data)) && rootObj.body.equals(body);
     }
 }

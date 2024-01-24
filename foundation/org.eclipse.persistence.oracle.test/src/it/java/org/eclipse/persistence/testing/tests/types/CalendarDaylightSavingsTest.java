@@ -154,10 +154,9 @@ public class CalendarDaylightSavingsTest extends TestCase {
 
     @Override
     public void setup() {
-        if (!(getSession().getPlatform() instanceof Oracle9Platform)) {
+        if (!(getSession().getPlatform() instanceof Oracle9Platform platform)) {
             throw new TestWarningException("Test is only supported on Oracle9 platform and above, as TIMESTAMPTZ is used");
         }
-        Oracle9Platform platform = (Oracle9Platform) getSession().getPlatform();
 
         this.oldBindingValue = platform.shouldBindAllParameters();
         this.oldNativeSqlValue = platform.usesNativeSQL();

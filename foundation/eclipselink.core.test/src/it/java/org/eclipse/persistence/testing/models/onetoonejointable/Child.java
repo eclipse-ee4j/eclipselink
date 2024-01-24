@@ -93,10 +93,9 @@ public class Child implements Serializable{
     }
 
     public boolean equals(java.lang.Object arg0){
-        if ( !(arg0 instanceof Child) ){
+        if ( !(arg0 instanceof Child c2) ){
             return false;
         }
-        Child c2 = (Child)arg0;
         return (id == c2.id) || ((id != null) && (c2.id != null) && id.equals(c2.id));
     }
 

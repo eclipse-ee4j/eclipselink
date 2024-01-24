@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,11 +88,10 @@ public class Team
 
    public boolean equals(Object object)
    {
-     if(!(object instanceof Team))
+     if(!(object instanceof Team teamObject))
       return false;
 
-     Team teamObject = (Team)object;
-     if((((this.getEmployees() == null) && (teamObject.getEmployees() == null))||
+       if((((this.getEmployees() == null) && (teamObject.getEmployees() == null))||
           (this.getEmployees().containsAll(teamObject.getEmployees()))) &&
         (((this.getProjects() == null) && (teamObject.getProjects() == null))||
           (this.getProjects().containsAll(teamObject.getProjects()))) &&

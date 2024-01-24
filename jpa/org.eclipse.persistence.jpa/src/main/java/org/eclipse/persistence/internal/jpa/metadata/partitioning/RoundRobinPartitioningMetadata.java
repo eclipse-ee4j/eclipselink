@@ -60,8 +60,7 @@ public class RoundRobinPartitioningMetadata extends ReplicationPartitioningMetad
 
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof RoundRobinPartitioningMetadata)) {
-            RoundRobinPartitioningMetadata policy = (RoundRobinPartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof RoundRobinPartitioningMetadata policy)) {
 
             return valuesMatch(this.replicateWrites, policy.getReplicateWrites());
         }

@@ -92,8 +92,7 @@ public class TableGeneratorMetadata extends TableMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof TableGeneratorMetadata) {
-            TableGeneratorMetadata generator = (TableGeneratorMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof TableGeneratorMetadata generator) {
 
             if (! valuesMatch(m_allocationSize, generator.getAllocationSize())) {
                 return false;

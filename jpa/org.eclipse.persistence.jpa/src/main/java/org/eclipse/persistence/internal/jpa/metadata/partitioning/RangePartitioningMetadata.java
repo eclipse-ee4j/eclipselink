@@ -95,8 +95,7 @@ public class RangePartitioningMetadata extends FieldPartitioningMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof RangePartitioningMetadata)) {
-            RangePartitioningMetadata policy = (RangePartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof RangePartitioningMetadata policy)) {
 
             return valuesMatch(this.partitions, policy.getPartitions());
         }

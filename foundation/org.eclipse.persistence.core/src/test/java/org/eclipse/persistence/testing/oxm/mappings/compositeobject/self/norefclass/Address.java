@@ -28,10 +28,9 @@ public class Address {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof Address)) {
+        if (!(object instanceof Address addressObject)) {
             return false;
         }
-        Address addressObject = (Address) object;
         return this.getStreet().equals(addressObject.getStreet());
     }
 

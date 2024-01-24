@@ -131,8 +131,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof EntityListenerMetadata) {
-            EntityListenerMetadata entityListener = (EntityListenerMetadata) objectToCompare;
+        if (objectToCompare instanceof EntityListenerMetadata entityListener) {
 
             if (! valuesMatch(m_className, entityListener.getClassName())) {
                 return false;

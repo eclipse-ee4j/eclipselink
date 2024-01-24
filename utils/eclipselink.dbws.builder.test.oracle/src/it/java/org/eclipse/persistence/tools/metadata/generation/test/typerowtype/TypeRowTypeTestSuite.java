@@ -62,26 +62,28 @@ import org.w3c.dom.Document;
  */
 public class TypeRowTypeTestSuite {
     static final String CREATE_EMPTYPE_TABLE =
-        "CREATE TABLE EMPTYPEX (" +
-            "\nEMPNO NUMERIC(4) NOT NULL," +
-            "\nENAME VARCHAR(25)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE EMPTYPEX (
+                    EMPNO NUMERIC(4) NOT NULL,
+                    ENAME VARCHAR(25),
+                    PRIMARY KEY (EMPNO)
+                    )""";
 
     static final String CREATE_EMP_RECORD_PACKAGE =
-        "create or replace PACKAGE EMP_RECORD_PACKAGE AS\n" +
-            "type EmpRec is record (" +
-                "emp_id   EMPTYPEX.EMPNO%TYPE,\n" +
-                "emp_name EMPTYPEX.ENAME%TYPE\n" +
-            ");\n" +
-            "function get_emp_record (pId in number) return EmpRec;\n" +
-        "END EMP_RECORD_PACKAGE;";
+            """
+                    create or replace PACKAGE EMP_RECORD_PACKAGE AS
+                    type EmpRec is record (emp_id   EMPTYPEX.EMPNO%TYPE,
+                    emp_name EMPTYPEX.ENAME%TYPE
+                    );
+                    function get_emp_record (pId in number) return EmpRec;
+                    END EMP_RECORD_PACKAGE;""";
 
     static final String CREATE_ROWTYPE_TEST_PACKAGE =
-        "CREATE OR REPLACE PACKAGE RTYPE_PKG AS" +
-            "\nPROCEDURE testProc(PARAM1 IN INTEGER, PARAM2 OUT EMPTYPEX%ROWTYPE);" +
-            "\nFUNCTION testFunc(PARAM1 IN INTEGER) RETURN EMPTYPEX%ROWTYPE;" +
-        "\nEND RTYPE_PKG;";
+            """
+                    CREATE OR REPLACE PACKAGE RTYPE_PKG AS
+                    PROCEDURE testProc(PARAM1 IN INTEGER, PARAM2 OUT EMPTYPEX%ROWTYPE);
+                    FUNCTION testFunc(PARAM1 IN INTEGER) RETURN EMPTYPEX%ROWTYPE;
+                    END RTYPE_PKG;""";
 
     // shadow JDBC type for PL/SQL record
     static final String CREATE_EMPREC_TYPE =
@@ -206,68 +208,67 @@ public class TypeRowTypeTestSuite {
     }
 
     static final String mappingMetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:named-plsql-stored-procedure-query name=\"testProc\" procedure-name=\"RTYPE_PKG.testProc\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"PARAM1\" database-type=\"INTEGER_TYPE\"/>\n" +
-        "      <orm:parameter direction=\"OUT\" name=\"PARAM2\" database-type=\"EMPTYPEX%ROWTYPE\"/>\n" +
-        "   </orm:named-plsql-stored-procedure-query>\n" +
-        "   <orm:named-plsql-stored-function-query name=\"get_emp_record\" function-name=\"EMP_RECORD_PACKAGE.get_emp_record\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"pId\" database-type=\"NUMERIC_TYPE\"/>\n" +
-        "      <orm:return-parameter name=\"RESULT\" database-type=\"EMP_RECORD_PACKAGE.EmpRec\"/>\n" +
-        "   </orm:named-plsql-stored-function-query>\n" +
-        "   <orm:named-plsql-stored-function-query name=\"testFunc\" function-name=\"RTYPE_PKG.testFunc\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"PARAM1\" database-type=\"INTEGER_TYPE\"/>\n" +
-        "      <orm:return-parameter name=\"RESULT\" database-type=\"EMPTYPEX%ROWTYPE\"/>\n" +
-        "   </orm:named-plsql-stored-function-query>\n" +
-        "   <orm:plsql-record name=\"EMP_RECORD_PACKAGE.EmpRec\" compatible-type=\"EMP_RECORD_PACKAGE_EmpRec\" java-type=\"emp_record_package.Emprec\">\n" +
-        "      <orm:field name=\"emp_id\" database-type=\"NUMERIC_TYPE\"/>\n" +
-        "      <orm:field name=\"emp_name\" database-type=\"VARCHAR_TYPE\"/>\n" +
-        "   </orm:plsql-record>\n" +
-        "   <orm:plsql-record name=\"EMPTYPEX%ROWTYPE\" compatible-type=\"EMPTYPEX_ROWTYPE\" java-type=\"Emptypex_rowtype\">\n" +
-        "      <orm:field name=\"EMPNO\" database-type=\"NUMERIC_TYPE\"/>\n" +
-        "      <orm:field name=\"ENAME\" database-type=\"VARCHAR_TYPE\"/>\n" +
-        "   </orm:plsql-record>\n" +
-        "   <orm:entity class=\"metadatagen.Emptypex\" access=\"VIRTUAL\">\n" +
-        "      <orm:table name=\"EMPTYPEX\"/>\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:id name=\"empno\" attribute-type=\"java.math.BigInteger\">\n" +
-        "            <orm:column name=\"EMPNO\"/>\n" +
-        "         </orm:id>\n" +
-        "         <orm:basic name=\"ename\" attribute-type=\"java.lang.String\">\n" +
-        "            <orm:column name=\"ENAME\"/>\n" +
-        "         </orm:basic>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:entity>\n" +
-        "   <orm:embeddable class=\"emp_record_package.Emprec\" access=\"VIRTUAL\">\n" +
-        "      <orm:struct name=\"EMP_RECORD_PACKAGE_EmpRec\">\n" +
-        "         <orm:field>emp_id</orm:field>\n" +
-        "         <orm:field>emp_name</orm:field>\n" +
-        "      </orm:struct>\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:basic name=\"emp_id\" attribute-type=\"java.math.BigInteger\">\n" +
-        "            <orm:column name=\"emp_id\"/>\n" +
-        "         </orm:basic>\n" +
-        "         <orm:basic name=\"emp_name\" attribute-type=\"java.lang.String\">\n" +
-        "            <orm:column name=\"emp_name\"/>\n" +
-        "         </orm:basic>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "   <orm:embeddable class=\"Emptypex_rowtype\" access=\"VIRTUAL\">\n" +
-        "      <orm:struct name=\"EMPTYPEX_ROWTYPE\">\n" +
-        "         <orm:field>EMPNO</orm:field>\n" +
-        "         <orm:field>ENAME</orm:field>\n" +
-        "      </orm:struct>\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:basic name=\"empno\" attribute-type=\"java.math.BigInteger\">\n" +
-        "            <orm:column name=\"EMPNO\"/>\n" +
-        "         </orm:basic>\n" +
-        "         <orm:basic name=\"ename\" attribute-type=\"java.lang.String\">\n" +
-        "            <orm:column name=\"ENAME\"/>\n" +
-        "         </orm:basic>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:named-plsql-stored-procedure-query name="testProc" procedure-name="RTYPE_PKG.testProc">
+                          <orm:parameter direction="IN" name="PARAM1" database-type="INTEGER_TYPE"/>
+                          <orm:parameter direction="OUT" name="PARAM2" database-type="EMPTYPEX%ROWTYPE"/>
+                       </orm:named-plsql-stored-procedure-query>
+                       <orm:named-plsql-stored-function-query name="get_emp_record" function-name="EMP_RECORD_PACKAGE.get_emp_record">
+                          <orm:parameter direction="IN" name="pId" database-type="NUMERIC_TYPE"/>
+                          <orm:return-parameter name="RESULT" database-type="EMP_RECORD_PACKAGE.EmpRec"/>
+                       </orm:named-plsql-stored-function-query>
+                       <orm:named-plsql-stored-function-query name="testFunc" function-name="RTYPE_PKG.testFunc">
+                          <orm:parameter direction="IN" name="PARAM1" database-type="INTEGER_TYPE"/>
+                          <orm:return-parameter name="RESULT" database-type="EMPTYPEX%ROWTYPE"/>
+                       </orm:named-plsql-stored-function-query>
+                       <orm:plsql-record name="EMP_RECORD_PACKAGE.EmpRec" compatible-type="EMP_RECORD_PACKAGE_EmpRec" java-type="emp_record_package.Emprec">
+                          <orm:field name="emp_id" database-type="NUMERIC_TYPE"/>
+                          <orm:field name="emp_name" database-type="VARCHAR_TYPE"/>
+                       </orm:plsql-record>
+                       <orm:plsql-record name="EMPTYPEX%ROWTYPE" compatible-type="EMPTYPEX_ROWTYPE" java-type="Emptypex_rowtype">
+                          <orm:field name="EMPNO" database-type="NUMERIC_TYPE"/>
+                          <orm:field name="ENAME" database-type="VARCHAR_TYPE"/>
+                       </orm:plsql-record>
+                       <orm:entity class="metadatagen.Emptypex" access="VIRTUAL">
+                          <orm:table name="EMPTYPEX"/>
+                          <orm:attributes>
+                             <orm:id name="empno" attribute-type="java.math.BigInteger">
+                                <orm:column name="EMPNO"/>
+                             </orm:id>
+                             <orm:basic name="ename" attribute-type="java.lang.String">
+                                <orm:column name="ENAME"/>
+                             </orm:basic>
+                          </orm:attributes>
+                       </orm:entity>
+                       <orm:embeddable class="emp_record_package.Emprec" access="VIRTUAL">
+                          <orm:struct name="EMP_RECORD_PACKAGE_EmpRec">
+                             <orm:field>emp_id</orm:field>
+                             <orm:field>emp_name</orm:field>
+                          </orm:struct>
+                          <orm:attributes>
+                             <orm:basic name="emp_id" attribute-type="java.math.BigInteger">
+                                <orm:column name="emp_id"/>
+                             </orm:basic>
+                             <orm:basic name="emp_name" attribute-type="java.lang.String">
+                                <orm:column name="emp_name"/>
+                             </orm:basic>
+                          </orm:attributes>
+                       </orm:embeddable>
+                       <orm:embeddable class="Emptypex_rowtype" access="VIRTUAL">
+                          <orm:struct name="EMPTYPEX_ROWTYPE">
+                             <orm:field>EMPNO</orm:field>
+                             <orm:field>ENAME</orm:field>
+                          </orm:struct>
+                          <orm:attributes>
+                             <orm:basic name="empno" attribute-type="java.math.BigInteger">
+                                <orm:column name="EMPNO"/>
+                             </orm:basic>
+                             <orm:basic name="ename" attribute-type="java.lang.String">
+                                <orm:column name="ENAME"/>
+                             </orm:basic>
+                          </orm:attributes>
+                       </orm:embeddable>
+                    </orm:entity-mappings>""";
 }

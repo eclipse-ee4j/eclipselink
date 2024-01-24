@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,10 +65,9 @@ public class InterfaceProxyInvocationTest extends AutoVerifyTestCase {
             String firstName = employee.getFirstName();
         } catch (Exception n) {
             exceptionThrown = true;
-            if (!(n instanceof EclipseLinkException)) {
+            if (!(n instanceof EclipseLinkException w)) {
                 throw new TestErrorException("Unhandled non-TopLink Exception occurred upon invocation of getName() on employee");
             } else {
-                EclipseLinkException w = (EclipseLinkException)n;
 
                 // test error code here
                 if (w.getErrorCode() != ValidationException.NULL_UNDERLYING_VALUEHOLDER_VALUE) {

@@ -65,8 +65,7 @@ public class FetchAttributeMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof FetchAttributeMetadata) {
-            FetchAttributeMetadata fetchAttribute = (FetchAttributeMetadata) objectToCompare;
+        if (objectToCompare instanceof FetchAttributeMetadata fetchAttribute) {
             return valuesMatch(m_name, fetchAttribute.getName());
         }
 

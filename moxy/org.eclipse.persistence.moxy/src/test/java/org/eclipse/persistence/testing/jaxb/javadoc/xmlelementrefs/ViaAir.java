@@ -24,10 +24,9 @@ public class ViaAir extends TransportType{
     public String airliner;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof ViaAir)) {
+        if (obj == null || !(obj instanceof ViaAir t)) {
             return false;
         }
-        ViaAir t = (ViaAir) obj;
 
         return t.transportTypeID == this.transportTypeID && t.transportCost == this.transportCost && t.airliner.equals(this.airliner);
     }

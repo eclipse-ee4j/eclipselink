@@ -76,8 +76,7 @@ public class OrderByMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof OrderByMetadata) {
-            OrderByMetadata orderBy = (OrderByMetadata) objectToCompare;
+        if (objectToCompare instanceof OrderByMetadata orderBy) {
             return valuesMatch(m_value, orderBy.getValue());
         }
 

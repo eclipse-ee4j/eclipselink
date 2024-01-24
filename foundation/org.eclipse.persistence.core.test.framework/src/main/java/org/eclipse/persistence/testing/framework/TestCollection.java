@@ -397,8 +397,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
 
         for (Enumeration<Test> tests = getFinishedTests().elements(); tests.hasMoreElements();) {
             junit.framework.Test test = tests.nextElement();
-            if (test instanceof TestEntity) {
-                TestEntity testEntity = (TestEntity)test;
+            if (test instanceof TestEntity testEntity) {
                 if (regression) {
                     if (!(testEntity instanceof TestCase) || !(testEntity.getReport().hasPassed() || ((TestResult)testEntity.getReport()).hasWarning())) {
                         testEntity.logRegressionResult(log);
@@ -430,11 +429,9 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
         getSummary().resetTotals();
         for (Enumeration<Test> tests = getFinishedTests().elements(); tests.hasMoreElements();) {
             junit.framework.Test test = tests.nextElement();
-            if (test instanceof TestCase) {
-                TestCase testEntity = (TestCase)test;
+            if (test instanceof TestCase testEntity) {
                 testEntity.appendTestResult(getSummary());
-            } else if (test instanceof TestCollection) {
-                TestCollection testEntity = (TestCollection)test;
+            } else if (test instanceof TestCollection testEntity) {
                 testEntity.computeResultSummary();
                 testEntity.appendTestResult(getSummary());
             } else {

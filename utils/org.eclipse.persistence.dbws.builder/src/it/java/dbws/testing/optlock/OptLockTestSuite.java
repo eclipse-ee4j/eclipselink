@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -130,13 +130,14 @@ import static dbws.testing.DBWSTestSuite.runDdl;
 public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
     static final String CREATE_OPTLOCK_TABLE =
-        "CREATE TABLE IF NOT EXISTS optlock (" +
-            "\nID NUMERIC NOT NULL," +
-            "\nNAME VARCHAR(25)," +
-            "\nDESCRIPT VARCHAR(20)," +
-            "\nVERSION NUMERIC," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS optlock (
+                    ID NUMERIC NOT NULL,
+                    NAME VARCHAR(25),
+                    DESCRIPT VARCHAR(20),
+                    VERSION NUMERIC,
+                    PRIMARY KEY (ID)
+                    )""";
     static final String[] POPULATE_OPTLOCK_TABLE = new String[] {
         "insert into optlock (ID, NAME, DESCRIPT, VERSION) values (1, 'name', 'this is ver 3', 3)"
     };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -51,8 +51,7 @@ public class CollectionExpression extends ConstantExpression {
      */
     @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
-        if (this.value instanceof Collection) {
-            Collection values = (Collection)this.value;
+        if (this.value instanceof Collection values) {
             Vector fieldValues = new Vector(values.size());
             for (Iterator iterator = values.iterator(); iterator.hasNext();) {
                 Object value = iterator.next();
@@ -75,8 +74,7 @@ public class CollectionExpression extends ConstantExpression {
     @Override
     public void setLocalBase(Expression e) {
         super.setLocalBase(e);
-        if (this.value instanceof Collection) {
-            Collection values = (Collection)this.value;
+        if (this.value instanceof Collection values) {
             for (Iterator iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();
                 if (val instanceof Expression){
@@ -93,8 +91,7 @@ public class CollectionExpression extends ConstantExpression {
     @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        if (this.value instanceof Collection) {
-            Collection values = (Collection)this.value;
+        if (this.value instanceof Collection values) {
             Vector newValues = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(values.size());
             for (Iterator iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();

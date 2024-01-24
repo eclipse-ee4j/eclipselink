@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -131,8 +131,7 @@ public class EISMappedRecord extends AbstractRecord {
             Vector<EISMappedRecord> nestedRows = new Vector<>(1);
             nestedRows.add(new EISMappedRecord((Map)value, getAccessor()));
             value = nestedRows;
-        } else if (value instanceof List) {
-            List<?> values = (List<?>)value;
+        } else if (value instanceof List<?> values) {
             Vector<Object> nestedValues = new Vector<>(values.size());
             for (int index = 0; index < values.size(); index++) {
                 Object nestedValue = values.get(index);

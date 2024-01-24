@@ -654,8 +654,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ClassAccessor) {
-            ClassAccessor accessor = (ClassAccessor) objectToCompare;
+        if (objectToCompare instanceof ClassAccessor accessor) {
             return valuesMatch(getJavaClassName(), accessor.getJavaClassName());
         }
 

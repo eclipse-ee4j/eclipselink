@@ -140,8 +140,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof DirectCollectionAccessor) {
-            DirectCollectionAccessor directCollectionAccessor = (DirectCollectionAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof DirectCollectionAccessor directCollectionAccessor) {
 
             if (! valuesMatch(m_joinFetch, directCollectionAccessor.getJoinFetch())) {
                 return false;
@@ -355,8 +354,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // Will check for PROPERTY access
         setAccessorMethods(mapping);
 
-        if (mapping instanceof CollectionMapping) {
-            CollectionMapping collectionMapping = (CollectionMapping)mapping;
+        if (mapping instanceof CollectionMapping collectionMapping) {
 
             // Set the reference class name.
             collectionMapping.setReferenceClassName(getReferenceClassName());
@@ -375,8 +373,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
 
             // Set the cascade on delete if specified.
             collectionMapping.setIsCascadeOnDeleteSetOnDatabase(isCascadeOnDelete());
-        } else if (mapping instanceof AggregateMapping) {
-            AggregateMapping aggregateMapping = (AggregateMapping)mapping;
+        } else if (mapping instanceof AggregateMapping aggregateMapping) {
 
             // Set the reference class name.
             aggregateMapping.setReferenceClassName(getReferenceClassName());
@@ -438,8 +435,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
 
         processContainerPolicyAndIndirection((ContainerMapping) mapping);
 
-        if (mapping instanceof DirectCollectionMapping) {
-            DirectCollectionMapping directCollectionMapping = (DirectCollectionMapping) mapping;
+        if (mapping instanceof DirectCollectionMapping directCollectionMapping) {
             // Process the container and indirection policies.
 
             // Process the value column (we must process this field before the

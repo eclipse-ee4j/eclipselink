@@ -54,12 +54,13 @@ import dbws.testing.DBWSTestSuite;
 public class LogLevelValidationTestSuite extends DBWSTestSuite {
 
     static final String CREATE_LOGLEVEL_TABLE =
-        "CREATE TABLE IF NOT EXISTS loglevel (" +
-            "\nID NUMERIC NOT NULL," +
-            "\nNAME VARCHAR(25)," +
-            "\nSINCE DATE," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS loglevel (
+                    ID NUMERIC NOT NULL,
+                    NAME VARCHAR(25),
+                    SINCE DATE,
+                    PRIMARY KEY (ID)
+                    )""";
     static final String DROP_LOGLEVEL_TABLE =
         "DROP TABLE loglevel";
 

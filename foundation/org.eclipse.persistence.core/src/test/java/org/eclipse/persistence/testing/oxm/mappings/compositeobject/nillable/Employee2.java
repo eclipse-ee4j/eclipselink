@@ -51,11 +51,10 @@ public class Employee2 {
 
     // override default equals
     public boolean equals(Object object) {
-        if (!(object instanceof Employee2)) {
+        if (!(object instanceof Employee2 employeeObject)) {
             return false;
         }
-        Employee2 employeeObject = (Employee2)object;
-//        if (getId() != employeeObject.getId()) {
+        //        if (getId() != employeeObject.getId()) {
 //            return false;
 //        }
 //        if ((employeeObject.getLastName() == null) && (getLastName() != null)) {

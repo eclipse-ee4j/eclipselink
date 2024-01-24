@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,17 +147,18 @@ import static dbws.testing.DBWSTestSuite.runDdl;
 public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
     static final String CREATE_SECONDARY_TABLE =
-        "CREATE TABLE IF NOT EXISTS secondary (" +
-            "\nEMPNO NUMERIC(4)," +
-            "\nENAME VARCHAR(10)," +
-            "\nJOB VARCHAR(9)," +
-            "\nMGR NUMERIC(4)," +
-            "\nHIREDATE DATE," +
-            "\nSAL NUMERIC(7,2)," +
-            "\nCOMM NUMERIC(7,2)," +
-            "\nDEPTNO NUMERIC(2)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS secondary (
+                    EMPNO NUMERIC(4),
+                    ENAME VARCHAR(10),
+                    JOB VARCHAR(9),
+                    MGR NUMERIC(4),
+                    HIREDATE DATE,
+                    SAL NUMERIC(7,2),
+                    COMM NUMERIC(7,2),
+                    DEPTNO NUMERIC(2),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String[] POPULATE_SECONDARY_TABLE = new String[] {
         "INSERT INTO secondary VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20)",
         "INSERT INTO secondary VALUES (7499,'ALLEN','SALESMAN',7698,'1981-2-20',1600,300,30)",
@@ -441,29 +442,30 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      }
 
      public static final String SCHEMA_CONTROL_DOC =
-         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:secondarySQL\" xmlns=\"urn:secondarySQL\" elementFormDefault=\"qualified\">\n" +
-          "   <xsd:complexType name=\"secondaryType\">\n" +
-         "      <xsd:sequence>\n" +
-         "         <xsd:element name=\"empno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "         <xsd:element name=\"ename\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "         <xsd:element name=\"job\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "         <xsd:element name=\"mgr\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "         <xsd:element name=\"hiredate\" type=\"xsd:date\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "         <xsd:element name=\"sal\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "         <xsd:element name=\"comm\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "         <xsd:element name=\"deptno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "      </xsd:sequence>\n" +
-         "   </xsd:complexType>\n" +
-         "   <xsd:complexType name=\"secondaryAggregate\">\n" +
-         "      <xsd:sequence>\n" +
-         "         <xsd:element name=\"count\" type=\"xsd:integer\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "         <xsd:element name=\"max-salary\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "      </xsd:sequence>\n" +
-         "   </xsd:complexType>\n" +
-         "   <xsd:element name=\"secondaryType\" type=\"secondaryType\"/>\n" +
-         "   <xsd:element name=\"secondaryAggregate\" type=\"secondaryAggregate\"/>\n" +
-         "</xsd:schema>";
+             """
+                     <?xml version="1.0" encoding="UTF-8"?>
+                     <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:secondarySQL" xmlns="urn:secondarySQL" elementFormDefault="qualified">
+                        <xsd:complexType name="secondaryType">
+                           <xsd:sequence>
+                              <xsd:element name="empno" type="xsd:decimal" minOccurs="0" nillable="true"/>
+                              <xsd:element name="ename" type="xsd:string" minOccurs="0" nillable="true"/>
+                              <xsd:element name="job" type="xsd:string" minOccurs="0" nillable="true"/>
+                              <xsd:element name="mgr" type="xsd:decimal" minOccurs="0" nillable="true"/>
+                              <xsd:element name="hiredate" type="xsd:date" minOccurs="0" nillable="true"/>
+                              <xsd:element name="sal" type="xsd:decimal" minOccurs="0" nillable="true"/>
+                              <xsd:element name="comm" type="xsd:decimal" minOccurs="0" nillable="true"/>
+                              <xsd:element name="deptno" type="xsd:decimal" minOccurs="0" nillable="true"/>
+                           </xsd:sequence>
+                        </xsd:complexType>
+                        <xsd:complexType name="secondaryAggregate">
+                           <xsd:sequence>
+                              <xsd:element name="count" type="xsd:integer" minOccurs="0" nillable="true"/>
+                              <xsd:element name="max-salary" type="xsd:decimal" minOccurs="0" nillable="true"/>
+                           </xsd:sequence>
+                        </xsd:complexType>
+                        <xsd:element name="secondaryType" type="secondaryType"/>
+                        <xsd:element name="secondaryAggregate" type="secondaryAggregate"/>
+                     </xsd:schema>""";
 
      static final String ALL_CUSTOM_CONTROL_DOC =
          "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +

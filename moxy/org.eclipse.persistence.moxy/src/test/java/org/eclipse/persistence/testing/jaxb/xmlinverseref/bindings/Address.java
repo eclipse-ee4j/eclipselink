@@ -24,8 +24,7 @@ public class Address {
    public Person owner;
 
    public boolean equals(Object obj){
-       if(obj instanceof Address){
-           Address compareAddr = (Address)obj;
+       if(obj instanceof Address compareAddr){
            return street.equals(compareAddr.street) &&
                owner.getAddr() == this;
               //calling person.equals will be an infinite loop

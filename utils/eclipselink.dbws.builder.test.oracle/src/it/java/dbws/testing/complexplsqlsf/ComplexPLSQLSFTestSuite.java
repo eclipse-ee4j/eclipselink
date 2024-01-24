@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,285 +47,293 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
     static final String CREATE_VARCHAR2ARRAY_VARRAY =
         "CREATE OR REPLACE TYPE VARCHAR2ARRAY AS VARRAY(10) OF VARCHAR2(20)";
     static final String CREATE_A_PHONE2_TYPE =
-        "CREATE OR REPLACE TYPE A_PHONE2_TYPE AS OBJECT (" +
-            "\nHOME VARCHAR2(20)," +
-            "\nCELL VARCHAR2(20)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE A_PHONE2_TYPE AS OBJECT (
+                    HOME VARCHAR2(20),
+                    CELL VARCHAR2(20)
+                    )""";
     static final String CREATE_A_PHONE2_TYPE_TABLE =
         "CREATE OR REPLACE TYPE A_PHONE2_TYPE_TABLE AS TABLE OF A_PHONE2_TYPE";
     static final String CREATE_A_PHONE2_TYPE_VARRAY =
         "CREATE OR REPLACE TYPE A_PHONE2_TYPE_VARRAY AS VARRAY(10) OF A_PHONE2_TYPE";
     static final String CREATE_A_CONTACT2_TYPE =
-        "CREATE OR REPLACE TYPE A_CONTACT2_TYPE AS OBJECT (" +
-            "\nADDRESS VARCHAR2(40)," +
-            "\nPHONE A_PHONE2_TYPE" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE A_CONTACT2_TYPE AS OBJECT (
+                    ADDRESS VARCHAR2(40),
+                    PHONE A_PHONE2_TYPE
+                    )""";
     static final String CREATE_A_CUSTOMER2_TYPE =
-        "CREATE OR REPLACE TYPE A_CUSTOMER2_TYPE AS OBJECT (" +
-            "\nNAME VARCHAR2ARRAY," +
-            "\nAGE NUMBER(3)," +
-            "\nCONTACT A_CONTACT2_TYPE" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE A_CUSTOMER2_TYPE AS OBJECT (
+                    NAME VARCHAR2ARRAY,
+                    AGE NUMBER(3),
+                    CONTACT A_CONTACT2_TYPE
+                    )""";
     static final String CREATE_COMPLEXPKG2_TAB1_TYPE =
         "CREATE OR REPLACE TYPE COMPLEXPKG2_TAB1 AS TABLE OF VARCHAR2(20)";
     static final String CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE =
-        "CREATE OR REPLACE TYPE COMPLEXPKG2_SIMPLERECORD AS OBJECT (" +
-            "\nSR1 VARCHAR2(20)," +
-            "\nSR2 VARCHAR2(20)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE COMPLEXPKG2_SIMPLERECORD AS OBJECT (
+                    SR1 VARCHAR2(20),
+                    SR2 VARCHAR2(20)
+                    )""";
     static final String CREATE_COMPLEXPKG2_COMPLEXRECORD_TYPE =
-        "CREATE OR REPLACE TYPE COMPLEXPKG2_COMPLEXRECORD AS OBJECT (" +
-            "\nCR1 NUMBER," +
-            "\nCR2 A_CONTACT2_TYPE," +
-            "\nCR3 VARCHAR2ARRAY," +
-            "\nCR4 A_PHONE2_TYPE_TABLE" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE COMPLEXPKG2_COMPLEXRECORD AS OBJECT (
+                    CR1 NUMBER,
+                    CR2 A_CONTACT2_TYPE,
+                    CR3 VARCHAR2ARRAY,
+                    CR4 A_PHONE2_TYPE_TABLE
+                    )""";
     static final String CREATE_COMPLEXPKG2_MORECOMPLEXRECORD_TYPE =
-        "CREATE OR REPLACE TYPE COMPLEXPKG2_MORECOMPLEXRECORD AS OBJECT (" +
-            "\nMCR1 A_PHONE2_TYPE_VARRAY" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE COMPLEXPKG2_MORECOMPLEXRECORD AS OBJECT (
+                    MCR1 A_PHONE2_TYPE_VARRAY
+                    )""";
     static final String CREATE_COMPLEXPKG2_PACKAGE =
-        "CREATE OR REPLACE PACKAGE COMPLEXPKG2 AS" +
-            "\nTYPE TAB1 IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" +
-            "\nTYPE SIMPLERECORD IS RECORD (" +
-                "\nSR1 VARCHAR2(20)," +
-                "\nSR2 VARCHAR2(20)" +
-            "\n);" +
-            "\nTYPE COMPLEXRECORD IS RECORD (" +
-                "\nCR1 NUMBER," +
-                "\nCR2 A_CONTACT2_TYPE," +
-                "\nCR3 VARCHAR2ARRAY," +
-                "\nCR4 A_PHONE2_TYPE_TABLE" +
-            "\n);" +
-            "\nTYPE MORECOMPLEXRECORD IS RECORD (" +
-                "\nMCR1 A_PHONE2_TYPE_VARRAY" +
-            "\n);" +
-            "\nFUNCTION TABLETOVARRAY(OLDTAB IN TAB1) RETURN VARCHAR2ARRAY;" +
-            "\nFUNCTION TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1) RETURN VARCHAR2ARRAY;" +
-            "\nFUNCTION VARRAYTOTABLE(OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1;" +
-            "\nFUNCTION VARRAYSTOTABLE(OLDVARRAY IN VARCHAR2ARRAY, OLDVARRAY2 IN VARCHAR2ARRAY) RETURN TAB1;" +
-            "\nFUNCTION PHONETOTABLE(APHONE IN A_PHONE2_TYPE) RETURN TAB1;" +
-            "\nFUNCTION PHONEANDVARRAYTOTABLE(APHONE IN A_PHONE2_TYPE, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1;" +
-            "\nFUNCTION TABLETOPHONE(OLDTAB IN TAB1) RETURN A_PHONE2_TYPE;" +
-            "\nFUNCTION TABLEANDVARRAYTOPHONE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN A_PHONE2_TYPE;" +
-            "\nFUNCTION TABLEANDVARRAYTOVARRAY(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN VARCHAR2ARRAY;" +
-            "\nFUNCTION TABLEANDVARRAYTOTABLE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1;" +
-            "\nFUNCTION RECORDTOVARRAY(OLDREC IN SIMPLERECORD) RETURN VARCHAR2ARRAY;" +
-            "\nFUNCTION RECORDTOPHONE(OLDREC IN SIMPLERECORD) RETURN A_PHONE2_TYPE;" +
-            "\nFUNCTION VARRAYTORECORD(OLDVARRAY IN VARCHAR2ARRAY) RETURN SIMPLERECORD;" +
-            "\nFUNCTION PHONETORECORD(APHONE IN A_PHONE2_TYPE) RETURN SIMPLERECORD;" +
-            "\nFUNCTION PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1) RETURN A_PHONE2_TYPE_TABLE;" +
-            "\nFUNCTION PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN SIMPLERECORD;" +
-            "\nFUNCTION CREATECUSTOMER RETURN A_CUSTOMER2_TYPE;" +
-            "\nFUNCTION CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT2_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHAR2ARRAY, APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN COMPLEXRECORD;" +
-            "\nFUNCTION CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN A_PHONE2_TYPE_VARRAY;" +
-            "\nFUNCTION CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN MORECOMPLEXRECORD;" +
-        "\nEND COMPLEXPKG2;";
+            """
+                    CREATE OR REPLACE PACKAGE COMPLEXPKG2 AS
+                    TYPE TAB1 IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;
+                    TYPE SIMPLERECORD IS RECORD (
+                    SR1 VARCHAR2(20),
+                    SR2 VARCHAR2(20)
+                    );
+                    TYPE COMPLEXRECORD IS RECORD (
+                    CR1 NUMBER,
+                    CR2 A_CONTACT2_TYPE,
+                    CR3 VARCHAR2ARRAY,
+                    CR4 A_PHONE2_TYPE_TABLE
+                    );
+                    TYPE MORECOMPLEXRECORD IS RECORD (
+                    MCR1 A_PHONE2_TYPE_VARRAY
+                    );
+                    FUNCTION TABLETOVARRAY(OLDTAB IN TAB1) RETURN VARCHAR2ARRAY;
+                    FUNCTION TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1) RETURN VARCHAR2ARRAY;
+                    FUNCTION VARRAYTOTABLE(OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1;
+                    FUNCTION VARRAYSTOTABLE(OLDVARRAY IN VARCHAR2ARRAY, OLDVARRAY2 IN VARCHAR2ARRAY) RETURN TAB1;
+                    FUNCTION PHONETOTABLE(APHONE IN A_PHONE2_TYPE) RETURN TAB1;
+                    FUNCTION PHONEANDVARRAYTOTABLE(APHONE IN A_PHONE2_TYPE, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1;
+                    FUNCTION TABLETOPHONE(OLDTAB IN TAB1) RETURN A_PHONE2_TYPE;
+                    FUNCTION TABLEANDVARRAYTOPHONE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN A_PHONE2_TYPE;
+                    FUNCTION TABLEANDVARRAYTOVARRAY(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN VARCHAR2ARRAY;
+                    FUNCTION TABLEANDVARRAYTOTABLE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1;
+                    FUNCTION RECORDTOVARRAY(OLDREC IN SIMPLERECORD) RETURN VARCHAR2ARRAY;
+                    FUNCTION RECORDTOPHONE(OLDREC IN SIMPLERECORD) RETURN A_PHONE2_TYPE;
+                    FUNCTION VARRAYTORECORD(OLDVARRAY IN VARCHAR2ARRAY) RETURN SIMPLERECORD;
+                    FUNCTION PHONETORECORD(APHONE IN A_PHONE2_TYPE) RETURN SIMPLERECORD;
+                    FUNCTION PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1) RETURN A_PHONE2_TYPE_TABLE;
+                    FUNCTION PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN SIMPLERECORD;
+                    FUNCTION CREATECUSTOMER RETURN A_CUSTOMER2_TYPE;
+                    FUNCTION CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT2_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHAR2ARRAY, APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN COMPLEXRECORD;
+                    FUNCTION CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN A_PHONE2_TYPE_VARRAY;
+                    FUNCTION CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN MORECOMPLEXRECORD;
+                    END COMPLEXPKG2;""";
     static final String CREATE_COMPLEXPKG2_BODY =
-        "CREATE OR REPLACE PACKAGE BODY COMPLEXPKG2 AS" +
-            "\nFUNCTION TABLETOVARRAY(OLDTAB IN TAB1) RETURN VARCHAR2ARRAY AS" +
-            "\nNEWVARRAY VARCHAR2ARRAY;" +
-            "\nBEGIN" +
-                "\nNEWVARRAY := VARCHAR2ARRAY();" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(1) := OLDTAB(1);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(2) := OLDTAB(2);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(3) := OLDTAB(3);" +
-                "\nRETURN NEWVARRAY;" +
-            "\nEND TABLETOVARRAY;" +
-            "\nFUNCTION TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1) RETURN VARCHAR2ARRAY AS" +
-            "\nNEWVARRAY VARCHAR2ARRAY;" +
-            "\nBEGIN" +
-                "\nNEWVARRAY := VARCHAR2ARRAY();" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(1) := OLDTAB(1);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(2) := OLDTAB(2);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(3) := OLDTAB(3);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(4) := OLDTAB2(1);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(5) := OLDTAB2(2);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(6) := OLDTAB2(3);" +
-                "\nRETURN NEWVARRAY;" +
-            "\nEND TABLESTOVARRAY;" +
-            "\nFUNCTION VARRAYTOTABLE(OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" +
-            "\nBEGIN" +
-                "\nNEWTAB(1) := OLDVARRAY(1);" +
-                "\nNEWTAB(2) := OLDVARRAY(2);" +
-                "\nNEWTAB(3) := OLDVARRAY(3);" +
-                "\nRETURN NEWTAB;" +
-            "\nEND VARRAYTOTABLE;" +
-            "\nFUNCTION VARRAYSTOTABLE(OLDVARRAY IN VARCHAR2ARRAY, OLDVARRAY2 IN VARCHAR2ARRAY) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" +
-            "\nBEGIN" +
-                "\nNEWTAB(1) := OLDVARRAY(1);" +
-                "\nNEWTAB(2) := OLDVARRAY(2);" +
-                "\nNEWTAB(3) := OLDVARRAY(3);" +
-                "\nNEWTAB(4) := OLDVARRAY2(1);" +
-                "\nNEWTAB(5) := OLDVARRAY2(2);" +
-                "\nNEWTAB(6) := OLDVARRAY2(3);" +
-                "\nRETURN NEWTAB;" +
-            "\nEND VARRAYSTOTABLE;" +
-            "\nFUNCTION PHONETOTABLE(APHONE IN A_PHONE2_TYPE) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" +
-            "\nBEGIN" +
-                "\nNEWTAB(1) := APHONE.HOME;" +
-                "\nNEWTAB(2) := APHONE.CELL;" +
-                "\nRETURN NEWTAB;" +
-            "\nEND PHONETOTABLE;" +
-            "\nFUNCTION PHONEANDVARRAYTOTABLE(APHONE IN A_PHONE2_TYPE, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" +
-            "\nBEGIN" +
-                "\nNEWTAB(1) := APHONE.HOME;" +
-                "\nNEWTAB(2) := APHONE.CELL;" +
-                "\nNEWTAB(3) := OLDVARRAY(1);" +
-                "\nNEWTAB(4) := OLDVARRAY(2);" +
-                "\nRETURN NEWTAB;" +
-            "\nEND PHONEANDVARRAYTOTABLE;" +
-            "\nFUNCTION TABLETOPHONE(OLDTAB IN TAB1) RETURN A_PHONE2_TYPE AS" +
-            "\nAPHONE A_PHONE2_TYPE;" +
-            "\nBEGIN" +
-                "\nAPHONE := A_PHONE2_TYPE(OLDTAB(1), OLDTAB(2));" +
-                "\nRETURN APHONE;" +
-            "\nEND TABLETOPHONE;" +
-            "\nFUNCTION TABLEANDVARRAYTOPHONE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN A_PHONE2_TYPE AS" +
-            "\nAPHONE A_PHONE2_TYPE;" +
-            "\nBEGIN" +
-                "\nAPHONE := A_PHONE2_TYPE(OLDTAB(1), OLDVARRAY(1));" +
-                "\nRETURN APHONE;" +
-            "\nEND TABLEANDVARRAYTOPHONE;" +
-            "\nFUNCTION TABLEANDVARRAYTOVARRAY(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN VARCHAR2ARRAY AS" +
-            "\nNEWVARRAY VARCHAR2ARRAY;" +
-            "\nBEGIN" +
-                "\nNEWVARRAY := VARCHAR2ARRAY();" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(1) := OLDTAB(1);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(2) := OLDTAB(2);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(3) := OLDTAB(3);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(4) := OLDVARRAY(1);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(5) := OLDVARRAY(2);" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(6) := OLDVARRAY(3);" +
-                "\nRETURN NEWVARRAY;" +
-            "\nEND TABLEANDVARRAYTOVARRAY;" +
-            "\nFUNCTION TABLEANDVARRAYTOTABLE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" +
-            "\nBEGIN" +
-                "\nNEWTAB(1) := OLDTAB(1);" +
-                "\nNEWTAB(2) := OLDTAB(2);" +
-                "\nNEWTAB(3) := OLDTAB(3);" +
-                "\nNEWTAB(4) := OLDVARRAY(1);" +
-                "\nNEWTAB(5) := OLDVARRAY(2);" +
-                "\nNEWTAB(6) := OLDVARRAY(3);" +
-                "\nRETURN NEWTAB;" +
-            "\nEND TABLEANDVARRAYTOTABLE;" +
-            "\nFUNCTION RECORDTOVARRAY(OLDREC IN SIMPLERECORD) RETURN VARCHAR2ARRAY AS" +
-            "\nNEWVARRAY VARCHAR2ARRAY;" +
-            "\nBEGIN" +
-                "\nNEWVARRAY := VARCHAR2ARRAY();" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(1) := OLDREC.SR1;" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(2) := OLDREC.SR2;" +
-                "\nRETURN NEWVARRAY;" +
-            "\nEND RECORDTOVARRAY;" +
-            "\nFUNCTION RECORDTOPHONE(OLDREC IN SIMPLERECORD) RETURN A_PHONE2_TYPE AS" +
-            "\nAPHONE A_PHONE2_TYPE;" +
-            "\nBEGIN" +
-                "\nAPHONE := A_PHONE2_TYPE(OLDREC.SR1, OLDREC.SR2);" +
-                "\nRETURN APHONE;" +
-            "\nEND RECORDTOPHONE;" +
-            "\nFUNCTION VARRAYTORECORD(OLDVARRAY IN VARCHAR2ARRAY) RETURN SIMPLERECORD AS" +
-            "\nNEWREC SIMPLERECORD;" +
-            "\nBEGIN" +
-                "\nNEWREC.SR1 := OLDVARRAY(1);" +
-                "\nNEWREC.SR2 := OLDVARRAY(2);" +
-                "\nRETURN NEWREC;" +
-            "\nEND VARRAYTORECORD;" +
-            "\nFUNCTION PHONETORECORD(APHONE IN A_PHONE2_TYPE) RETURN SIMPLERECORD AS" +
-            "\nNEWREC SIMPLERECORD;" +
-            "\nBEGIN" +
-                "\nNEWREC.SR1 := APHONE.HOME;" +
-                "\nNEWREC.SR2 := APHONE.CELL;" +
-                "\nRETURN NEWREC;" +
-            "\nEND PHONETORECORD;" +
-            "\nFUNCTION PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1) RETURN A_PHONE2_TYPE_TABLE AS" +
-            "\nAPHONE1 A_PHONE2_TYPE;" +
-            "\nAPHONE2 A_PHONE2_TYPE;" +
-            "\nAPHONETYPETABLE A_PHONE2_TYPE_TABLE;" +
-            "\nBEGIN" +
-                "\nAPHONE1 := RECORDTOPHONE(OLDREC);" +
-                "\nAPHONE2 := TABLETOPHONE(OLDTAB);" +
-                "\nAPHONETYPETABLE := A_PHONE2_TYPE_TABLE();" +
-                "\nAPHONETYPETABLE.EXTEND;" +
-                "\nAPHONETYPETABLE(APHONETYPETABLE.COUNT) := APHONE1;" +
-                "\nAPHONETYPETABLE.EXTEND;" +
-                "\nAPHONETYPETABLE(APHONETYPETABLE.COUNT) := APHONE2;" +
-                "\nRETURN APHONETYPETABLE;" +
-            "\nEND PLSQLTOPHONETYPETABLE;" +
-            "\nFUNCTION PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN SIMPLERECORD AS" +
-            "\nAPHONE1 A_PHONE2_TYPE;" +
-            "\nAPHONE2 A_PHONE2_TYPE;" +
-            "\nNEWREC SIMPLERECORD;" +
-            "\nBEGIN" +
-                "\nAPHONE1 := APHONETYPETABLE(1);" +
-                "\nAPHONE2 := APHONETYPETABLE(2);" +
-                "\nNEWREC.SR1 := APHONE2.HOME;" +
-                "\nNEWREC.SR2 := APHONE1.HOME;" +
-                "\nRETURN NEWREC;" +
-            "\nEND PHONETYPETABLETOPLSQL;" +
-            "\nFUNCTION CREATECUSTOMER RETURN A_CUSTOMER2_TYPE AS" +
-            "\nACONTACT A_CONTACT2_TYPE;" +
-            "\nACUSTOMER A_CUSTOMER2_TYPE;" +
-            "\nNEWVARRAY VARCHAR2ARRAY;" +
-            "\nBEGIN" +
-                "\nNEWVARRAY := VARCHAR2ARRAY();" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(1) := 'John';" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(2) := 'Q';" +
-                "\nNEWVARRAY.EXTEND;" +
-                "\nNEWVARRAY(3) := 'Oracle';" +
-                "\nACONTACT := A_CONTACT2_TYPE('1234 Somewhere St, Ottawa, ON', A_PHONE2_TYPE('(613)555-1234', '(613)555-4321'));" +
-                "\nACUSTOMER := A_CUSTOMER2_TYPE(NEWVARRAY, 41, ACONTACT);" +
-                "\nRETURN ACUSTOMER;" +
-            "\nEND CREATECUSTOMER;" +
-            "\nFUNCTION CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT2_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHAR2ARRAY, APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN COMPLEXRECORD AS" +
-            "\nACOMPLEXREC COMPLEXRECORD;" +
-            "\nBEGIN" +
-                "\nACOMPLEXREC.CR1 := ANUMBER;" +
-                "\nACOMPLEXREC.CR2 := ACONTACT;" +
-                "\nACOMPLEXREC.CR3 := AVARRAY;" +
-                "\nACOMPLEXREC.CR4 := APHONETYPETABLE;" +
-                "\nRETURN ACOMPLEXREC;" +
-            "\nEND CREATE_COMPLEXRECORD;" +
-            "\nFUNCTION CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN A_PHONE2_TYPE_VARRAY AS" +
-            "\nPHONETYPEARRAY A_PHONE2_TYPE_VARRAY;" +
-            "\nBEGIN" +
-                "\nPHONETYPEARRAY := A_PHONE2_TYPE_VARRAY();" +
-                "\nPHONETYPEARRAY.EXTEND;" +
-                "\nPHONETYPEARRAY(1) := APHONETYPE1;" +
-                "\nPHONETYPEARRAY.EXTEND;" +
-                "\nPHONETYPEARRAY(2) := APHONETYPE2;" +
-                "\nRETURN PHONETYPEARRAY;" +
-            "\nEND CREATE_PHONETYPEVARRAY;" +
-            "\nFUNCTION CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN MORECOMPLEXRECORD AS" +
-            "\nMORECOMPLEXREC MORECOMPLEXRECORD;" +
-            "\nBEGIN" +
-                "\nMORECOMPLEXREC.MCR1 := CREATE_PHONETYPEVARRAY(APHONETYPE1, APHONETYPE2);" +
-                "\nRETURN MORECOMPLEXREC;" +
-            "\nEND CREATE_MORECOMPLEXRECORD;" +
-        "\nEND COMPLEXPKG2;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY COMPLEXPKG2 AS
+                    FUNCTION TABLETOVARRAY(OLDTAB IN TAB1) RETURN VARCHAR2ARRAY AS
+                    NEWVARRAY VARCHAR2ARRAY;
+                    BEGIN
+                    NEWVARRAY := VARCHAR2ARRAY();
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(1) := OLDTAB(1);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(2) := OLDTAB(2);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(3) := OLDTAB(3);
+                    RETURN NEWVARRAY;
+                    END TABLETOVARRAY;
+                    FUNCTION TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1) RETURN VARCHAR2ARRAY AS
+                    NEWVARRAY VARCHAR2ARRAY;
+                    BEGIN
+                    NEWVARRAY := VARCHAR2ARRAY();
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(1) := OLDTAB(1);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(2) := OLDTAB(2);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(3) := OLDTAB(3);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(4) := OLDTAB2(1);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(5) := OLDTAB2(2);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(6) := OLDTAB2(3);
+                    RETURN NEWVARRAY;
+                    END TABLESTOVARRAY;
+                    FUNCTION VARRAYTOTABLE(OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1 AS
+                    NEWTAB TAB1;
+                    BEGIN
+                    NEWTAB(1) := OLDVARRAY(1);
+                    NEWTAB(2) := OLDVARRAY(2);
+                    NEWTAB(3) := OLDVARRAY(3);
+                    RETURN NEWTAB;
+                    END VARRAYTOTABLE;
+                    FUNCTION VARRAYSTOTABLE(OLDVARRAY IN VARCHAR2ARRAY, OLDVARRAY2 IN VARCHAR2ARRAY) RETURN TAB1 AS
+                    NEWTAB TAB1;
+                    BEGIN
+                    NEWTAB(1) := OLDVARRAY(1);
+                    NEWTAB(2) := OLDVARRAY(2);
+                    NEWTAB(3) := OLDVARRAY(3);
+                    NEWTAB(4) := OLDVARRAY2(1);
+                    NEWTAB(5) := OLDVARRAY2(2);
+                    NEWTAB(6) := OLDVARRAY2(3);
+                    RETURN NEWTAB;
+                    END VARRAYSTOTABLE;
+                    FUNCTION PHONETOTABLE(APHONE IN A_PHONE2_TYPE) RETURN TAB1 AS
+                    NEWTAB TAB1;
+                    BEGIN
+                    NEWTAB(1) := APHONE.HOME;
+                    NEWTAB(2) := APHONE.CELL;
+                    RETURN NEWTAB;
+                    END PHONETOTABLE;
+                    FUNCTION PHONEANDVARRAYTOTABLE(APHONE IN A_PHONE2_TYPE, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1 AS
+                    NEWTAB TAB1;
+                    BEGIN
+                    NEWTAB(1) := APHONE.HOME;
+                    NEWTAB(2) := APHONE.CELL;
+                    NEWTAB(3) := OLDVARRAY(1);
+                    NEWTAB(4) := OLDVARRAY(2);
+                    RETURN NEWTAB;
+                    END PHONEANDVARRAYTOTABLE;
+                    FUNCTION TABLETOPHONE(OLDTAB IN TAB1) RETURN A_PHONE2_TYPE AS
+                    APHONE A_PHONE2_TYPE;
+                    BEGIN
+                    APHONE := A_PHONE2_TYPE(OLDTAB(1), OLDTAB(2));
+                    RETURN APHONE;
+                    END TABLETOPHONE;
+                    FUNCTION TABLEANDVARRAYTOPHONE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN A_PHONE2_TYPE AS
+                    APHONE A_PHONE2_TYPE;
+                    BEGIN
+                    APHONE := A_PHONE2_TYPE(OLDTAB(1), OLDVARRAY(1));
+                    RETURN APHONE;
+                    END TABLEANDVARRAYTOPHONE;
+                    FUNCTION TABLEANDVARRAYTOVARRAY(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN VARCHAR2ARRAY AS
+                    NEWVARRAY VARCHAR2ARRAY;
+                    BEGIN
+                    NEWVARRAY := VARCHAR2ARRAY();
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(1) := OLDTAB(1);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(2) := OLDTAB(2);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(3) := OLDTAB(3);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(4) := OLDVARRAY(1);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(5) := OLDVARRAY(2);
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(6) := OLDVARRAY(3);
+                    RETURN NEWVARRAY;
+                    END TABLEANDVARRAYTOVARRAY;
+                    FUNCTION TABLEANDVARRAYTOTABLE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1 AS
+                    NEWTAB TAB1;
+                    BEGIN
+                    NEWTAB(1) := OLDTAB(1);
+                    NEWTAB(2) := OLDTAB(2);
+                    NEWTAB(3) := OLDTAB(3);
+                    NEWTAB(4) := OLDVARRAY(1);
+                    NEWTAB(5) := OLDVARRAY(2);
+                    NEWTAB(6) := OLDVARRAY(3);
+                    RETURN NEWTAB;
+                    END TABLEANDVARRAYTOTABLE;
+                    FUNCTION RECORDTOVARRAY(OLDREC IN SIMPLERECORD) RETURN VARCHAR2ARRAY AS
+                    NEWVARRAY VARCHAR2ARRAY;
+                    BEGIN
+                    NEWVARRAY := VARCHAR2ARRAY();
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(1) := OLDREC.SR1;
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(2) := OLDREC.SR2;
+                    RETURN NEWVARRAY;
+                    END RECORDTOVARRAY;
+                    FUNCTION RECORDTOPHONE(OLDREC IN SIMPLERECORD) RETURN A_PHONE2_TYPE AS
+                    APHONE A_PHONE2_TYPE;
+                    BEGIN
+                    APHONE := A_PHONE2_TYPE(OLDREC.SR1, OLDREC.SR2);
+                    RETURN APHONE;
+                    END RECORDTOPHONE;
+                    FUNCTION VARRAYTORECORD(OLDVARRAY IN VARCHAR2ARRAY) RETURN SIMPLERECORD AS
+                    NEWREC SIMPLERECORD;
+                    BEGIN
+                    NEWREC.SR1 := OLDVARRAY(1);
+                    NEWREC.SR2 := OLDVARRAY(2);
+                    RETURN NEWREC;
+                    END VARRAYTORECORD;
+                    FUNCTION PHONETORECORD(APHONE IN A_PHONE2_TYPE) RETURN SIMPLERECORD AS
+                    NEWREC SIMPLERECORD;
+                    BEGIN
+                    NEWREC.SR1 := APHONE.HOME;
+                    NEWREC.SR2 := APHONE.CELL;
+                    RETURN NEWREC;
+                    END PHONETORECORD;
+                    FUNCTION PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1) RETURN A_PHONE2_TYPE_TABLE AS
+                    APHONE1 A_PHONE2_TYPE;
+                    APHONE2 A_PHONE2_TYPE;
+                    APHONETYPETABLE A_PHONE2_TYPE_TABLE;
+                    BEGIN
+                    APHONE1 := RECORDTOPHONE(OLDREC);
+                    APHONE2 := TABLETOPHONE(OLDTAB);
+                    APHONETYPETABLE := A_PHONE2_TYPE_TABLE();
+                    APHONETYPETABLE.EXTEND;
+                    APHONETYPETABLE(APHONETYPETABLE.COUNT) := APHONE1;
+                    APHONETYPETABLE.EXTEND;
+                    APHONETYPETABLE(APHONETYPETABLE.COUNT) := APHONE2;
+                    RETURN APHONETYPETABLE;
+                    END PLSQLTOPHONETYPETABLE;
+                    FUNCTION PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN SIMPLERECORD AS
+                    APHONE1 A_PHONE2_TYPE;
+                    APHONE2 A_PHONE2_TYPE;
+                    NEWREC SIMPLERECORD;
+                    BEGIN
+                    APHONE1 := APHONETYPETABLE(1);
+                    APHONE2 := APHONETYPETABLE(2);
+                    NEWREC.SR1 := APHONE2.HOME;
+                    NEWREC.SR2 := APHONE1.HOME;
+                    RETURN NEWREC;
+                    END PHONETYPETABLETOPLSQL;
+                    FUNCTION CREATECUSTOMER RETURN A_CUSTOMER2_TYPE AS
+                    ACONTACT A_CONTACT2_TYPE;
+                    ACUSTOMER A_CUSTOMER2_TYPE;
+                    NEWVARRAY VARCHAR2ARRAY;
+                    BEGIN
+                    NEWVARRAY := VARCHAR2ARRAY();
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(1) := 'John';
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(2) := 'Q';
+                    NEWVARRAY.EXTEND;
+                    NEWVARRAY(3) := 'Oracle';
+                    ACONTACT := A_CONTACT2_TYPE('1234 Somewhere St, Ottawa, ON', A_PHONE2_TYPE('(613)555-1234', '(613)555-4321'));
+                    ACUSTOMER := A_CUSTOMER2_TYPE(NEWVARRAY, 41, ACONTACT);
+                    RETURN ACUSTOMER;
+                    END CREATECUSTOMER;
+                    FUNCTION CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT2_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHAR2ARRAY, APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN COMPLEXRECORD AS
+                    ACOMPLEXREC COMPLEXRECORD;
+                    BEGIN
+                    ACOMPLEXREC.CR1 := ANUMBER;
+                    ACOMPLEXREC.CR2 := ACONTACT;
+                    ACOMPLEXREC.CR3 := AVARRAY;
+                    ACOMPLEXREC.CR4 := APHONETYPETABLE;
+                    RETURN ACOMPLEXREC;
+                    END CREATE_COMPLEXRECORD;
+                    FUNCTION CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN A_PHONE2_TYPE_VARRAY AS
+                    PHONETYPEARRAY A_PHONE2_TYPE_VARRAY;
+                    BEGIN
+                    PHONETYPEARRAY := A_PHONE2_TYPE_VARRAY();
+                    PHONETYPEARRAY.EXTEND;
+                    PHONETYPEARRAY(1) := APHONETYPE1;
+                    PHONETYPEARRAY.EXTEND;
+                    PHONETYPEARRAY(2) := APHONETYPE2;
+                    RETURN PHONETYPEARRAY;
+                    END CREATE_PHONETYPEVARRAY;
+                    FUNCTION CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN MORECOMPLEXRECORD AS
+                    MORECOMPLEXREC MORECOMPLEXRECORD;
+                    BEGIN
+                    MORECOMPLEXREC.MCR1 := CREATE_PHONETYPEVARRAY(APHONETYPE1, APHONETYPE2);
+                    RETURN MORECOMPLEXREC;
+                    END CREATE_MORECOMPLEXRECORD;
+                    END COMPLEXPKG2;""";
     static final String DROP_COMPLEXPKG2_PACKAGE =
         "DROP PACKAGE COMPLEXPKG2";
     static final String DROP_COMPLEXPKG2_PACKAGE_BODY =

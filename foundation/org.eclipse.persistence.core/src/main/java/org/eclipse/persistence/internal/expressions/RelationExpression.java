@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -656,8 +656,7 @@ public class RelationExpression extends CompoundExpression {
             if (right.isConstantExpression()) {
                 // Check for a constant with a List of objects, need to collect the ids (also allow a list of ids).
                 ConstantExpression constant = (ConstantExpression)right;
-                if (constant.getValue() instanceof Collection) {
-                    Collection objects = (Collection)constant.getValue();
+                if (constant.getValue() instanceof Collection objects) {
                     List<Object> newObjects = new ArrayList<>(objects.size());
                     for (Object object : objects) {
                         if (object instanceof Expression) {

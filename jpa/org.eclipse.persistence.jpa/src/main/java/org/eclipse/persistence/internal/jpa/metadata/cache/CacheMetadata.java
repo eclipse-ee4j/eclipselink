@@ -101,8 +101,7 @@ public class CacheMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof CacheMetadata) {
-            CacheMetadata cache = (CacheMetadata) objectToCompare;
+        if (objectToCompare instanceof CacheMetadata cache) {
 
             if (! valuesMatch(m_alwaysRefresh, cache.getAlwaysRefresh())) {
                 return false;

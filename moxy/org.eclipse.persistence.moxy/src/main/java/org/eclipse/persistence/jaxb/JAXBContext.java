@@ -729,8 +729,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
     protected JAXBElement createJAXBElementFromXMLRoot(Root xmlRoot, Class<?> declaredType) {
         Object value = xmlRoot.getObject();
 
-        if (value instanceof List) {
-            List theList = (List) value;
+        if (value instanceof List theList) {
             for (int i = 0; i < theList.size(); i++) {
                 Object next = theList.get(i);
                 if (next instanceof Root) {

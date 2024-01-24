@@ -76,8 +76,7 @@ public class StructureAccessor extends MappingAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof StructureAccessor)) {
-            StructureAccessor accessor = (StructureAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof StructureAccessor accessor)) {
 
             return valuesMatch(m_column, accessor.getColumn());
         }

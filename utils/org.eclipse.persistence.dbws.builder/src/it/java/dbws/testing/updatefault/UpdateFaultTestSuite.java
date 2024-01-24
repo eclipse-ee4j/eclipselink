@@ -136,11 +136,12 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
     static final String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
 
     static final String CREATE_SFAULT_TABLE =
-        "CREATE TABLE IF NOT EXISTS sfault_table (" +
-            "\nID NUMERIC NOT NULL," +
-            "\nNAME varchar(9)," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS sfault_table (
+                    ID NUMERIC NOT NULL,
+                    NAME varchar(9),
+                    PRIMARY KEY (ID)
+                    )""";
     static String[] POPULATE_SFAULT_TABLE = new String[] {
         "insert into sfault_table values (1, 'name1')"
     };

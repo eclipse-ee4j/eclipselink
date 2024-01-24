@@ -32,10 +32,9 @@ class OrangeRef {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof OrangeRef)) {
+        if (obj == null || !(obj instanceof OrangeRef o)) {
             return false;
         }
-        OrangeRef o = (OrangeRef) obj;
 
         return this.ref.equals(o.ref);
     }

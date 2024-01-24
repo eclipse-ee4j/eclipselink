@@ -93,8 +93,7 @@ public class ColumnMetadata extends DirectColumnMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof ColumnMetadata) {
-            ColumnMetadata column = (ColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof ColumnMetadata column) {
 
             if (!valuesMatch(m_unique, column.getUnique())) {
                 return false;

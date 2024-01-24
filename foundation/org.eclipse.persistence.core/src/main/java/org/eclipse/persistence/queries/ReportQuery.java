@@ -1274,8 +1274,7 @@ public class ReportQuery extends ReadAllQuery {
             } else if (item instanceof ConstructorReportItem) {
                 // recursive call to process child ReportItems
                 prepareObjectAttributeCount(((ConstructorReportItem)item).getReportItems(), clonedExpressions);
-            } else if (item.getAttributeExpression() instanceof FunctionExpression) {
-                FunctionExpression count = (FunctionExpression)item.getAttributeExpression();
+            } else if (item.getAttributeExpression() instanceof FunctionExpression count) {
                 count.prepareObjectAttributeCount(null, item, this, clonedExpressions);
             }
         }

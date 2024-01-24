@@ -1004,16 +1004,14 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                     spa = new StoredProcedureOutCursorArgument();
                 }
                 spa.argumentName = argumentName;
-                if (argument instanceof DatabaseField) {
-                    DatabaseField argField = (DatabaseField)argument;
+                if (argument instanceof DatabaseField argField) {
                     spa.setDatabaseField(argField);
                 }
                 else {
                     if (argument instanceof Object[]) {
                        Object first = ((Object[])argument)[0];
                        DatabaseField secondField = (DatabaseField)((Object[])argument)[1];
-                       if (first instanceof DatabaseField) {
-                           DatabaseField firstField = (DatabaseField)first;
+                       if (first instanceof DatabaseField firstField) {
                            spa.setDatabaseField(firstField);
                        }
                        else {
@@ -1490,8 +1488,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
               // If the policy is default (NullPolicy(ispfan=true, inrben=false, inrbxnn=false, XMLNullRep=ABSENT_NODE) return null
               AbstractNullPolicy value = ((XMLNillableMapping)object).getNullPolicy();
-              if(value instanceof NullPolicy) {
-                  NullPolicy aPolicy = (NullPolicy)value;
+              if(value instanceof NullPolicy aPolicy) {
                   if(aPolicy.getIsSetPerformedForAbsentNode() && !aPolicy.isNullRepresentedByEmptyNode() //
                           && !aPolicy.isNullRepresentedByXsiNil() //
                           && aPolicy.getMarshalNullRepresentation().equals(XMLNullRepresentationType.ABSENT_NODE)) {

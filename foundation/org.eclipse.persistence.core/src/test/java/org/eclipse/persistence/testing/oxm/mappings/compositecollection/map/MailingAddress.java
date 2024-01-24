@@ -43,10 +43,9 @@ public class MailingAddress {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof MailingAddress)) {
+        if (!(object instanceof MailingAddress addressObject)) {
             return false;
         }
-        MailingAddress addressObject = (MailingAddress)object;
         if (!(this.getAddressType().equals(addressObject.getAddressType()))) {
             return false;
         }

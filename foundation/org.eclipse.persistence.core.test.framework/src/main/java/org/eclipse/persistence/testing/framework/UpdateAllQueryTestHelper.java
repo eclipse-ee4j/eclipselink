@@ -250,15 +250,13 @@ public class UpdateAllQueryTestHelper {
 
     static protected String getQualifiedFieldNameFromKey(Object key, Class<?> referenceClass, ClassDescriptor descriptor, Session session) {
         DatabaseField field = null;
-        if(key instanceof String) {
+        if(key instanceof String name) {
             // attribute name
-            String name = (String)key;
             DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(name);
             if(mapping != null) {
                 field = mapping.getFields().get(0);
             }
-        } else if(key instanceof DataExpression) {
-            DataExpression fieldExpression = (DataExpression)key;
+        } else if(key instanceof DataExpression fieldExpression) {
             field = descriptor.getObjectBuilder().getFieldForQueryKeyName(fieldExpression.getName());
             if(field == null) {
                 DataExpression fieldExpressionClone = (DataExpression)fieldExpression.clone();

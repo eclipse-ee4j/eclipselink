@@ -41,10 +41,9 @@ public class Employee {
     public Collection<PhoneNumber> phones;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Employee)) {
+        if (obj == null || !(obj instanceof Employee emp)) {
             return false;
         }
-        Employee emp = (Employee) obj;
         if (this.address == null) {
             return emp.address == null;
         }

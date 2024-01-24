@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -340,49 +340,54 @@ public class TestProcessor {
         }
     }
 
-    private static final String PXML30 = "<persistence xmlns=\"https://jakarta.ee/xml/ns/persistence\"\n" +
-            "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "  xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence\n" +
-            "    https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd\"\n" +
-            "  version=\"3.0\">\n" +
-            "     <persistence-unit name=\"sample-pu\" transaction-type=\"RESOURCE_LOCAL\">\n" +
-            "          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>\n" +
-            "          <exclude-unlisted-classes>false</exclude-unlisted-classes>\n" +
-            "          <properties>\n" +
-            "          </properties>\n" +
-            "     </persistence-unit>\n" +
-            "</persistence>";
+    private static final String PXML30 = """
+            <persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+                https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+              version="3.0">
+                 <persistence-unit name="sample-pu" transaction-type="RESOURCE_LOCAL">
+                      <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+                      <exclude-unlisted-classes>false</exclude-unlisted-classes>
+                      <properties>
+                      </properties>
+                 </persistence-unit>
+            </persistence>""";
 
-    private static final String OXML30 = "<entity-mappings xmlns=\"https://jakarta.ee/xml/ns/persistence/orm\"\n" +
-"             xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-"             xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd\"\n" +
-"             version=\"3.0\">" +
-            "</entity-mappings>";
+    private static final String OXML30 = """
+            <entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd"
+                         version="3.0"></entity-mappings>""";
 
-    private static final String OXML31 = "<entity-mappings xmlns=\"https://jakarta.ee/xml/ns/persistence/orm\"\n" +
-            "             xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "             xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd\"\n" +
-            "             version=\"3.1\">" +
-            "</entity-mappings>";
+    private static final String OXML31 = """
+            <entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd"
+                         version="3.1"></entity-mappings>""";
 
     private static final String PXML_LOG_BEG =
-            "<persistence xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\"\n" +
-            "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "  xsi:schemaLocation=\"http://xmlns.jcp.org/xml/ns/persistence\n" +
-            "    http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd\"\n" +
-            "  version=\"2.2\">\n" +
-            "     <persistence-unit name=\"";
+            """
+                    <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+                        http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+                      version="2.2">
+                         <persistence-unit name=\"""";
 
     private static final String PXML_LOG_MID =
-            "\" transaction-type=\"RESOURCE_LOCAL\">\n" +
-            "          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>\n" +
-            "          <exclude-unlisted-classes>false</exclude-unlisted-classes>\n" +
-            "          <properties>\n";
+            """
+                    " transaction-type="RESOURCE_LOCAL">
+                              <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+                              <exclude-unlisted-classes>false</exclude-unlisted-classes>
+                              <properties>
+                    """;
 
     private static final String PXML_LOG_END =
-            "          </properties>\n" +
-            "     </persistence-unit>\n" +
-            "</persistence>";
+            """
+                              </properties>
+                         </persistence-unit>
+                    </persistence>""";
 
     /**
      * Simple property holding class.

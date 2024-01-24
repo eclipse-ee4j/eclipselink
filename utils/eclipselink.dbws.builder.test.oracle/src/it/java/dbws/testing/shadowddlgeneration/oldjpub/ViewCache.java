@@ -259,8 +259,7 @@ public class ViewCache implements Externalizable {
         }
         key.append(": ");
         for (Object value : values) {
-            if (value instanceof byte[]) {
-                byte[] bytes = (byte[]) value;
+            if (value instanceof byte[] bytes) {
                 for (byte aByte : bytes) {
                     key.append(aByte);
                 }

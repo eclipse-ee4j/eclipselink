@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -156,8 +156,7 @@ public abstract class TypeMappingInfoWithJSONTestCases extends TypeMappingInfoTe
                 fail("Expected an array value but was an " + testValue.getClass().getName());
             }
         }
-        else if (controlValue instanceof Collection){
-            Collection controlCollection = (Collection)controlValue;
+        else if (controlValue instanceof Collection controlCollection){
             Collection testCollection = (Collection)testValue;
             Iterator<Object> controlIter = controlCollection.iterator();
             Iterator<Object> testIter = testCollection.iterator();

@@ -20,10 +20,9 @@ public class LongHolder {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof LongHolder)) {
+        if (!(o instanceof LongHolder other)) {
             return false;
         }
-        LongHolder other = (LongHolder) o;
         return Objects.equals(value1, other.value1) && Objects.equals(value2, other.value2);
     }
 

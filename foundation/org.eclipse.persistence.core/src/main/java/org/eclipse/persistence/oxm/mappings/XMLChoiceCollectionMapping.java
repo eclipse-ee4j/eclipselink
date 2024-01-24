@@ -267,8 +267,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                Object value = xmlMapping.buildObjectFromNestedRow((AbstractRecord)next.getValue(), joinManager, sourceQuery, executionSession, isTargetProtected);
                value = convertDataValueToObjectValue(value, executionSession, ((XMLRecord) row).getUnmarshaller());
                getContainerPolicy().addInto(value, container, executionSession);
-           } else if(nextMapping instanceof XMLCompositeDirectCollectionMapping){
-               XMLCompositeDirectCollectionMapping xmlMapping = (XMLCompositeDirectCollectionMapping)nextMapping;
+           } else if(nextMapping instanceof XMLCompositeDirectCollectionMapping xmlMapping){
                Object value = next.getValue();
                value = convertDataValueToObjectValue(value, executionSession, ((XMLRecord) row).getUnmarshaller());
                getContainerPolicy().addInto(value, container, executionSession);
@@ -303,8 +302,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                     NodeValue associatedNodeValue = null;
                     XMLField associatedField = null;
                     Object fieldValue = value;
-                    if(value instanceof XMLRoot) {
-                        XMLRoot rootValue = (XMLRoot)value;
+                    if(value instanceof XMLRoot rootValue) {
                         String localName = rootValue.getLocalName();
                         String namespaceUri = rootValue.getNamespaceURI();
                         fieldValue = rootValue.getObject();

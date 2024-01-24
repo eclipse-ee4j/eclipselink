@@ -31,10 +31,9 @@ class MelonRef {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof MelonRef)) {
+        if (obj == null || !(obj instanceof MelonRef a)) {
             return false;
         }
-        MelonRef a = (MelonRef) obj;
 
         return this.ref.equals(a.ref);
     }

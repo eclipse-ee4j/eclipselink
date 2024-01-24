@@ -40,9 +40,7 @@ public class Phone {
     public boolean equals(Object obj) {
         if (obj == null) return false;
 
-        if (!(obj instanceof Phone)) return false;
-
-        Phone p = (Phone) obj;
+        if (!(obj instanceof Phone p)) return false;
 
         if (this.id != p.id) return false;
 

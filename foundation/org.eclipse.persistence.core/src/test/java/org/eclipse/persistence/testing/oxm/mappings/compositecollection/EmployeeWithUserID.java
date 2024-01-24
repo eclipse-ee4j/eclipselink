@@ -54,10 +54,9 @@ public class EmployeeWithUserID {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof EmployeeWithUserID)) {
+        if (!(object instanceof EmployeeWithUserID employeeObject)) {
             return false;
         }
-        EmployeeWithUserID employeeObject = (EmployeeWithUserID)object;
 
         if (!this.getUserID().equals(employeeObject.getUserID()))
         {

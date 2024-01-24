@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -496,8 +496,7 @@ public class XPathEngine <
             elementsToReturn.add(parent);
         } else {
             // Value may be a direct value, node, or list of values.
-            if (value instanceof List) {
-                List values = (List)value;
+            if (value instanceof List values) {
                 for (int index = 0; index < values.size(); index++) {
                     Element newElement = null;
 
@@ -763,10 +762,9 @@ public class XPathEngine <
     private Node addAttribute(XPathFragment attributeFragment, Field xmlField, Node parent, Object value, CoreAbstractSession session) {
         Object valueToWrite = null;
 
-        if (!(parent instanceof Element)) {
+        if (!(parent instanceof Element parentElement)) {
             return parent;
         }
-        Element parentElement = (Element)parent;
         if (value instanceof Node) {
             if (((Node)value).getNodeType() == Node.ATTRIBUTE_NODE) {
                 Attr attr = (Attr)value;

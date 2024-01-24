@@ -69,10 +69,9 @@ public class Address {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof Address)) {
+        if (!(object instanceof Address address)) {
             return false;
         }
-        Address address = (Address)object;
         if (this.id != null && !this.id.equals(address.id)) {
             return false;
         }

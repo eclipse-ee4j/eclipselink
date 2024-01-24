@@ -1198,13 +1198,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             SDOType existingType = (SDOType) propertyToReturn.getType();
             boolean typeMismatch = false;
 
-            if (propDOType instanceof SDOType) {
-                SDOType newType = (SDOType) propDOType;
+            if (propDOType instanceof SDOType newType) {
                 if (!newType.getQName().equals(existingType.getQName())) {
                     typeMismatch = true;
                 }
-            } else if (propDOType instanceof DataObject) {
-                DataObject newTypeDO = (DataObject) propDOType;
+            } else if (propDOType instanceof DataObject newTypeDO) {
                 if (!newTypeDO.get("name").equals(existingType.getName()) || !newTypeDO.get("uri").equals(existingType.getURI())) {
                     typeMismatch = true;
                 }

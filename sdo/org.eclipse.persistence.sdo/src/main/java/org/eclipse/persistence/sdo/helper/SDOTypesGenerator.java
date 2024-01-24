@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2232,8 +2232,7 @@ public class SDOTypesGenerator {
     }
 
     private void closeSource(Source source){
-        if(source instanceof StreamSource){
-            StreamSource ss = (StreamSource)source;
+        if(source instanceof StreamSource ss){
             try{
                 if(ss.getInputStream() != null){
                    ss.getInputStream().close();

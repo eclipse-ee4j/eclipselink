@@ -29,10 +29,9 @@ public class Invoice {
 
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Invoice)) {
+        if (obj == null || !(obj instanceof Invoice inv)) {
             return false;
         }
-        Invoice inv = (Invoice) obj;
         if (this.customer == null) {
             return inv.customer == null;
         }

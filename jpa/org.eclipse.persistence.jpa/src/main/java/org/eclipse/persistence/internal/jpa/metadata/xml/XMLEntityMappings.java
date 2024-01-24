@@ -174,8 +174,7 @@ public class XMLEntityMappings extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof XMLEntityMappings) {
-            XMLEntityMappings entityMappings = (XMLEntityMappings) objectToCompare;
+        if (objectToCompare instanceof XMLEntityMappings entityMappings) {
             return valuesMatch(m_mappingFileNameOrURL, entityMappings.getMappingFileOrURL());
         }
 

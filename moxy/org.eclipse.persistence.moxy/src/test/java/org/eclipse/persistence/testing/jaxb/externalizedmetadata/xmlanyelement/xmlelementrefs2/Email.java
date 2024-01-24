@@ -40,9 +40,7 @@ public class Email {
     public boolean equals(Object obj) {
         if (obj == null) return false;
 
-        if (!(obj instanceof Email)) return false;
-
-        Email e = (Email) obj;
+        if (!(obj instanceof Email e)) return false;
 
         if (this.id != e.id) return false;
 

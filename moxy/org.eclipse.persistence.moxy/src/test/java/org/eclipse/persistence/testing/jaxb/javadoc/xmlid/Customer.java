@@ -30,10 +30,9 @@ public class Customer {
     public String name;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Customer)) {
+        if (obj == null || !(obj instanceof Customer c)) {
             return false;
         }
-        Customer c = (Customer) obj;
 
         return c.id.equals(this.id) && c.name.equals(this.name);
     }

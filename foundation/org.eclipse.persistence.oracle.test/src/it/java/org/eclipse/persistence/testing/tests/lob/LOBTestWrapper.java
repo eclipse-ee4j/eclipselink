@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,8 +42,7 @@ public class LOBTestWrapper extends TestWrapper {
         if (!platform.isOracle()) {
             throw new TestWarningException("This test case works on Oracle only");
         }
-        if(platform instanceof Oracle8Platform) {
-            Oracle8Platform platform8 = (Oracle8Platform)platform;
+        if(platform instanceof Oracle8Platform platform8) {
             shouldUseLocatorForLOBWriteOriginal = platform8.shouldUseLocatorForLOBWrite();
             if(shouldSetUseLocatorForLOBWriteIntoPlatform) {
                 platform8.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWrite);
@@ -73,8 +72,7 @@ public class LOBTestWrapper extends TestWrapper {
         if(!shouldUseLocatorForLOBWrite) {
             platform.setUsesStringBinding(usesStringBindingOriginal);
         }
-        if(platform instanceof Oracle8Platform) {
-            Oracle8Platform platform8 = (Oracle8Platform)platform;
+        if(platform instanceof Oracle8Platform platform8) {
             if(shouldSetUseLocatorForLOBWriteIntoPlatform) {
                 platform8.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWriteOriginal);
             }

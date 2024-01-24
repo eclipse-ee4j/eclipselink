@@ -107,8 +107,7 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof SequenceGeneratorMetadata) {
-            SequenceGeneratorMetadata generator = (SequenceGeneratorMetadata) objectToCompare;
+        if (objectToCompare instanceof SequenceGeneratorMetadata generator) {
 
             if (! valuesMatch(m_name, generator.getName())) {
                 return false;

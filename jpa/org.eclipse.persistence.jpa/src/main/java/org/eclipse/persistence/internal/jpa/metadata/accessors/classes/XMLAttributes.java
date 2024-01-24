@@ -98,8 +98,7 @@ public class XMLAttributes extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof XMLAttributes) {
-            XMLAttributes attributes = (XMLAttributes) objectToCompare;
+        if (objectToCompare instanceof XMLAttributes attributes) {
 
             if (! valuesMatch(m_embeddedId, attributes.getEmbeddedId())) {
                 return false;

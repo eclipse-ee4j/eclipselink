@@ -67,8 +67,7 @@ public class RangePartitionMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof RangePartitionMetadata) {
-            RangePartitionMetadata partition = (RangePartitionMetadata) objectToCompare;
+        if (objectToCompare instanceof RangePartitionMetadata partition) {
 
             return valuesMatch(this.connectionPool, partition.getConnectionPool())
                     && valuesMatch(this.startValue, partition.getStartValue())

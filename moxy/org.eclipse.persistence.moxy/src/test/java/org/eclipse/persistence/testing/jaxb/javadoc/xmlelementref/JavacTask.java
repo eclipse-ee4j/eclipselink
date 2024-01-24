@@ -34,10 +34,9 @@ public class JavacTask extends Task{
  }
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof JavacTask)) {
+        if (obj == null || !(obj instanceof JavacTask javacTask)) {
             return false;
         }
-        JavacTask javacTask = (JavacTask) obj;
 
         return javacTask.name.equals(this.name);
     }

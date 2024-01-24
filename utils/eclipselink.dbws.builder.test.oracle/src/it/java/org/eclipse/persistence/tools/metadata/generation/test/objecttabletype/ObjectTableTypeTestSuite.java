@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,22 +56,24 @@ import org.w3c.dom.Document;
  */
 public class ObjectTableTypeTestSuite {
     static final String CREATE_PHONE_TYPE =
-        "CREATE OR REPLACE TYPE DBWS_PHONE_TYPE AS OBJECT (" +
-            "\nHOME VARCHAR2(20)," +
-            "\nCELL VARCHAR2(20)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_PHONE_TYPE AS OBJECT (
+                    HOME VARCHAR2(20),
+                    CELL VARCHAR2(20)
+                    )""";
     static final String CREATE_PHONE_TYPE_TABLE =
         "CREATE OR REPLACE TYPE DBWS_PHONE_TYPE_TABLE AS TABLE OF DBWS_PHONE_TYPE";
 
     static final String CREATE_GET_PHONETYPE_TABLE_PROC =
-        "CREATE OR REPLACE PROCEDURE GET_PHONETYPE_TABLE(PTABLE OUT DBWS_PHONE_TYPE_TABLE) AS" +
-        "\nBEGIN" +
-            "\nPTABLE := DBWS_PHONE_TYPE_TABLE();" +
-            "\nPTABLE.EXTEND();" +
-            "\nPTABLE(PTABLE.COUNT) := DBWS_PHONE_TYPE('613.288.1234', '613.858.4321');" +
-            "\nPTABLE.EXTEND();" +
-            "\nPTABLE(PTABLE.COUNT) := DBWS_PHONE_TYPE('613.288.0000', '613.585.2222');" +
-        "\nEND GET_PHONETYPE_TABLE;";
+            """
+                    CREATE OR REPLACE PROCEDURE GET_PHONETYPE_TABLE(PTABLE OUT DBWS_PHONE_TYPE_TABLE) AS
+                    BEGIN
+                    PTABLE := DBWS_PHONE_TYPE_TABLE();
+                    PTABLE.EXTEND();
+                    PTABLE(PTABLE.COUNT) := DBWS_PHONE_TYPE('613.288.1234', '613.858.4321');
+                    PTABLE.EXTEND();
+                    PTABLE(PTABLE.COUNT) := DBWS_PHONE_TYPE('613.288.0000', '613.585.2222');
+                    END GET_PHONETYPE_TABLE;""";
 
     static final String DROP_GET_PHOETYPE_TABLE_PROC =
         "DROP PROCEDURE GET_PHONETYPE_TABLE";
@@ -154,20 +156,19 @@ public class ObjectTableTypeTestSuite {
     }
 
     static final String arraymetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:named-stored-procedure-query name=\"GET_PHONETYPE_TABLE\" procedure-name=\"GET_PHONETYPE_TABLE\" returns-result-set=\"false\">\n" +
-        "      <orm:parameter mode=\"OUT\" name=\"PTABLE\" type=\"metadatagen.Dbws_phone_type_table\" class=\"metadatagen.Dbws_phone_type_table\" jdbc-type=\"2003\" jdbc-type-name=\"DBWS_PHONE_TYPE_TABLE\"/>\n" +
-        "   </orm:named-stored-procedure-query>\n" +
-        "   <orm:oracle-array name=\"DBWS_PHONE_TYPE_TABLE\" java-type=\"metadatagen.Dbws_phone_type_table\" nested-type=\"DBWS_PHONE_TYPE\"/>\n" +
-        "   <orm:embeddable class=\"metadatagen.Dbws_phone_type_table\" access=\"VIRTUAL\">\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:array name=\"items\" target-class=\"metadatagen.Dbws_phone_type\" attribute-type=\"java.util.ArrayList\" database-type=\"DBWS_PHONE_TYPE\">\n" +
-        "            <orm:column name=\"ITEMS\"/>\n" +
-        "         </orm:array>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:named-stored-procedure-query name="GET_PHONETYPE_TABLE" procedure-name="GET_PHONETYPE_TABLE" returns-result-set="false">
+                          <orm:parameter mode="OUT" name="PTABLE" type="metadatagen.Dbws_phone_type_table" class="metadatagen.Dbws_phone_type_table" jdbc-type="2003" jdbc-type-name="DBWS_PHONE_TYPE_TABLE"/>
+                       </orm:named-stored-procedure-query>
+                       <orm:oracle-array name="DBWS_PHONE_TYPE_TABLE" java-type="metadatagen.Dbws_phone_type_table" nested-type="DBWS_PHONE_TYPE"/>
+                       <orm:embeddable class="metadatagen.Dbws_phone_type_table" access="VIRTUAL">
+                          <orm:attributes>
+                             <orm:array name="items" target-class="metadatagen.Dbws_phone_type" attribute-type="java.util.ArrayList" database-type="DBWS_PHONE_TYPE">
+                                <orm:column name="ITEMS"/>
+                             </orm:array>
+                          </orm:attributes>
+                       </orm:embeddable>
+                    </orm:entity-mappings>""";
 }

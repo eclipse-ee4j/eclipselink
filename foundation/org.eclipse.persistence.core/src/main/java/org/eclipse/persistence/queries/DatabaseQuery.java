@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1100,8 +1100,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public Call getDatasourceCall() {
         Call call = null;
-        if (this.queryMechanism instanceof DatasourceCallQueryMechanism) {
-            DatasourceCallQueryMechanism mechanism = (DatasourceCallQueryMechanism) this.queryMechanism;
+        if (this.queryMechanism instanceof DatasourceCallQueryMechanism mechanism) {
             call = mechanism.getCall();
             // If has multiple calls return the first one.
             if ((call == null) && mechanism.hasMultipleCalls()) {
@@ -1122,8 +1121,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List getDatasourceCalls() {
         List calls = new Vector();
-        if (getQueryMechanism() instanceof DatasourceCallQueryMechanism) {
-            DatasourceCallQueryMechanism mechanism = (DatasourceCallQueryMechanism) getQueryMechanism();
+        if (getQueryMechanism() instanceof DatasourceCallQueryMechanism mechanism) {
 
             // If has multiple calls return the first one.
             if (mechanism.hasMultipleCalls()) {

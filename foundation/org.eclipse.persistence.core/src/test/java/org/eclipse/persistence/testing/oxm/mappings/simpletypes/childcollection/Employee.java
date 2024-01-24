@@ -46,11 +46,9 @@ public class Employee  {
     }
 
     public boolean equals(Object object) {
-        if(!(object instanceof Employee)) {
+        if(!(object instanceof Employee employeeObject)) {
             return false;
         }
-
-        Employee employeeObject = (Employee)object;
 
         if (!(employeeObject.getName().equals(this.getName()))) {
             return false;
