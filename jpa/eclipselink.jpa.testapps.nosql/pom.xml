@@ -52,7 +52,7 @@
             <id>intel</id>
             <activation>
                 <os>
-                    <arch>amd64</arch>
+                    <arch>x86_64</arch>
                 </os>
             </activation>
             <modules>
