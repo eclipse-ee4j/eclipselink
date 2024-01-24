@@ -103,18 +103,18 @@ public class Customer {
     }
 
     public String toString(){
-        String s = "Customer:" +  getId() +" " +getFirstName()+" "  + getLastName() +"\n";
-        s += "isFirstTimeCustomer:" + isFirstTimeCustomer() +"\n";
-        s += address +"\n";
+        StringBuilder s = new StringBuilder("Customer:" + getId() + " " + getFirstName() + " " + getLastName() + "\n");
+        s.append("isFirstTimeCustomer:").append(isFirstTimeCustomer()).append("\n");
+        s.append(address).append("\n");
         for(PhoneNumber p: phoneNumbers){
-            s+= p + "\n";
+            s.append(p).append("\n");
         }
-        s+= "OrderNumbers: ";
+        s.append("OrderNumbers: ");
         for(Integer i: getOrderNumbers()){
-            s+= i + ",";
+            s.append(i).append(",");
         }
-        s+="\n";
-        return s;
+        s.append("\n");
+        return s.toString();
     }
 
     public boolean equals(Object obj) {

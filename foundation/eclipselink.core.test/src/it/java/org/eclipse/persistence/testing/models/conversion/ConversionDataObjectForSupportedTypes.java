@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,9 +49,9 @@ public class ConversionDataObjectForSupportedTypes extends ConversionDataObject 
         example.aCalendar.set(Calendar.MILLISECOND, 0);
         example.aTime = Helper.timeFromHourMinuteSecond(3, 3, 3);
         example.aTimestamp = Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1903, 3, 3, 3, 3, 3, 0);
-        example.aString = new String("Conversion Managaer Test Example 1");
-        example.stringToInt = new String("111");
-        example.stringToTimestamp = new String("2003/11/23 23:45:56");
+        example.aString = "Conversion Managaer Test Example 1";
+        example.stringToInt = "111";
+        example.stringToTimestamp = "2003/11/23 23:45:56";
         example.aByteArray = new Byte[] { Byte.valueOf("4"), Byte.valueOf("5"), Byte.valueOf("6") };
         example.aCharacterArray = new Character[] {'C', 'H', 'A'};
 

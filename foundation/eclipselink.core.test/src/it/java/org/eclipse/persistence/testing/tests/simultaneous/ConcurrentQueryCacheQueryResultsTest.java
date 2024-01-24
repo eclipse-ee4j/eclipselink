@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,10 +70,10 @@ public class ConcurrentQueryCacheQueryResultsTest extends TestCase {
         query.setQueryResultsCachePolicy(new QueryResultsCachePolicy(CACHE_SIZE));
         getSession().addQuery(QUERY_NAME, query);
         
-        testEmployees = new ArrayList<Employee>(TESTDATA_INSTANCES);
+        testEmployees = new ArrayList<>(TESTDATA_INSTANCES);
         
         // set all test results to false
-        testResults = new ArrayList<Boolean>(NUMBER_OF_EXECUTIONS);
+        testResults = new ArrayList<>(NUMBER_OF_EXECUTIONS);
         for (int i = 0; i < NUMBER_OF_EXECUTIONS; i++) {
             testResults.add(i, Boolean.FALSE);
         }
@@ -144,7 +144,7 @@ public class ConcurrentQueryCacheQueryResultsTest extends TestCase {
             int randomNumber = new Random().nextInt(TESTDATA_INSTANCES);
             Employee randomEmployee = testEmployees.get(randomNumber);
             
-            Vector<String> args = new Vector<String>();
+            Vector<String> args = new Vector<>();
             args.add(randomEmployee.getFirstName());
             Employee employeeFound = (Employee) getSession().executeQuery(QUERY_NAME, args);
             

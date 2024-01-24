@@ -25,8 +25,6 @@ import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISDirectMapping;
 import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
 
-import org.eclipse.persistence.testing.oxm.mappings.onetomany.keyontarget.eis.nestedownedtoexternalroot.Company;
-import org.eclipse.persistence.testing.oxm.mappings.onetomany.keyontarget.eis.nestedownedtoexternalroot.Department;
 import org.eclipse.persistence.testing.oxm.mappings.onetomany.keyontarget.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.onetomany.keyontarget.Project;
 

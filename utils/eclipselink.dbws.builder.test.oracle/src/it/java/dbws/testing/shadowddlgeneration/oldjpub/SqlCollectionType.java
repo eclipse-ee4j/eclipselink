@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.AllCollTypes;
-import dbws.testing.shadowddlgeneration.oldjpub.AllTypes;
-import dbws.testing.shadowddlgeneration.oldjpub.ElemInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewRow;
+
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_COLL_TYPES;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_TYPES;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.OWNER;

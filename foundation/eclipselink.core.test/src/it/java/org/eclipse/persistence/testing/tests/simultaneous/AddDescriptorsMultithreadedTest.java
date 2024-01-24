@@ -83,8 +83,8 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
     void generateTestName() {
         ArrayList<String> testNames = new ArrayList();
         HashMap<String, Integer> map = new HashMap();
-        for (int i=0; i < this.test.length; i++) {
-            String testName = this.test[i].getName();
+        for (TestCase testCase : this.test) {
+            String testName = testCase.getName();
             if (testNames.contains(testName)) {
                 int count = map.get(testName);
                 map.put(testName, count + 1);
@@ -93,19 +93,19 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
                 map.put(testName, 1);
             }
         }
-        String name = "";
+        StringBuilder name = new StringBuilder();
         for(int k=0; k < testNames.size(); k++) {
             String testName = testNames.get(k);
             if (k > 0) {
-                name += ";_";
+                name.append(";_");
             }
-            name += testName;
+            name.append(testName);
             int count = map.get(testName);
             if (count > 1) {
-                name += "_" + map.get(testName)+"threads";
+                name.append("_").append(map.get(testName)).append("threads");
             }
         }
-        setName(name);
+        setName(name.toString());
     }
 
     /*

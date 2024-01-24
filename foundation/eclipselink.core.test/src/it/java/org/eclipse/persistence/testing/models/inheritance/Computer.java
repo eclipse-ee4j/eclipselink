@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.models.inheritance;
 
 import java.io.*;
-import java.util.Iterator;
 
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.*;
@@ -35,15 +34,12 @@ public class Computer implements Serializable {
         // As a result, we check for the mapping before adding it.
         // The reason this mapping is not added in the project is that some Mapping Workbench
         // tests rely on the ammendment method.
-        Iterator<DatabaseMapping> mappings = descriptor.getMappings().iterator();
-        while (mappings.hasNext()) {
-            DatabaseMapping mapping = mappings.next();
+        for (DatabaseMapping mapping : descriptor.getMappings()) {
             if (mapping.isTransformationMapping()) {
-                Object ctype = ((TransformationMapping)mapping).getFieldNameToMethodNames().get("CTYPE");
+                Object ctype = ((TransformationMapping) mapping).getFieldNameToMethodNames().get("CTYPE");
                 if (ctype != null) {
                     return;
                 }
-                ;
             }
         }
 

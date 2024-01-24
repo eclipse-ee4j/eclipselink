@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,13 +24,6 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBValidator;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Address;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Badge;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Employee;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Job;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Job2;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Phone;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.Car;
 
 public class ValidatorTestCases extends TestCase {

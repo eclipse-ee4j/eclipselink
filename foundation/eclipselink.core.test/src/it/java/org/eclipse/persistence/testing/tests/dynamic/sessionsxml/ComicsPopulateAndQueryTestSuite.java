@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,7 +143,7 @@ public class ComicsPopulateAndQueryTestSuite {
     protected Map<Integer, DynamicEntity> loadIssues(Session server, URL fileURL,
         Map<Integer, DynamicEntity> titles) {
         DynamicType type = dynamicHelper.getType("Issue");
-        Map<Integer, DynamicEntity> issues = new HashMap<Integer, DynamicEntity>();
+        Map<Integer, DynamicEntity> issues = new HashMap<>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(fileURL.openStream()));
@@ -177,7 +177,7 @@ public class ComicsPopulateAndQueryTestSuite {
         issue.set("condition", columns[3]);
         issue.set("comments", columns[4]);
         String numCopiesString = columns[5];
-        if (numCopiesString.length() > 0) {
+        if (!numCopiesString.isEmpty()) {
             issue.set("copies", Integer.valueOf(numCopiesString));
         }
         issue.set("id", Integer.valueOf(columns[6]));
@@ -187,7 +187,7 @@ public class ComicsPopulateAndQueryTestSuite {
 
     protected Map<Integer, DynamicEntity> loadPublishers(Session server, URL fileURL) {
         DynamicType type = dynamicHelper.getType("Publisher");
-        Map<Integer, DynamicEntity> publishers = new HashMap<Integer, DynamicEntity>();
+        Map<Integer, DynamicEntity> publishers = new HashMap<>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(fileURL.openStream()));
@@ -226,7 +226,7 @@ public class ComicsPopulateAndQueryTestSuite {
     protected Map<Integer, DynamicEntity> loadTitles(Session server, URL fileURL,
         Map<Integer, DynamicEntity> publishers) {
         DynamicType type = dynamicHelper.getType("Title");
-        Map<Integer, DynamicEntity> titles = new HashMap<Integer, DynamicEntity>();
+        Map<Integer, DynamicEntity> titles = new HashMap<>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(fileURL.openStream()));

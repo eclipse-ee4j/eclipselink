@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public class UnitOfWorkConformNewObjectTest  extends AutoVerifyTestCase {
         if(!employees.contains(emp2)) {
             localErrorMsg += "emp2";
         }
-        if(localErrorMsg.length() > 0) {
+        if(!localErrorMsg.isEmpty()) {
             errorMsg += "ReadAll: " + errorMsg + "; ";
         }
 
@@ -81,7 +81,7 @@ public class UnitOfWorkConformNewObjectTest  extends AutoVerifyTestCase {
         if(!employeesByLastName.contains(emp2)) {
             localErrorMsg += "emp2";
         }
-        if(localErrorMsg.length() > 0) {
+        if(!localErrorMsg.isEmpty()) {
             errorMsg += "ReadAllByLastName: " + errorMsg + "; ";
         }
 
@@ -123,7 +123,7 @@ public class UnitOfWorkConformNewObjectTest  extends AutoVerifyTestCase {
 
         uow.release();
 
-        if (errorMsg.length() > 0) {
+        if (!errorMsg.isEmpty()) {
             errorMsg = "The following objects were not found: " + errorMsg;
             throw new TestErrorException(errorMsg);
         }

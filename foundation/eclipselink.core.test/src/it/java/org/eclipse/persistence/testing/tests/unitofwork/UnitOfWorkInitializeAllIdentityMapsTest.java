@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -83,13 +83,11 @@ public class UnitOfWorkInitializeAllIdentityMapsTest extends AutoVerifyTestCase 
             if ((returnObjectA != null) || (returnObjectB != null)) {
                 setStoredException(new TestErrorException("Objects not removed from cache by uow.getIdentityMapAccessor().initializeAllIdentityMaps() : " +
                                                           TEST_NAME));
-                return;
             }
         } catch (Exception e) {
             e.printStackTrace();
             setStoredException(new TestErrorException("Error using UnitOfWork getIdentityMapAccessor().initializeAllIdentityMaps() : " +
                                                       TEST_NAME));
-            return;
         }
     }
 

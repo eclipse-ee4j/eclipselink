@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -140,7 +140,7 @@ public class TestAttributeOverride {
             OverrideEmbeddableB emb1 = new OverrideEmbeddableB(43, 44, new OverrideNestedEmbeddableB(45, 46));
             OverrideEmbeddableB emb2 = new OverrideEmbeddableB(47, 48, new OverrideNestedEmbeddableB(49, 50));
             OverrideEmbeddableB emb3 = new OverrideEmbeddableB(51, 52, new OverrideNestedEmbeddableB(53, 54));
-            Set<OverrideEmbeddableB> set = new HashSet<OverrideEmbeddableB>(Arrays.asList(emb1, emb2, emb3));
+            Set<OverrideEmbeddableB> set = new HashSet<>(Arrays.asList(emb1, emb2, emb3));
 
             OverrideEntityB ent = new OverrideEntityB(id, set);
 

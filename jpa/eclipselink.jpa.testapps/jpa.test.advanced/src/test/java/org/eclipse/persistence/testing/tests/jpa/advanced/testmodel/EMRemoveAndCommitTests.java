@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumberPK;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
@@ -122,23 +121,21 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
             beginTransaction();
             Employee employee = getEntityManager().find(Employee.class, empIDs[1]);
             List<Project> projects = new ArrayList<>(employee.getProjects());
-            for (Iterator<Project> projs = projects.iterator(); projs.hasNext();){
-                Project project = projs.next();
-                if (project.getTeamLeader() == employee){
+            for (Project project : projects) {
+                if (project.getTeamLeader() == employee) {
                     project.setTeamLeader(null);
                 }
                 employee.getProjects().remove(project);
             }
             List<Employee> managedEmps = new ArrayList<>(employee.getManagedEmployees());
-            for (Iterator<Employee> reports = managedEmps.iterator(); reports.hasNext();){
-                Employee report = reports.next();
-                if (report.getManager() == employee){
+            for (Employee report : managedEmps) {
+                if (report.getManager() == employee) {
                     report.setManager(null);
                 }
                 employee.getManagedEmployees().remove(report);
             }
-            for (Iterator<PhoneNumber> phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
-                this.phoneIDs.add(phones.next().buildPK());
+            for (PhoneNumber phoneNumber : employee.getPhoneNumbers()) {
+                this.phoneIDs.add(phoneNumber.buildPK());
             }
             getEntityManager().remove(employee);
             Address address = getEntityManager().find(Address.class, addrIDs[0]);
@@ -156,9 +153,9 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
         if ( employee != null){
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Was not Deleted");
         }
-        for (Iterator<PhoneNumberPK> ids = this.phoneIDs.iterator(); ids.hasNext();){
-            PhoneNumber phone = getEntityManager().find(PhoneNumber.class, ids.next());
-            if (phone != null){
+        for (PhoneNumberPK id : this.phoneIDs) {
+            PhoneNumber phone = getEntityManager().find(PhoneNumber.class, id);
+            if (phone != null) {
                 throw new TestErrorException("Employee ID :" + empIDs[1] + " Related Phones were not deleted");
             }
         }
@@ -169,9 +166,9 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
         if ( employee != null){
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Was not Deleted on Database");
         }
-        for (Iterator<PhoneNumberPK> ids = this.phoneIDs.iterator(); ids.hasNext();){
-            PhoneNumber phone = getEntityManager().find(PhoneNumber.class, ids.next());
-            if (phone != null){
+        for (PhoneNumberPK phoneID : this.phoneIDs) {
+            PhoneNumber phone = getEntityManager().find(PhoneNumber.class, phoneID);
+            if (phone != null) {
                 throw new TestErrorException("Employee ID :" + empIDs[1] + " Related Phones were not deleted on Database");
             }
         }

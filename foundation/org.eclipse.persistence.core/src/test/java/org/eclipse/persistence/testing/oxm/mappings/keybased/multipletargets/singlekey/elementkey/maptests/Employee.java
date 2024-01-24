@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.si
 
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Address;
 
-import java.util.Iterator;
 import java.util.Map;
 
 public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keybased.Employee {
@@ -38,8 +37,8 @@ public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keyba
             return false;
         }
 
-        for (Iterator addIt = this.addresses.values().iterator(); addIt.hasNext(); ) {
-            Address address = (Address) addIt.next();
+        for (Object o : this.addresses.values()) {
+            Address address = (Address) o;
             if (!(tgtAddresses.containsValue(address))) {
                 return false;
             }

@@ -71,12 +71,12 @@ public class NamedQueriesClientSessionTest extends MultiNameQueriesTestCase {
         // do not use the following session's API,
         // public Object executeQuery(queryName, domainClass, argumentValues)
         // since it looks for query in DescriptorQueryManager, not in ClientSession
-        Vector empsByFirstName = (Vector)clientSession.executeQuery("namedQuerySameName", new String("Jill"));
+        Vector empsByFirstName = (Vector)clientSession.executeQuery("namedQuerySameName", "Jill");
     }
 
     // end of useNamedQueryFirstName
     public void useNamedQueryFirstAndLastName() {
-        Vector empsByFirstAndLastName = (Vector)clientSession.executeQuery("namedQuerySameName", new String("Jill"), new String("May"));
+        Vector empsByFirstAndLastName = (Vector)clientSession.executeQuery("namedQuerySameName", "Jill", "May");
     }
 
     // end of useNamedQueryFirstAndLastName

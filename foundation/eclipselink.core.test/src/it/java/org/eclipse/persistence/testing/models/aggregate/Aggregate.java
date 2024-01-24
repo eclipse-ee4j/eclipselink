@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,9 +26,9 @@ public class Aggregate {
 
     public Aggregate() {
         super();
-        nicknames = new ArrayList<String>();
-        children = new ArrayList<Child>();
-        relatives = new ArrayList<Relative>();
+        nicknames = new ArrayList<>();
+        children = new ArrayList<>();
+        relatives = new ArrayList<>();
     }
 
     public List<Child> getChildren() {

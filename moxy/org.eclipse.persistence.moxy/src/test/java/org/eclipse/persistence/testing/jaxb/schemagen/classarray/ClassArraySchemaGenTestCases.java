@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,15 +63,15 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
                 additionalGlobalElements.put(new QName("example.com", "ASingleEmployee"), Employee.class);
                 additionalGlobalElements.put(new QName("ASingleInt"), int.class);
             } catch (Exception x) {
-                fail("Additional global element Map setup failed: " + x.toString());
+                fail("Additional global element Map setup failed: " + x);
             }
             try {
                 Class<?>[] classesToBeBound = new Class<?>[]{Employee.class};
                 generateSchema(classesToBeBound, outputResolver, additionalGlobalElements);
             } catch (Exception ex) {
-                fail("Schema generation failed unexpectedly: " + ex.toString());
+                fail("Schema generation failed unexpectedly: " + ex);
             }
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+            assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
             assertTrue("Expected two schemas to be generated, but there were [ " + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == 2);
             shouldGenerateSchema = false;
         }
@@ -139,9 +139,9 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
             jaxbContext.generateSchema(schemaOrderoutputResolver);
 
         } catch (Exception ex) {
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
-        assertTrue("No schemas were generated", schemaOrderoutputResolver.schemaFiles.size() > 0);
+        assertTrue("No schemas were generated", !schemaOrderoutputResolver.schemaFiles.isEmpty());
         assertTrue("Expected five schemas to be generated, but there were [ " + schemaOrderoutputResolver.schemaFiles.size() + "]", schemaOrderoutputResolver.schemaFiles.size() == 5);
         List<File> generatedSchemas = schemaOrderoutputResolver.schemaFiles;
         List<File> controlSchemas = new ArrayList<>(xsdResources.length);

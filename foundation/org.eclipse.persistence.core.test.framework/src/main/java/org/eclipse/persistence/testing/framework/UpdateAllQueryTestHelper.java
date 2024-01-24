@@ -31,7 +31,6 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -72,7 +71,7 @@ public class UpdateAllQueryTestHelper {
 
         String errorMsg = execute(mainSession, uq, handleChildren, rootClass);
 
-        if(errorMsg.length() == 0) {
+        if(errorMsg.isEmpty()) {
             return null;
         } else {
             return errorMsg;
@@ -81,7 +80,7 @@ public class UpdateAllQueryTestHelper {
 
     protected static String execute(Session mainSession, UpdateAllQuery uq, boolean handleChildren,
                                   Class<?> rootClass) {
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         ClassDescriptor descriptor = mainSession.getDescriptor(uq.getReferenceClass());
 
         clearCache(mainSession);
@@ -97,34 +96,33 @@ public class UpdateAllQueryTestHelper {
         rq.setShouldRetrievePrimaryKeys(true);
         // some db platforms don't allow nulls in select clause - so add the fields with null values to the query result.
         Vector<String> fieldsWithNullValues = new Vector<>();
-        Iterator itEntrySets = uq.getUpdateClauses().entrySet().iterator();
-        while(itEntrySets.hasNext()) {
-            Map.Entry entry = (Map.Entry)itEntrySets.next();
+        for (Object o : uq.getUpdateClauses().entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
             Expression valueExpression;
             String keyString = getQualifiedFieldNameFromKey(entry.getKey(), rq.getReferenceClass(), descriptor, mainSession);
             Object value = entry.getValue();
             DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForField(new DatabaseField(keyString));
-            if(mapping != null && mapping.isOneToOneMapping() && value != null) {
+            if (mapping != null && mapping.isOneToOneMapping() && value != null) {
                 // Note that this only works in case the reference PK is not compound
-                if(((OneToOneMapping)mapping).getSourceToTargetKeyFields().size() > 1) {
-                    errorMsg = "Attribute "+ mapping.getAttributeName() + " mapped with 1to1 mapping that has more than one targetKeyField. UpdateAllQueryTestHelper currently doesn't support that.";
+                if (((OneToOneMapping) mapping).getSourceToTargetKeyFields().size() > 1) {
+                    errorMsg = new StringBuilder("Attribute " + mapping.getAttributeName() + " mapped with 1to1 mapping that has more than one targetKeyField. UpdateAllQueryTestHelper currently doesn't support that.");
                 }
-                DatabaseField targetField = ((OneToOneMapping)mapping).getSourceToTargetKeyFields().get(new DatabaseField(keyString));
-                if(value instanceof Expression) {
-                    valueExpression = ((Expression)(((Expression)value).clone())).getField(targetField);
+                DatabaseField targetField = ((OneToOneMapping) mapping).getSourceToTargetKeyFields().get(new DatabaseField(keyString));
+                if (value instanceof Expression) {
+                    valueExpression = ((Expression) (((Expression) value).clone())).getField(targetField);
                 } else {
                     ClassDescriptor targetDescriptor = mapping.getReferenceDescriptor();
-                    Object fieldValue = targetDescriptor.getObjectBuilder().extractValueFromObjectForField(value, targetField, (org.eclipse.persistence.internal.sessions.AbstractSession)mainSession);
+                    Object fieldValue = targetDescriptor.getObjectBuilder().extractValueFromObjectForField(value, targetField, (AbstractSession) mainSession);
                     valueExpression = rq.getExpressionBuilder().value(fieldValue);
                 }
             } else {
-                if(value instanceof Expression) {
-                    valueExpression = (Expression)value;
+                if (value instanceof Expression) {
+                    valueExpression = (Expression) value;
                 } else {
                     valueExpression = rq.getExpressionBuilder().value(value);
                 }
             }
-            if(value == null) {
+            if (value == null) {
                 fieldsWithNullValues.add(keyString);
             } else {
                 rq.addAttribute(keyString, valueExpression);
@@ -202,34 +200,32 @@ public class UpdateAllQueryTestHelper {
         clearCache(mainSession);
 
         // verify
-        String classErrorMsg = "";
+        StringBuilder classErrorMsg = new StringBuilder();
         for(int i=0; i < objects.size(); i++) {
             Object obj = objects.elementAt(i);
             Object obj1 = objectsAfterOneByOneUpdate.elementAt(i);
             Object obj2 = objectsAfterUpdateAll.elementAt(i);
             boolean equal = rq.getDescriptor().getObjectBuilder().compareObjects(obj, obj2, session);
             if(!equal) {
-                classErrorMsg = classErrorMsg + "Difference: original = " + obj.toString() + "; afterOneByOneUpdate = " + obj1.toString() +"; afterUpdateAll = " + obj2.toString() + ";";
+                classErrorMsg.append("Difference: original = ").append(obj.toString()).append("; afterOneByOneUpdate = ").append(obj1.toString()).append("; afterUpdateAll = ").append(obj2.toString()).append(";");
             }
         }
-        if(classErrorMsg.length() > 0) {
-            errorMsg = errorMsg + classErrorMsg;
+        if(!classErrorMsg.isEmpty()) {
+            errorMsg.append(classErrorMsg);
         }
 
         if(handleChildren) {
             if(descriptor.hasInheritance() && descriptor.getInheritancePolicy().hasChildren()) {
-                Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
-                while(it.hasNext()) {
-                    ClassDescriptor childDescriptor = it.next();
+                for (ClassDescriptor childDescriptor : descriptor.getInheritancePolicy().getChildDescriptors()) {
                     Class<?> childReferenceClass = childDescriptor.getJavaClass();
-                    UpdateAllQuery childUq = (UpdateAllQuery)uq.clone();
+                    UpdateAllQuery childUq = (UpdateAllQuery) uq.clone();
                     childUq.setReferenceClass(childReferenceClass);
                     childUq.setIsPrepared(false);
-                    errorMsg += execute(mainSession, childUq, handleChildren, rootClass);
+                    errorMsg.append(execute(mainSession, childUq, handleChildren, rootClass));
                 }
             }
         }
-        return errorMsg;
+        return errorMsg.toString();
     }
 
     protected static void clearCache(Session mainSession) {
@@ -239,10 +235,9 @@ public class UpdateAllQueryTestHelper {
     public static UpdateAllQuery createUpdateAllQuery(Class<?> referenceClass, HashMap updateClauses, Expression selectionExpression) {
         // Construct UpdateAllQuery
         UpdateAllQuery uq = new UpdateAllQuery(referenceClass, selectionExpression);
-        Iterator itEntrySets = updateClauses.entrySet().iterator();
-        while(itEntrySets.hasNext()) {
-            Map.Entry entry = (Map.Entry)itEntrySets.next();
-            uq.addUpdate((String)entry.getKey(), entry.getValue());
+        for (Object o : updateClauses.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            uq.addUpdate((String) entry.getKey(), entry.getValue());
         }
         return uq;
     }

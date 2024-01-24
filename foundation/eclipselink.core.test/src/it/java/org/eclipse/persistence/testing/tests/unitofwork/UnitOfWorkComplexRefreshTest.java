@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,7 +121,7 @@ public class UnitOfWorkComplexRefreshTest extends AutoVerifyTestCase {
             throw new TestErrorException("The object in the unit of work was properly refreshed.");
         }
 
-        if (tempWriter.toString().indexOf("UPDATE ADDRESS SET CITY = 'Yousersville'") != -1) {
+        if (tempWriter.toString().contains("UPDATE ADDRESS SET CITY = 'Yousersville'")) {
             throw new TestErrorException("The second commit updated the database, but should not have, '" +
                                          tempWriter.toString() + "'");
         }

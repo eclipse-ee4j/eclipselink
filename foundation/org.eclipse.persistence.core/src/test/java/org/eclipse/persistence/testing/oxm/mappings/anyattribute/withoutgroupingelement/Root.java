@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -40,24 +39,22 @@ public class Root {
             Map collection2 = ((Root)object).getAny();
             if(collection1 == null && collection2 == null) {
                 return true;
-            } else if(collection1 == null && collection2.size() == 0) {
+            } else if(collection1 == null && collection2.isEmpty()) {
                 return true;
-            } else if(collection2 == null && collection1.size() == 0) {
+            } else if(collection2 == null && collection1.isEmpty()) {
                 return true;
-            } else if(collection1 == null && collection2.size() > 0) {
+            } else if(collection1 == null && !collection2.isEmpty()) {
                 return false;
-            } else if(collection2 == null && collection1.size() > 0) {
+            } else if(collection2 == null && !collection1.isEmpty()) {
                 return false;
             } else if(any.size() != ((Root)object).getAny().size()) {
                 return false;
             } else {
-                Iterator values1 = any.keySet().iterator();
-                while(values1.hasNext()) {
-                    Object key1 = values1.next();
+                for (Object key1 : any.keySet()) {
                     Object value1 = collection1.get(key1);
                     Object value2 = collection2.get(key1);
 
-                    if(!(value1.equals(value2))) {
+                    if (!(value1.equals(value2))) {
                         return false;
                     }
                 }
@@ -67,15 +64,13 @@ public class Root {
         return false;
     }
     public String toString() {
-        String value = "Root:\n ";
+        StringBuilder value = new StringBuilder("Root:\n ");
         if(any == null) {
-            return value;
+            return value.toString();
         }
-        Iterator keys = any.keySet().iterator();
-        while(keys.hasNext()) {
-            Object key = keys.next();
-            value += "\tKey:" + key + " --> Value:" + any.get(key) + "\n";
+        for (Object key : any.keySet()) {
+            value.append("\tKey:").append(key).append(" --> Value:").append(any.get(key)).append("\n");
         }
-        return value;
+        return value.toString();
     }
 }

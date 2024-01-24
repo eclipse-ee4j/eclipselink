@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,9 +99,9 @@ public class TypedDirectMappingTestCases extends XMLMappingTestCases {
             java.sql.Timestamp typedTimestamp, untypedTimestamp;
 
             hexAndBase64Vector = new Vector();
-            hexAndBase64Vector.addElement(new String("111").getBytes());
-            hexAndBase64Vector.addElement(new String("222").getBytes());
-            hexAndBase64Vector.addElement(new String("333").getBytes());
+            hexAndBase64Vector.addElement("111".getBytes());
+            hexAndBase64Vector.addElement("222".getBytes());
+            hexAndBase64Vector.addElement("333".getBytes());
 
             Date parsedDate = new SimpleDateFormat(TIME_FORMAT).parse("23:21:00");
             time = Calendar.getInstance();

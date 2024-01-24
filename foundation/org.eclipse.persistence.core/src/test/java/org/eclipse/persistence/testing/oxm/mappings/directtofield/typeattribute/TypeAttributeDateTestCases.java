@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class TypeAttributeDateTestCases extends XMLMappingTestCases {
             fail("No Exception was thrown");
         } catch (ConversionException ex) {
             System.out.println(ex.getMessage());
-            assertTrue("The wrong exception was thrown for invalid date format", ex.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals("The wrong exception was thrown for invalid date format", ConversionException.INCORRECT_DATE_FORMAT, ex.getErrorCode());
         }
     }
 }

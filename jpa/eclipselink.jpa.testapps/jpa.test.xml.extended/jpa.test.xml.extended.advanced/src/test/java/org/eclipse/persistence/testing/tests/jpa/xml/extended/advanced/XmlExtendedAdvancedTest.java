@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -756,7 +756,7 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
             }
         }
         if(calendarEnd.get(Calendar.HOUR_OF_DAY) != endHour || calendarEnd.get(Calendar.MINUTE) != endMin || calendarEnd.get(Calendar.SECOND) != endSec) {
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 errorMsg = errorMsg + "; ";
             }
             if(attributeName.equals("normalHours")) {
@@ -778,7 +778,7 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
             closeEntityManager(em);
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -815,54 +815,54 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
         ClassDescriptor aggregateDescriptor = ((EntityManagerImpl) em).getServerSession().getDescriptor(EmploymentPeriod.class);
         em.close();
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
 
         if (descriptor == null) {
-            errorMsg += " Descriptor for XMLEmployee alias was not found;";
+            errorMsg.append(" Descriptor for XMLEmployee alias was not found;");
         }
         if (aggregateDescriptor == null) {
-            errorMsg += " Descriptor for EmploymentPeriod.class was not found;";
+            errorMsg.append(" Descriptor for EmploymentPeriod.class was not found;");
         }
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
 
         // verify properties set on Employee instance
-        errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "XMLEmployee");
-        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1);
-        errorMsg += verifyPropertyValue(descriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(descriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE);
+        errorMsg.append(verifyPropertyValue(descriptor, "entityName", String.class, "XMLEmployee"));
+        errorMsg.append(verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1));
+        errorMsg.append(verifyPropertyValue(descriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE));
+        errorMsg.append(verifyPropertyValue(descriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE));
 
         // each attribute of Employee was assigned a property attributeName with the value attribute name.
         for(DatabaseMapping mapping : descriptor.getMappings()) {
-            errorMsg += verifyPropertyValue(mapping, "attributeName", String.class, mapping.getAttributeName());
+            errorMsg.append(verifyPropertyValue(mapping, "attributeName", String.class, mapping.getAttributeName()));
         }
 
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
-        errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1);
-        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A');
-        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0);
-        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F);
-        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1);
-        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, 1L);
-        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1);
-        errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
-        errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
-        errorMsg += verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59"));
-        errorMsg += verifyPropertyValue(mapping, "TimeStampProperty", java.sql.Timestamp.class, Helper.timestampFromString("2008-04-10 13:59:59"));
-        errorMsg += verifyPropertyValue(mapping, "DateProperty", Date.class, Helper.dateFromString("2008-04-10"));
+        errorMsg.append(verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE));
+        errorMsg.append(verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1));
+        errorMsg.append(verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A'));
+        errorMsg.append(verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0));
+        errorMsg.append(verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F));
+        errorMsg.append(verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1));
+        errorMsg.append(verifyPropertyValue(mapping, "LongProperty", Long.class, 1L));
+        errorMsg.append(verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1));
+        errorMsg.append(verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE));
+        errorMsg.append(verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE));
+        errorMsg.append(verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59")));
+        errorMsg.append(verifyPropertyValue(mapping, "TimeStampProperty", java.sql.Timestamp.class, Helper.timestampFromString("2008-04-10 13:59:59")));
+        errorMsg.append(verifyPropertyValue(mapping, "DateProperty", Date.class, Helper.dateFromString("2008-04-10")));
 
-        errorMsg += verifyPropertyValue(mapping, "ToBeIgnored", null, null);
+        errorMsg.append(verifyPropertyValue(mapping, "ToBeIgnored", null, null));
 
         // verify property set on EmploymentPeriod embeddable
-        errorMsg += verifyPropertyValue(aggregateDescriptor, "embeddableClassName", String.class, "EmploymentPeriod");
-        errorMsg += verifyPropertyValue(aggregateDescriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(aggregateDescriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE);
+        errorMsg.append(verifyPropertyValue(aggregateDescriptor, "embeddableClassName", String.class, "EmploymentPeriod"));
+        errorMsg.append(verifyPropertyValue(aggregateDescriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE));
+        errorMsg.append(verifyPropertyValue(aggregateDescriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE));
 
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
     protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
@@ -939,8 +939,8 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
         List<Employee> employees = createEmployeesWithUnidirectionalMappings(lastName);
         beginTransaction(em);
         try {
-            for(int i=0; i<employees.size(); i++) {
-                em.persist(employees.get(i));
+            for (Employee employee : employees) {
+                em.persist(employee);
             }
             commitTransaction(em);
         } finally {

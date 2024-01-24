@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1617,7 +1617,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
         List aSettingList = cs.getOldValues(item2ProductDO);
-        assertTrue(aSettingList.size() > 0);
+        assertTrue(!aSettingList.isEmpty());
         ChangeSummary.Setting containmentSetting = (ChangeSummary.Setting)aSettingList.get(0);
         assertEquals("price", containmentSetting.getProperty().getName());
         assertTrue(containmentSetting.getValue() instanceof List);
@@ -1655,7 +1655,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
         List aSettingList = cs.getOldValues(item2ProductDO);
-        assertTrue(aSettingList.size() > 0);
+        assertTrue(!aSettingList.isEmpty());
         ChangeSummary.Setting containmentSetting = (ChangeSummary.Setting)aSettingList.get(0);
         assertEquals("price", containmentSetting.getProperty().getName());
         assertTrue(containmentSetting.getValue() instanceof List);
@@ -1691,7 +1691,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
         List aSettingList = cs.getOldValues(item2ProductDO);
-        assertTrue(aSettingList.size() > 0);
+        assertTrue(!aSettingList.isEmpty());
         ChangeSummary.Setting containmentSetting = (ChangeSummary.Setting)aSettingList.get(0);
         assertEquals("price", containmentSetting.getProperty().getName());
         assertTrue(containmentSetting.getValue() instanceof List);
@@ -1727,7 +1727,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
         List aSettingList = cs.getOldValues(item2ProductDO);
-        assertTrue(aSettingList.size() > 0);
+        assertTrue(!aSettingList.isEmpty());
         ChangeSummary.Setting containmentSetting = (ChangeSummary.Setting)aSettingList.get(0);
         assertEquals("price", containmentSetting.getProperty().getName());
         assertTrue(containmentSetting.getValue() instanceof List);
@@ -1764,7 +1764,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
         List aSettingList = cs.getOldValues(item2ProductDO);
-        assertTrue(aSettingList.size() > 0);
+        assertTrue(!aSettingList.isEmpty());
         ChangeSummary.Setting containmentSetting = (ChangeSummary.Setting)aSettingList.get(0);
         assertEquals("price", containmentSetting.getProperty().getName());
         assertTrue(containmentSetting.getValue() instanceof List);
@@ -1947,7 +1947,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
         List aSettingList = cs.getOldValues(item2ProductDO);
-        assertTrue(aSettingList.size() > 0);
+        assertTrue(!aSettingList.isEmpty());
         ChangeSummary.Setting containmentSetting = (ChangeSummary.Setting)aSettingList.get(0);
         assertEquals("price", containmentSetting.getProperty().getName());
         assertTrue(containmentSetting.getValue() instanceof List);
@@ -1997,7 +1997,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(14, ((SDOChangeSummary)cs).getOldContainmentProperty().size());
 
         List aSettingList = cs.getOldValues(item2ProductDO);
-        assertTrue(aSettingList.size() > 0);
+        assertTrue(!aSettingList.isEmpty());
         ChangeSummary.Setting containmentSetting = (ChangeSummary.Setting)aSettingList.get(0);
         assertEquals("price", containmentSetting.getProperty().getName());
         assertTrue(containmentSetting.getValue() instanceof List);
@@ -2053,7 +2053,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertEquals(5, cs.getOldValues(item3DO).size());// 1
         assertEquals(5, cs.getOldValues(item5DO).size());// 1
         List aSettingList = cs.getOldValues(itemsDO);
-        assertTrue(aSettingList.size() > 0);
+        assertTrue(!aSettingList.isEmpty());
         ChangeSummary.Setting containmentSetting = (ChangeSummary.Setting)aSettingList.get(0);
         assertEquals("item", containmentSetting.getProperty().getName());
         assertTrue(containmentSetting.getValue() instanceof List);

@@ -218,7 +218,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                     Iterator<String> keyIter = bindingFiles.keySet().iterator();
                     while(keyIter.hasNext()){
                         String nextKey = keyIter.next();
-                        Object nextBindings = bindingFiles.get(nextKey);;
+                        Object nextBindings = bindingFiles.get(nextKey);
                         if(nextBindings instanceof List){
                             List nextList = (List) bindingFiles.get(nextKey);
                             for(int i=0;i< nextList.size();i++){
@@ -303,7 +303,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             } else if (metadata instanceof XMLStreamReader) {
                 xmlBindings = (XmlBindings) unmarshaller.unmarshal((XMLStreamReader) metadata);
             } else if (metadata instanceof String) {
-                if(((String)metadata).length() == 0) {
+                if(((String) metadata).isEmpty()) {
                     throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
                 }
                 URL url = null;

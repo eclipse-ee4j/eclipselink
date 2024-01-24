@@ -59,7 +59,7 @@ public class Employee  {
         if(projects != null)
         {
             returnString += "Projects: ";
-            returnString += projects.toString() + " ";
+            returnString += projects + " ";
         }
 
         return returnString;

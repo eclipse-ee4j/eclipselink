@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,6 @@ import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirection
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.Project;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
@@ -192,12 +191,10 @@ public class XmlUnidirectionalRelationshipsTest extends JUnitTestCase {
         Collection<PhoneNumber> phones = employee.getPhoneNumbers();
         assertEquals("Employee didn't have correct number of phone numbers", 2, phones.size());
         boolean phonesMatched = true;
-        for(Iterator<PhoneNumber> ite = phones.iterator(); ite.hasNext();){
-          PhoneNumber phone = ite.next();
-          if(phone.getId()!=otmPhone1Id && phone.getId()!=otmPhone2Id)
-          {
-            phonesMatched = false;
-          }
+        for (PhoneNumber phone : phones) {
+            if (phone.getId() != otmPhone1Id && phone.getId() != otmPhone2Id) {
+                phonesMatched = false;
+            }
         }
         assertTrue("Employee didn't have correct phones", phonesMatched);
     }
@@ -349,12 +346,10 @@ public class XmlUnidirectionalRelationshipsTest extends JUnitTestCase {
         Collection<Project> projects = employee.getProjects();
         assertEquals("Employee didn't have correct number of projects", 2, projects.size());
         boolean projectsMatched = true;
-        for(Iterator<Project> ite = projects.iterator(); ite.hasNext();){
-          Project project = ite.next();
-          if(project.getId()!=mtmProject1Id && project.getId()!=mtmProject2Id)
-          {
-            projectsMatched = false;
-          }
+        for (Project project : projects) {
+            if (project.getId() != mtmProject1Id && project.getId() != mtmProject2Id) {
+                projectsMatched = false;
+            }
         }
         assertTrue("Employee didn't have correct projects", projectsMatched);
     }

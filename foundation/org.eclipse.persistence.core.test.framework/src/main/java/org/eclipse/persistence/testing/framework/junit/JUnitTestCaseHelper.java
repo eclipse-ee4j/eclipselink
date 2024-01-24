@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -97,7 +97,7 @@ public class JUnitTestCaseHelper {
 
     public static Map<String, String> getDatabaseProperties(String puName) {
         Map puProperties = null;
-        if (puName != null && puName.length() > 0) {
+        if (puName != null && !puName.isEmpty()) {
             puProperties = puPropertiesMap.get(puName);
             if (puProperties == null) {
                 if (puName.equals("composite-advanced") || puName.equals("xml-composite-advanced") || puName.equals("xml-extended-composite-advanced")) {
@@ -152,7 +152,7 @@ public class JUnitTestCaseHelper {
      *         file as a fall back option.
      */
     static Map<String, String> createDatabaseProperties(final String dbIndex) {
-        final boolean addLoggingLevel = dbIndex == null || dbIndex.length() == 0;
+        final boolean addLoggingLevel = dbIndex == null || dbIndex.isEmpty();
 
         final String db_driver_key = insertIndex(DB_DRIVER_KEY, dbIndex);
         final String db_url_key = insertIndex(DB_URL_KEY, dbIndex);
@@ -220,16 +220,16 @@ public class JUnitTestCaseHelper {
     }
 
     public static String insertIndex(String key, String index) {
-        if (index == null || index.length() == 0) {
+        if (index == null || index.isEmpty()) {
             return key;
         } else {
-            String suffix = key.substring(DB.length(), key.length());
+            String suffix = key.substring(DB.length());
             return DB + index + suffix;
         }
     }
 
     public static Map<String, String> getDatabasePropertiesForIndex(String dbIndex) {
-        if (dbIndex != null && dbIndex.length() > 0) {
+        if (dbIndex != null && !dbIndex.isEmpty()) {
             Map dbProperties = dbPropertiesMap.get(dbIndex);
             if (dbProperties == null) {
                 dbProperties = createDatabaseProperties(dbIndex);

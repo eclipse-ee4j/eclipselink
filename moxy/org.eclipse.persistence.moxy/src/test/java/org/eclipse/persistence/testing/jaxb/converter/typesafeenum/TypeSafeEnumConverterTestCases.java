@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class TypeSafeEnumConverterTestCases extends XMLMappingTestCases {
             super.getXMLContext(p);
         } catch (Exception e) {
             if (e instanceof IntegrityException) {
-                Exception internalException = (Exception)((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
+                Exception internalException = ((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
                 if (internalException instanceof XMLMarshalException) {
                     assertTrue("An incorrect XMLMarshalException exception occurred.", ((XMLMarshalException)internalException).getErrorCode() == XMLMarshalException.ENUM_CLASS_NOT_SPECIFIED);
                     return;
@@ -76,7 +76,7 @@ public class TypeSafeEnumConverterTestCases extends XMLMappingTestCases {
             super.getXMLContext(p);
         } catch (Exception e) {
             if (e instanceof IntegrityException) {
-                Exception internalException = (Exception)((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
+                Exception internalException = ((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
                 if (internalException instanceof XMLMarshalException) {
                     assertTrue("An incorrect XMLMarshalException exception occurred.", ((XMLMarshalException)internalException).getErrorCode() == XMLMarshalException.FROMSTRING_METHOD_ERROR);
                     return;
@@ -98,7 +98,7 @@ public class TypeSafeEnumConverterTestCases extends XMLMappingTestCases {
             super.getXMLContext(p);
         } catch (Exception e) {
             if (e instanceof IntegrityException) {
-                Exception internalException = (Exception)((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
+                Exception internalException = ((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
                 if (internalException instanceof XMLMarshalException) {
                     assertTrue("An incorrect XMLMarshalException exception occurred.", ((XMLMarshalException)internalException).getErrorCode() == XMLMarshalException.INVALID_ENUM_CLASS_SPECIFIED);
                     return;

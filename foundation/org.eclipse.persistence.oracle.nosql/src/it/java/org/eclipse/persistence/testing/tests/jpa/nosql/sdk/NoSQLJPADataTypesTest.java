@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -114,7 +114,7 @@ public class NoSQLJPADataTypesTest {
         try {
             Query query = em.createNamedQuery("DataTypesEntity.findAll", DataTypesEntity.class);
             List<DataTypesEntity> testEntities = query.getResultList();
-            assertTrue(testEntities.size() > 0);
+            assertTrue(!testEntities.isEmpty());
             for (DataTypesEntity dataTypesEntity : testEntities) {
                 LOG.log(SessionLog.INFO, String.format("Entity by DataTypesEntity.findAll query:\t%s", dataTypesEntity));
             }
@@ -303,7 +303,7 @@ public class NoSQLJPADataTypesTest {
         TableLimits limits = new TableLimits(1, 2, 1);
         TableRequest tableRequest = new TableRequest().setStatement(createTableDDL).setTableLimits(limits);
         LOG.log(SessionLog.INFO, String.format("Creating table:\t%s", TABLE_NAME));
-        handle.doTableRequest(tableRequest, 60000, 1000);
+        handle.doTableRequest(tableRequest, 60000, 2024);
         LOG.log(SessionLog.INFO, String.format("Table \t%s is active", TABLE_NAME));
     }
 
@@ -311,7 +311,7 @@ public class NoSQLJPADataTypesTest {
         /* Drop the table and wait for the table to move to dropped state */
         LOG.log(SessionLog.INFO, String.format("Dropping table:\t%s", TABLE_NAME));
         TableRequest tableRequest = new TableRequest().setStatement("DROP TABLE IF EXISTS " + TABLE_NAME);
-        handle.doTableRequest(tableRequest, 60000, 1000);
+        handle.doTableRequest(tableRequest, 60000, 2024);
         LOG.log(SessionLog.INFO, String.format("Table \t%s has been dropped", TABLE_NAME));
     }
 

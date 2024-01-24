@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,8 +75,8 @@ public class MTOMServiceTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_TABLE[i]);
+                for (String s : POPULATE_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             } catch (SQLException e) {
@@ -105,7 +105,7 @@ public class MTOMServiceTestSuite extends DBWSTestSuite {
             SOAPMessage request = createSOAPMessage(SOAP_FINDALL_REQUEST);
             SOAPMessage response = sourceDispatch.invoke(request);
             assertNotNull("findAll failed:  response is null.", response);
-            assertTrue("findAll failed:  wrong number of attachments - expected [3] but was [" + response.countAttachments() + "]", response.countAttachments() == 3);
+            assertEquals("findAll failed:  wrong number of attachments - expected [3] but was [" + response.countAttachments() + "]", 3, response.countAttachments());
 
             // verify MTOM format, i.e.
             // <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:c060bfb1-82cb-4820-9d87-4f2422b50915"/>
@@ -124,7 +124,7 @@ public class MTOMServiceTestSuite extends DBWSTestSuite {
                 assertNotNull("findAll failed:  no attachment for [cid:" + contentId + "]", ap);
 
                 byte[] rawBytes = ap.getRawContentBytes() ;
-                assertTrue("findAll failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", rawBytes.length == 15);
+                assertEquals("findAll failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", 15, rawBytes.length);
 
                 // no order is guaranteed, so need to check which attachment we are dealing with
                 byte b = rawBytes[0];
@@ -136,7 +136,7 @@ public class MTOMServiceTestSuite extends DBWSTestSuite {
             // we expect 1 attachment
             request = createSOAPMessage(SOAP_FINDBYPK_REQUEST);
             response = sourceDispatch.invoke(request);
-            assertTrue("findByPk failed:  wrong number of attachments - expected [1] but was [" + response.countAttachments() + "]", response.countAttachments() == 1);
+            assertEquals("findByPk failed:  wrong number of attachments - expected [1] but was [" + response.countAttachments() + "]", 1, response.countAttachments());
 
             @SuppressWarnings("rawtypes")
             AttachmentPart ap = (AttachmentPart)((Iterator)response.getAttachments()).next();
@@ -151,7 +151,7 @@ public class MTOMServiceTestSuite extends DBWSTestSuite {
             assertNotNull("findByPk failed:  no attachment for [cid:" + contentId + "]", ap);
 
             byte[] rawBytes = ap.getRawContentBytes() ;
-            assertTrue("findByPk failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", rawBytes.length == 15);
+            assertEquals("findByPk failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", 15, rawBytes.length);
             compareBytes(3, rawBytes, "findByPk");
         } catch (Exception x) {
             fail("Service test failed: " + x.getMessage());
@@ -159,8 +159,8 @@ public class MTOMServiceTestSuite extends DBWSTestSuite {
     }
 
     static void compareBytes(int intVal, byte[] bytes, String testName) {
-        for (int i = 0; i < bytes.length; i++) {
-            assertEquals(testName + " failed:  wrong byte value returned - expected [" + intVal + "] but was [" + bytes[i] + "]", bytes[i], intVal);
+        for (byte aByte : bytes) {
+            assertEquals(testName + " failed:  wrong byte value returned - expected [" + intVal + "] but was [" + aByte + "]", aByte, intVal);
         }
     }
 }

@@ -156,7 +156,7 @@ public class HistoryFacade {
             if (policy != null) {
                 List<String> names = policy.getHistoryTableNames();
                 for (int i = 0; i < descriptor.getTableNames().size(); i++) {
-                    String name = (String)descriptor.getTableNames().get(i);
+                    String name = descriptor.getTableNames().get(i);
                     String histName = names.get(i);
                     if (!generatedTables.contains(histName)) {
                         generatedTables.add(histName);
@@ -217,11 +217,10 @@ public class HistoryFacade {
             if (size == 0) {
                 continue;
             }
-            for (int i = 0; i < size; i++) {
-                DatabaseTable table = tables.get(i);
+            for (DatabaseTable table : tables) {
                 String name = table.getQualifiedNameDelimited(platform);
                 String historicalName;
-                if(table.shouldUseDelimiters()) {
+                if (table.shouldUseDelimiters()) {
                     historicalName = name.substring(0, name.length() - 1) + "_HIST" + Helper.getDefaultEndDatabaseDelimiter();
                 } else {
                     historicalName = name + "_HIST";

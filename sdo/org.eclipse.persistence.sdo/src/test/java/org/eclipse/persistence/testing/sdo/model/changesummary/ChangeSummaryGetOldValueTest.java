@@ -199,7 +199,7 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
     // purpose: unmodified DataObject
     public void testGetOldValueReturnListWithUnmodifiedProperty() {
         changeSummary.beginLogging();
-        assertTrue(0 == changeSummary.getOldValues(root).size());
+        assertTrue(changeSummary.getOldValues(root).isEmpty());
     }
 
     // purpose: modified DataObject

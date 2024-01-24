@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public class RMIServerManagerController extends UnicastRemoteObject implements R
         try {
             controller = new RMIRemoteSessionControllerDispatcher(this.session);
         } catch (RemoteException exception) {
-            System.out.println("Error in invocation " + exception.toString());
+            System.out.println("Error in invocation " + exception);
         }
 
         return controller;
@@ -58,14 +58,14 @@ public class RMIServerManagerController extends UnicastRemoteObject implements R
         try {
             System.setSecurityManager(new RMISecurityManager());
         } catch (Exception exception) {
-            System.out.println("Security violation " + exception.toString());
+            System.out.println("Security violation " + exception);
         }
 
         // Make sure RMI registry is started.
         try {
             java.rmi.registry.LocateRegistry.createRegistry(1099);
         } catch (Exception exception) {
-            System.out.println("Security violation " + exception.toString());
+            System.out.println("Security violation " + exception);
         }
 
         // Create local instance of the factory

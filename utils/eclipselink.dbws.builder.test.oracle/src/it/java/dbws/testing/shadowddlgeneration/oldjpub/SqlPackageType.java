@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,17 +21,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.MethodFilter;
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
-import dbws.testing.shadowddlgeneration.oldjpub.FieldInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.MethodInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ParamInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ResultInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.UserArguments;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewCache;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewRow;
+
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.DATA_LEVEL;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.OBJECT_NAME;
@@ -169,7 +162,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
                 UserArguments item = (UserArguments)iter.next();
                 String key = makeKey(item.OBJECT_NAME /* METHOD_NAME */, item.OVERLOAD/* METHOD_NO */);
                 if (m_ht.get(key) == null) {
-                    ArrayList<ViewRow> itemWrapper = new ArrayList<ViewRow>();
+                    ArrayList<ViewRow> itemWrapper = new ArrayList<>();
                     itemWrapper.add(item);
                     m_ht.put(key, itemWrapper);
                 }
@@ -201,15 +194,15 @@ public class SqlPackageType extends SqlTypeWithMethods {
         public InfoValues(String schema, String name) throws SQLException {
             m_schema = schema;
             m_name = name;
-            m_ht = new HashMap<String, ArrayList<ViewRow>>();
+            m_ht = new HashMap<>();
         }
 
         protected static String makeKey(String method, String method_no) {
-            return "" + method + "/" + method_no;
+            return method + "/" + method_no;
         }
 
         public boolean matches(String schema, String name) {
-            return ((schema == null) ? m_schema == null : schema.equals(m_schema))
+            return (Objects.equals(schema, m_schema))
                 && ((name == null) ? m_name != null : name.equals(m_name));
         }
     }
@@ -230,7 +223,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
             }
             Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
                 new String[0]);
-            ArrayList<ViewRow> viewRows = new ArrayList<ViewRow>();
+            ArrayList<ViewRow> viewRows = new ArrayList<>();
             while (iter.hasNext()) {
                 UserArguments item = (UserArguments)iter.next();
                 if (item.ARGUMENT_NAME != null) {
@@ -238,12 +231,12 @@ public class SqlPackageType extends SqlTypeWithMethods {
                 }
             }
             UserArguments.orderByPosition(viewRows);
-            for (int i = 0; i < viewRows.size(); i++) {
-                UserArguments item = (UserArguments)viewRows.get(i);
+            for (ViewRow viewRow : viewRows) {
+                UserArguments item = (UserArguments) viewRow;
                 String key = makeKey(item.OBJECT_NAME/* METHOD_NAME */, item.OVERLOAD/* METHOD_NO */);
                 ArrayList<ViewRow> v = m_ht.get(key);
                 if (v == null) {
-                    v = new ArrayList<ViewRow>();
+                    v = new ArrayList<>();
                     m_ht.put(key, v);
                 }
                 v.add(item);
@@ -253,7 +246,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
         public ParamInfo[] get(String method, String method_no) throws SQLException {
             ArrayList<ViewRow> v = m_ht.get(makeKey(method, method_no));
             if (v == null) {
-                v = new ArrayList<ViewRow>(); // zero parameter
+                v = new ArrayList<>(); // zero parameter
             }
             return ParamInfo.getParamInfo(v);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,8 +50,8 @@ public class CascadeNoBindingOnQuery extends AutoVerifyTestCase {
     public void test() {
         Vector emps = getSession().readAllObjects(Employee.class, new ExpressionBuilder().get("firstName").like("%o%"));
         Vector pks = new Vector();
-        for (int index = 0; index < emps.size(); ++index) {
-            pks.add(((Employee)emps.get(index)).getId());
+        for (Object emp : emps) {
+            pks.add(((Employee) emp).getId());
         }
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         ReadAllQuery query = new ReadAllQuery(Employee.class);

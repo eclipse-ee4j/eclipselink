@@ -188,17 +188,17 @@ public class IndirectContainerTestDatabase extends ZTestCase {
     protected void compareOrders(AbstractOrder expected, AbstractOrder actual) {
         assertEquals("The customer name is incorrect.", expected.customerName, actual.customerName);
 
-        assertTrue("The sales reps should NOT be populated yet.", !((IndirectContainer)actual.getSalesRepContainer()).isInstantiated());
+        assertFalse("The sales reps should NOT be populated yet.", ((IndirectContainer) actual.getSalesRepContainer()).isInstantiated());
         assertEquals("The number of sales reps is incorrect.", expected.getNumberOfSalesReps(), actual.getNumberOfSalesReps());
         assertTrue("The sales reps should be populated.", ((IndirectContainer)actual.getSalesRepContainer()).isInstantiated());
         assertUnorderedElementsEqual("The sales reps are not correct.", expected.getSalesRepVector(), actual.getSalesRepVector());
 
-        assertTrue("The contacts should NOT be populated.", !((IndirectContainer)actual.getContactContainer()).isInstantiated());
+        assertFalse("The contacts should NOT be populated.", ((IndirectContainer) actual.getContactContainer()).isInstantiated());
         assertEquals("Number of contacts is incorrect.", expected.getNumberOfContacts(), actual.getNumberOfContacts());
         assertTrue("The contacts should be populated.", ((IndirectContainer)actual.getContactContainer()).isInstantiated());
         assertUnorderedElementsEqual("The contacts are not correct.", expected.getContactVector(), actual.getContactVector());
 
-        assertTrue("The order lines should NOT be populated yet.", !((IndirectContainer)actual.getLineContainer()).isInstantiated());
+        assertFalse("The order lines should NOT be populated yet.", ((IndirectContainer) actual.getLineContainer()).isInstantiated());
         assertEquals("The number of order lines is incorrect.", expected.getNumberOfLines(), actual.getNumberOfLines());
         assertTrue("The order lines should be populated.", ((IndirectContainer)actual.getLineContainer()).isInstantiated());
         assertUnorderedElementsEqual("The order lines are not correct.", expected.getLineVector(), actual.getLineVector());
@@ -209,7 +209,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         assertEquals("The number of sales reps 2 is incorrect.", expected.getNumberOfSalesReps2(), actual.getNumberOfSalesReps2());
         assertUnorderedElementsEqual("The sales reps 2 are not correct.", expected.getSalesRepVector2(), actual.getSalesRepVector2());
 
-        assertTrue("The total should NOT be instantiated yet.", !(actual.total.isInstantiated()));
+        assertFalse("The total should NOT be instantiated yet.", actual.total.isInstantiated());
         assertEquals("The total is incorrect.", expected.getTotal(), actual.getTotal());
         assertTrue("The total should be instantiated.", actual.total.isInstantiated());
 
@@ -278,12 +278,12 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         this.getBackdoorSession().executeNonSelectingSQL("update ORDLINE set ITEM_NAME = '" + orderLine.itemName + "' where ID = " + orderLine.id);
         AbstractOrder orderFromDB = (AbstractOrder)this.getSession().refreshObject(originalOrder);
 
-        assertTrue("The order lines should NOT be populated.", !((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
+        assertFalse("The order lines should NOT be populated.", ((IndirectContainer) orderFromDB.getLineContainer()).isInstantiated());
         assertTrue("New order line not found.", orderFromDB.containsLine(orderLine));
         assertTrue("The order lines should be populated.", ((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
 
         // there were problems with TransformationMappings, so make sure they work too
-        assertTrue("The total should NOT be instantiated yet.", !(orderFromDB.total.isInstantiated()));
+        assertFalse("The total should NOT be instantiated yet.", orderFromDB.total.isInstantiated());
         assertEquals("The total is incorrect.", this.buildTestOrder2().getTotal(), orderFromDB.getTotal());
         assertTrue("The total should be instantiated.", orderFromDB.total.isInstantiated());
 
@@ -298,13 +298,13 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         key.id = originalID;
         AbstractOrder orderFromDB = (AbstractOrder)this.getSession().readObject(key);
 
-        assertTrue("The order lines should NOT be populated.", !((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
+        assertFalse("The order lines should NOT be populated.", ((IndirectContainer) orderFromDB.getLineContainer()).isInstantiated());
         AbstractOrderLine orderLine = (AbstractOrderLine)orderFromDB.getLineStream().nextElement();
         assertTrue("The order lines should be populated.", ((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
 
         // there were problems with TransformationMappings, so make sure they work too
         AbstractOrder expected = this.buildTestOrder1();
-        assertTrue("The total should NOT be instantiated yet.", !(orderFromDB.total.isInstantiated()));
+        assertFalse("The total should NOT be instantiated yet.", orderFromDB.total.isInstantiated());
         assertEquals("The total is incorrect.", expected.getTotal(), orderFromDB.getTotal());
         assertTrue("The total should be instantiated.", orderFromDB.total.isInstantiated());
 
@@ -315,12 +315,12 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         this.getBackdoorSession().executeNonSelectingSQL("update ORDLINE set ITEM_NAME = '" + orderLine.itemName + "' where ID = " + orderLine.id);
         orderFromDB = (AbstractOrder)this.getSession().refreshObject(orderFromDB);
 
-        assertTrue("The order lines should NOT be populated.", !((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
+        assertFalse("The order lines should NOT be populated.", ((IndirectContainer) orderFromDB.getLineContainer()).isInstantiated());
         assertTrue("New order line not found.", orderFromDB.containsLine(orderLine));
         assertTrue("The order lines should be populated.", ((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
 
         // there were problems with TransformationMappings, so make sure they work too
-        assertTrue("The total should NOT be instantiated yet.", !(orderFromDB.total.isInstantiated()));
+        assertFalse("The total should NOT be instantiated yet.", orderFromDB.total.isInstantiated());
         assertEquals("The total is incorrect.", expected.getTotal(), orderFromDB.getTotal());
         assertTrue("The total should be instantiated.", orderFromDB.total.isInstantiated());
 
@@ -343,7 +343,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         orderFromDB = (AbstractOrder)this.getSession().readObject(key);
-        assertTrue("The contacts should NOT be populated.", !((IndirectContainer)orderFromDB.getContactContainer()).isInstantiated());
+        assertFalse("The contacts should NOT be populated.", ((IndirectContainer) orderFromDB.getContactContainer()).isInstantiated());
         assertEquals("The number of contacts is incorrect.", this.buildTestOrder1().getNumberOfContacts() + 1, orderFromDB.getNumberOfContacts());
         assertTrue("New contact not found.", orderFromDB.containsContact(contact));
     }
@@ -384,7 +384,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         orderFromDB = (AbstractOrder)this.getSession().readObject(key);
-        assertTrue("The order lines should NOT be populated.", !((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
+        assertFalse("The order lines should NOT be populated.", ((IndirectContainer) orderFromDB.getLineContainer()).isInstantiated());
         assertEquals("The number of order lines is incorrect.", this.buildTestOrder1().getNumberOfLines() + 1, orderFromDB.getNumberOfLines());
         assertTrue("New order line not found.", orderFromDB.containsLine(orderLine));
     }
@@ -405,7 +405,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         orderFromDB = (AbstractOrder)this.getSession().readObject(key);
-        assertTrue("The sales reps should NOT be populated.", !((IndirectContainer)orderFromDB.getSalesRepContainer()).isInstantiated());
+        assertFalse("The sales reps should NOT be populated.", ((IndirectContainer) orderFromDB.getSalesRepContainer()).isInstantiated());
         assertEquals("The number of sales reps is incorrect.", this.buildTestOrder1().getNumberOfSalesReps() + 1, orderFromDB.getNumberOfSalesReps());
         assertTrue("New sales rep not found.", orderFromDB.containsSalesRep(salesRep));
     }
@@ -446,7 +446,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         orderFromDB = (AbstractOrder)this.getSession().readObject(key);
-        assertTrue("The total should NOT be instantiated.", !orderFromDB.total.isInstantiated());
+        assertFalse("The total should NOT be instantiated.", orderFromDB.total.isInstantiated());
         assertEquals("The total is incorrect.", newTotal, orderFromDB.getTotal());
         assertTrue("The total should be instantiated.", orderFromDB.total.isInstantiated());
     }
@@ -497,9 +497,9 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         orderFromDB = (AbstractOrder)this.getSession().readObject(key);
-        assertTrue("The contacts should NOT be populated.", !((IndirectContainer)orderFromDB.getContactContainer()).isInstantiated());
+        assertFalse("The contacts should NOT be populated.", ((IndirectContainer) orderFromDB.getContactContainer()).isInstantiated());
         assertEquals("The number of contacts is incorrect.", this.buildTestOrder1().getNumberOfContacts() - 1, orderFromDB.getNumberOfContacts());
-        assertTrue("Removed contact still present.", !orderFromDB.containsContact(contact));
+        assertFalse("Removed contact still present.", orderFromDB.containsContact(contact));
     }
 
     /**
@@ -519,7 +519,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
 
         orderFromDB = (AbstractOrder)this.getSession().readObject(key);
         assertEquals("The number of contacts2 is incorrect.", this.buildTestOrder1().getNumberOfContacts2() - 1, orderFromDB.getNumberOfContacts2());
-        assertTrue("Removed contact2 still present.", !orderFromDB.containsContact2(contact));
+        assertFalse("Removed contact2 still present.", orderFromDB.containsContact2(contact));
     }
 
     /**
@@ -538,9 +538,9 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         orderFromDB = (AbstractOrder)this.getSession().readObject(key);
-        assertTrue("The order lines should NOT be populated.", !((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
+        assertFalse("The order lines should NOT be populated.", ((IndirectContainer) orderFromDB.getLineContainer()).isInstantiated());
         assertEquals("The number of order lines is incorrect.", this.buildTestOrder1().getNumberOfLines() - 1, orderFromDB.getNumberOfLines());
-        assertTrue("Removed order line still present.", !orderFromDB.containsLine(orderLine));
+        assertFalse("Removed order line still present.", orderFromDB.containsLine(orderLine));
     }
 
     /**
@@ -559,9 +559,9 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         orderFromDB = (AbstractOrder)this.getSession().readObject(key);
-        assertTrue("The sales reps should NOT be populated.", !((IndirectContainer)orderFromDB.getSalesRepContainer()).isInstantiated());
+        assertFalse("The sales reps should NOT be populated.", ((IndirectContainer) orderFromDB.getSalesRepContainer()).isInstantiated());
         assertEquals("The number of sales reps is incorrect.", this.buildTestOrder1().getNumberOfSalesReps() - 1, orderFromDB.getNumberOfSalesReps());
-        assertTrue("Removed sales rep still present.", !orderFromDB.containsSalesRep(salesRep));
+        assertFalse("Removed sales rep still present.", orderFromDB.containsSalesRep(salesRep));
     }
 
     /**
@@ -581,7 +581,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
 
         orderFromDB = (AbstractOrder)this.getSession().readObject(key);
         assertEquals("The number of sales reps 2 is incorrect.", this.buildTestOrder1().getNumberOfSalesReps2() - 1, orderFromDB.getNumberOfSalesReps2());
-        assertTrue("Removed sales rep 2 still present.", !orderFromDB.containsSalesRep2(salesRep));
+        assertFalse("Removed sales rep 2 still present.", orderFromDB.containsSalesRep2(salesRep));
     }
 
     /**
@@ -593,20 +593,20 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         AbstractOrder key = this.buildOrderShell();
         key.id = originalID;
         AbstractOrder orderFromDB = (AbstractOrder)uow.readObject(key);
-        assertTrue("The sales reps should NOT be populated.", !((IndirectContainer)orderFromDB.getSalesRepContainer()).isInstantiated());
-        assertTrue("The order lines should NOT be populated.", !((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
-        assertTrue("The contacts should NOT be populated.", !((IndirectContainer)orderFromDB.getContactContainer()).isInstantiated());
+        assertFalse("The sales reps should NOT be populated.", ((IndirectContainer) orderFromDB.getSalesRepContainer()).isInstantiated());
+        assertFalse("The order lines should NOT be populated.", ((IndirectContainer) orderFromDB.getLineContainer()).isInstantiated());
+        assertFalse("The contacts should NOT be populated.", ((IndirectContainer) orderFromDB.getContactContainer()).isInstantiated());
         uow.commit();
 
-        assertTrue("The sales reps should NOT be populated.", !((IndirectContainer)orderFromDB.getSalesRepContainer()).isInstantiated());
+        assertFalse("The sales reps should NOT be populated.", ((IndirectContainer) orderFromDB.getSalesRepContainer()).isInstantiated());
         assertEquals("The number of sales reps is incorrect.", this.buildTestOrder1().getNumberOfSalesReps(), orderFromDB.getNumberOfSalesReps());
         assertTrue("The sales reps should be populated.", ((IndirectContainer)orderFromDB.getSalesRepContainer()).isInstantiated());
 
-        assertTrue("The contacts should NOT be populated.", !((IndirectContainer)orderFromDB.getContactContainer()).isInstantiated());
+        assertFalse("The contacts should NOT be populated.", ((IndirectContainer) orderFromDB.getContactContainer()).isInstantiated());
         assertEquals("The number of contacts is incorrect.", this.buildTestOrder1().getNumberOfContacts(), orderFromDB.getNumberOfContacts());
         assertTrue("The contacts should be populated.", ((IndirectContainer)orderFromDB.getContactContainer()).isInstantiated());
 
-        assertTrue("The order lines should NOT be populated.", !((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
+        assertFalse("The order lines should NOT be populated.", ((IndirectContainer) orderFromDB.getLineContainer()).isInstantiated());
         assertEquals("The number of order lines is incorrect.", this.buildTestOrder1().getNumberOfLines(), orderFromDB.getNumberOfLines());
         assertTrue("The order lines should be populated.", ((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
 
@@ -614,7 +614,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
 
         assertEquals("The number of sales reps 2 is incorrect.", this.buildTestOrder1().getNumberOfSalesReps2(), orderFromDB.getNumberOfSalesReps2());
 
-        assertTrue("The total should NOT be instantiated yet.", !(orderFromDB.total.isInstantiated()));
+        assertFalse("The total should NOT be instantiated yet.", orderFromDB.total.isInstantiated());
         assertEquals("The total is incorrect.", this.buildTestOrder1().getTotal(), orderFromDB.getTotal());
         assertTrue("The total should be instantiated.", orderFromDB.total.isInstantiated());
 
@@ -653,7 +653,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         try {
             uow.commit();
         } catch (NullPointerException ex) {
-            assertTrue("Merging of the clone did not trigger the back up value holder" + ex.toString(), false);
+            fail("Merging of the clone did not trigger the back up value holder" + ex);
         }
     }
 

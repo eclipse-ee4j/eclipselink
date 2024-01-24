@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package dbws.testing.invalidinput;
 
 //javase imports
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -123,8 +124,8 @@ public class InvalidInputTestSuite extends DBWSTestSuite {
     public void testWarningLogs() {
         assertTrue("No WARNINGs logged", dbwsLogger.hasWarnings());
         List<String> warnings = dbwsLogger.getWarnings();
-        assertTrue("Expected [2] WARNING, but was [" + warnings.size() + "]", warnings.size() == 2);
-        assertTrue("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1.equals(warnings.get(0)));
-        assertTrue("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2.equals(warnings.get(1)));
+        assertEquals("Expected [2] WARNING, but was [" + warnings.size() + "]", 2, warnings.size());
+        assertEquals("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1, warnings.get(0));
+        assertEquals("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2, warnings.get(1));
     }
 }

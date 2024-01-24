@@ -21,6 +21,8 @@ import org.w3c.dom.Document;
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -160,7 +162,7 @@ public class NoTestSet {
         }
         assertTrue("invocation no failed: " + msg, worked);
         Integer bool2int = (Integer)o;
-        assertTrue("wrong bool2int value", bool2int == 1);
+        assertEquals("wrong bool2int value", 1, (int) bool2int);
         s.logout();
     }
 }

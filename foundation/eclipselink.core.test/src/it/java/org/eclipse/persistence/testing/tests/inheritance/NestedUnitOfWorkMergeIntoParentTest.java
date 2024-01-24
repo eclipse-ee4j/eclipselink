@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,7 @@ public class NestedUnitOfWorkMergeIntoParentTest extends TestCase {
             nestedUnitOfWork.registerObject(apple);
 
             int numberOfPearsToInsert = 10;
-            List<Pear> pearsList = new ArrayList<Pear>(numberOfPearsToInsert);
+            List<Pear> pearsList = new ArrayList<>(numberOfPearsToInsert);
             for (int pearNumber = 0; pearNumber < numberOfPearsToInsert; pearNumber++) {
                 Pear pear = new Pear();
                 pearsList.add(pear);

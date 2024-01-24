@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,10 +74,10 @@ public class StringTester extends TypeTester {
         if (!getTestName().equals(otherTester.getTestName())) {
             return false;
         }
-        if ((!Helper.rightTrimString(getVarString(stringLength())).equals(otherTester.getVarString())) && !((getVarString().length() == 0) && (otherTester.getVarString() == null))) {
+        if ((!Helper.rightTrimString(getVarString(stringLength())).equals(otherTester.getVarString())) && !((getVarString().isEmpty()) && (otherTester.getVarString() == null))) {
             return false;
         }
-        if ((!Helper.rightTrimString(getFixedString(stringLength())).equals(otherTester.getFixedString())) && !((getFixedString().length() == 0) && (otherTester.getFixedString() == null))) {
+        if ((!Helper.rightTrimString(getFixedString(stringLength())).equals(otherTester.getFixedString())) && !((getFixedString().isEmpty()) && (otherTester.getFixedString() == null))) {
             return false;
         }
         if ((otherTester.getFixedString() == null) || (otherTester.getVarString() == null)) {
@@ -142,7 +142,7 @@ public class StringTester extends TypeTester {
         tests.addElement(new StringTester("Too Long", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"));
         tests.addElement(new StringTester("Leading Blanks", "     5 blanks"));
         tests.addElement(new StringTester("Trailing Blanks", "5 blanks     "));
-        tests.addElement(new StringTester("Quotes", "\"\'`"));
+        tests.addElement(new StringTester("Quotes", "\"'`"));
         return tests;
     }
 
@@ -165,7 +165,7 @@ public class StringTester extends TypeTester {
             // Char fields always are trimmed (by us) this is an error if they are not
             if (testCase.getObjectFromDatabase() != null) {
                 String fixed = ((StringTester)testCase.getObjectFromDatabase()).getFixedString();
-                if ((fixed != null) && (fixed.length() > 0) && (fixed.charAt(fixed.length() - 1) == ' ')) {
+                if ((fixed != null) && (!fixed.isEmpty()) && (fixed.charAt(fixed.length() - 1) == ' ')) {
                     if (fixed.equals(" ")) {// Stupid drivers make "" -> " "
                         throw new TestWarningException("This driver converts '''' to '' ''.");
                     }
@@ -174,22 +174,22 @@ public class StringTester extends TypeTester {
             }
 
             // Databases which return empty strings as null
-            if ((getVarString().length() == 0) && (((StringTester)testCase.getObjectFromDatabase()).getVarString() == null)) {
+            if ((getVarString().isEmpty()) && (((StringTester)testCase.getObjectFromDatabase()).getVarString() == null)) {
                 throw new TestWarningException("A null was returned for the empty string");
             }
 
             // Database returned a " " when an empty string was stored.
-            if ((getVarString().length() == 0) && ((StringTester)testCase.getObjectFromDatabase()).getVarString().equals(" ")) {
+            if ((getVarString().isEmpty()) && ((StringTester)testCase.getObjectFromDatabase()).getVarString().equals(" ")) {
                 throw new TestWarningException("A single space string was returned instead of an empty string");
             }
 
             // Databases which remove trailing blanks
-            if ((getVarString().length() > 0) && (getVarString().charAt(getVarString().length() - 1) == ' ') && getVarString().trim().equals(((StringTester)testCase.getObjectFromDatabase()).getVarString())) {
+            if ((!getVarString().isEmpty()) && (getVarString().charAt(getVarString().length() - 1) == ' ') && getVarString().trim().equals(((StringTester)testCase.getObjectFromDatabase()).getVarString())) {
                 throw new TestWarningException("Trailing blanks were removed");
             }
 
             // Databases which remove leading blanks
-            if ((getVarString().length() > 0) && (getVarString().charAt(0) == ' ') && getVarString().trim().equals(((StringTester)testCase.getObjectFromDatabase()).getVarString())) {
+            if ((!getVarString().isEmpty()) && (getVarString().charAt(0) == ' ') && getVarString().trim().equals(((StringTester)testCase.getObjectFromDatabase()).getVarString())) {
                 throw new TestWarningException("Leading blanks were removed");
             }
 
@@ -199,7 +199,7 @@ public class StringTester extends TypeTester {
             }
 
             // Char fields always are trimmed (by us)
-            if ((getFixedString().length() > 0) && (getFixedString().charAt(getFixedString().length() - 1) == ' ') && getFixedString().trim().equals(((StringTester)testCase.getObjectFromDatabase()).getFixedString())) {
+            if ((!getFixedString().isEmpty()) && (getFixedString().charAt(getFixedString().length() - 1) == ' ') && getFixedString().trim().equals(((StringTester)testCase.getObjectFromDatabase()).getFixedString())) {
                 throw new TestWarningException("Trailing blanks were removed from char field.");
             }
 

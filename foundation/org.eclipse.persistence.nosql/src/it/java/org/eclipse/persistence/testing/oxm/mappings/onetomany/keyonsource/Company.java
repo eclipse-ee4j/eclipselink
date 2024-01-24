@@ -52,15 +52,15 @@ public class Company
   }
 
   public String toString(){
-    String result = "COMPANY: "+ this.getName();
+    StringBuilder result = new StringBuilder("COMPANY: " + this.getName());
 
-    result += " DEPARTMENTS: ";
+    result.append(" DEPARTMENTS: ");
     for(int i=0; i<getDepartments().size();i++)
     {
-      result+= getDepartments().elementAt(i);
+      result.append(getDepartments().elementAt(i));
     }
 
-    return result;
+    return result.toString();
   }
 
    public boolean equals(Object object)

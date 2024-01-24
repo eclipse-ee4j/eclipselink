@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ public class Scenario1_4 extends ReportQueryTestCase {
 
         for (Enumeration e = projects.elements(); e.hasMoreElements(); ) {
             Project project = (Project)e.nextElement();
-            if (project.getDescription().indexOf("EclipseLink") != -1) {
+            if (project.getDescription().contains("EclipseLink")) {
                 Object[] result = new Object[1];
                 result[0] = project.getName();
                 addResult(result, null);

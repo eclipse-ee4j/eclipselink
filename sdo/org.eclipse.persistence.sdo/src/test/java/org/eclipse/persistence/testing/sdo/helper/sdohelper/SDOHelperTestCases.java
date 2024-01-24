@@ -14,7 +14,6 @@
 //     dmccann - September 15/2009 - 1.2 - Initial implementation
 package org.eclipse.persistence.testing.sdo.helper.sdohelper;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -88,8 +87,7 @@ public class SDOHelperTestCases extends TestCase {
         dataFactory = aHelperContext.getDataFactory();
         dataHelper = aHelperContext.getDataHelper();
 
-        Reader rdr = new InputStreamReader(new FileInputStream(new File(
-                "./org/eclipse/persistence/testing/sdo/schemas/Team_cs_on_root.xsd")));
+        Reader rdr = new InputStreamReader(new FileInputStream("./org/eclipse/persistence/testing/sdo/schemas/Team_cs_on_root.xsd"));
         types = xsdHelper.define(rdr, null);
         teamType = typeHelper.getType("http://www.example.org", "Team");
         teamDO = dataFactory.create(teamType);

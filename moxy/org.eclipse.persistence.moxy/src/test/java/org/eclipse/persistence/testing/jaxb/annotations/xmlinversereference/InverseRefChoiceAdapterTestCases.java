@@ -29,7 +29,7 @@ public class InverseRefChoiceAdapterTestCases extends JAXBWithJSONTestCases {
         super(name);
         setClasses(new Class<?>[]{ Owner.class });
         setControlDocument(XML_RESOURCE);
-        setControlJSON(JSON_RESOURCE);;
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

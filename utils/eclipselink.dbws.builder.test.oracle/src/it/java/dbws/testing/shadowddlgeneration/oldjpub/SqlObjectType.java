@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.AllTypes;
-import dbws.testing.shadowddlgeneration.oldjpub.FieldInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.MethodInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ParamInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ResultInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewRow;
+
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_METHOD_PARAMS;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_TYPES;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_TYPE_ATTRS;
@@ -62,7 +56,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
         m_modifiers = Modifier.PUBLIC;
         m_fields = fields;
         m_fieldsPublishedOnly = fields;
-        m_methods = new ArrayList<ProcedureMethod>();
+        m_methods = new ArrayList<>();
     }
 
     /**
@@ -173,7 +167,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
         int nonSuperFieldCount = declaredFieldCount + subtypeFieldCount;
 
         List<AttributeField> fields = supertype == null ?
-            new ArrayList<AttributeField>(nonSuperFieldCount) :
+                new ArrayList<>(nonSuperFieldCount) :
             supertype.getFields(nonSuperFieldCount, publishedOnly);
 
         int fieldsX = fields.size() - nonSuperFieldCount;

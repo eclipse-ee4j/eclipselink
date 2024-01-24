@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class CORBAServerManagerController extends _CORBAServerManagerImplBase {
                 java.lang.Object[] params = { getSession() };
                 controller = (CORBARemoteSessionController)constructor.newInstance(params);
             } catch (Exception exception) {
-                System.out.println("Error instantiating  " + controllerClassName + " " + exception.toString());
+                System.out.println("Error instantiating  " + controllerClassName + " " + exception);
             }
         }
 
@@ -83,7 +83,7 @@ public class CORBAServerManagerController extends _CORBAServerManagerImplBase {
             org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
             NamingContext ncRef = NamingContextHelper.narrow(objRef);
             NameComponent nc = new NameComponent(nameToBind, "");
-            NameComponent path[] = { nc };
+            NameComponent[] path = { nc };
             ncRef.rebind(path, server);
             java.lang.Object sync = new Object();
             if (wait) {

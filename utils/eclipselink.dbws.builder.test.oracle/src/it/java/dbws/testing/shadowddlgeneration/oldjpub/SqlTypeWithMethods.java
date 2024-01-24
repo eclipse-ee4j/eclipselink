@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,14 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.MethodFilter;
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
-import dbws.testing.shadowddlgeneration.oldjpub.MethodInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ParamInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ResultInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.SingleColumnViewRow;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewRow;
+
 
 public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
 
@@ -60,28 +53,28 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
     @Override
     public boolean hasMethods() throws SQLException, PublisherException {
         List<ProcedureMethod> m = getDeclaredMethods();
-        return m != null && m.size() > 0;
+        return m != null && !m.isEmpty();
     }
 
     private List<ProcedureMethod> reflectMethods(SqlName sqlName) throws SQLException, PublisherException {
         String schema = sqlName.getSchemaName();
         String type = sqlName.getTypeName();
-        ArrayList<ProcedureMethod> methodl = new ArrayList<ProcedureMethod>();
+        ArrayList<ProcedureMethod> methodl = new ArrayList<>();
 
         /* get method information */
         MethodInfo[] minfo = getMethodInfo(schema, type);
-        for (int minfoi = 0; minfoi < minfo.length; minfoi++) {
-            String methodName = minfo[minfoi].methodName;
-            String methodType = minfo[minfoi].methodType;
-            String methodNo = minfo[minfoi].methodNo;
-            int results = minfo[minfoi].results;
-            int parameters = minfo[minfoi].parameters;
+        for (MethodInfo methodInfo : minfo) {
+            String methodName = methodInfo.methodName;
+            String methodType = methodInfo.methodType;
+            String methodNo = methodInfo.methodNo;
+            int results = methodInfo.results;
+            int parameters = methodInfo.parameters;
 
             // Pre-approve the method, to avoid unwanted methods during Toplevel publishing.
             boolean preApproved = true;
             if (m_methodFilter != null) {
                 preApproved = m_methodFilter.acceptMethod(new ProcedureMethod(methodName, null, -1, null,
-                    null, null, null, null, 0), true);
+                        null, null, null, null, 0), true);
             }
             if (!preApproved) {
                 continue;
@@ -91,8 +84,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             modifiers = Modifier.PUBLIC;
             if (methodType.equals("MAP")) {
                 modifiers = modifiers ^ PublisherModifier.MAP;
-            }
-            else if (methodType.equals("ORDER")) {
+            } else if (methodType.equals("ORDER")) {
                 modifiers = modifiers ^ PublisherModifier.ORDER;
             }
 
@@ -113,10 +105,9 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                         String resultMethodNo = resultInfo.methodNo;
                         int sequence = resultInfo.sequence;
                         returnType = m_reflector.addPlsqlDBType(resultTypeOwner, resultTypeName,
-                            resultTypeSubname, resultTypeMod, ncharFormOfUse, type,
-                            resultMethodName, resultMethodNo, sequence, this);
-                    }
-                    catch (SQLException e) {
+                                resultTypeSubname, resultTypeMod, ncharFormOfUse, type,
+                                resultMethodName, resultMethodNo, sequence, this);
+                    } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 }
@@ -124,10 +115,10 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
 
             /* get parameter information */
             int paramCount = parameters;
-            List<TypeClass> paramTypes_v = new ArrayList<TypeClass>();
-            List<String> paramNames_v = new ArrayList<String>();
-            List<Integer> paramModes_v = new ArrayList<Integer>();
-            List<Boolean> paramNCharFormOfUse_v = new ArrayList<Boolean>();
+            List<TypeClass> paramTypes_v = new ArrayList<>();
+            List<String> paramNames_v = new ArrayList<>();
+            List<Integer> paramModes_v = new ArrayList<>();
+            List<Boolean> paramNCharFormOfUse_v = new ArrayList<>();
             int firstNoDefault = -1;
             boolean[] paramDefaults = new boolean[paramCount];
             if (paramCount > 0) {
@@ -160,7 +151,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                 paramDefaults = new boolean[pinfo.length];
                 for (int i = pinfo.length - 1; i >= 0; i--) {
                     paramDefaults[i] = hasDefault(objectId[i], paramMethodName[i], sequence[i],
-                        paramMethodNo[i]);
+                            paramMethodNo[i]);
                 }
                 for (int i = pinfo.length - 1; i >= 0; i--) {
                     if (!paramDefaults[i]) {
@@ -176,12 +167,11 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
                                 .equals("IN") ? ProcedureMethod.IN : (mode.equals("OUT") ? ProcedureMethod.OUT
                                 : ProcedureMethod.INOUT)));
                         paramTypes_v.add(m_reflector.addPlsqlDBType(paramTypeOwner[i],
-                            paramTypeName[i], paramTypeSubname[i], paramTypeMod[i],
-                            mcharFormOfUse[i], type, paramMethodName[i], paramMethodNo[i],
-                            sequence[i], this));
+                                paramTypeName[i], paramTypeSubname[i], paramTypeMod[i],
+                                mcharFormOfUse[i], type, paramMethodName[i], paramMethodNo[i],
+                                sequence[i], this));
                         paramNCharFormOfUse_v.add(mcharFormOfUse[i]);
-                    }
-                    catch (SQLException e) {
+                    } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 }
@@ -190,7 +180,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             int len = paramTypes_v.size();
             if (len != paramCount) {
                 System.err.println("WARNING: incorrect parameter number for method " + methodName
-                    + ". Expect " + paramCount + " with actual " + len);
+                        + ". Expect " + paramCount + " with actual " + len);
 
             }
 
@@ -206,33 +196,31 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
             }
 
             paramTypes = generateDefaultArgsHolderParamTypes(paramTypes, paramDefaults,
-                paramNCharFormOfUse);
+                    paramNCharFormOfUse);
             ProcedureMethod method = null;
             for (int paramLen = firstNoDefault + 1; paramLen <= paramCount; paramLen++) {
                 if (this instanceof SqlPackageType && returnType != null && resultInfo != null
-                    && returnType.equals(SqlReflector.REF_CURSOR_TYPE)) {
+                        && returnType.equals(SqlReflector.REF_CURSOR_TYPE)) {
                     method = new PlsqlCursorMethod(type, methodName, methodNo, modifiers,
-                        resultInfo.sequence, paramTypes, paramNames, paramModes, paramDefaults,
-                        paramLen, false, m_reflector);
-                }
-                else if (this instanceof SqlPackageType) {
+                            resultInfo.sequence, paramTypes, paramNames, paramModes, paramDefaults,
+                            paramLen, false, m_reflector);
+                } else if (this instanceof SqlPackageType) {
                     method = new PlsqlMethod(methodName, methodNo, modifiers, returnType,
-                        paramTypes, paramNames, paramModes, paramDefaults, paramLen);
-                }
-                else {
+                            paramTypes, paramNames, paramModes, paramDefaults, paramLen);
+                } else {
                     method = new ProcedureMethod(methodName, methodNo, modifiers, returnType, paramTypes,
-                        paramNames, paramModes, paramDefaults, paramLen);
+                            paramNames, paramModes, paramDefaults, paramLen);
                 }
 
                 if (acceptMethod(method, false)) {
                     methodl.add(method);
                     if (returnType != null && resultInfo != null
-                        && returnType.equals(SqlReflector.REF_CURSOR_TYPE)) {
+                            && returnType.equals(SqlReflector.REF_CURSOR_TYPE)) {
                         method = new PlsqlCursorMethod(type, methodName, methodNo, modifiers,
-                            resultInfo.sequence, paramTypes, paramNames, paramModes, paramDefaults,
-                            paramLen, true, /* returnBeans */
-                            m_reflector);
-                        if (((PlsqlCursorMethod)method).getReturnColCount() != 0) {
+                                resultInfo.sequence, paramTypes, paramNames, paramModes, paramDefaults,
+                                paramLen, true, /* returnBeans */
+                                m_reflector);
+                        if (((PlsqlCursorMethod) method).getReturnColCount() != 0) {
                             methodl.add(method);
                         }
                     }
@@ -286,7 +274,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
          */
         try {
             Iterator<ViewRow> rowIter;
-            if (overload == null || overload.equals("")) {
+            if (overload == null || overload.isEmpty()) {
                 rowIter = m_viewCache.getRows(Util.ALL_ARGUMENTS, new String[]{"DEFAULTED"},
                     new String[]{"OBJECT_ID", "OBJECT_NAME", "SEQUENCE", "OVERLOAD"}, new Object[]{
                                 object_id, methodName, sequence, null},
@@ -332,7 +320,7 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
 
                 String sqljutl = "SYS.SQLJUTL.HAS_DEFAULT(" + object_id + ", " + "'"
                     + methodName.toUpperCase() + "', " + sequence + ","
-                    + ((overload == null || overload.equals("")) ? "0" : overload) + ")";
+                    + ((overload == null || overload.isEmpty()) ? "0" : overload) + ")";
                 Iterator<ViewRow> rowIter = m_viewCache.getRows(Util.DUAL, new String[]{sqljutl},
                     new String[0], new Object[0], new String[0]);
 
@@ -378,8 +366,8 @@ public abstract class SqlTypeWithMethods extends SqlTypeWithFields {
 
         TypeClass[] defaultParamTypes = paramTypes;
         boolean hasDefault = false;
-        for (int i = 0; i < paramDefaults.length; i++) {
-            if (paramDefaults[i]) {
+        for (boolean paramDefault : paramDefaults) {
+            if (paramDefault) {
                 hasDefault = true;
             }
         }

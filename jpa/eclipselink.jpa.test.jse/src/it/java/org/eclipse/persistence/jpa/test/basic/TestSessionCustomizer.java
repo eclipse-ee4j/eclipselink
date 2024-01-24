@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -39,7 +39,7 @@ public class TestSessionCustomizer {
 
     @Before
     public void before() {
-        props = new HashMap<String, Object>();
+        props = new HashMap<>();
         Customizer.staticCustomized = false;
     }
 

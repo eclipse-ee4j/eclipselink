@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,7 +60,7 @@ public class StoredProcedureResultSetAndOutputTest extends TestCase {
         // Stored procecures with both result sets and output parameters are not supported
         // on all DBs currently we just test DB2.
         // ET: This test does not support jcc driver(bug 3551317)
-        if (!(getSession().getPlatform().isDB2()) || (getSession().getLogin().getDatabaseURL().indexOf("jcc") == -1)) {
+        if (!(getSession().getPlatform().isDB2()) || (!getSession().getLogin().getDatabaseURL().contains("jcc"))) {
             throw new TestWarningException("This test can only be run in DB2, and not support jcc driver.");
         }
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

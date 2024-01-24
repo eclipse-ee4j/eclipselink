@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,13 +66,13 @@ public class RootWithCompositeObjectTestCases extends XMLMappingTestCases {
     @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
-        assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
+        assertEquals("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents, unmarshalListener.events);
     }
 
     @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
-        assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));
+        assertEquals("Expected sequence of Marshal events not found", expectedMarshalEvents, listener.events);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,7 +135,7 @@ public abstract class DistributedServersModel extends TestModel {
                 getDistributedServers().removeAllElements();
                 stopCacheSynchronization();
             } catch (Exception exception) {
-                System.out.println(exception.toString());
+                System.out.println(exception);
             }
         }
     }
@@ -165,12 +165,12 @@ public abstract class DistributedServersModel extends TestModel {
                 }
                 setRegistryStarted(true);
             } catch (Exception exception) {
-                System.out.println(exception.toString());
+                System.out.println(exception);
                 try {
                     java.rmi.registry.LocateRegistry.getRegistry(1099);
                     setRegistryStarted(true);
                 } catch (Exception secondTryException) {
-                    System.out.println(secondTryException.toString());
+                    System.out.println(secondTryException);
                 }
             }
         } else {
@@ -186,7 +186,7 @@ public abstract class DistributedServersModel extends TestModel {
                 getDistributedServers().removeAllElements();
                 stopCacheSynchronization();
             } catch (Exception exception) {
-                System.out.println(exception.toString());
+                System.out.println(exception);
             }
         }
         DistributedServer server = createDistributedServer(getSession());

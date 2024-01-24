@@ -37,7 +37,7 @@ public class InvalidUseOfTransparentIndirectionTest_extractPrimaryKeyForReferenc
     IntegrityChecker orgIntegrityChecker;
 
     public InvalidUseOfTransparentIndirectionTest_extractPrimaryKeyForReferenceObject() {
-        setDescription("This tests Invalid Use Of Transparent Indirection (extractPrimaryKeyForReferenceObject) (TL-ERROR 144) " + "");
+        setDescription("This tests Invalid Use Of Transparent Indirection (extractPrimaryKeyForReferenceObject) (TL-ERROR 144) ");
     }
 
     @Override

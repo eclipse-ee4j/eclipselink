@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class IdentityWeakHashMapConcurrentModTest extends AutoVerifyTestCase{
 
     @Override
     public void setup(){
-        map = new IdentityWeakHashMap<Integer, Integer>(100);
+        map = new IdentityWeakHashMap<>(100);
 
         for (int i=0;i<1000;i++){
             map.put(i, i);

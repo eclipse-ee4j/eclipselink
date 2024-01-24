@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.validation;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -118,8 +117,8 @@ public class ClientServerTest extends AutoVerifyTestCase {
             int counter = 0;
             ConnectionPool pool = server.serverSession.getConnectionPools().get("default");
             List<Accessor> connections = pool.getConnectionsAvailable();
-            for (Iterator<Accessor> iterator = connections.iterator(); iterator.hasNext(); ) {
-                if (iterator.next().isConnected()) {
+            for (Accessor connection : connections) {
+                if (connection.isConnected()) {
                     counter = counter + 1;
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,8 +75,7 @@ public class LiteralExpressionTest extends TestCase {
         if (results == null || results.isEmpty()) {
             throw new TestErrorException("Unexpected error - no ReportQuery results returned");
         }
-        for (int i = 0; i < results.size(); i++) {
-            ReportQueryResult rqr = results.get(i);
+        for (ReportQueryResult rqr : results) {
             Object gender = rqr.get("gender");
             if (gender == null) {
                 throw new TestErrorException("ReportQueryResult does not contain entries for 'gender', literal not added");

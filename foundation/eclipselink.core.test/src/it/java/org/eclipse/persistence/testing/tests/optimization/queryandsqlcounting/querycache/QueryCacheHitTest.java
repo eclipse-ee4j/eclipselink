@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -119,7 +119,7 @@ public class QueryCacheHitTest extends TestCase {
             assertNotNull(results);
             if (results != null) {
                 // assert that we get back DB results (from cache)
-                assertTrue(!results.isEmpty());
+                assertFalse(results.isEmpty());
             }
             // assert that the database was only hit once (important)
             assertEquals(tracker.getSqlStatements().size(), 1);
@@ -199,7 +199,7 @@ public class QueryCacheHitTest extends TestCase {
             assertNotNull(results);
             if (results != null) {
                 // assert that we get back DB results (from cache)
-                assertTrue(!results.isEmpty());
+                assertFalse(results.isEmpty());
             }
             // assert that the database was only hit once (important)
             assertEquals(tracker.getSqlStatements().size(), 1);

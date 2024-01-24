@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class NestedUnitOfWorkDeleteFromNestedObjectTest extends AutoVerifyTestCa
         Employee employee = results.firstElement();
         Employee employeeNested = (Employee)nestedUow1.registerObject(employee);
 
-        assertTrue(employeeNested.getPhoneNumbers().size() > 0);
+        assertTrue(!employeeNested.getPhoneNumbers().isEmpty());
         for (PhoneNumber item: new Vector<PhoneNumber>(employeeNested.getPhoneNumbers())) {
             if (item != null) {
                 nestedUow1.deleteObject(item);
@@ -60,7 +60,7 @@ public class NestedUnitOfWorkDeleteFromNestedObjectTest extends AutoVerifyTestCa
         }
         nestedUow1.deleteObject(employeeNested);
         nestedUow1.commitAndResume();
-        if (employee.getPhoneNumbers().size() != 0) {
+        if (!employee.getPhoneNumbers().isEmpty()) {
             throw new TestErrorException("Objects removal from the nested unit of work is not merged into outer/main unit of work. Number of remaining objects is: " +  employee.getPhoneNumbers().size());
         }
     }

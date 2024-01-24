@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
 
     @Override
     public void verify() {
-        if (testFailures.length() > 0) {
+        if (!testFailures.isEmpty()) {
             throw new TestErrorException("Tests failures from DatabaseLogin: " + testFailures);
         }
     }
@@ -346,7 +346,7 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
 
         ////////////////////////////////////////////////////
         login.useWebLogicJDBCConnectionPool("martinsPool");
-        if (login.getConnectionString().indexOf("martinsPool") == -1) {
+        if (!login.getConnectionString().contains("martinsPool")) {
             addToTestFailures("useWebLogicJDBCConnectionPool");
         }
 
@@ -482,7 +482,7 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
             addToTestFailures("databaseName");
         }
 
-        if (login.toString().indexOf("oneCompleteLie") == -1) {
+        if (!login.toString().contains("oneCompleteLie")) {
             addToTestFailures("databaseName - toString failed");
         }
 
@@ -492,7 +492,7 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
             addToTestFailures("serverName");
         }
 
-        if (login.toString().indexOf("homer") == -1) {
+        if (!login.toString().contains("homer")) {
             addToTestFailures("serverName - toString failed");
         }
 

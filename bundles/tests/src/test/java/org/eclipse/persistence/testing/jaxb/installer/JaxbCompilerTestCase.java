@@ -53,7 +53,7 @@ public class JaxbCompilerTestCase extends junit.framework.TestCase {
         Process process = Runtime.getRuntime().exec(new String[] { compilerFile.getAbsolutePath(), resourceFile.getAbsolutePath() }, null, binDir);
         int result = process.waitFor();
 
-        assertTrue("Process has not completed successfully.", result == 0);
+        assertEquals("Process has not completed successfully.", 0, result);
 
         String packagePrefix = "perf" + File.separator + "testing" + File.separator + "persistence" + File.separator + "eclipse" + File.separator + "org" + File.separator + "workitem";
 

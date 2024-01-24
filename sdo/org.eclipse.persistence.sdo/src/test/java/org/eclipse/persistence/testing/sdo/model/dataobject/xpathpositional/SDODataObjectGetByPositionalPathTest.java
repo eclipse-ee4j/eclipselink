@@ -138,7 +138,7 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
         Object value = doTest.get("P.Name-b");
         assertTrue(value instanceof List);
-        assertTrue(((List)value).size() == 0);
+        assertTrue(((List) value).isEmpty());
 
         List values = new ArrayList();
         values.add("test");

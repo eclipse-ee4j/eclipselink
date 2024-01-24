@@ -49,7 +49,7 @@ public class ReadAllJoinReadingTest extends ReadAllTest {
             if (!((Employee)proj.getTeamLeader()).address.isInstantiated()) {
                 throw new TestErrorException("teamLeader address value holder not instantiated.");
             }
-            if (proj.getTeamLeader().getAddress().getCity().length() == 0) {
+            if (proj.getTeamLeader().getAddress().getCity().isEmpty()) {
                 throw new org.eclipse.persistence.testing.framework.TestErrorException("Address wrong.");
             }
         }

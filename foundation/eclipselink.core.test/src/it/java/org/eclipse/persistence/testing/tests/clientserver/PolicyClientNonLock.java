@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class PolicyClientNonLock extends Client2 {
             Expression exp = builder.anyOf("policies").get("policyNumber").equal(555);
             for (int i = 0; i < 1; i++) {
                 PolicyHolder holder = (PolicyHolder)this.clientSession.readObject(org.eclipse.persistence.testing.models.insurance.PolicyHolder.class, exp);
-                if ((holder == null) || holder.getFirstName().equals("") || (holder.getPolicies() == null) || holder.getAddress().getCity().equals("")) {
+                if ((holder == null) || holder.getFirstName().isEmpty() || (holder.getPolicies() == null) || holder.getAddress().getCity().isEmpty()) {
                     throw new TestWarningException("Client/Server dead lock test fails as null/default attribuet value is retruned");
                 }
             }

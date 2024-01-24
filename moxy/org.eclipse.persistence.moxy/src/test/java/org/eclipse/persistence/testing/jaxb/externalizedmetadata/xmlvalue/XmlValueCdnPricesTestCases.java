@@ -85,7 +85,7 @@ public class XmlValueCdnPricesTestCases extends JAXBWithJSONTestCases{
             assertNotNull("No descriptor was generated for CDNPricesNoAnnotation.", xDesc);
             DatabaseMapping mapping = xDesc.getMappingForAttributeName("prices");
             assertNotNull("No mapping exists on CDNPricesNoAnnotation for attribute [prices].", mapping);
-            assertTrue("Expected an XMLCompositeDirectCollectionMapping for attribute [prices], but was [" + mapping.toString() +"].", mapping instanceof XMLCompositeDirectCollectionMapping);
+            assertTrue("Expected an XMLCompositeDirectCollectionMapping for attribute [prices], but was [" + mapping +"].", mapping instanceof XMLCompositeDirectCollectionMapping);
             assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
         }
 

@@ -50,7 +50,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
     public void testGetBytesFromByte() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
-        byte theByte = new String("abc").getBytes()[0];
+        byte theByte = "abc".getBytes()[0];
         dataObject.set(property, theByte);
         try {
             dataObject.getBytes(property);

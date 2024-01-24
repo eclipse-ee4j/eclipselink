@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class Agent implements Serializable {
         super();
         houses = new ValueHolder<>(new Vector<>());
         houses2 = new ArrayList(2);
-        customers = new ValueHolder<>(new Vector<Customer>());
+        customers = new ValueHolder<>(new Vector<>());
     }
 
     public void addCustomer(Customer customer) {
@@ -54,7 +54,7 @@ public class Agent implements Serializable {
 
         example1.setFirstName("Micheal");
         example1.setLastName("Jordan");
-        Vector<Customer> customers = new Vector<Customer>();
+        Vector<Customer> customers = new Vector<>();
         customers.addElement(Customer.example1());
         customers.addElement(Customer.example2());
         example1.setCustomers(customers);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,8 +84,8 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
             return true;
         }
         if (supportedPlatforms != null) {
-            for (Iterator iterator = supportedPlatforms.iterator(); iterator.hasNext();) {
-                Class<?> platformClass = (Class)iterator.next();
+            for (Object supportedPlatform : supportedPlatforms) {
+                Class<?> platformClass = (Class) supportedPlatform;
                 if (platformClass.isInstance(platform)) {
                     supported = true;
                 }
@@ -94,8 +94,8 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
             supported = true;
         }
         if (unsupportedPlatforms != null) {
-            for (Iterator iterator = unsupportedPlatforms.iterator(); iterator.hasNext();) {
-                Class<?> platformClass = (Class)iterator.next();
+            for (Object unsupportedPlatform : unsupportedPlatforms) {
+                Class<?> platformClass = (Class) unsupportedPlatform;
                 if (platformClass.isInstance(platform)) {
                     notSupported = true;
                 }
@@ -123,7 +123,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         getQuery(true).setIsPrepared(false);
 
         try {
-            if (getName().equals("MultiPlatformTest") && getSession().getLogin().getPlatform().isOracle() && (getAbstractSession().getAccessor().getConnection().getMetaData().getDriverVersion().indexOf("8.1.7") != -1)) {
+            if (getName().equals("MultiPlatformTest") && getSession().getLogin().getPlatform().isOracle() && (getAbstractSession().getAccessor().getConnection().getMetaData().getDriverVersion().contains("8.1.7"))) {
                 throw new TestWarningException("CASE not supported until Oracle 9i.");
             }
         } catch (java.sql.SQLException e) {}
@@ -221,7 +221,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         Vector phoneNumbers = ((Employee) result.elementAt(0)).getPhoneNumbers();
         ((Employee) result.elementAt(0)).getResponsibilitiesList().size();
         ((Employee) result.elementAt(0)).getProjects().size();
-        if ((phoneNumbers == null) || (phoneNumbers.size() == 0)) {
+        if ((phoneNumbers == null) || (phoneNumbers.isEmpty())) {
                 throw new TestErrorException("The original query was corrupted when made part of a batch query.");
         }
         if (((Employee) result.elementAt(0)).getAddress() == null) {

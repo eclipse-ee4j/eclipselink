@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,10 +79,7 @@ public abstract class AbstractOrderLine implements Serializable, Cloneable {
         if (!this.itemName.equals(other.itemName)) {
             return false;
         }
-        if (this.quantity != other.quantity) {
-            return false;
-        }
-        return true;
+        return this.quantity == other.quantity;
     }
 
     public String getKey() {

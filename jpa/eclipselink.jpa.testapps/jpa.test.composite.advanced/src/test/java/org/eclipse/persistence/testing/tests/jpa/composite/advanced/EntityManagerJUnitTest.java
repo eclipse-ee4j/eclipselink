@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -503,7 +503,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             }
         }
 
-        if (SessionEventTracker.getHandlings().size() > 0) {
+        if (!SessionEventTracker.getHandlings().isEmpty()) {
             // otherwise broker is already connected when testSetup is run - no preLogin/postLogin
             verifyPrePostLoginEvents(broker, sessions);
         }
@@ -525,9 +525,9 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         Set<ServerSession> setSessions = new HashSet(sessions.length);
         HashMap<ServerSession, SessionEventTracker> sessionListeners = new HashMap(sessions.length);
         CompositeEventListener compositeListener =  (CompositeEventListener)getCompositeAndMemberListeners(broker).get(0);
-        for (int i=0; i<sessions.length; i++) {
-            setSessions.add(sessions[i]);
-            sessionListeners.put(sessions[i], (SessionEventTracker)sessions[i].getEventManager().getListeners().get(0));
+        for (ServerSession session : sessions) {
+            setSessions.add(session);
+            sessionListeners.put(session, (SessionEventTracker) session.getEventManager().getListeners().get(0));
         }
 
         assertEquals(errorMsg + "unexpected number of events' handlings = " + SessionEventTracker.getHandlings().size() + "; " + (sessions.length * 4 + 2) + " was expected", SessionEventTracker.getHandlings().size(), sessions.length * 4 + 2);
@@ -669,7 +669,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             errorMsg ="EMFClose: " + ex.getMessage() +";";
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -1431,16 +1431,16 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
 
         String errorMsg = "";
-        if(noException.length() > 0) {
+        if(!noException.isEmpty()) {
             errorMsg = "No exception thrown: " + noException;
         }
-        if(wrongException.length() > 0) {
-            if(errorMsg.length() > 0) {
+        if(!wrongException.isEmpty()) {
+            if(!errorMsg.isEmpty()) {
                 errorMsg = errorMsg + " ";
             }
             errorMsg = errorMsg + "Wrong exception thrown: " + wrongException;
         }
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -1511,13 +1511,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             List<Employee> emps = empQuery.getResultList();
 
             List phones = phoneQuery.getResultList();
-            for (Iterator iterator = phones.iterator(); iterator.hasNext();){
-                em.remove(iterator.next());
+            for (Object o : phones) {
+                em.remove(o);
             }
             em.flush();
 
-            for (Iterator<Employee> iterator = emps.iterator(); iterator.hasNext();){
-                em.remove(iterator.next());
+            for (Employee employee : emps) {
+                em.remove(employee);
             }
         }catch (RuntimeException ex){
             rollbackTransaction(em);
@@ -1535,11 +1535,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 empQuery = em.createQuery("Select e from Employee e where e.lastName like 'Dow%'");
                 List<Employee> emps =  empQuery.getResultList();
                 List phones = phoneQuery.getResultList();
-                for (Iterator iterator = phones.iterator(); iterator.hasNext();){
-                    em.remove(iterator.next());
+                for (Object phone : phones) {
+                    em.remove(phone);
                 }
-                for (Iterator<Employee> iterator = emps.iterator(); iterator.hasNext();){
-                    em.remove(iterator.next());
+                for (Employee emp : emps) {
+                    em.remove(emp);
                 }
                 commitTransaction(em);
             }catch (RuntimeException re){
@@ -2413,20 +2413,17 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         String[] testModeArray2 = {"find"};
 */
         // testMode1 loop
-        for(int i=0; i < testModeArray1.length; i++) {
-            String testMode1 = testModeArray1[i];
+        for (String testMode1 : testModeArray1) {
             // isObjectCached loop
-            for(int k=0; k < isObjectCached.length; k++) {
-                boolean isObjCached = isObjectCached[k];
+            for (boolean isObjCached : isObjectCached) {
                 // testMode2 loop
-                for(int j=0; j < testModeArray2.length; j++) {
-                    String testMode2 = testModeArray2[j];
+                for (String testMode2 : testModeArray2) {
                     boolean isExceptionExpected = !testMode2.equals("update_project");
 
                     // lock emp using em1
-                    EntityManager em1= createEntityManager();
+                    EntityManager em1 = createEntityManager();
                     // bring object into cache if required
-                    if(isObjCached) {
+                    if (isObjCached) {
                         broker.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: bring object into cache", null, null, false);
                         em1.find(Employee.class, id);
                     }
@@ -2436,20 +2433,20 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
                         broker.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode1 = " + testMode1, null, null, false);
 
-                        if(testMode1.equals("query")) {
-                            Query query1 = em1.createQuery("SELECT emp FROM Employee emp WHERE emp.id = "+id).setLockMode(lockMode).
+                        if (testMode1.equals("query")) {
+                            Query query1 = em1.createQuery("SELECT emp FROM Employee emp WHERE emp.id = " + id).setLockMode(lockMode).
                                     setHint(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-                            if(isSelectForUpateNoWaitSupported()) {
+                            if (isSelectForUpateNoWaitSupported()) {
                                 query1.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                             }
-                            emp1 = (Employee)query1.getSingleResult();
-                        } else if(testMode1.equals("find")) {
+                            emp1 = (Employee) query1.getSingleResult();
+                        } else if (testMode1.equals("find")) {
                             emp1 = em1.find(Employee.class, id, lockMode, properties);
                         } else {
                             emp1 = em1.find(Employee.class, id);
-                            if(testMode1.equals("lock")) {
+                            if (testMode1.equals("lock")) {
                                 em1.lock(emp1, lockMode, properties);
-                            } else if(testMode1.equals("refresh")) {
+                            } else if (testMode1.equals("refresh")) {
                                 em1.refresh(emp1, lockMode, properties);
                             } else {
                                 fail("Unknown testMode1 = " + testMode1);
@@ -2465,7 +2462,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
                             broker.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode2 = " + testMode2, null, null, false);
 
-                            if(shouldSpawnThread) {
+                            if (shouldSpawnThread) {
                                 // after waiting TransactionKiller rollback em1 transaction unlocking way for em2 to proceed.
                                 // the test assumes that em2 waiting for timeToWait means em2 waiting on the lock acquired by em1.
                                 transactionKiller = new TransactionKiller(em1, timeToWait);
@@ -2520,33 +2517,33 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                                     break;
                             }
 
-            //                commitTransaction(em2);
+                            //                commitTransaction(em2);
                             boolean hasKilledTransaction = false;
-                            if(transactionKiller != null) {
+                            if (transactionKiller != null) {
                                 transactionKiller.shouldKillTransaction = false;
                                 try {
                                     transactionKiller.join();
-                                } catch(InterruptedException intEx) {
+                                } catch (InterruptedException intEx) {
                                     // Ignore
                                 }
                                 hasKilledTransaction = transactionKiller.hasKilledTransaction;
                             }
                             // transaction killed by TransactionKiller is treated as PessimisticLockException
-                            if(isExceptionExpected && !hasKilledTransaction) {
+                            if (isExceptionExpected && !hasKilledTransaction) {
                                 String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Exception was expected.";
                                 broker.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, null, null, false);
                                 errorMsg.append('\n').append(localErrorMsg);
                             }
                         } catch (Exception ex) {
-                            if(transactionKiller != null) {
+                            if (transactionKiller != null) {
                                 transactionKiller.shouldKillTransaction = false;
                                 try {
                                     transactionKiller.join();
-                                } catch(InterruptedException intEx) {
+                                } catch (InterruptedException intEx) {
                                     // Ignore
                                 }
                             }
-                            if(!isExceptionExpected) {
+                            if (!isExceptionExpected) {
                                 String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Unexpected exception: " + ex.getMessage();
                                 broker.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, null, null, false);
                                 errorMsg.append('\n').append(localErrorMsg);
@@ -2558,7 +2555,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                             closeEntityManager(em2);
                         }
 
-            //            commitTransaction(em1);
+                        //            commitTransaction(em1);
                     } finally {
                         if (isTransactionActive(em1)) {
                             rollbackTransaction(em1);
@@ -2590,7 +2587,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg.toString());
         }
     }
@@ -2717,7 +2714,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     }
 
                     List resultList = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
-                    employeeExists = resultList.size() > 0;
+                    employeeExists = !resultList.isEmpty();
 
                     if(employeeShouldExist) {
                         if(resultList.size() > 1) {
@@ -2727,7 +2724,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                             localErrorMsg = localErrorMsg + " employeeReadFromDB == null;";
                         }
                     } else {
-                        if(resultList.size() > 0) {
+                        if(!resultList.isEmpty()) {
                             localErrorMsg = localErrorMsg + " employeeReadFromDB != null;";
                         }
                     }
@@ -2759,7 +2756,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 errorMsg.append("i=").append(i).append(": ").append(localErrorMsg).append(" ");
             }
         }
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg.toString());
         }
     }
@@ -3573,7 +3570,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             emp.setLastName("McRae");
             em.persist(emp);
             Query query = em.createQuery("Select e from Employee e where e.firstName = 'testFlushMode'");
-            if (query.getResultList().size() > 0) {
+            if (!query.getResultList().isEmpty()) {
                 fail("Query triggered flush.");
             }
             rollbackTransaction(em);
@@ -3901,10 +3898,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         try {
             beginTransaction(em);
             List<Employee> list = em.createQuery("Select e from Employee e where e.firstName = '"+firstName+"'").getResultList();
-            Iterator<Employee> i = list.iterator();
-            while (i.hasNext()){
-                Employee e = i.next();
-                if (e.getManager() != null){
+            for (Employee e : list) {
+                if (e.getManager() != null) {
                     e.getManager().removeManagedEmployee(e);
                     e.setManager(null);
                 }
@@ -3916,13 +3911,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             // ignore exception in clean up in case there's an error in test
-            if(errorMsg.length() == 0) {
+            if(errorMsg.isEmpty()) {
                 throw ex;
             }
         }
         clearCache();
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg.toString());
         }
     }
@@ -6902,8 +6897,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             EntityManager em = createEntityManager();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
             map = new HashMap(projects.size());
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
+            for (Object o : projects) {
+                Project p = (Project) o;
                 map.put(p.getId(), p.getName());
             }
 
@@ -6925,22 +6920,22 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             em = createEntityManager();
             StringBuilder errorMsg = new StringBuilder();
             projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
+            for (Object project : projects) {
+                Project p = (Project) project;
                 String readName = p.getName();
-                if(cls.isInstance(p)) {
-                    if(!newName.equals(readName)) {
+                if (cls.isInstance(p)) {
+                    if (!newName.equals(readName)) {
                         errorMsg.append("haven't updated name: ").append(p).append("; ");
                     }
                 } else {
-                    if(newName.equals(readName)) {
+                    if (newName.equals(readName)) {
                         errorMsg.append("have updated name: ").append(p).append("; ");
                     }
                 }
             }
             closeEntityManager(em);
 
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 fail(errorMsg.toString());
             } else {
                 ok = true;
@@ -6953,9 +6948,9 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     beginTransaction(em);
                     List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
                     try {
-                        for(int i=0; i<projects.size(); i++) {
-                            Project p = (Project)projects.get(i);
-                            String oldName = (String)map.get(((Project)projects.get(i)).getId());
+                        for (Object project : projects) {
+                            Project p = (Project) project;
+                            String oldName = (String) map.get(((Project) project).getId());
                             p.setName(oldName);
                         }
                         commitTransaction(em);
@@ -7026,22 +7021,22 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             em = createEntityManager();
             StringBuilder errorMsg = new StringBuilder();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
+            for (Object project : projects) {
+                Project p = (Project) project;
                 String readName = p.getName();
-                if(cls.isInstance(p)) {
-                    if(!readName.equals(newName)) {
+                if (cls.isInstance(p)) {
+                    if (!readName.equals(newName)) {
                         errorMsg.append("haven't updated name: ").append(p).append("; ");
                     }
                 } else {
-                    if(readName.equals(newName)) {
+                    if (readName.equals(newName)) {
                         errorMsg.append("have updated name: ").append(p).append("; ");
                     }
                 }
             }
             closeEntityManager(em);
 
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 fail(errorMsg.toString());
             } else {
                 ok = true;
@@ -7090,7 +7085,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             EntityManager em = createEntityManager();
             Employee emp = null;
             List employees = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
-            if(employees.size() > 0) {
+            if(!employees.isEmpty()) {
                 emp = (Employee)employees.get(0);
             } else {
                 beginTransaction(em);
@@ -7132,22 +7127,22 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             em = createEntityManager();
             StringBuilder errorMsg = new StringBuilder();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
+            for (Object project : projects) {
+                Project p = (Project) project;
                 String readName = p.getName();
-                if(cls.isInstance(p) && p.getTeamLeader()==null) {
-                    if(!readName.equals(newName)) {
+                if (cls.isInstance(p) && p.getTeamLeader() == null) {
+                    if (!readName.equals(newName)) {
                         errorMsg.append("haven't updated name: ").append(p).append("; ");
                     }
                 } else {
-                    if(readName.equals(newName)) {
+                    if (readName.equals(newName)) {
                         errorMsg.append("have updated name: ").append(p).append("; ");
                     }
                 }
             }
             closeEntityManager(em);
 
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 fail(errorMsg.toString());
             } else {
                 ok = true;
@@ -7267,7 +7262,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             errorMsg = errorMsg + "; em.lock() threw wrong exception: " + ex.getMessage();
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -7729,7 +7724,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -7762,7 +7757,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             errorMsg = errorMsg + "ADDRESS_BR1_SEQ: doesPlatformSupportSequenceObjects = " + doesPlatformSupportSequenceObjects + ", but isSequenceObject = " + isSequenceObject;
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -7894,7 +7889,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     + (assignedSequenceNumber_Dealer + 1)
                     + " was expected)\n";
         }
-        if (errorMsg.length() > 0) {
+        if (!errorMsg.isEmpty()) {
             errorMsg = "\n" + errorMsg;
             fail(errorMsg);
         }
@@ -8250,7 +8245,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             }
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg.toString());
         }
     }
@@ -8559,7 +8554,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     if(listener.nAcquredReadConnections() > 0) {
                         localErrorMsg += "readConnection not released; ";
                     }
-                    if(localErrorMsg.length() > 0) {
+                    if(!localErrorMsg.isEmpty()) {
                         localErrorMsg = exclusiveConnectionMode + " useSequencing="+useSequencing + ": " + localErrorMsg;
                         errorMsg.append(localErrorMsg);
                         listener.clear();
@@ -8593,7 +8588,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                             }
                             closeEntityManager(em);
 
-                            if(errorMsg.length() > 0) {
+                            if(!errorMsg.isEmpty()) {
                                 broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: errorMsg: " + "\n" + errorMsg, null, null, false);
                             }
                         }
@@ -8634,7 +8629,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             ss.getLogin().setConnectionString(originalConnectionString);
             broker.login();
 
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 fail(errorMsg.toString());
             }
         }
@@ -8701,11 +8696,9 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         //reconnect the session
         em = createEntityManager();
         //verify connections
-        Iterator<ConnectionPool> itPools = ((ServerSession)((EntityManagerImpl)em).getSessionBroker().getSessionForName(ss.getName())).getConnectionPools().values().iterator();
-        while (itPools.hasNext()) {
-            ConnectionPool pool = itPools.next();
+        for (ConnectionPool pool : ((ServerSession) ((EntityManagerImpl) em).getSessionBroker().getSessionForName(ss.getName())).getConnectionPools().values()) {
             int disconnected = 0;
-            for (int i=0; i < pool.getConnectionsAvailable().size(); i++) {
+            for (int i = 0; i < pool.getConnectionsAvailable().size(); i++) {
                 if (!(pool.getConnectionsAvailable().get(i)).isConnected()) {
                     disconnected++;
                 }
@@ -8714,7 +8707,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 errorMsg.append(pool.getName()).append(" has ").append(disconnected).append(" connections; ");
             }
         }
-        if (errorMsg.length() > 0) {
+        if (!errorMsg.isEmpty()) {
             fail(errorMsg.toString());
         }
     }
@@ -8866,25 +8859,25 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     pooled = "non pooled; ";
                     memberProperties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
                 }
-                for(int i=0; i<exclusiveConnectionModeArray.length; i++) {
-                    exclusiveConnectionMode = exclusiveConnectionModeArray[i];
-                    for(int j=0; j<3; j++) {
+                for (String s : exclusiveConnectionModeArray) {
+                    exclusiveConnectionMode = s;
+                    for (int j = 0; j < 3; j++) {
                         // either beginning early transaction or not
-                        boolean shouldBeginEarlyTransaction = (j==2);
-                        boolean shouldReadBeforeTransaction = (j==1);
+                        boolean shouldBeginEarlyTransaction = (j == 2);
+                        boolean shouldReadBeforeTransaction = (j == 1);
                         mode = pooled + exclusiveConnectionMode + (shouldBeginEarlyTransaction ? "; beginEarlyTransaction" : "") + (shouldReadBeforeTransaction ? "; readBeforeTransaction" : "");
                         broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: " + mode, null, null, false);
                         memberProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
                         EntityManager em = createEntityManager(emProperties);
 
-                        if(shouldReadBeforeTransaction) {
+                        if (shouldReadBeforeTransaction) {
                             em.find(Address.class, 1);
                         }
                         Address address = null;
-                        try{
+                        try {
                             em.getTransaction().begin();
 
-                            if(shouldBeginEarlyTransaction) {
+                            if (shouldBeginEarlyTransaction) {
                                 em.unwrap(UnitOfWorkImpl.class).beginEarlyTransaction();
                             }
 
@@ -8894,13 +8887,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                             em.getTransaction().commit();
                         } finally {
                             // expected exception - connection is invalid and cannot be reconnected.
-                            if(em.getTransaction().isActive()) {
+                            if (em.getTransaction().isActive()) {
                                 em.getTransaction().rollback();
                             }
                             closeEntityManager(em);
                         }
 
-                        if(listener.hasAcquiredConnections()) {
+                        if (listener.hasAcquiredConnections()) {
                             fail(mode + " connection was not passed to preReleaseConnection event");
                         }
                     }
@@ -10116,14 +10109,12 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             Map backupMap = copyGroupBackup.getCopies();
 
             // verify that backup objects are identical to originals
-            Iterator<Map.Entry> it = backupMap.entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry entry = it.next();
+            for (Map.Entry entry : (Iterable<Map.Entry>) backupMap.entrySet()) {
                 Object original = entry.getKey();
                 ClassDescriptor descriptor = dbs.getDescriptor(original);
-                if(!descriptor.isAggregateDescriptor()) {
+                if (!descriptor.isAggregateDescriptor()) {
                     Object backup = entry.getValue();
-                    if(original == backup) {
+                    if (original == backup) {
                         fail("Test problem: backup failed: original == backup: " + original);
                     }
                     if (!dbs.compareObjects(original, backup)) {
@@ -10369,15 +10360,15 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             commitTransaction(em);
 
             String errorMsg = "";
-            if(errorMsgOldValues.length() > 0) {
+            if(!errorMsgOldValues.isEmpty()) {
                 errorMsgOldValues.insert(0, "Some old values and back up objects are not equal:\n");
                 errorMsg += errorMsgOldValues;
             }
-            if(errorMsgDb.length() > 0) {
+            if(!errorMsgDb.isEmpty()) {
                 errorMsgDb.insert(0, "\nSome values were incorrectly written into the db:\n");
                 errorMsg += errorMsgDb;
             }
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 fail(errorMsg);
             }
         } finally {
@@ -10727,8 +10718,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         List<SessionEventListener> list = new ArrayList();
         List<SessionEventListener> allListeners = session.getEventManager().getListeners();
         int nListeners = allListeners.size();
-        for (int i=0; i<nListeners; i++) {
-            SessionEventListener listener = allListeners.get(i);
+        for (SessionEventListener listener : allListeners) {
             if (listener instanceof CompositeEventListener) {
                 list.add(listener);
             } else if ("MemberEventListener".equals(listener.getClass().getSimpleName())) {

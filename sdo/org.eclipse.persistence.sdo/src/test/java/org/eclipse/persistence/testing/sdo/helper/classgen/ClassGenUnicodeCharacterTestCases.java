@@ -17,7 +17,7 @@ import static org.eclipse.persistence.sdo.SDOConstants.EMPTY_STRING;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,19 +67,19 @@ public class ClassGenUnicodeCharacterTestCases extends SDOClassGenTestCases {
 
     @Override
     public String getSchema(InputStream is, String fileName) {
-        String xsdSchema = EMPTY_STRING;
+        StringBuilder xsdSchema = new StringBuilder(EMPTY_STRING);
         try {
-            InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
+            InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(isr);
             String nextLine = reader.readLine();
             while(nextLine != null) {
-                xsdSchema += nextLine;
+                xsdSchema.append(nextLine);
                 nextLine = reader.readLine();
             }
-            log(xsdSchema);
-            return xsdSchema;
+            log(xsdSchema.toString());
+            return xsdSchema.toString();
         } catch (Exception e) {
-            log(getClass().toString() + ": Reading error for : " + fileName + " message: " + e.getClass() + " " + e.getMessage());
+            log(getClass() + ": Reading error for : " + fileName + " message: " + e.getClass() + " " + e.getMessage());
         } finally {
             try {
                 if (null != is) {
@@ -89,7 +89,7 @@ public class ClassGenUnicodeCharacterTestCases extends SDOClassGenTestCases {
                 e2.printStackTrace();
             }
         }
-        return xsdSchema;
+        return xsdSchema.toString();
     }
 
 }

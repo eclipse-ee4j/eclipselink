@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ public class IntegrityCheckerTest extends AutoVerifyTestCase {
             ds.login();
         } catch (IntegrityException ic) {
             if (ic.getIntegrityChecker().getCaughtExceptions().size() != 15) {
-                throw new TestErrorException("" + ic.getIntegrityChecker().getCaughtExceptions().size() + "  Not equal to the Number of Exceptions to the excepted 15.");
+                throw new TestErrorException(ic.getIntegrityChecker().getCaughtExceptions().size() + "  Not equal to the Number of Exceptions to the excepted 15.");
             }
             didErrorOccur = true;
         } finally {

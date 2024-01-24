@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -425,7 +425,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         List result = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
         commitTransaction(em);
         Object obj = getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(result.get(0));
-        assertTrue("Failed to load the object into the shared cache when there were no changes in the UOW", obj != null);
+        assertNotNull("Failed to load the object into the shared cache when there were no changes in the UOW", obj);
         try{
             beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
@@ -596,7 +596,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 fail("Failed to flush to database");
             }
             em.refresh(emp);
-            assertTrue("Failed to flush to Database", emp.getSalary() == 100);
+            assertEquals("Failed to flush to Database", 100, emp.getSalary());
             em.remove(emp);
             commitTransaction(em);
         }catch(RuntimeException ex){
@@ -651,13 +651,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 em.clear(); //prevent the flush again
                 try {
                     String eName = (String)em.createQuery("SELECT e.firstName FROM Employee e where e.id = " + emp2.getId()).getSingleResult();
-                    assertTrue("Failed to keep txn open for set RollbackOnly", eName.equals(newName));
+                    assertEquals("Failed to keep txn open for set RollbackOnly", eName, newName);
                 } catch (Exception ignore) {}
             }
         }
         try {
             if (isOnServer()) {
-                assertTrue("Failed to mark txn rollback only", !isTransactionActive(em));
+                assertFalse("Failed to mark txn rollback only", isTransactionActive(em));
             } else {
                 assertTrue("Failed to mark txn rollback only", em.getTransaction().getRollbackOnly());
             }
@@ -775,16 +775,16 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
 
         String errorMsg = "";
-        if(noException.length() > 0) {
+        if(!noException.isEmpty()) {
             errorMsg = "No exception thrown: " + noException;
         }
-        if(wrongException.length() > 0) {
-            if(errorMsg.length() > 0) {
+        if(!wrongException.isEmpty()) {
+            if(!errorMsg.isEmpty()) {
                 errorMsg = errorMsg + " ";
             }
             errorMsg = errorMsg + "Wrong exception thrown: " + wrongException;
         }
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -863,13 +863,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             List<Employee> emps = empQuery.getResultList();
 
             List phones = phoneQuery.getResultList();
-            for (Iterator iterator = phones.iterator(); iterator.hasNext();){
-                em.remove(iterator.next());
+            for (Object o : phones) {
+                em.remove(o);
             }
             em.flush();
 
-            for (Iterator<Employee> iterator = emps.iterator(); iterator.hasNext();){
-                em.remove(iterator.next());
+            for (Employee employee : emps) {
+                em.remove(employee);
             }
         }catch (RuntimeException ex){
             rollbackTransaction(em);
@@ -887,11 +887,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 empQuery = em.createQuery("Select e FROM Employee e where e.lastName like 'Dow%'");
                 List<Employee> emps =  empQuery.getResultList();
                 List phones = phoneQuery.getResultList();
-                for (Iterator iterator = phones.iterator(); iterator.hasNext();){
-                    em.remove(iterator.next());
+                for (Object phone : phones) {
+                    em.remove(phone);
                 }
-                for (Iterator<Employee> iterator = emps.iterator(); iterator.hasNext();){
-                    em.remove(iterator.next());
+                for (Employee emp : emps) {
+                    em.remove(emp);
                 }
                 commitTransaction(em);
             }catch (RuntimeException re){
@@ -1014,7 +1014,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             throw ex;
         }
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         for (int i=0; i < 32; i++) {
             int j = i;
             boolean doRollback = j % 2 == 0;
@@ -1106,7 +1106,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     }
 
                     List resultList = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
-                    employeeExists = resultList.size() > 0;
+                    employeeExists = !resultList.isEmpty();
 
                     if(employeeShouldExist) {
                         if(resultList.size() > 1) {
@@ -1116,7 +1116,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                             localErrorMsg = localErrorMsg + " employeeReadFromDB == null;";
                         }
                     } else {
-                        if(resultList.size() > 0) {
+                        if(!resultList.isEmpty()) {
                             localErrorMsg = localErrorMsg + " employeeReadFromDB != null;";
                         }
                     }
@@ -1147,11 +1147,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             }
 
             if(!msg.equals(localErrorMsg)) {
-                errorMsg = errorMsg + "i="+ i +": "+ localErrorMsg + " ";
+                errorMsg.append("i=").append(i).append(": ").append(localErrorMsg).append(" ");
             }
         }
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -1541,7 +1541,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         emp = em.find(Employee.class, emp.getId());
         closeEntityManager(em);
         assertTrue("EntityManager not properly cleared", cleared);
-        assertTrue("Employee was updated although EM was cleared", emp.getFirstName().equals(originalName));
+        assertEquals("Employee was updated although EM was cleared", emp.getFirstName(), originalName);
     }
 
     public void testExtendedPersistenceContext() {
@@ -1947,7 +1947,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             } else {
                 nUpdated = em.createNativeQuery("UPDATE CMP3_FA_EMPLOYEE SET L_NAME = '" + lastNameNew + "', VERSION = VERSION + 1 WHERE F_NAME LIKE '" + firstName + "'").setFlushMode(FlushModeType.AUTO).executeUpdate();
             }
-            assertTrue("nUpdated=="+ nUpdated +"; 1 was expected", nUpdated == 1);
+            assertEquals("nUpdated==" + nUpdated + "; 1 was expected", 1, nUpdated);
 
             if(shouldFlush) {
                 selectQuery.setFlushMode(FlushModeType.AUTO);
@@ -1962,12 +1962,12 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             } else {
                 employeeUOW = (Employee)selectQuery.getSingleResult();
             }
-            assertTrue("employeeUOW.getLastName()=="+ employeeUOW.getLastName() +"; " + lastNameNew + " was expected", employeeUOW.getLastName().equals(lastNameNew));
+            assertEquals("employeeUOW.getLastName()==" + employeeUOW.getLastName() + "; " + lastNameNew + " was expected", employeeUOW.getLastName(), lastNameNew);
 
             employeeUOW.setSalary(salaryNew);
 
             employeeUOW = (Employee)selectQuery.getSingleResult();
-            assertTrue("employeeUOW.getSalary()=="+ employeeUOW.getSalary() +"; " + salaryNew + " was expected", employeeUOW.getSalary() == salaryNew);
+            assertEquals("employeeUOW.getSalary()==" + employeeUOW.getSalary() + "; " + salaryNew + " was expected", employeeUOW.getSalary(), salaryNew);
 
             commitTransaction(em);
         }catch (Throwable ex){
@@ -1983,8 +1983,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
 
         Employee employeeFoundAfterTransaction = em.find(Employee.class, employeeUOW.getId());
-        assertTrue("employeeFoundAfterTransaction().getLastName()=="+ employeeFoundAfterTransaction.getLastName() +"; " + lastNameNew + " was expected", employeeFoundAfterTransaction.getLastName().equals(lastNameNew));
-        assertTrue("employeeFoundAfterTransaction().getSalary()=="+ employeeFoundAfterTransaction.getSalary() +"; " + salaryNew + " was expected", employeeFoundAfterTransaction.getSalary() == salaryNew);
+        assertEquals("employeeFoundAfterTransaction().getLastName()==" + employeeFoundAfterTransaction.getLastName() + "; " + lastNameNew + " was expected", employeeFoundAfterTransaction.getLastName(), lastNameNew);
+        assertEquals("employeeFoundAfterTransaction().getSalary()==" + employeeFoundAfterTransaction.getSalary() + "; " + salaryNew + " was expected", employeeFoundAfterTransaction.getSalary(), salaryNew);
 
         // clean up
         beginTransaction(em);
@@ -2510,7 +2510,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         // cache usage
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-        assertTrue("Cache usage not set.", olrQuery.getCacheUsage()==ObjectLevelReadQuery.DoNotCheckCache);
+        assertEquals("Cache usage not set.", ObjectLevelReadQuery.DoNotCheckCache, olrQuery.getCacheUsage());
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
         assertTrue("Cache usage not set.", olrQuery.shouldCheckCacheOnly());
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.ConformResultsInUnitOfWork);
@@ -2521,14 +2521,14 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         // pessimistic lock
         query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.LOCK);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.LOCK, olrQuery.getLockMode());
         query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.NoLock);
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.NO_LOCK);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.NO_LOCK, olrQuery.getLockMode());
         query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.LockNoWait);
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.LOCK_NOWAIT);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.LOCK_NOWAIT, olrQuery.getLockMode());
         // default state
         query.setHint(QueryHints.PESSIMISTIC_LOCK, "");
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.NO_LOCK);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.NO_LOCK, olrQuery.getLockMode());
 
         //refresh
         // set to original state - don't refresh.
@@ -2560,29 +2560,29 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         assertFalse("Read-only not set.", olrQuery.isReadOnly());
 
         query.setHint(QueryHints.JDBC_TIMEOUT, 100);
-        assertTrue("Timeout not set.", olrQuery.getQueryTimeout() == 100);
+        assertEquals("Timeout not set.", 100, olrQuery.getQueryTimeout());
         query.setHint(QueryHints.JDBC_FETCH_SIZE, 101);
-        assertTrue("Fetch-size not set.", olrQuery.getFetchSize() == 101);
+        assertEquals("Fetch-size not set.", 101, olrQuery.getFetchSize());
 
         query.setHint(QueryHints.JDBC_MAX_ROWS, 103);
-        assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103);
+        assertEquals("Max-rows not set.", 103, olrQuery.getMaxRows());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.NoCascading);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.NoCascading);
+        assertEquals(DatabaseQuery.NoCascading, olrQuery.getCascadePolicy());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
+        assertEquals(DatabaseQuery.CascadeByMapping, olrQuery.getCascadePolicy());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeAllParts);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeAllParts);
+        assertEquals(DatabaseQuery.CascadeAllParts, olrQuery.getCascadePolicy());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadePrivateParts);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadePrivateParts);
+        assertEquals(DatabaseQuery.CascadePrivateParts, olrQuery.getCascadePolicy());
         // reset to the original state
         query.setHint(QueryHints.REFRESH_CASCADE, "");
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
+        assertEquals(DatabaseQuery.CascadeByMapping, olrQuery.getCascadePolicy());
 
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, java.util.ArrayList.class);
-        assertTrue("ArrayList not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.ArrayList.class.getName()));
+        assertEquals("ArrayList not set.", ((ReadAllQuery) olrQuery).getContainerPolicy().getContainerClassName(), ArrayList.class.getName());
 
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "java.util.Vector");
-        assertTrue("Vector not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.Vector.class.getName()));
+        assertEquals("Vector not set.", ((ReadAllQuery) olrQuery).getContainerPolicy().getContainerClassName(), Vector.class.getName());
 
         closeEntityManager(em);
     }
@@ -2597,10 +2597,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
 
         //testing for query timeout specified in persistence.xml
-        assertTrue("Timeout overriden or not set in persistence.xml", olrQuery.getQueryTimeout() == 100000);
+        assertEquals("Timeout overriden or not set in persistence.xml", 100000, olrQuery.getQueryTimeout());
         query.setHint(QueryHints.JDBC_TIMEOUT, 500000);
         olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
-        assertTrue(olrQuery.getQueryTimeout() == 500000);
+        assertEquals(500000, olrQuery.getQueryTimeout());
 
         closeEntityManager(em);
 
@@ -2662,13 +2662,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List<Expression> expressions = raq.getBatchReadAttributeExpressions();
-        assertTrue(expressions.size() == 2);
+        assertEquals(2, expressions.size());
         Expression exp = expressions.get(0);
         assertTrue(exp.isQueryKeyExpression());
-        assertTrue(exp.getName().equals("phoneNumbers"));
+        assertEquals("phoneNumbers", exp.getName());
         exp = expressions.get(1);
         assertTrue(exp.isQueryKeyExpression());
-        assertTrue(exp.getName().equals("phoneNumbers"));
+        assertEquals("phoneNumbers", exp.getName());
 
         List resultList = query.getResultList();
         emp = (Employee)resultList.get(0);
@@ -2746,11 +2746,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         query.setHint(QueryHints.FETCH, "e.manager");
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getJoinedAttributeExpressions();
-        assertTrue(expressions.size() == 1);
+        assertEquals(1, expressions.size());
         Expression exp = (Expression)expressions.get(0);
-        assertTrue(exp.getName().equals("manager"));
+        assertEquals("manager", exp.getName());
         query.setHint(QueryHints.FETCH, "e.manager.phoneNumbers");
-        assertTrue(expressions.size() == 2);
+        assertEquals(2, expressions.size());
 
         List resultList = query.getResultList();
         emp = (Employee)resultList.get(0);
@@ -2783,7 +2783,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect BATCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS, exception.getErrorCode());
         exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
@@ -2793,7 +2793,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect BATCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP, exception.getErrorCode());
 
         exception = null;
         try{
@@ -2804,7 +2804,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown when an incorrect relationship was navigated in a BATCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP, exception.getErrorCode());
 
         exception = null;
         try{
@@ -2815,7 +2815,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect FETCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS, exception.getErrorCode());
 
         exception = null;
         try{
@@ -2826,7 +2826,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect FETCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP, exception.getErrorCode());
 
         exception = null;
         try{
@@ -2837,7 +2837,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown when an incorrect relationship was navigated in a FETCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP, exception.getErrorCode());
 
     }
 
@@ -2929,10 +2929,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             if (e.getErrorCode() == ValidationException.INSTANTIATING_VALUEHOLDER_WITH_NULL_SESSION){
                 exception = e;
             } else {
-                fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e.toString());
+                fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e);
             }
         } catch (Exception e){
-            fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e.toString());
+            fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e);
         }
 
         // Only throw error if weaving was used.
@@ -3338,19 +3338,19 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         try {
             Project mp1 = em.merge(p1); // cascade merge
             assertTrue(em.contains(mp1));
-            assertTrue("Managed instance and detached instance must not be same", mp1 != p1);
+            assertNotSame("Managed instance and detached instance must not be same", mp1, p1);
 
             Employee me1 = mp1.getTeamLeader();
             assertTrue("Cascade merge failed", em.contains(me1));
-            assertTrue("Managed instance and detached instance must not be same", me1 != e1);
+            assertNotSame("Managed instance and detached instance must not be same", me1, e1);
 
             Employee me2 = me1.getManagedEmployees().iterator().next();
             assertTrue("Cascade merge failed", em.contains(me2));
-            assertTrue("Managed instance and detached instance must not be same", me2 != e2);
+            assertNotSame("Managed instance and detached instance must not be same", me2, e2);
 
             Project mp2 = me2.getProjects().iterator().next();
             assertTrue("Cascade merge failed", em.contains(mp2));
-            assertTrue("Managed instance and detached instance must not be same", mp2 != p2);
+            assertNotSame("Managed instance and detached instance must not be same", mp2, p2);
 
             commitTransaction(em);
         } catch (Throwable exception){
@@ -3399,7 +3399,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         try {
             Project mp1 = em.merge(p1);
             assertTrue(em.contains(mp1));
-            assertTrue("Managed instance and detached instance must not be same", mp1 != p1);
+            assertNotSame("Managed instance and detached instance must not be same", mp1, p1);
 
             //p1 -> e1 (one-to-one)
             mp1.setTeamLeader(e1);
@@ -3407,7 +3407,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             Employee me1 = mp1.getTeamLeader();
             assertTrue("Cascade merge failed", em.contains(me1));
-            assertTrue("Managed instance and detached instance must not be same", me1 != e1);
+            assertNotSame("Managed instance and detached instance must not be same", me1, e1);
 
             //e1 -> e2 (one-to-many)
             me1.addManagedEmployee(e2);
@@ -3415,7 +3415,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             Employee me2 = me1.getManagedEmployees().iterator().next();
             assertTrue("Cascade merge failed", em.contains(me2));
-            assertTrue("Managed instance and detached instance must not be same", me2 != e2);
+            assertNotSame("Managed instance and detached instance must not be same", me2, e2);
 
             //e2 -> p2 (many-to-many)
             me2.addProject(p2);
@@ -3424,7 +3424,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             Project mp2 = me2.getProjects().iterator().next();
             assertTrue("Cascade merge failed", em.contains(mp2));
-            assertTrue("Managed instance and detached instance must not be same", mp2 != p2);
+            assertNotSame("Managed instance and detached instance must not be same", mp2, p2);
 
             commitTransaction(em);
         } catch (Throwable exception){
@@ -3504,8 +3504,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             employee = em.find(Employee.class, id);
             address = employee.getAddress();
 
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Shawshank"));
+            assertNotNull("The address was not persisted.", employee.getAddress());
+            assertEquals("The address was not correctly persisted.", "Shawshank", employee.getAddress().getCity());
         } finally {
             employee.setAddress(null);
             em.remove(address);
@@ -3561,8 +3561,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             employee = em.find(Employee.class, id);
             address = employee.getAddress();
 
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+            assertNotNull("The address was not persisted.", employee.getAddress());
+            assertEquals("The address was not correctly persisted.", "Metropolis", employee.getAddress().getCity());
         } finally {
             Address initialAddress = em.find(Address.class, addressId);
             employee.setAddress(null);
@@ -3622,8 +3622,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             employee = em.find(Employee.class, id);
             address = employee.getAddress();
 
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+            assertNotNull("The address was not persisted.", employee.getAddress());
+            assertEquals("The address was not correctly persisted.", "Metropolis", employee.getAddress().getCity());
         } finally {
             Address initialAddress = em.find(Address.class, addressId);
             employee.setAddress(null);
@@ -3684,8 +3684,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             employee = em.find(Employee.class, id);
             address = employee.getAddress();
 
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+            assertNotNull("The address was not persisted.", employee.getAddress());
+            assertEquals("The address was not correctly persisted.", "Metropolis", employee.getAddress().getCity());
 
         } finally {
             Address initialAddress = em.find(Address.class, addressId);
@@ -3948,17 +3948,17 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         if(n != nReadBack) {
             error = " n = "+n+", but nReadBack ="+nReadBack+";";
         }
-        for(int i=0; i<nReadBack; i++) {
-            Employee emp = (Employee)result.get(i);
-            if(emp.getAddress() != null) {
-                error = " Employee "+emp.getLastName()+" still has address;";
+        for (Object o : result) {
+            Employee emp = (Employee) o;
+            if (emp.getAddress() != null) {
+                error = " Employee " + emp.getLastName() + " still has address;";
             }
             int ind = Integer.parseInt(emp.getLastName());
-            if(emp.getSalary() != ind) {
-                error = " Employee "+emp.getLastName()+" has wrong salary "+emp.getSalary()+";";
+            if (emp.getSalary() != ind) {
+                error = " Employee " + emp.getLastName() + " has wrong salary " + emp.getSalary() + ";";
             }
-            if(emp.getRoomNumber() != ind*100) {
-                error = " Employee "+emp.getLastName()+" has wrong roomNumber "+emp.getRoomNumber()+";";
+            if (emp.getRoomNumber() != ind * 100) {
+                error = " Employee " + emp.getLastName() + " has wrong roomNumber " + emp.getRoomNumber() + ";";
             }
         }
 
@@ -4071,8 +4071,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             EntityManager em = createEntityManager();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
             map = new HashMap(projects.size());
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
+            for (Object o : projects) {
+                Project p = (Project) o;
                 map.put(p.getId(), p.getName());
             }
 
@@ -4092,25 +4092,25 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             // verify
             em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
+            for (Object project : projects) {
+                Project p = (Project) project;
                 String readName = p.getName();
-                if(cls.isInstance(p)) {
-                    if(!newName.equals(readName)) {
-                        errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                if (cls.isInstance(p)) {
+                    if (!newName.equals(readName)) {
+                        errorMsg.append("haven't updated name: ").append(p).append("; ");
                     }
                 } else {
-                    if(newName.equals(readName)) {
-                        errorMsg = errorMsg + "have updated name: " + p + "; ";
+                    if (newName.equals(readName)) {
+                        errorMsg.append("have updated name: ").append(p).append("; ");
                     }
                 }
             }
             closeEntityManager(em);
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             } else {
                 ok = true;
             }
@@ -4122,9 +4122,9 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     beginTransaction(em);
                     List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
                     try {
-                        for(int i=0; i<projects.size(); i++) {
-                            Project p = (Project)projects.get(i);
-                            String oldName = (String)map.get(((Project)projects.get(i)).getId());
+                        for (Object project : projects) {
+                            Project p = (Project) project;
+                            String oldName = (String) map.get(((Project) project).getId());
                             p.setName(oldName);
                         }
                         commitTransaction(em);
@@ -4193,25 +4193,25 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             // verify
             em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
+            for (Object project : projects) {
+                Project p = (Project) project;
                 String readName = p.getName();
-                if(cls.isInstance(p)) {
-                    if(!readName.equals(newName)) {
-                        errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                if (cls.isInstance(p)) {
+                    if (!readName.equals(newName)) {
+                        errorMsg.append("haven't updated name: ").append(p).append("; ");
                     }
                 } else {
-                    if(readName.equals(newName)) {
-                        errorMsg = errorMsg + "have updated name: " + p + "; ";
+                    if (readName.equals(newName)) {
+                        errorMsg.append("have updated name: ").append(p).append("; ");
                     }
                 }
             }
             closeEntityManager(em);
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             } else {
                 ok = true;
             }
@@ -4259,7 +4259,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             EntityManager em = createEntityManager();
             Employee emp = null;
             List employees = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
-            if(employees.size() > 0) {
+            if(!employees.isEmpty()) {
                 emp = (Employee)employees.get(0);
             } else {
                 beginTransaction(em);
@@ -4299,25 +4299,25 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             // verify
             em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
+            for (Object project : projects) {
+                Project p = (Project) project;
                 String readName = p.getName();
-                if(cls.isInstance(p) && p.getTeamLeader()==null) {
-                    if(!readName.equals(newName)) {
-                        errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                if (cls.isInstance(p) && p.getTeamLeader() == null) {
+                    if (!readName.equals(newName)) {
+                        errorMsg.append("haven't updated name: ").append(p).append("; ");
                     }
                 } else {
-                    if(readName.equals(newName)) {
-                        errorMsg = errorMsg + "have updated name: " + p + "; ";
+                    if (readName.equals(newName)) {
+                        errorMsg.append("have updated name: ").append(p).append("; ");
                     }
                 }
             }
             closeEntityManager(em);
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             } else {
                 ok = true;
             }
@@ -4437,7 +4437,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             errorMsg = errorMsg + "; em.lock() threw wrong exception: " + ex.getMessage();
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -4584,10 +4584,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", lastNameToUse).getResultList();
 
-            assertTrue(results.size() == 1);
+            assertEquals(1, results.size());
             emp = (Employee)results.get(0);
-            assertTrue(emp.getFirstName().equals("Melvin"));
-            assertTrue(emp.getLastName().equals(lastNameToUse));
+            assertEquals("Melvin", emp.getFirstName());
+            assertEquals(emp.getLastName(), lastNameToUse);
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -4629,10 +4629,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", "Malone").getResultList();
 
-            assertTrue(results.size() == 1);
+            assertEquals(1, results.size());
             emp = (Employee)results.get(0);
-            assertTrue(emp.getFirstName().equals("Melvin"));
-            assertTrue(emp.getLastName().equals("Malone"));
+            assertEquals("Melvin", emp.getFirstName());
+            assertEquals("Malone", emp.getLastName());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -5106,17 +5106,15 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             Map backupMap = copyGroupBackup.getCopies();
 
             // verify that backup objects are identical to originals
-            Iterator<Map.Entry> it = backupMap.entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry entry = it.next();
+            for (Map.Entry entry : (Iterable<Map.Entry>) backupMap.entrySet()) {
                 Object original = entry.getKey();
                 ClassDescriptor descriptor = session.getDescriptor(original);
-                if(!descriptor.isAggregateDescriptor()) {
+                if (!descriptor.isAggregateDescriptor()) {
                     Object backup = entry.getValue();
-                    if(original == backup) {
+                    if (original == backup) {
                         fail("Test problem: backup failed: original == backup: " + original);
                     }
-                    if(!session.compareObjects(original, backup)) {
+                    if (!session.compareObjects(original, backup)) {
                         fail("Test problem: backup failed: compareObjects(original, backup) == false: " + original + "; " + backup);
                     }
                 }
@@ -5284,7 +5282,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 }
             }
 
-            String errorMsgOldValues = "";
+            StringBuilder errorMsgOldValues = new StringBuilder();
             // now compare oldValue objects with corresponding backup objects
             itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
             while(itChangeSets.hasNext()) {
@@ -5300,7 +5298,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                             Object backupObject = backupMap.get(object);
                             // compare oldValue with backup object
                             if ((oldValueObject != null) && !session.compareObjects(oldValueObject, backupObject)) {
-                                errorMsgOldValues += '\t' + object.toString() + '\n';
+                                errorMsgOldValues.append('\t').append(object.toString()).append('\n');
                             }
                         }
                     }
@@ -5317,7 +5315,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             }
 
             // verify that the objects were correctly written to the db
-            String errorMsgDb = "";
+            StringBuilder errorMsgDb = new StringBuilder();
             clearCache();
             Map updatedToReadBack = new HashMap();
             EntityManager em2 = createEntityManager();
@@ -5342,7 +5340,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 Object object = entry.getKey();
                 Object readBack = entry.getValue();
                 if(!session.compareObjects(object, readBack)) {
-                    errorMsgDb += '\t' + object.toString() + '\n';
+                    errorMsgDb.append('\t').append(object.toString()).append('\n');
                 }
             }
             rollbackTransaction(em2);
@@ -5374,14 +5372,14 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             String errorMsg = "";
             if(errorMsgOldValues.length() > 0) {
-                errorMsgOldValues = "Some old values and back up objects are not equal:\n" + errorMsgOldValues;
+                errorMsgOldValues.insert(0, "Some old values and back up objects are not equal:\n");
                 errorMsg += errorMsgOldValues;
             }
             if(errorMsgDb.length() > 0) {
-                errorMsgDb = "\nSome values were incorrectly written into the db:\n" + errorMsgDb;
+                errorMsgDb.insert(0, "\nSome values were incorrectly written into the db:\n");
                 errorMsg += errorMsgDb;
             }
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 fail(errorMsg);
             }
         } finally {
@@ -5425,7 +5423,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
 
-        assertTrue("Wrong emp.getPeriod() inserted into db", emp.getPeriod().equals(empRead.getPeriod()));
+        assertEquals("Wrong emp.getPeriod() inserted into db", emp.getPeriod(), empRead.getPeriod());
     }
 
     //  Bug 307433 - Regression in Auditing Support when using defaults.
@@ -5458,7 +5456,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
 
-        assertTrue("Wrong emp.getFormerEmployment().getPeriod() inserted into db", emp.getFormerEmployment().getPeriod().equals(empRead.getFormerEmployment().getPeriod()));
+        assertEquals("Wrong emp.getFormerEmployment().getPeriod() inserted into db", emp.getFormerEmployment().getPeriod(), empRead.getFormerEmployment().getPeriod());
     }
 
     //  Bug 336280 - Same object referenced from both EM cache and shared cache
@@ -5491,7 +5489,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         // originalObjects should consist of just three objects: emp, emp1, emp2.
         // However if manager_vh is wrapped around manager instance from the shared cache (empShared),
         // the size will be 6: emp, emp1, emp2 and empShared, emp1Shared, emp2Shared.
-        assertTrue(originalObjects.size() == 3);
+        assertEquals(3, originalObjects.size());
     }
 
     //  Bug 336280 - Same object referenced from both EM cache and shared cache
@@ -5514,9 +5512,9 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         // using query by example read empShared corresponding to emp in ghe share cache
         Employee empShared = (Employee)ss.readObject(emp);
         // these are really to distinct objects
-        assertTrue(emp != empShared);
+        assertNotSame(emp, empShared);
         // they should not share the aggragate
-        assertTrue(emp.getPeriod() != empShared.getPeriod());
+        assertNotSame(emp.getPeriod(), empShared.getPeriod());
     }
 
     public void testCharFieldDefaultNullValue() {

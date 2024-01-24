@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewCache;
+
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.SCHEMA_IF_NEEDED;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.printTypeWithLength;
 
@@ -138,11 +136,11 @@ public class SqlType extends TypeClass {
         Map<String, String> h = (Map<String, String>)getAnnotation();
         List<String> v = getNamedTranslations();
         if (h == null) {
-            h = new HashMap<String, String>();
+            h = new HashMap<>();
             setAnnotation(h);
         }
         if (v == null) {
-            v = new ArrayList<String>();
+            v = new ArrayList<>();
             setNamedTranslations(v);
         }
         Object old = h.put(dbField, javaField);
@@ -207,12 +205,12 @@ public class SqlType extends TypeClass {
 
     boolean dependsOn(SqlType t) {
         if (m_dependTypes == null) {
-            m_dependTypes = new ArrayList<SqlType>();
+            m_dependTypes = new ArrayList<>();
             if (isPlsqlRecord() || this instanceof DefaultArgsHolderType) {
                 try {
                     List<AttributeField> fields = getDeclaredFields(true);
-                    for (int i = 0; i < fields.size(); i++) {
-                        SqlType st = (SqlType)fields.get(i).getType();
+                    for (AttributeField field : fields) {
+                        SqlType st = (SqlType) field.getType();
                         if (st.isPlsqlRecord() || st.isPlsqlTable()) {
                             m_dependTypes.add(st);
                         }
@@ -237,8 +235,8 @@ public class SqlType extends TypeClass {
         if (m_dependTypes.contains(t)) {
             return true;
         }
-        for (int i = 0; i < m_dependTypes.size(); i++) {
-            if (m_dependTypes.get(i).dependsOn(t)) {
+        for (SqlType mDependType : m_dependTypes) {
+            if (mDependType.dependsOn(t)) {
                 return true;
             }
         }
@@ -326,37 +324,36 @@ public class SqlType extends TypeClass {
 
     // SQL declaration of the generated SQL types
     public String getSqlTypeDecl() throws SQLException, PublisherException {
-        String sqlTypeDecl = "";
+        StringBuilder sqlTypeDecl = new StringBuilder();
         if (isPlsqlRecord() && !getSqlName().isReused()) {
-            sqlTypeDecl += "CREATE OR REPLACE TYPE " + getTargetTypeName() + " AS OBJECT (\n";
+            sqlTypeDecl.append("CREATE OR REPLACE TYPE ").append(getTargetTypeName()).append(" AS OBJECT (\n");
             List<AttributeField> fields = this.getFields(true);
             for (int i = 0; i < fields.size(); i++) {
                 if (i != 0) {
-                    sqlTypeDecl += ",\n";
+                    sqlTypeDecl.append(",\n");
                 }
-                sqlTypeDecl += "      " + Util.unreserveSql(fields.get(i).getName()) + " ";
-                sqlTypeDecl += fields.get(i).printTypeWithLength(SCHEMA_IF_NEEDED);
+                sqlTypeDecl.append("      ").append(Util.unreserveSql(fields.get(i).getName())).append(" ");
+                sqlTypeDecl.append(fields.get(i).printTypeWithLength(SCHEMA_IF_NEEDED));
             }
-            sqlTypeDecl += "\n);";
+            sqlTypeDecl.append("\n);");
         }
         else if (isPlsqlTable() && !getSqlName().isReused()) {
             PlsqlTableType plType = (PlsqlTableType)this;
             SqlType eleType = (SqlType)plType.getComponentType();
-            sqlTypeDecl += "CREATE OR REPLACE TYPE " + getTargetTypeName();
-            sqlTypeDecl += " AS TABLE OF ";
-            sqlTypeDecl += printTypeWithLength(eleType.getTargetTypeName(SCHEMA_IF_NEEDED), plType
-                .getElemTypeLength(), plType.getElemTypePrecision(), plType.getElemTypeScale());
-            sqlTypeDecl += ";";
+            sqlTypeDecl.append("CREATE OR REPLACE TYPE ").append(getTargetTypeName());
+            sqlTypeDecl.append(" AS TABLE OF ");
+            sqlTypeDecl.append(printTypeWithLength(eleType.getTargetTypeName(SCHEMA_IF_NEEDED), plType
+                    .getElemTypeLength(), plType.getElemTypePrecision(), plType.getElemTypeScale()));
+            sqlTypeDecl.append(";");
         }
-        else if ((this instanceof DefaultArgsHolderType) && !getSqlName().isReused()) {
-            DefaultArgsHolderType holder = (DefaultArgsHolderType)this;
-            sqlTypeDecl += "CREATE OR REPLACE TYPE " + getTypeName() + " AS OBJECT (\n";
+        else if ((this instanceof DefaultArgsHolderType holder) && !getSqlName().isReused()) {
+            sqlTypeDecl.append("CREATE OR REPLACE TYPE ").append(getTypeName()).append(" AS OBJECT (\n");
             AttributeField vfield = holder.getFields(false).get(0);
-            sqlTypeDecl += "      " + vfield.getName() + " ";
-            sqlTypeDecl += vfield.printTypeWithLength();
-            sqlTypeDecl += "\n);";
+            sqlTypeDecl.append("      ").append(vfield.getName()).append(" ");
+            sqlTypeDecl.append(vfield.printTypeWithLength());
+            sqlTypeDecl.append("\n);");
         }
-        return sqlTypeDecl;
+        return sqlTypeDecl.toString();
     }
 
     // Drop the generated SQL type
@@ -372,33 +369,28 @@ public class SqlType extends TypeClass {
         if (!hasConversion()) {
             return "";
         }
-        String sqlConvPkgDecl = "";
+        StringBuilder sqlConvPkgDecl = new StringBuilder();
 
         // If this type is a ROWTYPE, then redefine it as a normal PL/SQL record
         if (getSqlName().isRowType()) {
-            sqlConvPkgDecl += "\t-- Redefine a PL/SQL RECORD type originally defined via CURSOR%ROWTYPE"
-                + "\n";
-            sqlConvPkgDecl += "\tTYPE " + getTypeName() + " IS RECORD (\n";
+            sqlConvPkgDecl.append("\t-- Redefine a PL/SQL RECORD type originally defined via CURSOR%ROWTYPE" + "\n");
+            sqlConvPkgDecl.append("\tTYPE ").append(getTypeName()).append(" IS RECORD (\n");
             List<AttributeField> fields = this.getFields(true);
             for (int i = 0; i < fields.size(); i++) {
                 if (i != 0) {
-                    sqlConvPkgDecl += ",\n";
+                    sqlConvPkgDecl.append(",\n");
                 }
-                sqlConvPkgDecl += "\t\t" + fields.get(i).getName() + " "
-                    + fields.get(i).printTypeWithLength();
+                sqlConvPkgDecl.append("\t\t").append(fields.get(i).getName()).append(" ").append(fields.get(i).printTypeWithLength());
             }
-            sqlConvPkgDecl += ");";
+            sqlConvPkgDecl.append(");");
         }
 
         // PL/SQL to SQL
-        sqlConvPkgDecl += "\t-- Declare the conversion functions the PL/SQL type " + getTypeName()
-            + "\n" + "\tFUNCTION " + getOutOfConversion() + "(aPlsqlItem " + getTypeName() + ")\n"
-            + " \tRETURN " + getTargetTypeName() + ";\n";
+        sqlConvPkgDecl.append("\t-- Declare the conversion functions the PL/SQL type ").append(getTypeName()).append("\n").append("\tFUNCTION ").append(getOutOfConversion()).append("(aPlsqlItem ").append(getTypeName()).append(")\n").append(" \tRETURN ").append(getTargetTypeName()).append(";\n");
 
         // SQL to PL/SQL
-        sqlConvPkgDecl += "\tFUNCTION " + getIntoConversion() + "(aSqlItem " + getTargetTypeName()
-            + ")\n" + "\tRETURN " + getTypeName() + ";";
-        return sqlConvPkgDecl;
+        sqlConvPkgDecl.append("\tFUNCTION ").append(getIntoConversion()).append("(aSqlItem ").append(getTargetTypeName()).append(")\n").append("\tRETURN ").append(getTypeName()).append(";");
+        return sqlConvPkgDecl.toString();
     }
 
     // PL/SQL package body for conversion functions between SQL and PL/SQL
@@ -441,17 +433,12 @@ public class SqlType extends TypeClass {
             return formatPrefix + maybePlsql + "." + getName() + " := " + maybeSql + getName()
                 + ";\n";
         }
-        String stmts = "";
+        StringBuilder stmts = new StringBuilder();
         if (isPlsqlRecord()) {
             List<AttributeField> fields = getFields(true);
             for (int i = 0; i < java.lang.reflect.Array.getLength(fields); i++) {
                 AttributeField af = fields.get(i);
-                stmts += formatPrefix
-                    + maybePlsql
-                    + "."
-                    + af.getName()
-                    + " := "
-                    + ((af.getType().hasConversion() && af.getType()
+                stmts.append(formatPrefix).append(maybePlsql).append(".").append(af.getName()).append(" := ").append((af.getType().hasConversion() && af.getType()
                         .getIntoConversion() != null) ? af.getType().getIntoConversion()
                         + "(" + maybeSql + "." + Util.unreserveSql(af.getName()) + ");\n"
                         : maybeSql + "." + Util.unreserveSql(af.getName()) + ";\n");
@@ -461,28 +448,14 @@ public class SqlType extends TypeClass {
             TypeClass compType = ((PlsqlTableType)this).getComponentType();
             if (getTypecode() == OracleTypes.PLSQL_NESTED_TABLE
                 || getTypecode() == OracleTypes.PLSQL_VARRAY_TABLE) {
-                stmts += formatPrefix + maybePlsql + " := " + getTypeName() + "();\n";
-                stmts += formatPrefix + maybePlsql + ".EXTEND" + "(" + maybeSql + ".COUNT);\n";
+                stmts.append(formatPrefix).append(maybePlsql).append(" := ").append(getTypeName()).append("();\n");
+                stmts.append(formatPrefix).append(maybePlsql).append(".EXTEND").append("(").append(maybeSql).append(".COUNT);\n");
             }
-            stmts += formatPrefix
-                + "IF "
-                + maybeSql
-                + ".COUNT>0 THEN\n"
-                + formatPrefix
-                + "FOR I IN 1.."
-                + maybeSql
-                + ".COUNT LOOP\n"
-                + formatPrefix
-                + "\t"
-                + maybePlsql
-                + "(I)"
-                + " := "
-                + ((compType.hasConversion() && compType.getIntoConversion() != null) ? compType
+            stmts.append(formatPrefix).append("IF ").append(maybeSql).append(".COUNT>0 THEN\n").append(formatPrefix).append("FOR I IN 1..").append(maybeSql).append(".COUNT LOOP\n").append(formatPrefix).append("\t").append(maybePlsql).append("(I)").append(" := ").append((compType.hasConversion() && compType.getIntoConversion() != null) ? compType
                     .getIntoConversion()
-                    + "(" + maybeSql + "(I)" + ");\n" : maybeSql + "(I);\n") + formatPrefix
-                + "END LOOP; \n" + formatPrefix + "END IF;\n";
+                    + "(" + maybeSql + "(I)" + ");\n" : maybeSql + "(I);\n").append(formatPrefix).append("END LOOP; \n").append(formatPrefix).append("END IF;\n");
         }
-        return stmts;
+        return stmts.toString();
     }
 
     // Return assignment statements from PL/SQL records to SQL objects
@@ -491,23 +464,17 @@ public class SqlType extends TypeClass {
         if (!isPlsqlRecord() && !isPlsqlTable()) {
             return formatPrefix + maybeSql + " := " + maybePlsql + ";\n";
         }
-        String stmts = "";
+        StringBuilder stmts = new StringBuilder();
         if (isPlsqlRecord()) {
             List<AttributeField> fields = getFields(true);
-            stmts += formatPrefix + maybeSql + " := " + getTargetTypeName() + "(NULL";
+            stmts.append(formatPrefix).append(maybeSql).append(" := ").append(getTargetTypeName()).append("(NULL");
             for (int i = 1; i < fields.size(); i++) {
-                stmts += ", NULL";
+                stmts.append(", NULL");
             }
-            stmts += ");\n";
+            stmts.append(");\n");
 
-            for (int i = 0; i < fields.size(); i++) {
-                AttributeField af = fields.get(i);
-                stmts += formatPrefix
-                    + maybeSql
-                    + "."
-                    + Util.unreserveSql(af.getName())
-                    + " := "
-                    + ((af.getType().hasConversion() && af.getType()
+            for (AttributeField af : fields) {
+                stmts.append(formatPrefix).append(maybeSql).append(".").append(Util.unreserveSql(af.getName())).append(" := ").append((af.getType().hasConversion() && af.getType()
                         .getOutOfConversion() != null) ? af.getType().getOutOfConversion()
                         + "(" + maybePlsql + "." + af.getName() + ");\n" : maybePlsql + "."
                         + af.getName() + ";\n");
@@ -515,38 +482,10 @@ public class SqlType extends TypeClass {
         }
         else { // if (isPlsqlTable())
             TypeClass compType = ((PlsqlTableType)this).getComponentType();
-            stmts += formatPrefix
-                + maybeSql
-                + " := "
-                + getTargetTypeName()
-                + "();\n"
-                + formatPrefix
-                + maybeSql
-                + ".EXTEND("
-                + maybePlsql
-                + ".COUNT);\n"
-                + formatPrefix
-                + "IF "
-                + maybePlsql
-                + ".COUNT>0 THEN\n"
-                + formatPrefix
-                + "FOR I IN "
-                + maybePlsql
-                + ".FIRST.."
-                + maybePlsql
-                + ".LAST LOOP\n"
-                + formatPrefix
-                + "\t"
-                + maybeSql
-                + "(I + 1 - "
-                + maybePlsql
-                + ".FIRST)"
-                + " := "
-                + ((compType.hasConversion() || compType.getOutOfConversion() != null) ? compType
+            stmts.append(formatPrefix).append(maybeSql).append(" := ").append(getTargetTypeName()).append("();\n").append(formatPrefix).append(maybeSql).append(".EXTEND(").append(maybePlsql).append(".COUNT);\n").append(formatPrefix).append("IF ").append(maybePlsql).append(".COUNT>0 THEN\n").append(formatPrefix).append("FOR I IN ").append(maybePlsql).append(".FIRST..").append(maybePlsql).append(".LAST LOOP\n").append(formatPrefix).append("\t").append(maybeSql).append("(I + 1 - ").append(maybePlsql).append(".FIRST)").append(" := ").append((compType.hasConversion() || compType.getOutOfConversion() != null) ? compType
                     .getOutOfConversion()
-                    + "(" + maybePlsql + "(I)" + ");\n" : maybePlsql + "(I);\n") + formatPrefix
-                + "END LOOP; \n" + formatPrefix + "END IF; \n";
+                    + "(" + maybePlsql + "(I)" + ");\n" : maybePlsql + "(I);\n").append(formatPrefix).append("END LOOP; \n").append(formatPrefix).append("END IF; \n");
         }
-        return stmts;
+        return stmts.toString();
     }
 }

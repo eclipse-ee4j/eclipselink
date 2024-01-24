@@ -14,7 +14,6 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLValidationTest;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.logging.JavaLog;
 import org.eclipse.persistence.sessions.Session;

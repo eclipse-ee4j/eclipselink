@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -129,11 +129,11 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
         } catch (XMLMarshalException exception) {
             StringWriter sw = new StringWriter();
             exception.printStackTrace(new PrintWriter(sw));
-            assertTrue("An unexpected XMLMarshalException was caught\n" + sw.toString(), exception.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An unexpected XMLMarshalException was caught\n" + sw, XMLMarshalException.UNMARSHAL_EXCEPTION, exception.getErrorCode());
             return;
         }
 
-        assertTrue("An exception should have been caught but wasn't.", false);
+        fail("An exception should have been caught but wasn't.");
     }
 
     /**
@@ -152,7 +152,7 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
         } catch (XMLMarshalException exception) {
             StringWriter sw = new StringWriter();
             exception.printStackTrace(new PrintWriter(sw));
-            assertTrue("An XMLMarshalException was thrown unexpectedly\n" + sw.toString(), false);
+            fail("An XMLMarshalException was thrown unexpectedly\n" + sw);
             return;
         }
         assertEquals(controlObject, unmarshalledObject);
@@ -175,10 +175,10 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
         } catch (XMLMarshalException exception) {
             StringWriter sw = new StringWriter();
             exception.printStackTrace(new PrintWriter(sw));
-            assertTrue("An unexpected XMLMarshalException was caught\n" + sw.toString(), exception.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An unexpected XMLMarshalException was caught\n" + sw, XMLMarshalException.UNMARSHAL_EXCEPTION, exception.getErrorCode());
             return;
         }
-        assertTrue(false);
+        fail();
     }
 
     //SCHEMA VALIDATING TEST=========================================================================================
@@ -198,7 +198,7 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
         } catch (XMLMarshalException exception) {
             StringWriter sw = new StringWriter();
             exception.printStackTrace(new PrintWriter(sw));
-            assertTrue("An XMLMarshalException was thrown unexpectedly\n " + sw.toString(), false);
+            fail("An XMLMarshalException was thrown unexpectedly\n " + sw);
             return;
         }
         assertEquals(controlObject, unmarshalledObject);
@@ -218,10 +218,10 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
         } catch (XMLMarshalException exception) {
             StringWriter sw = new StringWriter();
             exception.printStackTrace(new PrintWriter(sw));
-            assertTrue("An unexpected XMLMarshalException was caught\n" + sw.toString(), exception.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An unexpected XMLMarshalException was caught\n" + sw, XMLMarshalException.UNMARSHAL_EXCEPTION, exception.getErrorCode());
             return;
         }
-        assertTrue("An XMLMarshalException should have been caught but wasn't.", false);
+        fail("An XMLMarshalException should have been caught but wasn't.");
     }
 
     /**
@@ -239,14 +239,14 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
         } catch (XMLMarshalException exception) {
             StringWriter sw = new StringWriter();
             exception.printStackTrace(new PrintWriter(sw));
-            assertTrue("An XMLMarshalException was thrown unexpectedly\n" + sw.toString(), false);
+            fail("An XMLMarshalException was thrown unexpectedly\n" + sw);
             return;
         }
         assertEquals(controlObject, unmarshalledObject);
     }
 
     //=========================================================================================
-    public class TestEntityResolver implements org.xml.sax.EntityResolver {
+    public static class TestEntityResolver implements org.xml.sax.EntityResolver {
         private final String DTD_NAME = "org/eclipse/persistence/testing/oxm/xmlmarshaller/Car.dtd";
 
         public TestEntityResolver() {
@@ -266,7 +266,7 @@ public class XMLMarshallerValidationModeTestCases extends OXTestCase {
      * Error handler implementation to capture DTD/Schema validation
      * errors/warnings.
      */
-    class ErrorHdlr implements ErrorHandler {
+    static class ErrorHdlr implements ErrorHandler {
         private boolean errorHasOccurred;
         private boolean fatalErrorHasOccurred;
         private boolean warningHasOccurred;

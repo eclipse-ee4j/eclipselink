@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -156,7 +156,7 @@ public class Menu implements ChangeTracker{
     }
 
     public String getKey() {
-        return new String(this.getType());
+        return this.getType();
     }
 
     public Restaurant getOwner() {
@@ -222,11 +222,11 @@ public class Menu implements ChangeTracker{
      * @return a string representation of the receiver
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(getClass().getSimpleName() + ": " + this.getType());
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName()).append(": ").append(this.getType());
         buf.append(System.lineSeparator());
         if (getItems() != null) {
-            buf.append("MenuItems: " + getItems().getClass().getSimpleName());
+            buf.append("MenuItems: ").append(getItems().getClass().getSimpleName());
             buf.append(getItems().toString());
             buf.append(System.lineSeparator());
         }

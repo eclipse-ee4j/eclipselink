@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,29 +16,12 @@ package org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingeleme
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 
 public class AnyObjectNoDefaultRootWithGroupingElementProject extends AnyObjectWithGroupingElementProject {
     public AnyObjectNoDefaultRootWithGroupingElementProject() {
         this.addDescriptor(buildRootDescriptor());
         this.addDescriptor(buildChildDescriptor());
-    }
-
-    @Override
-    public ClassDescriptor buildRootDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(Root.class);
-        descriptor.setDefaultRootElement("root");
-
-        XMLAnyObjectMapping anyObjectMapping = new XMLAnyObjectMapping();
-        anyObjectMapping.setXPath("nested");
-        anyObjectMapping.setAttributeName("any");
-        anyObjectMapping.setGetMethodName("getAny");
-        anyObjectMapping.setSetMethodName("setAny");
-        descriptor.addMapping(anyObjectMapping);
-
-        return descriptor;
     }
 
     @Override

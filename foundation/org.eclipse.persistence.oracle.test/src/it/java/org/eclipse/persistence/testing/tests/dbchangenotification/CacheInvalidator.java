@@ -59,10 +59,7 @@ CacheInvalidator {
         Set<String> tableNames = new HashSet<>();
 
         // fill out tableNames collection with all tables' names mapped by all descriptors
-        Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
-        while (descriptors.hasNext()) {
-            ClassDescriptor desc = descriptors.next();
-
+        for (ClassDescriptor desc : session.getDescriptors().values()) {
             // Create a Vector containing names of all tables mapped to the descriptor
             List<String> descTableNames = desc.getTableNames();
             // Remove schema names (if any) converting "SCHEMA_NAME.TABLE_NAME" to "TABLE_NAME"
@@ -161,8 +158,7 @@ CacheInvalidator {
 
         // create DatabaseRecord corresponding to the message
         DatabaseRecord row = new DatabaseRecord(pkFieldNames.size());
-        for (int i = 0; i < pkFieldNames.size(); i++) {
-            String fieldName = pkFieldNames.get(i);
+        for (String fieldName : pkFieldNames) {
             Object value = msg.getObjectProperty(fieldName);
             row.put(fieldName, value);
         }

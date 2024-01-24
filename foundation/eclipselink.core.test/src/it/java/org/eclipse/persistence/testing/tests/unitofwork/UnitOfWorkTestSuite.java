@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -236,9 +236,9 @@ public class UnitOfWorkTestSuite extends TestSuite {
                 List employees = getSession().readAllObjects(Employee.class);
                 Employee employee = null;
                 // Find an employee with a phone.
-                for (Iterator iterator = employees.iterator(); iterator.hasNext(); ) {
-                    employee = (Employee) iterator.next();
-                    if (employee.getPhoneNumbers().size() > 0) {
+                for (Object o : employees) {
+                    employee = (Employee) o;
+                    if (!employee.getPhoneNumbers().isEmpty()) {
                         break;
                     }
                 }
@@ -321,7 +321,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                     if (uow.executeQuery(query) != null) {
                         throwError("New employee should not have been found.");
                     }
-                    if (counter.getSqlStatements().size() == 0) {
+                    if (counter.getSqlStatements().isEmpty()) {
                         throwError("Query should have hit database.");
                     }
                     uow.commit();
@@ -329,7 +329,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                     if (uow.executeQuery(query) != employee) {
                         throwError("New employee should have been found.");
                     }
-                    if (counter.getSqlStatements().size() > 0) {
+                    if (!counter.getSqlStatements().isEmpty()) {
                         throwError("Query should have hit cache.");
                     }
                     uow = getSession().acquireUnitOfWork();
@@ -340,7 +340,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                     if (uow.executeQuery(query) != null) {
                         throwError("Employee should not have been found.");
                     }
-                    if (counter.getSqlStatements().size() == 0) {
+                    if (counter.getSqlStatements().isEmpty()) {
                         throwError("Query should have hit database.");
                     }
                     query = new ReadObjectQuery(Employee.class);
@@ -350,7 +350,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                     if (uow.executeQuery(query) != employee) {
                         throwError("Employee should have been found.");
                     }
-                    if (counter.getSqlStatements().size() > 0) {
+                    if (!counter.getSqlStatements().isEmpty()) {
                         throwError("Query should have hit cache.");
                     }
 

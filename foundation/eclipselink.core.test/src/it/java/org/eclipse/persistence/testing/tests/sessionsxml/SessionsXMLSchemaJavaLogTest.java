@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -74,12 +74,12 @@ public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
     @Override
     protected void verify() {
         if (generationException != null) {
-            throw new TestErrorException("Exception thrown during session configuration: " + generationException.toString());
+            throw new TestErrorException("Exception thrown during session configuration: " + generationException);
         }
         if (!findStringInFile(testString, fileName)) {
             String exceptionString = "String: " + testString + " not found in " + fileName;
             if (fileReadException != null) {
-                exceptionString = exceptionString + " Exception thrown while reading file. - " + fileReadException.toString();
+                exceptionString = exceptionString + " Exception thrown while reading file. - " + fileReadException;
             }
             throw new TestErrorException(exceptionString);
         }
@@ -91,7 +91,7 @@ public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
             LineNumberReader lnr = new LineNumberReader(reader);
             String line = lnr.readLine();
             while (line != null) {
-                if (line.indexOf(string) > -1) {
+                if (line.contains(string)) {
                     return true;
                 }
                 line = lnr.readLine();
@@ -99,7 +99,6 @@ public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
         } catch (Exception exception) {
             fileReadException = exception;
         }
-        ;
         return false;
     }
 }

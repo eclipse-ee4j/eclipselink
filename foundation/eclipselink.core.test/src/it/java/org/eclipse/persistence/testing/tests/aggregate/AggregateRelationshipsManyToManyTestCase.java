@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.tests.aggregate;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -80,9 +79,8 @@ public class AggregateRelationshipsManyToManyTestCase extends TestCase {
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Parent parent = (Parent)uow.registerObject(originalParent);
-        List<Relative> relatives = new ArrayList<Relative>(parent.getAggregate().getRelatives());
-        for (Iterator<Relative> iterator = relatives.iterator(); iterator.hasNext();) {
-            Relative relative = iterator.next();
+        List<Relative> relatives = new ArrayList<>(parent.getAggregate().getRelatives());
+        for (Relative relative : relatives) {
             parent.removeRelative(relative);
             uow.deleteObject(relative);
         }

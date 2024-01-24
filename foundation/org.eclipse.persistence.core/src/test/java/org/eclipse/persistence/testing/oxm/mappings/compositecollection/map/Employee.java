@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,9 +74,7 @@ public class Employee {
             if (((thisHome == null) && (objectHome == null)) || (thisHome.equals(objectHome))) {
                 MailingAddress thisWork = this.getMailingAddress(MailingAddress.WORK_TYPE);
                 MailingAddress objectWork = employeeObject.getMailingAddress(MailingAddress.WORK_TYPE);
-                if (((thisWork == null) && (objectWork == null)) || (thisWork.equals(objectWork))) {
-                    return true;
-                }
+                return ((thisWork == null) && (objectWork == null)) || (thisWork.equals(objectWork));
             }
         }
 

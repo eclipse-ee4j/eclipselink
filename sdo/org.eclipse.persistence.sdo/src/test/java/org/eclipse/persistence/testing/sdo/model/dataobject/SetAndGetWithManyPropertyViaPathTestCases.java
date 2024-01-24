@@ -292,7 +292,7 @@ public class SetAndGetWithManyPropertyViaPathTestCases extends SDOTestCase {
             myProp.set("type", SDOConstants.SDO_STRING);
             myProp.set("many", Boolean.valueOf("true"));
             Type myDOType = typeHelper.define(myDO);
-            String s = new String("This is my string.");
+            String s = "This is my string.";
             myDO.setString("myString", s);
             String mystring = myDO.getString("myString");
             assertTrue("Expected string [" + s + "], but was [" + mystring + "]", mystring.equals(s));

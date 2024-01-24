@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -296,19 +296,15 @@ public class EmployeeChangeFlagBasicTestModel extends EmployeeBasicTestModel {
 
         addressChangePolicy = getSession().getDescriptor(Address.class).getObjectChangePolicy();
         getSession().getDescriptor(Address.class).setObjectChangePolicy(new ObjectChangeTrackingPolicy());
-        ;
 
         projectChangePolicy = getSession().getDescriptor(Project.class).getObjectChangePolicy();
         getSession().getDescriptor(Project.class).setObjectChangePolicy(new ObjectChangeTrackingPolicy());
-        ;
 
         smallProjectChangePolicy = getSession().getDescriptor(SmallProject.class).getObjectChangePolicy();
         getSession().getDescriptor(SmallProject.class).setObjectChangePolicy(new ObjectChangeTrackingPolicy());
-        ;
 
         largeProjectChangePolicy = getSession().getDescriptor(LargeProject.class).getObjectChangePolicy();
         getSession().getDescriptor(LargeProject.class).setObjectChangePolicy(new ObjectChangeTrackingPolicy());
-        ;
 
         employmentPeriodChangePolicy = getSession().getDescriptor(EmploymentPeriod.class).getObjectChangePolicy();
         getSession().getDescriptor(EmploymentPeriod.class).setObjectChangePolicy(new ObjectChangeTrackingPolicy());

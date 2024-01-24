@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.tests.optimisticlocking;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,10 +56,7 @@ public class SwitchableOptimisticLockingPolicyTest extends TestCase {
     @Override
     public void setup() {
         Set<Class<?>> keys = getOldOptimisticLockingPolicies().keySet();
-        Iterator<Class<?>> iterator = new ArrayList(keys).iterator();
-        while (iterator.hasNext()) {
-            Class<?> classToModify = iterator.next();
-
+        for (Class<?> classToModify : (Iterable<Class<?>>) new ArrayList(keys)) {
             // Validate usage
             if (!AbstractVideogameObject.class.isAssignableFrom(classToModify)) {
                 throwError(classToModify.getName() + " does not implement " + AbstractVideogameObject.class.getName());
@@ -93,7 +89,7 @@ public class SwitchableOptimisticLockingPolicyTest extends TestCase {
             descriptor.getOptimisticLockingPolicy().initialize((AbstractSession) getSession());
             // Reinitialize the query manager & update call cache
             descriptor.setQueryManager(new DescriptorQueryManager());
-            descriptor.getQueryManager().initialize((AbstractSession)getSession());
+            descriptor.getQueryManager().initialize((AbstractSession) getSession());
         }
     }
 
@@ -115,9 +111,7 @@ public class SwitchableOptimisticLockingPolicyTest extends TestCase {
     public void reset() {
         Set<Class<?>> keys = getOldOptimisticLockingPolicies().keySet();
 
-        Iterator<Class<?>> iterator = new ArrayList(keys).iterator();
-        while (iterator.hasNext()) {
-            Class<?> classToModify = iterator.next();
+        for (Class<?> classToModify : (Iterable<Class<?>>) new ArrayList(keys)) {
             ClassDescriptor descriptor = getSession().getDescriptor(classToModify);
 
             // re-init old optimistic locking policy
@@ -125,12 +119,12 @@ public class SwitchableOptimisticLockingPolicyTest extends TestCase {
             descriptor.setOptimisticLockingPolicy(oldOptimisticLockingPolicy);
 
             if (descriptor.getOptimisticLockingPolicy() != null) {
-                descriptor.getOptimisticLockingPolicy().initialize((AbstractSession)getSession());
+                descriptor.getOptimisticLockingPolicy().initialize((AbstractSession) getSession());
             }
 
             // Reinitialize the query manager & update call cache
             descriptor.setQueryManager(new DescriptorQueryManager());
-            descriptor.getQueryManager().initialize((AbstractSession)getSession());
+            descriptor.getQueryManager().initialize((AbstractSession) getSession());
         }
 
         this.tlException = null;

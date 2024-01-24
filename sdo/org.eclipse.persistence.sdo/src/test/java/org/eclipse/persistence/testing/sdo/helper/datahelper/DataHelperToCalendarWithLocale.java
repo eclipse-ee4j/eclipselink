@@ -34,7 +34,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
         assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected toString: " + controlCalendar + ", but was: " + aCalendar, controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testToCalendarWithGYear() {
@@ -46,7 +46,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         Calendar aCalendar = dataHelper.toCalendar("2000", lc);
         assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected toString: " + controlCalendar + ", but was: " + aCalendar, controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testToCalendarWithGMonthDay() {
@@ -60,7 +60,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
         assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected toString: " + controlCalendar + ", but was: " + aCalendar, controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testToCalendarWithGMonth() {
@@ -72,7 +72,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         Calendar aCalendar = dataHelper.toCalendar("--11", lc);
         assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected toString: " + controlCalendar + ", but was: " + aCalendar, controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testToCalendarWithGDay() {
@@ -84,7 +84,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         Calendar aCalendar = dataHelper.toCalendar("---15", lc);
         assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected toString: " + controlCalendar + ", but was: " + aCalendar, controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testToCalendarWithTime() {
@@ -102,7 +102,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         assertTrue("Expected SECOND: " + controlCalendar.get(Calendar.SECOND) + ", but was: " + aCalendar.get(Calendar.SECOND), controlCalendar.get(Calendar.SECOND) == aCalendar.get(Calendar.SECOND));
         assertTrue("Expected MILLISECOND: " + controlCalendar.get(Calendar.MILLISECOND) + ", but was: " + aCalendar.get(Calendar.MILLISECOND), controlCalendar.get(Calendar.MILLISECOND) == aCalendar.get(Calendar.MILLISECOND));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected toString: " + controlCalendar + ", but was: " + aCalendar, controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testToCalendarWithDate() {
@@ -118,7 +118,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
         assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected toString: " + controlCalendar + ", but was: " + aCalendar, controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testToCalendarWithDateTime() {
@@ -142,7 +142,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         assertTrue("Expected SECOND: " + controlCalendar.get(Calendar.SECOND) + ", but was: " + aCalendar.get(Calendar.SECOND), controlCalendar.get(Calendar.SECOND) == aCalendar.get(Calendar.SECOND));
         assertTrue("Expected MILLISECOND: " + controlCalendar.get(Calendar.MILLISECOND) + ", but was: " + aCalendar.get(Calendar.MILLISECOND), controlCalendar.get(Calendar.MILLISECOND) == aCalendar.get(Calendar.MILLISECOND));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected toString: " + controlCalendar + ", but was: " + aCalendar, controlCalendar.toString().equals(aCalendar.toString()));
     }
 
     public void testToCalendarWithDuration() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -539,9 +539,9 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step:
-        assertTrue(aList.size() > 0);
+        assertTrue(!aList.isEmpty());
         aList.clear();
-        assertTrue(aList.size() == 0);
+        assertTrue(aList.isEmpty());
     }
 
     // boolean equals(Object aList)
@@ -572,10 +572,10 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         ListWrapper aList = (ListWrapper)aRoot.getList("items/item");
 
         // Test step:
-        assertTrue(aList.size() > 0);
+        assertTrue(!aList.isEmpty());
         assertTrue(!aList.isEmpty());
         aList.clear();
-        assertTrue(aList.size() == 0);
+        assertTrue(aList.isEmpty());
         assertTrue(aList.isEmpty());
     }
 
@@ -585,7 +585,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         ListWrapper aList = (ListWrapper)anEmptyListRoot.getList("items/item");
 
         // Test step:
-        assertTrue(aList.size() == 0);
+        assertTrue(aList.isEmpty());
         assertTrue(aList.isEmpty());
     }
 
@@ -792,7 +792,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
 
         // Test step: (remove at start)
         // list is empty first
-        assertTrue(aList.size() == 0);
+        assertTrue(aList.isEmpty());
         SDODataObject originalDO = (SDODataObject)aList.remove(0);
         assertNull(originalDO);
     }
@@ -891,7 +891,6 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         anArrayList.add(anItemDO2);
         // get containment node
         ListWrapper aList = (ListWrapper)anEmptyListRoot.getList("items/item");
-        ;
 
         // Test: remove all the objects in the list from the ListWrapper
         int originalSize = aList.size();
@@ -1078,7 +1077,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         //log("SDODataObjectListWrapperTest.testListWrapperSize0()");
         // get containment node
         ListWrapper aList = (ListWrapper)anEmptyListRoot.getList("items/item");
-        assertTrue(aList.size() == 0);
+        assertTrue(aList.isEmpty());
     }
 
     // List subList(int startPosition, int endPosition)
@@ -1300,7 +1299,7 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
             return SDOConstants.EMPTY_STRING;
         }
         StringBuffer aBuffer = new StringBuffer();
-        aBuffer.append(anObject.toString());
+        aBuffer.append(anObject);
         aBuffer.append("\n\t root: ");
         aBuffer.append(anObject.getRootObject());
         aBuffer.append("\n\t type: ");

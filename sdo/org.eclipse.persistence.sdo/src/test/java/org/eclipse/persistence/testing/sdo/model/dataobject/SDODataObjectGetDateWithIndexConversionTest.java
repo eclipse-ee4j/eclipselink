@@ -50,7 +50,7 @@ public class SDODataObjectGetDateWithIndexConversionTest extends SDODataObjectCo
     public void testGetDateFromByte() {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
-        dataObject.set(property, new String("eee").getBytes()[0]);
+        dataObject.set(property, "eee".getBytes()[0]);
         try {
             dataObject.getDate(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");
@@ -177,7 +177,7 @@ public class SDODataObjectGetDateWithIndexConversionTest extends SDODataObjectCo
     public void testGetDateFromBytes() {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("eee").getBytes());
+        dataObject.set(property, "eee".getBytes());
         try {
             dataObject.getDate(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");

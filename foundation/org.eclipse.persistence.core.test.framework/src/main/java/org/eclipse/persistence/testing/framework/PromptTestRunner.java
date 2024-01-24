@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,8 +117,8 @@ public class PromptTestRunner {
         if ((argv.length < 1) || (argv.length > 5)) {
             this.printUsageAndExit();
         }
-        for (int i = 0; i < argv.length; i++) {
-            this.processArguments(argv[i]);
+        for (String s : argv) {
+            this.processArguments(s);
         }
 
         try {
@@ -165,7 +165,7 @@ public class PromptTestRunner {
     protected void processArguments(String arg) {
         if (arg.startsWith(TEST_MODEL_FLAG)) {
             String testModelName = arg.substring(TEST_MODEL_FLAG.length());
-            if (testModelName.toLowerCase().equals("lightrunalltestmodel")) {
+            if (testModelName.equalsIgnoreCase("lightrunalltestmodel")) {
                 this.testModel = TestRunModel.buildLRGTestModel();
             } else {
                 try {

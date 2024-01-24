@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.anycollection.withgroupingelement;
 
-
-/**
- *  @version $Header: AnyCollectionMixedChildrenArrayListTestCases.java 29-jun-2007.13:21:21 dmahar Exp $
- *  @author  mmacivor
- *  @since   release specific (what release of product did this appear in)
- */
-
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -32,7 +25,6 @@ public class AnyCollectionMixedChildrenArrayListTestCases extends XMLMappingTest
         super(name);
         Project p = new AnyCollectionWithGroupingElementProject();
         ((XMLAnyCollectionMapping)p.getDescriptor(Root.class).getMappingForAttributeName("any")).useCollectionClass(java.util.ArrayList.class);
-        ;
         setProject(p);
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/mixed_children.xml");
     }

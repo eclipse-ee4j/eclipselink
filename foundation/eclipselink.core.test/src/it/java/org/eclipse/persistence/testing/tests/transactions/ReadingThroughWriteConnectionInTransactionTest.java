@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -161,7 +161,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
          */
         test = new ReadingThroughWriteConnectionInTransactionTest("2");
         test.setDescription("test for reading using write/transaction connection when in transaction (CR#4334).  Tests correct (write) accessor used when value holder triggered by in transaction session.");
-        test.setNotSupportedExplanation(new String("Unless the value holder is wrapped, as by a UOW, it will instaniate with the same connection as its parent in cache, the server read connection."));
+        test.setNotSupportedExplanation("Unless the value holder is wrapped, as by a UOW, it will instaniate with the same connection as its parent in cache, the server read connection.");
         test.instantiateValueHolders();
         tests.add(test);
 
@@ -192,7 +192,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
          */
         test = new ReadingThroughWriteConnectionInTransactionTest("4");
         test.setDescription("test for reading using write/transaction connection when in transaction (CR#4334).  Tests correct accessor used when value holder triggered by in transaction session, on object from global cache.");
-        test.setNotSupportedExplanation(new String("A client session is not allowed to own the value holders of objects it has read, as they are put in the cache and another could potentially trigger them with your connection."));
+        test.setNotSupportedExplanation("A client session is not allowed to own the value holders of objects it has read, as they are put in the cache and another could potentially trigger them with your connection.");
         test.readIntoCache();
         test.instantiateValueHolders();
         tests.add(test);
@@ -314,8 +314,8 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
             // as the result the write connection pool is not shutdown and the connections are leaked.
             // Let's close these connections here.
             try {
-                for (Iterator<ConnectionPool> poolsEnum = ((ServerSession)getServerSession()).getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
-                    poolsEnum.next().shutDown();
+                for (ConnectionPool connectionPool : ((ServerSession) getServerSession()).getConnectionPools().values()) {
+                    connectionPool.shutDown();
                 }
             } catch (Exception ex) {
                 // ignore

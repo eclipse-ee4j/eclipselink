@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public class EmployeeDeleteTest extends DeleteObjectTest {
     public static void deleteDependencies(Session session, org.eclipse.persistence.testing.models.employee.domain.Employee employee) {
         // CR2114 - following line modified; employee.getClass() passed as argument
         String appendString = ((AbstractSession)session).getPlatform(employee.getClass()).getTableQualifier();
-        if (appendString.length() != 0) {
+        if (!appendString.isEmpty()) {
             appendString = appendString + ".";
         }
 

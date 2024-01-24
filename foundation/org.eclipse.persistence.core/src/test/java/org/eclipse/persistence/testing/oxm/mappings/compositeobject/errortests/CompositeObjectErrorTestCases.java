@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public class CompositeObjectErrorTestCases extends OXTestCase {
             for (int i = 0; i < caughtExceptions.size(); i++) {
                 Exception nextException = (Exception)caughtExceptions.elementAt(i);
                 if (nextException instanceof DescriptorException) {
-                    assertTrue("An incorrect Descriptor exception occurred.", ((DescriptorException)nextException).getErrorCode() == DescriptorException.FIELD_NAME_NOT_SET_IN_MAPPING);
+                    assertEquals("An incorrect Descriptor exception occurred.", DescriptorException.FIELD_NAME_NOT_SET_IN_MAPPING, ((DescriptorException) nextException).getErrorCode());
                     foundException = true;
                 }
             }
@@ -44,7 +44,7 @@ public class CompositeObjectErrorTestCases extends OXTestCase {
             return;
 
         } catch (XMLMarshalException marshalException) {
-            assertTrue("An unexcepted XMLMarshalException occurred", !(metadata == Metadata.JAVA));
+            assertNotSame("An unexcepted XMLMarshalException occurred", metadata, Metadata.JAVA);
             return;
         } catch (Exception e) {
             fail("An unexcepted exception occurred");

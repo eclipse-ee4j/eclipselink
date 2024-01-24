@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,6 @@ import org.eclipse.persistence.testing.tests.jpa.fieldaccess.QuerySQLTracker;
 import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EmployeePopulator;
 import org.junit.Test;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -159,7 +158,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
             if(manager.getDefaultFetchGroup() != null) {
                 manager.setDefaultFetchGroup(null);
             }
-            if(manager.getFetchGroups().size() > 0) {
+            if(!manager.getFetchGroups().isEmpty()) {
                 manager.getFetchGroups().clear();
             }
         }
@@ -476,9 +475,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
 
     public static Employee minimumEmployee(EntityManager em, Map<String, Object> hints) {
         Query q = em.createQuery("SELECT e FROM Employee e WHERE e.id in (SELECT MIN(ee.id) FROM Employee ee)");
-        Iterator<Map.Entry<String, Object>> it = hints.entrySet().iterator();
-        while(it.hasNext()) {
-            Map.Entry<String, Object> entry = it.next();
+        for (Map.Entry<String, Object> entry : hints.entrySet()) {
             q.setHint(entry.getKey(), entry.getValue());
         }
 

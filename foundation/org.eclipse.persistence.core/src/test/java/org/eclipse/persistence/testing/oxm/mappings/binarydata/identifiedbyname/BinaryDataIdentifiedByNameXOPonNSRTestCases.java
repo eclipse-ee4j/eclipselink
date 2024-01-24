@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname;
 
 import jakarta.activation.DataHandler;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -89,7 +90,7 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLWithJSONMapp
             try {
                 this.testXMLToObjectFromInputStream();
             } catch(org.eclipse.persistence.exceptions.XMLMarshalException ex) {
-                assertTrue(ex.getErrorCode() == org.eclipse.persistence.exceptions.XMLMarshalException.NO_ATTACHMENT_UNMARSHALLER_SET);
+                assertEquals(XMLMarshalException.NO_ATTACHMENT_UNMARSHALLER_SET, ex.getErrorCode());
             }
         }
     }

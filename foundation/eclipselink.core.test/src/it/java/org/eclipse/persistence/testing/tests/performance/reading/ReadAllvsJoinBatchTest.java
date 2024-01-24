@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,8 +37,8 @@ public class ReadAllvsJoinBatchTest extends PerformanceComparisonTestCase {
     public void test() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         List results = getSession().readAllObjects(Employee.class);
-        for (int index = 0; index < results.size(); index++) {
-            Employee employee = (Employee)results.get(index);
+        for (Object result : results) {
+            Employee employee = (Employee) result;
             Address address = employee.getAddress();
         }
     }
@@ -54,8 +54,8 @@ public class ReadAllvsJoinBatchTest extends PerformanceComparisonTestCase {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.addJoinedAttribute("address");
                 List results = (List)getSession().executeQuery(query);
-                for (int index = 0; index < results.size(); index++) {
-                    Employee employee = (Employee)results.get(index);
+                for (Object result : results) {
+                    Employee employee = (Employee) result;
                     Address address = employee.getAddress();
                 }
             }
@@ -76,8 +76,8 @@ public class ReadAllvsJoinBatchTest extends PerformanceComparisonTestCase {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.addBatchReadAttribute("address");
                 List results = (List)getSession().executeQuery(query);
-                for (int index = 0; index < results.size(); index++) {
-                    Employee employee = (Employee)results.get(index);
+                for (Object result : results) {
+                    Employee employee = (Employee) result;
                     Address address = employee.getAddress();
                 }
             }

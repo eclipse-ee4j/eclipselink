@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ public class JavaBaseType extends JavaType {
         m_fields = fields;
         m_methods = methods;
         // System.out.println("[JavaBaseType] " + m_fields.length); //D+
-    };
+    }
 
     /* Create an added Java type */
     public JavaBaseType(JavaName javaName, List<AttributeField> fields, List<ProcedureMethod> methods,
@@ -38,7 +38,7 @@ public class JavaBaseType extends JavaType {
         m_fields = fields;
         m_methods = methods;
         // System.out.println("[JavaBaseType] " + m_fields.length); //D+
-    };
+    }
 
     @Override
     public List<AttributeField> getFields(boolean publishedOnly) {
@@ -56,11 +56,11 @@ public class JavaBaseType extends JavaType {
     }
 
     public boolean hasFields() {
-        return m_fields != null && m_fields.size() > 0;
+        return m_fields != null && !m_fields.isEmpty();
     }
 
     @Override
     public boolean hasMethods() {
-        return m_methods != null && m_methods.size() > 0;
+        return m_methods != null && !m_methods.isEmpty();
     }
 }

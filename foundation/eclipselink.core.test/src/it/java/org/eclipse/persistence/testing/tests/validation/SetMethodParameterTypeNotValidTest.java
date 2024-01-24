@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.mappings.OneToManyMapping;
 public class SetMethodParameterTypeNotValidTest extends ExceptionTest {
     public SetMethodParameterTypeNotValidTest() {
         super();
-        setDescription("This tests Set Method Parameter Type Not Valid (TL-ERROR 133) " + "");
+        setDescription("This tests Set Method Parameter Type Not Valid (TL-ERROR 133) ");
     }
 
     @Override

@@ -33,7 +33,7 @@ public class SDODataObjectGetStringConversionByXPathQueryTest extends SDODataObj
 
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty p = (SDOProperty)type_c0.getDeclaredPropertiesMap().get("test");        ;
+        SDOProperty p = (SDOProperty)type_c0.getDeclaredPropertiesMap().get("test");
         p.setType(SDOConstants.SDO_STRING);
         //p.setMany(true);
         //type_c0.addDeclaredProperty(p);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,7 +52,7 @@ public class PrefixMapperContextTestCases extends TestCase {
         StringWriter writer = new StringWriter();
         m.marshal(emp, writer);
 
-        assertTrue("Expected: " + CONTROL_XML + " But was: " + writer.toString(), writer.toString().equals(CONTROL_XML));
+        assertTrue("Expected: " + CONTROL_XML + " But was: " + writer, writer.toString().equals(CONTROL_XML));
 
     }
 

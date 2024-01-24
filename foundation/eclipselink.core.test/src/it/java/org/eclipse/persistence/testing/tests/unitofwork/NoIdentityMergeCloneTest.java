@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -66,12 +65,10 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         // because it may not be the same for all descriptors.
         this.checkCacheState = new Hashtable(10);
         this.identityMapTypes = new Hashtable(10);
-        Iterator<ClassDescriptor> iterator = getSession().getProject().getDescriptors().values().iterator();
-        while (iterator.hasNext()) {
-            ClassDescriptor descriptor = iterator.next();
+        for (ClassDescriptor descriptor : getSession().getProject().getDescriptors().values()) {
             checkCacheState.put(descriptor,
                     descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy());
-            if(descriptor.requiresInitialization((AbstractSession) getSession())) {
+            if (descriptor.requiresInitialization((AbstractSession) getSession())) {
                 // identityMapClass is null for AggregateObject, AggregateMapping and Interface descriptors.
                 identityMapTypes.put(descriptor, descriptor.getIdentityMapClass());
             }

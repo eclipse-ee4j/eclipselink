@@ -43,8 +43,8 @@ public class Server {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext();) {
-            descriptors.addElement(iterator.next());
+        for (ClassDescriptor classDescriptor : session.getDescriptors().values()) {
+            descriptors.addElement(classDescriptor);
         }
         serverSession.addDescriptors(descriptors);
     }

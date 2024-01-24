@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class DirectReadQueryTest1 extends TestCase {
     while (stream.hasMoreElements()) {
         count++;
         String lastName = (String) stream.nextElement();
-        if (lastName.length() == 0) {
+        if (lastName.isEmpty()) {
             throw new TestErrorException("missing data");
         }
     }
@@ -72,7 +72,7 @@ public class DirectReadQueryTest1 extends TestCase {
         stack = (Stack)getSession().executeQuery(query);
         // if we get here, we must not have generated a ClassCastException
         String lastName = (String)stack.peek();
-        if (lastName.length() == 0) {
+        if (lastName.isEmpty()) {
             throw new TestErrorException("missing data");
         }
     }

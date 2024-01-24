@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ package org.eclipse.persistence.testing.tests.junit.cache;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.persistence.internal.cache.AdvancedProcessor;
 import org.eclipse.persistence.internal.cache.ComputableTask;
@@ -57,8 +58,8 @@ public class AdvancedProcessorTest {
 
         Object futureAfterSecondComputation = memoizerCache.values().iterator().next();
 
-        Assert.assertTrue(memoizerCache.values().size() == 1);
-        Assert.assertTrue(futureAfterFirstComputation == futureAfterSecondComputation);
+        Assert.assertEquals(1, memoizerCache.values().size());
+        Assert.assertSame(futureAfterFirstComputation, futureAfterSecondComputation);
         fieldOnProcessor.setAccessible(false);
         fieldOnMemoizer.setAccessible(false);
     }
@@ -84,7 +85,7 @@ public class AdvancedProcessorTest {
         // we still have just one element in cache, because we called processor.clear()
         Object futureAfterSecondComputation = iteratorAfterSecondComputation.next();
 
-        Assert.assertFalse(futureAfterFirstComputation == futureAfterSecondComputation);
+        Assert.assertNotSame(futureAfterFirstComputation, futureAfterSecondComputation);
         fieldOnProcessor.setAccessible(false);
         fieldOnMemoizer.setAccessible(false);
 
@@ -113,9 +114,7 @@ public class AdvancedProcessorTest {
 
             Task task = (Task) o;
 
-            if (a != null ? !a.equals(task.a) : task.a != null) return false;
-
-            return true;
+            return Objects.equals(a, task.a);
         }
 
         @Override

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,7 +52,7 @@ public class TestLobMerge {
 
         EntityManager em = emf.createEntityManager();
         try {
-            final Set<CollectedEntity> col1 = new HashSet<CollectedEntity>(
+            final Set<CollectedEntity> col1 = new HashSet<>(
                     Arrays.asList(new CollectedEntity("label1", "content1"),
                             new CollectedEntity("label2", "content2"),
                             new CollectedEntity("label3", "content3")));
@@ -62,7 +62,7 @@ public class TestLobMerge {
             em.persist(pdo);
             em.getTransaction().commit();
 
-            final Set<CollectedEntity> col2 = new HashSet<CollectedEntity>(
+            final Set<CollectedEntity> col2 = new HashSet<>(
                     Arrays.asList(new CollectedEntity("label1", "content1"),
                             new CollectedEntity("label2", "content2")));
             final ParentEntity newEntity = new ParentEntity(pdo.getId(), col2);

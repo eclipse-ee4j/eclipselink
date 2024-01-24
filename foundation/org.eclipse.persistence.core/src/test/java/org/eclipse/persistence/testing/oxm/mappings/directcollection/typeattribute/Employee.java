@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,27 +52,27 @@ public class Employee  {
 
   public String toString()
   {
-        String returnString =  "Employee: " + this.getIdentifier() + " ";
+        StringBuilder returnString = new StringBuilder("Employee: " + this.getIdentifier() + " ");
         if(getResponsibilities() != null)
         {
-            returnString += "Responsiblities: ";
+            returnString.append("Responsiblities: ");
             for(int i=0; i<getResponsibilities().size(); i++)
             {
                 Object next = getResponsibilities().elementAt(i);
-                returnString += next.toString() + " ";
+                returnString.append(next.toString()).append(" ");
             }
         }
 
         if(getOutdoorResponsibilities() != null)
         {
-            returnString += "Outdoor Responsiblities: ";
+            returnString.append("Outdoor Responsiblities: ");
             for(int i=0; i<getOutdoorResponsibilities().size(); i++)
             {
                 Object next = getOutdoorResponsibilities().elementAt(i);
-                returnString += next.toString() + " ";
+                returnString.append(next.toString()).append(" ");
             }
         }
-        return returnString;
+        return returnString.toString();
   }
 
   public boolean equals(Object object)
@@ -91,12 +91,8 @@ public class Employee  {
     }
 
 
-    if((this.getIdentifier().equals(employeeObject.getIdentifier())) &&
-      ((this.getResponsibilities()==null && employeeObject.getResponsibilities()==null) ||(this.getResponsibilities().isEmpty() && employeeObject.getResponsibilities().isEmpty()) || (this.getResponsibilities().containsAll(employeeObject.getResponsibilities()))) &&
-            ((this.getOutdoorResponsibilities()==null && employeeObject.getOutdoorResponsibilities()==null) ||(this.getOutdoorResponsibilities().isEmpty() && employeeObject.getOutdoorResponsibilities().isEmpty())|| (this.getOutdoorResponsibilities().containsAll(employeeObject.getOutdoorResponsibilities())))
-            )
-          return true;
-
-    return false;
+      return (this.getIdentifier().equals(employeeObject.getIdentifier())) &&
+              ((this.getResponsibilities() == null && employeeObject.getResponsibilities() == null) || (this.getResponsibilities().isEmpty() && employeeObject.getResponsibilities().isEmpty()) || (this.getResponsibilities().containsAll(employeeObject.getResponsibilities()))) &&
+              ((this.getOutdoorResponsibilities() == null && employeeObject.getOutdoorResponsibilities() == null) || (this.getOutdoorResponsibilities().isEmpty() && employeeObject.getOutdoorResponsibilities().isEmpty()) || (this.getOutdoorResponsibilities().containsAll(employeeObject.getOutdoorResponsibilities())));
   }
 }

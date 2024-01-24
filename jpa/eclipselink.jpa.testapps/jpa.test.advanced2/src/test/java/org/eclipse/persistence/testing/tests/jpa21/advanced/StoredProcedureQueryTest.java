@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -753,17 +753,17 @@ public class StoredProcedureQueryTest extends JUnitTestCase {
             // Verify first result set mapping --> Employee
             List<?> results0 = allResults.get(0);
             assertNotNull("No Employee results returned", results0);
-            assertTrue("Empty Employee results returned", results0.size() > 0);
+            assertTrue("Empty Employee results returned", !results0.isEmpty());
 
             // Verify second result set mapping --> Address
             List<?> results1 = allResults.get(1);
             assertNotNull("No Address results returned", results1);
-            assertTrue("Empty Address results returned", results1.size() > 0);
+            assertTrue("Empty Address results returned", !results1.isEmpty());
 
             // Verify third result set mapping --> Project
             List<?> results2 = allResults.get(2);
             assertNotNull("No Project results returned", results2);
-            assertTrue("Empty Project results returned", results2.size() > 0);
+            assertTrue("Empty Project results returned", !results2.isEmpty());
 
             for (Object result2 : results2) {
                 Object[] result2Element = (Object[]) result2;
@@ -781,7 +781,7 @@ public class StoredProcedureQueryTest extends JUnitTestCase {
             // Verify fourth result set mapping --> Employee Constructor Result
             List<?> results3 = allResults.get(3);
             assertNotNull("No Employee constructor results returned", results3);
-            assertTrue("Empty Employee constructor results returned", results3.size() > 0);
+            assertTrue("Empty Employee constructor results returned", !results3.isEmpty());
         }
     }
 

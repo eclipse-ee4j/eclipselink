@@ -238,7 +238,7 @@ public class SDODataObjectGetShortConversionTest extends SDODataObjectConversion
     public void testGetShortFromBytes() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        byte[] bytes = new String("abc").getBytes();
+        byte[] bytes = "abc".getBytes();
         dataObject.set(property, bytes);
         try {
             dataObject.getShort(property);

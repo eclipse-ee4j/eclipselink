@@ -71,7 +71,7 @@ public class MapAdapterTestCases extends TestCase {
         try (InputStream entityStream = jsonResource.openStream();
                 Scanner scanner = new Scanner(entityStream, "UTF-8")) {
             String expected = scanner.useDelimiter("\\A").next();
-            assertEquals(expected, new String(outputStream.toByteArray()));
+            assertEquals(expected, outputStream.toString());
         }
     }
 

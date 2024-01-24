@@ -173,9 +173,9 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
 
         // Check Binary formats
         String base64Str =
-            XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.BASE_64_BINARY_QNAME).toString();
+                XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.BASE_64_BINARY_QNAME);
         String hexStr =
-            XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.HEX_BINARY_QNAME).toString();
+                XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.HEX_BINARY_QNAME);
 
         Element docElement = marshalDoc.getDocumentElement();
         Element flexObjectAsElem = (Element) docElement.getChildNodes().item(0);

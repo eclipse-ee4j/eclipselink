@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,10 +18,7 @@ public abstract class Event {
 
     @Override
     public boolean equals(Object object) {
-        if(null == object || object.getClass() != getClass()) {
-            return false;
-        }
-        return true;
+        return null != object && object.getClass() == getClass();
     }
 
     public boolean equals(String control, String test) {

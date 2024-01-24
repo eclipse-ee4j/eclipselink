@@ -75,7 +75,7 @@ public abstract class TestUuidCommon {
         EntityManager em = getEmf().createEntityManager();
         try {
             List<UUIDUUIDEntity> testEntities = em.createQuery("SELECT e FROM UUIDUUIDEntity AS e").getResultList();
-            assertTrue(testEntities.size() > 0);
+            assertTrue(!testEntities.isEmpty());
             for (UUIDUUIDEntity entity: testEntities) {
                 assertNotNull(entity.getId());
             }
@@ -97,7 +97,7 @@ public abstract class TestUuidCommon {
             Query query = em.createQuery("SELECT e FROM UUIDUUIDEntity AS e WHERE e.id = :id");
             query.setParameter("id", id);
             List<UUIDUUIDEntity> testEntities = query.getResultList();
-            assertTrue(testEntities.size() > 0);
+            assertTrue(!testEntities.isEmpty());
             for (UUIDUUIDEntity entity: testEntities) {
                 assertNotNull(entity);
                 assertNotNull(entity.getId());

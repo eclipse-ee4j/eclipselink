@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,7 +82,7 @@ public class SessionBrokerCustomFunctionTest extends TestCase {
 
             ReadAllQuery query = new ReadAllQuery(Address.class);
             ExpressionBuilder builder = query.getExpressionBuilder();
-            Vector<Expression> args = new Vector<Expression>();
+            Vector<Expression> args = new Vector<>();
             args.add(builder.get("country"));
             Expression expression = builder.getFunction(CustomDatabasePlatform.OPERATOR_SELECTOR, args).equal("CANADA");
             query.setSelectionCriteria(expression);
@@ -103,7 +103,7 @@ public class SessionBrokerCustomFunctionTest extends TestCase {
             UpdateAllQuery query = new UpdateAllQuery(Employee.class);
             ExpressionBuilder builder = query.getExpressionBuilder();
 
-            Vector<Expression> args = new Vector<Expression>();
+            Vector<Expression> args = new Vector<>();
             args.add(builder.get("lastName"));
 
             Expression expression = builder.getFunction(CustomDatabasePlatform.OPERATOR_SELECTOR, args).equal("SMITH");
@@ -129,7 +129,7 @@ public class SessionBrokerCustomFunctionTest extends TestCase {
             DeleteAllQuery query = new DeleteAllQuery(Employee.class);
             ExpressionBuilder builder = query.getExpressionBuilder();
 
-            Vector<Expression> args = new Vector<Expression>();
+            Vector<Expression> args = new Vector<>();
             args.add(builder.get("lastName"));
 
             Expression expression = builder.getFunction(CustomDatabasePlatform.OPERATOR_SELECTOR, args).equal("SMITH");

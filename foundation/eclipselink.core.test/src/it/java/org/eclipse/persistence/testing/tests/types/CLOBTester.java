@@ -70,7 +70,7 @@ public class CLOBTester extends TypeTester {
         if (!getTestName().equals(otherTester.getTestName())) {
             return false;
         }
-        if ((!getLongString().equals(otherTester.getLongString())) && !((getLongString().length() == 0) && (otherTester.getLongString() == null))) {
+        if ((!getLongString().equals(otherTester.getLongString())) && !((getLongString().isEmpty()) && (otherTester.getLongString() == null))) {
             return false;
         }
         if (otherTester.getLongString() == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,10 +70,10 @@ public class Root {
     }
 
     public String toString() {
-        String string = "Root:";
+        StringBuilder string = new StringBuilder("Root:");
         for (int i = 0; i < getCompanies().size(); i++) {
-            string += getCompanies().get(i).toString();
+            string.append(getCompanies().get(i).toString());
         }
-        return string;
+        return string.toString();
     }
 }

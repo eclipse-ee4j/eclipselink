@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -455,7 +455,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * be reset back to the state from where the test started.
      */
     public void reset() throws Throwable {
-        return;
     }
 
     /**
@@ -485,7 +484,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * from where the test started.
      */
     protected void resetVerify() throws Throwable {
-        return;
     }
 
     @Override
@@ -553,7 +551,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * that test should perform before running the actual test.
      */
     protected void setup() throws Throwable {
-        return;
     }
 
     /**
@@ -593,7 +590,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * override it.
      */
     protected void verify() throws Throwable {
-        return;
     }
 
     /**

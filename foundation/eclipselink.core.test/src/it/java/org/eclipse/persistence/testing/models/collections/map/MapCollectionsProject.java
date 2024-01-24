@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,12 +27,6 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
-import org.eclipse.persistence.testing.models.collections.map.AggregateEntityMapHolder;
-import org.eclipse.persistence.testing.models.collections.map.AggregateMapKey;
-import org.eclipse.persistence.testing.models.collections.map.EntityEntityMapHolder;
-import org.eclipse.persistence.testing.models.collections.map.EntityMapKey;
-import org.eclipse.persistence.testing.models.collections.map.EntityMapValue;
-import org.eclipse.persistence.testing.models.collections.map.DirectEntityMapHolder;
 
 /**
  * TopLink generated Project class.

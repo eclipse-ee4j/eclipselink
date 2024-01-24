@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,8 +11,6 @@
  */
 
 package org.eclipse.persistence.testing.tests.distributedservers.rcm;
-
-import java.util.Iterator;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -80,7 +78,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         // ensure the changes are propgated
         try{
             Thread.sleep(1000);
-        } catch (InterruptedException e){};
+        } catch (InterruptedException e){}
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
 
         ListHolder holder = (ListHolder)server.getDistributedSession().readObject(ListHolder.class);
@@ -93,9 +91,8 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ListHolder holder = (ListHolder)uow.readObject(ListHolder.class);
-        Iterator<ListItem> i = holder.getItems().iterator();
-        while (i.hasNext()){
-            uow.deleteObject(i.next());
+        for (ListItem listItem : holder.getItems()) {
+            uow.deleteObject(listItem);
         }
         uow.deleteObject(holder);
         uow.commit();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -213,7 +213,7 @@ public class UnitOfWorkConformExceptionTest extends org.eclipse.persistence.test
         try {
             Vector v = getContacts();
             String s = "";
-            if (v.size() > 0) {
+            if (!v.isEmpty()) {
                 Contact contact = (Contact)v.firstElement();
                 s = contact.getMailAddress().mailAddress;
             }
@@ -256,7 +256,7 @@ public class UnitOfWorkConformExceptionTest extends org.eclipse.persistence.test
     private void changeAMailAddress() {
         Expression exp = new ExpressionBuilder().get("mailAddress").equal("three@object.com");
         MailAddress mailAddress = (MailAddress)uow.readObject(MailAddress.class, exp);
-        mailAddress.mailAddress = new String("four@object.com");
+        mailAddress.mailAddress = "four@object.com";
     }
 
     private Vector getContacts() throws QueryException {

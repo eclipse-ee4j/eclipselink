@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,29 +48,29 @@ public class HistoricalQualifiedTableEmployeeSystem extends EmployeeSystem {
         String oldRelationTableName = mapping.getRelationTableName();
         List<String> oldHistoricalTableNames = mapping.getHistoryPolicy().getHistoryTableNames();
         mapping.getHistoryPolicy().setHistoricalTables(new Vector(1));
-        for (int i = 0; i < oldHistoricalTableNames.size(); i++) {
-            mapping.getHistoryPolicy().addHistoryTableName(user + "." + oldHistoricalTableNames.get(i));
+        for (String oldHistoricalTableName : oldHistoricalTableNames) {
+            mapping.getHistoryPolicy().addHistoryTableName(user + "." + oldHistoricalTableName);
         }
         mapping.setRelationTableName(user + "." + oldRelationTableName);
 
         Vector<DatabaseField> targetRelationKeyFields = mapping.getTargetKeyFields();
-        for (int i = 0; i < targetRelationKeyFields.size(); i++) {
-            String oldName = targetRelationKeyFields.get(i).getTable().getName();
-            targetRelationKeyFields.get(i).setTableName(user + "." + oldName);
+        for (DatabaseField targetRelationKeyField : targetRelationKeyFields) {
+            String oldName = targetRelationKeyField.getTable().getName();
+            targetRelationKeyField.setTableName(user + "." + oldName);
         }
 
         Vector<DatabaseField> sourceRelationKeyFields = mapping.getSourceRelationKeyFields();
-        for (int i = 0; i < sourceRelationKeyFields.size(); i++) {
-            String oldName = sourceRelationKeyFields.get(i).getTable().getName();
-            sourceRelationKeyFields.get(i).setTableName(user + "." + oldName);
+        for (DatabaseField sourceRelationKeyField : sourceRelationKeyFields) {
+            String oldName = sourceRelationKeyField.getTable().getName();
+            sourceRelationKeyField.setTableName(user + "." + oldName);
         }
 
         DirectCollectionMapping dcmapping = (DirectCollectionMapping)empDescriptor.getMappingForAttributeName("responsibilitiesList");
         String oldReferenceTableName = dcmapping.getReferenceTableName();
         List<String> oldDCHistoricalTableNames = dcmapping.getHistoryPolicy().getHistoryTableNames();
         dcmapping.getHistoryPolicy().setHistoricalTables(new Vector(1));
-        for (int i = 0; i < oldDCHistoricalTableNames.size(); i++) {
-            dcmapping.getHistoryPolicy().addHistoryTableName(user + "." + oldDCHistoricalTableNames.get(i));
+        for (String oldDCHistoricalTableName : oldDCHistoricalTableNames) {
+            dcmapping.getHistoryPolicy().addHistoryTableName(user + "." + oldDCHistoricalTableName);
         }
         dcmapping.setReferenceTableName(user + "." + oldReferenceTableName);
 

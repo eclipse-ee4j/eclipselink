@@ -253,7 +253,7 @@ public class SDODataObjectGetIntegerConversionTest extends SDODataObjectConversi
     public void testGetDecimalFromBytes() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("abcd").getBytes());
+        dataObject.set(property, "abcd".getBytes());
         try {
             dataObject.getBigDecimal(property);
             fail("ClassCastException should be thrown.");

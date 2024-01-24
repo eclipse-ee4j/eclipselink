@@ -245,7 +245,7 @@ public class SDODataObjectGetFloatConversionTest extends SDODataObjectConversion
     public void testGetFloatFromBytes() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("123").getBytes());
+        dataObject.set(property, "123".getBytes());
         try {
             dataObject.getFloat(property);
             fail("ClassCastException should be thrown.");

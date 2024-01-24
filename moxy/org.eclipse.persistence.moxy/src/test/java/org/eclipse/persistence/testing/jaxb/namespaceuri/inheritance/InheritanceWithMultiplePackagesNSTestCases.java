@@ -72,17 +72,17 @@ public class InheritanceWithMultiplePackagesNSTestCases extends InheritanceWithM
         root.baseTypeList = baseTypes;
 
         List objectList = new ArrayList(baseTypes);
-        objectList.add(new String("string test"));
+        objectList.add("string test");
         objectList.add(500);
         root.objectList = objectList;
 
         List anyObjectList = new ArrayList(baseTypes);
-        anyObjectList.add(new String("string test2"));
+        anyObjectList.add("string test2");
 
         List choiceList = new ArrayList();
         choiceList.add(anotherPackageSubType);
         choiceList.add(subTypeLevel2);
-        choiceList.add(new String("choice string test"));
+        choiceList.add("choice string test");
         choiceList.add(500);
         root.choiceList = choiceList;
         return root;

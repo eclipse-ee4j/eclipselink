@@ -238,7 +238,7 @@ public class SDODataObjectGetLongConversionTest extends SDODataObjectConversionT
     public void testGetLongFromBytes() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("cde").getBytes());
+        dataObject.set(property, "cde".getBytes());
         try {
             dataObject.getLong(property);
             fail("ClassCastException should be thrown.");

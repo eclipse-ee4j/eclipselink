@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,10 +49,8 @@ public class SetXmlSchemaTestCases extends OXTestCase {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
             schema = schemaFactory.newSchema(new java.io.File(Thread.currentThread().getContextClassLoader().getResource(XML_SCHEMA_RESOURCE).toURI()));
-        } catch(SAXException ex) {
+        } catch(SAXException | URISyntaxException ex) {
             throw new RuntimeException(ex);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -93,7 +91,7 @@ public class SetXmlSchemaTestCases extends OXTestCase {
     /**
      * Error handler implementation for handling parser errors
      */
-    class MyErrorHandler implements ErrorHandler {
+    static class MyErrorHandler implements ErrorHandler {
         @Override
         public void warning(org.xml.sax.SAXParseException sex) throws org.xml.sax.SAXParseException {
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.identitymaps;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -94,8 +93,7 @@ public class InsertWeakIdentityMapTest extends TestCase {
         // Check that all the CacheReferences (WeakCacheReferences) are null, since
         // they all should have been garbage collected.
         Map<Object, CacheKey> cache = getIdentityMap().getCacheKeys();
-        for (Iterator<CacheKey> iterator = cache.values().iterator(); iterator.hasNext(); ) {
-            CacheKey key = iterator.next();
+        for (CacheKey key : cache.values()) {
             if (key.getObject() != null) {
                 throw new TestErrorException("A WeakCacheKey with a non-empty WeakReference was found. The garbage collection did not clear the cache as expected.");
             }

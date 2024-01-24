@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.tests.validation.ExceptionTest;
 
 
 //Created by Ian Reid
@@ -30,7 +29,7 @@ import org.eclipse.persistence.testing.tests.validation.ExceptionTest;
 public class ParentDescriptorNotSpecifiedTest extends ExceptionTest {
     public ParentDescriptorNotSpecifiedTest() {
         super();
-        setDescription("This tests Parent Descriptor Not Specified (TL-ERROR 73) " + "");
+        setDescription("This tests Parent Descriptor Not Specified (TL-ERROR 73) ");
     }
 
     @Override

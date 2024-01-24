@@ -182,7 +182,7 @@ public abstract class JSONTestCases extends OXTestCase{
      public void testJSONMarshalToOutputStream() throws Exception{
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             jsonMarshaller.marshal(getWriteControlObject(), os);
-            compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+            compareStringToControlFile("testJSONMarshalToOutputStream", os.toString());
             os.close();
         }
 
@@ -243,7 +243,7 @@ public abstract class JSONTestCases extends OXTestCase{
         jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         jsonMarshaller.marshal(getWriteControlObject(), os);
-        compareStringToFile("testJSONMarshalToOutputStream", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
+        compareStringToFile("testJSONMarshalToOutputStream", os.toString(), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
         os.close();
     }
 

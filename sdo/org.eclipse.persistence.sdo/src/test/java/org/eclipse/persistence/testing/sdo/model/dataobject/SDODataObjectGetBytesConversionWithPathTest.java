@@ -56,7 +56,7 @@ public class SDODataObjectGetBytesConversionWithPathTest extends SDODataObjectCo
         property_c.setType(SDOConstants.SDO_BYTE);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-        dataObject_c.set(property_c, new String("eee").getBytes()[0]);
+        dataObject_c.set(property_c, "eee".getBytes()[0]);
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
         } catch (Exception e) {
@@ -166,7 +166,7 @@ public class SDODataObjectGetBytesConversionWithPathTest extends SDODataObjectCo
         property_c.setType(SDOConstants.SDO_STRING);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-        dataObject_c.set(property_c, new String("0A64"));
+        dataObject_c.set(property_c, "0A64");
         try {
             byte[] value = dataObject_a.getBytes(propertyPath_a_b_c);
             byte[] controlBytes = new byte[]{10, 100};

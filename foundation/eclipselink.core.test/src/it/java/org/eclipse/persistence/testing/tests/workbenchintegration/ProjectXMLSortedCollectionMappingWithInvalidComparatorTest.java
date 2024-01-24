@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class ProjectXMLSortedCollectionMappingWithInvalidComparatorTest extends 
     @Override
     protected void verify() {
         if (exception != null){
-            if((exception.getMessage().indexOf("is not a valid comparator"))==-1){
+            if(!exception.getMessage().contains("is not a valid comparator")){
                 throw new TestErrorException("There is problem when read project back from project.xml",exception);
             }
         }else{

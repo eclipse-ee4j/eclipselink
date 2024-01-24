@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class XPathHelperLogicalOPTestCases extends XPathHelperTestCases {
         DataObject mower = (DataObject) returnValue.get(0);
 
         returnValue = xpathHelper.evaluate("productName", mower);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
     }
@@ -46,12 +46,12 @@ public class XPathHelperLogicalOPTestCases extends XPathHelperTestCases {
         DataObject battery = (DataObject) returnValue.get(1);
 
         returnValue = xpathHelper.evaluate("productName", mower);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
 
         returnValue = xpathHelper.evaluate("productName", battery);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Battery", pName);
     }
@@ -62,7 +62,7 @@ public class XPathHelperLogicalOPTestCases extends XPathHelperTestCases {
         DataObject mower = (DataObject) returnValue.get(0);
 
         returnValue = xpathHelper.evaluate("productName", mower);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
     }
@@ -83,7 +83,7 @@ public class XPathHelperLogicalOPTestCases extends XPathHelperTestCases {
         DataObject battery = (DataObject) returnValue.get(0);
 
         returnValue = xpathHelper.evaluate("productName", battery);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Battery", pName);
     }
@@ -95,12 +95,12 @@ public class XPathHelperLogicalOPTestCases extends XPathHelperTestCases {
         DataObject battery = (DataObject) returnValue.get(1);
 
         returnValue = xpathHelper.evaluate("productName", mower);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         String pName = (String) returnValue.get(0);
         assertEquals("Lawnmower", pName);
 
         returnValue = xpathHelper.evaluate("productName", battery);
-        assertTrue(returnValue != null && returnValue.size() != 0);
+        assertTrue(returnValue != null && !returnValue.isEmpty());
         pName = (String) returnValue.get(0);
         assertEquals("Battery", pName);
     }

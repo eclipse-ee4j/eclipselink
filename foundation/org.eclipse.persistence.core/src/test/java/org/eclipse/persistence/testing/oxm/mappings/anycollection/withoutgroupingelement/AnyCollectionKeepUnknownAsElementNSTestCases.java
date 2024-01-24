@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,13 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement;
-
-
-/**
- *  @version $Header: AnyCollectionKeepUnknownAsElementTestCases.java 30-jul-2007.15:34:52 dmccann Exp $
- *  @author  mmacivor
- *  @since   release specific (what release of product did this appear in)
- */
 
 import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;

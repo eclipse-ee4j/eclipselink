@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -192,9 +192,9 @@ public abstract class BaseNcharTest extends TestCase {
     }
 
     protected String charCode(char ch) {
-        String temp = Integer.toHexString(ch).toUpperCase();
+        StringBuilder temp = new StringBuilder(Integer.toHexString(ch).toUpperCase());
         while (temp.length() != 4) {
-            temp = "0" + temp;
+            temp.insert(0, "0");
         }
         return "\\u" + temp;
     }

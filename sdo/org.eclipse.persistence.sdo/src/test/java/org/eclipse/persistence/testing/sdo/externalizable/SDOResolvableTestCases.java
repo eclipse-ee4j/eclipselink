@@ -193,7 +193,7 @@ public class SDOResolvableTestCases extends SDOTestCase {
             return SDOConstants.EMPTY_STRING;
         }
         StringBuffer aBuffer = new StringBuffer();
-        aBuffer.append(anObject.toString());
+        aBuffer.append(anObject);
         aBuffer.append("\n\t root: ");
         aBuffer.append(anObject.getRootObject());
         aBuffer.append("\n\t type: ");

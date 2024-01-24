@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class CacheInvalidationPolicyCloneTest extends TestCase {
             DailyCacheInvalidationPolicy policyClone = (DailyCacheInvalidationPolicy)policy.clone();
 
             assertNotNull("Clone should not be null", policyClone);
-            assertFalse("Clone should not be the same instance", policy == policyClone);
+            assertNotSame("Clone should not be the same instance", policy, policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
             assertEquals("Clone's expiry time should be the same", policy.getExpiryTime().getTimeInMillis(), policyClone.getExpiryTime().getTimeInMillis());
             assertEquals("Clone's expiry time should be 01:02:03.004 - hour", 1, policyClone.getExpiryTime().get(Calendar.HOUR_OF_DAY));
@@ -63,14 +63,14 @@ public class CacheInvalidationPolicyCloneTest extends TestCase {
             NoExpiryCacheInvalidationPolicy policyClone = (NoExpiryCacheInvalidationPolicy)policy.clone();
 
             assertNotNull("Clone should not be null", policyClone);
-            assertFalse("Clone should not be the same instance", policy == policyClone);
+            assertNotSame("Clone should not be the same instance", policy, policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
         } else if (policyClassToTest.equals(TimeToLiveCacheInvalidationPolicy.class)) {
             TimeToLiveCacheInvalidationPolicy policy = new TimeToLiveCacheInvalidationPolicy();
             TimeToLiveCacheInvalidationPolicy policyClone = (TimeToLiveCacheInvalidationPolicy)policy.clone();
 
             assertNotNull("Clone should not be null", policyClone);
-            assertFalse("Clone should not be the same instance", policy == policyClone);
+            assertNotSame("Clone should not be the same instance", policy, policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
             assertEquals("Clone's TTL should be the same", policy.getTimeToLive(), policyClone.getTimeToLive());
         } else {

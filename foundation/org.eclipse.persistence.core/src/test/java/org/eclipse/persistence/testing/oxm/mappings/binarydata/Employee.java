@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,7 +112,7 @@ public class Employee {
             return false;
         }
 
-        /**
+        /*
          * Note: do not use Vector.contains() for byte[] arrays since each .getBytes() will return
          * a different hash-value and will not pass the embedded (==) during the .contain check.
          * You must check each base64 byte in sequence

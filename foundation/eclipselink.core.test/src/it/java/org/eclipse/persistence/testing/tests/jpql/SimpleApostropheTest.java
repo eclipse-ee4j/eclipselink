@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,10 +29,9 @@ public class SimpleApostropheTest extends JPQLTestCase {
         String ejbqlString = null;
 
         //Find the desired address
-        Iterator addressesIterator = addresses.iterator();
-        while (addressesIterator.hasNext()) {
-            address = (Address)addressesIterator.next();
-            if (address.getStreet().indexOf("Lost") != -1) {
+        for (Object o : addresses) {
+            address = (Address) o;
+            if (address.getStreet().contains("Lost")) {
                 break;
             }
         }

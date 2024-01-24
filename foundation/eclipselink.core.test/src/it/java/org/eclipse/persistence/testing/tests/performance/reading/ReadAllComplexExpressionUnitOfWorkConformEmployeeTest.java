@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,8 +41,8 @@ public class ReadAllComplexExpressionUnitOfWorkConformEmployeeTest extends Perfo
     public void setup() {
         uow = getSession().acquireUnitOfWork();
         List employees = uow.readAllObjects(Employee.class);
-        for (Iterator iterator = employees.iterator(); iterator.hasNext();) {
-            Employee employee = (Employee)iterator.next();
+        for (Object o : employees) {
+            Employee employee = (Employee) o;
             employee.getAddress();
             employee.getPhoneNumbers().size();
         }

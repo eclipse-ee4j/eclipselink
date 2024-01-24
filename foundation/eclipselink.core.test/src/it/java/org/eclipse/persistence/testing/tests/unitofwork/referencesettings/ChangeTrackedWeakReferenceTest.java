@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.tests.unitofwork.referencesettings;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -28,8 +27,8 @@ public class ChangeTrackedWeakReferenceTest extends AutoVerifyTestCase {
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork(ReferenceMode.FORCE_WEAK);
         Collection collection = uow.readAllObjects(ALCTEmployee.class);
-        for (Iterator iterator = collection.iterator(); iterator.hasNext();){
-            ((ALCTEmployee)iterator.next()).setFirstName(""+System.currentTimeMillis());
+        for (Object o : collection) {
+            ((ALCTEmployee) o).setFirstName("" + System.currentTimeMillis());
         }
         int size = collection.size();
         try{
@@ -45,4 +44,3 @@ public class ChangeTrackedWeakReferenceTest extends AutoVerifyTestCase {
         }
     }
 }
-;

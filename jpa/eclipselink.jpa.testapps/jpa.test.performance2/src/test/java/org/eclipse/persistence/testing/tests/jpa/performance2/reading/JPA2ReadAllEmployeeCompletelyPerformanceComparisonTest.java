@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import jakarta.persistence.TypedQuery;
 import org.eclipse.persistence.testing.models.jpa.performance2.Employee;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadPerformanceComparisonTest;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -41,8 +40,7 @@ public class JPA2ReadAllEmployeeCompletelyPerformanceComparisonTest extends JPAR
         manager.getTransaction().begin();
         TypedQuery<Employee> query = manager.createQuery("Select e from Employee e", Employee.class);
         List<Employee> result = query.getResultList();
-        for (Iterator<Employee> iterator = result.iterator(); iterator.hasNext();) {
-            Employee employee = iterator.next();
+        for (Employee employee : result) {
             employee.getAddress().toString();
             employee.getManagedEmployees().size();
             employee.getDegrees().size();

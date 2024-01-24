@@ -58,7 +58,7 @@ public class TestNegFunction {
             CriteriaQuery<DecHolder> criteriaQuery = criteriaBuilder.createQuery(DecHolder.class);
             Root<CritEntity> entityRoot = criteriaQuery.from(CritEntity.class);
 
-            Collection<Selection<?>> selections = new ArrayList<Selection<?>>();
+            Collection<Selection<?>> selections = new ArrayList<>();
 
             Expression<BigDecimal> valExpr = entityRoot.get("value");
 

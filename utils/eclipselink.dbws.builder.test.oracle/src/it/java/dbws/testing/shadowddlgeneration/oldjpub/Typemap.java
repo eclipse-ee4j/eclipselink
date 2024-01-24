@@ -19,7 +19,7 @@ package dbws.testing.shadowddlgeneration.oldjpub;
 import java.util.Map;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
+
 
 /**
  * NB - this class does <b>NOT</b> implement the {@link java.util.Map} API
@@ -251,7 +251,7 @@ public class Typemap {
         if (!m_mapInitialized) {
             javaMapping();
             m_mapInitialized = true;
-        };
+        }
 
         switch (sqlTypecode) {
             case OracleTypes.ARRAY:

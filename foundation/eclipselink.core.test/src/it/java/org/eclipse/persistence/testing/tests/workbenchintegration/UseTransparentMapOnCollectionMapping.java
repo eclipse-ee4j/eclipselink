@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -49,18 +48,17 @@ public class UseTransparentMapOnCollectionMapping extends ProjectClassGeneratorR
         descriptorToModify = project.getDescriptors().get(Employee.class);
         policy = new TransparentIndirectionPolicy();
         mapPolicy = new MapContainerPolicy();
-        for (Iterator<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).iterator();
-             mappingsEnum.hasNext(); ) {
-            mappingToModify = mappingsEnum.next();
+        for (DatabaseMapping databaseMapping : descriptorToModify.getMappings()) {
+            mappingToModify = databaseMapping;
 
             if (mappingToModify.isForeignReferenceMapping()) {
                 if (mappingToModify.isCollectionMapping()) {
                     CollectionMapping collectionMapping =
-                        (CollectionMapping) mappingToModify;
+                            (CollectionMapping) mappingToModify;
                     collectionMapping.setContainerPolicy(mapPolicy);
                     mapPolicy.setKeyName("testMethod");
                     collectionMapping.getContainerPolicy().setContainerClass(Vector.class);
-                    ((ForeignReferenceMapping)mappingToModify).setIndirectionPolicy(policy);
+                    ((ForeignReferenceMapping) mappingToModify).setIndirectionPolicy(policy);
                 }
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -544,8 +544,8 @@ public class Populate {
         Employee manager = this.employees[managerIndex];
 
         if (manager.getManagedEmployees().isEmpty()) {
-            for (int index = 0; index < employeeIndeces.length; index++) {
-                manager.addManagedEmployee(this.employees[employeeIndeces[index]]);
+            for (int employeeIndece : employeeIndeces) {
+                manager.addManagedEmployee(this.employees[employeeIndece]);
             }
         }
     }
@@ -559,12 +559,12 @@ public class Populate {
     private void addProjects(int empIndex, int[] smallProjIndeces, int[] largeProjIndeces) {
         Employee employee = this.employees[empIndex];
 
-        for (int index = 0; index < smallProjIndeces.length; index++) {
-            employee.addProject(this.smallProjects[smallProjIndeces[index]]);
+        for (int smallProjIndece : smallProjIndeces) {
+            employee.addProject(this.smallProjects[smallProjIndece]);
         }
 
-        for (int index = 0; index < largeProjIndeces.length; index++) {
-            employee.addProject(this.largeProjects[largeProjIndeces[index]]);
+        for (int largeProjIndece : largeProjIndeces) {
+            employee.addProject(this.largeProjects[largeProjIndece]);
         }
     }
 
@@ -586,17 +586,17 @@ public class Populate {
         assertCount(em, Project.class, 0);
         assertCount(em, JobTitle.class, 0);
 
-        for (int index = 0; index < this.jobTitles.length; index++) {
-            em.persist(this.jobTitles[index]);
+        for (JobTitle jobTitle : this.jobTitles) {
+            em.persist(jobTitle);
         }
-        for (int index = 0; index < this.employees.length; index++) {
-            em.persist(this.employees[index]);
+        for (Employee employee : this.employees) {
+            em.persist(employee);
         }
-        for (int index = 0; index < this.smallProjects.length; index++) {
-            em.persist(this.smallProjects[index]);
+        for (SmallProject smallProject : this.smallProjects) {
+            em.persist(smallProject);
         }
-        for (int index = 0; index < this.largeProjects.length; index++) {
-            em.persist(this.largeProjects[index]);
+        for (LargeProject largeProject : this.largeProjects) {
+            em.persist(largeProject);
         }
 
         System.out.println("Flushing to database.");

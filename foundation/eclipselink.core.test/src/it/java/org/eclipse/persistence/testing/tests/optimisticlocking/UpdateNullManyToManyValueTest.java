@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.optimisticlocking;
 
-import java.util.Iterator;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -106,9 +105,7 @@ public class UpdateNullManyToManyValueTest extends SwitchableOptimisticLockingPo
         assertNotNull("The object returned should be not null", clone);
 
         if (removeAll == true) {
-            Iterator<Gamer> gamers = new ArrayList(clone.getGamers()).iterator();
-            while (gamers.hasNext()) {
-                Gamer g = gamers.next();
+            for (Gamer g : (Iterable<Gamer>) new ArrayList(clone.getGamers())) {
                 g.setName(null);
                 clone.removeGamer(g);
             }

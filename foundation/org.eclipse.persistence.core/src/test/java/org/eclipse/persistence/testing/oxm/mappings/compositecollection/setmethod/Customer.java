@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.setmethod;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 public class Customer {
@@ -37,13 +36,12 @@ public class Customer {
     }
 
     public String toString() {
-        String string = "Customer(";
-        Iterator iterator = phoneNumbers.iterator();
-        while (iterator.hasNext()) {
-            string += iterator.next().toString();
+        StringBuilder string = new StringBuilder("Customer(");
+        for (Object phoneNumber : phoneNumbers) {
+            string.append(phoneNumber.toString());
         }
-        string += ")";
-        return string;
+        string.append(")");
+        return string.toString();
     }
 
     public boolean equals(Object object) {

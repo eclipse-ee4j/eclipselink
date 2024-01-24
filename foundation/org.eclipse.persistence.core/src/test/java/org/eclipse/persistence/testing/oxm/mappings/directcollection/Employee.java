@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.oxm.mappings.directcollection;
 
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.Vector;
 
 public class Employee  {
@@ -53,31 +54,27 @@ public class Employee  {
 
   public String toString()
   {
-        String returnString =  "Employee: " + this.getID() + " ";
+        StringBuilder returnString = new StringBuilder("Employee: " + this.getID() + " ");
         if(getResponsibilities() != null)
         {
-            returnString += "Responsiblities: ";
+            returnString.append("Responsiblities: ");
             for(int i=0; i<getResponsibilities().size(); i++)
             {
                 Object next = getResponsibilities().elementAt(i);
-                if(next != null){
-                    returnString += next.toString() + " ";
-                }else{
-                    returnString += "null_item" + " ";
-                }
+                returnString.append(Objects.requireNonNullElse(next, "null_item")).append(" ");
             }
         }
 
         if(getOutdoorResponsibilities() != null)
         {
-            returnString += "Outdoor Responsiblities: ";
+            returnString.append("Outdoor Responsiblities: ");
             for(int i=0; i<getOutdoorResponsibilities().size(); i++)
             {
                 Object next = getOutdoorResponsibilities().elementAt(i);
-                returnString += next.toString() + " ";
+                returnString.append(next.toString()).append(" ");
             }
         }
-        return returnString;
+        return returnString.toString();
   }
 
   public boolean equals(Object object)
@@ -96,13 +93,9 @@ public class Employee  {
     }
 
 
-    if((this.getID() == employeeObject.getID()) &&
-      ((this.getResponsibilities()==null && employeeObject.getResponsibilities()==null) ||(this.getResponsibilities().isEmpty() && employeeObject.getResponsibilities().isEmpty()) || (fixCalendar(this.getResponsibilities()).containsAll((fixCalendar(employeeObject.getResponsibilities()))))) &&
-            ((this.getOutdoorResponsibilities()==null && employeeObject.getOutdoorResponsibilities()==null) ||(this.getOutdoorResponsibilities().isEmpty() && employeeObject.getOutdoorResponsibilities().isEmpty())|| (fixCalendar(this.getOutdoorResponsibilities()).containsAll(fixCalendar(employeeObject.getOutdoorResponsibilities()))))
-            )
-          return true;
-
-    return false;
+      return (this.getID() == employeeObject.getID()) &&
+              ((this.getResponsibilities() == null && employeeObject.getResponsibilities() == null) || (this.getResponsibilities().isEmpty() && employeeObject.getResponsibilities().isEmpty()) || (fixCalendar(this.getResponsibilities()).containsAll((fixCalendar(employeeObject.getResponsibilities()))))) &&
+              ((this.getOutdoorResponsibilities() == null && employeeObject.getOutdoorResponsibilities() == null) || (this.getOutdoorResponsibilities().isEmpty() && employeeObject.getOutdoorResponsibilities().isEmpty()) || (fixCalendar(this.getOutdoorResponsibilities()).containsAll(fixCalendar(employeeObject.getOutdoorResponsibilities()))));
   }
 
   private Vector fixCalendar(Vector v) {

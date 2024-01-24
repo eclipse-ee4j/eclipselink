@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,12 +65,10 @@ public class RemoteConnectionExceptionsTest extends TestCase {
 
     protected void setNamesToExclude() {
         namesToExclude = new Vector();
-        String namesToExcludeArray[] =
+        String[] namesToExcludeArray =
         { "createProxySession", "createRemoteSession", "cursoredStreamNextPage", "fixObjectReferences",
           "getRemoteSessionController", "setRemoteSessionController", };
-        for (int i = 0; i < namesToExcludeArray.length; i++) {
-            namesToExclude.add(namesToExcludeArray[i]);
-        }
+        namesToExclude.addAll(Arrays.asList(namesToExcludeArray));
     }
 
     protected void setNameAndCheckMode() throws TestProblemException {
@@ -93,8 +91,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         methods = new Vector();
         args = new Vector();
         Method[] allMethods = remoteConnectionClass.getMethods();
-        for (int i = 0; i < allMethods.length; i++) {
-            Method method = allMethods[i];
+        for (Method method : allMethods) {
             if (!method.getDeclaringClass().equals(remoteConnectionClass)) {
                 continue;
             }
@@ -146,7 +143,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         if (mode == TransporterGenerator.THROW_REMOTE_EXCEPTION) {
             ok = exception != null;
             if (ok) {
-                ok = CommunicationException.class.isInstance(exception);
+                ok = exception instanceof CommunicationException;
                 if (ok) {
                     ok =
  ((CommunicationException)exception).getErrorCode() == CommunicationException.ERROR_IN_INVOCATION;
@@ -154,7 +151,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
             }
             if (!ok) {
                 if (((Method)methods.elementAt(i)).getName().equals("isConnected")) {
-                    if (Boolean.class.isInstance(results[i])) {
+                    if (results[i] instanceof Boolean) {
                         ok = !(Boolean) results[i];
                     }
                 }
@@ -162,7 +159,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         } else if (mode == TransporterGenerator.SET_EXCEPTION_INTO_TRANSPORTER) {
             ok = exception != null;
             if (ok) {
-                ok = TestException.class.isInstance(exception);
+                ok = exception instanceof TestException;
                 if (ok) {
                     ok = exception.getMessage().endsWith(generator.getMessage());
                 }
@@ -195,8 +192,8 @@ public class RemoteConnectionExceptionsTest extends TestCase {
     @Override
     public void verify() {
         boolean errorHasOccured = false;
-        String errorMessage = new String("Wrong exception/result thrown/returned by methods:");
-        String unknownBug = new String("!!!UNKNOWN BUG!!!");
+        String errorMessage = "Wrong exception/result thrown/returned by methods:";
+        String unknownBug = "!!!UNKNOWN BUG!!!";
         for (int i = 0; i < methods.size(); i++) {
             Method method = (Method)methods.elementAt(i);
             String name = method.getName();

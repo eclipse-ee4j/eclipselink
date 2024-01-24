@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,23 +72,23 @@ public class EmployeeWithByteArrayObject {
     }
 
     public String toString() {
-        String returnString = "Employee: " + this.getID() + " ";
+        StringBuilder returnString = new StringBuilder("Employee: " + this.getID() + " ");
         if (getPhotos() != null) {
-            returnString += "Photos: ";
+            returnString.append("Photos: ");
             for (int i = 0; i < getPhotos().size(); i++) {
                 Object next = getPhotos().elementAt(i);
                 if (next != null) {
-                    returnString += next + " ";
+                    returnString.append(next).append(" ");
                     if(next instanceof Byte[]) {
-                        returnString = "\n" + "-->" + new String(Base64.base64Encode(ConversionManager.getDefaultManager().convertObject(next, byte[].class)));
+                        returnString = new StringBuilder("\n" + "-->" + new String(Base64.base64Encode(ConversionManager.getDefaultManager().convertObject(next, byte[].class))));
                     }
                 } else {
-                    returnString += ("null_item" + " ");
+                    returnString.append("null_item" + " ");
                 }
             }
         }
 
-        return returnString;
+        return returnString.toString();
     }
 
     public boolean equals(Object object) {
@@ -104,7 +104,7 @@ public class EmployeeWithByteArrayObject {
             return false;
         }
 
-        /**
+        /*
          * Note: do not use Vector.contains() for byte[] arrays since each .getBytes() will return
          * a different hash-value and will not pass the embedded (==) during the .contain check.
          * You must check each base64 byte in sequence

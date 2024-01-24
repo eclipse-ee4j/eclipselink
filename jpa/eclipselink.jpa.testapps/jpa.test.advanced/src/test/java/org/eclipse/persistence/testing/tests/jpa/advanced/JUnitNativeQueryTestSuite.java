@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -191,13 +191,13 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
         clearCache(PUName);
 
         if (nativeQueryResults.isEmpty() ||
-                    nativeQueryResults.get(0).getDescription() == null || nativeQueryResults.get(0).getDescription().length()==0 ) {
+                    nativeQueryResults.get(0).getDescription() == null || nativeQueryResults.get(0).getDescription().isEmpty()) {
             fail("testCaseSensitivity_GoldBuyer1 failed to return ");
         }
         String errorMsg = JoinedAttributeTestHelper.compareCollections(jpaQueryResults, nativeQueryResults, session.getClassDescriptor(GoldBuyer.class), session);
 
         // non-empty error message means the test has failed
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }

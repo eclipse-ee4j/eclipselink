@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class PolicyHolderClient extends Client2 {
             Expression exp = builder.get("policyHolder").get("ssn").equal(1111);
             for (int i = 0; i < 1; i++) {
                 Policy policy = (Policy)this.clientSession.readObject(org.eclipse.persistence.testing.models.insurance.Policy.class, exp);
-                if ((policy == null) || (policy.getPolicyHolder() == null) || policy.getPolicyHolder().getLastName().equals("")) {
+                if ((policy == null) || (policy.getPolicyHolder() == null) || policy.getPolicyHolder().getLastName().isEmpty()) {
                     throw new TestWarningException("Client/Server dead lock test fails as null is returned");
                 }
             }

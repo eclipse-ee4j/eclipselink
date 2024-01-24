@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -214,7 +214,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -278,7 +278,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -654,7 +654,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -684,7 +684,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             em = createEntityManager();
             beginTransaction(em);
             query = em.createNativeQuery("Select * from CMP3_EMPLOYEE where F_NAME = 'Bobo' AND EMP_ID = " + emp.getId());
-            if (query.getResultList().size() == 0) {
+            if (query.getResultList().isEmpty()) {
                 fail("Native query did not commit transaction.");
             } else {
                 // clean up - bring back the original name
@@ -724,7 +724,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (!queryResult.getFirstName().equals(employee.getFirstName())) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -756,7 +756,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             query.setParameter("firstName", employee.getFirstName());
             // Test that list works as well.
             query.getResultList();
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -794,7 +794,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (query.getSingleResult() == null) {
                 fail("Query did not check session cache.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
             rollbackTransaction(em);
@@ -807,7 +807,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (query.getResultList().size() != 1) {
                 fail("Query did not check session cache.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -869,7 +869,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (result.size() != query.getResultList().size()) {
                 fail("List result size is not correct on 2nd cached query.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Query cache was not used: " + counter.getSqlStatements());
             }
             clearCache();
@@ -898,7 +898,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (!query.getResultList().isEmpty()) {
                 fail("List result size is not correct.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Query cache was not used: " + counter.getSqlStatements());
             }
             rollbackTransaction(em);
@@ -2151,8 +2151,8 @@ public class AdvancedQueryTest extends JUnitTestCase {
             }
             boolean found = false;
             for (Buyer buyer : results) {
-                found = found || buyer.getCreditCards().size() > 0;
-                found = found || buyer.getCreditLines().size() > 0;
+                found = found || !buyer.getCreditCards().isEmpty();
+                found = found || !buyer.getCreditLines().isEmpty();
             }
             assertTrue("No data to join.", found);
             int queries = 2;
@@ -2543,7 +2543,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (!queryResult.getId().equals(employee.getId())) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit did not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -2582,7 +2582,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
             employee.setLastName("fail");
@@ -2598,7 +2598,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != null) {
                 fail("Employees should not be found, " + queryResult);
             }
-            if (counter.getSqlStatements().size() == 0) {
+            if (counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit should not occur: " + counter.getSqlStatements());
             }
             closeEntityManager(em);
@@ -2616,7 +2616,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (!queryResult2.getName().equals(buyer.getName())) {
                 fail("Buyers are not equal: " + buyer + ", " + queryResult2);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {

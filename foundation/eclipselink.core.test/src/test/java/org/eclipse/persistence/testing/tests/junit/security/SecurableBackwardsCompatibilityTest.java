@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.junit.security;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
@@ -46,7 +47,7 @@ public class SecurableBackwardsCompatibilityTest {
         String plainTextString = "welcome123_des_ecb";
 
         String testString = encryptString_DES_ECB(plainTextString);
-        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
+        Assert.assertNotEquals("Strings should not match.", plainTextString, testString);
 
         JCEEncryptorCmd jceEncryptorCmd = new JCEEncryptorCmd();
         String decryptedString = jceEncryptorCmd.decryptPassword(testString);
@@ -62,7 +63,7 @@ public class SecurableBackwardsCompatibilityTest {
 
         Securable securable = new JCEEncryptor();
         String testString = securable.encryptPassword(plainTextString);
-        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
+        Assert.assertNotEquals("Strings should not match.", plainTextString, testString);
 
         String decryptedString = securable.decryptPassword(testString);
         Assert.assertEquals("Strings should match.", plainTextString, decryptedString);
@@ -77,7 +78,7 @@ public class SecurableBackwardsCompatibilityTest {
 
         Securable securable = new JCEEncryptor();
         String testString = securable.encryptPassword(plainTextString);
-        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
+        Assert.assertNotEquals("Strings should not match.", plainTextString, testString);
 
         JCEEncryptorCmd jceEncryptorCmd = new JCEEncryptorCmd();
         String decryptedString = jceEncryptorCmd.decryptPassword(testString);
@@ -93,7 +94,7 @@ public class SecurableBackwardsCompatibilityTest {
         String plainTextString = "welcome123_aes_cbc";
 
         String testString = encryptString_AES_CBC(plainTextString);
-        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
+        Assert.assertNotEquals("Strings should not match.", plainTextString, testString);
 
         JCEEncryptorCmd jceEncryptorCmd = new JCEEncryptorCmd();
         String decryptedString = jceEncryptorCmd.decryptPassword(testString);
@@ -108,7 +109,7 @@ public class SecurableBackwardsCompatibilityTest {
         String plainTextString = "welcome123_aes_ecb";
 
         String testString = encryptString_AES_ECB(plainTextString);
-        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
+        Assert.assertNotEquals("Strings should not match.", plainTextString, testString);
 
         JCEEncryptorCmd jceEncryptorCmd = new JCEEncryptorCmd();
         String decryptedString = jceEncryptorCmd.decryptPassword(testString);
@@ -171,7 +172,7 @@ public class SecurableBackwardsCompatibilityTest {
         String plainTextString = "welcome123_aes_ecb";
 
         String testString = encryptString_AES_ECB(plainTextString);
-        Assert.assertFalse("Strings should not match.", plainTextString.equals(testString));
+        Assert.assertNotEquals("Strings should not match.", plainTextString, testString);
 
         Securable securable = new JCEEncryptor();
         try {
@@ -212,7 +213,7 @@ public class SecurableBackwardsCompatibilityTest {
         IvParameterSpec iv = getIvSpec();
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(bytes, "AES"), iv);
 
-        return Helper.buildHexStringFromBytes(cipher.doFinal(aString.getBytes("UTF-8")));
+        return Helper.buildHexStringFromBytes(cipher.doFinal(aString.getBytes(StandardCharsets.UTF_8)));
     }
 
     /*

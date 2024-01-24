@@ -156,8 +156,8 @@ public class MutableAttributeObject {
 
         /* Configure all of the mappings as mutable, except the id mapping */
         List<DatabaseMapping> mappings = descriptor.getMappings();
-        for (int i = 0; i < mappings.size(); i++) {
-            AbstractDirectMapping mapping = (AbstractDirectMapping)mappings.get(i);
+        for (DatabaseMapping databaseMapping : mappings) {
+            AbstractDirectMapping mapping = (AbstractDirectMapping) databaseMapping;
             if (!mapping.getAttributeName().equalsIgnoreCase("id")) {
                 mapping.setIsMutable(true);
             }

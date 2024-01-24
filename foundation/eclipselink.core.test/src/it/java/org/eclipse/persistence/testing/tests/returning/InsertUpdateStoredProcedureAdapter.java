@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.sessions.*;
@@ -69,9 +67,7 @@ public class InsertUpdateStoredProcedureAdapter implements ProjectAndDatabaseAda
 
     protected int removeOptimisticLocking(Project project) {
         int removed = 0;
-        Iterator<ClassDescriptor> descriptors = project.getDescriptors().values().iterator();
-        while (descriptors.hasNext()) {
-            ClassDescriptor desc = descriptors.next();
+        for (ClassDescriptor desc : project.getDescriptors().values()) {
             if (desc.getOptimisticLockingPolicy() != null) {
                 desc.setOptimisticLockingPolicy(null);
                 removed++;

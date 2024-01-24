@@ -293,7 +293,7 @@ public class SDODataObjectGetFloatConversionWithPathTest extends SDODataObjectCo
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        dataObject_c.set(property_c, new String("eee").getBytes());
+        dataObject_c.set(property_c, "eee".getBytes());
         try {
             dataObject_a.getFloat(propertyPath_a_b_c);
         } catch (Exception e) {

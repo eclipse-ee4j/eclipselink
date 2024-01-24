@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public class JavaName extends LangName {
             m_useClass = useName.substring(dotPos + 1);
         }
         else {
-            m_usePackage = (packageName.length() > 0) ? packageName : m_defaultPackage;
+            m_usePackage = (!packageName.isEmpty()) ? packageName : m_defaultPackage;
             m_useClass = useName;
         }
 
@@ -72,7 +72,7 @@ public class JavaName extends LangName {
             m_useItf = useItf.substring(dotPos + 1);
         }
         else {
-            m_useItfPackage = (packageName.length() > 0) ? packageName : m_defaultPackage;
+            m_useItfPackage = (!packageName.isEmpty()) ? packageName : m_defaultPackage;
             m_useItf = useItf;
         }
 
@@ -90,7 +90,7 @@ public class JavaName extends LangName {
                 m_name = declName.substring(dotPos + 1);
             }
             else {
-                m_context = (packageName.length() > 0) ? packageName : m_defaultPackage;
+                m_context = (!packageName.isEmpty()) ? packageName : m_defaultPackage;
                 m_name = declName;
             }
             try {
@@ -105,7 +105,7 @@ public class JavaName extends LangName {
                 m_declItf = declItf.substring(dotPos + 1);
             }
             else {
-                m_declItfPackage = (packageName.length() > 0) ? packageName : m_defaultPackage;
+                m_declItfPackage = (!packageName.isEmpty()) ? packageName : m_defaultPackage;
                 m_declItf = declItf;
             }
         }

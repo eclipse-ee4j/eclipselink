@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -292,10 +292,7 @@ public class TestResultsSummary implements ResultInterface, Comparable<TestResul
     @Override
     public boolean hasPassed() {
         // This is a safest way to check then doing totaltests == passedtests.
-        if ((getWarnings() != 0) || (getFatalErrors() != 0) || (getProblems() != 0) || (getErrors() != 0) || didSetupFail() || (getSetupFailures() != 0) || didSetupWarn() || (getSetupWarnings() != 0)) {
-            return false;
-        }
-        return true;
+        return (getWarnings() == 0) && (getFatalErrors() == 0) && (getProblems() == 0) && (getErrors() == 0) && !didSetupFail() && (getSetupFailures() == 0) && !didSetupWarn() && (getSetupWarnings() == 0);
     }
 
     protected void incrementErrors() {

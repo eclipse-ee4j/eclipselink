@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -269,9 +269,9 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
         public void setup() {
             // find Project with at least one Employee
             List<Project> projects = getSession().readAllObjects(Project.class);
-            for(int i=0; i < projects.size(); i++) {
-                if(projects.get(i).getEmployees().size() > 0) {
-                    originalObject = projects.get(i);
+            for (Project project : projects) {
+                if (!project.getEmployees().isEmpty()) {
+                    originalObject = project;
                     break;
                 }
             }
@@ -432,7 +432,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             query.addJoinedAttribute(managerProjectLed);
 
             String errorMsg = JoinedAttributeTestHelper.executeQueriesAndCompareResults(controlQuery, query, (AbstractSession)getSession());
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 throw new TestErrorException(errorMsg);
             }
         }
@@ -478,12 +478,12 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             // (the data is already cached in the value holders).
             printDebug("Trigger batch reading results");
             boolean isConnected = true;
-            for(int i=0; i < employees.size(); i++) {
-                Address address = ((Employee)employees.get(i)).getAddress();
-                if(isConnected) {
+            for (Object employee : employees) {
+                Address address = ((Employee) employee).getAddress();
+                if (isConnected) {
                     // need to instantiate only a single Address to trigger sql that reads data from the db for all Addresses.
                     // to ensure that no other sql is issued close connection.
-                    ((AbstractSession)getSession()).getAccessor().closeConnection();
+                    ((AbstractSession) getSession()).getAccessor().closeConnection();
                     isConnected = false;
                 }
             }
@@ -500,13 +500,13 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             List controlEmployees = (List)getSession().executeQuery(controlQuery);
             // instantiate all value holders that the batch query expected to instantiate
             printDebug("Trigger control results");
-            for(int i=0; i < controlEmployees.size(); i++) {
-                Address address = ((Employee)controlEmployees.get(i)).getAddress();
+            for (Object controlEmployee : controlEmployees) {
+                Address address = ((Employee) controlEmployee).getAddress();
             }
 
             // compare results
             String errorMsg = JoinedAttributeTestHelper.compareCollections(employees, controlEmployees, getSession().getClassDescriptor(Employee.class), ((AbstractSession)getSession()));
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 throw new TestErrorException(errorMsg);
             }
         }
@@ -649,7 +649,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
          *   and itself
          */
         private void addEqualUnneccessaryJoinTest() {
-            Employee employee = (Employee)PopulationManager.getDefaultManager().getObject(new Employee().getClass(), "0008");
+            Employee employee = (Employee)PopulationManager.getDefaultManager().getObject(Employee.class, "0008");
 
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("firstName").equal("Fred").or(builder.get("manager").notEqual(builder.get("manager")));
@@ -767,7 +767,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             List<Child> children = ((Employee) result.elementAt(0)).getChildren();
             ((Employee) result.elementAt(0)).getResponsibilitiesList().size();
             ((Employee) result.elementAt(0)).getProjects().size();
-            if ((children == null) || (children.size() == 0)) {
+            if ((children == null) || (children.isEmpty())) {
                     throw new TestErrorException("The original query was corrupted when made part of a batch query.");
             }
             if (((Employee) result.elementAt(0)).getAddress() == null) {

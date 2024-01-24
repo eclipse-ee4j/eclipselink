@@ -14,8 +14,6 @@
 //     ailitchev - fixed bug 266555: Nested AggregateCollectionMapping may set wrong tables into reference descriptor.
 package org.eclipse.persistence.testing.tests.aggregate;
 
-import java.util.Iterator;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -41,47 +39,41 @@ public class AgentBuilderTablesTest extends TestCase {
         String errorMsg = "";
         errorMsg += verifyDescriptorWithAggColMappingsAndChildren(getSession().getDescriptor(Agent.class), false, "Agent");
         errorMsg += verifyDescriptorWithAggColMappingsAndChildren(getSession().getDescriptor(Builder.class), true, "Builder");
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             throw new TestErrorException("\n"+errorMsg);
         }
     }
     String verifyDescriptorWithAggColMappingsAndChildren(ClassDescriptor desc, boolean tableNameShouldStartWithBuilder, String attributeName) {
-        String localErrorMsg = verifyDescriptorWithChildren(desc, tableNameShouldStartWithBuilder, attributeName);
+        StringBuilder localErrorMsg = new StringBuilder(verifyDescriptorWithChildren(desc, tableNameShouldStartWithBuilder, attributeName));
         boolean hasAggregateCollectionMapping = false;
-        Iterator<DatabaseMapping> itMappings = desc.getMappings().iterator();
-        while(itMappings.hasNext()) {
-            DatabaseMapping mapping = itMappings.next();
-            if(mapping.isAggregateCollectionMapping()) {
-                AggregateCollectionMapping acMapping = (AggregateCollectionMapping)mapping;
-                localErrorMsg += verifyDescriptorWithAggColMappingsAndChildren(acMapping.getReferenceDescriptor(), tableNameShouldStartWithBuilder, attributeName + "." + acMapping.getAttributeName());
+        for (DatabaseMapping mapping : desc.getMappings()) {
+            if (mapping.isAggregateCollectionMapping()) {
+                AggregateCollectionMapping acMapping = (AggregateCollectionMapping) mapping;
+                localErrorMsg.append(verifyDescriptorWithAggColMappingsAndChildren(acMapping.getReferenceDescriptor(), tableNameShouldStartWithBuilder, attributeName + "." + acMapping.getAttributeName()));
             }
         }
-        return localErrorMsg;
+        return localErrorMsg.toString();
     }
     String verifyDescriptorWithChildren(ClassDescriptor desc, boolean tableNameShouldStartWithBuilder, String attributeName) {
-        String localErrorMsg = verifyDescriptor(desc, tableNameShouldStartWithBuilder, attributeName);
+        StringBuilder localErrorMsg = new StringBuilder(verifyDescriptor(desc, tableNameShouldStartWithBuilder, attributeName));
         if(desc.hasInheritance() && desc.getInheritancePolicy().hasChildren()) {
-            Iterator<ClassDescriptor> itChildren = desc.getInheritancePolicy().getChildDescriptors().iterator();
-            while(itChildren.hasNext()) {
-                ClassDescriptor childDesc = itChildren.next();
-                localErrorMsg += verifyDescriptor(childDesc, tableNameShouldStartWithBuilder, attributeName);
+            for (ClassDescriptor childDesc : desc.getInheritancePolicy().getChildDescriptors()) {
+                localErrorMsg.append(verifyDescriptor(childDesc, tableNameShouldStartWithBuilder, attributeName));
             }
         }
-        return localErrorMsg;
+        return localErrorMsg.toString();
     }
     String verifyDescriptor(ClassDescriptor desc, boolean tableNameShouldStartWithBuilder, String attributeName) {
-        String localErrorMsg = "";
-        Iterator<String> it = desc.getTableNames().iterator();
-        while(it.hasNext()) {
-            String tableName = it.next();
+        StringBuilder localErrorMsg = new StringBuilder();
+        for (String tableName : desc.getTableNames()) {
             boolean startsWithBuilder = tableName.startsWith("BUILDER");
-            if(tableNameShouldStartWithBuilder != startsWithBuilder) {
-                localErrorMsg += "Wrong table name " + tableName + "; ";
+            if (tableNameShouldStartWithBuilder != startsWithBuilder) {
+                localErrorMsg.append("Wrong table name ").append(tableName).append("; ");
             }
         }
-        if(localErrorMsg.length() > 0) {
-            localErrorMsg = "Ref.descriptor class: " + desc.getJavaClass().getSimpleName() +"; mapping: "+ attributeName + ": " + localErrorMsg + "\n";
+        if(!localErrorMsg.isEmpty()) {
+            localErrorMsg = new StringBuilder("Ref.descriptor class: " + desc.getJavaClass().getSimpleName() + "; mapping: " + attributeName + ": " + localErrorMsg + "\n");
         }
-        return localErrorMsg;
+        return localErrorMsg.toString();
     }
 }

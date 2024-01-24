@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -317,7 +317,7 @@ public class ConverterTest extends JUnitTestCase {
             // Run test for all existing Runner instances.
             final TypedQuery<Runner> rq = em.createNamedQuery("Runner.listAll", Runner.class);
             final List<Runner> runners = rq.getResultList();
-            assertTrue("No Runner object was returned", runners.size() > 0);
+            assertTrue("No Runner object was returned", !runners.isEmpty());
             for (Runner runner : runners) {
 
                 // Verify Map processed with @Convert annotation.

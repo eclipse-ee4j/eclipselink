@@ -163,7 +163,7 @@ public class SDODataObjectGetIntWithIndexConversionTest extends SDODataObjectCon
     public void testGetIntFromBytes() {
         SDOProperty property = type.getProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("rrr").getBytes());
+        dataObject.set(property, "rrr".getBytes());
         try {
             dataObject.getInt(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");

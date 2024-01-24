@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,7 +60,6 @@ import org.eclipse.persistence.testing.models.jpa.relationships.TestInstantiatio
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -501,7 +500,7 @@ public class RelationshipModelTest extends JUnitTestCase {
             if (returnedCustomers1 == null || (returnedCustomers1.size() < 2)) {
                 fail("Not all customers were returned from findAllCustomers query ");
             }
-            if (returnedCustomers2 == null || (returnedCustomers2.size() != 0)) {
+            if (returnedCustomers2 == null || (!returnedCustomers2.isEmpty())) {
                 fail("Customer from ReadObjectQuery was not returned using getResultCollection");
             }
             if (expectedException1 == null || (expectedException1.getErrorCode() != QueryException.INVALID_CONTAINER_CLASS)) {
@@ -583,7 +582,7 @@ public class RelationshipModelTest extends JUnitTestCase {
             if (returnedCustomers1 == null || (returnedCustomers1.size() < 2)) {
                 fail("Not all customers were returned from findAllCustomers query ");
             }
-            if (returnedCustomers2 == null || (returnedCustomers2.size() != 0)) {
+            if (returnedCustomers2 == null || (!returnedCustomers2.isEmpty())) {
                 fail("Customer from ReadObjectQuery was not returned using getResultCollection");
             }
             if (expectedException1 == null || (expectedException1.getErrorCode() != QueryException.INVALID_CONTAINER_CLASS)) {
@@ -818,9 +817,7 @@ public class RelationshipModelTest extends JUnitTestCase {
             UnitOfWorkChangeSet uowChangeSet = uow.getCumulativeUOWChangeSet();
             ObjectChangeSet customerChangeSet = uowChangeSet.getCloneToObjectChangeSet().get(cust);
             CollectionChangeRecord orderChangeRecord = (CollectionChangeRecord)customerChangeSet.getChangesForAttributeNamed("orders");
-            Iterator<ObjectChangeSet> i = orderChangeRecord.getAddObjectList().keySet().iterator();
-            while(i.hasNext()){
-                ObjectChangeSet orderChangeSet = i.next();
+            for (ObjectChangeSet orderChangeSet : orderChangeRecord.getAddObjectList().keySet()) {
                 assertTrue("There are changes in the change set.  There should be no changes for a new object.", orderChangeSet.getChanges().isEmpty());
             }
         } catch (Exception e){

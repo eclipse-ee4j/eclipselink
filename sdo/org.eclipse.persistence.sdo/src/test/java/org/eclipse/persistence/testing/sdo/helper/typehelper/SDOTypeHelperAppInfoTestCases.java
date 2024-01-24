@@ -171,7 +171,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         assertTrue("Type does not have AppInfoElements set as expected", newType.getAppInfoElements() != null);
         assertTrue("Expected AppInfoElements list of size [1] on Type, but was [" + newType.getAppInfoElements().size() + "]", newType.getAppInfoElements().size() == 1);
         String val = ((Element)newType.getAppInfoElements().get(0)).getAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE);
-        assertNotNull("AppInfoElement source on Type is empty/null", val != null && val.length() > 0);
+        assertNotNull("AppInfoElement source on Type is empty/null", val != null && !val.isEmpty());
         assertTrue("Expected AppInfoElement source ["+TYPE_APP_INFO+"] on Type but was [" + val + "]", val.equals(TYPE_APP_INFO));
         String appInfoString = xsdHelper.getAppinfo(newType, TYPE_APP_INFO);
         assertEquals("Expected getAppInfo() to return ["+TYPE_APP_INFO_STRING+"] but was ["+appInfoString+"]", TYPE_APP_INFO_STRING, appInfoString);
@@ -181,7 +181,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         assertTrue("Property does not have AppInfoElements set as expected", myProp.getAppInfoElements() != null);
         assertTrue("Expected AppInfoElements list of size [1] on Property, but was [" + myProp.getAppInfoElements().size() + "]", myProp.getAppInfoElements().size() == 1);
         val = ((Element)myProp.getAppInfoElements().get(0)).getAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE);
-        assertNotNull("AppInfoElement source on Property is empty/null", val != null && val.length() > 0);
+        assertNotNull("AppInfoElement source on Property is empty/null", val != null && !val.isEmpty());
         assertTrue("Expected AppInfoElement source ["+PROPERTY_APP_INFO+"] on Property but was [" + val + "]", val.equals(PROPERTY_APP_INFO));
         appInfoString = xsdHelper.getAppinfo(myProp, PROPERTY_APP_INFO);
         assertEquals("Expected getAppInfo() to return ["+PROPERTY_APP_INFO_STRING+"] but was ["+appInfoString+"]", PROPERTY_APP_INFO_STRING, appInfoString);

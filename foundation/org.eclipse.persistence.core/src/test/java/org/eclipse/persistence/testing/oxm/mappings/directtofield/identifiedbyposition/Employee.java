@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,8 +63,7 @@ public class Employee {
       if(this.getID() != employee.getID()) {return false;}
       if(!(this.getFirstName() == employee.getFirstName() || this.getFirstName().equals(employee.getFirstName()))) {return false;}
       if(!(this.getLastName() == employee.getLastName() || this.getLastName().equals(employee.getLastName()))) {return false;}
-            if(!(this.getMiddleName() == employee.getMiddleName() || this.getMiddleName().equals(employee.getMiddleName()))) {return false;}
-      return true;
+        return this.getMiddleName() == employee.getMiddleName() || this.getMiddleName().equals(employee.getMiddleName());
     } catch(ClassCastException e) {
       return false;
     }

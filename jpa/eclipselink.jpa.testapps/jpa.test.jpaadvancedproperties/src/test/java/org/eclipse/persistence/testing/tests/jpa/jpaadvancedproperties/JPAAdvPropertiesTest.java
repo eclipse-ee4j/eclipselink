@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -96,11 +96,10 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
 
             List<SessionEventListener> listeners = session.getEventManager().getListeners();
             boolean doseCustomizedSessionEventListenerExists=false;
-            for (int i =0;i<listeners.size();i++){
-                Object aListener = listeners.get(i);
-                if(aListener instanceof CustomizedSessionEventListener){
-                    doseCustomizedSessionEventListenerExists=true;
-                    CustomizedSessionEventListener requiredListener = ((CustomizedSessionEventListener)aListener);
+            for (Object aListener : listeners) {
+                if (aListener instanceof CustomizedSessionEventListener) {
+                    doseCustomizedSessionEventListenerExists = true;
+                    CustomizedSessionEventListener requiredListener = ((CustomizedSessionEventListener) aListener);
                     if (!requiredListener.preCommitTransaction) {
                         fail(" The preCommitTransaction event did not fire");
                     }
@@ -181,7 +180,7 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
     public void testCacheStatementsAndItsSizeProperty() {
         EntityManager em = createEntityManager();
         ServerSession session = em.unwrap(ServerSession.class);
-        if(session.getConnectionPools().size()>0){//And if connection pooling is configured,
+        if(!session.getConnectionPools().isEmpty()){//And if connection pooling is configured,
             if(!session.getProject().getLogin().shouldCacheAllStatements()){
                 fail("Caching all statements flag set equals to true by property eclipselink.jdbc.cache-statements in persistence.xml, it however read as false.");
             }

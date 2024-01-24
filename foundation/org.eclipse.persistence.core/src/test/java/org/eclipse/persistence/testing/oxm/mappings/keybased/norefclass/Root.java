@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,9 +24,9 @@ public class Root {
     private List<PhoneNumber> phoneNumbers;
 
     public Root() {
-        customers = new ArrayList<Customer>();
-        addresses = new ArrayList<Address>();
-        phoneNumbers = new ArrayList<PhoneNumber>();
+        customers = new ArrayList<>();
+        addresses = new ArrayList<>();
+        phoneNumbers = new ArrayList<>();
     }
 
     public List<Customer> getCustomers() {
@@ -66,10 +66,7 @@ public class Root {
             if(!equals(addresses, testRoot.getAddresses())) {
                 return false;
             }
-            if(!equals(phoneNumbers, testRoot.getPhoneNumbers())) {
-                return false;
-            }
-            return true;
+            return equals(phoneNumbers, testRoot.getPhoneNumbers());
         } catch(ClassCastException e) {
             return false;
         }

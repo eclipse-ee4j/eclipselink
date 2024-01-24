@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public class SunCORBARemoteModel extends RemoteModel {
             org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
             NamingContext ncRef = NamingContextHelper.narrow(objRef);
             NameComponent nc = new NameComponent("CORBAServer", "");
-            NameComponent path[] = { nc };
+            NameComponent[] path = { nc };
             manager = CORBAServerManagerHelper.narrow(ncRef.resolve(path));
         } catch (Exception exception) {
             throw new TestErrorException("Corba not configured correctly, see system.out.", exception);
@@ -62,7 +62,7 @@ public class SunCORBARemoteModel extends RemoteModel {
         try {
             Thread.sleep(10000);
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
         CORBAConnection connection = createConnection();
         Session remoteSession = connection.createRemoteSession();

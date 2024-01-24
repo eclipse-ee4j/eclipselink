@@ -131,14 +131,14 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
 
         Expression expression = null;
         String[] cities = new String[] { "Ottawa", "Vancouver" };
-        for (int i = 0; i < cities.length; i++) {
+        for (String city : cities) {
             ReportQuery subQuery = new ReportQuery(Address.class, new ExpressionBuilder(Address.class));
 
             ExpressionBuilder address = subQuery.getExpressionBuilder();
             subQuery.addAttribute("fish", address.value(1));
 
             Expression correlateExpression = address.equal(outerAddress);
-            Expression innerExpression = address.get("city").equal(cities[i]);
+            Expression innerExpression = address.get("city").equal(city);
             subQuery.setSelectionCriteria(correlateExpression.and(innerExpression));
 
             expression = manager.exists(subQuery).or(expression);
@@ -757,7 +757,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
      * This test was removed, not sure why?  Added back.
      */
     private void addUpperCaseTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0002");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("address").get("city").toUpperCase().equal("OTTAWA");

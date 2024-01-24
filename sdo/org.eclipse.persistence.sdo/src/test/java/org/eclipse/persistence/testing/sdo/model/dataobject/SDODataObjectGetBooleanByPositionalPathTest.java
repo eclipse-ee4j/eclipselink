@@ -305,7 +305,7 @@ public class SDODataObjectGetBooleanByPositionalPathTest extends SDODataObjectGe
     public void testGetBooleanFromBytes() {
         SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BYTES);
-        dataObject_c.set(prop, new String("eee").getBytes());
+        dataObject_c.set(prop, "eee".getBytes());
         try {
             dataObject_a.getBoolean(property);
         } catch (Exception e) {

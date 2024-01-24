@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,8 @@ import javax.wsdl.WSDLException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -142,13 +144,13 @@ public class TableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_TABLETYPE2_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_TABLETYPE_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_TABLETYPE_TABLE[i]);
+                for (String string : POPULATE_TABLETYPE_TABLE) {
+                    stmt.addBatch(string);
                 }
                 stmt.executeBatch();
                 stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_TABLETYPE2_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_TABLETYPE2_TABLE[i]);
+                for (String s : POPULATE_TABLETYPE2_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             }
@@ -364,7 +366,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         DatabaseQuery updateQuery = xrService.getORSession().getQuery("update_TabletypeType");
 
         // map property names to parameter binding values
-        Map<String, Integer> propOrder = new HashMap<String, Integer>();
+        Map<String, Integer> propOrder = new HashMap<>();
         propOrder.put("id", 1);
         propOrder.put("name", 2);
         propOrder.put("deptno", 3);
@@ -378,9 +380,9 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         propOrder.put("c", 11);
         propOrder.put("r", 12);
 
-        List<String> args = new ArrayList<String>();
-        Vector<DatabaseField> fieldVector = new Vector<DatabaseField>(12);
-        List<Object> argVals = new ArrayList<Object>();
+        List<String> args = new ArrayList<>();
+        Vector<DatabaseField> fieldVector = new Vector<>(12);
+        List<Object> argVals = new ArrayList<>();
 
         for (String prop : firstPerson.getPropertiesMap().keySet()) {
             args.add(propOrder.get(prop).toString());
@@ -411,9 +413,9 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         // verify update operation
         DatabaseQuery findQuery = xrService.getORSession().getActiveSession().getQuery("findByPrimaryKey_TabletypeType");
         findQuery.setIsPrepared(false);
-        args = new ArrayList<String>();
-        fieldVector = new Vector<DatabaseField>(12);
-        argVals = new ArrayList<Object>();
+        args = new ArrayList<>();
+        fieldVector = new Vector<>(12);
+        argVals = new ArrayList<>();
 
         argVals.add(1);
         args.add("1");
@@ -435,13 +437,13 @@ public class TableTypeTestSuite extends DBWSTestSuite {
 
         assertTrue("Expected Vector, but result was " + result.getClass().getName(), result instanceof Vector);
         Vector resultVector = (Vector) result;
-        assertTrue("Expected vector of size 1, but was " + resultVector.size(), resultVector.size() == 1);
+        assertEquals("Expected vector of size 1, but was " + resultVector.size(), 1, resultVector.size());
         result = resultVector.get(0);
         assertTrue("Expected TableType (XRDynamicEntity) but was " + result.getClass().getName(), result instanceof XRDynamicEntity);
 
         // verify that 'sal' and 'c' fields were updated successfully
         XRDynamicEntity tableTypeEntity = (XRDynamicEntity) result;
-        assertTrue("Expected [sal] '112000.99' but was '" + tableTypeEntity.get("sal") + "'", Float.compare(tableTypeEntity.get("sal"), 112000.99f) == 0);
+        assertEquals("Expected [sal] '112000.99' but was '" + tableTypeEntity.get("sal") + "'", 0, Float.compare(tableTypeEntity.get("sal"), 112000.99f));
 
         Character[] chars = tableTypeEntity.get("c");
         StringBuilder sb = new StringBuilder(chars.length);
@@ -449,7 +451,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
             sb.append(c.charValue());
         }
         String charStr = sb.toString();
-        assertTrue("Expected [c] 'ababababababababababababababab' but was '" + tableTypeEntity.get("c") + "'", charStr.equals("ababababababababababababababab"));
+        assertEquals("Expected [c] 'ababababababababababababababab' but was '" + tableTypeEntity.get("c") + "'", "ababababababababababababababab", charStr);
 
         // reset original value
         firstPerson.set("sal", originalSal);
@@ -472,9 +474,9 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         // Need to clone call, in case was executed as read.
         query.setDatasourceCall((Call) createQuery.getDatasourceCall().clone());
 
-        List<String> args = new ArrayList<String>();
-        Vector<DatabaseField> fieldVector = new Vector<DatabaseField>(12);
-        List<Object> argVals = new ArrayList<Object>();
+        List<String> args = new ArrayList<>();
+        Vector<DatabaseField> fieldVector = new Vector<>(12);
+        List<Object> argVals = new ArrayList<>();
 
         argVals.add(99);
         argVals.add("Joe Black");
@@ -539,9 +541,9 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         // Need to clone call, in case was executed as read.
         query.setDatasourceCall((Call) deleteQuery.getDatasourceCall().clone());
 
-        args = new ArrayList<String>();
-        fieldVector = new Vector<DatabaseField>(12);
-        argVals = new ArrayList<Object>();
+        args = new ArrayList<>();
+        fieldVector = new Vector<>(12);
+        argVals = new ArrayList<>();
 
         argVals.add(99);
         args.add("1");

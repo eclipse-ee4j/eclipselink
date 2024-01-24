@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -107,7 +107,7 @@ public class XMLTypeTestSuite {
 
         String schema = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
 
-        List<String> procedurePatterns = new ArrayList<String>();
+        List<String> procedurePatterns = new ArrayList<>();
         procedurePatterns.add("GET_XMLTYPE");
         procedurePatterns.add("RETURN_XMLTYPE");
 

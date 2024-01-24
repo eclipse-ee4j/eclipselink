@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.oxm.xpathengine;
 
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.oxm.XMLField;
+import org.junit.Assert;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -55,7 +56,7 @@ public class XPathEngineRemoveTestCases extends org.eclipse.persistence.testing.
 
         NodeList verifyNodes = searchNode.getElementsByTagName("phone");
 
-        assertTrue("XPath did not remove all of the elements.", verifyNodes.getLength() == 0);
+        assertEquals("XPath did not remove all of the elements.", 0, verifyNodes.getLength());
 
         searchNode = backupNode;
     }
@@ -73,7 +74,7 @@ public class XPathEngineRemoveTestCases extends org.eclipse.persistence.testing.
         for (int i = 0; i < verifyNodes.getLength(); i++) {
             Element nextNode = (Element) verifyNodes.item(i);
             String areaCode = nextNode.getAttribute("area-code");
-            assertFalse("XPath did not remove the element.", areaCode.equals("214"));
+            Assert.assertNotEquals("XPath did not remove the element.", "214", areaCode);
         }
         searchNode = backupNode;
     }
@@ -88,11 +89,11 @@ public class XPathEngineRemoveTestCases extends org.eclipse.persistence.testing.
 
         NodeList verifyNodes = searchNode.getElementsByTagName("phone");
 
-        assertTrue("XPath did not truly remove the element.", verifyNodes.getLength() == 4);
+        assertEquals("XPath did not truly remove the element.", 4, verifyNodes.getLength());
         for (int i = 0; i < verifyNodes.getLength(); i++) {
             Element nextNode = (Element) verifyNodes.item(i);
             String areaCode = nextNode.getAttribute("area-code");
-            assertFalse("XPath did not remove the element.", areaCode.equals("214"));
+            Assert.assertNotEquals("XPath did not remove the element.", "214", areaCode);
         }
 
         searchNode = backupNode;
@@ -110,8 +111,8 @@ public class XPathEngineRemoveTestCases extends org.eclipse.persistence.testing.
         for (int i = 0; i < verifyNodes.getLength(); i++) {
             Element nextNode = (Element) verifyNodes.item(i);
             String areaCode = nextNode.getAttribute("area-code");
-            assertFalse("XPath did not remove the element.", areaCode.equals("555-7298"));
-            assertFalse("XPath did not remove the element.", areaCode.equals("212-555-1530"));
+            Assert.assertNotEquals("XPath did not remove the element.", "555-7298", areaCode);
+            Assert.assertNotEquals("XPath did not remove the element.", "212-555-1530", areaCode);
         }
 
         searchNode = backupNode;
@@ -129,7 +130,7 @@ public class XPathEngineRemoveTestCases extends org.eclipse.persistence.testing.
         for (int i = 0; i < verifyNodes.getLength(); i++) {
             Element nextElement = (Element) verifyNodes.item(i);
             Attr typeAttribute = nextElement.getAttributeNode("type");
-            assertTrue("XPath did not remove all of the attributes.", typeAttribute == null);
+            assertNull("XPath did not remove all of the attributes.", typeAttribute);
         }
 
         searchNode = backupNode;
@@ -143,7 +144,7 @@ public class XPathEngineRemoveTestCases extends org.eclipse.persistence.testing.
         XMLField field = new XMLField(fieldName);
         NodeList nodes = org.eclipse.persistence.internal.oxm.XPathEngine.getInstance().remove(field, searchNode);
 
-        assertTrue("XPathEngine did not return a correct NodeList.", nodes.getLength() == 5);
+        assertEquals("XPathEngine did not return a correct NodeList.", 5, nodes.getLength());
 
         searchNode = backupNode;
     }

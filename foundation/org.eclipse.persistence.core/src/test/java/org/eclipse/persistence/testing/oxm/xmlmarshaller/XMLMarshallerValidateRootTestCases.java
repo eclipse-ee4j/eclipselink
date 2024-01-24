@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,11 +44,11 @@ public class XMLMarshallerValidateRootTestCases extends OXTestCase {
         try {
             xmlValidator.validateRoot(emp);
         } catch (XMLMarshalException ex) {
-            assertTrue("", ex.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT);
+            assertEquals("", XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT, ex.getErrorCode());
             return;
         }
 
-        assertTrue("Validation Exception not caught", false);
+        fail("Validation Exception not caught");
     }
 
     public void testDescriptorWithNoSchemaReference() throws Exception {
@@ -58,10 +58,10 @@ public class XMLMarshallerValidateRootTestCases extends OXTestCase {
         try {
             xmlValidator.validateRoot(car);
         } catch (XMLMarshalException ex) {
-            assertTrue("", ex.getErrorCode() == XMLMarshalException.SCHEMA_REFERENCE_NOT_SET);
+            assertEquals("", XMLMarshalException.SCHEMA_REFERENCE_NOT_SET, ex.getErrorCode());
             return;
         }
-        assertTrue("ValidationException not caught", false);
+        fail("ValidationException not caught");
     }
 
     public void testValidCar() throws Exception {
@@ -89,20 +89,20 @@ public class XMLMarshallerValidateRootTestCases extends OXTestCase {
         try {
             boolean valid = xmlValidator.validateRoot(null);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An unexpected XMLMarshalException was caught.", validationException.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("An unexpected XMLMarshalException was caught.", XMLMarshalException.NULL_ARGUMENT, validationException.getErrorCode());
             return;
         }
-        assertTrue("An XMLMarshalException should have been caught but wasn't", false);
+        fail("An XMLMarshalException should have been caught but wasn't");
     }
 
     public void testNullObject() throws Exception {
         try {
             boolean valid = xmlValidator.validate(null);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An unexpected XMLMarshalException was caught.", validationException.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("An unexpected XMLMarshalException was caught.", XMLMarshalException.NULL_ARGUMENT, validationException.getErrorCode());
             return;
         }
-        assertTrue("An XMLMarshalException should have been caught but wasn't", false);
+        fail("An XMLMarshalException should have been caught but wasn't");
     }
 
     private static class IgnoreAllErrorHandler implements ErrorHandler {

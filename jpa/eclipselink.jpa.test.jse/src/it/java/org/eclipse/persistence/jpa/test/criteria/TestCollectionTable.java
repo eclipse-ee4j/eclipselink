@@ -49,19 +49,19 @@ public class TestCollectionTable {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaCar[] data = new CriteriaCar[] {
-                    new CriteriaCar("One", 1, new HashMap<String, String>() {{
+                    new CriteriaCar("One", 1, new HashMap<>() {{
                         put("American", "Mustang");
                         put("German", "Volkswagen");
                     }}),
-                    new CriteriaCar("Two", 1, new HashMap<String, String>() {{
+                    new CriteriaCar("Two", 1, new HashMap<>() {{
                         put("American", "Mustang");
                         put("German", "Volkswagen");
                     }}),
-                    new CriteriaCar("Three", 1, new HashMap<String, String>() {{
+                    new CriteriaCar("Three", 1, new HashMap<>() {{
                         put("American", "Mustang");
                         put("German", "Volkswagen");
                     }}),
-                    new CriteriaCar("Four", 1, new HashMap<String, String>() {{
+                    new CriteriaCar("Four", 1, new HashMap<>() {{
                         put("American", "Mustang");
                         put("German", "Volkswagen");
                     }})

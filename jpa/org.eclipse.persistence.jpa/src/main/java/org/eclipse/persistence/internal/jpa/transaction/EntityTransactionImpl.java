@@ -27,7 +27,6 @@ import jakarta.persistence.RollbackException;
 
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.internal.jpa.QueryImpl;
-import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**

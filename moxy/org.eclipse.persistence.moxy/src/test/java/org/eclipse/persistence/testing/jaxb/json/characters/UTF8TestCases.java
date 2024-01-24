@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class UTF8TestCases extends TestCase {
         Marshaller marshaller = jaxbContext.createMarshaller();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         marshaller.marshal(getControlObject(), outputStream);
-        String test = new String(outputStream.toByteArray(), Charset.forName("UTF-8"));
+        String test = outputStream.toString(Charset.forName("UTF-8"));
         assertEquals(CONTROL, test);
 
     }

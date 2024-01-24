@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,11 +91,11 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
         }
         // problems were detected, errors vector has > 0 entries - print a verbose list of erroneous statements
         if (!errors.isEmpty()) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             buffer.append("Errors occurred with duplicate SQL being executed whilst building an object tree. The UnitOfWork cache should have been hit instead:");
             buffer.append(System.lineSeparator());
-            for (int i = 0; i < errors.size(); i++) {
-                buffer.append(errors.get(i));
+            for (Object error : errors) {
+                buffer.append(error);
                 buffer.append(System.lineSeparator());
             }
             throw new TestErrorException(buffer.toString());

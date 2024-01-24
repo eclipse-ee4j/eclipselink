@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,13 +70,11 @@ public class Team {
             return false;
         }
 
-        if ((this.getId() == teamObject.getId()) &&//
+        return (this.getId() == teamObject.getId()) &&//
                 (((this.getDevelopers() == null) && (teamObject.getDevelopers() == null)) ||//
-                (this.getDevelopers().isEmpty() && teamObject.getDevelopers().isEmpty()) ||//
-                (this.getDevelopers().containsAll(teamObject.getDevelopers()))) &&//
-                (this.getDevelopers().size() == teamObject.getDevelopers().size())) {
-            return true;
-        }
+                        (this.getDevelopers().isEmpty() && teamObject.getDevelopers().isEmpty()) ||//
+                        (this.getDevelopers().containsAll(teamObject.getDevelopers()))) &&//
+                (this.getDevelopers().size() == teamObject.getDevelopers().size());
 
         // todo handle :
 
@@ -85,7 +83,6 @@ public class Team {
             Actual:
             Employee(123,[write code],Doe)
         */
-        return false;
     }
 
     public int getId() {
@@ -118,7 +115,7 @@ public class Team {
     }
 
     public String toString() {
-        StringBuffer aBuffer = new StringBuffer();
+        StringBuilder aBuffer = new StringBuilder();
         aBuffer.append("Team(");
         aBuffer.append(getId());
         aBuffer.append(",");

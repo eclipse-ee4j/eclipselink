@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class Customer {
         example2.setName("Jack Johnson");
         example2.setIncome(773388);
         example2.setCompany(Company.example2());
-        Vector<Dependant> dependants = new Vector<Dependant>(1);
+        Vector<Dependant> dependants = new Vector<>(1);
         dependants.addElement(Dependant.example3());
         example2.setDependants(dependants);
         return example2;

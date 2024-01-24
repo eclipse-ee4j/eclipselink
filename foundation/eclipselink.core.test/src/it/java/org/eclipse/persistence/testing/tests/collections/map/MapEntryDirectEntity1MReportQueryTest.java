@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.tests.collections.map;
 
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -32,10 +31,9 @@ public class MapEntryDirectEntity1MReportQueryTest extends ReportQueryTestCase{
 
         for (Enumeration e = holders.elements(); e.hasMoreElements(); ) {
             DirectEntity1MMapHolder holder = (DirectEntity1MMapHolder)e.nextElement();
-            Iterator<Map.Entry> i = holder.getDirectToEntityMap().entrySet().iterator();
-            while (i.hasNext()){
+            for (Map.Entry value : (Iterable<Map.Entry>) holder.getDirectToEntityMap().entrySet()) {
                 Object[] result = new Object[1];
-                Map.Entry entry = i.next();
+                Map.Entry entry = value;
                 result[0] = new Association(entry.getKey(), entry.getValue());
                 addResult(result, null);
             }

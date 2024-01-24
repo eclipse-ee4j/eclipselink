@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -139,15 +139,15 @@ public class ProcedureMethod implements Comparable<ProcedureMethod> {
     }
 
     public String toString() {
-        String printout = m_returnType + " " + m_name + "(";
+        StringBuilder printout = new StringBuilder(m_returnType + " " + m_name + "(");
         for (int i = 0; i < m_paramTypes.length; i++) {
-            printout += m_paramTypes[i].toString() + " " + m_paramNames[i].toString();
+            printout.append(m_paramTypes[i].toString()).append(" ").append(m_paramNames[i]);
             if (i < m_paramTypes.length - 1) {
-                printout += ",";
+                printout.append(",");
             }
         }
-        printout += ");";
-        return printout;
+        printout.append(");");
+        return printout.toString();
     }
 
     // Keep Java method name same as Sql method name
@@ -161,21 +161,21 @@ public class ProcedureMethod implements Comparable<ProcedureMethod> {
     }
 
     protected String getSortingKey() {
-        String key = m_name;
+        StringBuilder key = new StringBuilder(m_name);
         if (m_overloadNumber != null) {
             for (int i = 0; i < 6 - m_overloadNumber.length(); i++) {
-                key = key + "9";
+                key.append("9");
             }
 
-            key = key + m_overloadNumber;
+            key.append(m_overloadNumber);
         }
         for (int i = 0; i < m_paramTypes.length; i++) {
             if (i > 0) {
-                key += ",";
+                key.append(",");
             }
-            key += m_paramTypes[i].getName();
+            key.append(m_paramTypes[i].getName());
         }
-        return key;
+        return key.toString();
     }
     @Override
     public int compareTo(ProcedureMethod other) {

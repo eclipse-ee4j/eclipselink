@@ -36,9 +36,9 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
         try {
             generateSchema(new Class<?>[]{ MyClassThree.class }, outputResolver, null);
         } catch (Exception ex) {
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
-        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         assertTrue("More than one shcema was generated unxepectedly", outputResolver.schemaFiles.size() == 1);
 
         String result = validateAgainstSchema(PATH + "root3.xml", outputResolver);
@@ -54,10 +54,10 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
         try {
             generateSchema(new Class<?>[]{ MyClassOne.class, MyClassTwo.class }, outputResolver, null);
         } catch (Exception ex) {
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
 
-        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         assertTrue("More than two schemas were generated unxepectedly", outputResolver.schemaFiles.size() == 2);
 
         String src = PATH + "root.xml";

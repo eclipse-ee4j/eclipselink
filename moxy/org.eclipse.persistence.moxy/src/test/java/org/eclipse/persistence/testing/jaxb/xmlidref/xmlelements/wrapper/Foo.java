@@ -24,7 +24,7 @@ public class Foo {
         @XmlElement(name="Attribute1", type=AttributeImpl.class),
         @XmlElement(name="Attribute2", type=AttributeImpl2.class)
     })
-    List<Attribute> attributes = new ArrayList<Attribute>();;
+    List<Attribute> attributes = new ArrayList<Attribute>();
 
     @XmlElementWrapper(name="AttributeRefs")
     @XmlElements({

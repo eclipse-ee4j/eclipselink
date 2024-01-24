@@ -60,7 +60,7 @@ public class XmlElementRefWithWrapperTestCases extends JAXBWithJSONTestCases{
         assertNotNull("No descriptor was generated for Foos.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("items");
         assertNotNull("No mapping exists on Foos for attribute [items].", mapping);
-        assertTrue("Expected an XMLChoiceCollectionMapping for attribute [items], but was [" + mapping.toString() +"].", mapping instanceof XMLChoiceCollectionMapping);
+        assertTrue("Expected an XMLChoiceCollectionMapping for attribute [items], but was [" + mapping +"].", mapping instanceof XMLChoiceCollectionMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 

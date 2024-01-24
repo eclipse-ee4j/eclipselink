@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class Base64TestCases extends OXTestCase {
             Integer integer = 1;
             xcm.convertObject(integer, ClassConstants.ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
         } catch (ConversionException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.COULD_NOT_BE_CONVERTED);
+            assertEquals("The incorrect exception was thrown", ConversionException.COULD_NOT_BE_CONVERTED, e.getErrorCode());
         }
     }
 

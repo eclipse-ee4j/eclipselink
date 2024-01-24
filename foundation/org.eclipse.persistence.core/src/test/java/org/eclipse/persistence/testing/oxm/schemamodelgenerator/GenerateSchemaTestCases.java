@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -76,8 +75,7 @@ public class GenerateSchemaTestCases extends TestCase {
         prj.setLogin(new XMLLogin(platform));
         DatabaseSession session = prj.createDatabaseSession();
         session.setLogLevel(SessionLog.OFF);
-        for (Iterator<ClassDescriptor> descriptorIt = prj.getOrderedDescriptors().iterator(); descriptorIt.hasNext();) {
-            ClassDescriptor descriptor = descriptorIt.next();
+        for (ClassDescriptor descriptor : prj.getOrderedDescriptors()) {
             if (descriptor.getJavaClass() == null) {
                 descriptor.setJavaClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(descriptor.getJavaClassName()));
             }
@@ -93,8 +91,8 @@ public class GenerateSchemaTestCases extends TestCase {
         try {
             Project p = new SchemaModelProject();
             Vector namespaces = generatedSchema.getNamespaceResolver().getNamespaces();
-            for (int i = 0; i < namespaces.size(); i++) {
-                Namespace next = (Namespace)namespaces.get(i);
+            for (Object namespace : namespaces) {
+                Namespace next = (Namespace) namespace;
                 ((XMLDescriptor) p.getDescriptor(Schema.class)).getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
             }
             XMLContext context = new XMLContext(p);
@@ -113,15 +111,15 @@ public class GenerateSchemaTestCases extends TestCase {
     protected void outputSchema(Schema generatedSchema){
         Project p = new SchemaModelProject();
         Vector namespaces = generatedSchema.getNamespaceResolver().getNamespaces();
-        for (int i = 0; i < namespaces.size(); i++) {
-            Namespace next = (Namespace)namespaces.get(i);
-            ((XMLDescriptor)p.getDescriptor(Schema.class)).getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
+        for (Object namespace : namespaces) {
+            Namespace next = (Namespace) namespace;
+            ((XMLDescriptor) p.getDescriptor(Schema.class)).getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
         }
         XMLContext context = new XMLContext(p);
         XMLMarshaller marshaller = context.createMarshaller();
         StringWriter generatedSchemaWriter = new StringWriter();
         marshaller.marshal(generatedSchema, generatedSchemaWriter);
-        System.out.println(generatedSchemaWriter.toString());
+        System.out.println(generatedSchemaWriter);
     }
 
     /**
@@ -132,8 +130,8 @@ public class GenerateSchemaTestCases extends TestCase {
     protected boolean compareSchemaStrings(Schema generatedSchema, String controlSchema){
         Project p = new SchemaModelProject();
         Vector namespaces = generatedSchema.getNamespaceResolver().getNamespaces();
-        for (int i = 0; i < namespaces.size(); i++) {
-            Namespace next = (Namespace)namespaces.get(i);
+        for (Object namespace : namespaces) {
+            Namespace next = (Namespace) namespace;
             ((XMLDescriptor) p.getDescriptor(Schema.class)).getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
         }
         XMLContext context = new XMLContext(p);
@@ -148,7 +146,7 @@ public class GenerateSchemaTestCases extends TestCase {
      *
      */
     protected String getSchemaAsString(BufferedReader reader, int available) {
-        StringBuffer sb = new StringBuffer(available);
+        StringBuilder sb = new StringBuilder(available);
         try {
             char[] chars = new char[available];
             int numRead = 0;
@@ -190,8 +188,7 @@ public class GenerateSchemaTestCases extends TestCase {
         Document document = parser.newDocument();
 
         Project p = new SchemaModelProject();
-        for (Iterator<Namespace> nameIt = schema.getNamespaceResolver().getNamespaces().iterator(); nameIt.hasNext(); ) {
-            Namespace next = nameIt.next();
+        for (Namespace next : schema.getNamespaceResolver().getNamespaces()) {
             ((XMLDescriptor) p.getDescriptor(Schema.class)).getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
         }
 
@@ -212,7 +209,7 @@ public class GenerateSchemaTestCases extends TestCase {
         for (int x = nodeList.getLength() - 1; x >= 0; x--) {
             childNode = nodeList.item(x);
             if (childNode.getNodeType() == Node.TEXT_NODE) {
-                if (childNode.getNodeValue().trim().equals("")) {
+                if (childNode.getNodeValue().trim().isEmpty()) {
                     node.removeChild(childNode);
                 }
             } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {

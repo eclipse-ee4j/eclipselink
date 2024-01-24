@@ -172,7 +172,7 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         assertNotNull("No descriptor was generated for Address.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("emp");
         assertNotNull("No mapping exists on Address for attribute [emp].", mapping);
-        assertTrue("Expected an XMLInverseReferenceMapping for attribute [emp], but was [" + mapping.toString() +"].", mapping instanceof XMLInverseReferenceMapping);
+        assertTrue("Expected an XMLInverseReferenceMapping for attribute [emp], but was [" + mapping +"].", mapping instanceof XMLInverseReferenceMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 }

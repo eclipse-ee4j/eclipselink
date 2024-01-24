@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ public class Employee {
 
     public int id;
     public String name;
-    public List<Address> addresses = new LinkedList<Address>();
+    public List<Address> addresses = new LinkedList<>();
 
     @Override
     public boolean equals(Object obj) {
@@ -36,10 +36,7 @@ public class Employee {
             if (!(this.addresses.equals(empObj.addresses))) {
                 return false;
             }
-            if (!(this.addresses.getClass().equals(empObj.addresses.getClass()))) {
-                return false;
-            }
-            return true;
+            return this.addresses.getClass().equals(empObj.addresses.getClass());
         } else {
             return false;
         }
@@ -47,14 +44,13 @@ public class Employee {
 
     @Override
     public String toString() {
-        String toString = "Employee[" + id + ", " + name + "], addresses[" + addresses.getClass() + "]:\n";
+        StringBuilder toString = new StringBuilder("Employee[" + id + ", " + name + "], addresses[" + addresses.getClass() + "]:\n");
 
-        for (int i = 0; i < addresses.size(); i++) {
-            Address a = addresses.get(i);
-            toString += "\tAddress[" +  a.id + "] " + a.info + "\n";
+        for (Address a : addresses) {
+            toString.append("\tAddress[").append(a.id).append("] ").append(a.info).append("\n");
         }
 
-        return toString;
+        return toString.toString();
     }
 
 }

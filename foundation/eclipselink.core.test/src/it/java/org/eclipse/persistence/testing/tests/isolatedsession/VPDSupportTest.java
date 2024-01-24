@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,8 +37,8 @@ public class VPDSupportTest extends AutoVerifyTestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            descriptors.addElement(iterator.next());
+        for (ClassDescriptor classDescriptor : session.getDescriptors().values()) {
+            descriptors.addElement(classDescriptor);
         }
         this.server.addDescriptors(descriptors);
         // Since the descriptors are already initialized, must also set the session to isolated.
@@ -121,7 +121,7 @@ public class VPDSupportTest extends AutoVerifyTestCase {
 
     @Override
     public void verify() {
-        if (this.nonVPDSession.readAllObjects(IsolatedEmployee.class).size() > 0) {
+        if (!this.nonVPDSession.readAllObjects(IsolatedEmployee.class).isEmpty()) {
             throw new TestErrorException("The objects were not isolated by the VPD");
         }
         this.nonVPDSession.release();

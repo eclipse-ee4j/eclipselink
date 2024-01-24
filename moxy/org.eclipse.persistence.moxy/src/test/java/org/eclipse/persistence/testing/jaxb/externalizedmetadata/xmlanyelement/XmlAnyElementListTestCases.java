@@ -86,7 +86,7 @@ public class XmlAnyElementListTestCases extends JAXBWithJSONTestCases{
         assertNotNull("No descriptor was generated for EmployeeWithList.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("stuff");
         assertNotNull("No mapping exists on EmployeeWithList for attribute [stuff].", mapping);
-        assertTrue("Expected an XMLAnyCollectionMapping for attribute [stuff], but was [" + mapping.toString() +"].", mapping instanceof XMLAnyCollectionMapping);
+        assertTrue("Expected an XMLAnyCollectionMapping for attribute [stuff], but was [" + mapping +"].", mapping instanceof XMLAnyCollectionMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2016, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,11 +89,10 @@ public class LocalizationResourcesTest {
                     String key = (String)message[0];
                     //log.log(SessionLog.INFO, "  - Checking key [{0}]", new Object[] {key}, false);
                     if (keys.contains(key)) {
-                        StringBuilder sb = new StringBuilder(bundleName.length() + key.length() + 1);
-                        sb.append(bundleName);
-                        sb.append(':');
-                        sb.append(key);
-                        duplicateKeys.add(sb.toString());
+                        String sb = bundleName +
+                                ':' +
+                                key;
+                        duplicateKeys.add(sb);
                     } else {
                         keys.add(key);
                     }
@@ -102,10 +101,10 @@ public class LocalizationResourcesTest {
                 }
             }
         }
-        if (nonStringKeys.size() > 0) {
+        if (!nonStringKeys.isEmpty()) {
             Assert.fail(buildMessageWithList("Non String key found in bundle: ", nonStringKeys));
         }
-        if (duplicateKeys.size() > 0) {
+        if (!duplicateKeys.isEmpty()) {
             Assert.fail(buildMessageWithList("Duplicate bundle keys found: ", duplicateKeys));
         }
     }

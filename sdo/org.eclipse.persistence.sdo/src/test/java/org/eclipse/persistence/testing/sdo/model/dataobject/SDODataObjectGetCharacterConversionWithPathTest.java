@@ -230,7 +230,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         property_c.setType(SDOConstants.SDO_BYTES);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-        byte[] theValue = new byte[]{10,100};;
+        byte[] theValue = new byte[]{10,100};
         dataObject_c.set(property_c, theValue);
         try {
             dataObject_a.getChar(propertyPath_a_b_c);

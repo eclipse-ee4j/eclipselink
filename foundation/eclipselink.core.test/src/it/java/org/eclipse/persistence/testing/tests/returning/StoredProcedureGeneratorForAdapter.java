@@ -88,7 +88,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
             if (!desc.getQueryManager().hasUpdateQuery()) {
                 UpdateObjectQuery updateQuery = new UpdateObjectQuery();
                 updateQuery.setModifyRow(desc.getObjectBuilder().buildTemplateUpdateRow(getSession()));
-                if (updateQuery.getModifyRow().size() > 0) {
+                if (!updateQuery.getModifyRow().isEmpty()) {
                     desc.getQueryManager().setUpdateQuery(updateQuery);
                 }
             }
@@ -244,7 +244,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
             nLastIndex = originalClassName.lastIndexOf('.', nLastIndex - 1);
         }
         if (nLastIndex < 0 || nLastIndex == originalClassName.length() - 1) {
-            return new String(originalClassName);
+            return originalClassName;
         } else {
             return originalClassName.substring(nLastIndex + 1);
         }

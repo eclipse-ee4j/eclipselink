@@ -20,7 +20,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.server.ClientSession;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -114,8 +113,6 @@ public class WriteObjectTest extends TransactionalTestCase {
             mutationString += "U";
         }
 
-        Iterator<DatabaseMapping> en = mappings.iterator();
-
         /*
          * Parse the mappings for the object's descriptor to find a suitable
          * mapping that can be mutated.  The mapping must meet the conditions:
@@ -126,12 +123,12 @@ public class WriteObjectTest extends TransactionalTestCase {
          * The loop exits once an appropriate mapping is found or the list of
          * mappings has been fully parsed (whichever occurs first)
          */
-        while (en.hasNext ()) {
-            dbMapping = en.next();
+        for (DatabaseMapping mapping : mappings) {
+            dbMapping = mapping;
 
             if (!dbMapping.isPrimaryKeyMapping()
                     && dbMapping.isDirectToFieldMapping()
-                    &&!((AbstractDirectMapping) dbMapping).hasConverter()
+                    && !((AbstractDirectMapping) dbMapping).hasConverter()
                     && (dbMapping.getAttributeAccessor().getAttributeClass())
                     .getName().contains("String")) {
                 mutatableMapping = dbMapping;

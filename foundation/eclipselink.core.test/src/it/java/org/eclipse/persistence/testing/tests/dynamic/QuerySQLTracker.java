@@ -85,7 +85,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
      * Reset the lists of SQL and queries being tracked
      */
     public void reset() {
-        this.queries = new ArrayList<QueryResult>();
+        this.queries = new ArrayList<>();
     }
 
     public List<QueryResult> getQueries() {
@@ -93,7 +93,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
     }
 
     protected QuerySQLTracker.QueryResult getCurrentResult() {
-        if (getQueries().size() == 0) {
+        if (getQueries().isEmpty()) {
             getQueries().add(new QueryResult(null));
             // throw new RuntimeException("Received SQL without a Query ???");
         }
@@ -160,7 +160,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
     protected class QueryResult {
         private DatabaseQuery query;
         private String resultString = null;
-        private List<String> sqlStatements = new ArrayList<String>();
+        private List<String> sqlStatements = new ArrayList<>();
 
         QueryResult(DatabaseQuery q) {
             query = q;

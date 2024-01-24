@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class ClassLoaderTestCases extends OXTestCase {
         Document employeeDocument = parse(EMPLOYEE_XML_RESOURCE);
         XMLUnmarshaller unmarshaller = employeeXMLContext.createUnmarshaller();
         Object employeeObject = unmarshaller.unmarshal(employeeDocument);
-        Class<? extends Object> testClass = employeeObject.getClass();
+        Class<?> testClass = employeeObject.getClass();
     }
 
     public void testEmployeeClassLoader() throws Exception {
@@ -63,7 +63,7 @@ public class ClassLoaderTestCases extends OXTestCase {
         Document employeeDocument = parse(EMPLOYEE_XML_RESOURCE);
         XMLUnmarshaller unmarshaller = employeeXMLContext.createUnmarshaller();
         Object employeeObject = unmarshaller.unmarshal(employeeDocument);
-        Class<? extends Object> testClass = employeeObject.getClass();
+        Class<?> testClass = employeeObject.getClass();
     }
 
     public void testPhoneNumberClassLoader() throws Exception {
@@ -72,7 +72,7 @@ public class ClassLoaderTestCases extends OXTestCase {
         XMLUnmarshaller unmarshaller = phoneNumberXMLContext.createUnmarshaller();
         Document phoneNumberDocument = parse(PHONE_NUMBER_XML_RESOURCE);
         Object phoneNumberObject = unmarshaller.unmarshal(phoneNumberDocument);
-        Class<? extends Object> testClass = phoneNumberObject.getClass();
+        Class<?> testClass = phoneNumberObject.getClass();
     }
 
     private Document parse(String xmlResource) throws Exception {

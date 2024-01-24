@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,12 +27,12 @@ public class DbChangeNotificationTest extends TestCase {
     int nMax = 2;
     int n; // n <= nMax
 
-    Session session[] = new Session[nMax];
+    Session[] session = new Session[nMax];
 
-    Vector employees[] = new Vector[nMax];
-    Vector smallProjects[] = new Vector[nMax];
-    Vector largeProjects[] = new Vector[nMax];
-    Vector phoneNumbers[] = new Vector[nMax];
+    Vector[] employees = new Vector[nMax];
+    Vector[] smallProjects = new Vector[nMax];
+    Vector[] largeProjects = new Vector[nMax];
+    Vector[] phoneNumbers = new Vector[nMax];
 
     String aqUser;
     String aqPassword;
@@ -42,7 +42,7 @@ public class DbChangeNotificationTest extends TestCase {
 
     long timeToWait = 1000;
     long timeDead = 5000;
-    CacheInvalidationHandler handler[] = new CacheInvalidationHandler[nMax];
+    CacheInvalidationHandler[] handler = new CacheInvalidationHandler[nMax];
 
     public DbChangeNotificationTest(String aqUser, String aqPassword, String queueName, boolean useMultipleConsumers, boolean useListener) {
         super();

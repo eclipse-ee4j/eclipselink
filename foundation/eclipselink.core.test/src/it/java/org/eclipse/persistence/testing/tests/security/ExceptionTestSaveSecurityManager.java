@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,12 +40,11 @@ public class ExceptionTestSaveSecurityManager extends ExceptionTest {
     public ExceptionTestSaveSecurityManager(String description, Class<?> cls) {
         super();
         if (cls != null) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(super.getName());
-            sb.append("(");
-            sb.append(cls.getSimpleName());
-            sb.append(")");
-            setName(sb.toString());
+            String sb = super.getName() +
+                    "(" +
+                    cls.getSimpleName() +
+                    ")";
+            setName(sb);
         }
         setDescription(description);
         this.cls = cls;

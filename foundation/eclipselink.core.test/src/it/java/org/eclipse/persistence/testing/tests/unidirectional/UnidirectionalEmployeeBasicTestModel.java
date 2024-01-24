@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -179,10 +179,10 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
      * These objects should be of type either Employee or PhoneNumber.
      */
     static class EmployeeComplexUpdateTest extends ComplexUpdateTest {
-        List<Employee> managedEmployeesToAdd = new ArrayList<Employee>();
-        List<Employee> managedEmployeesToRemove = new ArrayList<Employee>();
-        List<PhoneNumber> phonesToAdd = new ArrayList<PhoneNumber>();
-        List<PhoneNumber> phonesToRemove = new ArrayList<PhoneNumber>();
+        List<Employee> managedEmployeesToAdd = new ArrayList<>();
+        List<Employee> managedEmployeesToRemove = new ArrayList<>();
+        List<PhoneNumber> phonesToAdd = new ArrayList<>();
+        List<PhoneNumber> phonesToRemove = new ArrayList<>();
         public EmployeeComplexUpdateTest(Employee originalEmployee, List objectsToAdd, Object objectToRemove) {
             this(originalEmployee, (objectsToAdd != null ? objectsToAdd.toArray() : null), (objectToRemove != null ? new Object[]{objectToRemove} : null));
         }
@@ -205,18 +205,17 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             super(originalEmployee);
             this.usesUnitOfWork = true;
             if(objectsToAdd != null) {
-                for(int i=0; i < objectsToAdd.length; i++) {
-                    Object objectToAdd = objectsToAdd[i];
-                    if(objectToAdd instanceof Employee) {
-                        if(!originalEmployee.getManagedEmployees().contains(objectToAdd)) {
-                            managedEmployeesToAdd.add((Employee)objectToAdd);
+                for (Object objectToAdd : objectsToAdd) {
+                    if (objectToAdd instanceof Employee) {
+                        if (!originalEmployee.getManagedEmployees().contains(objectToAdd)) {
+                            managedEmployeesToAdd.add((Employee) objectToAdd);
                         } else {
                             throw new TestWarningException("OriginalEmployee: " + originalEmployee + " already manages employee to be added: " + objectToAdd);
                         }
                     } else {
                         // must be Phone
-                        if(!originalEmployee.getPhoneNumbers().contains(objectToAdd)) {
-                            phonesToAdd.add((PhoneNumber)objectToAdd);
+                        if (!originalEmployee.getPhoneNumbers().contains(objectToAdd)) {
+                            phonesToAdd.add((PhoneNumber) objectToAdd);
                         } else {
                             throw new TestWarningException("OriginalEmployee: " + originalEmployee + " already has the phonee to be added: " + objectToAdd);
                         }
@@ -224,18 +223,17 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
                 }
             }
             if(objectsToRemove != null) {
-                for(int i=0; i < objectsToRemove.length; i++) {
-                    Object objectToRemove = objectsToRemove[i];
-                    if(objectToRemove instanceof Employee) {
-                        if(originalEmployee.getManagedEmployees().contains(objectToRemove)) {
-                            managedEmployeesToRemove.add((Employee)objectToRemove);
+                for (Object objectToRemove : objectsToRemove) {
+                    if (objectToRemove instanceof Employee) {
+                        if (originalEmployee.getManagedEmployees().contains(objectToRemove)) {
+                            managedEmployeesToRemove.add((Employee) objectToRemove);
                         } else {
                             throw new TestWarningException("OriginalEmployee: " + originalEmployee + " doesn't manage employee to be removed: " + objectToRemove);
                         }
                     } else {
                         // must be Phone
-                        if(originalEmployee.getPhoneNumbers().contains(objectToRemove)) {
-                            phonesToRemove.add((PhoneNumber)objectToRemove);
+                        if (originalEmployee.getPhoneNumbers().contains(objectToRemove)) {
+                            phonesToRemove.add((PhoneNumber) objectToRemove);
                         } else {
                             throw new TestWarningException("OriginalEmployee: " + originalEmployee + " doesn't have the phonee to be removed: " + objectToRemove);
                         }
@@ -244,30 +242,30 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             }
             // generate a meaningful test name
             String employeeString = "";
-            if(managedEmployeesToAdd.size() > 0 || managedEmployeesToRemove.size() > 0 ) {
+            if(!managedEmployeesToAdd.isEmpty() || !managedEmployeesToRemove.isEmpty()) {
                 String addString = "";
-                if(managedEmployeesToAdd.size() > 0) {
+                if(!managedEmployeesToAdd.isEmpty()) {
                     addString = "add "+ managedEmployeesToAdd.size();
                 }
                 String removeString = "";
-                if(managedEmployeesToRemove.size() > 0) {
+                if(!managedEmployeesToRemove.isEmpty()) {
                     removeString = "remove "+ managedEmployeesToRemove.size();
                 }
-                employeeString = addString +(addString.length()>0 && removeString.length()>0 ? " and " : " ") + removeString + " Employees";
+                employeeString = addString +(!addString.isEmpty() && !removeString.isEmpty() ? " and " : " ") + removeString + " Employees";
             }
             String phoneString = "";
-            if(phonesToAdd.size() > 0 || phonesToRemove.size() > 0 ) {
+            if(!phonesToAdd.isEmpty() || !phonesToRemove.isEmpty()) {
                 String addString = "";
-                if(phonesToAdd.size() > 0) {
+                if(!phonesToAdd.isEmpty()) {
                     addString = "add "+ phonesToAdd.size();
                 }
                 String removeString = "";
-                if(phonesToRemove.size() > 0) {
+                if(!phonesToRemove.isEmpty()) {
                     removeString = "remove "+ phonesToRemove.size();
                 }
-                phoneString = addString +(addString.length()>0 && removeString.length()>0 ? " and " : "") + removeString + " Phones";
+                phoneString = addString +(!addString.isEmpty() && !removeString.isEmpty() ? " and " : "") + removeString + " Phones";
             }
-            setName("EmployeeComplexUpdateTest: " + employeeString +(employeeString.length()>0 && phoneString.length()>0 ? "; " : "")+ phoneString+";");
+            setName("EmployeeComplexUpdateTest: " + employeeString +(!employeeString.isEmpty() && !phoneString.isEmpty() ? "; " : "")+ phoneString+";");
             setDescription("The test updates original Employee object: " +originalObject.toString()+ " from the database by adding and/or removing managedEmployees and/or PhoneNumbers and verifies that the object updated correctly.");
         }
         @Override
@@ -283,20 +281,20 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         protected void changeObject() {
             UnitOfWork uow = (UnitOfWork)getSession();
             Employee cloneEmployee = (Employee)workingCopy;
-            for(int i=0; i < managedEmployeesToAdd.size(); i++) {
-                Employee cloneEmployeeToAdd = (Employee)uow.registerObject(managedEmployeesToAdd.get(i));
+            for (Employee value : managedEmployeesToAdd) {
+                Employee cloneEmployeeToAdd = (Employee) uow.registerObject(value);
                 cloneEmployee.addManagedEmployee(cloneEmployeeToAdd);
             }
-            for(int i=0; i < managedEmployeesToRemove.size(); i++) {
-                Employee cloneEmployeeToRemove = (Employee)uow.registerObject(managedEmployeesToRemove.get(i));
+            for (Employee employee : managedEmployeesToRemove) {
+                Employee cloneEmployeeToRemove = (Employee) uow.registerObject(employee);
                 cloneEmployee.removeManagedEmployee(cloneEmployeeToRemove);
             }
-            for(int i=0; i < phonesToRemove.size(); i++) {
-                PhoneNumber clonePhoneToRemove = (PhoneNumber)uow.registerObject(phonesToRemove.get(i));
+            for (PhoneNumber number : phonesToRemove) {
+                PhoneNumber clonePhoneToRemove = (PhoneNumber) uow.registerObject(number);
                 cloneEmployee.removePhoneNumber(clonePhoneToRemove);
             }
-            for(int i=0; i < phonesToAdd.size(); i++) {
-                PhoneNumber clonePhoneToAdd = (PhoneNumber)uow.registerObject(phonesToAdd.get(i));
+            for (PhoneNumber phoneNumber : phonesToAdd) {
+                PhoneNumber clonePhoneToAdd = (PhoneNumber) uow.registerObject(phoneNumber);
                 cloneEmployee.addPhoneNumber(clonePhoneToAdd);
             }
         }
@@ -351,8 +349,8 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
      * but on change of non private target (managed Employee) stays unchanged.
      */
     static class CascadeLockingTest extends TransactionalTestCase {
-        long version[] = new long[7];
-        long versionExpected[] = new long[] {1, 2, 2, 3, 4, 5, 6};
+        long[] version = new long[7];
+        long[] versionExpected = new long[] {1, 2, 2, 3, 4, 5, 6};
         public CascadeLockingTest() {
             super();
             setName("CascadeLockingPolicyTest");
@@ -431,15 +429,15 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         @Override
         public void verify() {
             int numTestsFailed = 0;
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             for(int i=0; i<version.length; i++) {
                 if(version[i] + numTestsFailed != versionExpected[i]) {
                     numTestsFailed++;
-                    errorMsg += "test" + i +" failed; ";
+                    errorMsg.append("test").append(i).append(" failed; ");
                 }
             }
             if(numTestsFailed > 0) {
-                throw new TestErrorException(errorMsg);
+                throw new TestErrorException(errorMsg.toString());
             }
         }
     }
@@ -474,21 +472,21 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             // (the data is already cached in the value holders).
             printDebug("Trigger batch reading results");
             boolean isConnected = true;
-            for(int i=0; i < employees.size(); i++) {
-                Employee manager = (Employee)employees.get(i);
-                if(!manager.getManagedEmployees().isEmpty()) {
+            for (Object employee : employees) {
+                Employee manager = (Employee) employee;
+                if (!manager.getManagedEmployees().isEmpty()) {
                     printDebug("Manager = " + manager);
-                    for(int j=0; j < manager.getManagedEmployees().size(); j++) {
-                        Employee emp = (Employee)manager.getManagedEmployees().get(j);
+                    for (int j = 0; j < manager.getManagedEmployees().size(); j++) {
+                        Employee emp = (Employee) manager.getManagedEmployees().get(j);
                         printDebug("     " + emp);
-                        for(int k = 0; k < emp.getPhoneNumbers().size(); k++) {
-                            if(isConnected) {
+                        for (int k = 0; k < emp.getPhoneNumbers().size(); k++) {
+                            if (isConnected) {
                                 // need to instantiate only a single Phone on a single managed Employee to trigger sql that reads data from the db for all.
                                 // to ensure that no other sql is issued close connection.
-                                ((AbstractSession)getSession()).getAccessor().closeConnection();
+                                ((AbstractSession) getSession()).getAccessor().closeConnection();
                                 isConnected = false;
                             }
-                            PhoneNumber phone = (PhoneNumber)emp.getPhoneNumbers().get(k);
+                            PhoneNumber phone = (PhoneNumber) emp.getPhoneNumbers().get(k);
                             printDebug("          " + phone);
                         }
                     }
@@ -509,15 +507,15 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             List controlEmployees = (List)getSession().executeQuery(controlQuery);
             // instantiate all value holders that the batch query expected to instantiate
             printDebug("Trigger control results");
-            for(int i=0; i < controlEmployees.size(); i++) {
-                Employee manager = (Employee)controlEmployees.get(i);
-                if(!manager.getManagedEmployees().isEmpty()) {
+            for (Object controlEmployee : controlEmployees) {
+                Employee manager = (Employee) controlEmployee;
+                if (!manager.getManagedEmployees().isEmpty()) {
                     printDebug("Manager = " + manager);
-                    for(int j=0; j < manager.getManagedEmployees().size(); j++) {
-                        Employee emp = (Employee)manager.getManagedEmployees().get(j);
+                    for (int j = 0; j < manager.getManagedEmployees().size(); j++) {
+                        Employee emp = (Employee) manager.getManagedEmployees().get(j);
                         printDebug("     " + emp);
-                        for(int k = 0; k < emp.getPhoneNumbers().size(); k++) {
-                            PhoneNumber phone = (PhoneNumber)emp.getPhoneNumbers().get(k);
+                        for (int k = 0; k < emp.getPhoneNumbers().size(); k++) {
+                            PhoneNumber phone = (PhoneNumber) emp.getPhoneNumbers().get(k);
                             printDebug("          " + phone);
                         }
                     }
@@ -528,7 +526,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
 
             // compare results
             String errorMsg = JoinedAttributeTestHelper.compareCollections(employees, controlEmployees, getSession().getClassDescriptor(Employee.class), ((AbstractSession)getSession()));
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 throw new TestErrorException(errorMsg);
             }
         }
@@ -570,7 +568,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
             query.addJoinedAttribute(phones);
 
             String errorMsg = JoinedAttributeTestHelper.executeQueriesAndCompareResults(controlQuery, query, (AbstractSession)getSession());
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 throw new TestErrorException(errorMsg);
             }
         }
@@ -592,7 +590,7 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
      * adding/removing target to/from source causes target's version to increment.
      */
     static class TargetLockingTest extends TestCase {
-        Employee employee[];
+        Employee[] employee;
 
         public TargetLockingTest() {
             super();
@@ -603,9 +601,9 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         @Override
         public void reset() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
-            for(int i=0; i<employee.length; i++) {
-                if(employee[i] != null) {
-                    uow.deleteObject(employee[i]);
+            for (Employee value : employee) {
+                if (value != null) {
+                    uow.deleteObject(value);
                 }
             }
             uow.commit();
@@ -649,8 +647,8 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
 
             // insert all the Employees into the db.
             UnitOfWork uow = getSession().acquireUnitOfWork();
-            for(int i=0; i<employee.length; i++) {
-                uow.registerObject(employee[i]);
+            for (Employee value : employee) {
+                uow.registerObject(value);
             }
             uow.commit();
         }
@@ -670,12 +668,12 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         }
         @Override
         public void verify() {
-            long version[] = new long[employee.length];
-            String errorMsg = "";
+            long[] version = new long[employee.length];
+            StringBuilder errorMsg = new StringBuilder();
             for(int i=0; i<employee.length; i++) {
                 version[i] = getVersion(employee[i]);
                 if(version[i] != 2) {
-                    errorMsg += "in the cache version["+i+"] = "+version[i]+" (2 was expected); ";
+                    errorMsg.append("in the cache version[").append(i).append("] = ").append(version[i]).append(" (2 was expected); ");
                 }
             }
             // make sure that versions in the db are correct, too.
@@ -683,11 +681,11 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
                 employee[i] = (Employee)getSession().refreshObject(employee[i]);
                 version[i] = getVersion(employee[i]);
                 if(version[i] != 2) {
-                    errorMsg += "in the db version["+i+"] = "+version[i]+" (2 was expected); ";
+                    errorMsg.append("in the db version[").append(i).append("] = ").append(version[i]).append(" (2 was expected); ");
                 }
             }
-            if(errorMsg.length() > 0) {
-                throw new TestErrorException(errorMsg);
+            if(!errorMsg.isEmpty()) {
+                throw new TestErrorException(errorMsg.toString());
             }
         }
     }
@@ -730,8 +728,8 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
 
             // insert all the Employees into the db.
             UnitOfWork uow = getSession().acquireUnitOfWork();
-            for(int i=0; i<employee.length; i++) {
-                uow.registerObject(employee[i]);
+            for (Employee value : employee) {
+                uow.registerObject(value);
             }
             uow.commit();
 
@@ -754,12 +752,12 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
         }
         @Override
         public void verify() {
-            long version[] = new long[employee.length];
-            String errorMsg = "";
+            long[] version = new long[employee.length];
+            StringBuilder errorMsg = new StringBuilder();
             for(int i=1; i<employee.length; i++) {
                 version[i] = getVersion(employee[i]);
                 if(version[i] != 2) {
-                    errorMsg += "in the cache version["+i+"] = "+version[i]+" (2 was expected); ";
+                    errorMsg.append("in the cache version[").append(i).append("] = ").append(version[i]).append(" (2 was expected); ");
                 }
             }
             // make sure that versions in the db are correct, too.
@@ -767,11 +765,11 @@ public class UnidirectionalEmployeeBasicTestModel extends TestModel {
                 employee[i] = (Employee)getSession().refreshObject(employee[i]);
                 version[i] = getVersion(employee[i]);
                 if(version[i] != 2) {
-                    errorMsg += "in the db version["+i+"] = "+version[i]+" (2 was expected); ";
+                    errorMsg.append("in the db version[").append(i).append("] = ").append(version[i]).append(" (2 was expected); ");
                 }
             }
-            if(errorMsg.length() > 0) {
-                throw new TestErrorException(errorMsg);
+            if(!errorMsg.isEmpty()) {
+                throw new TestErrorException(errorMsg.toString());
             }
         }
     }

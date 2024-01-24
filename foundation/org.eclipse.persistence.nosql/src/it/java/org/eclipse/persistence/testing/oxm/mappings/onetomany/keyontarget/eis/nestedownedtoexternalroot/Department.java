@@ -54,15 +54,15 @@ public class Department
   }
 
   public String toString(){
-    String result = "DEPARTMENT: "+ this.getDeptName();
+    StringBuilder result = new StringBuilder("DEPARTMENT: " + this.getDeptName());
 
-    result += "EMPLOYEES: ";
+    result.append("EMPLOYEES: ");
     for(int i=0; i<getEmployees().size();i++)
     {
-      result+= getEmployees().elementAt(i);
+      result.append(getEmployees().elementAt(i));
     }
 
-    return result;
+    return result.toString();
   }
 
    public boolean equals(Object object)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -138,7 +138,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             File file = new File(ClassLoader.getSystemResource(XML_RESOURCE).getFile());
             unmarshaller.unmarshal(file, null);
         } catch (XMLMarshalException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("The incorrect exception was thrown", XMLMarshalException.NULL_ARGUMENT, e.getErrorCode());
         }
     }
 
@@ -183,7 +183,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             Document testDocument = getParser().parse(stream);
             unmarshaller.unmarshal(testDocument, null);
         } catch (XMLMarshalException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("The incorrect exception was thrown", XMLMarshalException.NULL_ARGUMENT, e.getErrorCode());
         }
     }
 
@@ -307,7 +307,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
             unmarshaller.unmarshal(stream, null);
         } catch (XMLMarshalException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("The incorrect exception was thrown", XMLMarshalException.NULL_ARGUMENT, e.getErrorCode());
         }
     }
 
@@ -357,7 +357,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             InputSource source = new InputSource(stream);
             unmarshaller.unmarshal(source, null);
         } catch (XMLMarshalException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("The incorrect exception was thrown", XMLMarshalException.NULL_ARGUMENT, e.getErrorCode());
         }
     }
 
@@ -407,7 +407,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             InputStreamReader reader = new InputStreamReader(stream);
             unmarshaller.unmarshal(reader, null);
         } catch (XMLMarshalException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("The incorrect exception was thrown", XMLMarshalException.NULL_ARGUMENT, e.getErrorCode());
         }
     }
 
@@ -450,7 +450,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             Source source = new StreamSource(inputStream);
             unmarshaller.unmarshal(source, null);
         } catch (XMLMarshalException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("The incorrect exception was thrown", XMLMarshalException.NULL_ARGUMENT, e.getErrorCode());
         }
     }
 
@@ -499,7 +499,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             DOMSource source = new DOMSource(testDocument);
             unmarshaller.unmarshal(source, null);
         } catch (XMLMarshalException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("The incorrect exception was thrown", XMLMarshalException.NULL_ARGUMENT, e.getErrorCode());
         }
     }
 
@@ -549,7 +549,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             SAXSource source = new SAXSource(inputSource);
             unmarshaller.unmarshal(source, Employee.class);
         } catch (XMLMarshalException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("The incorrect exception was thrown", XMLMarshalException.NULL_ARGUMENT, e.getErrorCode());
         }
     }
 
@@ -588,7 +588,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             URL url = ClassLoader.getSystemResource(XML_RESOURCE);
             Object unmarshalledObject = unmarshaller.unmarshal(url, null);
         } catch (XMLMarshalException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("The incorrect exception was thrown", XMLMarshalException.NULL_ARGUMENT, e.getErrorCode());
         }
     }
 
@@ -600,10 +600,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             reader.close();
             Object unmarshalledObject = unmarshaller.unmarshal(reader);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An XMLValidation should have been caught but wasn't.", validationException.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An XMLValidation should have been caught but wasn't.", XMLMarshalException.UNMARSHAL_EXCEPTION, validationException.getErrorCode());
             return;
         }
-        assertTrue("An UnmarshalException should have been caught but wasn't.", false);
+        fail("An UnmarshalException should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromEmptyReader() throws Exception {
@@ -612,10 +612,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             InputStreamReader reader = new InputStreamReader(stream);
             Object unmarshalledObject = unmarshaller.unmarshal(reader);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An XMLValidation should have been caught but wasn't.", validationException.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An XMLValidation should have been caught but wasn't.", XMLMarshalException.UNMARSHAL_EXCEPTION, validationException.getErrorCode());
             return;
         }
-        assertTrue("An UnmarshalException should have been caught but wasn't.", false);
+        fail("An UnmarshalException should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromEmptyURL() throws Exception {
@@ -623,10 +623,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             URL url = ClassLoader.getSystemResource(CONTROL_EMPTY_XML_FILE_NAME);
             Object unmarshalledObject = unmarshaller.unmarshal(url);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An XMLValidation should have been caught but wasn't.", validationException.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An XMLValidation should have been caught but wasn't.", XMLMarshalException.UNMARSHAL_EXCEPTION, validationException.getErrorCode());
             return;
         }
-        assertTrue("An UnmarshalException should have been caught but wasn't.", false);
+        fail("An UnmarshalException should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromEmptyFile() throws Exception {
@@ -634,10 +634,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             File file = new File(ClassLoader.getSystemResource(CONTROL_EMPTY_XML_FILE_NAME).getFile());
             Object unmarshalledObject = unmarshaller.unmarshal(file);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An XMLValidation should have been caught but wasn't.", validationException.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An XMLValidation should have been caught but wasn't.", XMLMarshalException.UNMARSHAL_EXCEPTION, validationException.getErrorCode());
             return;
         }
-        assertTrue("An UnmarshalException should have been caught but wasn't.", false);
+        fail("An UnmarshalException should have been caught but wasn't.");
     }
 
     public void testUnmarshalInvalidDocument() {
@@ -646,12 +646,12 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         try {
             Object unmarshalledObject = unmarshaller.unmarshal(stream);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An XMLValidation should have been caught but wasn't.", validationException.getErrorCode() == XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT);
+            assertEquals("An XMLValidation should have been caught but wasn't.", XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT, validationException.getErrorCode());
             return;
         } catch (Exception e) {
-            assertTrue("An XMLValidation should have been caught but wasn't.", false);
+            fail("An XMLValidation should have been caught but wasn't.");
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
 
     }
 
@@ -661,14 +661,14 @@ public class XMLUnmarshalTestCases extends OXTestCase {
 
             Object testObject = unmarshaller.unmarshal(file);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An XMLMarshalException should have been caught but wasn't.", validationException.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An XMLMarshalException should have been caught but wasn't.", XMLMarshalException.UNMARSHAL_EXCEPTION, validationException.getErrorCode());
             return;
         } catch (Exception e) {
             e.printStackTrace();
-            assertTrue("The wrong exception was thrown ... should have been an XMLMarshalException.", false);
+            fail("The wrong exception was thrown ... should have been an XMLMarshalException.");
             return;
         }
-        assertTrue("An XMLMarshalException should have been caught but wasn't.", false);
+        fail("An XMLMarshalException should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromEmptyInputStream() throws Exception {
@@ -676,14 +676,14 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         try {
             Object unmarshalledObject = unmarshaller.unmarshal(stream);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An XMLMarshalException should have been caught but wasn't.", validationException.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An XMLMarshalException should have been caught but wasn't.", XMLMarshalException.UNMARSHAL_EXCEPTION, validationException.getErrorCode());
             return;
         } catch (Exception e) {
             e.printStackTrace();
-            assertTrue("The wrong exception was thrown ... should have been an XMLMarshalException.", false);
+            fail("The wrong exception was thrown ... should have been an XMLMarshalException.");
             return;
         }
-        assertTrue("An XMLMarshalException should have been caught but wasn't.", false);
+        fail("An XMLMarshalException should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromEmptyInputSource() throws Exception {
@@ -692,14 +692,14 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             InputSource source = new InputSource(stream);
             Object unmarshalledObject = unmarshaller.unmarshal(source);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An XMLMarshalException should have been caught but wasn't.", validationException.getErrorCode() == XMLMarshalException.UNMARSHAL_EXCEPTION);
+            assertEquals("An XMLMarshalException should have been caught but wasn't.", XMLMarshalException.UNMARSHAL_EXCEPTION, validationException.getErrorCode());
             return;
         } catch (Exception e) {
             e.printStackTrace();
-            assertTrue("The wrong exception was thrown ... should have been an XMLMarshalException.", false);
+            fail("The wrong exception was thrown ... should have been an XMLMarshalException.");
             return;
         }
-        assertTrue("An XMLMarshalException should have been caught but wasn't.", false);
+        fail("An XMLMarshalException should have been caught but wasn't.");
     }
 
     public void testUnmarshalNonRoot() {
@@ -710,14 +710,14 @@ public class XMLUnmarshalTestCases extends OXTestCase {
             Object unmarshalledObject = unmarshaller.unmarshal(testDocument);
         } catch (XMLMarshalException validationException) {
             validationException.printStackTrace();
-            assertTrue("An XMLValidation should have been caught but wasn't.", validationException.getErrorCode() == XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT);
+            assertEquals("An XMLValidation should have been caught but wasn't.", XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT, validationException.getErrorCode());
             return;
         } catch (Exception e) {
             e.printStackTrace();
-            assertTrue("An XMLValidation should have been caught but wasn't.", false);
+            fail("An XMLValidation should have been caught but wasn't.");
         }
         System.out.println("NO EXCEPTION THROWN");
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
 
     }
 
@@ -743,10 +743,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         try {
             Object unmarshalledObject = unmarshaller.unmarshal(input);
         } catch (XMLMarshalException exception) {
-            assertTrue("An unexpected XMLMarshalException was caught", exception.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.NULL_ARGUMENT, exception.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromNullInputStream() {
@@ -754,10 +754,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         try {
             Object unmarshalledObject = unmarshaller.unmarshal(input);
         } catch (XMLMarshalException exception) {
-            assertTrue("An unexpected XMLMarshalException was caught", exception.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.NULL_ARGUMENT, exception.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromNullInputSource() {
@@ -765,10 +765,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         try {
             Object unmarshalledObject = unmarshaller.unmarshal(input);
         } catch (XMLMarshalException exception) {
-            assertTrue("An unexpected XMLMarshalException was caught", exception.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.NULL_ARGUMENT, exception.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromNullNode() {
@@ -776,10 +776,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         try {
             Object unmarshalledObject = unmarshaller.unmarshal(input);
         } catch (XMLMarshalException exception) {
-            assertTrue("An unexpected XMLMarshalException was caught", exception.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.NULL_ARGUMENT, exception.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromNullReader() {
@@ -787,10 +787,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         try {
             Object unmarshalledObject = unmarshaller.unmarshal(reader);
         } catch (XMLMarshalException exception) {
-            assertTrue("An unexpected XMLMarshalException was caught", exception.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.NULL_ARGUMENT, exception.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromNullSource() {
@@ -798,10 +798,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         try {
             Object unmarshalledObject = unmarshaller.unmarshal(input);
         } catch (XMLMarshalException exception) {
-            assertTrue("An unexpected XMLMarshalException was caught", exception.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.NULL_ARGUMENT, exception.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
     public void testUnmarshalFromNullURL() {
@@ -809,10 +809,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         try {
             Object unmarshalledObject = unmarshaller.unmarshal(input);
         } catch (XMLMarshalException exception) {
-            assertTrue("An unexpected XMLMarshalException was caught", exception.getErrorCode() == XMLMarshalException.NULL_ARGUMENT);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.NULL_ARGUMENT, exception.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
 

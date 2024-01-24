@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,7 @@ import java.util.List;
 
      public void testSetCollectionValueByXPath() {
          Customer customer = new Customer();
-         List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(1);
+         List<PhoneNumber> phoneNumbers = new ArrayList<>(1);
          phoneNumbers.add(new PhoneNumber());
          xmlContext.setValueByXPath(customer, "a:contact-info/a:phone-number/", namespaceResolver, phoneNumbers);
          assertSame(customer.getPhoneNumbers(), phoneNumbers);

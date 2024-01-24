@@ -233,7 +233,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
     public void testGetFloatFromBytes() {
         SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BYTES);
-        dataObject_c.set(prop, new String("eee").getBytes());
+        dataObject_c.set(prop, "eee".getBytes());
 
         try {
             dataObject_a.getFloat(propertyPath_a_b_c);

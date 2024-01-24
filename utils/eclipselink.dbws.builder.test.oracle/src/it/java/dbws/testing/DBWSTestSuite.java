@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -285,7 +285,7 @@ public class DBWSTestSuite {
 
                 Project oxProject = null;
                 if (DBWS_OX_STREAM.size() != 0) {
-                    Map<String, OXMMetadataSource> metadataMap = new HashMap<String, OXMMetadataSource>();
+                    Map<String, OXMMetadataSource> metadataMap = new HashMap<>();
                     StreamSource xml = new StreamSource(new StringReader(DBWS_OX_STREAM.toString()));
                     try {
                         JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
@@ -300,7 +300,7 @@ public class DBWSTestSuite {
                         jaxbex.printStackTrace();
                     }
 
-                    Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<String, Map<String, OXMMetadataSource>>();
+                    Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<>();
                     properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
                     try {
                         org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx =
@@ -411,7 +411,7 @@ public class DBWSTestSuite {
 
         protected DBWSLogger(String name, String resourceBundleName) {
             super(name, resourceBundleName);
-            messages = new ArrayList<String>();
+            messages = new ArrayList<>();
         }
 
         @Override
@@ -421,11 +421,11 @@ public class DBWSTestSuite {
         }
 
         public boolean hasMessages() {
-            return messages != null && messages.size() > 0;
+            return messages != null && !messages.isEmpty();
         }
 
         public boolean hasWarnings() {
-            if (messages != null || messages.size() > 0) {
+            if (messages != null || !messages.isEmpty()) {
                 for (String message : messages) {
                     if (message.startsWith("WARNING")) {
                         return true;
@@ -437,8 +437,8 @@ public class DBWSTestSuite {
 
         public List<String> getWarnings() {
             List<String> warnings = null;
-            if (messages != null || messages.size() > 0) {
-                warnings = new ArrayList<String>();
+            if (messages != null || !messages.isEmpty()) {
+                warnings = new ArrayList<>();
                 for (String message : messages) {
                     if (message.startsWith("WARNING")) {
                         warnings.add(message);

@@ -54,10 +54,10 @@ public class ReadAllPartialReadingTest extends ReadAllTest {
     }
 
     protected void verifyEmployee(Employee employee) {
-        if (!employee.getLastName().equals("")) {
+        if (!employee.getLastName().isEmpty()) {
             throw new TestErrorException("last name was read.");
         }
-        if (this.attribute.equals("firstName") && employee.getFirstName().equals("")) {
+        if (this.attribute.equals("firstName") && employee.getFirstName().isEmpty()) {
             throw new TestErrorException("first name was not read.");
         }
         if (this.attribute.equals("address") && (employee.getAddress() == null)) {

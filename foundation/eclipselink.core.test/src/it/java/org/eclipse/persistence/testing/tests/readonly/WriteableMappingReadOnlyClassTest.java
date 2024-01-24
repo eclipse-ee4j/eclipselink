@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,7 +103,7 @@ public class WriteableMappingReadOnlyClassTest extends TransactionalTestCase {
             throw new TestErrorException("The original commit corrupted the session cache.", e);
         }
         Actor verification = (Actor)getSession().readObject(actorClone);
-        if ((verification.getHollywoodAgent() != null) || (verification.getCharities().size() != 0)) {
+        if ((verification.getHollywoodAgent() != null) || (!verification.getCharities().isEmpty())) {
             throw new TestErrorException("An exception was not thrown but the updates did not work.");
         }
     }

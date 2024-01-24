@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.types.CalendarToTSTZWithoutSessionTZTest;
 
 public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testing.framework.TestModel {
     protected boolean useAccessors;
@@ -66,11 +65,11 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
             ((AbstractSession)getSession()).getAccessor().decrementCallCount();
             //The combination of driver version of 9.2.0.4 or lower and JDK14 or up would cause
             //an exception, and therefore is not tested
-            if (driverVersion.indexOf("9.2.0.4") == -1) {
+            if (!driverVersion.contains("9.2.0.4")) {
                 //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
 
-                if (driverVersion.indexOf("9.2") == -1 ||
-                    getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
+                if (!driverVersion.contains("9.2") ||
+                        !getSession().getLogin().getDatabaseURL().contains("oci")) {
                     // set default time zone as a session time zone
                     addTest(getTIMESTAMPTestSuite(true));
                     addTest(getTIMESTAMPWithBindingTestSuite(true));
@@ -87,8 +86,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
                 }
                 if (!useAccessors) {
                     //Oracle 9.2.0.x OCI driver causes an exception, and therefore is not tested. Bug 4483904
-                    if (driverVersion.indexOf("9.2") ==
-                        -1 || getSession().getLogin().getDatabaseURL().indexOf("oci") == -1) {
+                    if (!driverVersion.contains("9.2") || !getSession().getLogin().getDatabaseURL().contains("oci")) {
                         addTest(getTIMESTAMPTCTestSuite(true));
                         addTest(getTIMESTAMPTCWithBindingTestSuite(true));
                         addTest(getTIMESTAMPTCUsingNativeSQLTestSuite(true));
@@ -116,7 +114,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
     }
 
     public static String getTimeZoneInfo(String timeZone) {
-        if(timeZone == null || timeZone.length()==0) {
+        if(timeZone == null || timeZone.isEmpty()) {
             return " without time zone";
         } else {
             return " with " + (defaultTimeZone.equals(timeZone) ? "default" : "alternative") + " time zone " + timeZone;

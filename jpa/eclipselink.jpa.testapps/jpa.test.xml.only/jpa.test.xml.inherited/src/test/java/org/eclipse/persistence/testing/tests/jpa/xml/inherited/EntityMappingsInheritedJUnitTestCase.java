@@ -59,7 +59,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -738,8 +737,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
             BeerConsumer cm = em.find(BeerConsumer.class, beerConsumerId);
             Collection<TelephoneNumber> phones = cm.getTelephoneNumbers().values();
             assertEquals("Wrong phonenumbers associated with BeerConsumer", 2, phones.size());
-            for (Iterator<TelephoneNumber> iterator = phones.iterator(); iterator.hasNext();){
-                    TelephoneNumber phone = iterator.next();
+            for (TelephoneNumber phone : phones) {
                 assertSame("Wrong owner of the telephone", phone.getBeerConsumer().getId(), beerConsumerId);
             }
 

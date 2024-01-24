@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ import static dbws.testing.simpletable.SimpleTableBuilderTestSuite.CREATE_TABLE;
 import static dbws.testing.simpletable.SimpleTableBuilderTestSuite.DROP_TABLE;
 import static dbws.testing.simpletable.SimpleTableBuilderTestSuite.POPULATE_TABLE;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -176,8 +177,8 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_TABLE[i]);
+                for (String s : POPULATE_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             } catch (SQLException e) {
@@ -237,7 +238,7 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
             request = createSOAPMessage(SOAP_UPDATE_REQUEST);
             response = sourceDispatch.invoke(request);
             assertNotNull("update_SimpletableType failed:  response is null.", response);
-            assertTrue(SOAP_UPDATE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_UPDATE_RESPONSE_ELEMENTNAME.equals(response.getSOAPBody().getFirstChild().getLocalName()));
+            assertEquals(SOAP_UPDATE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_UPDATE_RESPONSE_ELEMENTNAME, response.getSOAPBody().getFirstChild().getLocalName());
 
             request = createSOAPMessage(SOAP_FINDBYPK_REQUEST);
             response = sourceDispatch.invoke(request);
@@ -258,17 +259,17 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
             request = createSOAPMessage(SOAP_CREATE_REQUEST);
             response = sourceDispatch.invoke(request);
             assertNotNull("create_SimpletableType failed:  response is null.", response);
-            assertTrue(SOAP_CREATE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_CREATE_RESPONSE_ELEMENTNAME.equals(response.getSOAPBody().getFirstChild().getLocalName()));
+            assertEquals(SOAP_CREATE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_CREATE_RESPONSE_ELEMENTNAME, response.getSOAPBody().getFirstChild().getLocalName());
 
             request = createSOAPMessage(SOAP_DELETE_REQUEST);
             response = sourceDispatch.invoke(request);
             assertNotNull("delete_SimpletableType failed:  response is null.", response);
-            assertTrue(SOAP_DELETE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_DELETE_RESPONSE_ELEMENTNAME.equals(response.getSOAPBody().getFirstChild().getLocalName()));
+            assertEquals(SOAP_DELETE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_DELETE_RESPONSE_ELEMENTNAME, response.getSOAPBody().getFirstChild().getLocalName());
 
             request = createSOAPMessage(SOAP_UPDATE2_REQUEST);
             response = sourceDispatch.invoke(request);
             assertNotNull("update_SimpletableType (2) failed:  response is null.", response);
-            assertTrue(SOAP_UPDATE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_UPDATE_RESPONSE_ELEMENTNAME.equals(response.getSOAPBody().getFirstChild().getLocalName()));
+            assertEquals(SOAP_UPDATE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_UPDATE_RESPONSE_ELEMENTNAME, response.getSOAPBody().getFirstChild().getLocalName());
         } catch (Exception x) {
             fail("Service test failed: " + x.getMessage());
         }

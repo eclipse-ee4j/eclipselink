@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,11 +105,11 @@ public class RCMWithJmsTopicTest extends RcmBasicTest {
         }
 
         if (!errors.isEmpty()) {
-            String errorString = "The following RCM elements do not match their expected values:";
+            StringBuilder errorString = new StringBuilder("The following RCM elements do not match their expected values:");
             for (Enumeration enumtr = errors.elements(); enumtr.hasMoreElements(); ) {
-                errorString += "\n   " + enumtr.nextElement();
+                errorString.append("\n   ").append(enumtr.nextElement());
             }
-            throw new TestErrorException(errorString);
+            throw new TestErrorException(errorString.toString());
         }
     }
 

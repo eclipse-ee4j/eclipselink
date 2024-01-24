@@ -200,7 +200,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
     protected Calendar formatStringAsCalendar(String calendarString) {
         try {
             String dateOnly = calendarString.substring(0,19);
-            String timeZoneStr = calendarString.substring(20,calendarString.length());
+            String timeZoneStr = calendarString.substring(20);
             TimeZone timeZone = TimeZone.getTimeZone(timeZoneStr);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
             simpleDateFormat.setTimeZone(timeZone);

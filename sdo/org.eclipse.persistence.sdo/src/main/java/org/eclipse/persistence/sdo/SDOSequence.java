@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import java.util.HashMap;
 import commonj.sdo.Property;
 import commonj.sdo.Sequence;
 import javax.xml.namespace.QName;
-import org.eclipse.persistence.sdo.SDODataObject;
+
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.core.mappings.CoreMapping;

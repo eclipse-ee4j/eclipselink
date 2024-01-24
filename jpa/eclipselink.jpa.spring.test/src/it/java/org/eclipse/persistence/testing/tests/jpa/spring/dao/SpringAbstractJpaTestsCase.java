@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,9 +47,9 @@ public abstract class SpringAbstractJpaTestsCase {
         Truck truck = new Truck("persist");
         try {
             dao.persist(truck);
-            assertTrue(((Truck)dao.find(truck)).getDriverName().equals("persist"));
+            assertEquals("persist", ((Truck) dao.find(truck)).getDriverName());
         }catch (Exception e) {
-            assertFalse("Error during persist: " + e, true);
+            fail("Error during persist: " + e);
         }finally {
             dao.remove(truck);
         }
@@ -65,16 +65,16 @@ public abstract class SpringAbstractJpaTestsCase {
         truck.setRoute(route);
         try {
             dao.persist(truck);
-            assertTrue(((Truck)dao.find(truck)).getDriverName().equals("cascade"));
-            assertTrue(((Route)dao.find(route)).getAverageTimeMins() == 155);
-            assertTrue(((Address)dao.find(address)).getStreet().equals("First St."));
+            assertEquals("cascade", ((Truck) dao.find(truck)).getDriverName());
+            assertEquals(155, ((Route) dao.find(route)).getAverageTimeMins());
+            assertEquals("First St.", ((Address) dao.find(address)).getStreet());
 
             dao.remove(truck);
-            assertTrue(dao.find(truck) == null);
-            assertTrue(((Route)dao.find(route)).getAverageTimeMins() == 155);
-            assertTrue(((Address)dao.find(address)).getStreet().equals("First St."));
+            assertNull(dao.find(truck));
+            assertEquals(155, ((Route) dao.find(route)).getAverageTimeMins());
+            assertEquals("First St.", ((Address) dao.find(address)).getStreet());
         }catch (Exception e) {
-            assertFalse("Error during cascade persist with remove: " + e, true);
+            fail("Error during cascade persist with remove: " + e);
         }finally {
             route.removeAddress(address);
             dao.remove(address);
@@ -87,11 +87,11 @@ public abstract class SpringAbstractJpaTestsCase {
         Truck truck = new Truck("remove");
         try {
             dao.persist(truck);
-            assertTrue(((Truck) dao.find(truck)).getDriverName().equals("remove"));
+            assertEquals("remove", ((Truck) dao.find(truck)).getDriverName());
             dao.remove(truck);
-            assertTrue(dao.find(truck) == null);
+            assertNull(dao.find(truck));
         }catch (Exception e) {
-            assertFalse("Error during remove: " + e, true);
+            fail("Error during remove: " + e);
         }
     }
 
@@ -103,7 +103,7 @@ public abstract class SpringAbstractJpaTestsCase {
             assertTrue(dao.contains(truck));
             assertFalse(dao.contains(new Truck("doesNotContain")));
         }catch (Exception e) {
-            assertFalse("Error during contains: " + e, true);
+            fail("Error during contains: " + e);
         }finally {
             dao.remove(truck);
         }
@@ -114,9 +114,9 @@ public abstract class SpringAbstractJpaTestsCase {
         Truck truck = new Truck("merge");
         try {
             truck = (Truck)dao.merge(truck);
-            assertTrue(((Truck) dao.find(truck)).getDriverName().equals("merge"));
+            assertEquals("merge", ((Truck) dao.find(truck)).getDriverName());
         }catch (Exception e) {
-            assertFalse("Error during merge: " + e, true);
+            fail("Error during merge: " + e);
         }finally {
             dao.remove(truck);
         }
@@ -128,12 +128,12 @@ public abstract class SpringAbstractJpaTestsCase {
         try {
             dao.persist(truck);
             dao.flush();
-            assertTrue(((Truck) dao.find(truck)).getDriverName().equals("refresh"));
+            assertEquals("refresh", ((Truck) dao.find(truck)).getDriverName());
             truck.setDriverName("changeRefresh");
             dao.refresh(truck);
-            assertTrue(truck.getDriverName().equals("refresh"));
+            assertEquals("refresh", truck.getDriverName());
         }catch (Exception e) {
-            assertFalse("Error during refresh: " + e, true);
+            fail("Error during refresh: " + e);
         }finally {
             dao.remove(truck);
         }
@@ -144,12 +144,12 @@ public abstract class SpringAbstractJpaTestsCase {
         Truck truck = new Truck("flush");
         try {
             dao.persist(truck);
-            assertTrue(((Truck) dao.find(truck)).getDriverName().equals("flush"));
+            assertEquals("flush", ((Truck) dao.find(truck)).getDriverName());
             truck.setDriverName("reflush");
             dao.flush();
-            assertTrue(((Truck) dao.find(truck)).getDriverName().equals("reflush"));
+            assertEquals("reflush", ((Truck) dao.find(truck)).getDriverName());
         }catch (Exception e) {
-            assertFalse("Error during flush: " + e, true);
+            fail("Error during flush: " + e);
         }finally {
             dao.remove(truck);
         }
@@ -163,7 +163,7 @@ public abstract class SpringAbstractJpaTestsCase {
             List<?> l = dao.findByNamedQuery("findTruckByDriverName", "namedQuery");
             assertTrue(l.contains(truck));
         }catch (Exception e){
-            assertFalse("Error during named query: " + e, true);
+            fail("Error during named query: " + e);
         }finally {
             dao.remove(truck);
         }
@@ -176,7 +176,7 @@ public abstract class SpringAbstractJpaTestsCase {
         try {
             f = Address.class.getDeclaredField("_persistence_route_vh");
         } catch (Exception e) {
-            assertFalse("Exception when Address value holder retrieved", true);
+            fail("Exception when Address value holder retrieved");
         }
         assertNotNull("Address class does not have '_persistence_route_vh' field", f);
     }
@@ -186,11 +186,11 @@ public abstract class SpringAbstractJpaTestsCase {
     public void testDataExceptionTranslation(){
         try {
             dao.refresh(new Truck("detachedTruck"));
-            assertFalse("No exception thrown with bad refresh", true);
+            fail("No exception thrown with bad refresh");
         }catch (InvalidDataAccessApiUsageException idaaue) {
             //expected, so do nothing
         }catch (Exception e) {
-            assertFalse("Wrong exception thrown with bad refresh: " + e, true);
+            fail("Wrong exception thrown with bad refresh: " + e);
         }
     }
 }

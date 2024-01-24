@@ -53,8 +53,7 @@ public class TestQueryHaving {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "GROUP BY t.itemString1 HAVING COUNT(t.itemString1) > 2", String.class);
 
             List<String> dto01 = query.getResultList();
@@ -97,8 +96,7 @@ public class TestQueryHaving {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "GROUP BY t.itemString1 HAVING COUNT(t.itemString1) > ?1", String.class);
             query.setParameter(1, 2);
 

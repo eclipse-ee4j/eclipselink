@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.util.Iterator;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
@@ -38,9 +36,8 @@ public class MappingIsReadOnlyTest extends ProjectClassGeneratorResultFileTest {
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         descriptorToModify = project.getDescriptors().get(Employee.class);
-        for (Iterator<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).iterator();
-             mappingsEnum.hasNext(); ) {
-            mappingToModify = mappingsEnum.next();
+        for (DatabaseMapping databaseMapping : descriptorToModify.getMappings()) {
+            mappingToModify = databaseMapping;
             mappingToModify.readOnly();
         }
     }

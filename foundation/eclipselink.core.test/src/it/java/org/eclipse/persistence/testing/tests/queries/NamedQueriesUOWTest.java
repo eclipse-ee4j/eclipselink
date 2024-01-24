@@ -68,12 +68,12 @@ public class NamedQueriesUOWTest extends MultiNameQueriesTestCase {
 
     // end of setup()
     public void useNamedQueryFirstName() {
-        Vector empsByFirstName = (Vector)uow.executeQuery("namedQuerySameName", new String("Jill"));
+        Vector empsByFirstName = (Vector)uow.executeQuery("namedQuerySameName", "Jill");
     }
 
     // end of useNamedQueryFirstName
     public void useNamedQueryFirstAndLastName() {
-        Vector empsByFirstAndLastName = (Vector)uow.executeQuery("namedQuerySameName", new String("Jill"), new String("May"));
+        Vector empsByFirstAndLastName = (Vector)uow.executeQuery("namedQuerySameName", "Jill", "May");
     }
 
     // end of useNamedQueryFirstAndLastName

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,7 @@ public class Employee {
 
     public void setTasks(Vector tasks) {
         this.tasks = tasks;
-        isSetTasks = (tasks == null) ? false : true;
+        isSetTasks = tasks != null;
     }
 
     public boolean isSetTasks() {
@@ -129,15 +129,11 @@ public class Employee {
             return false;
         }
 
-        if((this.getId() == employeeObject.getId()) && //
-                ((this.getTasks()==null && employeeObject.getTasks()==null) || //
+        return (this.getId() == employeeObject.getId()) && //
+                ((this.getTasks() == null && employeeObject.getTasks() == null) || //
                         (this.getTasks().isEmpty() && employeeObject.getTasks().isEmpty()) || //
                         (this.getTasks().containsAll(employeeObject.getTasks()))) && //
-                        (this.getTasks().size() == employeeObject.getTasks().size())) {
-            return true;
-        }
-
-        return false;
+                (this.getTasks().size() == employeeObject.getTasks().size());
     }
 
     // ==============================================

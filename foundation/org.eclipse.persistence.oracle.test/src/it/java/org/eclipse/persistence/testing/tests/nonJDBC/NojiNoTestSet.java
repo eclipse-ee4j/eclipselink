@@ -23,6 +23,8 @@ import org.w3c.dom.Document;
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -190,9 +192,9 @@ public class NojiNoTestSet {
         Vector results = (Vector)o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         BigDecimal bint2bigdec = (BigDecimal)record.get("X");
-        assertTrue("wrong bint2bigdec value", bint2bigdec.intValue() == 42);
+        assertEquals("wrong bint2bigdec value", 42, bint2bigdec.intValue());
         Integer bool2int = (Integer)record.get("Z");
-        assertTrue("wrong bool2int value", bool2int == 1);
+        assertEquals("wrong bool2int value", 1, (int) bool2int);
         s.logout();
     }
 }

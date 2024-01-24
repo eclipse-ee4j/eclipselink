@@ -230,7 +230,7 @@ public class DBWSTestSuite {
         for (int x = nodeList.getLength() - 1; x >= 0; x--) {
             childNode = nodeList.item(x);
             if (childNode.getNodeType() == Node.TEXT_NODE) {
-                if (childNode.getNodeValue().trim().equals("")) {
+                if (childNode.getNodeValue().trim().isEmpty()) {
                     node.removeChild(childNode);
                 }
             } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -310,7 +310,7 @@ public class DBWSTestSuite {
 
         protected DBWSLogger(String name, String resourceBundleName) {
             super(name, resourceBundleName);
-            messages = new ArrayList<String>();
+            messages = new ArrayList<>();
         }
 
         @Override
@@ -320,11 +320,11 @@ public class DBWSTestSuite {
         }
 
         public boolean hasMessages() {
-            return messages != null && messages.size() > 0;
+            return messages != null && !messages.isEmpty();
         }
 
         public boolean hasWarnings() {
-            if (messages != null || messages.size() > 0) {
+            if (messages != null || !messages.isEmpty()) {
                 for (String message : messages) {
                     if (message.startsWith("WARNING")) {
                         return true;
@@ -336,8 +336,8 @@ public class DBWSTestSuite {
 
         public List<String> getWarnings() {
             List<String> warnings = null;
-            if (messages != null || messages.size() > 0) {
-                warnings = new ArrayList<String>();
+            if (messages != null || !messages.isEmpty()) {
+                warnings = new ArrayList<>();
                 for (String message : messages) {
                     if (message.startsWith("WARNING")) {
                         warnings.add(message);

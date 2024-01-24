@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.sequencing.DefaultSequence;
@@ -73,8 +72,8 @@ public class SessionsXMLSchemaSequencingTest extends AutoVerifyTestCase {
     @Override
     protected void verify() {
         for (int i = 0; i < numSessions; i++) {
-            boolean isDefaultSequenceDefined = sessionName[i].indexOf("NoDefaultSequence") == -1;
-            boolean isSequencesDefined = sessionName[i].indexOf("NoSequences") == -1;
+            boolean isDefaultSequenceDefined = !sessionName[i].contains("NoDefaultSequence");
+            boolean isSequencesDefined = !sessionName[i].contains("NoSequences");
             boolean ok;
             if (isDefaultSequenceDefined) {
                 ok = definedDefaultSequence.equals(session[i].getDatasourcePlatform().getDefaultSequence());
@@ -86,9 +85,8 @@ public class SessionsXMLSchemaSequencingTest extends AutoVerifyTestCase {
             }
 
             if (isSequencesDefined) {
-                Iterator it = definedSequences.values().iterator();
-                while (it.hasNext()) {
-                    Sequence definedSequence = (Sequence)it.next();
+                for (Object o : definedSequences.values()) {
+                    Sequence definedSequence = (Sequence) o;
                     Sequence sequence = session[i].getDatasourcePlatform().getSequence(definedSequence.getName());
                     ok = definedSequence.equals(sequence);
                     if (!ok) {

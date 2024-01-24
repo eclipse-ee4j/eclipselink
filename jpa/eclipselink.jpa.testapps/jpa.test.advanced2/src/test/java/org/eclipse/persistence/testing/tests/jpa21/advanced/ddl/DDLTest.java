@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,6 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.Runner;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.RunnerInfo;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.RunnerStatus;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -306,9 +305,9 @@ public class DDLTest extends JUnitTestCase {
             properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, true);
             properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
             properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SOURCE, PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE);
-            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, new FileReader(new File(createSource)));
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, new FileReader(createSource));
             properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SOURCE, PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE);
-            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, new FileReader(new File(dropSource)));
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, new FileReader(dropSource));
 
             em = createEntityManager(properties);
 

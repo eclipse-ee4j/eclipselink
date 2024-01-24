@@ -84,9 +84,9 @@ public abstract class MethodVisitor {
 
     public abstract void visitTableSwitchInsnSuper(final int min, final int max, final Label dflt, final Label... labels);
 
-    public abstract void visitLookupSwitchInsn(final Label dflt, final int keys[], final Label labels[]);
+    public abstract void visitLookupSwitchInsn(final Label dflt, final int[] keys, final Label[] labels);
 
-    public abstract void visitLookupSwitchInsnSuper(final Label dflt, final int keys[], final Label labels[]);
+    public abstract void visitLookupSwitchInsnSuper(final Label dflt, final int[] keys, final Label[] labels);
 
     public abstract void visitMultiANewArrayInsn(final String desc, final int dims);
 

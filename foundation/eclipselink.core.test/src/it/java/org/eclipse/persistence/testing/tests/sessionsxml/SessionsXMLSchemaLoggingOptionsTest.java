@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,7 @@ public class SessionsXMLSchemaLoggingOptionsTest extends AutoVerifyTestCase {
         if (!findStringInFile(testString, fileName)) {
             String exceptionString = "String: " + testString + " not found in " + fileName;
             if (fileReadException != null) {
-                exceptionString = exceptionString + " Exception thrown while reading file. - " + fileReadException.toString();
+                exceptionString = exceptionString + " Exception thrown while reading file. - " + fileReadException;
             }
             throw new TestErrorException(exceptionString);
         }
@@ -119,7 +119,7 @@ public class SessionsXMLSchemaLoggingOptionsTest extends AutoVerifyTestCase {
         if (findStringInFile(testString, fileName)) {
             String exceptionString = "String: " + testString + " found in " + fileName;
             if (fileReadException != null) {
-                exceptionString = exceptionString + " Exception thrown while reading file. - " + fileReadException.toString();
+                exceptionString = exceptionString + " Exception thrown while reading file. - " + fileReadException;
             }
             throw new TestErrorException(exceptionString);
         }
@@ -131,7 +131,7 @@ public class SessionsXMLSchemaLoggingOptionsTest extends AutoVerifyTestCase {
             LineNumberReader lnr = new LineNumberReader(reader);
             String line = lnr.readLine();
             while (line != null) {
-                if (line.indexOf(string) > -1) {
+                if (line.contains(string)) {
                     return true;
                 }
                 line = lnr.readLine();
@@ -139,7 +139,6 @@ public class SessionsXMLSchemaLoggingOptionsTest extends AutoVerifyTestCase {
         } catch (Exception exception) {
             fileReadException = exception;
         }
-        ;
         return false;
     }
 }

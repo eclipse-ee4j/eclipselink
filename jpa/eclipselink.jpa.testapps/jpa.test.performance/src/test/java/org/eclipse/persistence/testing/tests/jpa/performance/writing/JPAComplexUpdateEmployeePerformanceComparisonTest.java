@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,6 @@ import jakarta.persistence.EntityManager;
 import org.eclipse.persistence.testing.framework.PerformanceRegressionTestCase;
 import org.eclipse.persistence.testing.models.jpa.performance.Employee;
 import org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber;
-
-import java.util.Iterator;
 
 /**
  * This test compares the performance of updating Employee.
@@ -61,8 +59,7 @@ public class JPAComplexUpdateEmployeePerformanceComparisonTest extends Performan
         employee.getAddress().setCity(originalEmployee.getAddress().getCity() + count);
         PhoneNumber workFax = null;
         try {
-            for (Iterator<PhoneNumber> iterator = employee.getPhoneNumbers().iterator(); iterator.hasNext();) {
-                PhoneNumber phone = iterator.next();
+            for (PhoneNumber phone : employee.getPhoneNumbers()) {
                 if (phone.getType().equals("work-fax")) {
                     workFax = phone;
                     break;

@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.inheritance;
 
-import java.util.Iterator;
-
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.expressions.*;
@@ -32,15 +30,12 @@ public class PC extends Computer {
         // As a result, we check for the mapping before adding it.
         // The reason this mapping is not added in the project is that some Mapping Workbench
         // tests rely on the ammendment method.
-        Iterator<DatabaseMapping> mappings = descriptor.getMappings().iterator();
-        while (mappings.hasNext()) {
-            DatabaseMapping mapping = mappings.next();
+        for (DatabaseMapping mapping : descriptor.getMappings()) {
             if (mapping.isTransformationMapping()) {
-                Object pctype = ((TransformationMapping)mapping).getFieldNameToMethodNames().get("PCTYPE");
+                Object pctype = ((TransformationMapping) mapping).getFieldNameToMethodNames().get("PCTYPE");
                 if (pctype != null) {
                     return;
                 }
-                ;
             }
         }
         TransformationMapping typeMapping = new TransformationMapping();

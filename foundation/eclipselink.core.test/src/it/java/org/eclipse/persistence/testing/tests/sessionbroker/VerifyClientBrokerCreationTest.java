@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,6 @@
 // Contributors:
 //     tware - Bug 241681 fixes for clientSessionBroker
 package org.eclipse.persistence.testing.tests.sessionbroker;
-
-import java.util.Iterator;
 
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
@@ -102,9 +100,7 @@ public class VerifyClientBrokerCreationTest extends AutoVerifyTestCase {
             throw new TestErrorException("Incorrect number of sessions in client broker");
 
         }
-        Iterator<String> i = serverBroker.getSessionsByName().keySet().iterator();
-        while (i.hasNext()){
-            String key = i.next();
+        for (String key : serverBroker.getSessionsByName().keySet()) {
             if (clientBroker.getSessionForName(key) == null) {
                 throw new TestErrorException("Session " + key + " exists in server broker but not client broker.");
             }

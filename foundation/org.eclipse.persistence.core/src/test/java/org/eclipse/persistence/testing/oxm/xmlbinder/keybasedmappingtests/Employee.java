@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,9 +27,7 @@ public class Employee {
         Employee emp = (Employee)obj;
         if(id == emp.id || (emp.id != null && id != null && id.equals(emp.id))) {
             if(name == emp.name || (emp.name != null && name != null && name.equals(emp.name))) {
-                if(address == emp.address || (address != null && emp.address != null && emp.address.equals(address))) {
-                    return true;
-                }
+                return address == emp.address || (address != null && emp.address != null && emp.address.equals(address));
             }
         }
         return false;

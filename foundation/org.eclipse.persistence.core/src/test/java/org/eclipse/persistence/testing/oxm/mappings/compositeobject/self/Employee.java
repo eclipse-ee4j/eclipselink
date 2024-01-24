@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,22 +68,17 @@ public class Employee {
                 }
             }
             if (null == address) {
-                if (null != employee.address) {
-                    return false;
-                }
+                return null == employee.address;
             } else {
-                if (!address.equals(employee.address)) {
-                    return false;
-                }
+                return address.equals(employee.address);
             }
-            return true;
         } catch (ClassCastException e) {
             return false;
         }
     }
 
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append("Employee(_StartDateAndEndDate=");
         stringBuffer.append(_StartDateAndEndDate);
         stringBuffer.append(" address=");
@@ -121,10 +116,7 @@ public class Employee {
                 if ((getStartDate() == period.getStartDate()) && (getEndDate() == period.getEndDate())) {
                     return true;
                 }
-                if ((getStartDate().getTime().compareTo(period.getStartDate().getTime()) != 0) || (getEndDate().getTime().compareTo(period.getEndDate().getTime()) != 0)) {
-                    return false;
-                }
-                return true;
+                return (getStartDate().getTime().compareTo(period.getStartDate().getTime()) == 0) && (getEndDate().getTime().compareTo(period.getEndDate().getTime()) == 0);
             } catch (ClassCastException e) {
                 return false;
             }

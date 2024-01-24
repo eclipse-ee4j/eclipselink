@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning.model;
 
-import java.util.Iterator;
-
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -72,8 +70,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
     }
 
     public void getChange(DataRecord row, Session session, Object object1, Object object2, ClassDescriptor desc, boolean useUOW, WriteType writeType) {
-        for (Iterator<DatabaseMapping> mappings = desc.getMappings().iterator(); mappings.hasNext(); ) {
-            DatabaseMapping mapping = mappings.next();
+        for (DatabaseMapping mapping : desc.getMappings()) {
             if (!mapping.isReadOnly()) {
                 getChange(row, mapping, session, object1, object2, useUOW, writeType);
             }
@@ -125,9 +122,8 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
         Object object = desc.getObjectBuilder().buildNewInstance();
         ReadObjectQuery query = new ReadObjectQuery();
         query.setSession((AbstractSession)session);
-        for (Iterator<DatabaseMapping> mappings = desc.getMappings().iterator(); mappings.hasNext(); ) {
-            DatabaseMapping mapping = mappings.next();
-            mapping.readFromRowIntoObject((DatabaseRecord)row, query.getJoinedAttributeManager(), object, null, query, query.getSession(), true);
+        for (DatabaseMapping mapping : desc.getMappings()) {
+            mapping.readFromRowIntoObject((DatabaseRecord) row, query.getJoinedAttributeManager(), object, null, query, query.getSession(), true);
         }
         return object;
     }

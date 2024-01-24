@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,15 +42,10 @@ public abstract class SellingPoint {
                 }
             }
             if (area == null) {
-                if (sellingPoint.getArea() != null) {
-                    return false;
-                }
+                return sellingPoint.getArea() == null;
             } else {
-                if (!area.equals(sellingPoint.getArea())) {
-                    return false;
-                }
+                return area.equals(sellingPoint.getArea());
             }
-            return true;
         } else {
             return false;
         }

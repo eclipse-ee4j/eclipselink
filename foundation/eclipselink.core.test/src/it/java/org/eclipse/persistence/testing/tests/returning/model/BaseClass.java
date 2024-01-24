@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -177,17 +177,13 @@ public abstract class BaseClass implements Cloneable {
         } else if (c_BigDecimal != null && other.c_BigDecimal == null) {
             return false;
         } else if (c_BigDecimal != null && other.c_BigDecimal != null) {
-            if (!c_BigDecimal.equals(other.c_BigDecimal)) {
-                return false;
-            }
+            return c_BigDecimal.equals(other.c_BigDecimal);
         } else if (c_Integer == null && other.c_Integer != null) {
             return false;
         } else if (c_Integer != null && other.c_Integer == null) {
             return false;
         } else if (c_Integer != null && other.c_Integer != null) {
-            if (!c_Integer.equals(other.c_Integer)) {
-                return false;
-            }
+            return c_Integer.equals(other.c_Integer);
         }
         return true;
     }
@@ -199,14 +195,14 @@ public abstract class BaseClass implements Cloneable {
     public abstract String getFieldBName();
 
     public String toString() {
-        String str = new String();
+        String str = "";
         if (getA() != null && getB() != null) {
             str = str + "A=" + getA() + "; B=" + getB();
         }
         if (getC() != null) {
             str = str + "; C=" + getC();
         }
-        if (str.length() > 0) {
+        if (!str.isEmpty()) {
             str = str + ".";
         }
         return str;
@@ -236,18 +232,13 @@ public abstract class BaseClass implements Cloneable {
             }
         }
         if (c_BigDecimal == null) {
-            if (c_Integer != null) {
-                return false;
-            }
+            return c_Integer == null;
         } else {
             if (c_Integer == null) {
                 return false;
             }
-            if (c_BigDecimal.intValue() != c_Integer) {
-                return false;
-            }
+            return c_BigDecimal.intValue() == c_Integer;
         }
-        return true;
     }
 
     public boolean equals(Object other) {
@@ -269,9 +260,7 @@ public abstract class BaseClass implements Cloneable {
         try {
             BaseClass clone = (BaseClass)super.clone();
             clone.a_plus_minus_b_BigDecimal = new BigDecimal[2];
-            for(int i=0; i < a_plus_minus_b_BigDecimal.length; i++) {
-                clone.a_plus_minus_b_BigDecimal[i] = a_plus_minus_b_BigDecimal[i];
-            }
+            System.arraycopy(a_plus_minus_b_BigDecimal, 0, clone.a_plus_minus_b_BigDecimal, 0, a_plus_minus_b_BigDecimal.length);
             return clone;
         } catch (CloneNotSupportedException ex) {
             throw new InternalError();

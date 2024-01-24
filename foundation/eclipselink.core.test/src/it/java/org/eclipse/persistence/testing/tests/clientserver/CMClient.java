@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class CMClient extends Thread {
         try {
             Expression exp = new ExpressionBuilder().get("firstName").equal("Marcus");
             this.objectRead = (Employee)this.clientSession.readObject(Employee.class, exp);
-            if ((objectRead == null) || objectRead.getLastName().equals("") || objectRead.getAddress().getCountry().equals("")) {
+            if ((objectRead == null) || objectRead.getLastName().isEmpty() || objectRead.getAddress().getCountry().isEmpty()) {
                 throw new TestErrorException("read object on thread #" + this + " fails as null object/attribute is returned which should not be");
             }
         } catch (Exception exception) {

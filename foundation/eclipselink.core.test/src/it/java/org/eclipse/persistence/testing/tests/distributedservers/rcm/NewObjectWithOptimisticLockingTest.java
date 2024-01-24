@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,8 +11,6 @@
  */
 
 package org.eclipse.persistence.testing.tests.distributedservers.rcm;
-
-import java.util.Iterator;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -69,17 +67,15 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         // ensure the changes are propagated
         try{
             Thread.sleep(1000);
-        } catch (InterruptedException e){};
+        } catch (InterruptedException e){}
         holder = (ListHolder)getSession().readObject(ListHolder.class);
         if (holder.getItems().size() != 2){
             throw new TestErrorException("Incorrect number of items");
         }
 
         boolean found = false;
-        Iterator<ListItem> i = holder.getItems().iterator();
-        while (i.hasNext()){
-            ListItem item = i.next();
-            if (item.getDescription() != null && item.getDescription().equals("test2")){
+        for (ListItem item : holder.getItems()) {
+            if (item.getDescription() != null && item.getDescription().equals("test2")) {
                 found = true;
             }
         }
@@ -93,9 +89,8 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = (ListHolder)uow.readObject(ListHolder.class);
-        Iterator<ListItem> i = holder.getItems().iterator();
-        while (i.hasNext()){
-            uow.deleteObject(i.next());
+        for (ListItem listItem : holder.getItems()) {
+            uow.deleteObject(listItem);
         }
         uow.deleteObject(holder);
         uow.commit();

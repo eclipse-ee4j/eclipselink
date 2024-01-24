@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -130,17 +130,17 @@ public class RowtypeInfo extends SequencedInfo {
     }
 
     public static List<RowtypeInfo> getRowtypeInfo(ArrayList<ViewRow> viewRows) throws SQLException {
-        ArrayList<RowtypeInfo> a = new ArrayList<RowtypeInfo>();
-        for (int i = 0; i < viewRows.size(); i++) {
-            RowtypeInfo rif = new RowtypeInfo((UserArguments)viewRows.get(i));
+        ArrayList<RowtypeInfo> a = new ArrayList<>();
+        for (ViewRow viewRow : viewRows) {
+            RowtypeInfo rif = new RowtypeInfo((UserArguments) viewRow);
             a.add(rif);
         }
-        if (a.size() == 0) {
+        if (a.isEmpty()) {
             return null;
         }
-        RowtypeInfo[] r = a.toArray(new RowtypeInfo[a.size()]);
+        RowtypeInfo[] r = a.toArray(new RowtypeInfo[0]);
         RowtypeInfo[] rr = (RowtypeInfo[])reorder(r);
-        ArrayList<RowtypeInfo> aa = new ArrayList<RowtypeInfo>();
+        ArrayList<RowtypeInfo> aa = new ArrayList<>();
         for (RowtypeInfo rti : rr) {
             aa.add(rti);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,9 +30,7 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
 
     protected void addResult(Object[] values, Object primaryKey) {
         Vector results = new Vector(values.length);
-        for (int index = 0; index < values.length; index++) {
-            results.add(values[index]);
-        }
+        results.addAll(Arrays.asList(values));
         ReportQueryResult result = new ReportQueryResult(results, primaryKey);
 
         expectedResults.addElement(result);
@@ -64,9 +62,8 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
             }
             List names = new ArrayList(result.getNames());
             List results = new ArrayList(result.getResults());
-            Iterator it = set.iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry)it.next();
+            for (Object o : set) {
+                Map.Entry entry = (Map.Entry) o;
                 Object key = entry.getKey();
                 Object value = entry.getValue();
                 int index = names.indexOf(key);
@@ -110,7 +107,7 @@ protected  void setup() throws Exception
         for (Enumeration e = results.elements(); e.hasMoreElements();) {
             removeFromResult((ReportQueryResult)e.nextElement(), cloneResults);
         }
-        if (cloneResults.size() != 0) {
+        if (!cloneResults.isEmpty()) {
             throw new TestErrorException("ReportQuery test failed: The result didn't match");
         }
 

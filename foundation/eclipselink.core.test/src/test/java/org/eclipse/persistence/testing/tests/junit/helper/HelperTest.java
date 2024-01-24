@@ -60,8 +60,8 @@ public class HelperTest {
         Assert.assertTrue("Failed to check if Float.class is a primitive wrapper.", Helper.isPrimitiveWrapper(Float.class));
         Assert.assertTrue("Failed to check if Double.class is a primitive wrapper.", Helper.isPrimitiveWrapper(Double.class));
 
-        Vector<Object> aVector = new Vector<Object>();
-        Object elem = new String("dummy");
+        Vector<Object> aVector = new Vector<>();
+        Object elem = "dummy";
         aVector.addElement(elem);
         Assert.assertEquals("Failed to make a java.util.Vector from a java.util.Vector.",
                 aVector, Helper.makeVectorFromObject(aVector));
@@ -136,8 +136,8 @@ public class HelperTest {
         Integer[] array2 = new Integer[3];
         Integer[] array3 = new Integer[3];
         for (int count = 0; count < 3; count++) {
-            Integer counter = count;
-            Integer counter2 = count + 9;
+            int counter = count;
+            int counter2 = count + 9;
             array1[count] = counter;
             array2[count] = counter;
             array3[count] = counter2;
@@ -155,7 +155,7 @@ public class HelperTest {
         Integer[] array2 = new Integer[2];
         Integer[] array3 = new Integer[3];
         for (int count = 0; count < 2; count++) {
-            Integer counter = count;
+            int counter = count;
             array1[count] = counter;
             array2[count] = counter;
             array3[count] = counter;
@@ -332,7 +332,7 @@ public class HelperTest {
             java.sql.Date date = Helper.dateFromYearMonthDate(1950, 1, 30);
             Assert.assertEquals("1950-02-30", date.toString());
         } catch (ConversionException e) {
-            Assert.assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.INCORRECT_DATE_VALUE);
+            Assert.assertEquals("The incorrect exception was thrown", ConversionException.INCORRECT_DATE_VALUE, e.getErrorCode());
         }
     }
 }

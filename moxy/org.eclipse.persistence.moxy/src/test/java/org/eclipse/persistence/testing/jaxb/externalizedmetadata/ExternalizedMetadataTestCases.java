@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -114,9 +114,9 @@ public class ExternalizedMetadataTestCases extends TestCase {
             generateSchema(classes, null, outputResolver, classLoader);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
-        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
         return outputResolver;
     }
@@ -131,9 +131,9 @@ public class ExternalizedMetadataTestCases extends TestCase {
             generateSchema(contextPath, outputResolver);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
-        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
         return outputResolver;
     }
@@ -147,9 +147,9 @@ public class ExternalizedMetadataTestCases extends TestCase {
             generateSchema(contextPath, outputResolver);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
-        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
     }
 
@@ -164,9 +164,9 @@ public class ExternalizedMetadataTestCases extends TestCase {
             generateSchema(contextPath, outputResolver, properties);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
-        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
         return outputResolver;
     }
@@ -233,9 +233,9 @@ public class ExternalizedMetadataTestCases extends TestCase {
             generateSchema(classes, properties, outputResolver, loader);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
-        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
         return outputResolver;
     }
@@ -270,10 +270,10 @@ public class ExternalizedMetadataTestCases extends TestCase {
             generateSchema(classes, properties, outputResolver, loader);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
         if(expectedSchemaCount >0){
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+            assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         }
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
     }
@@ -296,10 +296,10 @@ public class ExternalizedMetadataTestCases extends TestCase {
             generateSchema(classes, properties, outputResolver, loader);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
         if(expectedSchemaCount >0){
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+            assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         }
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
         return outputResolver;
@@ -333,9 +333,9 @@ public class ExternalizedMetadataTestCases extends TestCase {
             generateSchema(types, properties, outputResolver, classLoader);
         } catch (Exception ex) {
             ex.printStackTrace();
-            fail("Schema generation failed unexpectedly: " + ex.toString());
+            fail("Schema generation failed unexpectedly: " + ex);
         }
-        assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+        assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
         return outputResolver;
     }

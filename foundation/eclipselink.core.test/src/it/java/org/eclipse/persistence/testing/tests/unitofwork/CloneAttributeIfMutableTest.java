@@ -125,11 +125,11 @@ public class CloneAttributeIfMutableTest extends TestCase {
 
         // error handling for all failed assertions
         if (errors.isEmpty() == false) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             buffer.append("The following assertions failed:");
             buffer.append(System.lineSeparator());
-            for (int i = 0; i < errors.size(); i++) {
-                Throwable t = (Throwable)errors.get(i);
+            for (Object error : errors) {
+                Throwable t = (Throwable) error;
                 buffer.append(t);
                 buffer.append(System.lineSeparator());
             }

@@ -40,7 +40,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
         //System.setProperty("useDocPres", "true");
         //System.setProperty("useLogging", "true");
         //System.setProperty("useSAXParsing", "true");
-        String arguments[] = { "-c", "org.eclipse.persistence.testing.oxm.jaxb.MarshallerFormattingTestCases" };
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.jaxb.MarshallerFormattingTestCases" };
         TestRunner.main(arguments);
     }
 
@@ -92,7 +92,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
         marshaller.marshal(controlObject, writer);
 
         log("Expected:" + controlString);
-        log("Actual  :" + writer.toString());
+        log("Actual  :" + writer);
 
         assertTrue(controlString.equals(writer.toString()));
 

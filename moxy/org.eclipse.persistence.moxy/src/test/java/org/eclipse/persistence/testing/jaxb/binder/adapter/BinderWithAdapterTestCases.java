@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 // dmccann - June 4/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.binder.adapter;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,7 +40,7 @@ import junit.framework.TestCase;
  */
 public class BinderWithAdapterTestCases  extends TestCase {
     static XPath xpath;
-    Binder<Node> binder;;
+    Binder<Node> binder;
     DocumentBuilderFactory documentBuilderFactory;
 
     public BinderWithAdapterTestCases(String name) throws Exception {
@@ -84,7 +83,7 @@ public class BinderWithAdapterTestCases  extends TestCase {
             String src = "org/eclipse/persistence/testing/jaxb/binder/adapter/element.xml";
 
             try {
-                srcFileInputStream = new FileInputStream(new File(src));
+                srcFileInputStream = new FileInputStream(src);
             } catch (FileNotFoundException fnfe) {
                 srcFileInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(src);
                 if (null == srcFileInputStream) {

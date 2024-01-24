@@ -189,7 +189,7 @@ public class MethodVisitorImpl extends org.eclipse.persistence.asm.MethodVisitor
         }
 
         @Override
-        public void visitLookupSwitchInsn(final org.objectweb.asm.Label dflt, final int keys[], final org.objectweb.asm.Label labels[]) {
+        public void visitLookupSwitchInsn(final org.objectweb.asm.Label dflt, final int[] keys, final org.objectweb.asm.Label[] labels) {
             if (customMethodVisitor == null) {
                 super.visitLookupSwitchInsn(dflt, keys, labels);
             } else {
@@ -198,7 +198,7 @@ public class MethodVisitorImpl extends org.eclipse.persistence.asm.MethodVisitor
             }
         }
 
-        public void visitLookupSwitchInsnSuper(final org.objectweb.asm.Label dflt, final int keys[], final org.objectweb.asm.Label labels[]) {
+        public void visitLookupSwitchInsnSuper(final org.objectweb.asm.Label dflt, final int[] keys, final org.objectweb.asm.Label[] labels) {
             super.visitLookupSwitchInsn(dflt, keys, labels);
         }
 
