@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -202,10 +203,11 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * CR#2751
      * Returns the set of read-only classes for the receiver.  These class come from the
      * Remote connection
+     *
      * @return A Vector containing the Java Classes that are currently read-only.
      */
     @Override
-    public Vector getDefaultReadOnlyClasses() {
+    public List<Class<?>> getDefaultReadOnlyClasses() {
         if (this.isMetadataRemote && !this.hasDefaultReadOnlyClasses) {
             getProject().setDefaultReadOnlyClasses(getRemoteConnection().getDefaultReadOnlyClasses());
             this.hasDefaultReadOnlyClasses = true;

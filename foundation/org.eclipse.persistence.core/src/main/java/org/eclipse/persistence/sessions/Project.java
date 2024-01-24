@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -67,7 +66,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Maintain all of the EclipseLink configuration information for a system.
@@ -91,7 +89,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected MultitenantPolicy multitenantPolicy;
 
     /** Holds the default set of read-only classes that apply to each UnitOfWork. */
-    protected Vector<Class<?>> defaultReadOnlyClasses;
+    protected List<Class<?>> defaultReadOnlyClasses;
 
     /** Cache the EJBQL descriptor aliases. */
     protected Map<String, ClassDescriptor> aliasDescriptors;
@@ -212,7 +210,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public Project() {
         this.name = "";
         this.descriptors = new HashMap<>();
-        this.defaultReadOnlyClasses = NonSynchronizedVector.newInstance();
+        this.defaultReadOnlyClasses = new ArrayList<>();
         this.orderedDescriptors = new ArrayList<>();
         this.hasIsolatedClasses = false;
         this.hasGenericHistorySupport = false;
@@ -409,7 +407,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Add the read-only class which apply to each UnitOfWork created by default.
      */
     public void addDefaultReadOnlyClass(Class<?> readOnlyClass) {
-        getDefaultReadOnlyClasses().addElement(readOnlyClass);
+        getDefaultReadOnlyClasses().add(readOnlyClass);
     }
 
     /**
@@ -697,7 +695,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Returns the default set of read-only classes.
      */
-    public Vector getDefaultReadOnlyClasses() {
+    public List<Class<?>> getDefaultReadOnlyClasses() {
         return defaultReadOnlyClasses;
     }
 
@@ -907,8 +905,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Set the read-only classes which apply to each UnitOfWork create by default.
      */
-    public void setDefaultReadOnlyClasses(Collection newValue) {
-        this.defaultReadOnlyClasses = new Vector(newValue);
+    public void setDefaultReadOnlyClasses(Collection<Class<?>> newValue) {
+        this.defaultReadOnlyClasses = new ArrayList<>(newValue);
     }
 
     /**

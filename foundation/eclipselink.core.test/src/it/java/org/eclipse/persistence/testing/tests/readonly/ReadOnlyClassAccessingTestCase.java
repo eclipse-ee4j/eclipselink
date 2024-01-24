@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,46 +43,32 @@ public class ReadOnlyClassAccessingTestCase extends TestCase {
     /**
      *  Compares a Hashtable and a vector for equality.
      */
-    protected boolean areEqual(Set ht, Vector v1) {
+    protected boolean areEqual(Set<?> ht, List<?> v1) {
         if (v1.size() != ht.size()) {
             return false;
         }
-        for (Enumeration enumtr = v1.elements(); enumtr.hasMoreElements();) {
-            if (!ht.contains(enumtr.nextElement())) {
-                return false;
-            }
-        }
-        return true;
+        return ht.containsAll(v1);
     }
 
     /**
      *  Compares two vectors for equality.
      */
-    protected boolean areEqual(Vector v1, Vector v2) {
+    protected boolean areEqual(List<?> v1, List<?> v2) {
         if (v1.size() != v2.size()) {
             return false;
         }
-        for (Enumeration enumtr = v1.elements(); enumtr.hasMoreElements();) {
-            if (!v2.contains(enumtr.nextElement())) {
-                return false;
-            }
-        }
-        for (Enumeration enumtr = v2.elements(); enumtr.hasMoreElements();) {
-            if (!v1.contains(enumtr.nextElement())) {
-                return false;
-            }
-        }
-        return true;
+
+        return v1.containsAll(v2);
     }
 
     @Override
     public void reset() {
-        getSession().getProject().setDefaultReadOnlyClasses(new Vector());
+        getSession().getProject().setDefaultReadOnlyClasses(new ArrayList<>());
     }
 
     @Override
     protected void setup() {
-        getSession().getProject().setDefaultReadOnlyClasses(new Vector());
+        getSession().getProject().setDefaultReadOnlyClasses(new ArrayList<>());
 
     }
 
@@ -147,9 +133,9 @@ public class ReadOnlyClassAccessingTestCase extends TestCase {
         }
 
         // Check that the default read-only classes work.
-        Vector someClasses = new Vector();
-        someClasses.addElement(Country.class);
-        someClasses.addElement(Address.class);
+        List<Class<?>> someClasses = new ArrayList<>();
+        someClasses.add(Country.class);
+        someClasses.add(Address.class);
         getSession().getProject().setDefaultReadOnlyClasses(someClasses);
         UnitOfWork uow3 = getSession().acquireUnitOfWork();
         if (!areEqual(uow3.getReadOnlyClasses(), someClasses)) {
