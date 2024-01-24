@@ -188,12 +188,12 @@ public class QueryKeyExpression extends ObjectExpression {
         }
 
         HashMap tablesJoinExpressions = new HashMap();
-        Vector<DatabaseTable> tables = getDescriptor().getTables();
+        List<DatabaseTable> tables = getDescriptor().getTables();
         // skip the main table - start with i=1
         int tablesSize = tables.size();
         if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause(getDescriptor().getQueryManager().getReadAllQuery()))) {
             for (int i=1; i < tablesSize; i++) {
-                DatabaseTable table = tables.elementAt(i);
+                DatabaseTable table = tables.get(i);
                 Expression joinExpression = getDescriptor().getQueryManager().getTablesJoinExpressions().get(table);
                 joinExpression = this.baseExpression.twist(joinExpression, this);
                 if (getDescriptor().getHistoryPolicy() != null) {
@@ -229,7 +229,7 @@ public class QueryKeyExpression extends ObjectExpression {
 
         //"ref" and "structure" mappings, no table printed in the FROM clause, need to get the table alias form the parent table
         if ((mapping != null) && (mapping.isReferenceMapping() || mapping.isStructureMapping())) {
-            DatabaseTable alias = this.baseExpression.aliasForTable(mapping.getDescriptor().getTables().firstElement());
+            DatabaseTable alias = this.baseExpression.aliasForTable(mapping.getDescriptor().getTables().get(0));
             alias.setName(alias.getName() + "." + mapping.getField().getName());
             return alias;
         }
@@ -1416,7 +1416,7 @@ public class QueryKeyExpression extends ObjectExpression {
             if (getMapping().isDirectCollectionMapping()) {
                 return ((DirectCollectionMapping)getMapping()).getReferenceTable();
             } else {
-                return getMapping().getReferenceDescriptor().getTables().firstElement();
+                return getMapping().getReferenceDescriptor().getTables().get(0);
             }
         } else {
             return ((ForeignReferenceQueryKey)getQueryKeyOrNull()).getReferenceTable(getDescriptor());
@@ -1443,7 +1443,7 @@ public class QueryKeyExpression extends ObjectExpression {
             if (getMapping().isObjectReferenceMapping() && ((ObjectReferenceMapping) getMapping()).isForeignKeyRelationship()) {
                  return getMapping().getFields().get(0).getTable();
             } else {
-                return ((ObjectExpression)this.baseExpression).getDescriptor().getTables().firstElement();
+                return ((ObjectExpression)this.baseExpression).getDescriptor().getTables().get(0);
             }
         } else {
             return ((ForeignReferenceQueryKey)getQueryKeyOrNull()).getSourceTable();

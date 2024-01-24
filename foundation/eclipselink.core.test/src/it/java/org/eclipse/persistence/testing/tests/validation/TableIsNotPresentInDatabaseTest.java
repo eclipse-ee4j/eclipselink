@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,8 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+
+import java.util.List;
 
 
 //Created by Ian Reid
@@ -56,7 +58,8 @@ public class TableIsNotPresentInDatabaseTest extends ExceptionTest {
             getSession().getIntegrityChecker().checkDatabase();
 
             RelationalDescriptor descriptor = descriptor();
-            DatabaseTable table = descriptor.getTables().lastElement(); //retrieving address table
+            List<DatabaseTable> tables = descriptor.getTables();
+            DatabaseTable table = tables.get(tables.size() - 1); //retrieving address table
 
             //the following causes the correct error to occure.
             table.setName("Bad_Table"); //change name of table to cause error

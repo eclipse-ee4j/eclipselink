@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.identitymaps;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -56,7 +56,7 @@ public class ConcurrentReadBigBadObjectTest extends AutoVerifyTestCase {
         ClassDescriptor d = (server.serverSession).getClassDescriptor(BigBadObject.class);
         DatabaseMapping m;
 
-        Vector<DatabaseMapping> v = d.getMappings();
+        List<DatabaseMapping> v = d.getMappings();
         int mappings = v.size();
         int i = 0;
         while (i < mappings) {

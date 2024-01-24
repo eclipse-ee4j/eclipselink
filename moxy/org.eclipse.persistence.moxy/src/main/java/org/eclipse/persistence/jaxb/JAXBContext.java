@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.namespace.QName;
@@ -1375,7 +1374,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             }
             processed.add(desc);
 
-            Vector mappings = desc.getMappings();
+            List mappings = desc.getMappings();
 
             for (Object mapping : mappings) {
                 DatabaseMapping nextMapping = (DatabaseMapping) mapping;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,16 +47,16 @@ public class
 
 CacheInvalidator {
     // maps a table name to Class mapped to this table
-    Hashtable tableNameToClass;
+    Map<String, Class<?>> tableNameToClass;
     // maps table name to a vector of primary key fields' names
-    Hashtable tableNameToPkFieldNames;
+    Map<String, List<String>> tableNameToPkFieldNames;
 
     // Create a CacheInvalidator object that invalidates cache if the changed table
     // is mapped by one of the descriptors of the passed session
 
     public CacheInvalidator(Session session) {
         // HashSet is used to avoid duplications
-        HashSet tableNames = new HashSet();
+        Set<String> tableNames = new HashSet<>();
 
         // fill out tableNames collection with all tables' names mapped by all descriptors
         Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
@@ -64,7 +64,7 @@ CacheInvalidator {
             ClassDescriptor desc = descriptors.next();
 
             // Create a Vector containing names of all tables mapped to the descriptor
-            Vector descTableNames = desc.getTableNames();
+            List<String> descTableNames = desc.getTableNames();
             // Remove schema names (if any) converting "SCHEMA_NAME.TABLE_NAME" to "TABLE_NAME"
             removePrefixFromDatabaseObjectNames(descTableNames);
             // add descTableNames to the collection
@@ -80,24 +80,24 @@ CacheInvalidator {
     // Note that the Collection tableNames will be altered - only names
     // of tables not found in descriptors of the passed session will remain.
 
-    public CacheInvalidator(Session session, Collection tableNames) {
+    public CacheInvalidator(Session session, Collection<String> tableNames) {
         // initialize
         initializeWithTableNames(session, tableNames);
     }
 
-    protected void initializeWithTableNames(Session session, Collection tableNames) {
-        tableNameToClass = new Hashtable(tableNames.size());
-        tableNameToPkFieldNames = new Hashtable(tableNames.size());
+    protected void initializeWithTableNames(Session session, Collection<String> tableNames) {
+        tableNameToClass = new HashMap<>(tableNames.size());
+        tableNameToPkFieldNames = new HashMap<>(tableNames.size());
 
         // pkFieldVectors cached here to avoid calculating it more than once per class
-        Hashtable classToPkFieldNames = new Hashtable();
+        Map<Class<?>, List<String>> classToPkFieldNames = new HashMap<>();
         // loop through the descriptors to fill out tableNameToClass and tableNameToPkFieldNames
         Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
         while (descriptors.hasNext() && !tableNames.isEmpty()) {
             ClassDescriptor desc = descriptors.next();
 
             // Create a Vector containing names of all tables mapped to the descriptor
-            Vector descTableNames = desc.getTableNames();
+            List<String> descTableNames = desc.getTableNames();
 
             // bypass descriptors with no tables
             if (descTableNames.isEmpty()) {
@@ -114,17 +114,17 @@ CacheInvalidator {
                 baseClass = desc.getJavaClass();
             }
 
-            Iterator it = tableNames.iterator();
+            Iterator<String> it = tableNames.iterator();
             while (it.hasNext()) {
                 // for each tableName specified by the user
-                String tableName = (String)it.next();
+                String tableName = it.next();
                 // verify whether the descriptor maps a table with the same name
                 if (descTableNames.contains(tableName)) {
                     // map the table name to the baseClass corresponding to the descriptor
                     tableNameToClass.put(tableName, baseClass);
 
                     // try to obtain cached pkFieldNames Vector corresponding to baseClass
-                    Vector pkFieldNames = (Vector)classToPkFieldNames.get(baseClass);
+                    List<String> pkFieldNames = classToPkFieldNames.get(baseClass);
                     if (pkFieldNames == null) {
                         // Create a Vector containing names of all primary key fields
                         pkFieldNames = desc.getPrimaryKeyFieldNames();
@@ -150,11 +150,11 @@ CacheInvalidator {
         if (tableName == null) {
             return;
         }
-        Class<?> baseClass = (Class)tableNameToClass.get(tableName);
+        Class<?> baseClass = tableNameToClass.get(tableName);
         if (baseClass == null) {
             return;
         }
-        Vector pkFieldNames = (Vector)tableNameToPkFieldNames.get(tableName);
+        List<String> pkFieldNames = tableNameToPkFieldNames.get(tableName);
         if (pkFieldNames == null) {
             return;
         }
@@ -162,7 +162,7 @@ CacheInvalidator {
         // create DatabaseRecord corresponding to the message
         DatabaseRecord row = new DatabaseRecord(pkFieldNames.size());
         for (int i = 0; i < pkFieldNames.size(); i++) {
-            String fieldName = (String)pkFieldNames.elementAt(i);
+            String fieldName = pkFieldNames.get(i);
             Object value = msg.getObjectProperty(fieldName);
             row.put(fieldName, value);
         }
@@ -173,11 +173,11 @@ CacheInvalidator {
 
     // converts "SCHEMA_NAME.TABLE_NAME" to "TABLE_NAME"
 
-    protected void removePrefixFromDatabaseObjectNames(Vector names) {
+    protected void removePrefixFromDatabaseObjectNames(List<String> names) {
         for (int i = 0; i < names.size(); i++) {
-            String qualifiedName = (String)names.elementAt(i);
+            String qualifiedName = names.get(i);
             String name = qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
-            names.setElementAt(name, i);
+            names.add(i, name);
         }
     }
 }

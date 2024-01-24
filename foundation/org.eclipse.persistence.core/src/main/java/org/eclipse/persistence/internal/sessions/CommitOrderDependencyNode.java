@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -107,9 +108,7 @@ public class CommitOrderDependencyNode {
      * If my superclass is related to a class, I'm related to it.
      */
     public void recordMappingDependencies() {
-        for (Enumeration<DatabaseMapping> mappings = getDescriptor().getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
+        for (DatabaseMapping mapping: getDescriptor().getMappings()) {
             if (mapping.isForeignReferenceMapping()) {
                 if (mapping.hasConstraintDependency()) {
                     Class<?> ownedClass;
@@ -154,9 +153,9 @@ public class CommitOrderDependencyNode {
      * If my superclass is related to a class, I'm related to it.
      */
     public void recordSpecifiedDependencies() {
-        for (Enumeration constraintsEnum = getDescriptor().getConstraintDependencies().elements();
-                 constraintsEnum.hasMoreElements();) {
-            Class<?> ownedClass = (Class)constraintsEnum.nextElement();
+        for (Iterator<Class<?>> constraintsEnum = getDescriptor().getConstraintDependencies().iterator();
+             constraintsEnum.hasNext();) {
+            Class<?> ownedClass = constraintsEnum.next();
             CommitOrderDependencyNode node = getOwner().nodeFor(ownedClass);
             Vector ownedNodes = withAllSubclasses(node);
 

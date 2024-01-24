@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,7 +70,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -217,7 +216,7 @@ public class SchemaModelGenerator {
             } else {
                 // at this point there is no schema reference set, but if a descriptor has a
                 // default root element set we will need to generate a global element for it
-                for (DatabaseTable table : (Vector<DatabaseTable>)desc.getTables()) {
+                for (DatabaseTable table : (List<DatabaseTable>)desc.getTables()) {
                     namespace = getDefaultRootElementAsQName(desc, table.getName()).getNamespaceURI();
                     workingSchema = getSchema(namespace, desc.getNamespaceResolver(), schemaForNamespace, properties);
                     addNamespacesToWorkingSchema(desc.getNamespaceResolver(), workingSchema);
@@ -302,7 +301,7 @@ public class SchemaModelGenerator {
                 workingSchema.addTopLevelElement(buildElement(desc, schemaForNamespace, workingSchema, properties, descriptors, simple));
             }
 
-            for (DatabaseTable table :  (Vector<DatabaseTable>)desc.getTables()) {
+            for (DatabaseTable table :  (List<DatabaseTable>)desc.getTables()) {
                 String localName = getDefaultRootElementAsQName(desc, table.getName()).getLocalPart();
                 // don't overwrite existing top level elements
                 if (workingSchema.getTopLevelElements().get(localName) != null) {
@@ -325,7 +324,7 @@ public class SchemaModelGenerator {
         } else {
             // here we have a descriptor that does not have a schema reference set, but since
             // there is a default root element set we need to generate a global element
-            for (DatabaseTable table :  (Vector<DatabaseTable>)desc.getTables()) {
+            for (DatabaseTable table :  (List<DatabaseTable>)desc.getTables()) {
                 String localName = getDefaultRootElementAsQName(desc, table.getName()).getLocalPart();
                 // a global element may have been created while generating an element ref
                 if (workingSchema.getTopLevelElements().get(localName) == null) {
@@ -443,7 +442,7 @@ public class SchemaModelGenerator {
             ct.setComplexContent(complexContent);
         }
         Sequence seq = new Sequence();
-        for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
+        for (CoreMapping mapping : (List<CoreMapping>)desc.getMappings()) {
             processMapping(mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors);
         }
         if (extension != null) {
@@ -465,7 +464,7 @@ public class SchemaModelGenerator {
         Extension extension = new Extension();
         sc.setExtension(extension);
         ct.setSimpleContent(sc);
-        for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
+        for (CoreMapping mapping : (List<CoreMapping>)desc.getMappings()) {
             Field xFld = (Field) mapping.getField();
             if (xFld.getXPath().equals(TEXT)) {
                 extension.setBaseType(getSchemaTypeForDirectMapping((DirectMapping) mapping, workingSchema));
@@ -857,11 +856,11 @@ public class SchemaModelGenerator {
         Map<Field, Field> associations = mapping.getSourceToTargetKeyFieldAssociations();
         for (Entry<Field, Field> entry : associations.entrySet()) {
             Field tgtField = entry.getValue();
-            Vector mappings = tgtDesc.getMappings();
+            List<DatabaseMapping> mappings = tgtDesc.getMappings();
             // Until IDREF support is added, we want the source type to be that of the target
             //schemaTypeString = Constants.SCHEMA_PREFIX + COLON + IDREF;
-            for (Enumeration mappingsNum = mappings.elements(); mappingsNum.hasMoreElements();) {
-                Mapping nextMapping = (Mapping)mappingsNum.nextElement();
+            for (Iterator mappingsNum = mappings.iterator(); mappingsNum.hasNext();) {
+                Mapping nextMapping = (Mapping)mappingsNum.next();
                 if (nextMapping.getField() != null && nextMapping.getField() instanceof Field) {
                     Field xFld = (Field) nextMapping.getField();
                     if (xFld == tgtField) {
@@ -1352,7 +1351,7 @@ public class SchemaModelGenerator {
      */
     protected boolean isSimple(Descriptor desc) {
         boolean isSimple = false;
-        for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
+        for (CoreMapping mapping : (List<CoreMapping>)desc.getMappings()) {
             if (mapping.isDirectToFieldMapping()) {
                 Field xFld = (Field) mapping.getField();
                 if (xFld.getXPath().equals(TEXT)) {
@@ -1414,7 +1413,7 @@ public class SchemaModelGenerator {
      */
     protected boolean isFragPrimaryKey(XPathFragment frag, DirectMapping mapping) {
         /* Uncomment the following when ID support is needed
-        Vector<String> pkFieldNames = mapping.getDescriptor().getPrimaryKeyFieldNames();
+        List<String> pkFieldNames = mapping.getDescriptor().getPrimaryKeyFieldNames();
         if (pkFieldNames != null) {
             if (frag.isAttribute()) {
                 return pkFieldNames.contains(XMLConstants.ATTRIBUTE + frag.getLocalName());

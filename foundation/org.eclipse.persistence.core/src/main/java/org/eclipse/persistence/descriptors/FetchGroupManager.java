@@ -34,9 +34,9 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -537,7 +537,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      */
     // TODO-244124-dclarke: Needs to be updated to reflect new FetchGroup behaviour
     private void refreshFetchGroupIntoClones(Object cachedObject, Object workingClone, Object backupClone, FetchGroup fetchGroupInObject, FetchGroup fetchGroupInClone, UnitOfWorkImpl uow) {
-        Vector<DatabaseMapping> mappings = descriptor.getMappings();
+        List<DatabaseMapping> mappings = descriptor.getMappings();
         boolean isObjectPartial = (fetchGroupInObject != null);
         Set fetchedAttributes = isObjectPartial ? fetchGroupInObject.getAttributeNames() : null;
         int size = mappings.size();

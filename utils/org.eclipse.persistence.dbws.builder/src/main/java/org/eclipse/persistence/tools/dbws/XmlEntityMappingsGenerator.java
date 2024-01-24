@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -234,7 +234,7 @@ public class XmlEntityMappingsGenerator {
                             params.add(param);
                         }
                     }
-                    if (params.size() > 0) {
+                    if (!params.isEmpty()) {
                         metadata.setParameters(params);
                     }
                     plsqlStoredFuncs.add(metadata);
@@ -280,7 +280,7 @@ public class XmlEntityMappingsGenerator {
                             params.add(param);
                         }
                     }
-                    if (params.size() > 0) {
+                    if (!params.isEmpty()) {
                         metadata.setParameters(params);
                     }
                     storedFuncs.add(metadata);
@@ -320,7 +320,7 @@ public class XmlEntityMappingsGenerator {
                         }
                         params.add(param);
                     }
-                    if (params.size() > 0) {
+                    if (!params.isEmpty()) {
                         metadata.setParameters(params);
                     }
                     plsqlStoredProcs.add(metadata);
@@ -363,7 +363,7 @@ public class XmlEntityMappingsGenerator {
 
                         params.add(param);
                     }
-                    if (params.size() > 0) {
+                    if (!params.isEmpty()) {
                         metadata.setParameters(params);
                     }
                     if (storedProcs == null) {
@@ -419,10 +419,12 @@ public class XmlEntityMappingsGenerator {
             // may need add STRUCT metadata to the classAccessor to ensure correct field ordering
             if (cdesc.isObjectRelationalDataTypeDescriptor()) {
                 ObjectRelationalDataTypeDescriptor odesc = (ObjectRelationalDataTypeDescriptor) cdesc;
-                if (odesc.getOrderedFields().size() > 0) {
+                if (!odesc.getOrderedFields().isEmpty()) {
                     StructMetadata struct = new StructMetadata();
                     struct.setName(odesc.getStructureName());
-                    struct.setFields(odesc.getOrderedFields());
+                    for (DatabaseField field: odesc.getOrderedFields()) {
+                        struct.getFields().add(field.getName());
+                    }
                     classAccessor.setStruct(struct);
                 }
             }
@@ -457,7 +459,7 @@ public class XmlEntityMappingsGenerator {
                         namedNatQueries.add(crudQuery);
                     }
                 }
-                if (namedNatQueries.size() > 0) {
+                if (!namedNatQueries.isEmpty()) {
                     ((EntityAccessor)classAccessor).setNamedNativeQueries(namedNatQueries);
                 }
             }

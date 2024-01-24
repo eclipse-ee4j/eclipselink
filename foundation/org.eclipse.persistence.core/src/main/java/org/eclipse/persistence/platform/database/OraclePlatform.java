@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -268,7 +268,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Returns null unless the platform supports call with returning
      */
     @Override
-    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector<DatabaseField> returnFields) {
+    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, List<DatabaseField> returnFields) {
         SQLCall call = new SQLCall();
         call.setParameters(sqlCall.getParameters());
         call.setParameterTypes(sqlCall.getParameterTypes());
@@ -280,7 +280,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             writer.write(" RETURNING ");
 
             for (int i = 0; i < returnFields.size(); i++) {
-                DatabaseField field = returnFields.elementAt(i);
+                DatabaseField field = returnFields.get(i);
                 writer.write(field.getNameDelimited(this));
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");
@@ -290,7 +290,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             writer.write(" INTO ");
 
             for (int i = 0; i < returnFields.size(); i++) {
-                DatabaseField field = returnFields.elementAt(i);
+                DatabaseField field = returnFields.get(i);
                 call.appendOut(writer, field);
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -683,9 +683,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         if (!infos.isEmpty()) {
             Hashtable<DatabaseField, Info> infoHashtable = removeDuplicateAndValidateInfos(session);
             Hashtable<DatabaseField, Info> infoHashtableUnmapped = (Hashtable<DatabaseField, Info>)infoHashtable.clone();
-            for (Enumeration<DatabaseField> fields = getDescriptor().getFields().elements();
-                 fields.hasMoreElements();) {
-                DatabaseField field = fields.nextElement();
+            for (DatabaseField field: getDescriptor().getFields()) {
                 Info info = infoHashtableUnmapped.get(field);
                 if (info != null) {
                     infoHashtableUnmapped.remove(field);
@@ -901,9 +899,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
             }
         }
         if (!mapped.isEmpty()) {
-            for (Enumeration<DatabaseField> fields = getDescriptor().getFields().elements();
-                 fields.hasMoreElements();) {
-                DatabaseField fieldInDescriptor = fields.nextElement();
+            for (DatabaseField fieldInDescriptor: getDescriptor().getFields()) {
                 DatabaseField fieldInMain = mapped.get(fieldInDescriptor);
                 if (fieldInMain != null) {
                     if (fieldInMain.getType() == null) {

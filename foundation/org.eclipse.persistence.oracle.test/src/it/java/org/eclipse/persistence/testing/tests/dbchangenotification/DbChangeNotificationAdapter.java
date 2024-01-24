@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,9 +54,9 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
         Iterator<ClassDescriptor> it = project.getDescriptors().values().iterator();
         while (it.hasNext()) {
             ClassDescriptor desc = it.next();
-            Enumeration<DatabaseTable> enumDescTableNames = desc.getTables().elements();
-            while (enumDescTableNames.hasMoreElements()) {
-                String tableName = enumDescTableNames.nextElement().getName();
+            Iterator<DatabaseTable> enumDescTableNames = desc.getTables().iterator();
+            while (enumDescTableNames.hasNext()) {
+                String tableName = enumDescTableNames.next().getName();
                 if (!tableNamesToPkFields.containsKey(tableName)) {
                     while (desc.isChildDescriptor()) {
                         desc = project.getClassDescriptor(desc.getInheritancePolicy().getParentClass());

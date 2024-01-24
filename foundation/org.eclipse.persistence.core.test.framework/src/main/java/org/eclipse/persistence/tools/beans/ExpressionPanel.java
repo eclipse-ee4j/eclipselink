@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 import javax.swing.*;
-import java.util.Enumeration;
 
 /**
  * Reusable visual component for editing expressions.
@@ -702,11 +701,7 @@ public class ExpressionPanel extends JPanel {
             getAttributeCombo().removeAllItems();
         }
         if (getDescriptor() != null) {
-            for (Enumeration<DatabaseMapping> mappingsEnum =
-                 getDescriptor().getMappings().elements();
-                 mappingsEnum.hasMoreElements(); ) {
-                DatabaseMapping mapping =
-                        mappingsEnum.nextElement();
+            for (DatabaseMapping mapping: getDescriptor().getMappings()) {
                 if (mapping.isDirectToFieldMapping()) {
                     getAttributeCombo().addItem(mapping.getAttributeName());
                 }

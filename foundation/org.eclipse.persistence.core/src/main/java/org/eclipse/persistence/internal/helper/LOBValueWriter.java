@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -109,7 +109,7 @@ public class LOBValueWriter {
     */
     private SQLSelectStatement buildSelectStatementForLocator(WriteObjectQuery writeQuery, DatabaseCall call, AbstractSession session) {
         SQLSelectStatement selectStatement = new SQLSelectStatement();
-        Vector<DatabaseTable> tables = writeQuery.getDescriptor().getTables();
+        List<DatabaseTable> tables = writeQuery.getDescriptor().getTables();
         selectStatement.setTables(tables);
         //rather than get ALL fields from the descriptor, only use the LOB-related fields to build the minimal SELECT statement.
         selectStatement.setFields(call.getContexts().getFields());

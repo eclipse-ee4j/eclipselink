@@ -251,7 +251,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         selectStatement.setQuery(query);
         selectStatement.setLockingClause(query.getLockingClause());
         selectStatement.setDistinctState(query.getDistinctState());
-        selectStatement.setTables((Vector)getDescriptor().getTables().clone());
+        selectStatement.setTables((List<DatabaseTable>) ((ArrayList<DatabaseTable>) getDescriptor().getTables()).clone());
         selectStatement.setWhereClause(buildBaseSelectionCriteria(isSubSelect, clonedExpressions, shouldUseAdditionalJoinExpression));
         //make sure we use the cloned builder and make sure we get the builder from the query if we have set the type.
         // If we use the expression builder and there are parallel builders and the query builder is on the 'right'
@@ -2452,7 +2452,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         updateAllStatement.setTables_databaseFieldsToValues(tables_databaseFieldsToValues);
         updateAllStatement.setTablesToPrimaryKeyFields(tablesToPrimaryKeyFields);
 
-        updateAllStatement.setTable(getDescriptor().getTables().firstElement());
+        updateAllStatement.setTable(getDescriptor().getTables().get(0));
 
         return updateAllStatement;
     }
@@ -2759,7 +2759,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
     protected List<DatabaseField> getPrimaryKeyFieldsForTable(ClassDescriptor descriptor, DatabaseTable table) {
         List<DatabaseField> mainTablePrimaryKeyFields = descriptor.getPrimaryKeyFields();
-        if(table.equals(descriptor.getTables().firstElement())) {
+        if(table.equals(descriptor.getTables().get(0))) {
             return mainTablePrimaryKeyFields;
         } else {
             List<DatabaseField> primaryKeyFields;

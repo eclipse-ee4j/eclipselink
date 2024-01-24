@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,6 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -231,10 +230,7 @@ public class HistoryFacade {
             }
             descriptor.setHistoryPolicy(policy);
 
-            for (Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
-                 mappings.hasMoreElements(); ) {
-                DatabaseMapping mapping =
-                        mappings.nextElement();
+            for (DatabaseMapping mapping: descriptor.getMappings()) {
                 if (mapping instanceof ManyToManyMapping) {
                     ManyToManyMapping m2mMapping = (ManyToManyMapping)mapping;
                     policy = (HistoryPolicy)basePolicy.clone();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,9 +23,9 @@ import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Struct;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -166,9 +166,9 @@ public class Oracle12Platform extends Oracle11Platform {
      * @return Struct
      */
     @Override
-    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, Vector<DatabaseField> orderedFields, AbstractSession session, Connection connection) throws SQLException {
+    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, List<DatabaseField> orderedFields, AbstractSession session, Connection connection) throws SQLException {
         for (int index = 0; index < orderedFields.size(); index++) {
-            DatabaseField field = orderedFields.elementAt(index);
+            DatabaseField field = orderedFields.get(index);
             if (row.getField(field) != null && row.getField(field).getTypeName() != null) {
                 if (ClassConstants.BLOB.getTypeName().equals(row.getField(field).getTypeName())) {
                     Blob blob = connection.createBlob();

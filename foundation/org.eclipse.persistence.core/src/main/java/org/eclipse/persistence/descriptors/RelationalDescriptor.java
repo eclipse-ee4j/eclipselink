@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.descriptors;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 
-import java.util.Vector;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: EclipseLink has been designed to take advantage of the similarities between
@@ -94,7 +94,7 @@ public class RelationalDescriptor extends ClassDescriptor {
      * Return the table names.
      */
     @Override
-    public Vector getTableNames() {
+    public List<String> getTableNames() {
         return super.getTableNames();
     }
 
@@ -125,7 +125,7 @@ public class RelationalDescriptor extends ClassDescriptor {
      * (i.e. "userid.employee"). This method is used for multiple tables
      */
     @Override
-    public void setTableNames(Vector tableNames) {
+    public void setTableNames(List<String> tableNames) {
         super.setTableNames(tableNames);
     }
 

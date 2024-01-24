@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -269,9 +269,9 @@ public class SQLSelectStatement extends SQLStatement {
                     outerJoinedAliases.add(newAlias);
                     writer.write(newAlias.getQualifiedNameDelimited(printer.getPlatform()));
                 } else {// do normal outer stuff for Informix
-                    for (Enumeration<DatabaseTable> target = outerExpression.getMapping().getReferenceDescriptor().getTables().elements();
-                         target.hasMoreElements();) {
-                        DatabaseTable newTarget = target.nextElement();
+                    for (Iterator<DatabaseTable> target = outerExpression.getMapping().getReferenceDescriptor().getTables().iterator();
+                         target.hasNext();) {
+                        DatabaseTable newTarget = target.next();
                         DatabaseTable newAlias = outerExpression.aliasForTable(newTarget);
                         writer.write(", OUTER ");
                         writer.write(newTarget.getQualifiedNameDelimited(printer.getPlatform()));
@@ -2302,7 +2302,7 @@ public class SQLSelectStatement extends SQLStatement {
      *
      *     Note that tablesInOrder must contain all tables used by expression
      */
-    public static Map mapTableToExpression(Expression expression, Vector tablesInOrder) {
+    public static Map mapTableToExpression(Expression expression, List<DatabaseTable> tablesInOrder) {
         TreeMap indexToExpressionMap = new TreeMap();
         mapTableIndexToExpression(expression, indexToExpressionMap, tablesInOrder);
         HashMap map = new HashMap(indexToExpressionMap.size());

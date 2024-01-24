@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -155,7 +155,7 @@ public class MutableAttributeObject {
         descriptor.addDirectMapping("utilDate", "UTIL_DATE");
 
         /* Configure all of the mappings as mutable, except the id mapping */
-        Vector<DatabaseMapping> mappings = descriptor.getMappings();
+        List<DatabaseMapping> mappings = descriptor.getMappings();
         for (int i = 0; i < mappings.size(); i++) {
             AbstractDirectMapping mapping = (AbstractDirectMapping)mappings.get(i);
             if (!mapping.getAttributeName().equalsIgnoreCase("id")) {
