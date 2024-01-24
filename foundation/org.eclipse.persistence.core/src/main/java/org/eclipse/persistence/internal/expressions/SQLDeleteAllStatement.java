@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,7 +26,9 @@ import org.eclipse.persistence.queries.SQLCall;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -48,8 +50,8 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
     protected String tableAliasInSelectCallForNotExist;
 
     // A pair of Vectors for join expression
-    protected Vector aliasedFields;
-    protected Vector originalFields;
+    protected List<DatabaseField> aliasedFields;
+    protected List<DatabaseField> originalFields;
 
     protected boolean shouldExtractWhereClauseFromSelectCallForExist;
 
@@ -77,29 +79,30 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
     public String getTableAliasInSelectCallForNotExist() {
         return tableAliasInSelectCallForNotExist;
     }
+    @SuppressWarnings({"unchecked"})
     public void setPrimaryKeyFieldsForAutoJoin(Collection primaryKeyFields) {
         if(primaryKeyFields != null) {
-            if(primaryKeyFields instanceof Vector) {
-                setOriginalFieldsForJoin((Vector)primaryKeyFields);
+            if(primaryKeyFields instanceof ArrayList<?>) {
+                setOriginalFieldsForJoin((ArrayList<DatabaseField>)primaryKeyFields);
             } else {
-                setOriginalFieldsForJoin(new Vector(primaryKeyFields));
+                setOriginalFieldsForJoin(new ArrayList<>(primaryKeyFields));
             }
-            setAliasedFieldsForJoin((Vector)getOriginalFieldsForJoin().clone());
+            setAliasedFieldsForJoin((List<DatabaseField>) ((ArrayList<DatabaseField>) getOriginalFieldsForJoin()).clone());
         } else {
             setOriginalFieldsForJoin(null);
             setAliasedFieldsForJoin(null);
         }
     }
-    public void setOriginalFieldsForJoin(Vector originalFields) {
+    public void setOriginalFieldsForJoin(List<DatabaseField> originalFields) {
         this.originalFields = originalFields;
     }
-    public Vector getOriginalFieldsForJoin() {
+    public List<DatabaseField> getOriginalFieldsForJoin() {
         return originalFields;
     }
-    public void setAliasedFieldsForJoin(Vector aliasedFields) {
+    public void setAliasedFieldsForJoin(List<DatabaseField> aliasedFields) {
         this.aliasedFields = aliasedFields;
     }
-    public Vector getAliasedFieldsForExpression() {
+    public List<DatabaseField> getAliasedFieldsForExpression() {
         return aliasedFields;
     }
     public void setInheritanceExpression(Expression inheritanceExpression) {
@@ -214,11 +217,11 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                 writer.write(tableAliasInSelectCall);
                 writer.write('.');
             }
-            writer.write(((DatabaseField)aliasedFields.elementAt(i)).getNameDelimited(platform));
+            writer.write(((DatabaseField)aliasedFields.get(i)).getNameDelimited(platform));
             writer.write(" = ");
             writer.write(table.getQualifiedNameDelimited(platform));
             writer.write('.');
-            writer.write(((DatabaseField)originalFields.elementAt(i)).getNameDelimited(platform));
+            writer.write(((DatabaseField)originalFields.get(i)).getNameDelimited(platform));
         }
 
         // add parameters

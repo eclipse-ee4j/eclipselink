@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
@@ -483,13 +482,13 @@ public abstract class ObjectExpression extends DataExpression {
      * only applies to query keys representing an object or to expression builders.
      */
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         if (getDescriptor() == null) {
             DatabaseMapping mapping = getMapping();
             if (mapping != null) {
                 return mapping.getSelectFields();
             }
-            return new NonSynchronizedVector(0);
+            return new ArrayList<>(0);
         }
         if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().shouldReadSubclasses()
                 && (!descriptor.getInheritancePolicy().hasMultipleTableChild()) || shouldUseOuterJoinForMultitableInheritance()) {
@@ -534,10 +533,10 @@ public abstract class ObjectExpression extends DataExpression {
      * Returns the first field from each of the owned tables, used for
      * fine-grained pessimistic locking.
      */
-    protected Vector getForUpdateOfFields() {
-        Vector allFields = getFields();
+    protected List<DatabaseField> getForUpdateOfFields() {
+        List<DatabaseField> allFields = getFields();
         int expected = getTableAliases().size();
-        Vector firstFields = new Vector(expected);
+        List<DatabaseField> firstFields = new ArrayList<>(expected);
         DatabaseTable lastTable = null;
         DatabaseField field = null;
         int i = 0;
@@ -548,18 +547,18 @@ public abstract class ObjectExpression extends DataExpression {
         // take O(n) time.
         // An even faster way may be to go getDescriptor().getAdditionalPrimaryKeyFields.
         while ((i < allFields.size()) && (firstFields.size() < expected)) {
-            field = (DatabaseField)allFields.elementAt(i++);
+            field = allFields.get(i++);
             if ((lastTable == null) || !field.getTable().equals(lastTable)) {
                 lastTable = field.getTable();
                 int j = 0;
                 while (j < firstFields.size()) {
-                    if (lastTable.equals(((DatabaseField)firstFields.elementAt(j)).getTable())) {
+                    if (lastTable.equals(firstFields.get(j).getTable())) {
                         break;
                     }
                     j++;
                 }
                 if (j == firstFields.size()) {
-                    firstFields.addElement(field);
+                    firstFields.add(field);
                 }
             }
         }

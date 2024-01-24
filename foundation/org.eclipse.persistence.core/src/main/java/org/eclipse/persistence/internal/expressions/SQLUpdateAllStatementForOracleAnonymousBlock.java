@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,6 +16,7 @@
 package org.eclipse.persistence.internal.expressions;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -26,9 +27,9 @@ import org.eclipse.persistence.queries.SQLCall;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -37,8 +38,8 @@ import java.util.Vector;
  * @since TOPLink/Java 1.0
  */
 public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyStatement {
-    protected HashMap tables_databaseFieldsToValues;
-    protected HashMap tablesToPrimaryKeyFields;
+    protected Map<DatabaseTable, Map<DatabaseField, Object>> tables_databaseFieldsToValues;
+    protected Map<DatabaseTable, List<DatabaseField>> tablesToPrimaryKeyFields;
     protected SQLCall selectCall;
 
     protected static final String varSuffix = "_VAR";
@@ -53,16 +54,16 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
     public SQLCall getSelectCall() {
         return selectCall;
     }
-    public void setTablesToPrimaryKeyFields(HashMap tablesToPrimaryKeyFields) {
+    public void setTablesToPrimaryKeyFields(Map<DatabaseTable, List<DatabaseField>> tablesToPrimaryKeyFields) {
         this.tablesToPrimaryKeyFields = tablesToPrimaryKeyFields;
     }
-    public HashMap getTablesToPrimaryKeyFields() {
+    public Map<DatabaseTable, List<DatabaseField>> getTablesToPrimaryKeyFields() {
         return tablesToPrimaryKeyFields;
     }
-    public void setTables_databaseFieldsToValues(HashMap tables_databaseFieldsToValues) {
+    public void setTables_databaseFieldsToValues(Map<DatabaseTable, Map<DatabaseField, Object>> tables_databaseFieldsToValues) {
         this.tables_databaseFieldsToValues = tables_databaseFieldsToValues;
     }
-    public HashMap getTables_databaseFieldsToValues() {
+    public Map<DatabaseTable, Map<DatabaseField, Object>> getTables_databaseFieldsToValues() {
         return tables_databaseFieldsToValues;
     }
 
@@ -77,7 +78,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
         Writer writer = new CharArrayWriter(100);
 
         Vector mainPrimaryKeys = new Vector();
-        mainPrimaryKeys.addAll((Collection)tablesToPrimaryKeyFields.get(table));
+        mainPrimaryKeys.addAll(tablesToPrimaryKeyFields.get(table));
 
         Vector allFields = (Vector)mainPrimaryKeys.clone();
         Iterator itDatabaseFieldsToValues = tables_databaseFieldsToValues.values().iterator();
@@ -155,7 +156,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
                 writer.write(" WHERE ");
 
                 Vector tablePrimaryKeys = new Vector();
-                tablePrimaryKeys.addAll((Collection)tablesToPrimaryKeyFields.get(t));
+                tablePrimaryKeys.addAll(tablesToPrimaryKeyFields.get(t));
                 for(int i=0; i < mainPrimaryKeys.size(); i++) {
                     DatabaseField tableField = (DatabaseField)tablePrimaryKeys.elementAt(i);
                     writer.write(tableField.getNameDelimited(session.getPlatform()));

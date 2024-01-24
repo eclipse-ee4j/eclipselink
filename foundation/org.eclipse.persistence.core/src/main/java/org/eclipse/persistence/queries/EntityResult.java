@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -185,7 +185,7 @@ public class EntityResult extends SQLResult {
             FieldResult fieldResult = (FieldResult)this.getFieldResults().get(mapping.getAttributeName());
             if (fieldResult != null){
                 if (mapping.getFields().size() == 1 ) {
-                    entityRecord.put(mapping.getFields().firstElement(), record.get(fieldResult.getColumn()));
+                    entityRecord.put(mapping.getFields().get(0), record.get(fieldResult.getColumn()));
                 } else if (mapping.getFields().size() >1){
                     getValueFromRecordForMapping(entityRecord,mapping,fieldResult,record);
                 }
@@ -252,7 +252,7 @@ public class EntityResult extends SQLResult {
             return df;
         }else{
             //this is it.. return this mapping's field
-            return mapping.getFields().firstElement();
+            return mapping.getFields().get(0);
         }
     }
 

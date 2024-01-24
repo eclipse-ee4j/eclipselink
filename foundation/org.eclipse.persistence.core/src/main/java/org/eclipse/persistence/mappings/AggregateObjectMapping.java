@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,7 +117,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected DatabaseTable aggregateKeyTable  = null;
 
     /** Map the name of a field in the aggregate descriptor to a field in the source table. */
-    /** 322233 - changed to store the source DatabaseField to hold Case and other colunm info*/
+    /* 322233 - changed to store the source DatabaseField to hold Case and other colunm info*/
     protected Map<String, DatabaseField> aggregateToSourceFields;
 
     /**
@@ -324,7 +324,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * row are NULL.
      */
     protected boolean allAggregateFieldsAreNull(AbstractRecord databaseRow) {
-        Vector<DatabaseField> fields = getReferenceFields();
+        List<DatabaseField> fields = getReferenceFields();
         int size = fields.size();
         for (int index = 0; index < size; index++) {
             DatabaseField field = fields.get(index);
@@ -617,16 +617,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Write the aggregate values into the parent row.
      */
-    protected void writeToRowFromAggregate(AbstractRecord record, Object object, Object attributeValue, AbstractSession session, WriteType writeType) throws DescriptorException {
+    protected void writeToRowFromAggregate(AbstractRecord abstractRecord, Object object, Object attributeValue, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (attributeValue == null) {
             if (this.isNullAllowed) {
-                writeNullReferenceRow(record);
+                writeNullReferenceRow(abstractRecord);
             } else {
                 throw DescriptorException.nullForNonNullAggregate(object, this);
             }
         } else {
             if (!session.isClassReadOnly(attributeValue.getClass())) {
-                getObjectBuilder(attributeValue, session).buildRow(record, attributeValue, session, writeType);
+                getObjectBuilder(attributeValue, session).buildRow(abstractRecord, attributeValue, session, writeType);
             }
         }
     }
@@ -635,16 +635,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Write the aggregate values into the parent row for shallow insert.
      */
-    protected void writeToRowFromAggregateForShallowInsert(AbstractRecord record, Object object, Object attributeValue, AbstractSession session) throws DescriptorException {
+    protected void writeToRowFromAggregateForShallowInsert(AbstractRecord abstractRecord, Object object, Object attributeValue, AbstractSession session) throws DescriptorException {
         if (attributeValue == null) {
             if (this.isNullAllowed) {
-                writeNullReferenceRow(record);
+                writeNullReferenceRow(abstractRecord);
             } else {
                 throw DescriptorException.nullForNonNullAggregate(object, this);
             }
         } else {
             if (!session.isClassReadOnly(attributeValue.getClass())) {
-                getObjectBuilder(attributeValue, session).buildRowForShallowInsert(record, attributeValue, session);
+                getObjectBuilder(attributeValue, session).buildRowForShallowInsert(abstractRecord, attributeValue, session);
             }
         }
     }
@@ -653,14 +653,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Write the aggregate values into the parent row for update after shallow insert.
      */
-    protected void writeToRowFromAggregateForUpdateAfterShallowInsert(AbstractRecord record, Object object, Object attributeValue, AbstractSession session, DatabaseTable table) throws DescriptorException {
+    protected void writeToRowFromAggregateForUpdateAfterShallowInsert(AbstractRecord abstractRecord, Object object, Object attributeValue, AbstractSession session, DatabaseTable table) throws DescriptorException {
         if (attributeValue == null) {
             if (!this.isNullAllowed) {
                 throw DescriptorException.nullForNonNullAggregate(object, this);
             }
         } else {
             if (!session.isClassReadOnly(attributeValue.getClass()) && !isPrimaryKeyMapping()) {
-                getObjectBuilder(attributeValue, session).buildRowForUpdateAfterShallowInsert(record, attributeValue, session, table);
+                getObjectBuilder(attributeValue, session).buildRowForUpdateAfterShallowInsert(abstractRecord, attributeValue, session, table);
             }
         }
     }
@@ -669,14 +669,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Write the aggregate values into the parent row for update before shallow delete.
      */
-    protected void writeToRowFromAggregateForUpdateBeforeShallowDelete(AbstractRecord record, Object object, Object attributeValue, AbstractSession session, DatabaseTable table) throws DescriptorException {
+    protected void writeToRowFromAggregateForUpdateBeforeShallowDelete(AbstractRecord abstractRecord, Object object, Object attributeValue, AbstractSession session, DatabaseTable table) throws DescriptorException {
         if (attributeValue == null) {
             if (!this.isNullAllowed) {
                 throw DescriptorException.nullForNonNullAggregate(object, this);
             }
         } else {
             if (!session.isClassReadOnly(attributeValue.getClass()) && !isPrimaryKeyMapping()) {
-                getObjectBuilder(attributeValue, session).buildRowForUpdateBeforeShallowDelete(record, attributeValue, session, table);
+                getObjectBuilder(attributeValue, session).buildRowForUpdateBeforeShallowDelete(abstractRecord, attributeValue, session, table);
             }
         }
     }
@@ -686,17 +686,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Build and return a database row built with the values from
      * the specified attribute value.
      */
-    protected void writeToRowFromAggregateWithChangeRecord(AbstractRecord record, ChangeRecord changeRecord, ObjectChangeSet objectChangeSet, AbstractSession session, WriteType writeType) throws DescriptorException {
+    protected void writeToRowFromAggregateWithChangeRecord(AbstractRecord abstractRecord, ChangeRecord changeRecord, ObjectChangeSet objectChangeSet, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (objectChangeSet == null) {
             if (this.isNullAllowed) {
-                writeNullReferenceRow(record);
+                writeNullReferenceRow(abstractRecord);
             } else {
                 Object object = ((ObjectChangeSet)changeRecord.getOwner()).getUnitOfWorkClone();
                 throw DescriptorException.nullForNonNullAggregate(object, this);
             }
         } else {
             if (!session.isClassReadOnly(objectChangeSet.getClassType(session))) {
-                getReferenceDescriptor(objectChangeSet.getClassType(session), session).getObjectBuilder().buildRowWithChangeSet(record, objectChangeSet, session, writeType);
+                getReferenceDescriptor(objectChangeSet.getClassType(session), session).getObjectBuilder().buildRowWithChangeSet(abstractRecord, objectChangeSet, session, writeType);
             }
         }
     }
@@ -706,19 +706,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Build and return a database row built with the changed values from
      * the specified attribute value.
      */
-    protected void writeToRowFromAggregateForUpdate(AbstractRecord record, WriteObjectQuery query, Object attributeValue) throws DescriptorException {
+    protected void writeToRowFromAggregateForUpdate(AbstractRecord abstractRecord, WriteObjectQuery query, Object attributeValue) throws DescriptorException {
         if (attributeValue == null) {
             if (this.isNullAllowed) {
                 if (backupAttributeValueIsNull(query)) {
                     // both attributes are null - no update required
                 } else {
-                    writeNullReferenceRow(record);
+                    writeNullReferenceRow(abstractRecord);
                 }
             } else {
                 throw DescriptorException.nullForNonNullAggregate(query.getObject(), this);
             }
         } else if ((query.getBackupClone() != null) && ((getMatchingBackupAttributeValue(query, attributeValue) == null) || !(attributeValue.getClass().equals(getMatchingBackupAttributeValue(query, attributeValue).getClass())))) {
-            getObjectBuilder(attributeValue, query.getSession()).buildRow(record, attributeValue, query.getSession(), WriteType.UPDATE);
+            getObjectBuilder(attributeValue, query.getSession()).buildRow(abstractRecord, attributeValue, query.getSession(), WriteType.UPDATE);
         } else {
             if (!query.getSession().isClassReadOnly(attributeValue.getClass())) {
                 WriteObjectQuery clonedQuery = (WriteObjectQuery)query.clone();
@@ -730,7 +730,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                     }
                     clonedQuery.setBackupClone(backupAttributeValue);
                 }
-                getObjectBuilder(attributeValue, query.getSession()).buildRowForUpdate(record, clonedQuery);
+                getObjectBuilder(attributeValue, query.getSession()).buildRowForUpdate(abstractRecord, clonedQuery);
             }
         }
     }
@@ -843,7 +843,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     protected AbstractRecord buildTemplateInsertRow(AbstractSession session) {
         AbstractRecord result = getReferenceDescriptor().getObjectBuilder().buildTemplateInsertRow(session);
-        List processedMappings = (List)getReferenceDescriptor().getMappings().clone();
+        @SuppressWarnings({"unchecked"})
+        List<DatabaseMapping> processedMappings = (List<DatabaseMapping>) getReferenceDescriptor().getMappings().clone();
         if (getReferenceDescriptor().hasInheritance()) {
             for (ClassDescriptor child : getReferenceDescriptor().getInheritancePolicy().getChildDescriptors()) {
                 for (DatabaseMapping mapping : child.getMappings()) {
@@ -1031,8 +1032,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     @Override
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
-        Object key = buildAggregateFromRow(dbRow, null, parentCacheKey, null, query, false, session, isTargetProtected);
-        return key;
+        return buildAggregateFromRow(dbRow, null, parentCacheKey, null, query, false, session, isTargetProtected);
     }
 
     /**
@@ -1516,7 +1516,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if (parentDescriptor.getInheritancePolicy().hasChildren()) {
             //setFields(clonedChildDescriptor.getFields());
             List<ClassDescriptor> childDescriptors = parentDescriptor.getInheritancePolicy().getChildDescriptors();
-            List<ClassDescriptor> cloneChildDescriptors = new ArrayList();
+            List<ClassDescriptor> cloneChildDescriptors = new ArrayList<>();
             for (ClassDescriptor child : childDescriptors) {
                 ClassDescriptor clonedChildDescriptor = (ClassDescriptor)child.clone();
                 clonedChildDescriptor.getInheritancePolicy().setParentDescriptor(parentDescriptor);
@@ -1550,8 +1550,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
 
         initializeReferenceDescriptor(clonedParentDescriptor, session);
-        Vector children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        children.addElement(childDescriptor);
+        List<ClassDescriptor> children = new ArrayList<>(1);
+        children.add(childDescriptor);
         clonedParentDescriptor.getInheritancePolicy().setChildDescriptors(children);
         clonedParentDescriptor.preInitialize(session);
         clonedParentDescriptor.initialize(session);
@@ -1577,7 +1577,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             // We need to translate the mappings field now BEFORE the clonedDescriptor gets initialized.
             // During clonedDescriptor initialize, the mappings will be initialized and the field needs translated by then.
             // If we wait any longer, the initialized mapping will be set as a primary key if the field name matches primaryKeyFields
-            Vector<DatabaseMapping> mappingsToTranslate = clonedDescriptor.getMappings();
+            List<DatabaseMapping> mappingsToTranslate = clonedDescriptor.getMappings();
             for (DatabaseMapping mapping : mappingsToTranslate) {
                 DatabaseField field = mapping.getField();
                 if(field != null) {
@@ -1802,7 +1802,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             boolean allAttributesNull = true;
             int nAggregateFields = this.fields.size();
             for (int i = 0; (i < nAggregateFields) && allAttributesNull; i++) {
-                DatabaseField field = this.fields.elementAt(i);
+                DatabaseField field = this.fields.get(i);
                 if (row.containsKey(field)) {
                     allAttributesNull = row.get(field) == null;
                 } else {

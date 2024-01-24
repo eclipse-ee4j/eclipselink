@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
-import java.util.Vector;
+import java.util.List;
 
 /**
  * INTERNAL
@@ -89,7 +89,7 @@ public abstract class CoreMapping<
      * INTERNAL:
      * Return the field associated with this mapping if there is exactly one.
      * This is required for object relational mapping to print them, but because
-     * they are defined in in an Enterprise context they cannot be cast to.
+     * they are defined in an Enterprise context they cannot be cast to.
      * Mappings that have a field include direct mappings and object relational mappings.
      *
      * @return TODO
@@ -98,11 +98,11 @@ public abstract class CoreMapping<
 
     /**
      * INTERNAL:
-     * Returns a vector of all the fields this mapping represents.
+     * Returns a list of all the fields this mapping represents.
      *
      * @return TODO
      */
-    public abstract Vector<FIELD> getFields();
+    public abstract List<FIELD> getFields();
 
     /**
      * PUBLIC:
@@ -236,7 +236,7 @@ public abstract class CoreMapping<
      *
      * @param fields TODO
      */
-    protected abstract void setFields(Vector<FIELD> fields);
+    protected abstract void setFields(List<FIELD> fields);
 
     /**
      * INTERNAL:

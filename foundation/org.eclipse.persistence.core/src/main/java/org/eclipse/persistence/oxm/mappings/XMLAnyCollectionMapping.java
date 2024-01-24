@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,6 +65,7 @@ import org.w3c.dom.Text;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -691,7 +692,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
     }
 
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         return this.collectFields();
     }
 

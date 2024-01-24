@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -368,16 +368,16 @@ public class QueryKeyExpression extends ObjectExpression {
      * Return all the fields
      */
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         if (isAttribute()) {
-            Vector result = new Vector(1);
+            List<DatabaseField> result = new ArrayList<>(1);
             DatabaseField field = getField();
             if (field != null) {
-                result.addElement(field);
+                result.add(field);
             }
             return result;
         } else {
-            Vector result = new Vector();
+            List<DatabaseField> result = new ArrayList<>();
             result.addAll(super.getFields());
             if ((this.mapping != null) && this.mapping.isCollectionMapping()){
                 List<DatabaseField> fields = this.mapping.getContainerPolicy().getAdditionalFieldsForJoin((CollectionMapping)this.mapping);
@@ -1441,7 +1441,7 @@ public class QueryKeyExpression extends ObjectExpression {
             // from the descriptor. In an joined inheritance hierarchy, the
             // fk used in the outer join may be from a subclasses's table.
             if (getMapping().isObjectReferenceMapping() && ((ObjectReferenceMapping) getMapping()).isForeignKeyRelationship()) {
-                 return getMapping().getFields().firstElement().getTable();
+                 return getMapping().getFields().get(0).getTable();
             } else {
                 return ((ObjectExpression)this.baseExpression).getDescriptor().getTables().firstElement();
             }
