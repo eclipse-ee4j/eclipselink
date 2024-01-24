@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1379,7 +1379,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
             for (Object mapping : mappings) {
                 DatabaseMapping nextMapping = (DatabaseMapping) mapping;
-                Vector<DatabaseField> fields = nextMapping.getFields();
+                List<DatabaseField> fields = nextMapping.getFields();
                 updateResolverForFields(fields, nr);
                 Descriptor refDesc = (Descriptor) nextMapping.getReferenceDescriptor();
                 if (refDesc != null && !processed.contains(refDesc)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -27,16 +27,16 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Guy Pelletier
  * @since TOPLink/Java 1.0
  */
 public class SQLUpdateAllStatement extends SQLModifyStatement {
-    protected HashMap m_updateClauses;
-    protected HashMap databaseFieldsToTableAliases;
+    protected Map m_updateClauses;
+    protected Map<DatabaseField, String> databaseFieldsToTableAliases;
 
     protected SQLCall selectCallForExist;
     protected String tableAliasInSelectCallForExist;
@@ -61,16 +61,16 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
     public Collection getPrimaryKeyFieldsForAutoJoin() {
         return primaryKeyFields;
     }
-    public void setUpdateClauses(HashMap updateClauses) {
+    public void setUpdateClauses(Map updateClauses) {
         m_updateClauses = updateClauses;
     }
-    public HashMap getUpdateClauses() {
+    public Map getUpdateClauses() {
         return m_updateClauses;
     }
-    public void setDatabaseFieldsToTableAliases(HashMap databaseFieldsToTableAliases) {
+    public void setDatabaseFieldsToTableAliases(Map<DatabaseField, String> databaseFieldsToTableAliases) {
         this.databaseFieldsToTableAliases = databaseFieldsToTableAliases;
     }
-    public HashMap getDatabaseFieldsToTableAliases() {
+    public Map<DatabaseField, String> getDatabaseFieldsToTableAliases() {
         return databaseFieldsToTableAliases;
     }
     public void setShouldExtractWhereClauseFromSelectCallForExist(boolean shouldExtractWhereClauseFromSelectCallForExist) {
@@ -169,7 +169,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                 } else {
                     // must be SQLCall
                     SQLCall selCall = (SQLCall)value;
-                    String tableAlias = (String)getDatabaseFieldsToTableAliases().get(field);
+                    String tableAlias = getDatabaseFieldsToTableAliases().get(field);
                     // should be SQLCall select
                     writer.write("(");
                     writeSelect(writer, selCall, tableAlias, call, session.getPlatform());

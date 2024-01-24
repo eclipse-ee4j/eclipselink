@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,7 +134,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     protected Boolean isLazy;
 
     /** Fields associated with the mappings are cached */
-    protected Vector<DatabaseField> fields;
+    protected List<DatabaseField> fields;
 
     /** It is needed only in remote initialization and mapping is in parent descriptor */
     protected boolean isRemotelyInitialized;
@@ -915,7 +915,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      *
      * @return TODO
      */
-    public Vector getSelectFields() {
+    public List<DatabaseField> getSelectFields() {
         return getFields();
     }
 
@@ -937,7 +937,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * @return TODO
      */
     @Override
-    public Vector<DatabaseField> getFields() {
+    public List<DatabaseField> getFields() {
         return this.fields;
     }
 
@@ -1908,7 +1908,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * Set the mapping's field collection.
      */
     @Override
-    protected void setFields(Vector<DatabaseField> fields) {
+    protected void setFields(List<DatabaseField> fields) {
         this.fields = fields;
     }
 

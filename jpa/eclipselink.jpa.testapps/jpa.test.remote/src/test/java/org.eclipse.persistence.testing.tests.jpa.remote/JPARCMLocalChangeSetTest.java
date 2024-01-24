@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -381,7 +381,7 @@ public class JPARCMLocalChangeSetTest extends JUnitTestCase {
             Map<ObjectChangeSet, ObjectChangeSet> csMap = uowcs.getAllChangeSets();
             for (ObjectChangeSet ocs : csMap.keySet()) {
                 AbstractRecord protectedForeignKeys = ocs.getProtectedForeignKeys();
-                Vector<DatabaseField> fkFields = cacheableDescriptor.getMappingForAttributeName("cacheableFalse").getFields();
+                List<DatabaseField> fkFields = cacheableDescriptor.getMappingForAttributeName("cacheableFalse").getFields();
                 
                 assertNotNull("ObjectChangeSet should have a non-null protected foreign key", protectedForeignKeys);
                 assertEquals("ObjectChangeSet's protectedForeignKeys should be non-empty", fkFields.size(), protectedForeignKeys.size());
@@ -474,7 +474,7 @@ public class JPARCMLocalChangeSetTest extends JUnitTestCase {
             Map<ObjectChangeSet, ObjectChangeSet> csMap = uowcs.getAllChangeSets();
             for (ObjectChangeSet ocs : csMap.keySet()) {
                 AbstractRecord protectedForeignKeys = ocs.getProtectedForeignKeys();
-                Vector<DatabaseField> fkFields = cacheableDescriptor.getMappingForAttributeName("cacheableFalse").getFields();
+                List<DatabaseField> fkFields = cacheableDescriptor.getMappingForAttributeName("cacheableFalse").getFields();
                 
                 assertNotNull("ObjectChangeSet should have a non-null protected foreign key", protectedForeignKeys);
                 assertEquals("ObjectChangeSet's protectedForeignKeys should be non-empty", fkFields.size(), protectedForeignKeys.size());

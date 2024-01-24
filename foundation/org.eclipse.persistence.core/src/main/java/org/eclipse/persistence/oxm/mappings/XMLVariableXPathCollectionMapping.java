@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Session;
 
 import javax.xml.namespace.QName;
+import java.util.List;
 import java.util.Vector;
 public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMapping implements VariableXPathCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session, XMLUnmarshaller, XMLRecord>, XMLMapping, XMLContainerMapping {
 
@@ -105,7 +106,7 @@ public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMap
     }
 
 @Override
-public Vector getFields() {
+public List<DatabaseField> getFields() {
     return collectFields();
 }
 
