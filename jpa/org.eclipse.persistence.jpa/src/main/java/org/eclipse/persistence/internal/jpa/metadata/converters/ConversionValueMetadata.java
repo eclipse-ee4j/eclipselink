@@ -64,8 +64,7 @@ public class ConversionValueMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ConversionValueMetadata) {
-            ConversionValueMetadata conversionValue = (ConversionValueMetadata) objectToCompare;
+        if (objectToCompare instanceof ConversionValueMetadata conversionValue) {
 
             if (! valuesMatch(m_dataValue, conversionValue.getDataValue())) {
                 return false;

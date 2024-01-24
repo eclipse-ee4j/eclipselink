@@ -780,10 +780,9 @@ public class DatabasePlatform extends DatasourcePlatform {
     @Override
     public void copyInto(Platform platform) {
         super.copyInto(platform);
-        if (!(platform instanceof DatabasePlatform)) {
+        if (!(platform instanceof DatabasePlatform databasePlatform)) {
             return;
         }
-        DatabasePlatform databasePlatform = (DatabasePlatform)platform;
         databasePlatform.setShouldTrimStrings(shouldTrimStrings());
         databasePlatform.setUsesNativeSQL(usesNativeSQL());
         databasePlatform.setUsesByteArrayBinding(usesByteArrayBinding());
@@ -2394,8 +2393,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                     statement.setString(index, (String) parameter);
                 }
             }
-        } else if (parameter instanceof Number) {
-            Number number = (Number) parameter;
+        } else if (parameter instanceof Number number) {
             if (number instanceof Integer) {
                 statement.setInt(index, number.intValue());
             } else if (number instanceof Long) {
@@ -2428,14 +2426,12 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setTimestamp(index, java.sql.Timestamp.from(((java.time.OffsetDateTime) parameter).toInstant()));
         } else if (parameter instanceof java.sql.Time){
             statement.setTime(index,(java.sql.Time)parameter);
-        } else if (parameter instanceof java.time.LocalTime){
-            java.time.LocalTime lt = (java.time.LocalTime) parameter;
+        } else if (parameter instanceof java.time.LocalTime lt){
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
             // This may cause cast exceptions, statement.setTime(index, ...) should be here, but some platforms rely on full TIMESTAMP types
             // overriden to statement.setTime(index, ...) in: SQLServerPlatform
             statement.setTimestamp(index, ts);
-        } else if (parameter instanceof java.time.OffsetTime) {
-            java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
+        } else if (parameter instanceof java.time.OffsetTime ot) {
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             statement.setTimestamp(index, ts);
         } else if (parameter instanceof Boolean) {
@@ -2503,8 +2499,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                     statement.setString(name, (String) parameter);
                 }
             }
-        } else if (parameter instanceof Number) {
-            Number number = (Number) parameter;
+        } else if (parameter instanceof Number number) {
             if (number instanceof Integer) {
                 statement.setInt(name, number.intValue());
             } else if (number instanceof Long) {
@@ -2537,12 +2532,10 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setTimestamp(name, java.sql.Timestamp.from(((java.time.OffsetDateTime) parameter).toInstant()));
         } else if (parameter instanceof java.sql.Time){
             statement.setTime(name,(java.sql.Time)parameter);
-        } else if (parameter instanceof java.time.LocalTime){
-            java.time.LocalTime lt = (java.time.LocalTime) parameter;
+        } else if (parameter instanceof java.time.LocalTime lt){
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
             statement.setTimestamp(name, ts);
-        } else if (parameter instanceof java.time.OffsetTime) {
-            java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
+        } else if (parameter instanceof java.time.OffsetTime ot) {
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             statement.setTimestamp(name, ts);
         } else if (parameter instanceof Boolean) {
@@ -2671,12 +2664,10 @@ public class DatabasePlatform extends DatasourcePlatform {
                 appendTimestamp(java.sql.Timestamp.valueOf((java.time.LocalDateTime) dbValue), writer);
             } else if (dbValue instanceof java.time.OffsetDateTime) {
                 appendTimestamp(java.sql.Timestamp.from(((java.time.OffsetDateTime) dbValue).toInstant()), writer);
-            } else if (dbValue instanceof java.time.LocalTime){
-                java.time.LocalTime lt = (java.time.LocalTime) dbValue;
+            } else if (dbValue instanceof java.time.LocalTime lt){
                 java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
                 appendTimestamp(ts, writer);
-            } else if (dbValue instanceof java.time.OffsetTime) {
-                java.time.OffsetTime ot = (java.time.OffsetTime) dbValue;
+            } else if (dbValue instanceof java.time.OffsetTime ot) {
                 java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
                 appendTimestamp(ts, writer);
             } else if (dbValue instanceof java.sql.Date) {

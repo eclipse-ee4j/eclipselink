@@ -51,11 +51,10 @@ public class Employee  {
     }
 
     public boolean equals(Object object) {
-        if(!(object instanceof Employee)) {
+        if(!(object instanceof Employee emp)) {
             return false;
         }
 
-        Employee emp = ((Employee)object);
         if(emp.isMarried() != this.isMarried())
         {
             return false;

@@ -1162,9 +1162,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
              * using the getMethodName on the accessor.
              */
             // Tie into the collection hierarchy at a lower level
-            if (mapping instanceof CollectionMapping) {
+            if (mapping instanceof CollectionMapping colMapping) {
                 // Handle 1:m, n:m collection mappings
-                CollectionMapping colMapping = (CollectionMapping) mapping;
                 ContainerPolicy collectionContainerPolicy = colMapping.getContainerPolicy();
                 if (collectionContainerPolicy.isMapPolicy()) {
                     // Handle the 3 Map type mappings (policy.isMappedKeyMapPolicy()) is handled by isMapPolicy())

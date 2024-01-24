@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,11 +34,10 @@ public class EmployeeLax {
     public Collection elements;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof EmployeeLax)) {
+        if(!(obj instanceof EmployeeLax emp)) {
             return false;
         }
 
-        EmployeeLax emp = (EmployeeLax)obj;
         if(!(name.equals(emp.name))) {
             return false;
         }
@@ -57,9 +56,7 @@ public class EmployeeLax {
             Object next1 = elements1.next();
             Object next2 = elements2.next();
 
-            if((next1 instanceof org.w3c.dom.Element) && (next2 instanceof Element)) {
-                Element nextElem1 = (Element)next1;
-                Element nextElem2 = (Element)next2;
+            if((next1 instanceof Element nextElem1) && (next2 instanceof Element nextElem2)) {
                 if(!(comparer.isNodeEqual(nextElem1, nextElem2))) {
                     return false;
                 }

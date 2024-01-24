@@ -85,8 +85,7 @@ public class ArrayAccessor extends DirectAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof ArrayAccessor) {
-            ArrayAccessor accessor = (ArrayAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof ArrayAccessor accessor) {
 
             if (! valuesMatch(m_column, accessor.getColumn())) {
                 return false;

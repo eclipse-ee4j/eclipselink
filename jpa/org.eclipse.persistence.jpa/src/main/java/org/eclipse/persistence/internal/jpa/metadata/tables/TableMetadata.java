@@ -108,8 +108,7 @@ public class TableMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof TableMetadata) {
-            TableMetadata table = (TableMetadata) objectToCompare;
+        if (objectToCompare instanceof TableMetadata table) {
 
             if (! valuesMatch(m_name, table.getName())) {
                 return false;

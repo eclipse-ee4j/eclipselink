@@ -166,8 +166,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof VariableOneToOneAccessor) {
-            VariableOneToOneAccessor variableOneToOneAccessor = (VariableOneToOneAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof VariableOneToOneAccessor variableOneToOneAccessor) {
 
             if (! valuesMatch(m_discriminatorColumn, variableOneToOneAccessor.getDiscriminatorColumn())) {
                 return false;

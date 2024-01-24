@@ -66,8 +66,7 @@ public abstract class AbstractConverterMetadata extends MetadataConverter {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof AbstractConverterMetadata) {
-            AbstractConverterMetadata abstractConverter = (AbstractConverterMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof AbstractConverterMetadata abstractConverter) {
             return valuesMatch(m_name, abstractConverter.getName());
         }
 

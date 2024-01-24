@@ -60,12 +60,13 @@ import dbws.testing.DBWSTestSuite;
 public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
 
     static final String CREATE_SIMPLE_TABLE =
-        "CREATE TABLE SIMPLETABLE2 (" +
-            "\nID NUMBER NOT NULL," +
-            "\nNAME VARCHAR(25)," +
-            "\nSINCE DATE," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE SIMPLETABLE2 (
+                    ID NUMBER NOT NULL,
+                    NAME VARCHAR(25),
+                    SINCE DATE,
+                    PRIMARY KEY (ID)
+                    )""";
     static final String[] POPULATE_SIMPLE_TABLE = new String[] {
         "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (1, 'mike', " +
             "TO_DATE('2001-12-25 00:00:00','YYYY-MM-DD HH24:MI:SS'))",

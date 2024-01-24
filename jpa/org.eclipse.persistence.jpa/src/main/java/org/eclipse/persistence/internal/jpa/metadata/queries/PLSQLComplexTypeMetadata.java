@@ -63,8 +63,7 @@ public abstract class PLSQLComplexTypeMetadata extends ComplexTypeMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof PLSQLRecordMetadata) {
-            PLSQLRecordMetadata parameter = (PLSQLRecordMetadata) objectToCompare;
+        if (objectToCompare instanceof PLSQLRecordMetadata parameter) {
 
             if (! valuesMatch(this.name, parameter.getName())) {
                 return false;

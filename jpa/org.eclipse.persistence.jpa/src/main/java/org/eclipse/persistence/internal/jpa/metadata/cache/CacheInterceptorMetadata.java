@@ -71,8 +71,7 @@ public class CacheInterceptorMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof CacheInterceptorMetadata) {
-            CacheInterceptorMetadata cacheInterceptor = (CacheInterceptorMetadata) objectToCompare;
+        if (objectToCompare instanceof CacheInterceptorMetadata cacheInterceptor) {
             return valuesMatch(m_interceptorClassName, cacheInterceptor.getInterceptorClassName());
         }
 

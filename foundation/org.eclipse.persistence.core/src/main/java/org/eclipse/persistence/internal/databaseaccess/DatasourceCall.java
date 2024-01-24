@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -287,9 +287,8 @@ public abstract class DatasourceCall implements Call {
      */
     @Override
     public DatabaseQueryMechanism buildQueryMechanism(DatabaseQuery query, DatabaseQueryMechanism mechanism) {
-        if (mechanism.isCallQueryMechanism() && (mechanism instanceof DatasourceCallQueryMechanism)) {
+        if (mechanism.isCallQueryMechanism() && (mechanism instanceof DatasourceCallQueryMechanism callMechanism)) {
             // Must also add the call singleton...
-            DatasourceCallQueryMechanism callMechanism = ((DatasourceCallQueryMechanism)mechanism);
             if (!callMechanism.hasMultipleCalls()) {
                 callMechanism.addCall(callMechanism.getCall());
                 callMechanism.setCall(null);
@@ -1366,8 +1365,7 @@ public abstract class DatasourceCall implements Call {
                     // Process next parameter.
                     Object parameter = parameters.get(parameterIndex);
                     // Parameter expressions are used for nesting and correct mapping conversion of the value.
-                    if (parameter instanceof Collection) {
-                        Collection<?> values = (Collection<?>)parameter;
+                    if (parameter instanceof Collection<?> values) {
                         writer.write("(");
                         if ((values.size() > 0) && (values.iterator().next() instanceof List)) {
                             // Support nested lists.

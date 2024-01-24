@@ -70,8 +70,7 @@ public class TimeOfDayMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof TimeOfDayMetadata) {
-            TimeOfDayMetadata timeOfDay = (TimeOfDayMetadata) objectToCompare;
+        if (objectToCompare instanceof TimeOfDayMetadata timeOfDay) {
 
             if (! valuesMatch(m_hour, timeOfDay.getHour())) {
                 return false;

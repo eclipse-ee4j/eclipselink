@@ -51,17 +51,18 @@ import dbws.testing.DBWSTestSuite;
 public class SimpleSPTestSuite extends DBWSTestSuite {
 
     static final String CREATE_SIMPLESP_TABLE =
-        "CREATE TABLE SIMPLESP (" +
-            "\nEMPNO DECIMAL(4,0) NOT NULL," +
-            "\nENAME VARCHAR(10)," +
-            "\nJOB VARCHAR(9)," +
-            "\nMGR DECIMAL(4,0)," +
-            "\nHIREDATE DATE," +
-            "\nSAL DECIMAL(7,2)," +
-            "\nCOMM DECIMAL(7,2)," +
-            "\nDEPTNO DECIMAL(2,0)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE SIMPLESP (
+                    EMPNO DECIMAL(4,0) NOT NULL,
+                    ENAME VARCHAR(10),
+                    JOB VARCHAR(9),
+                    MGR DECIMAL(4,0),
+                    HIREDATE DATE,
+                    SAL DECIMAL(7,2),
+                    COMM DECIMAL(7,2),
+                    DEPTNO DECIMAL(2,0),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String[] POPULATE_SIMPLESP_TABLE = new String[] {
         "INSERT INTO SIMPLESP VALUES (7369,'SMITH','CLERK',7902," +
             "TO_DATE('1980-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),800.92,NULL,20)",
@@ -93,47 +94,55 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             "TO_DATE('1982-01-23 00:00:00','YYYY-MM-DD HH24:MI:SS'),1300,NULL,10)"
     };
     static final String CREATE_VARCHARSP_PROC =
-        "CREATE PROCEDURE VARCHARSP(X IN VARCHAR) is" +
-        "\nBEGIN" +
-            "\nnull;" +
-        "\nEND VARCHARSP;";
+            """
+                    CREATE PROCEDURE VARCHARSP(X IN VARCHAR) is
+                    BEGIN
+                    null;
+                    END VARCHARSP;""";
     static final String CREATE_NOARGSP_PROC =
-        "CREATE PROCEDURE NOARGSP is" +
-        "\nBEGIN" +
-            "\nnull;" +
-        "\nEND NOARGSP;";
+            """
+                    CREATE PROCEDURE NOARGSP is
+                    BEGIN
+                    null;
+                    END NOARGSP;""";
     static final String CREATE_INOUTARGSSP_PROC =
-        "CREATE PROCEDURE INOUTARGSSP(T IN VARCHAR, U OUT VARCHAR, V OUT NUMERIC) is" +
-        "\nBEGIN" +
-            "\nU := CONCAT('barf-' , T);" +
-            "\nV := 55;" +
-        "\nEND INOUTARGSSP;";
+            """
+                    CREATE PROCEDURE INOUTARGSSP(T IN VARCHAR, U OUT VARCHAR, V OUT NUMERIC) is
+                    BEGIN
+                    U := CONCAT('barf-' , T);
+                    V := 55;
+                    END INOUTARGSSP;""";
     static final String CREATE_FINDBYJOB_PROC =
-        "CREATE PROCEDURE FINDBYJOB (J IN VARCHAR, SIMPL OUT SYS_REFCURSOR) IS" +
-        "\nBEGIN" +
-        "   \nOPEN SIMPL FOR SELECT * FROM SIMPLESP WHERE JOB LIKE J;" +
-        "\nEND FINDBYJOB;";
+            """
+                    CREATE PROCEDURE FINDBYJOB (J IN VARCHAR, SIMPL OUT SYS_REFCURSOR) IS
+                    BEGIN  \s
+                    OPEN SIMPL FOR SELECT * FROM SIMPLESP WHERE JOB LIKE J;
+                    END FINDBYJOB;""";
     static final String CREATE_GETALL_PROC =
-        "CREATE PROCEDURE GETALL(SIMPL OUT SYS_REFCURSOR) IS" +
-        "\nBEGIN" +
-        "   \nOPEN SIMPL FOR SELECT * FROM SIMPLESP;" +
-        "\nEND GETALL;";
+            """
+                    CREATE PROCEDURE GETALL(SIMPL OUT SYS_REFCURSOR) IS
+                    BEGIN  \s
+                    OPEN SIMPL FOR SELECT * FROM SIMPLESP;
+                    END GETALL;""";
     static final String CREATE_GETSALARYBYID_PROC =
-        "CREATE OR REPLACE PROCEDURE GETSALARYBYID(S IN OUT NUMERIC) is" +
-        "\nBEGIN" +
-        "   \nSELECT SAL INTO S FROM SIMPLESP WHERE EMPNO = S;" +
-        "\nEND GETSALARYBYID;";
+            """
+                    CREATE OR REPLACE PROCEDURE GETSALARYBYID(S IN OUT NUMERIC) is
+                    BEGIN  \s
+                    SELECT SAL INTO S FROM SIMPLESP WHERE EMPNO = S;
+                    END GETSALARYBYID;""";
     static final String CREATE_OUT_IN_INOUT_ARGSSP_PROC =
-        "CREATE PROCEDURE OUTININOUTARGSSP(T OUT VARCHAR, U IN VARCHAR, V IN OUT NUMERIC) is" +
-        "\nBEGIN" +
-            "\nT := CONCAT('barfoo-' , U);" +
-            "\nV := V + 1;" +
-        "\nEND OUTININOUTARGSSP;";
+            """
+                    CREATE PROCEDURE OUTININOUTARGSSP(T OUT VARCHAR, U IN VARCHAR, V IN OUT NUMERIC) is
+                    BEGIN
+                    T := CONCAT('barfoo-' , U);
+                    V := V + 1;
+                    END OUTININOUTARGSSP;""";
     static final String CREATE_GET_XMLTYPE_PROC =
-        "CREATE OR REPLACE PROCEDURE GET_XMLTYPE(W IN VARCHAR2, X OUT XMLTYPE) is" +
-        "\nBEGIN" +
-            "\nX := XMLTYPE(W);" +
-        "\nEND GET_XMLTYPE;";
+            """
+                    CREATE OR REPLACE PROCEDURE GET_XMLTYPE(W IN VARCHAR2, X OUT XMLTYPE) is
+                    BEGIN
+                    X := XMLTYPE(W);
+                    END GET_XMLTYPE;""";
     static final String DROP_SIMPLESP_TABLE =
         "DROP TABLE SIMPLESP";
     static final String DROP_VARCHARSP_PROC =

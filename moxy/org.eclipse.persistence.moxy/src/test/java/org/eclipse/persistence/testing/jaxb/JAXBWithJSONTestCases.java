@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -138,9 +138,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         log("Actual:");
         log(testObject.toString());
 
-        if ((controlObject instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
-            JAXBElement controlObj = (JAXBElement)controlObject;
-            JAXBElement testObj = (JAXBElement)testObject;
+        if ((controlObject instanceof JAXBElement controlObj) && (testObject instanceof JAXBElement testObj)) {
             compareJAXBElementObjects(controlObj, testObj, false);
         } else {
             assertEquals(controlObject, testObject);

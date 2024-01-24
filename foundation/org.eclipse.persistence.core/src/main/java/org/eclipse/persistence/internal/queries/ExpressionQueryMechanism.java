@@ -492,8 +492,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         ExpressionIterator expIterator = new ExpressionIterator() {
             @Override
             public void iterate(Expression each) {
-                if(each instanceof DataExpression) {
-                    DataExpression dataExpression = (DataExpression)each;
+                if(each instanceof DataExpression dataExpression) {
                     DatabaseField field = dataExpression.getField();
                     if(field != null) {
                         if(dataExpression.getBaseExpression() != getStatement().getBuilder()) {
@@ -799,8 +798,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             DatabaseField field = entry.getKey();
             // here's a Map of left hand fields to right hand expressions
             Object value = entry.getValue();
-            if(value instanceof SQLSelectStatement) {
-                SQLSelectStatement selStatement = (SQLSelectStatement)value;
+            if(value instanceof SQLSelectStatement selStatement) {
                 SQLCall selCall = (SQLCall)selStatement.buildCall(getSession());
                 databaseFieldsToValuesCopy.put(field, selCall);
                 if(databaseFieldsToTableAliases == null) {
@@ -1896,20 +1894,18 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     }
 
     private boolean isFieldInUpdate(Expression writeLock, HashMap updateClauses) {
-        if (!(writeLock instanceof FieldExpression)) {
+        if (!(writeLock instanceof FieldExpression fe)) {
             return false;
         }
 
-        final FieldExpression fe = (FieldExpression) writeLock;
         final DatabaseField targetField = fe.getField();
 
         final Set keys = updateClauses.keySet();
         for (Object key : keys) {
-            if (!(key instanceof QueryKeyExpression)) {
+            if (!(key instanceof QueryKeyExpression qke)) {
                 continue;
             }
 
-            QueryKeyExpression qke = (QueryKeyExpression) key;
             DatabaseField qkField = getDescriptor().getObjectBuilder().getFieldForQueryKeyName(qke.getName());
             if (qkField == targetField) {
                 return true;
@@ -2107,13 +2103,11 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 if(getResult() == null) {
                     return;
                 }
-                if(each instanceof DataExpression) {
-                    DataExpression dataExpression = (DataExpression)each;
+                if(each instanceof DataExpression dataExpression) {
                     Expression baseExpression = dataExpression.getBaseExpression();
                     if(baseExpression != null && !(baseExpression instanceof ExpressionBuilder)) {
                         boolean stop = true;
-                        if(baseExpression instanceof DataExpression) {
-                            DataExpression baseDataExpression = (DataExpression)baseExpression;
+                        if(baseExpression instanceof DataExpression baseDataExpression) {
                             if(baseDataExpression.getMapping() != null && baseDataExpression.getMapping().isAggregateObjectMapping()) {
                                 stop = false;
                             }
@@ -2218,8 +2212,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             ExpressionIterator expIterator = new ExpressionIterator() {
                 @Override
                 public void iterate(Expression each) {
-                    if(each instanceof DataExpression) {
-                        DataExpression dataExpression = (DataExpression)each;
+                    if(each instanceof DataExpression dataExpression) {
                         DatabaseField field = dataExpression.getField();
                         if(field != null) {
                             ((Collection)getResult()).add(field);
@@ -2277,8 +2270,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     leftFields.add(field);
                     // here's the right hand expression
                     Object value = databaseFieldValueEntry.getValue();
-                    if(value instanceof Expression) {
-                        Expression valueExpression = (Expression)value;
+                    if(value instanceof Expression valueExpression) {
                         // use iterator to extract all the fields
                         expIterator.iterateOn(valueExpression);
                     } else {
@@ -2707,8 +2699,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             Iterator<Map.Entry<DatabaseField, Object>> itEntries = databaseFieldsToValues.entrySet().iterator();
             while(itEntries.hasNext()) {
                 Map.Entry<DatabaseField, Object> entry = itEntries.next();
-                if(entry.getValue() instanceof ConstantExpression) {
-                    ConstantExpression constExp = (ConstantExpression)entry.getValue();
+                if(entry.getValue() instanceof ConstantExpression constExp) {
                     if(constExp.getValue() == null) {
                         continue;
                     }

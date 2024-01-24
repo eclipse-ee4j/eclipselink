@@ -47,17 +47,18 @@ import dbws.testing.DBWSTestSuite;
 public class SimpleSFTestSuite extends DBWSTestSuite {
 
     static final String CREATE_SIMPLESF_TABLE =
-        "CREATE TABLE SIMPLESF2 (" +
-            "\nEMPNO DECIMAL(4,0) NOT NULL," +
-            "\nENAME VARCHAR(10)," +
-            "\nJOB VARCHAR(9)," +
-            "\nMGR DECIMAL(4,0)," +
-            "\nHIREDATE DATE," +
-            "\nSAL DECIMAL(7,2)," +
-            "\nCOMM DECIMAL(7,2)," +
-            "\nDEPTNO DECIMAL(2,0)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE SIMPLESF2 (
+                    EMPNO DECIMAL(4,0) NOT NULL,
+                    ENAME VARCHAR(10),
+                    JOB VARCHAR(9),
+                    MGR DECIMAL(4,0),
+                    HIREDATE DATE,
+                    SAL DECIMAL(7,2),
+                    COMM DECIMAL(7,2),
+                    DEPTNO DECIMAL(2,0),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String[] POPULATE_SIMPLESF_TABLE = new String[] {
         "INSERT INTO SIMPLESF2 VALUES (7369,'SMITH','CLERK',7902," +
             "TO_DATE('1980-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),800,NULL,20)",
@@ -89,26 +90,29 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
             "TO_DATE('1982-01-23 00:00:00','YYYY-MM-DD HH24:MI:SS'),1300,NULL,10)"
     };
     static final String CREATE_FINDMAXSAL_FUNC =
-        "CREATE OR REPLACE FUNCTION FINDMAXSAL RETURN DECIMAL AS" +
-        "\nMAXSAL DECIMAL(7,2);" +
-        "\nBEGIN" +
-            "\nSELECT max(SAL) INTO MAXSAL FROM SIMPLESF2;" +
-            "\nRETURN(MAXSAL);" +
-        "\nEND FINDMAXSAL;";
+            """
+                    CREATE OR REPLACE FUNCTION FINDMAXSAL RETURN DECIMAL AS
+                    MAXSAL DECIMAL(7,2);
+                    BEGIN
+                    SELECT max(SAL) INTO MAXSAL FROM SIMPLESF2;
+                    RETURN(MAXSAL);
+                    END FINDMAXSAL;""";
     static final String CREATE_FINDMAXSALFORDEPT_FUNC =
-        "CREATE OR REPLACE FUNCTION FINDMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL AS" +
-        "\nMAXSAL DECIMAL(7,2);" +
-        "\nBEGIN" +
-            "\nSELECT max(SAL) INTO MAXSAL FROM SIMPLESF2 WHERE DEPTNO = DEPT;" +
-            "\nRETURN(MAXSAL);" +
-        "\nEND FINDMAXSALFORDEPT;";
+            """
+                    CREATE OR REPLACE FUNCTION FINDMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL AS
+                    MAXSAL DECIMAL(7,2);
+                    BEGIN
+                    SELECT max(SAL) INTO MAXSAL FROM SIMPLESF2 WHERE DEPTNO = DEPT;
+                    RETURN(MAXSAL);
+                    END FINDMAXSALFORDEPT;""";
     static final String CREATE_GET_XMLTYPE_FUNC =
-        "CREATE OR REPLACE FUNCTION GET_XMLTYPE(W IN VARCHAR2) RETURN sys.XMLTYPE AS" +
-        "\nX XMLTYPE;" +
-        "\nBEGIN" +
-            "\nX := XMLTYPE(W);" +
-            "\nRETURN X;" +
-        "\nEND GET_XMLTYPE;";
+            """
+                    CREATE OR REPLACE FUNCTION GET_XMLTYPE(W IN VARCHAR2) RETURN sys.XMLTYPE AS
+                    X XMLTYPE;
+                    BEGIN
+                    X := XMLTYPE(W);
+                    RETURN X;
+                    END GET_XMLTYPE;""";
     static final String DROP_SIMPLESF_TABLE =
         "DROP TABLE SIMPLESF2";
     static final String DROP_FINDMAXSAL_FUNC =

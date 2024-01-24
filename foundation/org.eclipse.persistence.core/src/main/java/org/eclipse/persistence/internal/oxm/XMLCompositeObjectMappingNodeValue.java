@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,8 +108,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         } else {
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = getMapping().getKeepAsElementPolicy();
             if(null != keepAsElementPolicy && (keepAsElementPolicy.isKeepAllAsElement() || keepAsElementPolicy.isKeepUnknownAsElement())) {
-                if(objectValue instanceof Node) {
-                    Node rootNode = (Node)objectValue;
+                if(objectValue instanceof Node rootNode) {
                     NamedNodeMap attributes = rootNode.getAttributes();
                     for(int i = 0; i < attributes.getLength(); i++) {
                         Attr next = (Attr)attributes.item(i);

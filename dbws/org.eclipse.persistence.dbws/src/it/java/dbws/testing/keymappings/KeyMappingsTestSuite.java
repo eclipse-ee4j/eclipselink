@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,64 +115,66 @@ public class KeyMappingsTestSuite {
         "DROP TABLE XR_KEYMAP_ADDRESS|"  ;
 
     static final String KEYMAPPINGS_SCHEMA =
-        "<?xml version='1.0' encoding='UTF-8'?>" +
-        "<xsd:schema targetNamespace=\"urn:keymappings\" xmlns=\"urn:keymappings\" elementFormDefault=\"qualified\"\n" +
-          "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-          ">\n" +
-          "<xsd:complexType name=\"phone\">\n" +
-            "<xsd:sequence>\n" +
-              "<xsd:element name=\"area-code\" type=\"xsd:string\" />\n" +
-              "<xsd:element name=\"phone-number\" type=\"xsd:string\" />\n" +
-              "<xsd:element name=\"type\" type=\"xsd:string\" />\n" +
-            "</xsd:sequence>\n" +
-            "<xsd:attribute name=\"phone-id\" type=\"xsd:int\" use=\"required\" />\n" +
-            "<xsd:attribute name=\"owner-ref-id\" type=\"xsd:int\" use=\"required\" />\n" +
-          "</xsd:complexType>\n" +
-          "<xsd:complexType name=\"address\">\n" +
-            "<xsd:sequence>\n" +
-              "<xsd:element name=\"street\" type=\"xsd:string\" />\n" +
-              "<xsd:element name=\"city\" type=\"xsd:string\" />\n" +
-              "<xsd:element name=\"province\" type=\"xsd:string\" />\n" +
-            "</xsd:sequence>\n" +
-            "<xsd:attribute name=\"address-id\" type=\"xsd:int\" use=\"required\" />\n" +
-          "</xsd:complexType>\n" +
-          "<xsd:complexType name=\"employee\">\n" +
-            "<xsd:sequence>\n" +
-              "<xsd:element name=\"first-name\" type=\"xsd:string\" />\n" +
-              "<xsd:element name=\"last-name\" type=\"xsd:string\" />\n" +
-              "<xsd:element name=\"address\" type=\"address\" minOccurs=\"0\" />\n" +
-              "<xsd:element name=\"phones\">\n" +
-                "<xsd:complexType>\n" +
-                  "<xsd:sequence>\n" +
-                    "<xsd:element maxOccurs=\"unbounded\" name=\"phone-ref\">\n" +
-                      "<xsd:complexType>\n" +
-                        "<xsd:attribute name=\"phone-id\" type=\"xsd:int\" use=\"required\" />\n" +
-                      "</xsd:complexType>\n" +
-                    "</xsd:element>\n" +
-                  "</xsd:sequence>\n" +
-                "</xsd:complexType>\n" +
-              "</xsd:element>\n" +
-            "</xsd:sequence>\n" +
-            "<xsd:attribute name=\"employee-id\" type=\"xsd:int\" use=\"required\" />\n" +
-            "<xsd:attribute name=\"address-ref-id\" type=\"xsd:int\" use=\"required\" />\n" +
-          "</xsd:complexType>\n" +
-        "</xsd:schema>";
+            """
+                    <?xml version='1.0' encoding='UTF-8'?><xsd:schema targetNamespace="urn:keymappings" xmlns="urn:keymappings" elementFormDefault="qualified"
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                    >
+                    <xsd:complexType name="phone">
+                    <xsd:sequence>
+                    <xsd:element name="area-code" type="xsd:string" />
+                    <xsd:element name="phone-number" type="xsd:string" />
+                    <xsd:element name="type" type="xsd:string" />
+                    </xsd:sequence>
+                    <xsd:attribute name="phone-id" type="xsd:int" use="required" />
+                    <xsd:attribute name="owner-ref-id" type="xsd:int" use="required" />
+                    </xsd:complexType>
+                    <xsd:complexType name="address">
+                    <xsd:sequence>
+                    <xsd:element name="street" type="xsd:string" />
+                    <xsd:element name="city" type="xsd:string" />
+                    <xsd:element name="province" type="xsd:string" />
+                    </xsd:sequence>
+                    <xsd:attribute name="address-id" type="xsd:int" use="required" />
+                    </xsd:complexType>
+                    <xsd:complexType name="employee">
+                    <xsd:sequence>
+                    <xsd:element name="first-name" type="xsd:string" />
+                    <xsd:element name="last-name" type="xsd:string" />
+                    <xsd:element name="address" type="address" minOccurs="0" />
+                    <xsd:element name="phones">
+                    <xsd:complexType>
+                    <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="phone-ref">
+                    <xsd:complexType>
+                    <xsd:attribute name="phone-id" type="xsd:int" use="required" />
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    </xsd:complexType>
+                    </xsd:element>
+                    </xsd:sequence>
+                    <xsd:attribute name="employee-id" type="xsd:int" use="required" />
+                    <xsd:attribute name="address-ref-id" type="xsd:int" use="required" />
+                    </xsd:complexType>
+                    </xsd:schema>""";
     static final String KEYMAPPINGS_DBWS =
-        "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<dbws\n" +
-          "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-          "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-          "xmlns:ns1=\"urn:keymappings\"\n" +
-          ">\n" +
-          "<name>keymappings</name>\n" +
-          "<query>\n" +
-            "<name>getAllEmployees</name>\n" +
-            "<result isCollection=\"true\">\n" +
-              "<type>ns1:employee</type>\n" +
-            "</result>\n" +
-            "<sql><![CDATA[select * from XR_KEYMAP_EMPLOYEE]]></sql>\n" +
-          "</query>\n" +
-        "</dbws>\n";
+            """
+                    <?xml version='1.0' encoding='UTF-8'?>
+                    <dbws
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns:ns1="urn:keymappings"
+                    >
+                    <name>keymappings</name>
+                    <query>
+                    <name>getAllEmployees</name>
+                    <result isCollection="true">
+                    <type>ns1:employee</type>
+                    </result>
+                    <sql><![CDATA[select * from XR_KEYMAP_EMPLOYEE]]></sql>
+                    </query>
+                    </dbws>
+                    """;
     static final String KEYMAPPINGS_OR_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<object-persistence version=\"" + CONSTANT_PROJECT_BUILD_VERSION + "\"\n" +

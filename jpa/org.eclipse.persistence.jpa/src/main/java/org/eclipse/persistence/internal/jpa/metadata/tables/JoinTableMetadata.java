@@ -104,8 +104,7 @@ public class JoinTableMetadata extends RelationalTableMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof JoinTableMetadata) {
-            JoinTableMetadata joinTable = (JoinTableMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof JoinTableMetadata joinTable) {
 
             if (! valuesMatch(m_inverseJoinColumns, getInverseJoinColumns())) {
                 return false;

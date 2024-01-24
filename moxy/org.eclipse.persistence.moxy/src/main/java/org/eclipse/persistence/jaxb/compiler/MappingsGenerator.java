@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2561,8 +2561,7 @@ public class MappingsGenerator {
                     accessor.setGetMethodName(getMethod);
                     accessor.setSetMethodName(setMethod);
 
-                    if (mapping.getAttributeAccessor() instanceof JAXBArrayAttributeAccessor) {
-                        JAXBArrayAttributeAccessor jaa = (JAXBArrayAttributeAccessor) mapping.getAttributeAccessor();
+                    if (mapping.getAttributeAccessor() instanceof JAXBArrayAttributeAccessor jaa) {
                         jaa.setNestedAccessor(accessor);
                     } else {
                         mapping.setAttributeAccessor(accessor);
@@ -3365,8 +3364,7 @@ public class MappingsGenerator {
         XmlAbstractNullPolicy xmlAbsNullPolicy = property.getNullPolicy();
 
         // policy is assumed to be one of XmlNullPolicy or XmlIsSetNullPolicy
-        if (xmlAbsNullPolicy instanceof XmlNullPolicy) {
-            XmlNullPolicy xmlNullPolicy = (XmlNullPolicy) xmlAbsNullPolicy;
+        if (xmlAbsNullPolicy instanceof XmlNullPolicy xmlNullPolicy) {
             NullPolicy nullPolicy = new NullPolicy();
             nullPolicy.setSetPerformedForAbsentNode(xmlNullPolicy.isIsSetPerformedForAbsentNode());
             absNullPolicy = nullPolicy;

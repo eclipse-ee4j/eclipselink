@@ -100,8 +100,7 @@ public class Tea implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Tea) {
-            Tea other = (Tea) obj;
+        if (obj instanceof Tea other) {
             return other.name.equals(name);
         }
         return false;

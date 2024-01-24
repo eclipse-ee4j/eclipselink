@@ -47,8 +47,7 @@ public class Doc {
     }
 
     public boolean equals(Object object) {
-        if (object instanceof Doc) {
-            Doc anotherDoc = (Doc) object;
+        if (object instanceof Doc anotherDoc) {
             if (elem == null && anotherDoc.getElem() != null) {
                 return false;
             }
@@ -72,9 +71,7 @@ public class Doc {
             for(int i=0;i<obj1.size(); i++){
                 Object firstObject = obj1.get(i);
                 Object secondObject =obj2.get(i);
-                if ((firstObject instanceof Element) && (secondObject instanceof Element)) {
-                    Element elem1 = (Element )firstObject;
-                    Element elem2 = (Element) secondObject;
+                if ((firstObject instanceof Element elem1) && (secondObject instanceof Element elem2)) {
 
                     if (!(elem1.getLocalName().equals(elem2.getLocalName()))) {
                         return false;

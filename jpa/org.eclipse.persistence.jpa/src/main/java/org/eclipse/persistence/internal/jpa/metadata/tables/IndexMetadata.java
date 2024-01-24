@@ -94,8 +94,7 @@ public class IndexMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof IndexMetadata) {
-            IndexMetadata index = (IndexMetadata) objectToCompare;
+        if (objectToCompare instanceof IndexMetadata index) {
 
             if (! valuesMatch(m_name, index.getName())) {
                 return false;

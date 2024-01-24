@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -319,8 +319,7 @@ public class EISPlatform extends DatasourcePlatform {
      */
     @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
-        if (parameter instanceof Vector) {
-            Vector<?> records = (Vector<?>)parameter;
+        if (parameter instanceof Vector<?> records) {
 
             // May be a collection of record.
             for (int index = 0; index < records.size(); index++) {

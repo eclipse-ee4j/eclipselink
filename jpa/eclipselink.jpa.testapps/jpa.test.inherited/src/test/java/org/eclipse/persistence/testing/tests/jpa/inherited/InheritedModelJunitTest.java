@@ -1319,8 +1319,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                 fail("Exception was expected - but not thrown");
             } catch (RuntimeException e) {
                 boolean isCorrectException = false;
-                if(e instanceof QueryException) {
-                    QueryException queryException = (QueryException)e;
+                if(e instanceof QueryException queryException) {
                     if(((QueryException) e).getErrorCode() == QueryException.LIST_ORDER_FIELD_WRONG_VALUE) {
                         isCorrectException = true;
                     }

@@ -78,8 +78,7 @@ public abstract class MetadataColumn extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof MetadataColumn) {
-            MetadataColumn column = (MetadataColumn) objectToCompare;
+        if (objectToCompare instanceof MetadataColumn column) {
 
             if (! valuesMatch(m_columnDefinition, column.getColumnDefinition())) {
                 return false;

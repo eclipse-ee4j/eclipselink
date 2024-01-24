@@ -42,10 +42,9 @@ public class Employee {
         return normalHours[1];
     }
     public boolean equals(Object obj) {
-        if(!(obj instanceof Employee)) {
+        if(!(obj instanceof Employee emp)) {
             return false;
         }
-        Employee emp = (Employee)obj;
         if(getStartTime() == emp.getStartTime() && getEndTime() == emp.getEndTime()) {
             return true;
         }

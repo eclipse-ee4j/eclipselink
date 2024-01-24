@@ -945,19 +945,16 @@ public class ProjectClassGenerator {
         }
         method.addLine(policyClassName + " lockingPolicy = new " + policyClassName + "();");
 
-        if (policy instanceof SelectedFieldsLockingPolicy) {
-            SelectedFieldsLockingPolicy fieldPolicy = (SelectedFieldsLockingPolicy)policy;
+        if (policy instanceof SelectedFieldsLockingPolicy fieldPolicy) {
             for ( DatabaseField field : fieldPolicy.getLockFields()) {
                 method.addLine("lockingPolicy.addLockFieldName(\"" + field.getQualifiedName() + "\");");
             }
-        } else if (policy instanceof VersionLockingPolicy) {
-            VersionLockingPolicy versionPolicy = (VersionLockingPolicy)policy;
+        } else if (policy instanceof VersionLockingPolicy versionPolicy) {
             method.addLine("lockingPolicy.setWriteLockFieldName(\"" + versionPolicy.getWriteLockField().getQualifiedName() + "\");");
             if (versionPolicy.isStoredInObject()) {
                 method.addLine("lockingPolicy.storeInObject();");
             }
-            if (policy instanceof TimestampLockingPolicy) {
-                TimestampLockingPolicy timestampPolicy = (TimestampLockingPolicy)policy;
+            if (policy instanceof TimestampLockingPolicy timestampPolicy) {
                 if (timestampPolicy.usesLocalTime()) {
                     method.addLine("lockingPolicy.useLocalTime();");
                 }
@@ -1733,8 +1730,7 @@ public class ProjectClassGenerator {
         }
         method.addLine(loginClassName + " login = new " + loginClassName + "();");
 
-        if (datasourceLogin instanceof DatabaseLogin) {
-            DatabaseLogin login = (DatabaseLogin)datasourceLogin;
+        if (datasourceLogin instanceof DatabaseLogin login) {
             method.addLine("login.usePlatform(new " + login.getPlatformClassName() + "());");
             // CR#3349 Change from setDriverClass() to setDriverClassName()
             method.addLine("login.setDriverClassName(\"" + login.getDriverClassName() + "\");");
@@ -1787,8 +1783,7 @@ public class ProjectClassGenerator {
             if (login.shouldUseExternalTransactionController()) {
                 method.addLine("login.setUsesExternalTransactionController(" + login.shouldUseExternalTransactionController() + ");");
             }
-        } else if (datasourceLogin instanceof EISLogin) {
-            EISLogin eisLogin = (EISLogin)datasourceLogin;
+        } else if (datasourceLogin instanceof EISLogin eisLogin) {
             method.addLine("login.setConnectionSpec(new " + eisLogin.getConnectionSpec().getClass().getName() + "());");
             if (eisLogin.getConnectionFactoryURL() != null) {
                 method.addLine("login.setConnectionFactoryURL(\"" + eisLogin.getConnectionFactoryURL() + "\");");
@@ -1828,11 +1823,9 @@ public class ProjectClassGenerator {
             prefix = "login.addSequence(new ";
         }
         String str;
-        if (sequence instanceof TableSequence) {
-            TableSequence ts = (TableSequence)sequence;
+        if (sequence instanceof TableSequence ts) {
             str = "TableSequence(\"" + ts.getName() + "\", " + ts.getPreallocationSize() + ", \"" + ts.getTableName() + "\", \"" + ts.getNameFieldName() + "\", \"" + ts.getCounterFieldName() + "\"));";
-        } else if (sequence instanceof UnaryTableSequence) {
-            UnaryTableSequence uts = (UnaryTableSequence)sequence;
+        } else if (sequence instanceof UnaryTableSequence uts) {
             str = "UnaryTableSequence(\"" + uts.getName() + "\", " + uts.getPreallocationSize() + ", \"" + uts.getCounterFieldName() + "\"));";
         } else {
             String typeName = sequence.getClass().getSimpleName();
@@ -2040,8 +2033,7 @@ public class ProjectClassGenerator {
         }
 
         //Bug2662265
-        if (value instanceof java.util.Date) {
-            java.util.Date date = (java.util.Date)value;
+        if (value instanceof java.util.Date date) {
             return "new " + value.getClass().getName() + "(" + date.getTime() + "L)";
         }
 

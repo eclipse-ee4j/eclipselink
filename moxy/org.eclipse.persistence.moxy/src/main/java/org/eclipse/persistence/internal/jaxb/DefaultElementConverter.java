@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,8 +40,7 @@ public class DefaultElementConverter implements XMLConverter {
 
     @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
-        if(dataValue instanceof Element) {
-            Element element = (Element) dataValue;
+        if(dataValue instanceof Element element) {
             if(element.getTextContent().length() == 0) {
                 element.setTextContent(defaultValue);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -163,7 +163,13 @@ public class TimeDateTester extends TypeTester {
             super.verify(testCase);
         } catch (TestException e) {
             // JConnect in non native mode
-            if ((caughtException != null) && caughtException.toString().equals("EXCEPTION: org.eclipse.persistence.exceptions.DatabaseException \n" + "DESCRIPTION: null \n" + "INTERNAL EXCEPTION: java.sql.SQLException: JZ0S8: An escape sequence in a SQL Query was malformed.\n" + "ERROR CODE: 0\n\n")) {
+            if ((caughtException != null) && caughtException.toString().equals("""
+                    EXCEPTION: org.eclipse.persistence.exceptions.DatabaseException\s
+                    DESCRIPTION: null\s
+                    INTERNAL EXCEPTION: java.sql.SQLException: JZ0S8: An escape sequence in a SQL Query was malformed.
+                    ERROR CODE: 0
+
+                    """)) {
                 throw new TestProblemException("JConnect does not do dates in non-native SQL:\n" + caughtException.getInternalException());
             }
 

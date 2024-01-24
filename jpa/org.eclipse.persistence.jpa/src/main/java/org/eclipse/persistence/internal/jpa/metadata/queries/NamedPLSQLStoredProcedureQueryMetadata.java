@@ -95,8 +95,7 @@ public class NamedPLSQLStoredProcedureQueryMetadata extends NamedNativeQueryMeta
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof NamedPLSQLStoredProcedureQueryMetadata) {
-            NamedPLSQLStoredProcedureQueryMetadata query = (NamedPLSQLStoredProcedureQueryMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedPLSQLStoredProcedureQueryMetadata query) {
 
             if (! valuesMatch(m_parameters, query.getParameters())) {
                 return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,9 +58,8 @@ public class MissingDescriptorListener extends SessionEventAdapter {
         Project project = session.getProject();
         String namespaceXPath = "";
         NamespaceResolverWithPrefixes namespaceResolverWithPrefixes;
-        if (project instanceof NamespaceResolvableProject) {
+        if (project instanceof NamespaceResolvableProject nrpProject) {
             // this should always be true
-            NamespaceResolvableProject nrpProject = (NamespaceResolvableProject)project;
             namespaceXPath = nrpProject.getPrimaryNamespaceXPath();
             namespaceResolverWithPrefixes = nrpProject.getNamespaceResolver();
         }

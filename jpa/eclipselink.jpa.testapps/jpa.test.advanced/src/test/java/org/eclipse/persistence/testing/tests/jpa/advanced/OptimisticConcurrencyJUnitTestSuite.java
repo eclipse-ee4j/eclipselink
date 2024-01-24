@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -180,8 +180,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Project;
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
             }
-            if (persistenceException instanceof OptimisticLockException) {
-                OptimisticLockException oe = (OptimisticLockException) persistenceException;
+            if (persistenceException instanceof OptimisticLockException oe) {
                 return;
             } else {
                 fail("updating object version with wrong value threw a wrong exception: " + exception.getMessage());
@@ -222,8 +221,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Project;
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
             }
-            if (persistenceException instanceof OptimisticLockException) {
-                OptimisticLockException oe = (OptimisticLockException) persistenceException;
+            if (persistenceException instanceof OptimisticLockException oe) {
                 return;
             } else {
                 fail("employee2.setVersion(null) threw a wrong exception: " + exception.getMessage());

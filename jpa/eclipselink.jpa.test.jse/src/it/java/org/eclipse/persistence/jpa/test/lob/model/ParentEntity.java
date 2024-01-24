@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -67,8 +67,7 @@ public class ParentEntity {
 
     @Override
     public boolean equals(final Object object) {
-        if (object instanceof ParentEntity) {
-            final ParentEntity that = (ParentEntity) object;
+        if (object instanceof ParentEntity that) {
             return (this.id == that.id);
         }
         return false;

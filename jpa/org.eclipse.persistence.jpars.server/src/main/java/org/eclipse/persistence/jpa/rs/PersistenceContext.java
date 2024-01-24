@@ -1216,22 +1216,19 @@ public class PersistenceContext {
      */
     @SuppressWarnings("rawtypes")
     protected void preMarshallIndividualEntity(Object entity) {
-        if (entity instanceof ReportQueryResultListItem) {
-            ReportQueryResultListItem item = (ReportQueryResultListItem) entity;
+        if (entity instanceof ReportQueryResultListItem item) {
             for (JAXBElement field : item.getFields()) {
                 // one or more fields in the MultiResultQueryListItem might be a domain object,
                 // so, we need to set the relationshipInfo for those domain objects.
                 setRelationshipInfo(field.getValue());
             }
-        } else if (entity instanceof SingleResultQueryList) {
-            SingleResultQueryList item = (SingleResultQueryList) entity;
+        } else if (entity instanceof SingleResultQueryList item) {
             for (JAXBElement field : item.getFields()) {
                 // one or more fields in the SingleResultQueryList might be a domain object,
                 // so, we need to set the relationshipInfo for those domain objects.
                 setRelationshipInfo(field.getValue());
             }
-        } else if (entity instanceof ReportQueryResultList) {
-            ReportQueryResultList list = (ReportQueryResultList) entity;
+        } else if (entity instanceof ReportQueryResultList list) {
             for (ReportQueryResultListItem item : list.getItems()) {
                 for (JAXBElement field : item.getFields()) {
                     // one or more fields in the MultiResultQueryList might be a domain object,
@@ -1239,16 +1236,14 @@ public class PersistenceContext {
                     setRelationshipInfo(field.getValue());
                 }
             }
-        } else if (entity instanceof ReadAllQueryResultCollection) {
-            ReadAllQueryResultCollection list = (ReadAllQueryResultCollection) entity;
+        } else if (entity instanceof ReadAllQueryResultCollection list) {
             List<Object> items = list.getItems();
             if ((items != null) && (!items.isEmpty())) {
                 for (Object item : items) {
                     setRelationshipInfo(item);
                 }
             }
-        } else if (entity instanceof ReportQueryResultCollection) {
-            ReportQueryResultCollection list = (ReportQueryResultCollection) entity;
+        } else if (entity instanceof ReportQueryResultCollection list) {
             List<ReportQueryResultListItem> items = list.getItems();
             if ((items != null) && (!items.isEmpty())) {
                 for (ReportQueryResultListItem item : items) {
@@ -1275,8 +1270,7 @@ public class PersistenceContext {
                         info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, (AbstractSession) getServerSession()));
                         ((PersistenceWeavedRest) entity)._persistence_getRelationships().add(info);
                     } else if (mapping.isEISMapping()) {
-                        if (mapping instanceof EISCompositeCollectionMapping) {
-                            EISCompositeCollectionMapping eisMapping = (EISCompositeCollectionMapping) mapping;
+                        if (mapping instanceof EISCompositeCollectionMapping eisMapping) {
                             RelationshipInfo info = new RelationshipInfo();
                             info.setAttributeName(eisMapping.getAttributeName());
                             info.setOwningEntity(entity);

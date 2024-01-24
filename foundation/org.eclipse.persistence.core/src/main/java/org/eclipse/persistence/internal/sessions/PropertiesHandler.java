@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -421,8 +421,7 @@ public class PropertiesHandler {
         void initialize() {
             if(valueArray != null) {
                 valueMap = new HashMap(valueArray.length);
-                if(valueArray instanceof Object[][]) {
-                    Object[][] valueArray2 = (Object[][])valueArray;
+                if(valueArray instanceof Object[][] valueArray2) {
                     for(int i=0; i<valueArray2.length; i++) {
                         valueMap.put(getUpperCaseString((String)valueArray2[i][0]), valueArray2[i][1]);
                         if(valueArray2[i][1] == null) {

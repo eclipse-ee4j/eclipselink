@@ -56,88 +56,91 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     static final String PERSON_TYPE_TABLE_CLASSNAME = "objecttabletypetests.Dbws_persontype_table_CollectionWrapper";
 
     static final String CREATE_PERSONTYPE =
-        "CREATE OR REPLACE TYPE DBWS_PERSONTYPE AS OBJECT (" +
-            "\nNAME VARCHAR2(20)," +
-            "\nAGE NUMBER," +
-            "\nGENDER VARCHAR2(1)," +
-            "\nINCARCERATED DATE" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_PERSONTYPE AS OBJECT (
+                    NAME VARCHAR2(20),
+                    AGE NUMBER,
+                    GENDER VARCHAR2(1),
+                    INCARCERATED DATE
+                    )""";
     static final String CREATE_PERSONTYPE_TABLE =
         "CREATE OR REPLACE TYPE DBWS_PERSONTYPE_TABLE AS TABLE OF DBWS_PERSONTYPE";
     static final String CREATE_MYEMPOBJECT =
-        "CREATE OR REPLACE TYPE DBWS_MYEMPOBJECT AS OBJECT (" +
-            "\nEMPNO NUMBER(4)," +
-            "\nENAME VARCHAR2(10)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_MYEMPOBJECT AS OBJECT (
+                    EMPNO NUMBER(4),
+                    ENAME VARCHAR2(10)
+                    )""";
     static final String CREATE_MYEMPOBJECT_TABLE =
         "CREATE OR REPLACE TYPE DBWS_MYEMPOBJECT_TABLE AS TABLE OF DBWS_MYEMPOBJECT";
     static final String CREATE_GROUPTYPE =
-        "CREATE OR REPLACE TYPE DBWS_GROUPTYPE AS OBJECT (" +
-            "\nNAME VARCHAR2(20)," +
-            "\nECOUNT NUMBER," +
-            "\nETABLE DBWS_MYEMPOBJECT_TABLE" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_GROUPTYPE AS OBJECT (
+                    NAME VARCHAR2(20),
+                    ECOUNT NUMBER,
+                    ETABLE DBWS_MYEMPOBJECT_TABLE
+                    )""";
     static final String CREATE_GET_PERSONTYPE_PROC =
-        "CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE(PTABLE OUT DBWS_PERSONTYPE_TABLE) AS" +
-        "\nBEGIN" +
-            "\nPTABLE := DBWS_PERSONTYPE_TABLE();" +
-            "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('BUBBLES', 32, 'M', " +
-                "TO_DATE('1990-11-19 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
-            "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('RICKY', 33, 'M', " +
-                "TO_DATE('1985-10-01 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
-            "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('JULIAN', 35, 'M', " +
-                "TO_DATE('1988-02-07 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
-            "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('SARAH', 25, 'F', " +
-                "TO_DATE('2002-05-12 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
-            "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('J-ROC', 27, 'M', " +
-                "TO_DATE('1998-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
-        "\nEND GET_PERSONTYPE_TABLE;";
+            """
+                    CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE(PTABLE OUT DBWS_PERSONTYPE_TABLE) AS
+                    BEGIN
+                    PTABLE := DBWS_PERSONTYPE_TABLE();
+                    PTABLE.EXTEND;
+                    PTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('BUBBLES', 32, 'M', TO_DATE('1990-11-19 00:00:00','YYYY-MM-DD HH24:MI:SS'));
+                    PTABLE.EXTEND;
+                    PTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('RICKY', 33, 'M', TO_DATE('1985-10-01 00:00:00','YYYY-MM-DD HH24:MI:SS'));
+                    PTABLE.EXTEND;
+                    PTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('JULIAN', 35, 'M', TO_DATE('1988-02-07 00:00:00','YYYY-MM-DD HH24:MI:SS'));
+                    PTABLE.EXTEND;
+                    PTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('SARAH', 25, 'F', TO_DATE('2002-05-12 00:00:00','YYYY-MM-DD HH24:MI:SS'));
+                    PTABLE.EXTEND;
+                    PTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('J-ROC', 27, 'M', TO_DATE('1998-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'));
+                    END GET_PERSONTYPE_TABLE;""";
     static final String CREATE_GET_PERSONTYPE_TABLE_PROC2 =
-        "CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE_PROC2(PTABLE IN OUT DBWS_PERSONTYPE_TABLE) AS" +
-        "\nBEGIN" +
-            "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('COREY', 20, 'M', " +
-                "TO_DATE('1997-12-09 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
-        "\nEND GET_PERSONTYPE_TABLE_PROC2;";
+            """
+                    CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE_PROC2(PTABLE IN OUT DBWS_PERSONTYPE_TABLE) AS
+                    BEGIN
+                    PTABLE.EXTEND;
+                    PTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('COREY', 20, 'M', TO_DATE('1997-12-09 00:00:00','YYYY-MM-DD HH24:MI:SS'));
+                    END GET_PERSONTYPE_TABLE_PROC2;""";
     static final String CREATE_GET_PERSONTYPE2_FUNC =
-        "CREATE OR REPLACE FUNCTION GET_PERSONTYPE_TABLE2 RETURN DBWS_PERSONTYPE_TABLE AS" +
-        "\nL_DATA DBWS_PERSONTYPE_TABLE;" +
-        "\nBEGIN" +
-            "\nGET_PERSONTYPE_TABLE(L_DATA);" +
-            "\nRETURN L_DATA;" +
-        "\nEND GET_PERSONTYPE_TABLE2;";
+            """
+                    CREATE OR REPLACE FUNCTION GET_PERSONTYPE_TABLE2 RETURN DBWS_PERSONTYPE_TABLE AS
+                    L_DATA DBWS_PERSONTYPE_TABLE;
+                    BEGIN
+                    GET_PERSONTYPE_TABLE(L_DATA);
+                    RETURN L_DATA;
+                    END GET_PERSONTYPE_TABLE2;""";
     static final String CREATE_GROUPTYPE_PROC =
-        "CREATE OR REPLACE PROCEDURE CREATE_GROUPTYPE(GNAME IN VARCHAR2, NEWGROUP OUT DBWS_GROUPTYPE) AS" +
-        "\nETABLE DBWS_MYEMPOBJECT_TABLE;" +
-        "\nBEGIN" +
-            "\nETABLE := DBWS_MYEMPOBJECT_TABLE();" +
-            "\nETABLE.EXTEND;" +
-            "\nETABLE(ETABLE.COUNT) := DBWS_MYEMPOBJECT(20, 'COREY');" +
-            "\nETABLE.EXTEND;" +
-            "\nETABLE(ETABLE.COUNT) := DBWS_MYEMPOBJECT(33, 'RICKY');" +
-            "\nETABLE.EXTEND;" +
-            "\nETABLE(ETABLE.COUNT) := DBWS_MYEMPOBJECT(32, 'BUBBLES');" +
-            "\nNEWGROUP := DBWS_GROUPTYPE(GNAME, 3, ETABLE);" +
-        "\nEND CREATE_GROUPTYPE;";
+            """
+                    CREATE OR REPLACE PROCEDURE CREATE_GROUPTYPE(GNAME IN VARCHAR2, NEWGROUP OUT DBWS_GROUPTYPE) AS
+                    ETABLE DBWS_MYEMPOBJECT_TABLE;
+                    BEGIN
+                    ETABLE := DBWS_MYEMPOBJECT_TABLE();
+                    ETABLE.EXTEND;
+                    ETABLE(ETABLE.COUNT) := DBWS_MYEMPOBJECT(20, 'COREY');
+                    ETABLE.EXTEND;
+                    ETABLE(ETABLE.COUNT) := DBWS_MYEMPOBJECT(33, 'RICKY');
+                    ETABLE.EXTEND;
+                    ETABLE(ETABLE.COUNT) := DBWS_MYEMPOBJECT(32, 'BUBBLES');
+                    NEWGROUP := DBWS_GROUPTYPE(GNAME, 3, ETABLE);
+                    END CREATE_GROUPTYPE;""";
     static final String CREATE_ADD_PERSONTYPE_TO_TABLE_PROC =
-        "CREATE OR REPLACE PROCEDURE ADD_PERSONTYPE_TO_TABLE(PTYPETOADD IN DBWS_PERSONTYPE, OLDTABLE IN DBWS_PERSONTYPE_TABLE, NEWTABLE OUT DBWS_PERSONTYPE_TABLE) AS" +
-        "\nBEGIN" +
-          "\nNEWTABLE := OLDTABLE;" +
-          "\nNEWTABLE.EXTEND;" +
-          "\nNEWTABLE(NEWTABLE.COUNT) := PTYPETOADD;" +
-        "\nEND ADD_PERSONTYPE_TO_TABLE;";
+            """
+                    CREATE OR REPLACE PROCEDURE ADD_PERSONTYPE_TO_TABLE(PTYPETOADD IN DBWS_PERSONTYPE, OLDTABLE IN DBWS_PERSONTYPE_TABLE, NEWTABLE OUT DBWS_PERSONTYPE_TABLE) AS
+                    BEGIN
+                    NEWTABLE := OLDTABLE;
+                    NEWTABLE.EXTEND;
+                    NEWTABLE(NEWTABLE.COUNT) := PTYPETOADD;
+                    END ADD_PERSONTYPE_TO_TABLE;""";
     static final String CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC =
-        "CREATE OR REPLACE FUNCTION ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD IN DBWS_PERSONTYPE, OLDTABLE IN DBWS_PERSONTYPE_TABLE) RETURN DBWS_PERSONTYPE_TABLE AS" +
-        "\nNEWTABLE DBWS_PERSONTYPE_TABLE;" +
-        "\nBEGIN" +
-            "\nADD_PERSONTYPE_TO_TABLE(PTYPETOADD, OLDTABLE, NEWTABLE);" +
-            "\nRETURN NEWTABLE;" +
-        "\nEND ADD_PERSONTYPE_TO_TABLE2;";
+            """
+                    CREATE OR REPLACE FUNCTION ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD IN DBWS_PERSONTYPE, OLDTABLE IN DBWS_PERSONTYPE_TABLE) RETURN DBWS_PERSONTYPE_TABLE AS
+                    NEWTABLE DBWS_PERSONTYPE_TABLE;
+                    BEGIN
+                    ADD_PERSONTYPE_TO_TABLE(PTYPETOADD, OLDTABLE, NEWTABLE);
+                    RETURN NEWTABLE;
+                    END ADD_PERSONTYPE_TO_TABLE2;""";
 
     static final String DROP_GET_PERSONTYPE_TABLE =
         "DROP PROCEDURE GET_PERSONTYPE_TABLE";
@@ -164,12 +167,13 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
 
     // ======================================================================
     static final String CREATE_EMP_TABLE =
-        "CREATE TABLE DBWS_EMP (" +
-            "\nEMPNO VARCHAR2(10) NOT NULL," +
-            "\nENAME VARCHAR2(35)," +
-            "\nSAL NUMBER(6,0)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE DBWS_EMP (
+                    EMPNO VARCHAR2(10) NOT NULL,
+                    ENAME VARCHAR2(35),
+                    SAL NUMBER(6,0),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String[] POPULATE_EMP_TABLE = new String[] {
         "INSERT INTO DBWS_EMP (EMPNO, ENAME, SAL) VALUES ('1', 'THEIF', 99000)",
         "INSERT INTO DBWS_EMP (EMPNO, ENAME, SAL) VALUES ('2', 'BULLY', 0)",
@@ -201,41 +205,42 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     static final String CREATE_TJOBS_TABLE =
         "create or replace TYPE COL_JOBS AS TABLE OF T_JOBS;";
     static final String CREATE_TEST_CUSTOM_TYPE_RECORD_PKG =
-        "create or replace PACKAGE TEST_CUSTOM_TYPE_RECORD as " +
-            "\nFUNCTION GET_JOB(p_job_id IN VARCHAR2) RETURN T_JOBS;" +
-            "\nFUNCTION GET_JOBS RETURN COL_JOBS;" +
-        "\nend;";
+            """
+                    create or replace PACKAGE TEST_CUSTOM_TYPE_RECORD as\s
+                    FUNCTION GET_JOB(p_job_id IN VARCHAR2) RETURN T_JOBS;
+                    FUNCTION GET_JOBS RETURN COL_JOBS;
+                    end;""";
     static final String CREATE_TEST_CUSTOM_TYPE_RECORD_PKG_BODY =
-        "create or replace PACKAGE BODY TEST_CUSTOM_TYPE_RECORD as " +
-            "\nFUNCTION GET_JOB(p_job_id IN VARCHAR2) RETURN T_JOBS IS " +
-            "\nresult       T_JOBS;" +
-            "\nl_JOB_ID     VARCHAR2(10);" +
-            "\nl_JOB_TITLE  VARCHAR2(35);" +
-            "\nl_MAX_SALARY NUMBER(6,0);" +
-            "\nBEGIN" +
-                "\nSELECT EMPNO, ENAME, SAL INTO l_JOB_ID, l_JOB_TITLE, l_MAX_SALARY FROM  DBWS_EMP WHERE EMPNO = p_job_id;" +
-                "\nresult := T_JOBS(l_JOB_ID, l_JOB_TITLE, l_MAX_SALARY);" +
-                "\nRETURN result;" +
-            "\nEND;" +
-
-            "\nfunction GET_JOBS return COL_JOBS is " +
-            "\nCURSOR cur IS select EMPNO, ENAME, SAL from DBWS_EMP;" +
-            "\ncol_result COL_JOBS;" +
-            "\nt_result       T_JOBS;" +
-            "\nl_JOB_ID       VARCHAR2(10);" +
-            "\nl_JOB_TITLE    VARCHAR2(35);" +
-            "\nl_MAX_SALARY   NUMBER(6,0);" +
-            "\nbegin" +
-                "\ncol_result := COL_JOBS(NULL);" +
-                "\ncol_result.DELETE;" +
-                "\nfor rec in cur LOOP" +
-                    "\nt_result := T_JOBS(rec.EMPNO, rec.ENAME, rec.SAL);" +
-                    "\ncol_result.EXTEND(1);" +
-                    "\ncol_result(col_result.COUNT) := t_result;" +
-                "\nend loop;" +
-                "\nreturn col_result;" +
-            "\nend;" +
-        "\nend;";
+            """
+                    create or replace PACKAGE BODY TEST_CUSTOM_TYPE_RECORD as\s
+                    FUNCTION GET_JOB(p_job_id IN VARCHAR2) RETURN T_JOBS IS\s
+                    result       T_JOBS;
+                    l_JOB_ID     VARCHAR2(10);
+                    l_JOB_TITLE  VARCHAR2(35);
+                    l_MAX_SALARY NUMBER(6,0);
+                    BEGIN
+                    SELECT EMPNO, ENAME, SAL INTO l_JOB_ID, l_JOB_TITLE, l_MAX_SALARY FROM  DBWS_EMP WHERE EMPNO = p_job_id;
+                    result := T_JOBS(l_JOB_ID, l_JOB_TITLE, l_MAX_SALARY);
+                    RETURN result;
+                    END;
+                    function GET_JOBS return COL_JOBS is\s
+                    CURSOR cur IS select EMPNO, ENAME, SAL from DBWS_EMP;
+                    col_result COL_JOBS;
+                    t_result       T_JOBS;
+                    l_JOB_ID       VARCHAR2(10);
+                    l_JOB_TITLE    VARCHAR2(35);
+                    l_MAX_SALARY   NUMBER(6,0);
+                    begin
+                    col_result := COL_JOBS(NULL);
+                    col_result.DELETE;
+                    for rec in cur LOOP
+                    t_result := T_JOBS(rec.EMPNO, rec.ENAME, rec.SAL);
+                    col_result.EXTEND(1);
+                    col_result(col_result.COUNT) := t_result;
+                    end loop;
+                    return col_result;
+                    end;
+                    end;""";
 
     static final String DROP_TEST_CUSTOM_TYPE_RECORD_PKG_BODY =
         "DROP PACKAGE BODY TEST_CUSTOM_TYPE_RECORD";

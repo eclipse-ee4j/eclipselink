@@ -40,10 +40,9 @@ class Melon {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Melon)) {
+        if (obj == null || !(obj instanceof Melon a)) {
             return false;
         }
-        Melon a = (Melon) obj;
 
         if (!this.id.equals(a.id)) {
             return false;

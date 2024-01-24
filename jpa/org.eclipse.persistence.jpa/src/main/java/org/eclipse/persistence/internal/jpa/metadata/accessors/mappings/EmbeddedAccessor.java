@@ -162,8 +162,7 @@ public class EmbeddedAccessor extends MappingAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof EmbeddedAccessor) {
-            EmbeddedAccessor embeddedAccessor = (EmbeddedAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof EmbeddedAccessor embeddedAccessor) {
 
             if (! valuesMatch(m_associationOverrides, embeddedAccessor.getAssociationOverrides())) {
                 return false;

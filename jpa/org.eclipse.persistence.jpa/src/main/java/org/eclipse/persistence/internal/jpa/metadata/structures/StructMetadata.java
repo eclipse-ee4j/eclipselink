@@ -75,8 +75,7 @@ public class StructMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof StructMetadata) {
-            StructMetadata struct = (StructMetadata) objectToCompare;
+        if (objectToCompare instanceof StructMetadata struct) {
             if (! valuesMatch(this.fields, struct.getFields())) {
                 return false;
             }

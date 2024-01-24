@@ -77,8 +77,7 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof OrderColumnMetadata) {
-            OrderColumnMetadata orderColumn = (OrderColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof OrderColumnMetadata orderColumn) {
             return valuesMatch(m_correctionType, orderColumn.getCorrectionType());
         }
 

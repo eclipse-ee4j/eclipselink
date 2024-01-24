@@ -58,13 +58,14 @@ public class SDOHelperContextMultiThreadedTest extends SDOHelperContextTestCases
 
     static int count = 0;
 
-    static String testDoc = "<customerDataSDO xmlns=\"http://www.example.com/\">\n" +
-    "    <FirstName>John</FirstName>\n" +
-    "    <LastName>Smith</LastName>\n" +
-    "    <Email>jsmith@yahoo.com</Email>\n" +
-    "    <MobilePhoneNumber>123-456-7890</MobilePhoneNumber>\n" +
-    "    <MembershipTypeCode>Gold</MembershipTypeCode>\n" +
-    "</customerDataSDO>";
+    static String testDoc = """
+            <customerDataSDO xmlns="http://www.example.com/">
+                <FirstName>John</FirstName>
+                <LastName>Smith</LastName>
+                <Email>jsmith@yahoo.com</Email>
+                <MobilePhoneNumber>123-456-7890</MobilePhoneNumber>
+                <MembershipTypeCode>Gold</MembershipTypeCode>
+            </customerDataSDO>""";
 
     public SDOHelperContextMultiThreadedTest(String name) {
         super(name);//, (HelperContext)SDOHelperContext.getInstance());

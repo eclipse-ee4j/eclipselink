@@ -69,8 +69,7 @@ public class HashPartitioningMetadata extends FieldPartitioningMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof HashPartitioningMetadata)) {
-            HashPartitioningMetadata policy = (HashPartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof HashPartitioningMetadata policy)) {
 
             return valuesMatch(this.connectionPools, policy.getConnectionPools());
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -223,10 +223,8 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                             List nextList = (List) bindingFiles.get(nextKey);
                             for(int i=0;i< nextList.size();i++){
                                 Object o = nextList.get(i);
-                                if(o instanceof Source){
-                                    Source nextSource = (Source)o;
-                                    if(nextSource instanceof StreamSource){
-                                        StreamSource ss= (StreamSource)nextSource;
+                                if(o instanceof Source nextSource){
+                                    if(nextSource instanceof StreamSource ss){
                                         StreamSource ss2= new StreamSource(ss.getInputStream());
                                         Object unmarshalledFromXML = u.unmarshal(ss2);
                                         StringWriter sw = new StringWriter();
@@ -247,8 +245,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                             bindingFiles.put(nextKey, newSource);
                         }
                     }
-                }else if(bindingFilesObject instanceof List){
-                    List bindingFilesList = (List) bindingFilesObject;
+                }else if(bindingFilesObject instanceof List bindingFilesList){
                     for(int i=0; i<bindingFilesList.size(); i++){
                         Object next = bindingFilesList.get(i);
                         Object unmarshalledFromXML = getXmlBindings(next);
@@ -874,9 +871,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         log("Actual:");
         log(testObject.toString());
 
-        if ((controlObject instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
-            JAXBElement controlObj = (JAXBElement)controlObject;
-            JAXBElement testObj = (JAXBElement)testObject;
+        if ((controlObject instanceof JAXBElement controlObj) && (testObject instanceof JAXBElement testObj)) {
             compareJAXBElementObjects(controlObj, testObj);
         } else {
             super.xmlToObjectTest(testObject);
@@ -1047,8 +1042,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
 
     protected void validateBindingsFileAgainstSchema(Object obj) {
-        if(obj instanceof List){
-            List theList = (List)obj;
+        if(obj instanceof List theList){
             for(int i=0; i<theList.size(); i++){
                 Object next = theList.get(i);
                 if(next instanceof Source) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -155,18 +155,16 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     }
 
     private XPathFragment getXPathFragmentForValue(Object value, MarshalRecord marshalRecord, Marshaller marshaller){
-         if (xmlAnyCollectionMapping.usesXMLRoot() && (value instanceof Root)) {
+         if (xmlAnyCollectionMapping.usesXMLRoot() && (value instanceof Root xmlRootValue)) {
 
-             Root xmlRootValue = (Root)value;
              XPathFragment xmlRootFragment = new XPathFragment(xmlRootValue.getLocalName(), marshalRecord.getNamespaceSeparator(), marshalRecord.isNamespaceAware());
              xmlRootFragment.setNamespaceURI(xmlRootValue.getNamespaceURI());
              return xmlRootFragment;
          }
 
-         if(value instanceof Node){
+         if(value instanceof Node n){
             XPathFragment frag = null;
-            Node n = (Node)value;
-            if(n.getNodeType() == Node.ELEMENT_NODE){
+             if(n.getNodeType() == Node.ELEMENT_NODE){
                 Element elem = (Element)n;
                 String local = elem.getLocalName();
                 if(local == null){

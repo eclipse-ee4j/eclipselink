@@ -53,8 +53,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
 
     @Override
     public void addTests() {
-        if (getSession().getPlatform() instanceof Oracle9Platform) {
-            Oracle9Platform platform = (Oracle9Platform)getSession().getPlatform();
+        if (getSession().getPlatform() instanceof Oracle9Platform platform) {
             ((AbstractSession)getSession()).getAccessor().incrementCallCount((AbstractSession)getSession());
             // unwrap connection if it's wrapped
             String driverVersion= platform.getDriverVersion();

@@ -668,8 +668,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     @Override
     public Object unmarshal(Source source) {
         try {
-            if (source instanceof SAXSource) {
-                SAXSource saxSource = (SAXSource) source;
+            if (source instanceof SAXSource saxSource) {
                 XMLReader xmlReader = null;
                 if (saxSource.getXMLReader() != null) {
                     if (saxSource.getXMLReader() instanceof XMLReader) {
@@ -684,11 +683,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 } else {
                     return unmarshal(saxSource.getInputSource(), xmlReader);
                 }
-            } else if (source instanceof DOMSource) {
-                DOMSource domSource = (DOMSource) source;
+            } else if (source instanceof DOMSource domSource) {
                 return unmarshal(domSource.getNode());
-            } else if (source instanceof StreamSource) {
-                StreamSource streamSource = (StreamSource) source;
+            } else if (source instanceof StreamSource streamSource) {
                 if (null != streamSource.getReader()) {
                     return unmarshal(streamSource.getReader());
                 } else if (null != streamSource.getInputStream()) {
@@ -696,8 +693,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 } else {
                     return unmarshal(streamSource.getSystemId());
                 }
-            } else if (source instanceof ExtendedSource) {
-                ExtendedSource extendedSource = (ExtendedSource) source;
+            } else if (source instanceof ExtendedSource extendedSource) {
                 return unmarshal(null, extendedSource.createReader(xmlUnmarshaller));
             } else {
                 UnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
@@ -715,8 +711,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     @Override
     public Object unmarshal(Source source, Class<?> clazz) {
-        if (source instanceof SAXSource) {
-            SAXSource saxSource = (SAXSource) source;
+        if (source instanceof SAXSource saxSource) {
             XMLReader xmlReader = null;
             if (saxSource.getXMLReader() != null) {
                 if (saxSource.getXMLReader() instanceof XMLReader) {
@@ -731,11 +726,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } else {
                 return unmarshal(saxSource.getInputSource(), clazz, xmlReader);
             }
-        } else if (source instanceof DOMSource) {
-            DOMSource domSource = (DOMSource) source;
+        } else if (source instanceof DOMSource domSource) {
             return unmarshal(domSource.getNode(), clazz);
-        } else if (source instanceof StreamSource) {
-            StreamSource streamSource = (StreamSource) source;
+        } else if (source instanceof StreamSource streamSource) {
             if (null != streamSource.getReader()) {
                 return unmarshal(streamSource.getReader(), clazz);
             } else if (null != streamSource.getInputStream()) {
@@ -743,8 +736,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } else {
                 return unmarshal(streamSource.getSystemId(), clazz);
             }
-        } else if (source instanceof ExtendedSource) {
-            ExtendedSource extendedSource = (ExtendedSource) source;
+        } else if (source instanceof ExtendedSource extendedSource) {
             return unmarshal(null, clazz, extendedSource.createReader(xmlUnmarshaller, clazz));
         } else {
             DOMResult result = new DOMResult();

@@ -74,8 +74,7 @@ public class FieldResultMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof FieldResultMetadata) {
-            FieldResultMetadata fieldResult = (FieldResultMetadata) objectToCompare;
+        if (objectToCompare instanceof FieldResultMetadata fieldResult) {
 
             if (! valuesMatch(m_name, fieldResult.getName())) {
                 return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -166,8 +166,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
                 sb.append(formatter.getClass().getSimpleName());
                 sb.append("[");
                 sb.append(formatter.getIdentifierStyle().name());
-                if (object instanceof AbstractActualJPQLQueryFormatter) {
-                    AbstractActualJPQLQueryFormatter actualFormatter = (AbstractActualJPQLQueryFormatter) object;
+                if (object instanceof AbstractActualJPQLQueryFormatter actualFormatter) {
                     sb.append("|");
                     sb.append(actualFormatter.isUsingExactMatch());
                 }

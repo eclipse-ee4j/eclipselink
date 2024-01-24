@@ -75,8 +75,7 @@ public class ChangeTrackingMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ChangeTrackingMetadata) {
-            ChangeTrackingMetadata changeTracking = (ChangeTrackingMetadata) objectToCompare;
+        if (objectToCompare instanceof ChangeTrackingMetadata changeTracking) {
             return valuesMatch(m_type, changeTracking.getType());
         }
 

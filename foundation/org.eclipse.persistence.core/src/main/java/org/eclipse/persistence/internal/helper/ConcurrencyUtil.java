@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2023 Oracle, IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2024 Oracle, IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -358,8 +358,7 @@ public class ConcurrencyUtil {
         String activeThread = activeThreadObj != null ? activeThreadObj.getName() : "Null";
         long concurrencyManagerId = concurrencyManager.getConcurrencyManagerId();
         Date concurrencyManagerCreationDate = concurrencyManager.getConcurrencyManagerCreationDate();
-        if (concurrencyManager instanceof CacheKey) {
-            CacheKey cacheKey = (CacheKey) concurrencyManager;
+        if (concurrencyManager instanceof CacheKey cacheKey) {
             Object primaryKey = cacheKey.getKey();
             Object cacheKeyObject = cacheKey.getObject();
             String canonicalName = cacheKeyObject != null ? cacheKeyObject.getClass().getCanonicalName()

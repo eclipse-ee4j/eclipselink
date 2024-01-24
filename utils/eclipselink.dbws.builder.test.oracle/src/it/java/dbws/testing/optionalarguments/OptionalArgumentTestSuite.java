@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,70 +39,73 @@ import dbws.testing.DBWSTestSuite;
  */
 public class OptionalArgumentTestSuite extends DBWSTestSuite {
     static final String CREATE_PHONE_TYPE =
-        "CREATE OR REPLACE TYPE DBWS_PHONETYPE AS OBJECT (" +
-            "\nHOME VARCHAR2(20)," +
-            "\nCELL VARCHAR2(20)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE DBWS_PHONETYPE AS OBJECT (
+                    HOME VARCHAR2(20),
+                    CELL VARCHAR2(20)
+                    )""";
     static final String CREATE_PHONE_TYPE_TABLE =
         "CREATE OR REPLACE TYPE DBWS_PHONETYPE_TABLE AS TABLE OF DBWS_PHONETYPE";
     static final String CREATE_VCARRAY_VARRAY =
         "CREATE OR REPLACE TYPE DBWS_VCARRAY AS VARRAY(4) OF VARCHAR2(20)";
     static final String CREATE_OPTIONALARG_PACKAGE =
-        "CREATE OR REPLACE PACKAGE OPTIONALARG AS" +
-            "\nPROCEDURE OPTIONAL_ARG1(X IN PLS_INTEGER DEFAULT NULL, Y IN BOOLEAN, Z IN PLS_INTEGER DEFAULT NULL, Q OUT VARCHAR2);" +
-            "\nPROCEDURE OPTIONAL_ARG2(X IN DBWS_VCARRAY DEFAULT NULL, Q OUT VARCHAR2);" +
-            "\nPROCEDURE OPTIONAL_ARG3(X IN DBWS_PHONETYPE DEFAULT NULL, Q OUT VARCHAR2);" +
-            "\nPROCEDURE OPTIONAL_ARG4(X IN DBWS_PHONETYPE_TABLE DEFAULT NULL, Q OUT VARCHAR2);" +
-        "\nEND OPTIONALARG;";
+            """
+                    CREATE OR REPLACE PACKAGE OPTIONALARG AS
+                    PROCEDURE OPTIONAL_ARG1(X IN PLS_INTEGER DEFAULT NULL, Y IN BOOLEAN, Z IN PLS_INTEGER DEFAULT NULL, Q OUT VARCHAR2);
+                    PROCEDURE OPTIONAL_ARG2(X IN DBWS_VCARRAY DEFAULT NULL, Q OUT VARCHAR2);
+                    PROCEDURE OPTIONAL_ARG3(X IN DBWS_PHONETYPE DEFAULT NULL, Q OUT VARCHAR2);
+                    PROCEDURE OPTIONAL_ARG4(X IN DBWS_PHONETYPE_TABLE DEFAULT NULL, Q OUT VARCHAR2);
+                    END OPTIONALARG;""";
     static final String CREATE_OPTIONALARG_BODY =
-        "CREATE OR REPLACE PACKAGE BODY OPTIONALARG AS" +
-            "\nPROCEDURE OPTIONAL_ARG1(X IN PLS_INTEGER DEFAULT NULL, Y IN BOOLEAN, Z IN PLS_INTEGER DEFAULT NULL, Q OUT VARCHAR2) AS" +
-            "\nA PLS_INTEGER := X;" +
-            "\nB PLS_INTEGER := Z;" +
-            "\nC BOOLEAN;" +
-            "\nBEGIN" +
-                "\nIF A IS NULL THEN" +
-                    "\nA := '-1';" +
-                "\nEND IF;" +
-                "\nIF B IS NULL THEN" +
-                    "\nB := '-1';" +
-                "\nEND IF;" +
-                "\nQ := CONCAT(A, ', ');" +
-                "\nQ := CONCAT(Q, B);" +
-            "\nEND OPTIONAL_ARG1;" +
-            "\nPROCEDURE OPTIONAL_ARG2(X IN DBWS_VCARRAY DEFAULT NULL, Q OUT VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nIF X IS NULL THEN" +
-                    "\nQ := 'null';" +
-                "\nELSE" +
-                    "\nQ := 'not null';" +
-                "\nEND IF;" +
-            "\nEND OPTIONAL_ARG2;" +
-            "\nPROCEDURE OPTIONAL_ARG3(X IN DBWS_PHONETYPE DEFAULT NULL, Q OUT VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nIF X IS NULL THEN" +
-                    "\nQ := 'null';" +
-                "\nELSE" +
-                    "\nQ := CONCAT(X.HOME, ', ');" +
-                    "\nQ := CONCAT(Q, X.CELL);" +
-                "\nEND IF;" +
-            "\nEND OPTIONAL_ARG3;" +
-            "\nPROCEDURE OPTIONAL_ARG4(X IN DBWS_PHONETYPE_TABLE DEFAULT NULL, Q OUT VARCHAR2) AS" +
-            "\nPHONE1 DBWS_PHONETYPE;" +
-            "\nPHONE2 DBWS_PHONETYPE;" +
-            "\nBEGIN" +
-                "\nIF X IS NULL THEN" +
-                    "\nQ := 'null';" +
-                "\nELSE" +
-                    "\nQ := CONCAT(X(1).HOME, ', ');" +
-                    "\nQ := CONCAT(Q, X(1).CELL);" +
-                    "\nQ := CONCAT(Q, ' - ');" +
-                    "\nQ := CONCAT(Q, X(2).HOME);" +
-                    "\nQ := CONCAT(Q, ', ');" +
-                    "\nQ := CONCAT(Q, X(2).CELL);" +
-                "\nEND IF;" +
-            "\nEND OPTIONAL_ARG4;" +
-        "\nEND OPTIONALARG;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY OPTIONALARG AS
+                    PROCEDURE OPTIONAL_ARG1(X IN PLS_INTEGER DEFAULT NULL, Y IN BOOLEAN, Z IN PLS_INTEGER DEFAULT NULL, Q OUT VARCHAR2) AS
+                    A PLS_INTEGER := X;
+                    B PLS_INTEGER := Z;
+                    C BOOLEAN;
+                    BEGIN
+                    IF A IS NULL THEN
+                    A := '-1';
+                    END IF;
+                    IF B IS NULL THEN
+                    B := '-1';
+                    END IF;
+                    Q := CONCAT(A, ', ');
+                    Q := CONCAT(Q, B);
+                    END OPTIONAL_ARG1;
+                    PROCEDURE OPTIONAL_ARG2(X IN DBWS_VCARRAY DEFAULT NULL, Q OUT VARCHAR2) AS
+                    BEGIN
+                    IF X IS NULL THEN
+                    Q := 'null';
+                    ELSE
+                    Q := 'not null';
+                    END IF;
+                    END OPTIONAL_ARG2;
+                    PROCEDURE OPTIONAL_ARG3(X IN DBWS_PHONETYPE DEFAULT NULL, Q OUT VARCHAR2) AS
+                    BEGIN
+                    IF X IS NULL THEN
+                    Q := 'null';
+                    ELSE
+                    Q := CONCAT(X.HOME, ', ');
+                    Q := CONCAT(Q, X.CELL);
+                    END IF;
+                    END OPTIONAL_ARG3;
+                    PROCEDURE OPTIONAL_ARG4(X IN DBWS_PHONETYPE_TABLE DEFAULT NULL, Q OUT VARCHAR2) AS
+                    PHONE1 DBWS_PHONETYPE;
+                    PHONE2 DBWS_PHONETYPE;
+                    BEGIN
+                    IF X IS NULL THEN
+                    Q := 'null';
+                    ELSE
+                    Q := CONCAT(X(1).HOME, ', ');
+                    Q := CONCAT(Q, X(1).CELL);
+                    Q := CONCAT(Q, ' - ');
+                    Q := CONCAT(Q, X(2).HOME);
+                    Q := CONCAT(Q, ', ');
+                    Q := CONCAT(Q, X(2).CELL);
+                    END IF;
+                    END OPTIONAL_ARG4;
+                    END OPTIONALARG;""";
 
     static final String DROP_OPTIONALARG_BODY =
         "DROP PACKAGE BODY OPTIONALARG";

@@ -188,8 +188,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof ObjectAccessor) {
-            ObjectAccessor objectAccessor = (ObjectAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof ObjectAccessor objectAccessor) {
 
             if (! valuesMatch(m_id, objectAccessor.getId())) {
                 return false;

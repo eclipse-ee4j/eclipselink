@@ -21,10 +21,9 @@ public class Address {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Address)) {
+        if (!(obj instanceof Address a)) {
             return false;
         }
-        Address a = (Address) obj;
         return a.city.equals(this.city);
     }
 

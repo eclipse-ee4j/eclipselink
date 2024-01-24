@@ -60,8 +60,7 @@ public class UnionPartitioningMetadata extends ReplicationPartitioningMetadata {
 
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof UnionPartitioningMetadata)) {
-            UnionPartitioningMetadata policy = (UnionPartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof UnionPartitioningMetadata policy)) {
 
             return valuesMatch(this.replicateWrites, policy.getReplicateWrites());
         }

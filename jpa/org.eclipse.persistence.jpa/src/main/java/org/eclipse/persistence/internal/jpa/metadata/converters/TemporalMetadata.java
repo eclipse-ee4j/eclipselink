@@ -75,8 +75,7 @@ public class TemporalMetadata extends MetadataConverter {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof TemporalMetadata) {
-            TemporalMetadata enumerated = (TemporalMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof TemporalMetadata enumerated) {
             return valuesMatch(m_temporalType, enumerated.getTemporalType());
         }
 

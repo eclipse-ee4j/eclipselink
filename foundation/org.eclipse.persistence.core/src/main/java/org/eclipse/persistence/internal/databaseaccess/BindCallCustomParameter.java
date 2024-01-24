@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -136,11 +136,9 @@ public class BindCallCustomParameter implements Serializable {
         if (parameter instanceof Object[]) {
             parameter = Arrays.asList((Object[])parameter);
         }
-        if ((dbField.getSqlType()!=Types.ARRAY)||(parameter instanceof Array) || !(parameter instanceof Collection) ){
+        if ((dbField.getSqlType()!=Types.ARRAY)||(parameter instanceof Array) || !(parameter instanceof Collection<?> container) ){
             return parameter;
         }
-
-        Collection<?> container = (Collection<?>)parameter;
 
         DatabaseField nestedType = ordField.getNestedTypeField();
 

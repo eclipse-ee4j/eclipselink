@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2022 Xavier Callejas. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Xavier Callejas. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -122,10 +122,9 @@ public class Operaciones implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Operaciones)) {
+        if (!(object instanceof Operaciones other)) {
             return false;
         }
-        Operaciones other = (Operaciones) object;
         if ((this.idOperacion == null && other.idOperacion != null) || (this.idOperacion != null && !this.idOperacion.equals(other.idOperacion))) {
             return false;
         }

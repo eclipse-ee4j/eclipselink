@@ -62,8 +62,7 @@ public class AdditionalCriteriaMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof AdditionalCriteriaMetadata) {
-            AdditionalCriteriaMetadata additionalCriteria = (AdditionalCriteriaMetadata) objectToCompare;
+        if (objectToCompare instanceof AdditionalCriteriaMetadata additionalCriteria) {
             return valuesMatch(m_criteria, additionalCriteria.getCriteria());
         }
 

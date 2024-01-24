@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -316,8 +316,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 bigInteger = ((BigDecimal)sourceObject).toBigInteger();
             } else if (sourceObject instanceof Number) {
                 bigInteger = new BigInteger(String.valueOf(((Number)sourceObject).longValue()));
-            } else if (sourceObject instanceof Byte[]) {
-                Byte[] objectBytes = (Byte[])sourceObject;
+            } else if (sourceObject instanceof Byte[] objectBytes) {
                 byte[] bytes = new byte[objectBytes.length];
                 for (int index = 0; index < objectBytes.length; index++) {
                     bytes[index] = objectBytes[index];
@@ -402,8 +401,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         if (sourceObject instanceof byte[]) {
             return (byte[])sourceObject;
             //Related to Bug#3128838.  Add support to convert to Byte[]
-        } else if (sourceObject instanceof Byte[]) {
-            Byte[] objectBytes = (Byte[])sourceObject;
+        } else if (sourceObject instanceof Byte[] objectBytes) {
             byte[] bytes = new byte[objectBytes.length];
             for (int index = 0; index < objectBytes.length; index++) {
                 Byte value = objectBytes[index];
@@ -414,15 +412,13 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             return bytes;
         } else if (sourceObject instanceof String) {
             return Helper.buildBytesFromHexString((String)sourceObject);
-        } else if (sourceObject instanceof Blob) {
-            Blob blob = (Blob)sourceObject;
+        } else if (sourceObject instanceof Blob blob) {
             try {
                 return blob.getBytes(1L, (int)blob.length());
             } catch (SQLException exception) {
                 throw DatabaseException.sqlException(exception);
             }
-        } else if (sourceObject instanceof InputStream) {
-            InputStream inputStream = (InputStream)sourceObject;
+        } else if (sourceObject instanceof InputStream inputStream) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try {
                 int tempInt = inputStream.read();
@@ -506,8 +502,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
       * Build a valid instance of a char array from the given object.
       */
     protected char[] convertObjectToCharArray(Object sourceObject) throws ConversionException {
-        if (sourceObject instanceof Character[]) {
-            Character[] objectChars = (Character[])sourceObject;
+        if (sourceObject instanceof Character[] objectChars) {
             char[] chars = new char[objectChars.length];
             for (int index = 0; index < objectChars.length; index++) {
                 chars[index] = objectChars[index];
@@ -772,8 +767,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             return ((Class<?>)sourceObject).getName();
         } else if (sourceObjectClass == ClassConstants.CHAR) {
             return sourceObject.toString();
-        } else if (sourceObject instanceof Clob) {
-            Clob clob = (Clob)sourceObject;
+        } else if (sourceObject instanceof Clob clob) {
             try {
                 return clob.getSubString(1L, (int)clob.length());
             } catch (SQLException exception) {
@@ -868,8 +862,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         } else if (sourceObject instanceof java.util.Date) {
             // handles sql.Time too
             localDate = ((java.util.Date) sourceObject).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        } else if (sourceObject instanceof Calendar) {
-            Calendar cal = (Calendar) sourceObject;
+        } else if (sourceObject instanceof Calendar cal) {
             localDate = java.time.LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
         } else if (sourceObject instanceof Long) {
             localDate = java.time.LocalDate.ofEpochDay((Long) sourceObject);
@@ -908,8 +901,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             localTime = java.time.LocalTime.of(
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
             Helper.releaseCalendar(cal);
-        } else if (sourceObject instanceof Calendar) {
-            Calendar cal = (Calendar) sourceObject;
+        } else if (sourceObject instanceof Calendar cal) {
             localTime = java.time.LocalTime.of(
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
         } else if (sourceObject instanceof Long) {
@@ -948,8 +940,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                     cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
             Helper.releaseCalendar(cal);
-        } else if (sourceObject instanceof Calendar) {
-            Calendar cal = (Calendar) sourceObject;
+        } else if (sourceObject instanceof Calendar cal) {
             localDateTime = java.time.LocalDateTime.of(
                     cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
@@ -990,8 +981,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND) * 1000000,
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
             Helper.releaseCalendar(cal);
-        } else if (sourceObject instanceof Calendar) {
-            Calendar cal = (Calendar) sourceObject;
+        } else if (sourceObject instanceof Calendar cal) {
             offsetDateTime = java.time.OffsetDateTime.of(
                     cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND)  * 1000000,
@@ -1036,8 +1026,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND),
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
             Helper.releaseCalendar(cal);
-        } else if (sourceObject instanceof Calendar) {
-            Calendar cal = (Calendar) sourceObject;
+        } else if (sourceObject instanceof Calendar cal) {
             offsetTime = java.time.OffsetTime.of(
                     cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND),
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));

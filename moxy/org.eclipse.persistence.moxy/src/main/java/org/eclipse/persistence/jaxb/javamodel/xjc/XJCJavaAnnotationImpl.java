@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,26 +103,21 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
                     Collection<JAnnotationValue> values = ((JAnnotationArrayMember) xjcValue).annotations2();
                     List<Object> valuesArray = new ArrayList<>(values.size());
                     for (JAnnotationValue val : values) {
-                        if (val instanceof JAnnotationUse) {
-                            JAnnotationUse xjcAnno = (JAnnotationUse) val;
+                        if (val instanceof JAnnotationUse xjcAnno) {
                             XJCJavaAnnotationImpl anno = new XJCJavaAnnotationImpl(xjcAnno, dynamicClassLoader);
                             valuesArray.add(anno.getJavaAnnotation());
-                        } else if (val instanceof JAnnotationStringValue) {
-                            JAnnotationStringValue value = (JAnnotationStringValue) val;
+                        } else if (val instanceof JAnnotationStringValue value) {
                             valuesArray.add(value.toString());
-                        } else if (val instanceof JAnnotationClassValue) {
-                            JAnnotationClassValue cval = (JAnnotationClassValue) val;
+                        } else if (val instanceof JAnnotationClassValue cval) {
                             valuesArray.add(getValueFromClsValue(cval, isXmlEnum));
                         } else {
                             throw new RuntimeException("got " + val.getClass().getName());
                         }
                     }
                     components.put(key, valuesArray.toArray(new Object[valuesArray.size()]));
-                } else if (xjcValue instanceof JAnnotationStringValue) {
-                    JAnnotationStringValue value = (JAnnotationStringValue) xjcValue;
+                } else if (xjcValue instanceof JAnnotationStringValue value) {
                     components.put(key, value.toString());
-                } else if (xjcValue instanceof JAnnotationClassValue) {
-                    JAnnotationClassValue cval = (JAnnotationClassValue) xjcValue;
+                } else if (xjcValue instanceof JAnnotationClassValue cval) {
                     components.put(key, getValueFromClsValue(cval, isXmlEnum));
                 } else {
                     throw new RuntimeException("got " + xjcValue.getClass().getName());

@@ -83,8 +83,7 @@ public class EnumeratedMetadata extends MetadataConverter {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof EnumeratedMetadata) {
-            EnumeratedMetadata enumerated = (EnumeratedMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof EnumeratedMetadata enumerated) {
             return valuesMatch(m_enumeratedType, enumerated.getEnumeratedType());
         }
 

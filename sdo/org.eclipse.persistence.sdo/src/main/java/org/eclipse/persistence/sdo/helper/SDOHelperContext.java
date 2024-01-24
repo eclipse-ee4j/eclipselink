@@ -985,8 +985,7 @@ public class SDOHelperContext implements HelperContext {
         public void handleNotification(Notification notification, Object handback) {
             switch (server) {
             case 0: {  // handle WebLogic notification
-                if (notification instanceof AttributeChangeNotification) {
-                    AttributeChangeNotification acn = (AttributeChangeNotification) notification;
+                if (notification instanceof AttributeChangeNotification acn) {
                     if (acn.getAttributeName().equals(WLS_ACTIVE_VERSION_STATE)) {
                         if (acn.getNewValue().equals(0)) {
                             resetHelperContext(appName);

@@ -38,9 +38,7 @@ public class RootKeepAsElement {
             }
             Object value1 = t1;
             Object value2 = ((RootKeepAsElement) object).getT1();
-            if ((value1 instanceof Element) && (value2 instanceof Element)) {
-                Element elem1 = (Element )value1;
-                Element elem2 = (Element) value2;
+            if ((value1 instanceof Element elem1) && (value2 instanceof Element elem2)) {
                 return elem1.getLocalName().equals(elem2.getLocalName());
             }
             return this.t1.equals(((RootKeepAsElement) object).getT1());

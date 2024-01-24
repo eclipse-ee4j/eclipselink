@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1125,8 +1125,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 lockingPolicy.addLockValuesToTranslationRow(writeQuery);
                 // Do not lock an object that has previously been optimistically locked within the RWUoW
                 boolean existingOptimisticLock = false;
-                if (session instanceof RepeatableWriteUnitOfWork) {
-                    RepeatableWriteUnitOfWork uow = (RepeatableWriteUnitOfWork)session;
+                if (session instanceof RepeatableWriteUnitOfWork uow) {
                     if (uow.getOptimisticReadLockObjects().get(object) != null && uow.getCumulativeUOWChangeSet() != null
                             && uow.getCumulativeUOWChangeSet().getObjectChangeSetForClone(object) != null) {
                         existingOptimisticLock = true;

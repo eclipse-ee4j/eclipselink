@@ -65,8 +65,7 @@ public class ValuePartitionMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ValuePartitionMetadata) {
-            ValuePartitionMetadata partition = (ValuePartitionMetadata) objectToCompare;
+        if (objectToCompare instanceof ValuePartitionMetadata partition) {
 
             return valuesMatch(this.connectionPool, partition.getConnectionPool())
                 && valuesMatch(this.value, partition.getValue());

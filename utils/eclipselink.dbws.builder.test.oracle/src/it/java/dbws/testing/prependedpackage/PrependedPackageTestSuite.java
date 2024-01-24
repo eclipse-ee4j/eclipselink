@@ -52,75 +52,81 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
     }
 
     static final String CREATE_REF_CURSOR_PKG3 =
-        "CREATE OR REPLACE PACKAGE REF_CURSOR_PKG3 AS" +
-            "\nTYPE QTAB IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
-            "\nTYPE QRECORD IS RECORD (" +
-                "\nQ1 NUMBER," +
-                "\nQ2 QTAB" +
-            "\n);" +
-        "\nEND REF_CURSOR_PKG3;";
+            """
+                    CREATE OR REPLACE PACKAGE REF_CURSOR_PKG3 AS
+                    TYPE QTAB IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+                    TYPE QRECORD IS RECORD (
+                    Q1 NUMBER,
+                    Q2 QTAB
+                    );
+                    END REF_CURSOR_PKG3;""";
 
     static final String CREATE_REF_CURSOR_PKG2 =
-        "CREATE OR REPLACE PACKAGE REF_CURSOR_PKG2 AS" +
-          "\nTYPE typecursor IS REF CURSOR;" +
-          "\nTYPE blahcursor IS REF CURSOR;" +
-          "\nPROCEDURE getSomething(PARAM1 IN REF_CURSOR_PKG3.QTAB, PARAM2 OUT REF_CURSOR_PKG3.QTAB);" +
-        "\nEND REF_CURSOR_PKG2;";
+            """
+                    CREATE OR REPLACE PACKAGE REF_CURSOR_PKG2 AS
+                    TYPE typecursor IS REF CURSOR;
+                    TYPE blahcursor IS REF CURSOR;
+                    PROCEDURE getSomething(PARAM1 IN REF_CURSOR_PKG3.QTAB, PARAM2 OUT REF_CURSOR_PKG3.QTAB);
+                    END REF_CURSOR_PKG2;""";
     static final String CREATE_REF_CURSOR_PKG2_BODY =
-        "CREATE OR REPLACE PACKAGE BODY REF_CURSOR_PKG2 AS" +
-            "\nPROCEDURE getSomething(PARAM1 IN REF_CURSOR_PKG3.QTAB, PARAM2 OUT REF_CURSOR_PKG3.QTAB) AS" +
-            "\nBEGIN" +
-              "\nPARAM2 := PARAM1;" +
-            "\nEND getSomething;" +
-        "\nEND REF_CURSOR_PKG2;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY REF_CURSOR_PKG2 AS
+                    PROCEDURE getSomething(PARAM1 IN REF_CURSOR_PKG3.QTAB, PARAM2 OUT REF_CURSOR_PKG3.QTAB) AS
+                    BEGIN
+                    PARAM2 := PARAM1;
+                    END getSomething;
+                    END REF_CURSOR_PKG2;""";
 
     static final String CREATE_REF_CURSOR_PKG =
-        "create or replace PACKAGE  REF_CURSOR_PKG as" +
-          "\nTYPE typecursor IS REF CURSOR  ;" +
-          "\nPROCEDURE getEmpDataProc(PARAM1 OUT REF_CURSOR_PKG.typecursor);" +
-          "\nFUNCTION getEmpData RETURN  REF_CURSOR_PKG.typecursor  ;" +
-          "\nFUNCTION getEmpData2 RETURN REF_CURSOR_PKG2.typecursor;" +
-          "\nFUNCTION getEmpData3(EMP_NUM NUMBER) RETURN REF_CURSOR_PKG2.blahcursor;" +
-        "\nEND REF_CURSOR_PKG  ;";
+            """
+                    create or replace PACKAGE  REF_CURSOR_PKG as
+                    TYPE typecursor IS REF CURSOR  ;
+                    PROCEDURE getEmpDataProc(PARAM1 OUT REF_CURSOR_PKG.typecursor);
+                    FUNCTION getEmpData RETURN  REF_CURSOR_PKG.typecursor  ;
+                    FUNCTION getEmpData2 RETURN REF_CURSOR_PKG2.typecursor;
+                    FUNCTION getEmpData3(EMP_NUM NUMBER) RETURN REF_CURSOR_PKG2.blahcursor;
+                    END REF_CURSOR_PKG  ;""";
 
     static final String CREATE_REF_CURSOR_BODY =
-        "create or replace PACKAGE BODY REF_CURSOR_PKG AS" +
-          "\nPROCEDURE getEmpDataProc(PARAM1 OUT REF_CURSOR_PKG.typecursor) AS" +
-          "\nBEGIN" +
-            "\nOPEN PARAM1 FOR" +
-            "\nSELECT  empno, ename, job, deptno FROM ref_cursor_emp  ;" +
-          "\nEND getEmpDataProc;" +
-          "\nFUNCTION getEmpData RETURN  REF_CURSOR_PKG.typecursor   AS" +
-          "\nc_temp REF_CURSOR_PKG.typecursor  ;" +
-          "\nBEGIN" +
-            "\nOPEN c_temp FOR" +
-            "\nSELECT  empno, ename, job, deptno FROM ref_cursor_emp  ;" +
-            "\nRETURN c_temp  ;" +
-          "\nEND getEmpData;" +
-          "\nFUNCTION getEmpData2 RETURN REF_CURSOR_PKG2.typecursor AS" +
-          "\nc_temp REF_CURSOR_PKG2.typecursor;" +
-          "\nBEGIN" +
-            "\nOPEN c_temp FOR" +
-            "\nSELECT empno, ename, job, deptno FROM ref_cursor_emp;" +
-            "\nRETURN c_temp;" +
-          "\nEND getEmpData2;" +
-          "\nFUNCTION getEmpData3(EMP_NUM NUMBER) RETURN REF_CURSOR_PKG2.blahcursor AS" +
-          "\nc_temp REF_CURSOR_PKG2.blahcursor;" +
-          "\nBEGIN" +
-            "\nOPEN c_temp FOR" +
-            "\nSELECT empno, ename, job, deptno FROM ref_cursor_emp WHERE empno = EMP_NUM;" +
-            "\nRETURN c_temp;" +
-          "\nEND getEmpData3;" +
-        "\nEND REF_CURSOR_PKG;";
+            """
+                    create or replace PACKAGE BODY REF_CURSOR_PKG AS
+                    PROCEDURE getEmpDataProc(PARAM1 OUT REF_CURSOR_PKG.typecursor) AS
+                    BEGIN
+                    OPEN PARAM1 FOR
+                    SELECT  empno, ename, job, deptno FROM ref_cursor_emp  ;
+                    END getEmpDataProc;
+                    FUNCTION getEmpData RETURN  REF_CURSOR_PKG.typecursor   AS
+                    c_temp REF_CURSOR_PKG.typecursor  ;
+                    BEGIN
+                    OPEN c_temp FOR
+                    SELECT  empno, ename, job, deptno FROM ref_cursor_emp  ;
+                    RETURN c_temp  ;
+                    END getEmpData;
+                    FUNCTION getEmpData2 RETURN REF_CURSOR_PKG2.typecursor AS
+                    c_temp REF_CURSOR_PKG2.typecursor;
+                    BEGIN
+                    OPEN c_temp FOR
+                    SELECT empno, ename, job, deptno FROM ref_cursor_emp;
+                    RETURN c_temp;
+                    END getEmpData2;
+                    FUNCTION getEmpData3(EMP_NUM NUMBER) RETURN REF_CURSOR_PKG2.blahcursor AS
+                    c_temp REF_CURSOR_PKG2.blahcursor;
+                    BEGIN
+                    OPEN c_temp FOR
+                    SELECT empno, ename, job, deptno FROM ref_cursor_emp WHERE empno = EMP_NUM;
+                    RETURN c_temp;
+                    END getEmpData3;
+                    END REF_CURSOR_PKG;""";
 
     static final String CREATE_EMP_TABLE =
-        "create table ref_cursor_emp (" +
-          "\nempno NUMERIC(4) NOT NULL," +
-          "\nename VARCHAR(25)," +
-          "\njob VARCHAR2(40)," +
-          "\ndeptno NUMERIC(3)," +
-          "\nPRIMARY KEY (empno)" +
-        "\n)";
+            """
+                    create table ref_cursor_emp (
+                    empno NUMERIC(4) NOT NULL,
+                    ename VARCHAR(25),
+                    job VARCHAR2(40),
+                    deptno NUMERIC(3),
+                    PRIMARY KEY (empno)
+                    )""";
 
     static final String[] POPULATE_EMP_TABLE = new String[] {
         "INSERT INTO ref_cursor_emp (empno, ename, job, deptno) VALUES (100, 'jim', 'sales', 24)",

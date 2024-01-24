@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,11 +65,10 @@ public class Company
 
    public boolean equals(Object object)
    {
-     if(!(object instanceof Company))
+     if(!(object instanceof Company companyObject))
       return false;
 
-     Company companyObject = (Company)object;
-     if((this.getName().equalsIgnoreCase(companyObject.getName())) &&
+       if((this.getName().equalsIgnoreCase(companyObject.getName())) &&
         (((this.getDepartments() == null) && (companyObject.getDepartments() == null))||
           (this.getDepartments().containsAll(companyObject.getDepartments()))) )
           return true;

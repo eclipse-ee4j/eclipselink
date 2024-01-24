@@ -3186,8 +3186,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
             }
-            if (persistenceException instanceof ValidationException) {
-                ValidationException ve = (ValidationException) persistenceException;
+            if (persistenceException instanceof ValidationException ve) {
                 if (ve.getErrorCode() == ValidationException.PRIMARY_KEY_UPDATE_DISALLOWED) {
                     return;
                 } else {
@@ -3272,8 +3271,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
             }
-            if (persistenceException instanceof ValidationException) {
-                ValidationException ve = (ValidationException) persistenceException;
+            if (persistenceException instanceof ValidationException ve) {
                 if (ve.getErrorCode() == ValidationException.PRIMARY_KEY_UPDATE_DISALLOWED) {
                     return;
                 } else {

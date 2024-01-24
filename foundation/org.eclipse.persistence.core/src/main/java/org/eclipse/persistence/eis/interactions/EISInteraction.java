@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -246,8 +246,7 @@ public abstract class EISInteraction extends DatasourceCall {
                 }
                 element = elements;
                 // Handle nested rows.
-            } else if (value instanceof AbstractRecord) {
-                AbstractRecord valuesRow = (AbstractRecord)value;
+            } else if (value instanceof AbstractRecord valuesRow) {
 
                 // The record name for the row must be determined,
                 // currently the SDK uses the table name of the row's field for this,
@@ -341,8 +340,7 @@ public abstract class EISInteraction extends DatasourceCall {
                 Object argument = getArguments().elementAt(index);
 
                 // The argument is either a value or a databasefield that needs to be translated.
-                if (argument instanceof DatabaseField) {
-                    DatabaseField field = (DatabaseField)argument;
+                if (argument instanceof DatabaseField field) {
                     Object value = translationRow.get(field);
 
                     //BUG#12345:modifyRow is null for reads
@@ -377,8 +375,7 @@ public abstract class EISInteraction extends DatasourceCall {
      */
     public Vector<AbstractRecord> buildRows(jakarta.resource.cci.Record record, EISAccessor accessor) {
         Vector<AbstractRecord> rows = null;
-        if (record instanceof IndexedRecord) {
-            IndexedRecord indexedRecord = (IndexedRecord)record;
+        if (record instanceof IndexedRecord indexedRecord) {
             rows = new Vector<>(indexedRecord.size());
             for (int index = 0; index < indexedRecord.size(); index++) {
                 Object element = indexedRecord.get(index);
@@ -390,8 +387,7 @@ public abstract class EISInteraction extends DatasourceCall {
                     return rows;
                 }
             }
-        } else if (record instanceof MappedRecord) {
-            MappedRecord mappedRecord = (MappedRecord)record;
+        } else if (record instanceof MappedRecord mappedRecord) {
 
             // Handle the case of a single output argument of the entire row contained within the return record.
             if (getOutputResultPath().length() > 0) {
@@ -402,8 +398,7 @@ public abstract class EISInteraction extends DatasourceCall {
                     return buildRows((IndexedRecord)element, accessor);
                 } else if (element instanceof MappedRecord) {
                     mappedRecord = (MappedRecord)element;
-                } else if (element instanceof List) {
-                    List<?> elements = (List<?>)element;
+                } else if (element instanceof List<?> elements) {
                     rows = new Vector<>(elements.size());
                     for (int index = 0; index < elements.size(); index++) {
                         Object elementValue = elements.get(index);

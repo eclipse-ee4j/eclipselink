@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,11 +100,10 @@ public class Room implements Serializable, Cloneable {
     }
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Room)) {
+        if (obj == null || !(obj instanceof Room r)) {
             return false;
         }
 
-        Room r = (Room) obj;
         if (this.id == r.id && this.width == r.width
                 && this.height == r.height && this.length == r.length) {
             return true;

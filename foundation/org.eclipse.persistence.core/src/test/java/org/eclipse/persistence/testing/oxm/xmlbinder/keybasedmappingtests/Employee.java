@@ -20,11 +20,10 @@ public class Employee {
     public Address address;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof Employee)) {
+        if(!(obj instanceof Employee emp)) {
             return false;
         }
 
-        Employee emp = (Employee)obj;
         if(id == emp.id || (emp.id != null && id != null && id.equals(emp.id))) {
             if(name == emp.name || (emp.name != null && name != null && name.equals(emp.name))) {
                 return address == emp.address || (address != null && emp.address != null && emp.address.equals(address));

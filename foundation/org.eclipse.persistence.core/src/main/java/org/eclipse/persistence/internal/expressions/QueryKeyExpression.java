@@ -425,9 +425,8 @@ public class QueryKeyExpression extends ObjectExpression {
         if (mapping != null) {
             if (mapping.isAbstractDirectMapping() || mapping.isDirectCollectionMapping()) {
                 // CR#3623207, check for IN Collection here not in mapping.
-                if (objectValue instanceof Collection) {
+                if (objectValue instanceof Collection values) {
                     // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
-                    Collection values = (Collection)objectValue;
                     Vector fieldValues = new Vector(values.size());
                     for (Iterator iterator = values.iterator(); iterator.hasNext();) {
                         Object value = iterator.next();

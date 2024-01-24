@@ -96,8 +96,7 @@ public class CascadeMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof CascadeMetadata) {
-            CascadeMetadata cascade = (CascadeMetadata) objectToCompare;
+        if (objectToCompare instanceof CascadeMetadata cascade) {
 
             if (! valuesMatch(m_cascadeAll, cascade.getCascadeAll())) {
                 return false;

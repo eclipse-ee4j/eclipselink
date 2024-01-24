@@ -62,8 +62,7 @@ public class BatchFetchMetadata extends ORMetadata {
 
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof BatchFetchMetadata) {
-            BatchFetchMetadata batchFetch = (BatchFetchMetadata) objectToCompare;
+        if (objectToCompare instanceof BatchFetchMetadata batchFetch) {
 
             if (! valuesMatch(m_type, batchFetch.getType())) {
                 return false;

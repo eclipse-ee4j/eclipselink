@@ -99,8 +99,7 @@ public class ConverterAccessor extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ConverterAccessor) {
-            ConverterAccessor converter = (ConverterAccessor) objectToCompare;
+        if (objectToCompare instanceof ConverterAccessor converter) {
             return valuesMatch(autoApply, converter.getAutoApply());
         }
 

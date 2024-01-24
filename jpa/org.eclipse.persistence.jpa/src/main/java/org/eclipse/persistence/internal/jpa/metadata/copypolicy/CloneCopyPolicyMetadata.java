@@ -71,8 +71,7 @@ public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof CloneCopyPolicyMetadata) {
-            CloneCopyPolicyMetadata cloneCopyPolicy = (CloneCopyPolicyMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof CloneCopyPolicyMetadata cloneCopyPolicy) {
 
             if (! valuesMatch(methodName, cloneCopyPolicy.getMethodName())) {
                 return false;

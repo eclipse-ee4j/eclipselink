@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -261,9 +261,7 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
             fail("testObject was [" + testObject + "] but controlObject was [" + controlObject + "].");
         }
 
-        if (testObject instanceof Element && controlObject instanceof Element) {
-            Element testElement = (Element) testObject;
-            Element controlElement = (Element) controlObject;
+        if (testObject instanceof Element testElement && controlObject instanceof Element controlElement) {
 
             boolean equal = true;
             try {
@@ -310,9 +308,7 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
             return;
         }
 
-        if (controlObject instanceof DynamicEntityImpl && testObject instanceof DynamicEntityImpl) {
-            DynamicEntityImpl dynamicControl = (DynamicEntityImpl) controlObject;
-            DynamicEntityImpl dynamicTest = (DynamicEntityImpl) testObject;
+        if (controlObject instanceof DynamicEntityImpl dynamicControl && testObject instanceof DynamicEntityImpl dynamicTest) {
 
             String controlClass = dynamicControl.getType().getClassName();
             String testClass = dynamicTest.getType().getClassName();
@@ -360,9 +356,7 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
             log(testObject.toString());
         }
 
-        if ((controlObject instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
-            XMLRoot controlRoot = (XMLRoot) controlObject;
-            XMLRoot testRoot = (XMLRoot) testObject;
+        if ((controlObject instanceof XMLRoot controlRoot) && (testObject instanceof XMLRoot testRoot)) {
             compareXMLRootObjects(controlRoot, testRoot);
         } else {
             objectsAlreadyCheckedForEquality = new ArrayList();

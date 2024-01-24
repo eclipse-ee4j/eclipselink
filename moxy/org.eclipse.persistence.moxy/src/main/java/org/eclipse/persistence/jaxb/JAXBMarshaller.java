@@ -325,8 +325,7 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
         } else if (MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME.equals(key)) {
             return xmlMarshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName();
         } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key) ||SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
-            if (xmlMarshaller.getCharacterEscapeHandler() instanceof CharacterEscapeHandlerWrapper) {
-                CharacterEscapeHandlerWrapper wrapper = (CharacterEscapeHandlerWrapper) xmlMarshaller.getCharacterEscapeHandler();
+            if (xmlMarshaller.getCharacterEscapeHandler() instanceof CharacterEscapeHandlerWrapper wrapper) {
                 return wrapper.getHandler();
             }
             return xmlMarshaller.getCharacterEscapeHandler();
@@ -616,8 +615,7 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
     }
 
     private Object modifyObjectIfNeeded(Object obj) {
-        if (obj instanceof Collection) {
-            Collection objectList = (Collection) obj;
+        if (obj instanceof Collection objectList) {
             List newList = new ArrayList(objectList.size());
             for (Object o : objectList) {
                 newList.add(modifySingleObjectIfNeeded(o));

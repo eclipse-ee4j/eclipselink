@@ -73,8 +73,7 @@ public class ReturnInsertMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ReturnInsertMetadata) {
-            ReturnInsertMetadata returnInsert = (ReturnInsertMetadata) objectToCompare;
+        if (objectToCompare instanceof ReturnInsertMetadata returnInsert) {
             return valuesMatch(m_returnOnly, returnInsert.getReturnOnly());
         }
 

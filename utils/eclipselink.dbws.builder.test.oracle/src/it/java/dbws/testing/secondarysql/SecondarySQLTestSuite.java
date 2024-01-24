@@ -54,17 +54,18 @@ import dbws.testing.DBWSTestSuite;
 public class SecondarySQLTestSuite extends DBWSTestSuite {
 
     static final String CREATE_SECONDARY_TABLE =
-        "CREATE TABLE DBWS_SECONDARY (" +
-            "\nEMPNO NUMERIC(4)," +
-            "\nENAME VARCHAR(10)," +
-            "\nJOB VARCHAR(9)," +
-            "\nMGR NUMERIC(4)," +
-            "\nHIREDATE DATE," +
-            "\nSAL DECIMAL(7,2)," +
-            "\nCOMM DECIMAL(7,2)," +
-            "\nDEPTNO NUMERIC(2)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE DBWS_SECONDARY (
+                    EMPNO NUMERIC(4),
+                    ENAME VARCHAR(10),
+                    JOB VARCHAR(9),
+                    MGR NUMERIC(4),
+                    HIREDATE DATE,
+                    SAL DECIMAL(7,2),
+                    COMM DECIMAL(7,2),
+                    DEPTNO NUMERIC(2),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String[] POPULATE_SECONDARY_TABLE = new String[] {
         "INSERT INTO DBWS_SECONDARY VALUES (7369,'SMITH','CLERK',7902,TO_DATE('1980-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),800.88,NULL,20)",
         "INSERT INTO DBWS_SECONDARY VALUES (7499,'ALLEN','SALESMAN',7698,TO_DATE('1981-2-20 00:00:00','YYYY-MM-DD HH24:MI:SS'),1600,300,30)",

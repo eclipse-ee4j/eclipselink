@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,8 +72,7 @@ public class GenericsClassHelper {
      * interface type is not a parameterized type.
      */
     private static Type[] getParameterizedTypeArguments(DeclaringClassInterfacePair p) {
-        if (p.genericInterface instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) p.genericInterface;
+        if (p.genericInterface instanceof ParameterizedType pt) {
             Type[] as = pt.getActualTypeArguments();
             Type[] ras = new Type[as.length];
 
@@ -148,8 +147,7 @@ public class GenericsClassHelper {
             } else {
                 return getClass(concrete, classOrIface, (Class) t);
             }
-        } else if (t instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) t;
+        } else if (t instanceof ParameterizedType pt) {
             if (pt.getRawType() == classOrIface) {
                 return new DeclaringClassInterfacePair(concrete, c, t);
             } else {
@@ -195,9 +193,8 @@ public class GenericsClassHelper {
                                                      Map<TypeVariable, Type> map) {
         Type[] gis = c.getGenericInterfaces();
         for (Type gi : gis) {
-            if (gi instanceof ParameterizedType) {
+            if (gi instanceof ParameterizedType pt) {
                 // process pt of interface
-                ParameterizedType pt = (ParameterizedType) gi;
                 ClassTypePair ctp = resolveTypeVariable(pt, (Class) pt.getRawType(), dc, tv, map);
                 if (ctp != null)
                     return ctp;
@@ -205,9 +202,8 @@ public class GenericsClassHelper {
         }
 
         Type gsc = c.getGenericSuperclass();
-        if (gsc instanceof ParameterizedType) {
+        if (gsc instanceof ParameterizedType pt) {
             // process pt of class
-            ParameterizedType pt = (ParameterizedType) gsc;
             return resolveTypeVariable(pt, c.getSuperclass(), dc, tv, map);
         } else if (gsc instanceof Class) {
             return resolveTypeVariable(c.getSuperclass(), dc, tv, map);
@@ -277,14 +273,12 @@ public class GenericsClassHelper {
     protected static Class<?> getClassOfType(Type type) {
         if (type instanceof Class) {
             return (Class) type;
-        } else if (type instanceof GenericArrayType) {
-            GenericArrayType arrayType = (GenericArrayType) type;
+        } else if (type instanceof GenericArrayType arrayType) {
             Type t = arrayType.getGenericComponentType();
             if (t instanceof Class) {
                 return getArrayClass((Class) t);
             }
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType subType = (ParameterizedType) type;
+        } else if (type instanceof ParameterizedType subType) {
             Type t = subType.getRawType();
             if (t instanceof Class) {
                 return (Class) t;

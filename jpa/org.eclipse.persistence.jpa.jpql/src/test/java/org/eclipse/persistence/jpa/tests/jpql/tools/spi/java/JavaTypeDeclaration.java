@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -114,16 +114,14 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
         List<ITypeDeclaration> parameterTypes = new ArrayList<>();
 
         // Example: Class<T>
-        if (genericType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+        if (genericType instanceof ParameterizedType parameterizedType) {
             for (Type type : parameterizedType.getActualTypeArguments()) {
                 ITypeDeclaration typeParameter = buildTypeDeclaration(type);
                 parameterTypes.add(typeParameter);
             }
         }
         // T[]
-        else if (genericType instanceof GenericArrayType) {
-            GenericArrayType genericArrayType = (GenericArrayType) genericType;
+        else if (genericType instanceof GenericArrayType genericArrayType) {
             parameterTypes.add(buildTypeDeclaration(genericArrayType.getGenericComponentType()));
         }
         // Example: Class
@@ -161,14 +159,12 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
     protected JavaTypeDeclaration buildTypeDeclaration(Object genericType) {
 
         // <T1, ..., Tn>
-        if (genericType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+        if (genericType instanceof ParameterizedType parameterizedType) {
             return buildTypeDeclaration(parameterizedType.getRawType());
         }
 
         // <T>
-        if (genericType instanceof TypeVariable) {
-            TypeVariable<?> typeVariable = (TypeVariable<?>) genericType;
+        if (genericType instanceof TypeVariable<?> typeVariable) {
             for (Type type : typeVariable.getBounds()) {
                 return buildTypeDeclaration(type);
             }
@@ -176,8 +172,7 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
         }
 
         // ?
-        if (genericType instanceof WildcardType) {
-            WildcardType wildcardType = (WildcardType) genericType;
+        if (genericType instanceof WildcardType wildcardType) {
             for (Type type : wildcardType.getUpperBounds()) {
                 return buildTypeDeclaration(type);
             }
@@ -185,8 +180,7 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
         }
 
         // T[]
-        if (genericType instanceof GenericArrayType) {
-            GenericArrayType genericArrayType = (GenericArrayType) genericType;
+        if (genericType instanceof GenericArrayType genericArrayType) {
             String arrayTypeName = buildArrayTypeName(genericArrayType.toString());
             IType arrayType = typeRepository.getType(arrayTypeName);
 

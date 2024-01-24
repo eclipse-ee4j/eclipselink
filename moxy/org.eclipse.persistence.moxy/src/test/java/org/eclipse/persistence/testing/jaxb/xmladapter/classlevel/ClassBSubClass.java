@@ -26,10 +26,9 @@ public class ClassBSubClass extends ClassB {
     }
 
     public boolean equals(Object obj){
-        if(!(obj instanceof ClassBSubClass)){
+        if(!(obj instanceof ClassBSubClass classBObj)){
             return false;
         }
-        ClassBSubClass classBObj = (ClassBSubClass)obj;
         if(!super.equals(obj)){
             return false;
         }

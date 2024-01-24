@@ -44,8 +44,7 @@ public class MyObject {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof MyObject) {
-            MyObject myObj = (MyObject) obj;
+        if (obj instanceof MyObject myObj) {
             if (myObj.value == null && this.value != null) {
                 return false;
             }

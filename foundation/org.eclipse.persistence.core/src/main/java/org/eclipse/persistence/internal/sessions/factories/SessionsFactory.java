@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -981,11 +981,9 @@ public class SessionsFactory {
             return new DefaultSequence(name, size);
         } else if (sequenceConfig instanceof NativeSequenceConfig) {
             return new NativeSequence(name, size);
-        } else if (sequenceConfig instanceof TableSequenceConfig) {
-            TableSequenceConfig tsc = (TableSequenceConfig)sequenceConfig;
+        } else if (sequenceConfig instanceof TableSequenceConfig tsc) {
             return new TableSequence(name, size, tsc.getTable(), tsc.getNameField(), tsc.getCounterField());
-        } else if (sequenceConfig instanceof UnaryTableSequenceConfig) {
-            UnaryTableSequenceConfig utsc = (UnaryTableSequenceConfig)sequenceConfig;
+        } else if (sequenceConfig instanceof UnaryTableSequenceConfig utsc) {
             return new UnaryTableSequence(name, size, utsc.getCounterField());
         } else if (sequenceConfig instanceof XMLFileSequenceConfig) {
             try {

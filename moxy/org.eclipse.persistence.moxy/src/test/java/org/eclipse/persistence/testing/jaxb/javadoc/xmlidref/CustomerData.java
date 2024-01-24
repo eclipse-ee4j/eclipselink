@@ -30,11 +30,10 @@ public class CustomerData {
     public Invoice invoice;
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof CustomerData)) {
+        if (!(obj instanceof CustomerData custData)) {
             return false;
         }
 
-        CustomerData custData = (CustomerData) obj;
         return custData.customer.equals(this.customer) && custData.shipping.equals(this.shipping) && custData.invoice.equals(this.invoice) ;
     }
 }

@@ -37,9 +37,10 @@ public class InvalidInputTestSuite extends DBWSTestSuite {
     private static String WARNING_MSG_2 = "WARNING: No procedures were found matching the following:  [CREATE_SOMETHING] [COMPLEXPKG3.CREATE_INVALID]";
 
     static final String CREATE_COMPLEXPKG3_PACKAGE =
-        "CREATE OR REPLACE PACKAGE COMPLEXPKG3 AS" +
-            "\nTYPE TAB3 IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" +
-        "\nEND COMPLEXPKG3;";
+            """
+                    CREATE OR REPLACE PACKAGE COMPLEXPKG3 AS
+                    TYPE TAB3 IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;
+                    END COMPLEXPKG3;""";
     static final String DROP_COMPLEXPKG3_PACKAGE =
         "DROP PACKAGE COMPLEXPKG3";
 

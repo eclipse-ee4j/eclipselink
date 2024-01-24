@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,8 +23,7 @@ public class Employee {
     public Address workAddress;
 
     public boolean equals(Object compareObj){
-        if (compareObj instanceof Employee){
-            Employee emp = (Employee)compareObj;
+        if (compareObj instanceof Employee emp){
             return name.equals(emp.name) && homeAddress.equals(emp.homeAddress) && workAddress.equals(emp.workAddress);
         }
         return false;

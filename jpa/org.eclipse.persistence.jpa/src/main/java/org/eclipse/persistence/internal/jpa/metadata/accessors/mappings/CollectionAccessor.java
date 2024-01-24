@@ -311,8 +311,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof CollectionAccessor) {
-            CollectionAccessor collectionAccessor = (CollectionAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof CollectionAccessor collectionAccessor) {
 
             if (! valuesMatch(m_mapKeyColumn, collectionAccessor.getMapKeyColumn())) {
                 return false;

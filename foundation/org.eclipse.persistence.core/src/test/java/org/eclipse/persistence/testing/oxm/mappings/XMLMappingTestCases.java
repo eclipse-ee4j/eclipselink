@@ -268,9 +268,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             log(testObject.toString());
         }
 
-        if ((getReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
-            XMLRoot controlObj = (XMLRoot)getReadControlObject();
-            XMLRoot testObj = (XMLRoot)testObject;
+        if ((getReadControlObject() instanceof XMLRoot controlObj) && (testObject instanceof XMLRoot testObj)) {
             compareXMLRootObjects(controlObj, testObj);
         } else {
             assertEquals(getReadControlObject(), testObject);
@@ -300,8 +298,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     public void testObjectToXMLDocument() throws Exception {
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -329,8 +326,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -368,8 +364,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -405,8 +400,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     public void testObjectToOutputStream() throws Exception {
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -442,8 +436,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     public void testObjectToOutputStreamASCIIEncoding() throws Exception {
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -489,8 +482,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
             Object objectToWrite = getWriteControlObject();
             XMLDescriptor desc = null;
-            if (objectToWrite instanceof XMLRoot) {
-                XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+            if (objectToWrite instanceof XMLRoot xmlRoot) {
                 if(null != xmlRoot.getObject()) {
                     desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
                 }
@@ -534,8 +526,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
             Object objectToWrite = getWriteControlObject();
             XMLDescriptor desc = null;
-            if (objectToWrite instanceof XMLRoot) {
-                XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+            if (objectToWrite instanceof XMLRoot xmlRoot) {
                 if(null != xmlRoot.getObject()) {
                     desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
                 }
@@ -587,8 +578,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }

@@ -63,10 +63,9 @@ public class Employee {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof Employee)) {
+        if (!(object instanceof Employee employeeObject)) {
             return false;
         }
-        Employee employeeObject = (Employee)object;
 
         if (this.getID() == employeeObject.getID()) {
             MailingAddress thisHome = this.getMailingAddress(MailingAddress.HOME_TYPE);

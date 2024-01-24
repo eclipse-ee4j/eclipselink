@@ -61,13 +61,14 @@ import org.w3c.dom.Document;
  */
 public class ProcedureOverloadTestSuite {
     static final String CREATE_PACKAGEX_PACKAGE =
-        "CREATE OR REPLACE PACKAGE PACKAGEX AS" +
-            "\nPROCEDURE P1(T OUT VARCHAR);" +
-            "\nPROCEDURE P1(T OUT VARCHAR, U IN VARCHAR);" +
-            "\nPROCEDURE P1(T OUT VARCHAR, U IN VARCHAR, V IN OUT NUMERIC);" +
-            "\nFUNCTION F1 RETURN VARCHAR;" +
-            "\nFUNCTION F1(U IN VARCHAR) RETURN VARCHAR;" +
-        "\nEND PACKAGEX;";
+            """
+                    CREATE OR REPLACE PACKAGE PACKAGEX AS
+                    PROCEDURE P1(T OUT VARCHAR);
+                    PROCEDURE P1(T OUT VARCHAR, U IN VARCHAR);
+                    PROCEDURE P1(T OUT VARCHAR, U IN VARCHAR, V IN OUT NUMERIC);
+                    FUNCTION F1 RETURN VARCHAR;
+                    FUNCTION F1(U IN VARCHAR) RETURN VARCHAR;
+                    END PACKAGEX;""";
 
     static final String DROP_PACKAGE =
         "DROP PACKAGE PACKAGEX";
@@ -161,29 +162,28 @@ public class ProcedureOverloadTestSuite {
     }
 
     static final String procedureMetadata =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-            "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-            "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-            "   <orm:named-plsql-stored-procedure-query name=\"P1\" procedure-name=\"PACKAGEX.P1\">\n" +
-            "     <orm:parameter direction=\"OUT\" name=\"T\" database-type=\"VARCHAR_TYPE\"/>\n" +
-            "  </orm:named-plsql-stored-procedure-query>\n" +
-            "  <orm:named-plsql-stored-procedure-query name=\"P1_1\" procedure-name=\"PACKAGEX.P1\">\n" +
-            "     <orm:parameter direction=\"OUT\" name=\"T\" database-type=\"VARCHAR_TYPE\"/>\n" +
-            "     <orm:parameter direction=\"IN\" name=\"U\" database-type=\"VARCHAR_TYPE\"/>\n" +
-            "  </orm:named-plsql-stored-procedure-query>\n" +
-            "  <orm:named-plsql-stored-procedure-query name=\"P1_2\" procedure-name=\"PACKAGEX.P1\">\n" +
-            "     <orm:parameter direction=\"OUT\" name=\"T\" database-type=\"VARCHAR_TYPE\"/>\n" +
-            "     <orm:parameter direction=\"IN\" name=\"U\" database-type=\"VARCHAR_TYPE\"/>\n" +
-            "     <orm:parameter direction=\"INOUT\" name=\"V\" database-type=\"NUMERIC_TYPE\"/>\n" +
-            "  </orm:named-plsql-stored-procedure-query>\n" +
-            "  <orm:named-plsql-stored-function-query name=\"F1\" function-name=\"PACKAGEX.F1\">\n" +
-            "     <orm:return-parameter name=\"RESULT\" database-type=\"VARCHAR_TYPE\"/>\n" +
-            "  </orm:named-plsql-stored-function-query>\n" +
-            "  <orm:named-plsql-stored-function-query name=\"F1_1\" function-name=\"PACKAGEX.F1\">\n" +
-            "     <orm:parameter direction=\"IN\" name=\"U\" database-type=\"VARCHAR_TYPE\"/>\n" +
-            "     <orm:return-parameter name=\"RESULT\" database-type=\"VARCHAR_TYPE\"/>\n" +
-            "  </orm:named-plsql-stored-function-query>\n" +
-            "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:named-plsql-stored-procedure-query name="P1" procedure-name="PACKAGEX.P1">
+                         <orm:parameter direction="OUT" name="T" database-type="VARCHAR_TYPE"/>
+                      </orm:named-plsql-stored-procedure-query>
+                      <orm:named-plsql-stored-procedure-query name="P1_1" procedure-name="PACKAGEX.P1">
+                         <orm:parameter direction="OUT" name="T" database-type="VARCHAR_TYPE"/>
+                         <orm:parameter direction="IN" name="U" database-type="VARCHAR_TYPE"/>
+                      </orm:named-plsql-stored-procedure-query>
+                      <orm:named-plsql-stored-procedure-query name="P1_2" procedure-name="PACKAGEX.P1">
+                         <orm:parameter direction="OUT" name="T" database-type="VARCHAR_TYPE"/>
+                         <orm:parameter direction="IN" name="U" database-type="VARCHAR_TYPE"/>
+                         <orm:parameter direction="INOUT" name="V" database-type="NUMERIC_TYPE"/>
+                      </orm:named-plsql-stored-procedure-query>
+                      <orm:named-plsql-stored-function-query name="F1" function-name="PACKAGEX.F1">
+                         <orm:return-parameter name="RESULT" database-type="VARCHAR_TYPE"/>
+                      </orm:named-plsql-stored-function-query>
+                      <orm:named-plsql-stored-function-query name="F1_1" function-name="PACKAGEX.F1">
+                         <orm:parameter direction="IN" name="U" database-type="VARCHAR_TYPE"/>
+                         <orm:return-parameter name="RESULT" database-type="VARCHAR_TYPE"/>
+                      </orm:named-plsql-stored-function-query>
+                    </orm:entity-mappings>""";
 
 }

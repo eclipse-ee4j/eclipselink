@@ -99,8 +99,7 @@ public class PhoneNumber implements Serializable {
      * Required for Hibernate cache to work.
      */
     public boolean equals(Object object) {
-        if (object instanceof PhoneNumber) {
-            PhoneNumber phone = (PhoneNumber)object;
+        if (object instanceof PhoneNumber phone) {
             if (! getType().equals(phone.getType())) {
                 return false;
             }

@@ -348,8 +348,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof ElementCollectionAccessor) {
-            ElementCollectionAccessor elementCollectionAccessor = (ElementCollectionAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof ElementCollectionAccessor elementCollectionAccessor) {
 
             if (! valuesMatch(m_deleteAll, elementCollectionAccessor.getDeleteAll())) {
                 return false;
@@ -947,8 +946,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
 
         processContainerPolicyAndIndirection((ContainerMapping)mapping);
 
-        if (mapping instanceof AggregateCollectionMapping) {
-            AggregateCollectionMapping collectionMapping = (AggregateCollectionMapping)mapping;
+        if (mapping instanceof AggregateCollectionMapping collectionMapping) {
 
             // Process the fetch type and set the correct indirection on the mapping.
 

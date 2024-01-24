@@ -86,8 +86,7 @@ public class ReadTransformerMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ReadTransformerMetadata) {
-            ReadTransformerMetadata readTransformer = (ReadTransformerMetadata) objectToCompare;
+        if (objectToCompare instanceof ReadTransformerMetadata readTransformer) {
 
             if (! valuesMatch(m_transformerClassName, readTransformer.getTransformerClassName())) {
                 return false;

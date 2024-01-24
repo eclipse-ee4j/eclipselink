@@ -1100,8 +1100,7 @@ public class SDOProperty implements Property, Serializable {
             if(SDOConstants.SDOXML_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.SDOXML_DATATYPE.equals(property.getName()) && value instanceof Type) {
                 setType((Type)value);
             }
-            if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.XML_SCHEMA_TYPE_NAME.equals(property.getName()) && value instanceof Type) {
-                Type schemaType = (Type)value;
+            if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.XML_SCHEMA_TYPE_NAME.equals(property.getName()) && value instanceof Type schemaType) {
                 QName schemaTypeQName = new QName(schemaType.getURI(), schemaType.getName());
                 setXsdType(schemaTypeQName);
             }

@@ -48,10 +48,9 @@ public class Team {
 
     // override default equals
     public boolean equals(Object object) {
-        if (!(object instanceof Team)) {
+        if (!(object instanceof Team teamObject)) {
             return false;
         }
-        Team teamObject = (Team)object;
 
         //      if((this.getId() == teamObject.getId()) && //
         //        ((this.getDevelopers()==null && teamObject.getDevelopers()==null) || //

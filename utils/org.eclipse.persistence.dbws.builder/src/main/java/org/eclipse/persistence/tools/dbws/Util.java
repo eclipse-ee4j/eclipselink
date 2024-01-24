@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -853,8 +853,7 @@ public class Util {
     public static boolean requiresSimpleXMLFormat(XRServiceModel serviceModel) {
         boolean requiresSimpleXMLFormat = false;
         for (Operation operation : serviceModel.getOperationsList()) {
-            if (operation instanceof QueryOperation) {
-                QueryOperation qo = (QueryOperation)operation;
+            if (operation instanceof QueryOperation qo) {
                 if (qo.getResult().isSimpleXMLFormat()) {
                     requiresSimpleXMLFormat = true;
                     break;

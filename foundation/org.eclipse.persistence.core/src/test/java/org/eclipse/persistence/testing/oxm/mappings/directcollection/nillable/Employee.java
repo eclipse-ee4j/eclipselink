@@ -94,10 +94,9 @@ public class Employee {
 
     // override default equals
     public boolean equals(Object object) {
-        if (!(object instanceof Employee)) {
+        if (!(object instanceof Employee employeeObject)) {
             return false;
         }
-        Employee employeeObject = (Employee) object;
         if (getId() != employeeObject.getId()) {
             return false;
         }

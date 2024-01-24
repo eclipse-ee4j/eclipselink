@@ -79,8 +79,7 @@ public class ConstructorResultMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ConstructorResultMetadata) {
-            ConstructorResultMetadata constructorResult = (ConstructorResultMetadata) objectToCompare;
+        if (objectToCompare instanceof ConstructorResultMetadata constructorResult) {
 
             if (! valuesMatch(getTargetClass(), constructorResult.getTargetClass())) {
                 return false;

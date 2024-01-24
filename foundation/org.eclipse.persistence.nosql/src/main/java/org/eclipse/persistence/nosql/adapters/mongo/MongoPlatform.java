@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -148,8 +148,7 @@ public class MongoPlatform extends EISPlatform {
             Object preference = interaction.getProperty(READ_PREFERENCE);
             if (preference instanceof ReadPreference) {
                 mongoSpec.setReadPreference((ReadPreference)preference);
-            } else if (preference instanceof String) {
-                String constant = (String)preference;
+            } else if (preference instanceof String constant) {
                 if (constant.equals("PRIMARY")) {
                     mongoSpec.setReadPreference(ReadPreference.primary());
                 } else if (constant.equals("SECONDARY")) {
@@ -163,8 +162,7 @@ public class MongoPlatform extends EISPlatform {
             Object concern = interaction.getProperty(WRITE_CONCERN);
             if (concern instanceof WriteConcern) {
                 mongoSpec.setWriteConcern((WriteConcern)concern);
-            } else if (concern instanceof String) {
-                String constant = (String)concern;
+            } else if (concern instanceof String constant) {
                 if (constant.equals("ACKNOWLEDGED")) {
                     mongoSpec.setWriteConcern(WriteConcern.ACKNOWLEDGED);
                 } else if (constant.equals("JOURNALED")) {
@@ -392,10 +390,9 @@ public class MongoPlatform extends EISPlatform {
             if (function.getOperator().getSelector() == ExpressionOperator.Like) {
                 Object left = extractValueFromExpression(function.getChildren().get(0), query);
                 Object right = extractValueFromExpression(function.getChildren().get(1), query);
-                if (!(right instanceof String)) {
+                if (!(right instanceof String pattern)) {
                     throw new EISException("Query too complex for Mongo translation, like with [" + right + "] not supported in query: " + query);
                 }
-                String pattern = (String)right;
                 DatabaseRecord nested = new DatabaseRecord();
                 if (!this.isLikeRegex) {
                     pattern = Helper.convertLikeToRegex(pattern);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -517,8 +517,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                     //collection as a backpointer, check to see if the container policy
                     //needs to be matched with the ORM project
                     DatabaseMapping nextMapping = oxmMappingsIterator.next();
-                    if(nextMapping instanceof ObjectReferenceMapping) {
-                        ObjectReferenceMapping refMapping = (ObjectReferenceMapping)nextMapping;
+                    if(nextMapping instanceof ObjectReferenceMapping refMapping) {
                         if(refMapping.getInverseReferenceMapping().getAttributeAccessor() != null && refMapping.getInverseReferenceMapping().getContainerPolicy() != null) {
                             ClassDescriptor refDescriptor = ormSession.getClassDescriptor(refMapping.getReferenceClass());
                             if(refDescriptor != null) {

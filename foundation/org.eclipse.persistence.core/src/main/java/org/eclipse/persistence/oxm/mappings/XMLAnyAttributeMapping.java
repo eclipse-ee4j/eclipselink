@@ -374,9 +374,8 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
             Map.Entry entry = (Map.Entry)cp.nextEntry(iter, session);
             Object key = entry.getKey();
-            if ((key != null) && key instanceof QName) {
+            if ((key != null) && key instanceof QName attributeName) {
                 Object value = entry.getValue();
-                QName attributeName = (QName) key;
                 String namespaceURI = attributeName.getNamespaceURI();
                 String qualifiedName = attributeName.getLocalPart();
 

@@ -67,10 +67,11 @@ public class XMLTypeTestSuite {
         ")";
 
     static final String CREATE_XMLTYPETESTPKG_PACKAGE =
-        "CREATE OR REPLACE PACKAGE XMLTYPETESTPKG AS" +
-            "\nPROCEDURE GET_XMLTYPE(W IN DBWS_XML_WRAPPER, X OUT XMLTYPE);" +
-            "\nFUNCTION RETURN_XMLTYPE(W IN DBWS_XML_WRAPPER) RETURN XMLTYPE;" +
-        "\nEND XMLTYPETESTPKG;";
+            """
+                    CREATE OR REPLACE PACKAGE XMLTYPETESTPKG AS
+                    PROCEDURE GET_XMLTYPE(W IN DBWS_XML_WRAPPER, X OUT XMLTYPE);
+                    FUNCTION RETURN_XMLTYPE(W IN DBWS_XML_WRAPPER) RETURN XMLTYPE;
+                    END XMLTYPETESTPKG;""";
 
     static final String DROP_XMLTYPETESTPKG_PACKAGE = "DROP PACKAGE XMLTYPETESTPKG";
     static final String DROP_DBWS_XML_WRAPPER_TYPE = "DROP TYPE DBWS_XML_WRAPPER FORCE";
@@ -164,30 +165,29 @@ public class XMLTypeTestSuite {
     }
 
     static final String typemetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:named-plsql-stored-procedure-query name=\"GET_XMLTYPE\" procedure-name=\"XMLTYPETESTPKG.GET_XMLTYPE\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"W\" database-type=\"DBWS_XML_WRAPPER\"/>\n" +
-        "      <orm:parameter direction=\"OUT\" name=\"X\" database-type=\"XMLType\"/>\n" +
-        "   </orm:named-plsql-stored-procedure-query>\n" +
-        "   <orm:named-plsql-stored-function-query name=\"RETURN_XMLTYPE\" function-name=\"XMLTYPETESTPKG.RETURN_XMLTYPE\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"W\" database-type=\"DBWS_XML_WRAPPER\"/>\n" +
-        "      <orm:return-parameter name=\"RESULT\" database-type=\"XMLType\"/>\n" +
-        "   </orm:named-plsql-stored-function-query>\n" +
-        "   <orm:oracle-object name=\"DBWS_XML_WRAPPER\" java-type=\"metadatagen.Dbws_xml_wrapper\">\n" +
-        "      <orm:field name=\"xmltext\" database-type=\"VARCHAR_TYPE\"/>\n" +
-        "   </orm:oracle-object>\n" +
-        "   <orm:embeddable class=\"metadatagen.Dbws_xml_wrapper\" access=\"VIRTUAL\">\n" +
-        "      <orm:struct name=\"DBWS_XML_WRAPPER\">\n" +
-        "         <orm:field>xmltext</orm:field>\n" +
-        "      </orm:struct>\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:basic name=\"xmltext\" attribute-type=\"java.lang.String\">\n" +
-        "            <orm:column name=\"xmltext\"/>\n" +
-        "         </orm:basic>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:named-plsql-stored-procedure-query name="GET_XMLTYPE" procedure-name="XMLTYPETESTPKG.GET_XMLTYPE">
+                          <orm:parameter direction="IN" name="W" database-type="DBWS_XML_WRAPPER"/>
+                          <orm:parameter direction="OUT" name="X" database-type="XMLType"/>
+                       </orm:named-plsql-stored-procedure-query>
+                       <orm:named-plsql-stored-function-query name="RETURN_XMLTYPE" function-name="XMLTYPETESTPKG.RETURN_XMLTYPE">
+                          <orm:parameter direction="IN" name="W" database-type="DBWS_XML_WRAPPER"/>
+                          <orm:return-parameter name="RESULT" database-type="XMLType"/>
+                       </orm:named-plsql-stored-function-query>
+                       <orm:oracle-object name="DBWS_XML_WRAPPER" java-type="metadatagen.Dbws_xml_wrapper">
+                          <orm:field name="xmltext" database-type="VARCHAR_TYPE"/>
+                       </orm:oracle-object>
+                       <orm:embeddable class="metadatagen.Dbws_xml_wrapper" access="VIRTUAL">
+                          <orm:struct name="DBWS_XML_WRAPPER">
+                             <orm:field>xmltext</orm:field>
+                          </orm:struct>
+                          <orm:attributes>
+                             <orm:basic name="xmltext" attribute-type="java.lang.String">
+                                <orm:column name="xmltext"/>
+                             </orm:basic>
+                          </orm:attributes>
+                       </orm:embeddable>
+                    </orm:entity-mappings>""";
 }

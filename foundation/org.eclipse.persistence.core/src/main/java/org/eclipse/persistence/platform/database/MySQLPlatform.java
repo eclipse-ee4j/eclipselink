@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -881,8 +881,7 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public void writeParameterMarker(Writer writer, ParameterExpression expression, AbstractRecord record, DatabaseCall call) throws IOException {
         // JSON values need cast in SQL statement.
-        if (expression.getType() instanceof Type) {
-            final Type type = (Type) expression.getType();
+        if (expression.getType() instanceof Type type) {
             switch (type.getTypeName()) {
                 case "jakarta.json.JsonValue":
                 case "jakarta.json.JsonArray":

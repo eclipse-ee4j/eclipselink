@@ -91,8 +91,7 @@ public class RelationalTableMetadata extends TableMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare)&& objectToCompare instanceof RelationalTableMetadata) {
-            RelationalTableMetadata relationalTable = (RelationalTableMetadata) objectToCompare;
+        if (super.equals(objectToCompare)&& objectToCompare instanceof RelationalTableMetadata relationalTable) {
 
             if (! valuesMatch(m_joinColumns, relationalTable.getJoinColumns())) {
                 return false;

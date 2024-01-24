@@ -89,8 +89,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof ObjectTypeConverterMetadata) {
-            ObjectTypeConverterMetadata objectTypeConverter = (ObjectTypeConverterMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof ObjectTypeConverterMetadata objectTypeConverter) {
 
             if (! valuesMatch(m_conversionValues, objectTypeConverter.getConversionValues())) {
                 return false;

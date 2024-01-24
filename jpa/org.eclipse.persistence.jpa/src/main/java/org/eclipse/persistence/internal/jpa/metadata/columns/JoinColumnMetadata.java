@@ -86,8 +86,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof JoinColumnMetadata) {
-            JoinColumnMetadata joinColumn = (JoinColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof JoinColumnMetadata joinColumn) {
 
             if (! valuesMatch(m_unique, joinColumn.getUnique())) {
                 return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,91 +105,91 @@ public class PLSQLSystem extends TestSystem {
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_CITY_LIST AS VARRAY(255) OF VARCHAR2(100)");
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_ADDRESS_LIST AS VARRAY(255) OF PLSQL_P_PLSQL_ADDRESS_REC");
         session.executeNonSelectingSQL("CREATE OR REPLACE TYPE PLSQL_P_PLSQL_EMP_LIST AS VARRAY(255) OF PLSQL_P_PLSQL_EMP_REC");
-        session.executeNonSelectingSQL("CREATE OR REPLACE PACKAGE PLSQL_P AS \n"
-                    + "TYPE PLSQL_ADDRESS_REC IS RECORD (ADDRESS_ID NUMBER(10), STREET_NUM NUMBER(10), STREET VARCHAR2(30), CITY VARCHAR2(30), STATE VARCHAR2(2)); \n"
-                    + "TYPE PLSQL_ADDRESS_CUR IS REF CURSOR RETURN PLSQL_ADDRESS%ROWTYPE; \n"
-                    + "TYPE PLSQL_ADDRESS_REC_CUR IS REF CURSOR RETURN PLSQL_ADDRESS_REC; \n"
-                    + "TYPE PLSQL_PHONE_REC IS RECORD (AREA_CODE VARCHAR2(3), P_NUM VARCHAR2(7)); \n"
-                    + "TYPE PLSQL_PHONE_LIST IS TABLE OF PLSQL_PHONE_REC INDEX BY BINARY_INTEGER; \n"
-                    + "TYPE PLSQL_EMP_REC IS RECORD (EMP_ID NUMBER(10), NAME VARCHAR2(30), ACTIVE BOOLEAN, ADDRESS PLSQL_ADDRESS_REC, PHONES PLSQL_PHONE_LIST); \n"
-                    + "TYPE PLSQL_CITY_LIST IS TABLE OF VARCHAR2(100) INDEX BY BINARY_INTEGER; \n"
-                    + "TYPE PLSQL_ADDRESS_LIST IS TABLE OF PLSQL_ADDRESS_REC INDEX BY BINARY_INTEGER; \n"
-                    + "TYPE PLSQL_EMP_LIST IS TABLE OF PLSQL_EMP_REC INDEX BY BINARY_INTEGER; \n"
-                    + "PROCEDURE PLSQL_CITY_LIST_IN(P_CITY_LIST IN PLSQL_CITY_LIST, P_CITY IN VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_CITY_LIST_OUT(P_CITY_LIST OUT PLSQL_CITY_LIST, P_CITY OUT VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_CITY_LIST_INOUT(P_CITY_LIST IN OUT PLSQL_CITY_LIST, P_CITY IN OUT VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_ADDRESS_LIST_IN(P_ADDRESS_LIST IN PLSQL_ADDRESS_LIST, P_CITY IN VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_ADDRESS_LIST_OUT(P_ADDRESS_LIST OUT PLSQL_ADDRESS_LIST, P_CITY OUT VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_ADDRESS_LIST_INOUT(P_ADDRESS_LIST IN OUT PLSQL_ADDRESS_LIST, P_CITY IN OUT VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_EMP_LIST_IN(P_EMP_LIST IN PLSQL_EMP_LIST, P_CITY IN VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_EMP_LIST_OUT(P_EMP_LIST OUT PLSQL_EMP_LIST, P_CITY OUT VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_EMP_LIST_INOUT(P_EMP_LIST IN OUT PLSQL_EMP_LIST, P_CITY IN OUT VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_EMP_IN(P_EMP IN PLSQL_EMP_REC, P_CITY IN VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_EMP_OUT(P_EMP OUT PLSQL_EMP_REC, P_CITY OUT VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_EMP_INOUT(P_EMP IN OUT PLSQL_EMP_REC, P_CITY IN OUT VARCHAR2); \n"
-                    + "PROCEDURE PLSQL_ADDRESS_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_CUR); \n"
-                    + "PROCEDURE PLSQL_ADDRESS_REC_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_REC_CUR); \n"
-                    + "END PLSQL_P; \n");
-        session.executeNonSelectingSQL("CREATE OR REPLACE PACKAGE BODY PLSQL_P AS \n"
-                    + "PROCEDURE PLSQL_CITY_LIST_IN(P_CITY_LIST IN PLSQL_CITY_LIST, P_CITY IN VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "NULL; \n"
-                        + "END PLSQL_CITY_LIST_IN; \n"
-                    + "PROCEDURE PLSQL_CITY_LIST_OUT(P_CITY_LIST OUT PLSQL_CITY_LIST, P_CITY OUT VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "P_CITY := 'Nepean'; \n"
-                        + "P_CITY_LIST(1) := 'Ottawa'; \n"
-                        + "END PLSQL_CITY_LIST_OUT; \n"
-                    + "PROCEDURE PLSQL_CITY_LIST_INOUT(P_CITY_LIST IN OUT PLSQL_CITY_LIST, P_CITY IN OUT VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "P_CITY := 'Nepean'; \n"
-                        + "P_CITY_LIST(1) := 'Ottawa'; \n"
-                        + "END PLSQL_CITY_LIST_INOUT; \n"
-                    + "PROCEDURE PLSQL_ADDRESS_LIST_IN(P_ADDRESS_LIST IN PLSQL_ADDRESS_LIST, P_CITY IN VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "NULL; \n"
-                        + "END PLSQL_ADDRESS_LIST_IN; \n"
-                    + "PROCEDURE PLSQL_ADDRESS_LIST_OUT(P_ADDRESS_LIST OUT PLSQL_ADDRESS_LIST, P_CITY OUT VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "P_CITY := 'Nepean'; "
-                        + "END PLSQL_ADDRESS_LIST_OUT; \n"
-                    + "PROCEDURE PLSQL_ADDRESS_LIST_INOUT(P_ADDRESS_LIST IN OUT PLSQL_ADDRESS_LIST, P_CITY IN OUT VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "P_CITY := 'Nepean'; \n"
-                        + "END PLSQL_ADDRESS_LIST_INOUT; \n"
-                    + "PROCEDURE PLSQL_EMP_LIST_IN(P_EMP_LIST IN PLSQL_EMP_LIST, P_CITY IN VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "NULL; \n"
-                        + "END PLSQL_EMP_LIST_IN; \n"
-                    + "PROCEDURE PLSQL_EMP_LIST_OUT(P_EMP_LIST OUT PLSQL_EMP_LIST, P_CITY OUT VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "P_CITY := 'Nepean'; "
-                        + "END PLSQL_EMP_LIST_OUT; \n"
-                    + "PROCEDURE PLSQL_EMP_LIST_INOUT(P_EMP_LIST IN OUT PLSQL_EMP_LIST, P_CITY IN OUT VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "P_CITY := 'Nepean'; "
-                        + "END PLSQL_EMP_LIST_INOUT; \n"
-                    + "PROCEDURE PLSQL_EMP_IN(P_EMP IN PLSQL_EMP_REC, P_CITY IN VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "NULL; \n"
-                        + "END PLSQL_EMP_IN; \n"
-                    + "PROCEDURE PLSQL_EMP_OUT(P_EMP OUT PLSQL_EMP_REC, P_CITY OUT VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "P_CITY := 'Nepean'; "
-                        + "END PLSQL_EMP_OUT; \n"
-                    + "PROCEDURE PLSQL_EMP_INOUT(P_EMP IN OUT PLSQL_EMP_REC, P_CITY IN OUT VARCHAR2) AS \n"
-                        + "BEGIN \n"
-                        + "P_CITY := 'Nepean'; \n"
-                        + "END PLSQL_EMP_INOUT; \n"
-                    + "PROCEDURE PLSQL_ADDRESS_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_CUR) AS \n"
-                        + "BEGIN \n"
-                        + "OPEN P_ADDRESS FOR SELECT * FROM PLSQL_ADDRESS; \n"
-                        + "END PLSQL_ADDRESS_CUR_OUT; \n"
-                    + "PROCEDURE PLSQL_ADDRESS_REC_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_REC_CUR) AS \n"
-                        + "BEGIN \n"
-                        + "OPEN P_ADDRESS FOR SELECT * FROM PLSQL_ADDRESS; \n"
-                        + "END PLSQL_ADDRESS_REC_CUR_OUT; \n"
-                    + "END PLSQL_P; \n");
+        session.executeNonSelectingSQL("""
+                CREATE OR REPLACE PACKAGE PLSQL_P AS\s
+                TYPE PLSQL_ADDRESS_REC IS RECORD (ADDRESS_ID NUMBER(10), STREET_NUM NUMBER(10), STREET VARCHAR2(30), CITY VARCHAR2(30), STATE VARCHAR2(2));\s
+                TYPE PLSQL_ADDRESS_CUR IS REF CURSOR RETURN PLSQL_ADDRESS%ROWTYPE;\s
+                TYPE PLSQL_ADDRESS_REC_CUR IS REF CURSOR RETURN PLSQL_ADDRESS_REC;\s
+                TYPE PLSQL_PHONE_REC IS RECORD (AREA_CODE VARCHAR2(3), P_NUM VARCHAR2(7));\s
+                TYPE PLSQL_PHONE_LIST IS TABLE OF PLSQL_PHONE_REC INDEX BY BINARY_INTEGER;\s
+                TYPE PLSQL_EMP_REC IS RECORD (EMP_ID NUMBER(10), NAME VARCHAR2(30), ACTIVE BOOLEAN, ADDRESS PLSQL_ADDRESS_REC, PHONES PLSQL_PHONE_LIST);\s
+                TYPE PLSQL_CITY_LIST IS TABLE OF VARCHAR2(100) INDEX BY BINARY_INTEGER;\s
+                TYPE PLSQL_ADDRESS_LIST IS TABLE OF PLSQL_ADDRESS_REC INDEX BY BINARY_INTEGER;\s
+                TYPE PLSQL_EMP_LIST IS TABLE OF PLSQL_EMP_REC INDEX BY BINARY_INTEGER;\s
+                PROCEDURE PLSQL_CITY_LIST_IN(P_CITY_LIST IN PLSQL_CITY_LIST, P_CITY IN VARCHAR2);\s
+                PROCEDURE PLSQL_CITY_LIST_OUT(P_CITY_LIST OUT PLSQL_CITY_LIST, P_CITY OUT VARCHAR2);\s
+                PROCEDURE PLSQL_CITY_LIST_INOUT(P_CITY_LIST IN OUT PLSQL_CITY_LIST, P_CITY IN OUT VARCHAR2);\s
+                PROCEDURE PLSQL_ADDRESS_LIST_IN(P_ADDRESS_LIST IN PLSQL_ADDRESS_LIST, P_CITY IN VARCHAR2);\s
+                PROCEDURE PLSQL_ADDRESS_LIST_OUT(P_ADDRESS_LIST OUT PLSQL_ADDRESS_LIST, P_CITY OUT VARCHAR2);\s
+                PROCEDURE PLSQL_ADDRESS_LIST_INOUT(P_ADDRESS_LIST IN OUT PLSQL_ADDRESS_LIST, P_CITY IN OUT VARCHAR2);\s
+                PROCEDURE PLSQL_EMP_LIST_IN(P_EMP_LIST IN PLSQL_EMP_LIST, P_CITY IN VARCHAR2);\s
+                PROCEDURE PLSQL_EMP_LIST_OUT(P_EMP_LIST OUT PLSQL_EMP_LIST, P_CITY OUT VARCHAR2);\s
+                PROCEDURE PLSQL_EMP_LIST_INOUT(P_EMP_LIST IN OUT PLSQL_EMP_LIST, P_CITY IN OUT VARCHAR2);\s
+                PROCEDURE PLSQL_EMP_IN(P_EMP IN PLSQL_EMP_REC, P_CITY IN VARCHAR2);\s
+                PROCEDURE PLSQL_EMP_OUT(P_EMP OUT PLSQL_EMP_REC, P_CITY OUT VARCHAR2);\s
+                PROCEDURE PLSQL_EMP_INOUT(P_EMP IN OUT PLSQL_EMP_REC, P_CITY IN OUT VARCHAR2);\s
+                PROCEDURE PLSQL_ADDRESS_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_CUR);\s
+                PROCEDURE PLSQL_ADDRESS_REC_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_REC_CUR);\s
+                END PLSQL_P;\s
+                """);
+        session.executeNonSelectingSQL("""
+                CREATE OR REPLACE PACKAGE BODY PLSQL_P AS\s
+                PROCEDURE PLSQL_CITY_LIST_IN(P_CITY_LIST IN PLSQL_CITY_LIST, P_CITY IN VARCHAR2) AS\s
+                BEGIN\s
+                NULL;\s
+                END PLSQL_CITY_LIST_IN;\s
+                PROCEDURE PLSQL_CITY_LIST_OUT(P_CITY_LIST OUT PLSQL_CITY_LIST, P_CITY OUT VARCHAR2) AS\s
+                BEGIN\s
+                P_CITY := 'Nepean';\s
+                P_CITY_LIST(1) := 'Ottawa';\s
+                END PLSQL_CITY_LIST_OUT;\s
+                PROCEDURE PLSQL_CITY_LIST_INOUT(P_CITY_LIST IN OUT PLSQL_CITY_LIST, P_CITY IN OUT VARCHAR2) AS\s
+                BEGIN\s
+                P_CITY := 'Nepean';\s
+                P_CITY_LIST(1) := 'Ottawa';\s
+                END PLSQL_CITY_LIST_INOUT;\s
+                PROCEDURE PLSQL_ADDRESS_LIST_IN(P_ADDRESS_LIST IN PLSQL_ADDRESS_LIST, P_CITY IN VARCHAR2) AS\s
+                BEGIN\s
+                NULL;\s
+                END PLSQL_ADDRESS_LIST_IN;\s
+                PROCEDURE PLSQL_ADDRESS_LIST_OUT(P_ADDRESS_LIST OUT PLSQL_ADDRESS_LIST, P_CITY OUT VARCHAR2) AS\s
+                BEGIN\s
+                P_CITY := 'Nepean'; END PLSQL_ADDRESS_LIST_OUT;\s
+                PROCEDURE PLSQL_ADDRESS_LIST_INOUT(P_ADDRESS_LIST IN OUT PLSQL_ADDRESS_LIST, P_CITY IN OUT VARCHAR2) AS\s
+                BEGIN\s
+                P_CITY := 'Nepean';\s
+                END PLSQL_ADDRESS_LIST_INOUT;\s
+                PROCEDURE PLSQL_EMP_LIST_IN(P_EMP_LIST IN PLSQL_EMP_LIST, P_CITY IN VARCHAR2) AS\s
+                BEGIN\s
+                NULL;\s
+                END PLSQL_EMP_LIST_IN;\s
+                PROCEDURE PLSQL_EMP_LIST_OUT(P_EMP_LIST OUT PLSQL_EMP_LIST, P_CITY OUT VARCHAR2) AS\s
+                BEGIN\s
+                P_CITY := 'Nepean'; END PLSQL_EMP_LIST_OUT;\s
+                PROCEDURE PLSQL_EMP_LIST_INOUT(P_EMP_LIST IN OUT PLSQL_EMP_LIST, P_CITY IN OUT VARCHAR2) AS\s
+                BEGIN\s
+                P_CITY := 'Nepean'; END PLSQL_EMP_LIST_INOUT;\s
+                PROCEDURE PLSQL_EMP_IN(P_EMP IN PLSQL_EMP_REC, P_CITY IN VARCHAR2) AS\s
+                BEGIN\s
+                NULL;\s
+                END PLSQL_EMP_IN;\s
+                PROCEDURE PLSQL_EMP_OUT(P_EMP OUT PLSQL_EMP_REC, P_CITY OUT VARCHAR2) AS\s
+                BEGIN\s
+                P_CITY := 'Nepean'; END PLSQL_EMP_OUT;\s
+                PROCEDURE PLSQL_EMP_INOUT(P_EMP IN OUT PLSQL_EMP_REC, P_CITY IN OUT VARCHAR2) AS\s
+                BEGIN\s
+                P_CITY := 'Nepean';\s
+                END PLSQL_EMP_INOUT;\s
+                PROCEDURE PLSQL_ADDRESS_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_CUR) AS\s
+                BEGIN\s
+                OPEN P_ADDRESS FOR SELECT * FROM PLSQL_ADDRESS;\s
+                END PLSQL_ADDRESS_CUR_OUT;\s
+                PROCEDURE PLSQL_ADDRESS_REC_CUR_OUT(P_ADDRESS OUT PLSQL_ADDRESS_REC_CUR) AS\s
+                BEGIN\s
+                OPEN P_ADDRESS FOR SELECT * FROM PLSQL_ADDRESS;\s
+                END PLSQL_ADDRESS_REC_CUR_OUT;\s
+                END PLSQL_P;\s
+                """);
     }
 
     @Override

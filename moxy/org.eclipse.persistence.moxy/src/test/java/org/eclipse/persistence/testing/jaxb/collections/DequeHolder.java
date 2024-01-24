@@ -175,8 +175,7 @@ public class DequeHolder {
 
     public boolean equals(Object compareObject){
 
-         if(compareObject instanceof DequeHolder){
-             DequeHolder compareCollectionHolder = ((DequeHolder)compareObject);
+         if(compareObject instanceof DequeHolder compareCollectionHolder){
              return compareCollections(collection1, compareCollectionHolder.getCollection1())
                     && compareCollections(collection2, compareCollectionHolder.getCollection2())
                     && compareCollections(collection3, compareCollectionHolder.getCollection3())

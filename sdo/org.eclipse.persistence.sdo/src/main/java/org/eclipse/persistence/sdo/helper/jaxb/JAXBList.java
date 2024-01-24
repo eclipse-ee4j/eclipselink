@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,8 +55,7 @@ public class JAXBList implements List {
     @Override
     public void add(int index, Object element) {
         Object container = getContainer();
-        if(container instanceof List) {
-            List list = (List) container;
+        if(container instanceof List list) {
             if(!property.getType().isDataType()) {
                 JAXBHelperContext jaxbHelperContext = jaxbValueStore.getJAXBHelperContext();
                 Object unwrappedElement = jaxbHelperContext.unwrap((DataObject) element);
@@ -90,8 +89,7 @@ public class JAXBList implements List {
     @Override
     public boolean addAll(int index, Collection c) {
         Object container = getContainer();
-        if(container instanceof List) {
-            List list = (List) container;
+        if(container instanceof List list) {
             if(!property.getType().isDataType()) {
                 c = jaxbValueStore.getJAXBHelperContext().unwrap(c);
             }
@@ -165,8 +163,7 @@ public class JAXBList implements List {
     @Override
     public Object remove(int index) {
         Object container = getContainer();
-        if(container instanceof List) {
-            List list = (List) container;
+        if(container instanceof List list) {
             return list.remove(index);
         } else {
             throw new UnsupportedOperationException();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,32 +116,26 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
             mapping  = ((XMLInverseReferenceMapping)mapping).getInlineMapping();
         }
 
-        if (mapping instanceof XMLCompositeCollectionMapping) {
-            XMLCompositeCollectionMapping oppositeMapping = (XMLCompositeCollectionMapping) mapping;
+        if (mapping instanceof XMLCompositeCollectionMapping oppositeMapping) {
             oppositeMapping.setInverseReferenceMapping(this);
         }
 
-        if (mapping instanceof XMLCompositeObjectMapping) {
-            XMLCompositeObjectMapping oppositeMapping = (XMLCompositeObjectMapping) mapping;
+        if (mapping instanceof XMLCompositeObjectMapping oppositeMapping) {
             oppositeMapping.setInverseReferenceMapping(this);
         }
 
-        if (mapping instanceof XMLObjectReferenceMapping) {
-            XMLObjectReferenceMapping oppositeMapping = (XMLObjectReferenceMapping) mapping;
+        if (mapping instanceof XMLObjectReferenceMapping oppositeMapping) {
             oppositeMapping.setInverseReferenceMapping(this);
         }
 
-        if (mapping instanceof XMLChoiceObjectMapping) {
-            XMLChoiceObjectMapping oppositeMapping = (XMLChoiceObjectMapping) mapping;
+        if (mapping instanceof XMLChoiceObjectMapping oppositeMapping) {
             Collection<XMLMapping> nestedMappings = oppositeMapping.getChoiceElementMappings().values();
             for(XMLMapping next:nestedMappings) {
-                if(next instanceof XMLCompositeObjectMapping) {
-                    XMLCompositeObjectMapping compositeMapping = ((XMLCompositeObjectMapping)next);
+                if(next instanceof XMLCompositeObjectMapping compositeMapping) {
                     if(compositeMapping.getReferenceClass() == this.getDescriptor().getJavaClass() || this.getDescriptor().getJavaClass().isAssignableFrom(compositeMapping.getReferenceClass())) {
                         compositeMapping.setInverseReferenceMapping(this);
                     }
-                } else if(next instanceof XMLObjectReferenceMapping) {
-                    XMLObjectReferenceMapping refMapping = ((XMLObjectReferenceMapping)next);
+                } else if(next instanceof XMLObjectReferenceMapping refMapping) {
                     if(refMapping.getReferenceClass() == this.getDescriptor().getJavaClass()) {
                         refMapping.setInverseReferenceMapping(this);
                     }
@@ -149,17 +143,14 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
             }
         }
 
-        if (mapping instanceof XMLChoiceCollectionMapping) {
-            XMLChoiceCollectionMapping oppositeMapping = (XMLChoiceCollectionMapping) mapping;
+        if (mapping instanceof XMLChoiceCollectionMapping oppositeMapping) {
             Collection<XMLMapping> nestedMappings = oppositeMapping.getChoiceElementMappings().values();
             for(XMLMapping next:nestedMappings) {
-                if(next instanceof XMLCompositeCollectionMapping) {
-                    XMLCompositeCollectionMapping compositeMapping = ((XMLCompositeCollectionMapping)next);
+                if(next instanceof XMLCompositeCollectionMapping compositeMapping) {
                     if(compositeMapping.getReferenceClass() == this.getDescriptor().getJavaClass() || this.getDescriptor().getJavaClass().isAssignableFrom(compositeMapping.getReferenceClass())) {
                         compositeMapping.setInverseReferenceMapping(this);
                     }
-                } else if(next instanceof XMLCollectionReferenceMapping) {
-                    XMLCollectionReferenceMapping refMapping = ((XMLCollectionReferenceMapping)next);
+                } else if(next instanceof XMLCollectionReferenceMapping refMapping) {
                     if(refMapping.getReferenceClass() == this.getDescriptor().getJavaClass()) {
                         refMapping.setInverseReferenceMapping(this);
                     }

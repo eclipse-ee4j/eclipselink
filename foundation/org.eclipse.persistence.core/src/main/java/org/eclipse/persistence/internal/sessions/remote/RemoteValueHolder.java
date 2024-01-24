@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -238,8 +238,7 @@ public class RemoteValueHolder<T> extends DatabaseValueHolder<T> implements Exte
      */
     @Override
     public T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder) {
-        if ((getWrappedServerValueHolder() != null) && (getWrappedServerValueHolder() instanceof DatabaseValueHolder)) {
-            DatabaseValueHolder<T> wrapped = (DatabaseValueHolder<T>)getWrappedServerValueHolder();
+        if ((getWrappedServerValueHolder() != null) && (getWrappedServerValueHolder() instanceof DatabaseValueHolder<T> wrapped)) {
             return wrapped.instantiateForUnitOfWorkValueHolder(unitOfWorkValueHolder);
         }
 

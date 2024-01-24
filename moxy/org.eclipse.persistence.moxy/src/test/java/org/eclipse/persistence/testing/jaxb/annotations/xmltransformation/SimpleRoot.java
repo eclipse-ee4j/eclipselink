@@ -30,8 +30,7 @@ public class SimpleRoot {
     }
 
     public boolean equals(Object obj){
-        if(obj instanceof SimpleRoot){
-            SimpleRoot compareObj = (SimpleRoot)obj;
+        if(obj instanceof SimpleRoot compareObj){
             return id == compareObj.id;
         }
         return false;

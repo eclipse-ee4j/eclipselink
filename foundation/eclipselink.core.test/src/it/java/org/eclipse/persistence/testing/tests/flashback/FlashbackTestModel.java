@@ -71,8 +71,7 @@ public class FlashbackTestModel extends TestModel {
         //expressionTestSuite.addTests();
         for (Iterator iter = expressionTestSuite.getTests().iterator(); iter.hasNext();) {
             TestEntity baseTest = (TestEntity)iter.next();
-            if (baseTest instanceof ReadAllExpressionTest) {
-                ReadAllExpressionTest test = (ReadAllExpressionTest)baseTest;
+            if (baseTest instanceof ReadAllExpressionTest test) {
                 if (test.getExpression() == null) {
                     //System.out.println("This test does not have an expression yet: " + test.getName());
                     iter.remove();
@@ -97,8 +96,7 @@ public class FlashbackTestModel extends TestModel {
 
         for (Iterator iter = subSelectTestSuite.getTests().iterator(); iter.hasNext();) {
             TestEntity baseTest = (TestEntity)iter.next();
-            if (baseTest instanceof ReadAllExpressionTest) {
-                ReadAllExpressionTest test = (ReadAllExpressionTest)baseTest;
+            if (baseTest instanceof ReadAllExpressionTest test) {
                 if (test.getExpression() == null) {
                     //System.out.println("This test does not have an expression yet: " + test.getName());
                     iter.remove();

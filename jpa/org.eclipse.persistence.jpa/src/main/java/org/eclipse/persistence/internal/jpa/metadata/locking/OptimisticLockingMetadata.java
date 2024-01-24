@@ -83,8 +83,7 @@ public class OptimisticLockingMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof OptimisticLockingMetadata) {
-            OptimisticLockingMetadata optimisticLocking = (OptimisticLockingMetadata) objectToCompare;
+        if (objectToCompare instanceof OptimisticLockingMetadata optimisticLocking) {
 
             if (! valuesMatch(m_cascade, optimisticLocking.getCascade())) {
                 return false;

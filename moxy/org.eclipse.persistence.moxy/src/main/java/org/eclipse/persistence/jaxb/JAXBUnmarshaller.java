@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -958,8 +958,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if(xmlUnmarshaller.getNamespaceResolver() == null){
                 return null;
             }
-            if (xmlUnmarshaller.getNamespaceResolver() instanceof PrefixMapperNamespaceResolver) {
-                PrefixMapperNamespaceResolver wrapper = (PrefixMapperNamespaceResolver) xmlUnmarshaller.getNamespaceResolver();
+            if (xmlUnmarshaller.getNamespaceResolver() instanceof PrefixMapperNamespaceResolver wrapper) {
                 return wrapper.getPrefixMapper();
             } else {
                 Map<String, String> nsMap = new HashMap<String, String>();

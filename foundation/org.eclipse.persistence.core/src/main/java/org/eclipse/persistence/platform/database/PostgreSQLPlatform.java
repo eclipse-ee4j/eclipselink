@@ -739,8 +739,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         // Cannot bind null through set object, so we must compute the type, this is not good.
         // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the
         // user defined type to setNull as well.
-        if (databaseField instanceof ObjectRelationalDatabaseField) {
-            ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
+        if (databaseField instanceof ObjectRelationalDatabaseField field) {
             //Fix for bug 537657: Inserting empty or null varchar arrays doesn't work with PostgreSQL since driver version 42.2.4
             if (field.getSqlType() == Types.ARRAY) {
                 statement.setNull(index, field.getSqlType());

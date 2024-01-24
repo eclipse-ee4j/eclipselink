@@ -67,10 +67,9 @@ public class RowtypeInfo extends SequencedInfo {
     }
 
     public boolean equals(Object o) {
-        if (!(o instanceof RowtypeInfo)) {
+        if (!(o instanceof RowtypeInfo p)) {
             return false;
         }
-        RowtypeInfo p = (RowtypeInfo)o;
         if (argument_name == null && p.argument_name != null) {
             return false;
         }

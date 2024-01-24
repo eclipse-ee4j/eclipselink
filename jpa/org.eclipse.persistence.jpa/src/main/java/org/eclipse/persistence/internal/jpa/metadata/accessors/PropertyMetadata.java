@@ -78,8 +78,7 @@ public class PropertyMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof PropertyMetadata) {
-            PropertyMetadata property = (PropertyMetadata) objectToCompare;
+        if (objectToCompare instanceof PropertyMetadata property) {
 
             if (! valuesMatch(m_name, property.getName())) {
                 return false;

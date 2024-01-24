@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * Copyright (c) 2005, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2024 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -269,8 +269,7 @@ public class TestLockMethod extends JPA1Base {
             flop("OptimisticLockException not thrown");
         } catch (RollbackException rbe) {
           Throwable cause = rbe.getCause();
-          if (cause instanceof OptimisticLockException) {
-              OptimisticLockException ole = (OptimisticLockException) cause;
+          if (cause instanceof OptimisticLockException ole) {
               verify(dep1.equals(ole.getEntity()), "wrong entity");
           } else {
               Assert.fail("cause is no OLE");

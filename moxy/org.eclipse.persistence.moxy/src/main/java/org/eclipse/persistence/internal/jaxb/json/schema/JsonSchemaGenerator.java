@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -287,13 +287,11 @@ public class JsonSchemaGenerator {
 
              ) {
                 return true;
-            } else if(next instanceof CompositeCollectionMapping) {
-                CompositeCollectionMapping ccm = (CompositeCollectionMapping)next;
+            } else if(next instanceof CompositeCollectionMapping ccm) {
                 if(ccm.getReferenceDescriptor() == null && ((XMLField)ccm.getField()).isSelfField()) {
                     return true;
                 }
-            } else if(next instanceof CompositeObjectMapping) {
-                CompositeObjectMapping ccm = (CompositeObjectMapping)next;
+            } else if(next instanceof CompositeObjectMapping ccm) {
                 if(ccm.getReferenceDescriptor() == null && ((XMLField)ccm.getField()).isSelfField()) {
                     return true;
                 }
@@ -341,16 +339,14 @@ public class JsonSchemaGenerator {
             }
         }
         for(DatabaseMapping next:mappings) {
-            if(next instanceof ChoiceObjectMapping) {
-                ChoiceObjectMapping coMapping = (ChoiceObjectMapping)next;
+            if(next instanceof ChoiceObjectMapping coMapping) {
                 for(Object nestedMapping:coMapping.getChoiceElementMappingsByClass().values()) {
                     Property prop = generateProperty((Mapping)nestedMapping, descriptor, properties);
                     if(prop != null && !(properties.containsKey(prop.getName()))) {
                         properties.put(prop.getName(), prop);
                     }
                 }
-            } else if(next instanceof ChoiceCollectionMapping) {
-                ChoiceCollectionMapping coMapping = (ChoiceCollectionMapping)next;
+            } else if(next instanceof ChoiceCollectionMapping coMapping) {
                 for(Object nestedMapping:coMapping.getChoiceElementMappingsByClass().values()) {
                     Property prop = generateProperty((Mapping)nestedMapping, descriptor, properties);
                     if(prop != null && !(properties.containsKey(prop.getName()))) {
@@ -381,14 +377,12 @@ public class JsonSchemaGenerator {
                     return next;
                 }
             }
-            if(next instanceof BinaryDataMapping) {
-                BinaryDataMapping mapping = (BinaryDataMapping)next;
+            if(next instanceof BinaryDataMapping mapping) {
                 if(((XMLField)mapping.getField()).isSelfField()) {
                     return next;
                 }
             }
-            if(next instanceof BinaryDataCollectionMapping) {
-                BinaryDataCollectionMapping mapping = (BinaryDataCollectionMapping)next;
+            if(next instanceof BinaryDataCollectionMapping mapping) {
                 if(((XMLField)mapping.getField()).isSelfField()) {
                     return next;
                 }
@@ -443,8 +437,7 @@ public class JsonSchemaGenerator {
     private Property generateProperty(Mapping next, XMLDescriptor descriptor, Map<String, Property> properties) {
         Property prop = null;
         if(next.isCollectionMapping()) {
-            if(next instanceof CollectionReferenceMapping) {
-                CollectionReferenceMapping mapping = (CollectionReferenceMapping)next;
+            if(next instanceof CollectionReferenceMapping mapping) {
                 Set<XMLField> sourceFields = mapping.getSourceToTargetKeyFieldAssociations().keySet();
                 XMLDescriptor reference = (XMLDescriptor) mapping.getReferenceDescriptor();
                 for(XMLField nextField: sourceFields) {
@@ -536,8 +529,7 @@ public class JsonSchemaGenerator {
                 }
                 nestedProperty.getItem().setType(getJsonTypeForJavaType(type));
                 return prop;
-            } else if(next instanceof BinaryDataCollectionMapping) {
-                BinaryDataCollectionMapping mapping = (BinaryDataCollectionMapping)next;
+            } else if(next instanceof BinaryDataCollectionMapping mapping) {
                 XMLField field = (XMLField)mapping.getField();
                 XPathFragment frag = field.getXPathFragment();
 
@@ -603,8 +595,7 @@ public class JsonSchemaGenerator {
                 if(enumeration != null) {
                     nestedProperty.setEnumeration(enumeration);
                 }
-                if(directMapping instanceof BinaryDataMapping) {
-                    BinaryDataMapping binaryMapping = (BinaryDataMapping)directMapping;
+                if(directMapping instanceof BinaryDataMapping binaryMapping) {
                     if(binaryMapping.shouldInlineBinaryData() || binaryMapping.isSwaRef()) {
                         nestedProperty.setType(JsonType.STRING);
                     } else {
@@ -617,8 +608,7 @@ public class JsonSchemaGenerator {
                     nestedProperty.setType(getJsonTypeForJavaType(directMapping.getAttributeClassification()));
                 }
                 return prop;
-            } else if(next instanceof ObjectReferenceMapping) {
-                ObjectReferenceMapping mapping = (ObjectReferenceMapping)next;
+            } else if(next instanceof ObjectReferenceMapping mapping) {
                 Set<XMLField> sourceFields = mapping.getSourceToTargetKeyFieldAssociations().keySet();
                 XMLDescriptor reference = (XMLDescriptor) mapping.getReferenceDescriptor();
                 for(XMLField nextField: sourceFields) {
@@ -681,8 +671,7 @@ public class JsonSchemaGenerator {
                         //populateProperties(nestedProperty.getItem().getProperties(), (XMLDescriptor)mapping.getReferenceDescriptor());
                     }                    //populateProperties(nestedProperty.getProperties(), nextDescriptor);
                 }
-            } else if(next instanceof BinaryDataMapping) {
-                BinaryDataMapping binaryMapping = (BinaryDataMapping)next;
+            } else if(next instanceof BinaryDataMapping binaryMapping) {
                 XMLField field = (XMLField)binaryMapping.getField();
                 XPathFragment frag = field.getXPathFragment();
                 String propertyName = getNameForFragment(frag);

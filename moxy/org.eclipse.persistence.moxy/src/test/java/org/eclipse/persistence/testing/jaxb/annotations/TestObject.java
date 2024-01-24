@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,9 +77,7 @@ public class TestObject {
     }
 
     private boolean equalByteArrays(Object obj1, Object obj2) {
-        if(obj1 instanceof byte[] && obj2 instanceof byte[]){
-            byte[] array1 = (byte[])obj1;
-            byte[] array2 = (byte[])obj2;
+        if(obj1 instanceof byte[] array1 && obj2 instanceof byte[] array2){
             //covers the case where both are null
             if(array1 == array2) {
                 return true;

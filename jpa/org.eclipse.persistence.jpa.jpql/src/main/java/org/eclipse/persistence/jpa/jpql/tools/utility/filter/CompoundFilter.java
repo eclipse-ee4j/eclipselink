@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,11 +88,9 @@ public abstract class CompoundFilter<T> implements Filter<T>,
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof CompoundFilter<?>)) {
+        if (!(object instanceof CompoundFilter<?> other)) {
             return false;
         }
-
-        CompoundFilter<?> other = (CompoundFilter<?>) object;
 
         return (filter1.equals(other.filter1) && filter2.equals(other.filter2)) ||
                (filter1.equals(other.filter2) && filter2.equals(other.filter1));

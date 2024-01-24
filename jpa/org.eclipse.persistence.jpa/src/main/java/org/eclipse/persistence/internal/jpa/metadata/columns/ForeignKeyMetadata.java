@@ -93,8 +93,7 @@ public class ForeignKeyMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ForeignKeyMetadata) {
-            ForeignKeyMetadata foreignKey = (ForeignKeyMetadata) objectToCompare;
+        if (objectToCompare instanceof ForeignKeyMetadata foreignKey) {
 
             if (! valuesMatch(m_name, foreignKey.getName())) {
                 return false;

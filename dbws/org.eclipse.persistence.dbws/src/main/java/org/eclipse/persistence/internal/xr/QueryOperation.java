@@ -413,10 +413,8 @@ public class QueryOperation extends Operation {
 
             // JPA spec returns an ArrayList<Object[]> for stored procedure queries - will need to unwrap.
             // Note that for legacy deployment XML projects this is not the case.
-            if (value instanceof ArrayList) {
-                ArrayList<?> returnedList = (ArrayList<?>) value;
-                if (returnedList.size() > 0 && returnedList.get(0) instanceof Object[]) {
-                    Object[] objs = (Object[]) returnedList.get(0);
+            if (value instanceof ArrayList<?> returnedList) {
+                if (returnedList.size() > 0 && returnedList.get(0) instanceof Object[] objs) {
                     if (isCollection()) {
                         value = new ArrayList<>();
                         for (Object obj : objs) {
@@ -553,8 +551,7 @@ public class QueryOperation extends Operation {
             for (Object obj : dsCall.getParameters()) {
                 if (obj instanceof OutputParameterForCallableStatement) {
                     paramFlds.add(((OutputParameterForCallableStatement) obj).getOutputField());
-                } else if (obj instanceof Object[]) {
-                    Object[] objArray = (Object[]) obj;
+                } else if (obj instanceof Object[] objArray) {
                     for (int i = 0; i < objArray.length; i++) {
                         Object o = objArray[i];
                         if (o instanceof OutputParameterForCallableStatement) {
@@ -598,8 +595,7 @@ public class QueryOperation extends Operation {
             Element rowElement = TEMP_DOC.createElement(tempXMLTag);
             for (DatabaseField field : dr.getFields()) {
                 // handle complex types, i.e. ones we have a descriptor for
-                if (field instanceof ObjectRelationalDatabaseField) {
-                    ObjectRelationalDatabaseField ordtField = (ObjectRelationalDatabaseField) field;
+                if (field instanceof ObjectRelationalDatabaseField ordtField) {
                     if (xrService.getOXSession().getDescriptor(ordtField.getType()) != null) {
                         xrService.getXMLContext().createMarshaller().marshal(dr.get(field), rowElement);
                         continue;
@@ -607,18 +603,14 @@ public class QueryOperation extends Operation {
                 }
                 Object fieldValue = dr.get(field);
                 if (fieldValue != null) {
-                    if (fieldValue instanceof Calendar) {
-                        Calendar cValue = (Calendar)fieldValue;
+                    if (fieldValue instanceof Calendar cValue) {
                         fieldValue = conversionManager.convertObject(cValue, STRING, DATE_TIME_QNAME);
                     }
-                    if (fieldValue instanceof Date) {
-                        Date dValue = (Date)fieldValue;
+                    if (fieldValue instanceof Date dValue) {
                         fieldValue = conversionManager.convertObject(dValue, STRING, DATE_QNAME);
-                    } else if (fieldValue instanceof Time) {
-                        Time tValue = (Time)fieldValue;
+                    } else if (fieldValue instanceof Time tValue) {
                         fieldValue = conversionManager.convertObject(tValue, STRING, TIME_QNAME);
-                    } else if (fieldValue instanceof Timestamp) {
-                        Timestamp tsValue = (Timestamp)fieldValue;
+                    } else if (fieldValue instanceof Timestamp tsValue) {
                         fieldValue = conversionManager.convertObject(tsValue, STRING, DATE_TIME_QNAME);
                     } else if (fieldValue instanceof Blob) {
                         fieldValue = conversionManager.convertObject(fieldValue, ClassConstants.APBYTE);

@@ -25,11 +25,9 @@ public class Root {
     }
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof Root)) {
+        if (!(obj instanceof Root otherRoot)) {
             return false;
         }
-
-        Root otherRoot = (Root) obj;
 
         if (this.items.size() != otherRoot.items.size()) {
             return false;

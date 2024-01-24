@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -146,8 +146,7 @@ public class PLSQLCallModelTestProject extends Project {
         descriptor.getInheritancePolicy().setClassExtractor(new ClassExtractor() {
             @Override
             public Class<?> extractClassFromRow(DataRecord databaseRow, Session session) {
-                if (databaseRow instanceof UnmarshalRecord) {
-                    UnmarshalRecord unmarshalRecord = (UnmarshalRecord)databaseRow;
+                if (databaseRow instanceof UnmarshalRecord unmarshalRecord) {
                     Attributes attributes = unmarshalRecord.getAttributes();
                     for (int i = 0, l = attributes.getLength(); i < l; i++) {
                         String qName = attributes.getQName(i);

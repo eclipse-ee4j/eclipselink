@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,8 +31,7 @@ public class SessionListener extends SessionEventAdapter {
     public void preCalculateUnitOfWorkChangeSet(SessionEvent event) {
         Object source = event.getSource();
 
-        if (source instanceof RepeatableWriteUnitOfWork) {
-            RepeatableWriteUnitOfWork uow = (RepeatableWriteUnitOfWork) source;
+        if (source instanceof RepeatableWriteUnitOfWork uow) {
             if (uow.getNewObjectsCloneToOriginal().size() == 1) {
                 Object cloneObject = uow.getNewObjectsCloneToOriginal().keySet().iterator().next();
                 if (cloneObject instanceof Bus) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,10 +26,9 @@ public class Target {
     public List<Task> tasks;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Target)) {
+        if (obj == null || !(obj instanceof Target t)) {
             return false;
         }
-        Target t = (Target) obj;
 
         return (t.tasks.size() == (this.tasks.size()) && t.tasks.get(0).equals(this.tasks.get(0)) && t.tasks.get(1).equals(this.tasks.get(1)));
     }

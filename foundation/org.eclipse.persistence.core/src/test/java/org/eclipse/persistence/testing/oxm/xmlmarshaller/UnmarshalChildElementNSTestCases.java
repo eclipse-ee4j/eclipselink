@@ -53,12 +53,13 @@ public class UnmarshalChildElementNSTestCases extends OXTestCase {
     }
 
     private String getInstanceDocumentAsString() {
-        String doc = "<ins:InsurableVehicle xmlns:ins=\"http://www.example.com\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:nsx=\"http://www.example.com\">\n" +
-        "  <ins:Motorcycle xsi:type=\"nsx:SportBike\">\n" +
-        "    <nsx:license-number>123456</nsx:license-number>\n" +
-        "    <nsx:engine-size>600</nsx:engine-size>\n" +
-        "  </ins:Motorcycle>\n" +
-        "</ins:InsurableVehicle>";
+        String doc = """
+                <ins:InsurableVehicle xmlns:ins="http://www.example.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:nsx="http://www.example.com">
+                  <ins:Motorcycle xsi:type="nsx:SportBike">
+                    <nsx:license-number>123456</nsx:license-number>
+                    <nsx:engine-size>600</nsx:engine-size>
+                  </ins:Motorcycle>
+                </ins:InsurableVehicle>""";
         return doc;
     }
 

@@ -77,8 +77,7 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof WriteTransformerMetadata) {
-            WriteTransformerMetadata writeTransformer = (WriteTransformerMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof WriteTransformerMetadata writeTransformer) {
             return valuesMatch(m_column, writeTransformer.getColumn());
         }
 

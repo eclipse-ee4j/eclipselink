@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,8 +79,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue,CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         XPathFragment xmlRootFrag = null;
 
-        if (objectValue instanceof Root) {
-            Root xmlRoot = (Root) objectValue;
+        if (objectValue instanceof Root xmlRoot) {
             xmlRootFrag = new XPathFragment();
             if (xmlRoot.getNamespaceURI() != null && !xmlRoot.getNamespaceURI().equals(namespaceResolver.getDefaultNamespaceURI())) {
                 String prefix = namespaceResolver.resolveNamespaceURI(xmlRoot.getNamespaceURI());

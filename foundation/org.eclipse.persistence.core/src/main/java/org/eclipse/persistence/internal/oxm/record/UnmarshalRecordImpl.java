@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -468,9 +468,8 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     public void setDocumentLocator(Locator locator) {
     if(xmlReader != null){
         xmlReader.setLocator(locator);
-        if (null == rootElementName  && null == rootElementLocalName && parentRecord == null && locator instanceof Locator2){
-                Locator2 loc = (Locator2)locator;
-                this.setEncoding(loc.getEncoding());
+        if (null == rootElementName  && null == rootElementLocalName && parentRecord == null && locator instanceof Locator2 loc){
+            this.setEncoding(loc.getEncoding());
                 this.setVersion(loc.getXMLVersion());
             }
     }

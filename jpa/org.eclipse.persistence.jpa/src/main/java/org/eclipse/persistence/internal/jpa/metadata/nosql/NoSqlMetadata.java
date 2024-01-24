@@ -86,8 +86,7 @@ public class NoSqlMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof NoSqlMetadata) {
-            NoSqlMetadata eis = (NoSqlMetadata) objectToCompare;
+        if (objectToCompare instanceof NoSqlMetadata eis) {
             if (! valuesMatch(this.dataType, eis.getDataType())) {
                 return false;
             }

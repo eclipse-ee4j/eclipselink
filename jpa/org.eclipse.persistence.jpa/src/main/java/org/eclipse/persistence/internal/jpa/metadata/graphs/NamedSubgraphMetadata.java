@@ -82,8 +82,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof NamedSubgraphMetadata) {
-            NamedSubgraphMetadata namedSubgraph = (NamedSubgraphMetadata) objectToCompare;
+        if (objectToCompare instanceof NamedSubgraphMetadata namedSubgraph) {
 
             if (! valuesMatch(m_name, namedSubgraph.getName())) {
                 return false;

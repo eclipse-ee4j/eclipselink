@@ -48,9 +48,10 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
     static final String SCHEMA = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
 
     static final String CREATE_EMPREC_TYPE =
-        "create or replace TYPE pkgrec_wrapper2_empRecType AS OBJECT ("+
-          "\np_empno NUMBER (4), p_ename VARCHAR2 (20)"+
-        "\n)";
+            """
+                    create or replace TYPE pkgrec_wrapper2_empRecType AS OBJECT (
+                    p_empno NUMBER (4), p_ename VARCHAR2 (20)
+                    )""";
 
     static final String DROP_EMPREC_TYPE = "DROP TYPE pkgrec_wrapper2_empRecType";
 

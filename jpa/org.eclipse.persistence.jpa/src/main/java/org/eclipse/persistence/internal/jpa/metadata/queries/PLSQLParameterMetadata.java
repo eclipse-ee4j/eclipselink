@@ -84,8 +84,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof PLSQLParameterMetadata) {
-            PLSQLParameterMetadata parameter = (PLSQLParameterMetadata) objectToCompare;
+        if (objectToCompare instanceof PLSQLParameterMetadata parameter) {
 
             if (! valuesMatch(m_databaseType, parameter.getDatabaseType())) {
                 return false;

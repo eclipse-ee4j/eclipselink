@@ -34,10 +34,9 @@ public class JarTask extends Task{
      }
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof JarTask)) {
+        if (obj == null || !(obj instanceof JarTask jarTask)) {
             return false;
         }
-        JarTask jarTask = (JarTask) obj;
 
         return jarTask.name.equals(this.name);
     }

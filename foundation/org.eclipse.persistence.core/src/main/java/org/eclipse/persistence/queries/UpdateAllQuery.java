@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -243,8 +243,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
             while(it.hasNext() ) {
                 Object value = it.next();
                 if(value != null) {
-                    if(value instanceof Expression) {
-                        Expression valueExpression = (Expression)value;
+                    if(value instanceof Expression valueExpression) {
                         this.defaultBuilder = valueExpression.getBuilder();
                         if(this.defaultBuilder != null) {
                             return;
@@ -255,8 +254,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
             it = m_updateClauses.keySet().iterator();
             while(it.hasNext() ) {
                 Object field = it.next();
-                if(field instanceof Expression) {
-                    Expression fieldExpression = (Expression)field;
+                if(field instanceof Expression fieldExpression) {
                     this.defaultBuilder = fieldExpression.getBuilder();
                     if(this.defaultBuilder != null) {
                         return;

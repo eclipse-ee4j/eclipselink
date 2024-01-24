@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,37 +49,39 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         ")";
 
     static final String CREATE_SIMPLEPACKAGE1_PACKAGE =
-        "CREATE OR REPLACE PACKAGE SIMPLEPACKAGE1 AS" +
-            "\nPROCEDURE NOARGPLSQLSP;" +
-            "\nPROCEDURE VARCHARPLSQLSP(X IN VARCHAR);" +
-            "\nPROCEDURE INOUTARGSPLSQLSP(T IN VARCHAR, U OUT VARCHAR, V OUT NUMERIC);" +
-            "\nPROCEDURE INOUTARGPLSQLSP(T IN OUT VARCHAR);" +
-            "\nPROCEDURE GET_XMLTYPE(W IN DBWS_XML_WRAPPER, X OUT XMLTYPE);" +
-        "\nEND SIMPLEPACKAGE1;";
+            """
+                    CREATE OR REPLACE PACKAGE SIMPLEPACKAGE1 AS
+                    PROCEDURE NOARGPLSQLSP;
+                    PROCEDURE VARCHARPLSQLSP(X IN VARCHAR);
+                    PROCEDURE INOUTARGSPLSQLSP(T IN VARCHAR, U OUT VARCHAR, V OUT NUMERIC);
+                    PROCEDURE INOUTARGPLSQLSP(T IN OUT VARCHAR);
+                    PROCEDURE GET_XMLTYPE(W IN DBWS_XML_WRAPPER, X OUT XMLTYPE);
+                    END SIMPLEPACKAGE1;""";
     static final String CREATE_SIMPLEPACKAGE1_BODY =
-        "CREATE OR REPLACE PACKAGE BODY SIMPLEPACKAGE1 AS" +
-            "\nPROCEDURE NOARGPLSQLSP AS" +
-            "\nBEGIN" +
-                "\nnull;" +
-            "\nEND NOARGPLSQLSP;" +
-            "\nPROCEDURE VARCHARPLSQLSP(X IN VARCHAR) AS" +
-            "\nBEGIN" +
-                "\nnull;" +
-            "\nEND VARCHARPLSQLSP;" +
-            "\nPROCEDURE INOUTARGSPLSQLSP(T IN VARCHAR, U OUT VARCHAR, V OUT NUMERIC) AS" +
-            "\nBEGIN" +
-                "\nU := CONCAT('barf-' , T);" +
-                "\nV := 55;" +
-            "\nEND INOUTARGSPLSQLSP;" +
-            "\nPROCEDURE INOUTARGPLSQLSP(T IN OUT VARCHAR) AS" +
-            "\nBEGIN" +
-                "\nT := CONCAT('barf-' , T);" +
-            "\nEND INOUTARGPLSQLSP;" +
-            "\nPROCEDURE GET_XMLTYPE(W IN DBWS_XML_WRAPPER, X OUT XMLTYPE) AS" +
-            "\nBEGIN" +
-                "\nX := XMLTYPE(CONCAT(CONCAT('<some>', W.xmltext), '</some>'));" +
-            "\nEND GET_XMLTYPE;" +
-        "\nEND SIMPLEPACKAGE1;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY SIMPLEPACKAGE1 AS
+                    PROCEDURE NOARGPLSQLSP AS
+                    BEGIN
+                    null;
+                    END NOARGPLSQLSP;
+                    PROCEDURE VARCHARPLSQLSP(X IN VARCHAR) AS
+                    BEGIN
+                    null;
+                    END VARCHARPLSQLSP;
+                    PROCEDURE INOUTARGSPLSQLSP(T IN VARCHAR, U OUT VARCHAR, V OUT NUMERIC) AS
+                    BEGIN
+                    U := CONCAT('barf-' , T);
+                    V := 55;
+                    END INOUTARGSPLSQLSP;
+                    PROCEDURE INOUTARGPLSQLSP(T IN OUT VARCHAR) AS
+                    BEGIN
+                    T := CONCAT('barf-' , T);
+                    END INOUTARGPLSQLSP;
+                    PROCEDURE GET_XMLTYPE(W IN DBWS_XML_WRAPPER, X OUT XMLTYPE) AS
+                    BEGIN
+                    X := XMLTYPE(CONCAT(CONCAT('<some>', W.xmltext), '</some>'));
+                    END GET_XMLTYPE;
+                    END SIMPLEPACKAGE1;""";
 
     static final String DROP_SIMPLEPACKAGE1_PACKAGE =
         "DROP PACKAGE SIMPLEPACKAGE1";

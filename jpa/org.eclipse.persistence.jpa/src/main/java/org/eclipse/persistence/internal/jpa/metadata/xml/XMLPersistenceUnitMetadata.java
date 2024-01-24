@@ -54,8 +54,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof XMLPersistenceUnitMetadata) {
-            XMLPersistenceUnitMetadata persistenceUnitMetadata = (XMLPersistenceUnitMetadata) objectToCompare;
+        if (objectToCompare instanceof XMLPersistenceUnitMetadata persistenceUnitMetadata) {
 
             if (m_xmlMappingMetadataComplete != persistenceUnitMetadata.getXMLMappingMetadataComplete()) {
                 return false;

@@ -61,27 +61,29 @@ import org.w3c.dom.Document;
  */
 public class PLSQLCollectionTypeTestSuite {
     static final String CREATE_A_PHONE_TYPE =
-        "CREATE OR REPLACE TYPE A_PHONE_TYPE AS OBJECT (" +
-            "\nHOME VARCHAR2(20)," +
-            "\nCELL VARCHAR2(20)" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE A_PHONE_TYPE AS OBJECT (
+                    HOME VARCHAR2(20),
+                    CELL VARCHAR2(20)
+                    )""";
     static final String CREATE_PACKAGE2_PACKAGE =
-        "CREATE OR REPLACE PACKAGE PACKAGE2 AS" +
-            "\nTYPE TAB1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
-            "\nTYPE ORECORD IS RECORD (" +
-                "\nO1 VARCHAR2(10)," +
-                "\nO2 DECIMAL(7,2)" +
-            "\n);" +
-            "\nTYPE TAB2 IS TABLE OF ORECORD INDEX BY BINARY_INTEGER;" +
-            "\nTYPE TAB3 IS TABLE OF BOOLEAN INDEX BY BINARY_INTEGER;" +
-            "\nTYPE NESTED_TABLE IS TABLE OF VARCHAR2(20);" +
-            "\nTYPE A_PHONE_TYPE_COL IS TABLE OF A_PHONE_TYPE INDEX BY BINARY_INTEGER;" +
-            "\nPROCEDURE COPYTABLE(OLDTAB IN TAB1, NEWTAB OUT TAB1);" +
-            "\nFUNCTION COPYTABLE_FUNC(OLDTAB IN TAB1, NESTAB IN NESTED_TABLE) RETURN TAB1;" +
-            "\nPROCEDURE COPYPHONECOLLECTION(OLDCOL IN A_PHONE_TYPE_COL, NEWCOL OUT A_PHONE_TYPE_COL);" +
-            "\nPROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2);" +
-            "\nPROCEDURE COPYBOOLEANTABLE(OLDTAB IN TAB3, NEWTAB OUT TAB3);" +
-        "\nEND PACKAGE2;";
+            """
+                    CREATE OR REPLACE PACKAGE PACKAGE2 AS
+                    TYPE TAB1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;
+                    TYPE ORECORD IS RECORD (
+                    O1 VARCHAR2(10),
+                    O2 DECIMAL(7,2)
+                    );
+                    TYPE TAB2 IS TABLE OF ORECORD INDEX BY BINARY_INTEGER;
+                    TYPE TAB3 IS TABLE OF BOOLEAN INDEX BY BINARY_INTEGER;
+                    TYPE NESTED_TABLE IS TABLE OF VARCHAR2(20);
+                    TYPE A_PHONE_TYPE_COL IS TABLE OF A_PHONE_TYPE INDEX BY BINARY_INTEGER;
+                    PROCEDURE COPYTABLE(OLDTAB IN TAB1, NEWTAB OUT TAB1);
+                    FUNCTION COPYTABLE_FUNC(OLDTAB IN TAB1, NESTAB IN NESTED_TABLE) RETURN TAB1;
+                    PROCEDURE COPYPHONECOLLECTION(OLDCOL IN A_PHONE_TYPE_COL, NEWCOL OUT A_PHONE_TYPE_COL);
+                    PROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2);
+                    PROCEDURE COPYBOOLEANTABLE(OLDTAB IN TAB3, NEWTAB OUT TAB3);
+                    END PACKAGE2;""";
 
     // JDBC Shadow types for PL/SQL collections
     static final String CREATE_PACKAGE2_TAB1_TYPE =
@@ -189,106 +191,105 @@ public class PLSQLCollectionTypeTestSuite {
     }
 
     static final String typemetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:named-plsql-stored-procedure-query name=\"COPYTABLE\" procedure-name=\"PACKAGE2.COPYTABLE\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"OLDTAB\" database-type=\"PACKAGE2.TAB1\"/>\n" +
-        "      <orm:parameter direction=\"OUT\" name=\"NEWTAB\" database-type=\"PACKAGE2.TAB1\"/>\n" +
-        "   </orm:named-plsql-stored-procedure-query>\n" +
-        "   <orm:named-plsql-stored-procedure-query name=\"COPYPHONECOLLECTION\" procedure-name=\"PACKAGE2.COPYPHONECOLLECTION\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"OLDCOL\" database-type=\"PACKAGE2.A_PHONE_TYPE_COL\"/>\n" +
-        "      <orm:parameter direction=\"OUT\" name=\"NEWCOL\" database-type=\"PACKAGE2.A_PHONE_TYPE_COL\"/>\n" +
-        "   </orm:named-plsql-stored-procedure-query>\n" +
-        "   <orm:named-plsql-stored-procedure-query name=\"SETRECORD\" procedure-name=\"PACKAGE2.SETRECORD\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"INREC\" database-type=\"PACKAGE2.ORECORD\"/>\n" +
-        "      <orm:parameter direction=\"OUT\" name=\"NEWTAB\" database-type=\"PACKAGE2.TAB2\"/>\n" +
-        "   </orm:named-plsql-stored-procedure-query>\n" +
-        "   <orm:named-plsql-stored-procedure-query name=\"COPYBOOLEANTABLE\" procedure-name=\"PACKAGE2.COPYBOOLEANTABLE\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"OLDTAB\" database-type=\"PACKAGE2.TAB3\"/>\n" +
-        "      <orm:parameter direction=\"OUT\" name=\"NEWTAB\" database-type=\"PACKAGE2.TAB3\"/>\n" +
-        "   </orm:named-plsql-stored-procedure-query>\n" +
-        "   <orm:named-plsql-stored-function-query name=\"COPYTABLE_FUNC\" function-name=\"PACKAGE2.COPYTABLE_FUNC\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"OLDTAB\" database-type=\"PACKAGE2.TAB1\"/>\n" +
-        "      <orm:parameter direction=\"IN\" name=\"NESTAB\" database-type=\"PACKAGE2.NESTED_TABLE\"/>\n" +
-        "      <orm:return-parameter name=\"RESULT\" database-type=\"PACKAGE2.TAB1\"/>\n" +
-        "   </orm:named-plsql-stored-function-query>\n" +
-        "   <orm:oracle-object name=\"A_PHONE_TYPE\" java-type=\"metadatagen.A_phone_type\">\n" +
-        "      <orm:field name=\"HOME\" database-type=\"VARCHAR_TYPE\"/>\n" +
-        "      <orm:field name=\"CELL\" database-type=\"VARCHAR_TYPE\"/>\n" +
-        "   </orm:oracle-object>\n" +
-        "   <orm:plsql-record name=\"PACKAGE2.ORECORD\" compatible-type=\"PACKAGE2_ORECORD\" java-type=\"package2.Orecord\">\n" +
-        "      <orm:field name=\"O1\" database-type=\"VARCHAR_TYPE\"/>\n" +
-        "      <orm:field name=\"O2\" database-type=\"DECIMAL_TYPE\"/>\n" +
-        "   </orm:plsql-record>\n" +
-        "   <orm:plsql-table name=\"PACKAGE2.TAB1\" compatible-type=\"PACKAGE2_TAB1\" java-type=\"package2.Tab1\" nested-type=\"VARCHAR_TYPE\" nested-table=\"false\"/>\n" +
-        "   <orm:plsql-table name=\"PACKAGE2.NESTED_TABLE\" compatible-type=\"PACKAGE2_NESTED_TABLE\" java-type=\"package2.Nested_table\" nested-type=\"VARCHAR_TYPE\" nested-table=\"true\"/>\n" +
-        "   <orm:plsql-table name=\"PACKAGE2.A_PHONE_TYPE_COL\" compatible-type=\"PACKAGE2_A_PHONE_TYPE_COL\" java-type=\"package2.A_phone_type_col\" nested-type=\"A_PHONE_TYPE\" nested-table=\"false\"/>\n" +
-        "   <orm:plsql-table name=\"PACKAGE2.TAB2\" compatible-type=\"PACKAGE2_TAB2\" java-type=\"package2.Tab2\" nested-type=\"PACKAGE2.ORECORD\" nested-table=\"false\"/>\n" +
-        "   <orm:plsql-table name=\"PACKAGE2.TAB3\" compatible-type=\"PACKAGE2_TAB3\" java-type=\"package2.Tab3\" nested-type=\"PLSQLBoolean\" nested-table=\"false\"/>\n" +
-        "   <orm:embeddable class=\"package2.Tab1\" access=\"VIRTUAL\">\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:array name=\"items\" target-class=\"PACKAGE2_TAB1\" attribute-type=\"java.util.ArrayList\" database-type=\"PACKAGE2_TAB1\">\n" +
-        "            <orm:column name=\"ITEMS\"/>\n" +
-        "         </orm:array>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "   <orm:embeddable class=\"package2.Nested_table\" access=\"VIRTUAL\">\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:array name=\"items\" target-class=\"PACKAGE2_NESTED_TABLE\" attribute-type=\"java.util.ArrayList\" database-type=\"PACKAGE2_NESTED_TABLE\">\n" +
-        "            <orm:column name=\"ITEMS\"/>\n" +
-        "         </orm:array>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "   <orm:embeddable class=\"metadatagen.A_phone_type\" access=\"VIRTUAL\">\n" +
-        "      <orm:struct name=\"A_PHONE_TYPE\">\n" +
-        "         <orm:field>HOME</orm:field>\n" +
-        "         <orm:field>CELL</orm:field>\n" +
-        "      </orm:struct>\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:basic name=\"home\" attribute-type=\"java.lang.String\">\n" +
-        "            <orm:column name=\"HOME\"/>\n" +
-        "         </orm:basic>\n" +
-        "         <orm:basic name=\"cell\" attribute-type=\"java.lang.String\">\n" +
-        "            <orm:column name=\"CELL\"/>\n" +
-        "         </orm:basic>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "   <orm:embeddable class=\"package2.A_phone_type_col\" access=\"VIRTUAL\">\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:array name=\"items\" target-class=\"metadatagen.A_phone_type\" attribute-type=\"java.util.ArrayList\" database-type=\"PACKAGE2_A_PHONE_TYPE_COL\">\n" +
-        "            <orm:column name=\"ITEMS\"/>\n" +
-        "         </orm:array>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "   <orm:embeddable class=\"package2.Orecord\" access=\"VIRTUAL\">\n" +
-        "      <orm:struct name=\"PACKAGE2_ORECORD\">\n" +
-        "         <orm:field>O1</orm:field>\n" +
-        "         <orm:field>O2</orm:field>\n" +
-        "      </orm:struct>\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:basic name=\"o1\" attribute-type=\"java.lang.String\">\n" +
-        "            <orm:column name=\"O1\"/>\n" +
-        "         </orm:basic>\n" +
-        "         <orm:basic name=\"o2\" attribute-type=\"java.math.BigDecimal\">\n" +
-        "            <orm:column name=\"O2\"/>\n" +
-        "         </orm:basic>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "   <orm:embeddable class=\"package2.Tab2\" access=\"VIRTUAL\">\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:array name=\"items\" target-class=\"package2.Orecord\" attribute-type=\"java.util.ArrayList\" database-type=\"PACKAGE2_TAB2\">\n" +
-        "            <orm:column name=\"ITEMS\"/>\n" +
-        "         </orm:array>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "   <orm:embeddable class=\"package2.Tab3\" access=\"VIRTUAL\">\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:array name=\"items\" target-class=\"PACKAGE2_TAB3\" attribute-type=\"java.util.ArrayList\" database-type=\"PACKAGE2_TAB3\">\n" +
-        "            <orm:column name=\"ITEMS\"/>\n" +
-        "         </orm:array>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:embeddable>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:named-plsql-stored-procedure-query name="COPYTABLE" procedure-name="PACKAGE2.COPYTABLE">
+                          <orm:parameter direction="IN" name="OLDTAB" database-type="PACKAGE2.TAB1"/>
+                          <orm:parameter direction="OUT" name="NEWTAB" database-type="PACKAGE2.TAB1"/>
+                       </orm:named-plsql-stored-procedure-query>
+                       <orm:named-plsql-stored-procedure-query name="COPYPHONECOLLECTION" procedure-name="PACKAGE2.COPYPHONECOLLECTION">
+                          <orm:parameter direction="IN" name="OLDCOL" database-type="PACKAGE2.A_PHONE_TYPE_COL"/>
+                          <orm:parameter direction="OUT" name="NEWCOL" database-type="PACKAGE2.A_PHONE_TYPE_COL"/>
+                       </orm:named-plsql-stored-procedure-query>
+                       <orm:named-plsql-stored-procedure-query name="SETRECORD" procedure-name="PACKAGE2.SETRECORD">
+                          <orm:parameter direction="IN" name="INREC" database-type="PACKAGE2.ORECORD"/>
+                          <orm:parameter direction="OUT" name="NEWTAB" database-type="PACKAGE2.TAB2"/>
+                       </orm:named-plsql-stored-procedure-query>
+                       <orm:named-plsql-stored-procedure-query name="COPYBOOLEANTABLE" procedure-name="PACKAGE2.COPYBOOLEANTABLE">
+                          <orm:parameter direction="IN" name="OLDTAB" database-type="PACKAGE2.TAB3"/>
+                          <orm:parameter direction="OUT" name="NEWTAB" database-type="PACKAGE2.TAB3"/>
+                       </orm:named-plsql-stored-procedure-query>
+                       <orm:named-plsql-stored-function-query name="COPYTABLE_FUNC" function-name="PACKAGE2.COPYTABLE_FUNC">
+                          <orm:parameter direction="IN" name="OLDTAB" database-type="PACKAGE2.TAB1"/>
+                          <orm:parameter direction="IN" name="NESTAB" database-type="PACKAGE2.NESTED_TABLE"/>
+                          <orm:return-parameter name="RESULT" database-type="PACKAGE2.TAB1"/>
+                       </orm:named-plsql-stored-function-query>
+                       <orm:oracle-object name="A_PHONE_TYPE" java-type="metadatagen.A_phone_type">
+                          <orm:field name="HOME" database-type="VARCHAR_TYPE"/>
+                          <orm:field name="CELL" database-type="VARCHAR_TYPE"/>
+                       </orm:oracle-object>
+                       <orm:plsql-record name="PACKAGE2.ORECORD" compatible-type="PACKAGE2_ORECORD" java-type="package2.Orecord">
+                          <orm:field name="O1" database-type="VARCHAR_TYPE"/>
+                          <orm:field name="O2" database-type="DECIMAL_TYPE"/>
+                       </orm:plsql-record>
+                       <orm:plsql-table name="PACKAGE2.TAB1" compatible-type="PACKAGE2_TAB1" java-type="package2.Tab1" nested-type="VARCHAR_TYPE" nested-table="false"/>
+                       <orm:plsql-table name="PACKAGE2.NESTED_TABLE" compatible-type="PACKAGE2_NESTED_TABLE" java-type="package2.Nested_table" nested-type="VARCHAR_TYPE" nested-table="true"/>
+                       <orm:plsql-table name="PACKAGE2.A_PHONE_TYPE_COL" compatible-type="PACKAGE2_A_PHONE_TYPE_COL" java-type="package2.A_phone_type_col" nested-type="A_PHONE_TYPE" nested-table="false"/>
+                       <orm:plsql-table name="PACKAGE2.TAB2" compatible-type="PACKAGE2_TAB2" java-type="package2.Tab2" nested-type="PACKAGE2.ORECORD" nested-table="false"/>
+                       <orm:plsql-table name="PACKAGE2.TAB3" compatible-type="PACKAGE2_TAB3" java-type="package2.Tab3" nested-type="PLSQLBoolean" nested-table="false"/>
+                       <orm:embeddable class="package2.Tab1" access="VIRTUAL">
+                          <orm:attributes>
+                             <orm:array name="items" target-class="PACKAGE2_TAB1" attribute-type="java.util.ArrayList" database-type="PACKAGE2_TAB1">
+                                <orm:column name="ITEMS"/>
+                             </orm:array>
+                          </orm:attributes>
+                       </orm:embeddable>
+                       <orm:embeddable class="package2.Nested_table" access="VIRTUAL">
+                          <orm:attributes>
+                             <orm:array name="items" target-class="PACKAGE2_NESTED_TABLE" attribute-type="java.util.ArrayList" database-type="PACKAGE2_NESTED_TABLE">
+                                <orm:column name="ITEMS"/>
+                             </orm:array>
+                          </orm:attributes>
+                       </orm:embeddable>
+                       <orm:embeddable class="metadatagen.A_phone_type" access="VIRTUAL">
+                          <orm:struct name="A_PHONE_TYPE">
+                             <orm:field>HOME</orm:field>
+                             <orm:field>CELL</orm:field>
+                          </orm:struct>
+                          <orm:attributes>
+                             <orm:basic name="home" attribute-type="java.lang.String">
+                                <orm:column name="HOME"/>
+                             </orm:basic>
+                             <orm:basic name="cell" attribute-type="java.lang.String">
+                                <orm:column name="CELL"/>
+                             </orm:basic>
+                          </orm:attributes>
+                       </orm:embeddable>
+                       <orm:embeddable class="package2.A_phone_type_col" access="VIRTUAL">
+                          <orm:attributes>
+                             <orm:array name="items" target-class="metadatagen.A_phone_type" attribute-type="java.util.ArrayList" database-type="PACKAGE2_A_PHONE_TYPE_COL">
+                                <orm:column name="ITEMS"/>
+                             </orm:array>
+                          </orm:attributes>
+                       </orm:embeddable>
+                       <orm:embeddable class="package2.Orecord" access="VIRTUAL">
+                          <orm:struct name="PACKAGE2_ORECORD">
+                             <orm:field>O1</orm:field>
+                             <orm:field>O2</orm:field>
+                          </orm:struct>
+                          <orm:attributes>
+                             <orm:basic name="o1" attribute-type="java.lang.String">
+                                <orm:column name="O1"/>
+                             </orm:basic>
+                             <orm:basic name="o2" attribute-type="java.math.BigDecimal">
+                                <orm:column name="O2"/>
+                             </orm:basic>
+                          </orm:attributes>
+                       </orm:embeddable>
+                       <orm:embeddable class="package2.Tab2" access="VIRTUAL">
+                          <orm:attributes>
+                             <orm:array name="items" target-class="package2.Orecord" attribute-type="java.util.ArrayList" database-type="PACKAGE2_TAB2">
+                                <orm:column name="ITEMS"/>
+                             </orm:array>
+                          </orm:attributes>
+                       </orm:embeddable>
+                       <orm:embeddable class="package2.Tab3" access="VIRTUAL">
+                          <orm:attributes>
+                             <orm:array name="items" target-class="PACKAGE2_TAB3" attribute-type="java.util.ArrayList" database-type="PACKAGE2_TAB3">
+                                <orm:column name="ITEMS"/>
+                             </orm:array>
+                          </orm:attributes>
+                       </orm:embeddable>
+                    </orm:entity-mappings>""";
 }

@@ -85,8 +85,7 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof FieldPartitioningMetadata)) {
-            FieldPartitioningMetadata policy = (FieldPartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof FieldPartitioningMetadata policy)) {
 
             return valuesMatch(this.partitionColumn, policy.getPartitionColumn())
                     && valuesMatch(this.unionUnpartitionableQueries, policy.getUnionUnpartitionableQueries())

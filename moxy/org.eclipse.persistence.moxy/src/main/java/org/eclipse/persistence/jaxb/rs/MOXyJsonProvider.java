@@ -251,8 +251,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         if(null == genericType) {
             return asSet(Object.class);
         }
-        if(genericType instanceof Class<?> && genericType != JAXBElement.class) {
-            Class<?> clazz = (Class<?>) genericType;
+        if(genericType instanceof Class<?> clazz && genericType != JAXBElement.class) {
             if(clazz.isArray()) {
                 return getDomainClasses(clazz.getComponentType());
             }
@@ -267,8 +266,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                 }
             }
             return result;
-        } else if (genericType instanceof GenericArrayType) {
-            GenericArrayType genericArrayType = (GenericArrayType) genericType;
+        } else if (genericType instanceof GenericArrayType genericArrayType) {
             return getDomainClasses(genericArrayType.getGenericComponentType());
         } else if(genericType instanceof WildcardType) {
             Set<Class<?>> result = new LinkedHashSet<Class<?>>();
@@ -786,8 +784,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return true;
         } else if(genericType instanceof GenericArrayType) {
             return wrapItemInJAXBElement(((GenericArrayType) genericType).getGenericComponentType());
-        } else if(genericType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+        } else if(genericType instanceof ParameterizedType parameterizedType) {
             Type actualType = parameterizedType.getActualTypeArguments()[0];
             return wrapItemInJAXBElement(parameterizedType.getOwnerType()) || wrapItemInJAXBElement(parameterizedType.getRawType()) || wrapItemInJAXBElement(actualType);
         } else {

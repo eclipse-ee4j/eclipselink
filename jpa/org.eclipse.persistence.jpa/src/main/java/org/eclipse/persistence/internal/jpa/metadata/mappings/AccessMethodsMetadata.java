@@ -93,8 +93,7 @@ public class AccessMethodsMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof AccessMethodsMetadata) {
-            AccessMethodsMetadata accessMethods = (AccessMethodsMetadata) objectToCompare;
+        if (objectToCompare instanceof AccessMethodsMetadata accessMethods) {
 
             if (! valuesMatch(getMethodName, accessMethods.getGetMethodName())) {
                 return false;

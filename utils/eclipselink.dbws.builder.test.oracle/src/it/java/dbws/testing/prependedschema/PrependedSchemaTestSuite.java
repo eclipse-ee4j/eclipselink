@@ -64,13 +64,14 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             "\nBUFFER_POOL DEFAULT" +
           "\n)";
     static final String CREATE_TESMAN_TYPE1 =
-        "CREATE TYPE XTESMAN_TYPE1 AS OBJECT" +
-          "\n(" +
-            "\nACCT NUMBER, " +
-            "\nSTATE VARCHAR2(30)," +
-            "\nDIVISION VARCHAR2(30)," +
-            "\nCOUNTRY VARCHAR2(30)" +
-          "\n);";
+            """
+                    CREATE TYPE XTESMAN_TYPE1 AS OBJECT
+                    (
+                    ACCT NUMBER,\s
+                    STATE VARCHAR2(30),
+                    DIVISION VARCHAR2(30),
+                    COUNTRY VARCHAR2(30)
+                    );""";
     static final String CREATE_TESMAN_TYPE2 =
         "CREATE TYPE XTESMAN_TYPE2 AS OBJECT" +
           "\n(" +

@@ -119,8 +119,7 @@ public class MultitenantMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof MultitenantMetadata) {
-            MultitenantMetadata multitenant = (MultitenantMetadata) objectToCompare;
+        if (objectToCompare instanceof MultitenantMetadata multitenant) {
 
             if (! valuesMatch(m_type, multitenant.getType())) {
                 return false;

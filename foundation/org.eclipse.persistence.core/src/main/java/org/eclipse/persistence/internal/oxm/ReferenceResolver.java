@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -366,8 +366,7 @@ public final class ReferenceResolver {
     private void perform(final CoreAbstractSession session, final IDResolver userSpecifiedResolver,
                          final ErrorHandler handler, final Reference reference) {
         final Object referenceSourceObject = reference.getSourceObject();
-        if (reference.getMapping() instanceof CollectionReferenceMapping) {
-            final CollectionReferenceMapping mapping = (CollectionReferenceMapping) reference.getMapping();
+        if (reference.getMapping() instanceof CollectionReferenceMapping mapping) {
             final CoreContainerPolicy cPolicy = mapping.getContainerPolicy();
             //container should never be null
             final Object container = reference.getContainer();
@@ -435,7 +434,7 @@ public final class ReferenceResolver {
                     backpointerContainerPolicy.addInto(referenceSourceObject, backpointerContainer, session);
                 }
             }
-        } else if (reference.getMapping() instanceof ObjectReferenceMapping) {
+        } else if (reference.getMapping() instanceof ObjectReferenceMapping mapping) {
             final CacheId primaryKey = (CacheId) reference.getPrimaryKey();
             Object value = null;
             if (userSpecifiedResolver != null) {
@@ -464,7 +463,6 @@ public final class ReferenceResolver {
                 value = getValue(session, reference, primaryKey, handler);
             }
 
-            ObjectReferenceMapping mapping = (ObjectReferenceMapping) reference.getMapping();
             if (value != null) {
                 mapping.setAttributeValueInObject(reference.getSourceObject(), value);
             }
@@ -677,9 +675,7 @@ public final class ReferenceResolver {
         @Override
         public boolean equals(final Object o) {
             if (this == o) return true;
-            if (!(o instanceof ReferenceKey)) return false;
-
-            ReferenceKey that = (ReferenceKey) o;
+            if (!(o instanceof ReferenceKey that)) return false;
 
             return sourceObject == that.sourceObject && mapping == that.mapping;
         }

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -515,8 +515,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         Object cloneAttribute = getAttributeValueFromObject(object);
         if ((cloneAttribute == null) || (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
-            if (cloneAttribute instanceof IndirectCollection)  {
-                IndirectCollection collection = (IndirectCollection)cloneAttribute;
+            if (cloneAttribute instanceof IndirectCollection collection)  {
                 if (collection.hasDeferredChanges()) {
                     Iterator iterator = collection.getAddedElements().iterator();
                     boolean cascade = isCascadePersist();

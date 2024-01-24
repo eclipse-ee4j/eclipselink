@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,21 +56,18 @@ public class SchemaResolverWrapper {
      */
     public Source resolveSchema(Source sourceXSD) {
         Source resolvedSchemaSource = null;
-        if(sourceXSD instanceof StreamSource) {
-            StreamSource streamSource = (StreamSource) sourceXSD;
+        if(sourceXSD instanceof StreamSource streamSource) {
             if(null == streamSource.getInputStream() && null == streamSource.getReader()) {
                 resolvedSchemaSource = resolveSchema(streamSource.getPublicId(), streamSource.getSystemId());
             }
-        } else if(sourceXSD instanceof SAXSource) {
-            SAXSource saxSource = (SAXSource) sourceXSD;
+        } else if(sourceXSD instanceof SAXSource saxSource) {
             InputSource inputSource = saxSource.getInputSource();
             if(null == inputSource) {
                resolvedSchemaSource = resolveSchema(saxSource.getSystemId());
             } else if(null == inputSource.getByteStream() && null == inputSource.getCharacterStream()){
                 resolvedSchemaSource = resolveSchema(inputSource.getPublicId(), inputSource.getSystemId());
             }
-        } else if(sourceXSD instanceof DOMSource) {
-            DOMSource domSource = (DOMSource) sourceXSD;
+        } else if(sourceXSD instanceof DOMSource domSource) {
             if(null == domSource.getNode()) {
                 resolvedSchemaSource = resolveSchema(domSource.getSystemId());
             }

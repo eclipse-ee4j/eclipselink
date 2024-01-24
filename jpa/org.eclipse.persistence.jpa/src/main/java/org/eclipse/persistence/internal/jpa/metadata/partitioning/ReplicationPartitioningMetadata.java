@@ -74,8 +74,7 @@ public class ReplicationPartitioningMetadata extends AbstractPartitioningMetadat
 
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof ReplicationPartitioningMetadata)) {
-            ReplicationPartitioningMetadata policy = (ReplicationPartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof ReplicationPartitioningMetadata policy)) {
 
             return valuesMatch(this.connectionPools, policy.getConnectionPools());
         }

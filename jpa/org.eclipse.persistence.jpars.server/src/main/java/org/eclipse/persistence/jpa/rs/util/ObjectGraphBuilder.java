@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,10 +66,9 @@ public class ObjectGraphBuilder {
 
         if (PersistenceWeavedRest.class.isAssignableFrom(object.getClass())) {
             createNodeForEntity(object, root);
-        } else if (object instanceof SingleResultQueryResult) {
+        } else if (object instanceof SingleResultQueryResult singleResultQueryResult) {
             root.addAttributeNode("links");
 
-            final SingleResultQueryResult singleResultQueryResult = (SingleResultQueryResult)object;
             processFieldsList(root.addSubNode("fields"), singleResultQueryResult.getFields());
         } else if (object instanceof ReadAllQueryResultCollection) {
             createNodeForPageableCollection((PageableCollection<?>) object, root);
@@ -91,8 +90,7 @@ public class ObjectGraphBuilder {
         node.addAttributeNode("links");
         if (collection.getItems() != null && !collection.getItems().isEmpty()) {
             final Node subNode = node.addSubNode("items");
-            if (collection instanceof ReportQueryResultCollection) {
-                final ReportQueryResultCollection reportQueryResultCollection = (ReportQueryResultCollection)collection;
+            if (collection instanceof ReportQueryResultCollection reportQueryResultCollection) {
                 processFieldsList(subNode.addSubNode("fields"), reportQueryResultCollection.getItems().get(0).getFields());
             } else {
                 createNodeForEntity(collection.getItems().get(0), subNode);

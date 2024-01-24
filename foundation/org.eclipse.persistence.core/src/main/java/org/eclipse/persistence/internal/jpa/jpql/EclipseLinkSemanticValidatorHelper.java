@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -364,9 +364,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
             return false;
         }
 
-        if (mapping instanceof DatabaseMapping) {
-
-            DatabaseMapping databaseMapping = (DatabaseMapping) mapping;
+        if (mapping instanceof DatabaseMapping databaseMapping) {
 
             return databaseMapping.isForeignReferenceMapping()            ||
                    databaseMapping.isAbstractCompositeCollectionMapping() ||

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -128,80 +128,82 @@ public class VeearrayTestSuite {
     static final String DATABASE_URL_KEY = "db.url";
     static final String DATABASE_DRIVER_KEY = "db.driver";
     static final String VEEARRAY_SCHEMA =
-        "<?xml version='1.0' encoding='UTF-8'?>" +
-        "<xsd:schema\n" +
-        "  targetNamespace=\"urn:veearray\" xmlns=\"urn:veearray\" elementFormDefault=\"qualified\"\n" +
-        "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-        "  >\n" +
-        "   <xsd:complexType name=\"phoneType\">\n" +
-        "      <xsd:sequence>\n" +
-        "        <xsd:element name=\"areaCode\" type=\"xsd:string\" />\n" +
-        "        <xsd:element name=\"phoneNumber\" type=\"xsd:string\" />\n" +
-        "        <xsd:element name=\"type\" type=\"xsd:string\" />\n" +
-        "      </xsd:sequence>\n" +
-        "   </xsd:complexType>\n" +
-        "   <xsd:complexType name=\"employeeType\">\n" +
-        "      <xsd:sequence>\n" +
-        "        <xsd:element name=\"id\" type=\"xsd:int\" />\n" +
-        "        <xsd:element name=\"first-name\" type=\"xsd:string\" />\n" +
-        "        <xsd:element name=\"last-name\" type=\"xsd:string\" />\n" +
-        "        <xsd:sequence>\n" +
-        "           <xsd:element name=\"phones\" type=\"phoneType\" minOccurs=\"0\" />\n" +
-        "        </xsd:sequence>\n" +
-        "      </xsd:sequence>\n" +
-        "   </xsd:complexType>\n" +
-        "</xsd:schema>";
+            """
+                    <?xml version='1.0' encoding='UTF-8'?><xsd:schema
+                      targetNamespace="urn:veearray" xmlns="urn:veearray" elementFormDefault="qualified"
+                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                      >
+                       <xsd:complexType name="phoneType">
+                          <xsd:sequence>
+                            <xsd:element name="areaCode" type="xsd:string" />
+                            <xsd:element name="phoneNumber" type="xsd:string" />
+                            <xsd:element name="type" type="xsd:string" />
+                          </xsd:sequence>
+                       </xsd:complexType>
+                       <xsd:complexType name="employeeType">
+                          <xsd:sequence>
+                            <xsd:element name="id" type="xsd:int" />
+                            <xsd:element name="first-name" type="xsd:string" />
+                            <xsd:element name="last-name" type="xsd:string" />
+                            <xsd:sequence>
+                               <xsd:element name="phones" type="phoneType" minOccurs="0" />
+                            </xsd:sequence>
+                          </xsd:sequence>
+                       </xsd:complexType>
+                    </xsd:schema>""";
     static final String VEEARRAY_XRMODEL =
-        "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<dbws\n" +
-        "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-        "  xmlns:ns1=\"urn:veearray\"\n" +
-        "  >\n" +
-        "  <name>veearray</name>\n" +
-        "  <query>\n" +
-        "     <name>getVeeArrayEmployees</name>\n" +
-        "     <result isCollection=\"true\">\n" +
-        "       <type>ns1:employeeType</type>\n" +
-        "     </result>\n" +
-        "     <named-query>\n" +
-        "       <name>getVeeArrayEmployees</name>\n" +
-        "       <descriptor>employee</descriptor>\n" +
-        "     </named-query>\n" +
-        "  </query>\n" +
-        "  <query>\n" +
-        "     <name>getVeeArrayEmployee</name>\n" +
-        "     <parameter>\n" +
-        "        <name>X</name>\n" +
-        "        <type>xsd:int</type>\n" +
-        "     </parameter>\n" +
-        "     <result isCollection=\"true\">\n" +
-        "       <type>ns1:employeeType</type>\n" +
-        "     </result>\n" +
-        "     <named-query>\n" +
-        "       <name>getVeeArrayEmployee</name>\n" +
-        "       <descriptor>employee</descriptor>\n" +
-        "     </named-query>\n" +
-        "  </query>\n" +
-        "  <query>\n" +
-        "     <name>updateVeeArrayPhones</name>\n" +
-        "     <parameter>\n" +
-        "        <name>X</name>\n" +
-        "        <type>xsd:int</type>\n" +
-        "     </parameter>\n" +
-        "     <parameter>\n" +
-        "        <name>Y</name>\n" +
-        "        <type>ns1:phoneType</type>\n" +
-        "     </parameter>\n" +
-        "     <result>\n" +
-        "        <type>xsd:int</type>\n" +
-        "     </result>\n" +
-        "     <named-query>\n" +
-        "       <name>updateVeeArrayPhones</name>\n" +
-        "       <descriptor>employee</descriptor>\n" +
-        "     </named-query>\n" +
-        "  </query>\n" +
-        "</dbws>\n";
+            """
+                    <?xml version='1.0' encoding='UTF-8'?>
+                    <dbws
+                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xmlns:ns1="urn:veearray"
+                      >
+                      <name>veearray</name>
+                      <query>
+                         <name>getVeeArrayEmployees</name>
+                         <result isCollection="true">
+                           <type>ns1:employeeType</type>
+                         </result>
+                         <named-query>
+                           <name>getVeeArrayEmployees</name>
+                           <descriptor>employee</descriptor>
+                         </named-query>
+                      </query>
+                      <query>
+                         <name>getVeeArrayEmployee</name>
+                         <parameter>
+                            <name>X</name>
+                            <type>xsd:int</type>
+                         </parameter>
+                         <result isCollection="true">
+                           <type>ns1:employeeType</type>
+                         </result>
+                         <named-query>
+                           <name>getVeeArrayEmployee</name>
+                           <descriptor>employee</descriptor>
+                         </named-query>
+                      </query>
+                      <query>
+                         <name>updateVeeArrayPhones</name>
+                         <parameter>
+                            <name>X</name>
+                            <type>xsd:int</type>
+                         </parameter>
+                         <parameter>
+                            <name>Y</name>
+                            <type>ns1:phoneType</type>
+                         </parameter>
+                         <result>
+                            <type>xsd:int</type>
+                         </result>
+                         <named-query>
+                           <name>updateVeeArrayPhones</name>
+                           <descriptor>employee</descriptor>
+                         </named-query>
+                      </query>
+                    </dbws>
+                    """;
 
     // test fixtures
     public static XMLComparer comparer = new XMLComparer();

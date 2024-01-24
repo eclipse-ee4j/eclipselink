@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -75,10 +75,9 @@ public class Oracle8Platform extends OraclePlatform {
     @Override
     public void copyInto(Platform platform) {
         super.copyInto(platform);
-        if (!(platform instanceof Oracle8Platform)) {
+        if (!(platform instanceof Oracle8Platform oracle8Platform)) {
             return;
         }
-        Oracle8Platform oracle8Platform = (Oracle8Platform) platform;
         oracle8Platform.setShouldUseLocatorForLOBWrite(shouldUseLocatorForLOBWrite());
         oracle8Platform.setLobValueLimits(getLobValueLimits());
     }

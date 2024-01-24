@@ -97,8 +97,7 @@ public class EntityResultMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof EntityResultMetadata) {
-            EntityResultMetadata entityResult = (EntityResultMetadata) objectToCompare;
+        if (objectToCompare instanceof EntityResultMetadata entityResult) {
 
             if (! valuesMatch(m_entityClass, entityResult.getEntityClass())) {
                 return false;

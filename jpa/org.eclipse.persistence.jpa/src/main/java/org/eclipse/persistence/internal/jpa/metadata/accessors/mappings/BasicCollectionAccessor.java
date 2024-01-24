@@ -117,8 +117,7 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof BasicCollectionAccessor) {
-            BasicCollectionAccessor basicCollectionAccessor = (BasicCollectionAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof BasicCollectionAccessor basicCollectionAccessor) {
             return valuesMatch(m_valueColumn, basicCollectionAccessor.getValueColumn());
         }
 

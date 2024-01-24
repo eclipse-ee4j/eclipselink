@@ -86,9 +86,8 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
 
             inputStream.close();
 
-            if ((getJSONReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
+            if ((getJSONReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot testObj)) {
                 XMLRoot controlObj = (XMLRoot)getReadControlObject();
-                XMLRoot testObj = (XMLRoot)testObject;
                 compareXMLRootObjects(controlObj, testObj);
             } else {
                 assertEquals(getJSONReadControlObject(), testObject);

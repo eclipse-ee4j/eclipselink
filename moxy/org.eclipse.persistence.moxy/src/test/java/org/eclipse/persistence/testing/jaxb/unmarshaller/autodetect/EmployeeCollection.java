@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,9 +39,7 @@ public class EmployeeCollection {
         while(iter1.hasNext()) {
             Object next1 = iter1.next();
             Object next2 = iter2.next();
-            if((next1 instanceof JAXBElement) && (next2 instanceof JAXBElement)) {
-                JAXBElement elem1 = (JAXBElement)next1;
-                JAXBElement elem2 = (JAXBElement)next2;
+            if((next1 instanceof JAXBElement elem1) && (next2 instanceof JAXBElement elem2)) {
                 if(!(elem1.getName().equals(elem2.getName()) && elem1.getValue().equals(elem2.getValue()) && elem1.getDeclaredType() == elem2.getDeclaredType())) {
                     return false;
                 }

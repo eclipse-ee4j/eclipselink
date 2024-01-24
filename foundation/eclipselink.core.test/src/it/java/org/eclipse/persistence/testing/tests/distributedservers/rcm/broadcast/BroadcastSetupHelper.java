@@ -286,8 +286,7 @@ public abstract class BroadcastSetupHelper {
     // but returns the wrapper test.
 
     public static TestCase getTestCase(Object test, String testShortClassName, boolean shouldLookUnderWrapper) {
-        if (test instanceof TestCase) {
-            TestCase testToLookAt = (TestCase)test;
+        if (test instanceof TestCase testToLookAt) {
             if (shouldLookUnderWrapper) {
                 while (testToLookAt instanceof TestWrapper) {
                     testToLookAt = ((TestWrapper)testToLookAt).getWrappedTest();

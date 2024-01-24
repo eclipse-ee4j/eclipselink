@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,16 +31,18 @@ public class SimplePLSQLBuilderTestSuite extends DBWSTestSuite {
     static final String WSDL_LOC = "http://" + host + ":" + port + "/simpleplsql/simpleplsql?wsdl";
 
     public static final String CREATE_PACKAGE =
-        "CREATE OR REPLACE PACKAGE SOMEPACKAGE AS \n" +
-            "PROCEDURE SOMEPROC(ARG1 IN VARCHAR2, ARG2 OUT VARCHAR2); \n" +
-        "END SOMEPACKAGE;";
+            """
+                    CREATE OR REPLACE PACKAGE SOMEPACKAGE AS\s
+                    PROCEDURE SOMEPROC(ARG1 IN VARCHAR2, ARG2 OUT VARCHAR2);\s
+                    END SOMEPACKAGE;""";
     public static final String CREATE_PACKAGE_BODY =
-        "CREATE OR REPLACE PACKAGE BODY SOMEPACKAGE AS \n" +
-            "PROCEDURE SOMEPROC(ARG1 IN VARCHAR2, ARG2 OUT VARCHAR2) AS \n" +
-            "BEGIN\n" +
-                "ARG2 := ARG1;\n" +
-            "END SOMEPROC;\n" +
-        "END SOMEPACKAGE;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY SOMEPACKAGE AS\s
+                    PROCEDURE SOMEPROC(ARG1 IN VARCHAR2, ARG2 OUT VARCHAR2) AS\s
+                    BEGIN
+                    ARG2 := ARG1;
+                    END SOMEPROC;
+                    END SOMEPACKAGE;""";
 
     public static final String DROP_PACKAGE_BODY =
         "DROP PACKAGE BODY SOMEPACKAGE";

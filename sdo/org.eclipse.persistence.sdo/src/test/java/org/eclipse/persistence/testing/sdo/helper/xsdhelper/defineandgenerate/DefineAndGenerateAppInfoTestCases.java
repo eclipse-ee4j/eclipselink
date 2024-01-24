@@ -326,7 +326,13 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
     }
 
     protected String getTestControlString() {
-        String controlString = "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <someTag>blah blah itemTest</someTag>" + "\n" + "</xsd:appinfo>" + "\n" + "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <anotherTag>blah blah itemTest</anotherTag>" + "\n" + "</xsd:appinfo>";
+        String controlString = """
+                <xsd:appinfo source="itemTest" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                   <someTag>blah blah itemTest</someTag>
+                </xsd:appinfo>
+                <xsd:appinfo source="itemTest" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                   <anotherTag>blah blah itemTest</anotherTag>
+                </xsd:appinfo>""";
         return controlString;
     }
 }

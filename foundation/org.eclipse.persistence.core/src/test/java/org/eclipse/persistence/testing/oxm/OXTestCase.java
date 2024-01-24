@@ -403,8 +403,7 @@ public abstract class OXTestCase extends XMLTestCase {
         if(controlValue.getClass().isArray()){
             compareArrays(controlValue, testValue);
         }
-        else if (controlValue instanceof Collection){
-            Collection controlCollection = (Collection)controlValue;
+        else if (controlValue instanceof Collection controlCollection){
             Collection testCollection = (Collection)testValue;
             Iterator<Object> controlIter = controlCollection.iterator();
             Iterator<Object> testIter = testCollection.iterator();

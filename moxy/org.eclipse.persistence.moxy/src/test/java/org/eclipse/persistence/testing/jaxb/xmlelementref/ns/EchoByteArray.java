@@ -40,8 +40,7 @@ public class EchoByteArray {
     }
 
     public boolean equals(Object obj) {
-        if (obj instanceof EchoByteArray) {
-            EchoByteArray eba = (EchoByteArray) obj;
+        if (obj instanceof EchoByteArray eba) {
             try {
                 return Arrays.equals(eba.request.getValue(), this.request.getValue());
             } catch (NullPointerException e) {

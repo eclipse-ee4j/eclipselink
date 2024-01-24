@@ -168,9 +168,7 @@ public class DynamicTestCases extends XMLMappingTestCases {
             log(testObject.toString());
         }
 
-        if ((controlObject instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
-            XMLRoot controlRoot = (XMLRoot) controlObject;
-            XMLRoot testRoot = (XMLRoot) testObject;
+        if ((controlObject instanceof XMLRoot controlRoot) && (testObject instanceof XMLRoot testRoot)) {
             compareXMLRootObjects(controlRoot, testRoot);
         } else {
             objectsAlreadyCheckedForEquality = new ArrayList();

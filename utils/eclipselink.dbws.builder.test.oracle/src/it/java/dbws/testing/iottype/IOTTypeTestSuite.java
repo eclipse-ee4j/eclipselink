@@ -49,28 +49,29 @@ import dbws.testing.DBWSTestSuite;
 public class IOTTypeTestSuite extends DBWSTestSuite {
 
     static final String CREATE_INDEXED_TABLE =
-        "CREATE TABLE INDEXEDTABLETYPE (" +
-            "\nID NUMERIC(4) NOT NULL," +
-            "\nNAME VARCHAR(25)," +
-            "\nRID UROWID," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)" +
-        "\nORGANIZATION INDEX" +
-        "\nPCTTHRESHOLD 2" +
-        "\nSTORAGE (" +
-            "\nINITIAL 4K" +
-            "\nNEXT 2K" +
-            "\nPCTINCREASE 0" +
-            "\nMINEXTENTS 1" +
-            "\nMAXEXTENTS 1" +
-        "\n)" +
-        "\nOVERFLOW STORAGE (" +
-            "\nINITIAL 4K" +
-            "\nNEXT 2K" +
-            "\nPCTINCREASE 0" +
-            "\nMINEXTENTS 1" +
-            "\nMAXEXTENTS 1" +
-        "\n)";
+            """
+                    CREATE TABLE INDEXEDTABLETYPE (
+                    ID NUMERIC(4) NOT NULL,
+                    NAME VARCHAR(25),
+                    RID UROWID,
+                    PRIMARY KEY (ID)
+                    )
+                    ORGANIZATION INDEX
+                    PCTTHRESHOLD 2
+                    STORAGE (
+                    INITIAL 4K
+                    NEXT 2K
+                    PCTINCREASE 0
+                    MINEXTENTS 1
+                    MAXEXTENTS 1
+                    )
+                    OVERFLOW STORAGE (
+                    INITIAL 4K
+                    NEXT 2K
+                    PCTINCREASE 0
+                    MINEXTENTS 1
+                    MAXEXTENTS 1
+                    )""";
     static final String[] POPULATE_INDEXED_TABLE = new String[] {
         "INSERT INTO INDEXEDTABLETYPE (ID, NAME, RID) VALUES (1, 'mike', '*EcLiPseLiNk1')",
         "INSERT INTO INDEXEDTABLETYPE (ID, NAME, RID) VALUES (2, 'merrick', '*EcLiPseLiNk2')",

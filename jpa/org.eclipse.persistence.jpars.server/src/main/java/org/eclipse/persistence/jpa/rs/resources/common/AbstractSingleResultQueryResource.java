@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,8 +68,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
                 final Object queryResults = query.getSingleResult();
                 final Object response = responseBuilder.buildSingleResultQueryResponse(context, getQueryParameters(uriInfo), queryResults, reportItems, uriInfo);
 
-                if (response != null && response instanceof SingleResultQuery) {
-                    final SingleResultQuery singleResultQuery = (SingleResultQuery) response;
+                if (response != null && response instanceof SingleResultQuery singleResultQuery) {
                     final List<JAXBElement<?>> item = singleResultQuery.getFields();
                     if ((item != null) && (item.size() == 1)) {
                         // Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery

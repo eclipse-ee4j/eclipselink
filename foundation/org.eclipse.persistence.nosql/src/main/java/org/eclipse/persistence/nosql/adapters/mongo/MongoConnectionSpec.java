@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -124,8 +124,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
             Object preference = properties.get(READ_PREFERENCE);
             if (preference instanceof ReadPreference) {
                 spec.setReadPreference((ReadPreference)preference);
-            } else if (preference instanceof String) {
-                String constant = (String)preference;
+            } else if (preference instanceof String constant) {
                 if (constant.equals("PRIMARY")) {
                     spec.setReadPreference(ReadPreference.primary());
                 } else if (constant.equals("SECONDARY")) {
@@ -139,8 +138,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
             Object concern = properties.get(WRITE_CONCERN);
             if (concern instanceof WriteConcern) {
                 spec.setWriteConcern((WriteConcern)concern);
-            } else if (concern instanceof String) {
-                String constant = (String)concern;
+            } else if (concern instanceof String constant) {
                 if (constant.equals("ACKNOWLEDGED")) {
                     spec.setWriteConcern(WriteConcern.ACKNOWLEDGED);
                 } else if (constant.equals("JOURNALED")) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1336,11 +1336,10 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         showBusyCursor();
 
         TestEntity entity = getSelectedEntity();
-        if ((!(entity instanceof TestCollection))) {
+        if ((!(entity instanceof TestCollection test))) {
             showNormalCursor();
             return;
         }
-        TestCollection test = (TestCollection)entity;
 
         test.setExecutor(getExecutor());
         setExecutionThread(new SynchronizedTestExecutor(getExecutor(), test, this));
@@ -1419,8 +1418,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     @Override
     public void endTest(junit.framework.Test test) {
         getRunModelProgressBar().setValue(getRunModelProgressBar().getValue() + 1);
-        if (test instanceof TestEntity) {
-            TestEntity testEntity = (TestEntity)test;
+        if (test instanceof TestEntity testEntity) {
             if ((testEntity instanceof TestCase) && (((TestCase)testEntity).getTestResult().hasFailed())) {
                 getErrorsProgressBar().setValue(getErrorsProgressBar().getValue() + 1);
             } else if ((testEntity instanceof TestCollection) && ((TestResultsSummary)testEntity.getReport()).didSetupFail()) {
@@ -1444,8 +1442,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
      */
     @Override
     public void startTest(junit.framework.Test test) {
-        if (test instanceof junit.framework.TestSuite) {
-            junit.framework.TestSuite suite = (junit.framework.TestSuite)test;
+        if (test instanceof junit.framework.TestSuite suite) {
             getRunModelProgressBar().setValue(0);
             getRunModelProgressBar().setMaximum(suite.countTestCases());
             getCurrentSuiteTextField().setText(suite.getName());

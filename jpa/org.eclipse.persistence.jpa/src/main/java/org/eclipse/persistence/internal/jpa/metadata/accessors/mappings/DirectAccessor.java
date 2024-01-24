@@ -134,8 +134,7 @@ public abstract class DirectAccessor extends MappingAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof DirectAccessor) {
-            DirectAccessor directAccessor = (DirectAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof DirectAccessor directAccessor) {
 
             if (! valuesMatch(m_optional, directAccessor.getOptional())) {
                 return false;

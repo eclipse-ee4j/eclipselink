@@ -134,11 +134,12 @@ import static dbws.testing.DBWSTestSuite.runDdl;
 public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
     static final String CREATE_ROOTCAUSE_TABLE =
-        "CREATE TABLE IF NOT EXISTS rootcause_table (" +
-            "\nID NUMERIC NOT NULL," +
-            "\nNAME VARCHAR(9)," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS rootcause_table (
+                    ID NUMERIC NOT NULL,
+                    NAME VARCHAR(9),
+                    PRIMARY KEY (ID)
+                    )""";
     static final String[] POPULATE_ROOTCAUSE_TABLE = new String[] {
         "insert into rootcause_table values (1, 'name1')"
     };

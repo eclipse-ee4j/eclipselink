@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,24 +121,22 @@ public class ClearDatabaseSchemaTest extends TestCase {
     }
 
     private void resetOracle(AbstractSession session) {
-        session.executeNonSelectingSQL("BEGIN FOR cur_rec IN (\n" + "SELECT object_name, object_type FROM user_objects WHERE object_type IN "
-                + "('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE', 'TYPE'))\n"
-                + "LOOP BEGIN IF cur_rec.object_type = 'TABLE' "
-                + "THEN EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" CASCADE CONSTRAINTS'; "
-                + "ELSIF cur_rec.object_type = 'TYPE' THEN EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" FORCE'; "
-                + "ELSE EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'; "
-                + "END IF;\nEXCEPTION WHEN OTHERS "
-                + "THEN DBMS_OUTPUT.put_line ('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"');"
-                + "END;\nEND LOOP; END;");
+        session.executeNonSelectingSQL("""
+                BEGIN FOR cur_rec IN (
+                SELECT object_name, object_type FROM user_objects WHERE object_type IN ('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE', 'TYPE'))
+                LOOP BEGIN IF cur_rec.object_type = 'TABLE' THEN EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' "' || cur_rec.object_name || '" CASCADE CONSTRAINTS'; ELSIF cur_rec.object_type = 'TYPE' THEN EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' "' || cur_rec.object_name || '" FORCE'; ELSE EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' "' || cur_rec.object_name || '"'; END IF;
+                EXCEPTION WHEN OTHERS THEN DBMS_OUTPUT.put_line ('FAILED: DROP ' || cur_rec.object_type || ' "' || cur_rec.object_name || '"');END;
+                END LOOP; END;""");
         session.executeNonSelectingSQL("PURGE user_recyclebin");
         session.executeNonSelectingSQL("PURGE recyclebin");
     }
 
     @SuppressWarnings({"unchecked"})
     private void resetDerby(AbstractSession session) {
-        Vector<ArrayRecord> result = session.executeSQL("SELECT 'ALTER TABLE '||S.SCHEMANAME||'.'||T.TABLENAME||' DROP CONSTRAINT \"'||C.CONSTRAINTNAME||'\"'\n"
-                + "FROM SYS.SYSCONSTRAINTS C, SYS.SYSSCHEMAS S, SYS.SYSTABLES T\n"
-                + "WHERE C.SCHEMAID = S.SCHEMAID AND C.TABLEID = T.TABLEID AND S.SCHEMANAME = CURRENT SCHEMA ORDER BY C.REFERENCECOUNT DESC");
+        Vector<ArrayRecord> result = session.executeSQL("""
+                SELECT 'ALTER TABLE '||S.SCHEMANAME||'.'||T.TABLENAME||' DROP CONSTRAINT "'||C.CONSTRAINTNAME||'"'
+                FROM SYS.SYSCONSTRAINTS C, SYS.SYSSCHEMAS S, SYS.SYSTABLES T
+                WHERE C.SCHEMAID = S.SCHEMAID AND C.TABLEID = T.TABLEID AND S.SCHEMANAME = CURRENT SCHEMA ORDER BY C.REFERENCECOUNT DESC""");
         List<String> toRetry = execStatements(session, result);
         final int MAX_ROUNDS = 3;
         int round = 0;
@@ -154,30 +152,32 @@ public class ClearDatabaseSchemaTest extends TestCase {
             }
             round++;
         }
-        result = session.executeSQL("SELECT 'DROP TABLE ' || schemaname ||'.' || tablename FROM SYS.SYSTABLES\n"
-                + "INNER JOIN SYS.SYSSCHEMAS ON SYS.SYSTABLES.SCHEMAID = SYS.SYSSCHEMAS.SCHEMAID\n"
-                + "WHERE schemaname = CURRENT SCHEMA");
+        result = session.executeSQL("""
+                SELECT 'DROP TABLE ' || schemaname ||'.' || tablename FROM SYS.SYSTABLES
+                INNER JOIN SYS.SYSSCHEMAS ON SYS.SYSTABLES.SCHEMAID = SYS.SYSSCHEMAS.SCHEMAID
+                WHERE schemaname = CURRENT SCHEMA""");
         toRetry.addAll(execStatements(session, result));
         assertTrue(toRetry + " statements failed", toRetry.isEmpty());
     }
 
     private void resetMSSQL(AbstractSession session) {
         session.executeNonSelectingSQL(
-                "DECLARE @name VARCHAR(256)\n" +
-                "DECLARE @subName VARCHAR(256)\n" +
-                "DECLARE @statement VARCHAR(256)\n" +
-                "WHILE((SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME()) > 0)\n" +
-                "BEGIN\n" +
-                "\tSELECT TOP 1 @name=TABLE_NAME, @subName=CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() ORDER BY CONSTRAINT_TYPE\n" +
-                "    SELECT @statement = 'ALTER TABLE [dbo].[' + RTRIM(@name) +'] DROP CONSTRAINT [' + RTRIM(@subName) +']'\n" +
-                "    EXEC (@statement)\n" +
-                "END\n" +
-                "WHILE((SELECT COUNT(1) FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0) > 0)\n" +
-                "BEGIN\n" +
-                "\tSELECT TOP 1 @name=[name], @subName=[type] FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0\n" +
-                "    SELECT @statement = 'DROP ' + CASE @subName WHEN 'P' THEN 'PROCEDURE' WHEN 'V' THEN 'VIEW' WHEN 'U' THEN 'TABLE' ELSE 'FUNCTION' END + ' [dbo].[' + RTRIM(@name) +']'\n" +
-                "    EXEC (@statement)\n" +
-                "END");
+                """
+                        DECLARE @name VARCHAR(256)
+                        DECLARE @subName VARCHAR(256)
+                        DECLARE @statement VARCHAR(256)
+                        WHILE((SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME()) > 0)
+                        BEGIN
+                        \tSELECT TOP 1 @name=TABLE_NAME, @subName=CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() ORDER BY CONSTRAINT_TYPE
+                            SELECT @statement = 'ALTER TABLE [dbo].[' + RTRIM(@name) +'] DROP CONSTRAINT [' + RTRIM(@subName) +']'
+                            EXEC (@statement)
+                        END
+                        WHILE((SELECT COUNT(1) FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0) > 0)
+                        BEGIN
+                        \tSELECT TOP 1 @name=[name], @subName=[type] FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0
+                            SELECT @statement = 'DROP ' + CASE @subName WHEN 'P' THEN 'PROCEDURE' WHEN 'V' THEN 'VIEW' WHEN 'U' THEN 'TABLE' ELSE 'FUNCTION' END + ' [dbo].[' + RTRIM(@name) +']'
+                            EXEC (@statement)
+                        END""");
     }
 
     private void resetHsql(AbstractSession session) {

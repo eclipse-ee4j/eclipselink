@@ -196,8 +196,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof MetadataAccessor) {
-            MetadataAccessor accessor = (MetadataAccessor) objectToCompare;
+        if (objectToCompare instanceof MetadataAccessor accessor) {
 
             if (! valuesMatch(m_accessMethods, accessor.getAccessMethods())) {
                 return false;

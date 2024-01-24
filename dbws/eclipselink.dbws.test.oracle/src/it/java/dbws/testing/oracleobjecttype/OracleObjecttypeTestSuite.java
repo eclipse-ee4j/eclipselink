@@ -128,50 +128,52 @@ public class OracleObjecttypeTestSuite {
     static final String DATABASE_URL_KEY = "db.url";
     static final String DATABASE_DRIVER_KEY = "db.driver";
     static final String OBJECTTYPE_SCHEMA =
-        "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<xsd:schema\n" +
-        "  targetNamespace=\"urn:oracleobjecttype\" xmlns=\"urn:oracleobjecttype\" elementFormDefault=\"qualified\"\n" +
-        "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-        "  >\n" +
-        "  <xsd:complexType name=\"addressType\">\n" +
-        "    <xsd:sequence>\n" +
-        "      <xsd:element name=\"street\" type=\"xsd:string\" />\n" +
-        "      <xsd:element name=\"city\" type=\"xsd:string\" />\n" +
-        "      <xsd:element name=\"province\" type=\"xsd:string\" />\n" +
-        "    </xsd:sequence>\n" +
-        "  </xsd:complexType>\n" +
-        "  <xsd:complexType name=\"employeeType\">\n" +
-        "    <xsd:sequence>\n" +
-        "      <xsd:element name=\"id\" type=\"xsd:int\" />\n" +
-        "      <xsd:element name=\"first-name\" type=\"xsd:string\" />\n" +
-        "      <xsd:element name=\"last-name\" type=\"xsd:string\" />\n" +
-        "      <xsd:element name=\"address\" type=\"addressType\" />\n" +
-        "    </xsd:sequence>\n" +
-        "  </xsd:complexType>\n" +
-        "</xsd:schema>";
+            """
+                    <?xml version='1.0' encoding='UTF-8'?>
+                    <xsd:schema
+                      targetNamespace="urn:oracleobjecttype" xmlns="urn:oracleobjecttype" elementFormDefault="qualified"
+                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                      >
+                      <xsd:complexType name="addressType">
+                        <xsd:sequence>
+                          <xsd:element name="street" type="xsd:string" />
+                          <xsd:element name="city" type="xsd:string" />
+                          <xsd:element name="province" type="xsd:string" />
+                        </xsd:sequence>
+                      </xsd:complexType>
+                      <xsd:complexType name="employeeType">
+                        <xsd:sequence>
+                          <xsd:element name="id" type="xsd:int" />
+                          <xsd:element name="first-name" type="xsd:string" />
+                          <xsd:element name="last-name" type="xsd:string" />
+                          <xsd:element name="address" type="addressType" />
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:schema>""";
     static final String OBJECTTYPE_XRMODEL =
-        "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<dbws\n" +
-        "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
-        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-        "  xmlns:ns1=\"urn:oracleobjecttype\"\n" +
-        "  >\n" +
-        "  <name>oracleobjecttype</name>\n" +
-        "  <query>\n" +
-        "    <name>getEmployeesByProv</name>\n" +
-        "    <parameter>\n" +
-        "      <name>X</name>\n" +
-        "      <type>ns1:addressType</type>\n" +
-        "    </parameter>\n" +
-        "    <result isCollection=\"true\">\n" +
-        "      <type>ns1:employeeType</type>\n" +
-        "    </result>\n" +
-        "    <named-query>\n" +
-        "      <name>getEmployeesByProv</name>\n" +
-        "      <descriptor>employee</descriptor>\n" +
-        "    </named-query>\n" +
-        "  </query>\n" +
-        "</dbws>";
+            """
+                    <?xml version='1.0' encoding='UTF-8'?>
+                    <dbws
+                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xmlns:ns1="urn:oracleobjecttype"
+                      >
+                      <name>oracleobjecttype</name>
+                      <query>
+                        <name>getEmployeesByProv</name>
+                        <parameter>
+                          <name>X</name>
+                          <type>ns1:addressType</type>
+                        </parameter>
+                        <result isCollection="true">
+                          <type>ns1:employeeType</type>
+                        </result>
+                        <named-query>
+                          <name>getEmployeesByProv</name>
+                          <descriptor>employee</descriptor>
+                        </named-query>
+                      </query>
+                    </dbws>""";
     static final String OBJECTTYPE_OR_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<object-persistence version=\"" + CONSTANT_PROJECT_BUILD_VERSION + "\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +

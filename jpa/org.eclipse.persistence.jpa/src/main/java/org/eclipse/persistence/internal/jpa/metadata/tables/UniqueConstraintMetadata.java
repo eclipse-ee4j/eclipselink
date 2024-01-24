@@ -75,8 +75,7 @@ public class UniqueConstraintMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof UniqueConstraintMetadata) {
-            UniqueConstraintMetadata uniqueConstraint = (UniqueConstraintMetadata) objectToCompare;
+        if (objectToCompare instanceof UniqueConstraintMetadata uniqueConstraint) {
 
             if (! valuesMatch(m_name, uniqueConstraint.getName())) {
                 return false;

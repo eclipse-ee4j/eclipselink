@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -148,8 +148,7 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
         // Bug 3835202 - Ensure access to valueholders is thread safe.  Several of the methods
         // called below are not threadsafe alone.
         synchronized (this.wrappedValueHolder) {
-            if (this.wrappedValueHolder instanceof DatabaseValueHolder) {
-                DatabaseValueHolder<T> wrapped = (DatabaseValueHolder<T>)this.wrappedValueHolder;
+            if (this.wrappedValueHolder instanceof DatabaseValueHolder<T> wrapped) {
                 UnitOfWorkImpl unitOfWork = getUnitOfWork();
                 if (!wrapped.isEasilyInstantiated()) {
                     if (wrapped.isPessimisticLockingValueHolder()) {

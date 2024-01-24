@@ -436,8 +436,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
         Vector inMemoryTests = new Vector(getTests().size());
         for (junit.framework.Test value : getTests()) {
             TestEntity baseTest = (TestEntity) value;
-            if (baseTest instanceof ReadAllExpressionTest) {
-                ReadAllExpressionTest test = (ReadAllExpressionTest) baseTest;
+            if (baseTest instanceof ReadAllExpressionTest test) {
                 if (test.isPlatformSpecific()) {
                     continue;
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -306,9 +306,8 @@ public class ProviderHelper extends XRServiceFactory {
                    *   have to get the element name from the schema context for the object
                    */
                   Object o = i.next();
-                  if (o instanceof Element) {
-                    Element e = (Element)o;
-                    String key = e.getLocalName();
+                  if (o instanceof Element e) {
+                      String key = e.getLocalName();
                     if ("theInstance".equals(key)) {
                         NodeList nl = e.getChildNodes();
                         for (int j = 0; j < nl.getLength(); j++) {

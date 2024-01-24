@@ -124,15 +124,12 @@ public abstract class JSONTestCases extends OXTestCase{
         log("Actual:");
         log(testObject.toString());
 
-        if ((getReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
+        if ((getReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement testObj)) {
             JAXBElement controlObj = (JAXBElement)control;
-            JAXBElement testObj = (JAXBElement)testObject;
             compareJAXBElementObjects(controlObj, testObj);
         } else {
 
-            if(testObject instanceof Collection && control instanceof Collection){
-                Collection testCollection = (Collection)testObject;
-                Collection controlCollection = (Collection)control;
+            if(testObject instanceof Collection testCollection && control instanceof Collection controlCollection){
                 assertTrue(testCollection.size() == controlCollection.size());
                 Iterator testIter = testCollection.iterator();
                 Iterator controlIter = controlCollection.iterator();

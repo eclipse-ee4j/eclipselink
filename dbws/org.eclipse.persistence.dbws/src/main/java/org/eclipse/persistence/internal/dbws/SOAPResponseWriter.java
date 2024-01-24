@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,8 +79,7 @@ public class SOAPResponseWriter {
             descriptor.setDefaultRootElement(SERVICE_NAMESPACE_PREFIX + ":" + op.getName() + "Response");
             descriptor.setNamespaceResolver(nr);
             descriptor.setJavaClass(opClass);
-            if (op instanceof QueryOperation) {
-                QueryOperation queryOperation = (QueryOperation)op;
+            if (op instanceof QueryOperation queryOperation) {
                 if (queryOperation.isSimpleXMLFormat()) {
                     XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
                     mapping.setUseXMLRoot(true);

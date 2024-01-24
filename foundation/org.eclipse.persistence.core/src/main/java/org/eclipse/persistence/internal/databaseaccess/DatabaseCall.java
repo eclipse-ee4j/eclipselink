@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -262,8 +262,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         int size = this.parameters.size();
         for (int index = 0; index < size; index++) {
             Object parameter = this.parameters.get(index);
-            if (parameter instanceof OutputParameterForCallableStatement) {
-                OutputParameterForCallableStatement outParameter = (OutputParameterForCallableStatement)parameter;
+            if (parameter instanceof OutputParameterForCallableStatement outParameter) {
                 if (!outParameter.isCursor() || !isCursorOutputProcedure()) {
                     Object value = getOutputParameterValue(statement, index, session);
                     DatabaseField field = outParameter.getOutputField();
@@ -278,9 +277,8 @@ public abstract class DatabaseCall extends DatasourceCall {
                         }
                     } else if ((value instanceof Array) && (field.isObjectRelationalDatabaseField())) {
                         value = ObjectRelationalDataTypeDescriptor.buildContainerFromArray((Array)value, (ObjectRelationalDatabaseField)field, session);
-                    } else if (value instanceof ResultSet) {
+                    } else if (value instanceof ResultSet resultSet) {
                         // Support multiple out cursors, put list of records in row.
-                        ResultSet resultSet = (ResultSet)value;
                         setFields(null);
                         matchFieldOrder(resultSet, accessor, session);
                         value = accessor.processResultSet(resultSet, this, statement, session);
@@ -299,9 +297,8 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     @Override
     public DatabaseQueryMechanism buildQueryMechanism(DatabaseQuery query, DatabaseQueryMechanism mechanism) {
-        if (mechanism.isCallQueryMechanism() && (mechanism instanceof CallQueryMechanism)) {
+        if (mechanism.isCallQueryMechanism() && (mechanism instanceof CallQueryMechanism callMechanism)) {
             // Must also add the call singleton...
-            CallQueryMechanism callMechanism = ((CallQueryMechanism)mechanism);
             if (!callMechanism.hasMultipleCalls()) {
                 callMechanism.addCall(callMechanism.getCall());
                 callMechanism.setCall(null);

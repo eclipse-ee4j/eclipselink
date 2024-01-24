@@ -230,15 +230,12 @@ public class HistoryFacade {
             descriptor.setHistoryPolicy(policy);
 
             for (DatabaseMapping mapping: descriptor.getMappings()) {
-                if (mapping instanceof ManyToManyMapping) {
-                    ManyToManyMapping m2mMapping = (ManyToManyMapping)mapping;
+                if (mapping instanceof ManyToManyMapping m2mMapping) {
                     policy = (HistoryPolicy)basePolicy.clone();
                     policy.addHistoryTableName(m2mMapping.getRelationTableName() +
                                                "_HIST");
                     m2mMapping.setHistoryPolicy(policy);
-                } else if (mapping instanceof DirectCollectionMapping) {
-                    DirectCollectionMapping dcMapping =
-                        (DirectCollectionMapping)mapping;
+                } else if (mapping instanceof DirectCollectionMapping dcMapping) {
                     policy = (HistoryPolicy)basePolicy.clone();
                     policy.addHistoryTableName(dcMapping.getReferenceTableName() +
                                                "_HIST");

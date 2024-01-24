@@ -45,10 +45,9 @@ public class Address {
     public List<Employee> emp;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Address)) {
+        if (obj == null || !(obj instanceof Address tgtAddress)) {
             return false;
         }
-        Address tgtAddress = (Address) obj;
         return (tgtAddress.city.equals(city) &&
                 tgtAddress.country.equals(country) &&
                 tgtAddress.id.equals(id) &&

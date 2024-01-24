@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,37 +61,48 @@ public class ProviderPackager extends XRPackager {
     public static final String PROVIDER_NAME = "_dbws.DBWSProvider";
 
     public static final String PROVIDER_LISTENER_SOURCE =
-        "package _dbws;\n\n" +
-        "import jakarta.servlet.ServletContext;\n" +
-        "import jakarta.servlet.ServletContextEvent;\n" +
-        "import jakarta.servlet.ServletContextListener;\n\n" +
-        "public class ProviderListener implements ServletContextListener {\n\n" +
-        "    public static ServletContext SC = null;\n\n" +
-        "    public  ProviderListener() {\n" +
-        "        super();\n" +
-        "    }\n\n" +
-        "    public void contextInitialized(ServletContextEvent sce) {\n" +
-        "        SC = sce.getServletContext();\n" +
-        "    }\n\n" +
-        "    public void contextDestroyed(ServletContextEvent sce) {\n" +
-        "        // no-op\n" +
-        "    }\n" +
-        "}\n";
+            """
+                    package _dbws;
+
+                    import jakarta.servlet.ServletContext;
+                    import jakarta.servlet.ServletContextEvent;
+                    import jakarta.servlet.ServletContextListener;
+
+                    public class ProviderListener implements ServletContextListener {
+
+                        public static ServletContext SC = null;
+
+                        public  ProviderListener() {
+                            super();
+                        }
+
+                        public void contextInitialized(ServletContextEvent sce) {
+                            SC = sce.getServletContext();
+                        }
+
+                        public void contextDestroyed(ServletContextEvent sce) {
+                            // no-op
+                        }
+                    }
+                    """;
 
     public static final String DBWS_PROVIDER_SOURCE_PREAMBLE_START =
-        "package _dbws;\n" +
-        "\n//Java extension libraries\n" +
-        "import jakarta.annotation.PostConstruct;\n" +
-        "import jakarta.annotation.PreDestroy;\n" +
-        "import jakarta.annotation.Resource;\n" +
-        "import jakarta.servlet.ServletContext;\n" +
-        "import jakarta.xml.soap.SOAPMessage;\n" +
-        "import jakarta.xml.ws.BindingType;\n" +
-        "import jakarta.xml.ws.Provider;\n" +
-        "import jakarta.xml.ws.ServiceMode;\n" +
-        "import jakarta.xml.ws.WebServiceContext;\n" +
-        "import jakarta.xml.ws.WebServiceProvider;\n" +
-        "import static jakarta.xml.ws.Service.Mode.MESSAGE;\n";
+            """
+                    package _dbws;
+
+                    //Java extension libraries
+                    import jakarta.annotation.PostConstruct;
+                    import jakarta.annotation.PreDestroy;
+                    import jakarta.annotation.Resource;
+                    import jakarta.servlet.ServletContext;
+                    import jakarta.xml.soap.SOAPMessage;
+                    import jakarta.xml.ws.BindingType;
+                    import jakarta.xml.ws.Provider;
+                    import jakarta.xml.ws.ServiceMode;
+                    import jakarta.xml.ws.WebServiceContext;
+                    import jakarta.xml.ws.WebServiceProvider;
+                    import static jakarta.xml.ws.Service.Mode.MESSAGE;
+                    """;
     public static final String DBWS_PROVIDER_SOURCE_SOAP11HTTP_MTOM_BINDING =
         "import static jakarta.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING;\n";
     public static final String DBWS_PROVIDER_SOURCE_SOAP12HTTP_BINDING =
@@ -121,39 +132,46 @@ public class ProviderPackager extends XRPackager {
         "@BindingType(value=SOAP12HTTP_MTOM_BINDING)\n";
 
     public static final String DBWS_PROVIDER_SOURCE_CLASSDEF =
-        "public class DBWSProvider extends ProviderHelper implements Provider<SOAPMessage> {\n\n" +
-        "    // Container injects wsContext here\n" +
-        "    @Resource\n" +
-        "    protected WebServiceContext wsContext;\n\n" +
-        "    public  DBWSProvider() {\n" +
-        "        super();\n" +
-        "    }\n\n" +
-        "    @PostConstruct\n" +
-        "    public void init() {\n" +
-        "        ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();\n" +
-        "        ServletContext sc = ProviderListener.SC;\n" +
-        "        boolean mtomEnabled = false;\n" +
-        "        BindingType thisBindingType = this.getClass().getAnnotation(BindingType.class);\n" +
-        "        if (thisBindingType != null) {\n" +
-        "            if (thisBindingType.value().toLowerCase().contains(\"mtom=true\")) {\n" +
-        "                mtomEnabled = true;\n" +
-        "            }\n" +
-        "        }\n" +
-        "        super.init(parentClassLoader, sc, mtomEnabled);\n" +
-        "    }\n\n" +
-        "    @Override\n" +
-        "    public SOAPMessage invoke(SOAPMessage request) {\n" +
-        "        if (wsContext != null) {\n" +
-        "            setMessageContext(wsContext.getMessageContext());\n" +
-        "        }\n" +
-        "        return super.invoke(request);\n" +
-        "    }\n\n" +
-        "    @Override\n" +
-        "    @PreDestroy\n" +
-        "    public void destroy() {\n" +
-        "        super.destroy();\n" +
-        "    }\n" +
-        "};\n";
+            """
+                    public class DBWSProvider extends ProviderHelper implements Provider<SOAPMessage> {
+
+                        // Container injects wsContext here
+                        @Resource
+                        protected WebServiceContext wsContext;
+
+                        public  DBWSProvider() {
+                            super();
+                        }
+
+                        @PostConstruct
+                        public void init() {
+                            ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
+                            ServletContext sc = ProviderListener.SC;
+                            boolean mtomEnabled = false;
+                            BindingType thisBindingType = this.getClass().getAnnotation(BindingType.class);
+                            if (thisBindingType != null) {
+                                if (thisBindingType.value().toLowerCase().contains("mtom=true")) {
+                                    mtomEnabled = true;
+                                }
+                            }
+                            super.init(parentClassLoader, sc, mtomEnabled);
+                        }
+
+                        @Override
+                        public SOAPMessage invoke(SOAPMessage request) {
+                            if (wsContext != null) {
+                                setMessageContext(wsContext.getMessageContext());
+                            }
+                            return super.invoke(request);
+                        }
+
+                        @Override
+                        @PreDestroy
+                        public void destroy() {
+                            super.destroy();
+                        }
+                    };
+                    """;
 
     public ProviderPackager() {
         this(new WarArchiver(),"provider", noArchive);

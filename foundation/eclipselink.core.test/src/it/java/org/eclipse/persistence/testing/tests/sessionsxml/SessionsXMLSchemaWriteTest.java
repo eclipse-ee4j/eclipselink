@@ -236,8 +236,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
 
 
         // Log config
-        if (m_session.getLogConfig() instanceof DefaultSessionLogConfig) {
-            DefaultSessionLogConfig logConfig = (DefaultSessionLogConfig)m_session.getLogConfig();
+        if (m_session.getLogConfig() instanceof DefaultSessionLogConfig logConfig) {
             check("LogLevel", logConfig.getLogLevel(), "severe");
             check("Filename", logConfig.getFilename(), "logfile");
         } else {
@@ -245,8 +244,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         }
 
         // Login
-        if (m_session.getLoginConfig() instanceof DatabaseLoginConfig) {
-            DatabaseLoginConfig loginConfig = (DatabaseLoginConfig)m_session.getLoginConfig();
+        if (m_session.getLoginConfig() instanceof DatabaseLoginConfig loginConfig) {
             checkBoolean("BatchWriting", loginConfig.getBatchWriting(), true);
             checkBoolean("BindAllParameters", loginConfig.getBindAllParameters(), true);
             checkBoolean("ByteArrayBinding", loginConfig.getByteArrayBinding(), false);
@@ -285,9 +283,8 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
             // Channel
             check("Channel", rcmConfig.getChannel(), "new_channel");
 
-            if (rcmConfig.getTransportManagerConfig() instanceof JMSTopicTransportManagerConfig) {
+            if (rcmConfig.getTransportManagerConfig() instanceof JMSTopicTransportManagerConfig transportConfig) {
                 // Transport manager
-                JMSTopicTransportManagerConfig transportConfig = (JMSTopicTransportManagerConfig)rcmConfig.getTransportManagerConfig();
                 check("OnConnectionError", transportConfig.getOnConnectionError(), "KeepConnection");
                 check("TopicHostURL", transportConfig.getTopicHostURL(), "ormi://jms_topic_host");
                 check("TopicConnectionFactoryName", transportConfig.getTopicConnectionFactoryName(), "test-topic-connection-factory-name");

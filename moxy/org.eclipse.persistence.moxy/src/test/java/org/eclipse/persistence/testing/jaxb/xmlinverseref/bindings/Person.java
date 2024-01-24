@@ -26,8 +26,7 @@ public class Person {
    }
 
    public boolean equals(Object obj){
-       if(obj instanceof Person){
-           Person comparePerson = (Person)obj;
+       if(obj instanceof Person comparePerson){
            return name.equals(comparePerson.name) &&
               addr.equals(comparePerson.addr) &&
               addr.owner == this;

@@ -7103,8 +7103,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
             }
-            if (persistenceException instanceof ValidationException) {
-                ValidationException ve = (ValidationException) persistenceException;
+            if (persistenceException instanceof ValidationException ve) {
                 if (ve.getErrorCode() == ValidationException.PRIMARY_KEY_UPDATE_DISALLOWED) {
                     return;
                 } else {
@@ -7189,8 +7188,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
             }
-            if (persistenceException instanceof ValidationException) {
-                ValidationException ve = (ValidationException) persistenceException;
+            if (persistenceException instanceof ValidationException ve) {
                 if (ve.getErrorCode() == ValidationException.PRIMARY_KEY_UPDATE_DISALLOWED) {
                     return;
                 } else {
@@ -9389,10 +9387,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if(!password.equals("em_password")) {
                 errorMsg += "em_password was expected\n";
             }
-            if(! (((DatasourceLogin)policy.getLogin()).getConnector() instanceof JNDIConnector)) {
+            if(! (((DatasourceLogin) policy.getLogin()).getConnector() instanceof JNDIConnector jndiConnector)) {
                 errorMsg += "JNDIConnector was expected\n";
             } else {
-                JNDIConnector jndiConnector = (JNDIConnector)((DatasourceLogin)policy.getLogin()).getConnector();
                 String dataSourceName = jndiConnector.getName();
                 if(dataSourceName == null) {
                     errorMsg += "NON null dataSourceName was expected\n";

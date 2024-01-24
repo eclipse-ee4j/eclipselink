@@ -80,8 +80,7 @@ public class MapKeyMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof MapKeyMetadata) {
-            MapKeyMetadata mapKey = (MapKeyMetadata) objectToCompare;
+        if (objectToCompare instanceof MapKeyMetadata mapKey) {
             return valuesMatch(m_name, mapKey.getName());
         }
 

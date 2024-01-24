@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -113,8 +113,7 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
     @Override
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Class<?> valueClass = null;
-        if (value instanceof Root) {
-            Root root = (Root)value;
+        if (value instanceof Root root) {
             for(CoreField next: (List<CoreField>) this.xmlChoiceMapping.getFields()) {
                 XPathFragment fragment = ((Field)next).getXPathFragment();
                 while(fragment != null && !fragment.nameIsText) {

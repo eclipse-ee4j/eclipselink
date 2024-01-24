@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -206,9 +206,8 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
             for (int recordIndex = 0; recordIndex < numberOfRecords; recordIndex++) {
                 Object records = databaseRecords.get(recordIndex);
 
-                if (records instanceof Map) {
+                if (records instanceof Map recordsMap) {
                     // We have a map keyed on named ref_cursors
-                    Map recordsMap = (Map) records;
 
                     for (Object list : recordsMap.values()) {
                         results.add(buildObjectsFromRecords((List) list, getSQLResultSetMappings().get(recordIndex)));

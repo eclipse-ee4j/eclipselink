@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,14 +116,12 @@ public class OracleNoSQLInteraction implements Interaction {
     @Override
     @SuppressWarnings({"unchecked"})
     public jakarta.resource.cci.Record execute(InteractionSpec spec, jakarta.resource.cci.Record record) throws ResourceException {
-        if (!(spec instanceof OracleNoSQLInteractionSpec)) {
+        if (!(spec instanceof OracleNoSQLInteractionSpec noSqlSpec)) {
             throw EISException.invalidInteractionSpecType();
         }
-        if (!(record instanceof OracleNoSQLRecord)) {
+        if (!(record instanceof OracleNoSQLRecord input)) {
             throw EISException.invalidRecordType();
         }
-        OracleNoSQLInteractionSpec noSqlSpec = (OracleNoSQLInteractionSpec) spec;
-        OracleNoSQLRecord input = (OracleNoSQLRecord) record;
         try {
             OracleNoSQLOperation operation = noSqlSpec.getOperation();
             Map<String, DatabaseMapping> fieldNameMapping = createFieldNameMappingMap(noSqlSpec.getDescriptor(), true);

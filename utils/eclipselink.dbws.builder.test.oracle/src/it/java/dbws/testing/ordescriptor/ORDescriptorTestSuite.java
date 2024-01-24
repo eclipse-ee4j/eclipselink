@@ -71,84 +71,88 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     public static final String ARECORD_DESCRIPTOR_JAVACLASSNAME = ARECORD_DATABASETYPE.toLowerCase();
 
     static final String CREATE_PACKAGE_ORPACKAGE =
-        "CREATE OR REPLACE PACKAGE ORPACKAGE AS" +
-            "\nTYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
-            "\nTYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
-            "\nTYPE ARECORD IS RECORD (" +
-                "\nT1 TBL1," +
-                "\nT2 TBL2," +
-                "\nT3 BOOLEAN" +
-            "\n);" +
-            "\nTYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;" +
-            "\nTYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;" +
-            "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
-            "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2);" +
-            "\nPROCEDURE P4(REC IN ARECORD);" +
-            "\nPROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD);" +
-            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
-            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-            "\nPROCEDURE P8(FOO IN VARCHAR2);" +
-            "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-            "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;" +
-            "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;" +
-        "\nEND ORPACKAGE;";
+            """
+                    CREATE OR REPLACE PACKAGE ORPACKAGE AS
+                    TYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;
+                    TYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+                    TYPE ARECORD IS RECORD (
+                    T1 TBL1,
+                    T2 TBL2,
+                    T3 BOOLEAN
+                    );
+                    TYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;
+                    TYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;
+                    PROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);
+                    PROCEDURE P2(OLD IN TBL2, NEW IN TBL2);
+                    PROCEDURE P4(REC IN ARECORD);
+                    PROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD);
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);
+                    PROCEDURE P8(FOO IN VARCHAR2);
+                    PROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);
+                    FUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;
+                    FUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;
+                    END ORPACKAGE;""";
 
     static final String CREATE_PACKAGE_BODY_ORPACKAGE =
-        "\nCREATE OR REPLACE PACKAGE BODY ORPACKAGE AS" +
-            "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P1;" +
-            "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P2;" +
-            "\nPROCEDURE P4(REC IN ARECORD) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P4;" +
-            "\nPROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD) AS" +
-            "\nBEGIN" +
-                "\nNEWREC.T1 := OLDREC.T1;" +
-                "\nNEWREC.T2 := OLDREC.T2;" +
-                "\nNEWREC.T3 := OLDREC.T3;" +
-             "\nEND P5;" +
-             "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P7;" +
-             "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P7;" +
-             "\nPROCEDURE P8(FOO IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P8;" +
-             "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P8;" +
-             "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2 IS" +
-             "\nBEGIN" +
-                 "\nRETURN OLD;" +
-             "\nEND F2;" +
-             "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS" +
-             "\nBEGIN" +
-                 "\nRETURN RECARRAY;" +
-             "\nEND F4;" +
-         "\nEND ORPACKAGE;";
+            """
+
+                    CREATE OR REPLACE PACKAGE BODY ORPACKAGE AS
+                    PROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P1;
+                    PROCEDURE P2(OLD IN TBL2, NEW IN TBL2) AS
+                    BEGIN
+                    NULL;
+                    END P2;
+                    PROCEDURE P4(REC IN ARECORD) AS
+                    BEGIN
+                    NULL;
+                    END P4;
+                    PROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD) AS
+                    BEGIN
+                    NEWREC.T1 := OLDREC.T1;
+                    NEWREC.T2 := OLDREC.T2;
+                    NEWREC.T3 := OLDREC.T3;
+                    END P5;
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P7;
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P7;
+                    PROCEDURE P8(FOO IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P8;
+                    PROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P8;
+                    FUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2 IS
+                    BEGIN
+                    RETURN OLD;
+                    END F2;
+                    FUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS
+                    BEGIN
+                    RETURN RECARRAY;
+                    END F4;
+                    END ORPACKAGE;""";
 
     static final String CREATE_TYPE_ORPACKAGE_TBL1 =
         "CREATE OR REPLACE TYPE ORPACKAGE_TBL1 AS TABLE OF VARCHAR2(111)";
     static final String CREATE_TYPE_ORPACKAGE_TBL2 =
         "CREATE OR REPLACE TYPE ORPACKAGE_TBL2 AS TABLE OF NUMBER";
     static final String CREATE_TYPE_ORPACKAGE_ARECORD =
-        "CREATE OR REPLACE TYPE ORPACKAGE_ARECORD AS OBJECT (" +
-              "\nT1 ORPACKAGE_TBL1," +
-              "\nT2 ORPACKAGE_TBL2," +
-              "\nT3 INTEGER" +
-         "\n)";
+            """
+                    CREATE OR REPLACE TYPE ORPACKAGE_ARECORD AS OBJECT (
+                    T1 ORPACKAGE_TBL1,
+                    T2 ORPACKAGE_TBL2,
+                    T3 INTEGER
+                    )""";
     static final String CREATE_TYPE_ORPACKAGE_TBL3 =
         "CREATE OR REPLACE TYPE ORPACKAGE_TBL3 AS TABLE OF ORPACKAGE_ARECORD";
     static final String CREATE_TYPE_ORPACKAGE_TBL4 =

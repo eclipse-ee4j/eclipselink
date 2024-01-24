@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,8 +34,7 @@ public class Student extends Person {
         if(!equals){
             return false;
         }
-        if(obj instanceof Student){
-            Student studentObject = (Student)obj;
+        if(obj instanceof Student studentObject){
             if(studentNumber == null && studentObject.getStudentNumber()!= null){
                 return false;
             }

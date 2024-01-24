@@ -65,9 +65,7 @@ public class JUnitDomainObjectComparer {
                 if (JUnitTestCase.usesSOP()) {
                     // In SOP case the PhoneNumber may be read only from Employee's sopObject.
                     // That means that unless read-only attribute PhoneNumber.id is explicitly set (which never happens) it will stay null forever.
-                    if ((obj1 instanceof PhoneNumber) && (obj2 instanceof PhoneNumber)) {
-                        PhoneNumber phone1 = (PhoneNumber)obj1;
-                        PhoneNumber phone2 = (PhoneNumber)obj2;
+                    if ((obj1 instanceof PhoneNumber phone1) && (obj2 instanceof PhoneNumber phone2)) {
                         if (phone1.getId() == null && phone1.getOwner() != null && phone1.getOwner().getId() != null) {
                             // assign ownerId
                             phone1.setId(phone1.getOwner().getId());
@@ -81,9 +79,7 @@ public class JUnitDomainObjectComparer {
                             // reset to the original state
                             phone2.setId(null);
                         }
-                    } else if ((obj1 instanceof Employee) && (obj2 instanceof Employee)) {
-                        Employee emp1 = (Employee)obj1;
-                        Employee emp2 = (Employee)obj2;
+                    } else if ((obj1 instanceof Employee emp1) && (obj2 instanceof Employee emp2)) {
                         Collection<PhoneNumber> phoneNumbers1 = emp1.getPhoneNumbers();
                         Collection<PhoneNumber> phoneNumbers2 = emp2.getPhoneNumbers();
                         // compare PhoneNumbers so that PhoneNumber.id == null are worked around (see PhoneNumber case above)

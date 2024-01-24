@@ -80,8 +80,7 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof TenantTableDiscriminatorMetadata) {
-            TenantTableDiscriminatorMetadata tenantTableDiscriminator = (TenantTableDiscriminatorMetadata) objectToCompare;
+        if (objectToCompare instanceof TenantTableDiscriminatorMetadata tenantTableDiscriminator) {
 
             if (! valuesMatch(m_contextProperty, tenantTableDiscriminator.getContextProperty())) {
                 return false;

@@ -162,8 +162,7 @@ public class SortedSetHolder implements Comparable {
 
     public boolean equals(Object compareObject){
 
-         if(compareObject instanceof SortedSetHolder){
-             SortedSetHolder compareCollectionHolder = ((SortedSetHolder)compareObject);
+         if(compareObject instanceof SortedSetHolder compareCollectionHolder){
              return compareCollections(collection1, compareCollectionHolder.getCollection1())
                     && compareCollections(collection2, compareCollectionHolder.getCollection2())
                     && compareCollections(collection3, compareCollectionHolder.getCollection3())

@@ -435,8 +435,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
                     fail("Expected an array value but was an " + testValue.getClass().getName());
                 }
             }
-            else if (controlValue instanceof Collection){
-                Collection controlCollection = (Collection)controlValue;
+            else if (controlValue instanceof Collection controlCollection){
                 Collection testCollection = (Collection)testValue;
                 Iterator<Object> controlIter = controlCollection.iterator();
                 Iterator<Object> testIter = testCollection.iterator();

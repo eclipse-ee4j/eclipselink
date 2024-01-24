@@ -74,8 +74,7 @@ public class CacheIndexMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof CacheIndexMetadata) {
-            CacheIndexMetadata index = (CacheIndexMetadata) objectToCompare;
+        if (objectToCompare instanceof CacheIndexMetadata index) {
             if (this.updateable != index.getUpdateable()) {
                 return false;
             }

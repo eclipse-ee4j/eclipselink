@@ -72,8 +72,7 @@ public class ColumnResultMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ColumnResultMetadata) {
-            ColumnResultMetadata columnResult = (ColumnResultMetadata) objectToCompare;
+        if (objectToCompare instanceof ColumnResultMetadata columnResult) {
 
             if (! valuesMatch(getName(), columnResult.getName())) {
                 return false;

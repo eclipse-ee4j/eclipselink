@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -515,8 +515,7 @@ public class TestExecutor {
         }
 
         if (shouldLogResults()) {
-            if (test instanceof TestEntity) {
-                TestEntity testEntity = (TestEntity)test;
+            if (test instanceof TestEntity testEntity) {
                 testEntity.resetNestedCounter();
                 if (regression) {
                     testEntity.logRegressionResult(log);
@@ -676,8 +675,7 @@ public class TestExecutor {
         boolean hasSession = true;
 
         setShouldStopExecution(false);
-        if ((getSession() == null) && (test instanceof TestEntity)) {
-            TestEntity testEntity = (TestEntity)test;
+        if ((getSession() == null) && (test instanceof TestEntity testEntity)) {
             hasSession = false;
             if (shouldHandleErrors()) {
                 try {

@@ -108,8 +108,7 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof SQLResultSetMappingMetadata) {
-            SQLResultSetMappingMetadata sqlResultSetMapping = (SQLResultSetMappingMetadata) objectToCompare;
+        if (objectToCompare instanceof SQLResultSetMappingMetadata sqlResultSetMapping) {
 
             if (! valuesMatch(m_name, sqlResultSetMapping.getName())) {
                 return false;

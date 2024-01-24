@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -467,8 +467,7 @@ public class WSDLGenerator {
             requestElement.setType(NS_TNS_PREFIX + ":" + requestType.getName());
             schema.addTopLevelElement(requestElement);
             // build response message based on operation type
-            if (op instanceof QueryOperation) {
-                QueryOperation q = (QueryOperation) op;
+            if (op instanceof QueryOperation q) {
                 ComplexType responseType = new ComplexType();
                 responseType.setName(op.getName() + RESPONSE_SUFFIX + TYPE_SUFFIX);
                 Sequence responseSequence = new Sequence();
