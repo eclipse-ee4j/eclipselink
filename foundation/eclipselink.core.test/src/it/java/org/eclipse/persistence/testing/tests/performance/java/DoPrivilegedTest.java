@@ -18,7 +18,6 @@ import java.lang.reflect.*;
 import java.security.AccessController;
 
 import org.eclipse.persistence.Version;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;

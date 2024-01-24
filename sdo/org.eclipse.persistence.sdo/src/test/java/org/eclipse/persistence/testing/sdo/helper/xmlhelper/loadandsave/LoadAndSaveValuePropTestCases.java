@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
-import commonj.sdo.DataObject;
-import commonj.sdo.Property;
-import commonj.sdo.Type;
-import commonj.sdo.helper.XMLDocument;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
-import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOProperty;
-import org.eclipse.persistence.sdo.SDOType;
 
 /* #  6067502 22-MAY-07 TOPLINK 4 15 N 1339 SDO 11.1.1.0.0 NO RELEASE
  * SDO: JAVA CODE GENERATION REQUIRES SDO RESERVED WORD NAME COLLISION HANDLING

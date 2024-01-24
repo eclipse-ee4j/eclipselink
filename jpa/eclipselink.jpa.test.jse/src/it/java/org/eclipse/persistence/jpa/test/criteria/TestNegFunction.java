@@ -28,7 +28,6 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 
-import org.eclipse.persistence.jpa.test.criteria.model.CoalesceEntity;
 import org.eclipse.persistence.jpa.test.criteria.model.CritEntity;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;

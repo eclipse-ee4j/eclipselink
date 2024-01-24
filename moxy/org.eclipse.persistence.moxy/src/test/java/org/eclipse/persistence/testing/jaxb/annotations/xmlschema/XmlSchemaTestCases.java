@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,6 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlschema.model.extended
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
 public class XmlSchemaTestCases {
     private static final String JAXB_FACTORY_KEY = "jakarta.xml.bind.JAXBContextFactory";

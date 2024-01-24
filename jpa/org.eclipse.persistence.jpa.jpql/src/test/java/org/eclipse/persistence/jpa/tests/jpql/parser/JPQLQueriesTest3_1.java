@@ -18,8 +18,6 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_1.*;
-import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.ceiling;
-import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.selectStatement;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 public class JPQLQueriesTest3_1 extends JPQLParserTest {

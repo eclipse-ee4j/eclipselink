@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,7 +65,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -80,7 +79,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -99,7 +97,6 @@ import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_K
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.DOM_PLATFORM_CLASSNAME;
 import static org.eclipse.persistence.tools.dbws.Util.OR_PRJ_SUFFIX;
-import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //domain-specific (test) imports

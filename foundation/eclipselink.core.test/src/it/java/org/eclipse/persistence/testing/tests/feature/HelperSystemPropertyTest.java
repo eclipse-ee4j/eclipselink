@@ -16,8 +16,6 @@ package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.testing.framework.*;
 
-import java.io.File;
-
 /**
  * Parital test for Bug 2756643.
  * Tests to ensure the Helper statics which access System Properties

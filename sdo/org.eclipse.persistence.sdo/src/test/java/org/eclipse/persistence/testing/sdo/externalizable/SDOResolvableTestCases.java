@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,6 @@ package org.eclipse.persistence.testing.sdo.externalizable;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
-import commonj.sdo.helper.HelperContext;
-import commonj.sdo.helper.XMLDocument;
-import commonj.sdo.impl.HelperProvider;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,17 +23,9 @@ import java.io.ObjectOutputStream;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.helper.DataObjectInputStream;
-import org.eclipse.persistence.sdo.helper.SDODataHelper;
-import org.eclipse.persistence.sdo.helper.SDOHelperContext;
-import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
-import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
-import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
-import org.eclipse.persistence.testing.sdo.SDOXMLComparer;
 
 public class SDOResolvableTestCases extends SDOTestCase {
     //protected String rootTypeName = "dataObject";

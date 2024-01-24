@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,6 @@
 // Contributors:
 //     bdoughan - Jan 27/2009 - 1.1 - Initial implementation
 package org.eclipse.persistence.testing.sdo.helper.jaxbhelper.xsdhelper;
-
-import java.util.Vector;
 
 public class Child1 {
 

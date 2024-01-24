@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,6 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkTemplate;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Query;
-import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;

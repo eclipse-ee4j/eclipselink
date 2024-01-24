@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,7 @@
 //     Denise Smith, February 2013
 package org.eclipse.persistence.testing.jaxb.xmlinverseref.bindings;
 
-import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
-import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 @XmlRootElement
 public class Person {

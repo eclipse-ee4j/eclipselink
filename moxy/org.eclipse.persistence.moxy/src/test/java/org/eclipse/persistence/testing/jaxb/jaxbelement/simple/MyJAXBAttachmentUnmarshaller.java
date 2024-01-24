@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,6 @@ import java.util.HashMap;
 
 import jakarta.activation.DataHandler;
 import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
-
-import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 
 public class MyJAXBAttachmentUnmarshaller extends AttachmentUnmarshaller {
     public static final String PHOTO_PATH1 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";

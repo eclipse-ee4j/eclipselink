@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 // dmccann - October 27/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement;
 
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 @jakarta.xml.bind.annotation.XmlRootElement

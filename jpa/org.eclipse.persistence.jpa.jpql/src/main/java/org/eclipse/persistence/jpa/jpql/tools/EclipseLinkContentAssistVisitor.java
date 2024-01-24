@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +67,6 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
-import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals.ClassType;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.Declaration;
 

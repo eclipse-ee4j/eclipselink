@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * Copyright (c) 2005, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2024 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,6 @@ import javax.naming.NamingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-
-import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 
 public interface JPAEnvironment {
 

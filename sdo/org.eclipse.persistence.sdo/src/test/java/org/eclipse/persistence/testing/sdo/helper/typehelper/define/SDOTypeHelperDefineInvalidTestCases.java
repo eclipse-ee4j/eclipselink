@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,22 +15,14 @@
 package org.eclipse.persistence.testing.sdo.helper.typehelper.define;
 
 import commonj.sdo.DataObject;
-import commonj.sdo.Property;
 import commonj.sdo.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-
-import javax.print.attribute.standard.JobHoldUntil;
 
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOProperty;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 import org.eclipse.persistence.exceptions.SDOException;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.json;
 
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,7 +26,6 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonWriter;
-import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;

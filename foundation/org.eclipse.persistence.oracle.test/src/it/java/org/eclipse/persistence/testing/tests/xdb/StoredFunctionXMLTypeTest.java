@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.xdb;
 
-import java.sql.Types;
 import java.util.List;
 
 import oracle.jdbc.OracleTypes;
@@ -25,7 +24,6 @@ import org.eclipse.persistence.internal.platform.database.oracle.XMLTypeFactory;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 

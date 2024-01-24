@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,8 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsNoJSONTestCases;
-import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 import org.w3c.dom.Document;
 
 public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsNoJSONTestCases {

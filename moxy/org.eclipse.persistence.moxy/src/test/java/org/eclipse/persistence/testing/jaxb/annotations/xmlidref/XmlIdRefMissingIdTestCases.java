@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,6 @@
 //     Denise Smith - 2.4 - October 2012
 package org.eclipse.persistence.testing.jaxb.annotations.xmlidref;
 
-import jakarta.xml.bind.ValidationEvent;
-import jakarta.xml.bind.ValidationEventHandler;
-
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlIdRefMissingIdTestCases extends JAXBWithJSONTestCases{

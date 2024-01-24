@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,28 +18,19 @@ import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
-import commonj.sdo.helper.XMLDocument;
 
 import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver;
-import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 public class SDOSequenceTest extends SDOSequenceTestCases {
 

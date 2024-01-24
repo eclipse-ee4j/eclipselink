@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 
-import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import junit.textui.TestRunner;
 

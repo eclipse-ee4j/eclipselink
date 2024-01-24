@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.jaxb.schemagen.anonymoustype;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 

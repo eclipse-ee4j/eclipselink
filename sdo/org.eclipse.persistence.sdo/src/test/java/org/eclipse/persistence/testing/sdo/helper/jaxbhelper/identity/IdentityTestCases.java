@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,7 @@
 //     bdoughan - Feb 3/2009 - 1.1 - Initial implementation
 package org.eclipse.persistence.testing.sdo.helper.jaxbhelper.identity;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
-
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -27,9 +22,6 @@ import org.eclipse.persistence.sdo.helper.jaxb.JAXBHelperContext;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 import commonj.sdo.DataObject;
-import commonj.sdo.Type;
-import commonj.sdo.helper.XMLDocument;
-import commonj.sdo.helper.XSDHelper;
 
 public class IdentityTestCases extends SDOTestCase {
 

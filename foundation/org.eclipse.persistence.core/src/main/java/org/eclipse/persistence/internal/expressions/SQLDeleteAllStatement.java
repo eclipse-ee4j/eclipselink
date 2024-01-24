@@ -29,7 +29,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Print DELETE statement with non trivial WHERE clause

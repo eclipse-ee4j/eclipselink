@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,6 @@
 
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -20,17 +19,12 @@ import java.util.Map;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package1.Container;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package2.Unmappable;
 import org.w3c.dom.Document;
-
-
-import junit.framework.TestCase;
 
 public class PackageLevelTestCases extends JAXBWithJSONTestCases {
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.descriptors.changetracking.*;
 
 /**

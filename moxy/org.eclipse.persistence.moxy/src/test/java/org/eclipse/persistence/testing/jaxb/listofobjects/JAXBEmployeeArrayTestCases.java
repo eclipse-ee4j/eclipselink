@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Denise Smith  June 05, 2009 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -25,10 +24,6 @@ import java.util.Map;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 
 public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases{
 
