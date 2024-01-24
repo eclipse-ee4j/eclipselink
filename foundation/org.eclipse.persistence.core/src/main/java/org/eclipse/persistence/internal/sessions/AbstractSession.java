@@ -1159,11 +1159,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * INTERNAL:
      * Copy the read only classes from the unit of work
-     *
+     * <p>
      * Added Nov 8, 2000 JED for Patch 2.5.1.8
      * Ref: Prs 24502
      */
-    public Vector copyReadOnlyClasses() {
+    public List<Class<?>> copyReadOnlyClasses() {
         return getDefaultReadOnlyClasses();
     }
 
@@ -2351,7 +2351,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see org.eclipse.persistence.sessions.Project#setDefaultReadOnlyClasses(Collection)
      */
-    public Vector getDefaultReadOnlyClasses() {
+    public List<Class<?>> getDefaultReadOnlyClasses() {
         //Bug#3911318  All brokered sessions share the same DefaultReadOnlyClasses.
         if (hasBroker()) {
             return getBroker().getDefaultReadOnlyClasses();

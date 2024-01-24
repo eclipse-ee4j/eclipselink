@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.ObjID;
 import java.util.Enumeration;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -280,13 +281,13 @@ public class RMIConnection extends RemoteConnection {
      * Return the read-only classes
      */
     @Override
-    public Vector getDefaultReadOnlyClasses() {
+    public List<Class<?>> getDefaultReadOnlyClasses() {
         try {
             Transporter transporter = getRemoteSessionController().getDefaultReadOnlyClasses();
             if (!transporter.wasOperationSuccessful()) {
                 throw transporter.getException();
             } else {
-                return (Vector)transporter.getObject();
+                return (List<Class<?>>)transporter.getObject();
             }
         } catch (RemoteException exception) {
             throw CommunicationException.errorInInvocation(exception);

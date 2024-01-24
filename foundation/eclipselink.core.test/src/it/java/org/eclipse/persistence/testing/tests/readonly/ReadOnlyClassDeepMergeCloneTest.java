@@ -41,7 +41,7 @@ public class ReadOnlyClassDeepMergeCloneTest extends AutoVerifyTestCase {
 
     @Override
     public void reset() {
-        getSession().getProject().setDefaultReadOnlyClasses(new Vector());
+        getSession().getProject().setDefaultReadOnlyClasses(new ArrayList<>());
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 

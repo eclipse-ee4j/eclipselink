@@ -1747,7 +1747,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     // Added Nov 8, 2000 JED for Patch 2.5.1.8, Ref: Prs 24502
     @Override
-    public Vector copyReadOnlyClasses() {
+    public List<Class<?>> copyReadOnlyClasses() {
         return new Vector(getReadOnlyClasses());
     }
 
@@ -2336,7 +2336,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see org.eclipse.persistence.sessions.Project#setDefaultReadOnlyClasses(Collection)
      */
     @Override
-    public Vector getDefaultReadOnlyClasses() {
+    public List<Class<?>> getDefaultReadOnlyClasses() {
         return this.parent.getDefaultReadOnlyClasses();
     }
 
