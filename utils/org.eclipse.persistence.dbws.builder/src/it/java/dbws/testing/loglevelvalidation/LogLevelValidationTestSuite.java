@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -155,7 +155,7 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
         }
         XMLDirectMapping versionMapping =
             (XMLDirectMapping)sessionConfigProject.getDescriptor(SessionConfigs.class).
-                getMappings().firstElement();
+                getMappings().get(0);
         versionMapping.setConverter(new XMLConverterAdapter() {
             @Override
             public Object convertObjectValueToDataValue(Object objectValue, Session session,
@@ -219,13 +219,13 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
         "</sessions>";
     }
 
-    @Test
     /**
      * Validate that the invalid session log level "finest" is set to the default
      * "info" by the builder.
      *
      * Positive test.
      */
+    @Test
     public void testInvalidLogLevel() {
         XMLComparer comparer = new XMLComparer();
         comparer.setIgnoreElementName("password");

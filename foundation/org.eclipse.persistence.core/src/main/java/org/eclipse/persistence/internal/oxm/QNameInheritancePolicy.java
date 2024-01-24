@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,8 +32,8 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -67,9 +67,9 @@ public class QNameInheritancePolicy extends InheritancePolicy {
     @Override
     protected void updateTables(){
         // Unique is required because the builder can add the same table many times.
-        Vector<DatabaseTable> childTables = getDescriptor().getTables();
-        Vector<DatabaseTable> parentTables = getParentDescriptor().getTables();
-        Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(childTables, parentTables);
+        List<DatabaseTable> childTables = getDescriptor().getTables();
+        List<DatabaseTable> parentTables = getParentDescriptor().getTables();
+        List<DatabaseTable> uniqueTables = Helper.concatenateUniqueLists(childTables, parentTables);
         getDescriptor().setTables(uniqueTables);
 
         if(getDescriptor().isXMLDescriptor() && getParentDescriptor().isXMLDescriptor()){
@@ -151,7 +151,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                     }
                     getClassIndicatorField().setType(type);
                 }
-                getDescriptor().getFields().addElement(getClassIndicatorField());
+                getDescriptor().getFields().add(getClassIndicatorField());
             }
         }
     }

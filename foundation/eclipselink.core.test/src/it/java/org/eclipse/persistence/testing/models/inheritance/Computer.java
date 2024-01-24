@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,8 @@
 package org.eclipse.persistence.testing.models.inheritance;
 
 import java.io.*;
-import java.util.Enumeration;
+import java.util.Iterator;
+
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.sessions.DataRecord;
@@ -34,9 +35,9 @@ public class Computer implements Serializable {
         // As a result, we check for the mapping before adding it.
         // The reason this mapping is not added in the project is that some Mapping Workbench
         // tests rely on the ammendment method.
-        Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
-        while (mappings.hasMoreElements()) {
-            DatabaseMapping mapping = mappings.nextElement();
+        Iterator<DatabaseMapping> mappings = descriptor.getMappings().iterator();
+        while (mappings.hasNext()) {
+            DatabaseMapping mapping = mappings.next();
             if (mapping.isTransformationMapping()) {
                 Object ctype = ((TransformationMapping)mapping).getFieldNameToMethodNames().get("CTYPE");
                 if (ctype != null) {

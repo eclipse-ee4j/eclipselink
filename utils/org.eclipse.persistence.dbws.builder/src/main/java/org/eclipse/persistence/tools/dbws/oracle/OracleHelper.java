@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,7 +73,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
@@ -170,14 +169,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      */
     @Override
     public boolean hasTables() {
-        return dbTables.size() == 0 ? false : true;
+        return dbTables.size() != 0;
     }
 
     @Override
     public void buildDbArtifacts() {
         super.buildDbArtifacts();
         //list of all directly-referenced packages
-        Set<PLSQLPackageType> directPackages = new HashSet<PLSQLPackageType>();
+        Set<PLSQLPackageType> directPackages = new HashSet<>();
         for (ProcedureType procedureType : dbStoredProcedures) {
             for (ArgumentType argumentType : procedureType.getArguments()) {
                 DatabaseType argumentDataType = argumentType.getEnclosedType();
@@ -188,7 +187,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
         }
         //any indirectly-referenced packages?
-        final Set<PLSQLPackageType> indirectPackages = new HashSet<PLSQLPackageType>();
+        final Set<PLSQLPackageType> indirectPackages = new HashSet<>();
         DatabaseTypeVisitor indirectVisitor = new BaseDatabaseTypeVisitor() {
             @Override
             public void beginVisit(PLSQLPackageType databaseType) {
@@ -198,7 +197,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         for (PLSQLPackageType pckage : directPackages) {
             pckage.accept(indirectVisitor);
         }
-        Set<PLSQLPackageType> packages = new HashSet<PLSQLPackageType>();
+        Set<PLSQLPackageType> packages = new HashSet<>();
         packages.addAll(directPackages);
         packages.addAll(indirectPackages);
         for (PLSQLPackageType pckage : packages) {
@@ -625,10 +624,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      */
     @Override
     protected List<ProcedureType> loadProcedures(List<String> catalogPatterns, List<String> schemaPatterns, List<String> procedureNamePatterns) {
-        List<ProcedureType> allProcsAndFuncs = new ArrayList<ProcedureType>();
-        List<String> topLevelSchemaPatterns = new ArrayList<String>();
-        List<String> topLevelProcedureNamePatterns = new ArrayList<String>();
-        Map<String, Set<String>> packagePatterns = new HashMap<String,Set<String>>();
+        List<ProcedureType> allProcsAndFuncs = new ArrayList<>();
+        List<String> topLevelSchemaPatterns = new ArrayList<>();
+        List<String> topLevelProcedureNamePatterns = new ArrayList<>();
+        Map<String, Set<String>> packagePatterns = new HashMap<>();
         for (int i = 0, len = catalogPatterns.size(); i < len; i++) {
             String catalogPattern = catalogPatterns.get(i);
             String schemaPattern = schemaPatterns.get(i);
@@ -641,7 +640,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             } else {
                 Set<String> packageNames = packagePatterns.get(schemaPattern);
                 if (packageNames == null) {
-                    packageNames = new HashSet<String>();
+                    packageNames = new HashSet<>();
                     packagePatterns.put(schemaPattern, packageNames);
                 }
                 packageNames.add(catalogPattern);
@@ -668,8 +667,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         if (packagePatterns.size() > 0) {
             try {
                 //unravel map
-                List<String> schemaPats = new ArrayList<String>();
-                List<String> packagePats = new ArrayList<String>();
+                List<String> schemaPats = new ArrayList<>();
+                List<String> packagePats = new ArrayList<>();
                 for (Map.Entry<String, Set<String>> entry : packagePatterns.entrySet()) {
                     String schema = entry.getKey();
                     for (String packageName : entry.getValue()) {
@@ -687,13 +686,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         dbwsBuilder.getTypeDDL().addAll(ddlGenerator.getAllCreateDDLs());
                         dbwsBuilder.getTypeDropDDL().addAll(ddlGenerator.getAllDropDDLs());
                         //check for overloading
-                        Map<String, List<ProcedureType>> overloadMap = new HashMap<String, List<ProcedureType>>();
+                        Map<String, List<ProcedureType>> overloadMap = new HashMap<>();
                         List<ProcedureType> procedures = pakage.getProcedures();
                         for (ProcedureType procedure : procedures) {
                             String procedureName = procedure.getProcedureName();
                             List<ProcedureType> multipleProcedures = overloadMap.get(procedureName);
                             if (multipleProcedures == null) {
-                                multipleProcedures = new ArrayList<ProcedureType>();
+                                multipleProcedures = new ArrayList<>();
                                 overloadMap.put(procedureName, multipleProcedures);
                             }
                             multipleProcedures.add(procedure);
@@ -870,15 +869,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             String lFieldName = fieldName.toLowerCase();
             // handle field ordering
             boolean found = false;
-            Vector orderedFields = ordtDesc.getOrderedFields();
-            for (Iterator i = orderedFields.iterator(); i.hasNext();) {
-                Object o = i.next();
-                if (o instanceof DatabaseField) {
-                    DatabaseField field = (DatabaseField)o;
-                    if (field.getName().equalsIgnoreCase(fieldName)) {
-                        found = true;
-                        break;
-                    }
+            List<DatabaseField> orderedFields = ordtDesc.getOrderedFields();
+            for (Iterator<DatabaseField> i = orderedFields.iterator(); i.hasNext();) {
+                DatabaseField field = i.next();
+                if (field.getName().equalsIgnoreCase(fieldName)) {
+                    found = true;
+                    break;
                 }
             }
             if (!found) {
@@ -946,7 +942,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             xdesc = buildAndAddNewXMLDescriptor(oxProject, tableAlias, tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX, nct.generateSchemaAlias(targetTypeName), buildCustomQName(targetTypeName, dbwsBuilder).getNamespaceURI());
         }
 
-        boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
+        boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) != null;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((PLSQLCollectionType)dbType).getEnclosedType();
             if (nestedType.isPLSQLRecordType()) {
@@ -977,7 +973,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         if (ordt == null) {
             ordt = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, tableAlias, tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
         }
-        boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
+        boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) != null;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((PLSQLCollectionType) dbType).getEnclosedType();
             if (nestedType.isPLSQLRecordType()) {
@@ -1016,7 +1012,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 }
             }
         }
-        boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
+        boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) != null;
         if (!itemsMappingFound) {
             if (nestedDbType.isComposite()) {
                 buildAndAddXMLCompositeCollectionMapping(xdesc, referenceTypeName);
@@ -1046,7 +1042,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 }
             }
         }
-        boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
+        boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) != null;
         if (!itemsMappingFound) {
             if (nestedDbType.isComposite()) {
                 buildAndAddObjectArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, referenceTypeName, arrayName);
@@ -1139,15 +1135,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
             // handle field ordering
             boolean found = false;
-            Vector orderedFields = ordt.getOrderedFields();
-            for (Iterator i = orderedFields.iterator(); i.hasNext();) {
-                Object o = i.next();
-                if (o instanceof DatabaseField) {
-                    DatabaseField field = (DatabaseField)o;
-                    if (field.getName().equalsIgnoreCase(fieldName)) {
-                        found = true;
-                        break;
-                    }
+            List<DatabaseField> orderedFields = ordt.getOrderedFields();
+            for (Iterator<DatabaseField> i = orderedFields.iterator(); i.hasNext();) {
+                DatabaseField field = i.next();
+                if (field.getName().equalsIgnoreCase(fieldName)) {
+                    found = true;
+                    break;
                 }
             }
             if (!found) {
@@ -1215,7 +1208,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         if (xdesc == null) {
             xdesc = buildAndAddNewXMLDescriptor(oxProject, objectTableAlias, objectTableName + COLLECTION_WRAPPER_SUFFIX, nct.generateSchemaAlias(dbType.getTypeName()), buildCustomQName(objectTableName, dbwsBuilder).getNamespaceURI());
         }
-        boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
+        boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) != null;
         if (!itemsMappingFound) {
             DatabaseType nType = ((ObjectTableType) dbType).getEnclosedType();
             if (nType.isObjectType()) {
@@ -1240,7 +1233,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         if (ordt == null) {
             ordt = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, objectTableAlias, objectTableName + COLLECTION_WRAPPER_SUFFIX);
         }
-        boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
+        boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) != null;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((ObjectTableType) dbType).getEnclosedType();
             if (nestedType.isObjectType()) {

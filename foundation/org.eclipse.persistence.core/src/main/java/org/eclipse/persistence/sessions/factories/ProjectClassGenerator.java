@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1609,17 +1609,15 @@ public class ProjectClassGenerator {
 
         if ((!descriptor.isAggregateDescriptor()) && (!descriptor.isDescriptorForInterface())) {
             // Tables
-            for (Enumeration<DatabaseTable> tablesEnum = descriptor.getTables().elements();
-                 tablesEnum.hasMoreElements();) {
-                String tableName = tablesEnum.nextElement().getQualifiedName();
+            for (DatabaseTable table: descriptor.getTables()) {
+                String tableName = table.getQualifiedName();
                 method.addLine("descriptor.addTableName(\"" + tableName + "\");");
             }
 
             // Primary key
             if (!descriptor.isChildDescriptor()) {
-                for (Enumeration<String> keysEnum = descriptor.getPrimaryKeyFieldNames().elements();
-                     keysEnum.hasMoreElements();) {
-                    method.addLine("descriptor.addPrimaryKeyFieldName(\"" + keysEnum.nextElement() + "\");");
+                for (String key: descriptor.getPrimaryKeyFieldNames()) {
+                    method.addLine("descriptor.addPrimaryKeyFieldName(\"" + key + "\");");
                 }
             }
             for (Map<DatabaseField, DatabaseField> keyMapping : descriptor.getAdditionalTablePrimaryKeyFields().values()) {

@@ -21,7 +21,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -95,7 +94,7 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
         assertNotNull("No descriptor was generated for CustomQuoteRequest.", xDesc);
         int currencyPairCodeCount = 0;
         int dateCount = 0;
-        Vector<DatabaseMapping> mappings = xDesc.getMappings();
+        List<DatabaseMapping> mappings = xDesc.getMappings();
         for (int i=0; i < mappings.size(); i++) {
             DatabaseMapping mapping = mappings.get(i);
             if (mapping.getAttributeName().equals("currencyPairCode")) {

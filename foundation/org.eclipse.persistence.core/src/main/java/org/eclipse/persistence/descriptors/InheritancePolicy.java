@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     protected transient Expression onlyInstancesExpression;
     protected transient Expression withAllSubclassesExpression;
     // null if there are no childrenTables, otherwise all tables for reference class plus childrenTables
-    protected transient Vector<DatabaseTable> allTables;
+    protected transient List<DatabaseTable> allTables;
     // all tables for all subclasses (subclasses of subclasses included), should be in sync with childrenTablesJoinExpressions.
     protected transient List<DatabaseTable> childrenTables;
     // join expression for each child table, keyed by the table, should be in sync with childrenTables.
@@ -160,7 +160,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
            // childrenTables should've been null, too
             this.childrenTables = new ArrayList<>();
            // allTables should've been null, too
-            this.allTables = new Vector<>(getDescriptor().getTables());
+            this.allTables = new ArrayList<>(getDescriptor().getTables());
         }
         // Avoid duplicates as two independent subclasses may have the same table.
         if (!this.childrenTables.contains(table)) {
@@ -264,14 +264,14 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Recursively adds fields to all the parents
      */
-    protected void addFieldsToParent(Vector fields) {
+    protected void addFieldsToParent(List<DatabaseField> fields) {
         if (isChildDescriptor()) {
             if (getParentDescriptor().isInvalid()) {
                 return;
             }
             ClassDescriptor parentDescriptor = getParentDescriptor();
             if (parentDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
-                Helper.addAllUniqueToVector(parentDescriptor.getAllFields(), fields);
+                Helper.addAllUniqueToList(parentDescriptor.getAllFields(), fields);
             }
             parentDescriptor.getInheritancePolicy().addFieldsToParent(fields);
         }
@@ -555,7 +555,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * all tables for reference class plus childrenTables
      */
-    public Vector<DatabaseTable> getAllTables() {
+    public List<DatabaseTable> getAllTables() {
         if (allTables == null) {
             return this.getDescriptor().getTables();
         } else {
@@ -960,14 +960,14 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         }
 
         if (isChildDescriptor()) {
-            getDescriptor().setMappings(Helper.concatenateVectors(getParentDescriptor().getMappings(), getDescriptor().getMappings()));
+            getDescriptor().setMappings(Helper.concatenateLists(getParentDescriptor().getMappings(), getDescriptor().getMappings()));
             getDescriptor().setQueryKeys(Helper.concatenateMaps(getParentDescriptor().getQueryKeys(), getDescriptor().getQueryKeys()));
             addFieldsToParent(getDescriptor().getFields());
             // Parents fields must be first for indexing to work.
-            Vector parentsFields = (Vector)getParentDescriptor().getFields().clone();
+            List<DatabaseField> parentsFields = (List<DatabaseField>) ((ArrayList<DatabaseField>) (getParentDescriptor().getFields())).clone();
 
             //bug fix on Oracle duplicate field SQL using "order by"
-            Helper.addAllUniqueToVector(parentsFields, getDescriptor().getFields());
+            Helper.addAllUniqueToList(parentsFields, getDescriptor().getFields());
             getDescriptor().setFields(parentsFields);
 
             if (getClassIndicatorValue() != null) {
@@ -1244,7 +1244,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                     }
                     getClassIndicatorField().setType(type);
                 }
-                getDescriptor().getFields().addElement(getClassIndicatorField());
+                getDescriptor().getFields().add(getClassIndicatorField());
             }
         }
     }
@@ -1870,9 +1870,9 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      */
     protected void updateTables(){
         // Unique is required because the builder can add the same table many times.
-        Vector<DatabaseTable> childTables = getDescriptor().getTables();
-        Vector<DatabaseTable> parentTables = getParentDescriptor().getTables();
-        Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(parentTables, childTables);
+        List<DatabaseTable> childTables = getDescriptor().getTables();
+        List<DatabaseTable> parentTables = getParentDescriptor().getTables();
+        List<DatabaseTable> uniqueTables = Helper.concatenateUniqueLists(parentTables, childTables);
         getDescriptor().setTables(uniqueTables);
 
         // After filtering out any duplicate tables, set the default table

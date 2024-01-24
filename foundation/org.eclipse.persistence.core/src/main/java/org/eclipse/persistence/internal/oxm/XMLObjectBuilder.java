@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -546,10 +546,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             relationshipMappings.clear();
         }
 
-        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
-
+        for (DatabaseMapping mapping: this.descriptor.getMappings()) {
             // Add attribute to mapping association
             if (!mapping.isWriteOnly()) {
                 if(mappingsByAttribute != null) {

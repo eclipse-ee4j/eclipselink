@@ -393,12 +393,11 @@ public class StoredProcedureGenerator {
      * currently only 1:1 and 1:M are supported
      */
     protected Hashtable<String, Hashtable<String, StoredProcedureDefinition>> generateMappingStoredProcedures(ClassDescriptor descriptor) {
-        Vector<DatabaseMapping> mappings = descriptor.getMappings();
+        List<DatabaseMapping> mappings = descriptor.getMappings();
         Hashtable<String, Hashtable<String, StoredProcedureDefinition>> mappingSP = new Hashtable<>();
         Hashtable<String, StoredProcedureDefinition> mappingTable;
-        for (Enumeration<DatabaseMapping> enumtr = mappings.elements(); enumtr.hasMoreElements();) {
+        for (DatabaseMapping mapping: mappings) {
             mappingTable = new Hashtable<>();
-            DatabaseMapping mapping = enumtr.nextElement();
             if (mapping.isOneToManyMapping()) {
                 if (!getSession().getPlatform().isOracle()) {
                     //reads not supported in oracle

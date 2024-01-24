@@ -15,6 +15,7 @@
 package dbws.testing.ordescriptor;
 
 //javase imports
+import java.util.List;
 import java.util.Vector;
 
 //java eXtension imports
@@ -385,7 +386,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     // ASSERT METHODS
     protected void tbl1Asserts(ClassDescriptor tbl1Descriptor) {
         assertTrue("Wrong Java class name.  Expected [" + TBL1_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl1Descriptor.getJavaClassName() + "]", tbl1Descriptor.getJavaClassName().equals(TBL1_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl1Descriptor.getMappings();
+        List<DatabaseMapping> mappings = tbl1Descriptor.getMappings();
         assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
         DatabaseMapping mapping = mappings.get(0);
         assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
@@ -397,7 +398,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
 
     protected void tbl2Asserts(ClassDescriptor tbl2Descriptor) {
         assertTrue("Wrong Java class name.  Expected [" + TBL2_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl2Descriptor.getJavaClassName() + "]", tbl2Descriptor.getJavaClassName().equals(TBL2_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl2Descriptor.getMappings();
+        List<DatabaseMapping> mappings = tbl2Descriptor.getMappings();
         assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
         DatabaseMapping mapping = mappings.get(0);
         assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
@@ -409,7 +410,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
 
     protected void tbl3Asserts(ClassDescriptor tbl3Descriptor) {
         assertTrue("Wrong Java class name.  Expected [" + TBL3_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl3Descriptor.getJavaClassName() + "]", tbl3Descriptor.getJavaClassName().equals(TBL3_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl3Descriptor.getMappings();
+        List<DatabaseMapping> mappings = tbl3Descriptor.getMappings();
         assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
         DatabaseMapping mapping = mappings.get(0);
         assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
@@ -422,7 +423,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     }
     protected void tbl4Asserts(ClassDescriptor tbl4Descriptor) {
         assertTrue("Wrong Java class name.  Expected [" +TBL4_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl4Descriptor.getJavaClassName() + "]", tbl4Descriptor.getJavaClassName().equals(TBL4_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl4Descriptor.getMappings();
+        List<DatabaseMapping> mappings = tbl4Descriptor.getMappings();
         assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
         DatabaseMapping mapping = mappings.get(0);
         assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
@@ -433,7 +434,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     }
     protected void aRecordAsserts(ClassDescriptor aRecordDescriptor) {
         assertTrue("Wrong Java class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + aRecordDescriptor.getJavaClassName() + "]", aRecordDescriptor.getJavaClassName().equals(ARECORD_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = aRecordDescriptor.getMappings();
+        List<DatabaseMapping> mappings = aRecordDescriptor.getMappings();
         assertTrue("Wrong number of mappings.  Expected [3] but was [" + mappings.size() + "]", mappings.size() == 3);
         DatabaseMapping dm1 = mappings.get(0);
         assertTrue("Incorrect mapping attribute name.  Expected [t1] but was [" + dm1.getAttributeName() + "]", dm1.getAttributeName().equals("t1"));

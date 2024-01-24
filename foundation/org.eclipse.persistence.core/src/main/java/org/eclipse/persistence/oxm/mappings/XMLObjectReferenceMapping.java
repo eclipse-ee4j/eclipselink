@@ -167,7 +167,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
             }
             primaryKeys.set(0, object);
         } else {
-            Vector<String> pkFieldNames = referenceDescriptor.getPrimaryKeyFieldNames();
+            List<String> pkFieldNames = referenceDescriptor.getPrimaryKeyFieldNames();
             // if reference is null, create a new instance and set it on the resolver
             if (reference == null) {
                 primaryKeys = new CacheId(new Object[pkFieldNames.size()]);
@@ -394,7 +394,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
         // reference descriptor's primary key entries
         CacheId primaryKeys;
         ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(referenceClass);
-        Vector pkFieldNames = null;
+        List<String> pkFieldNames = null;
         if(null == descriptor) {
             primaryKeys = new CacheId(new Object[1]);
         } else {

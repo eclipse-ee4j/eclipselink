@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,6 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.Enumeration;
 import java.util.Map;
 
 /**
@@ -1104,9 +1103,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return true;
         }
-        for (Enumeration<DatabaseMapping> mappings = getReferenceDescriptor(attributeValue, session).getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
+        for (DatabaseMapping mapping: getReferenceDescriptor(attributeValue, session).getMappings()) {
             if (!mapping.verifyDelete(attributeValue, session)) {
                 return false;
             }

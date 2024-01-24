@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -40,9 +40,9 @@ public class ShouldUseBatchReadingOnMappingTest extends ProjectClassGeneratorRes
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         descriptorToModify = project.getDescriptors().get(Employee.class);
-        for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
-             mappingsEnum.hasMoreElements(); ) {
-            mappingToModify = mappingsEnum.nextElement();
+        for (Iterator<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).iterator();
+             mappingsEnum.hasNext(); ) {
+            mappingToModify = mappingsEnum.next();
 
             if (mappingToModify.isForeignReferenceMapping()) {
                 ((ForeignReferenceMapping)mappingToModify).useBatchReading();

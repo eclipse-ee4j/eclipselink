@@ -750,6 +750,12 @@ public class Helper implements Serializable {
 
     }
 
+    public static <E> List<E> concatenateLists(List<? extends E> first, List<? extends E> second) {
+        List<E> concatenation = new ArrayList<>(first);
+        concatenation.addAll(second);
+        return concatenation;
+    }
+
     /** Return a copy of the vector containing a subset starting at startIndex
      *  and ending at stopIndex.
      *  @param originalVector - original vector

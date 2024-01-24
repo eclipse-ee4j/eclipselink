@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.helper.AttributeMimeTypePolicy;
@@ -653,7 +652,7 @@ public class SDOProperty implements Property, Serializable {
                     //iterate over the mappings and find the correct place to insert this mapping relative to the
                     //indecies of the others.
                     SDOType containingType = getContainingType();
-                    Vector<DatabaseMapping> mappings = containingType.getXmlDescriptor().getMappings();
+                    List<DatabaseMapping> mappings = containingType.getXmlDescriptor().getMappings();
                     boolean added = false;
                     for(int i = 0; i < mappings.size(); i++) {
                         DatabaseMapping next = mappings.get(i);

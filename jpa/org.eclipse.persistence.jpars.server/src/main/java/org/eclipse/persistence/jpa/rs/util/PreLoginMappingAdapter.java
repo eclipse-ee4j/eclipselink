@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.rs.util;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -132,7 +132,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
 
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
 
-            Vector<DatabaseMapping> descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
+            @SuppressWarnings({"unchecked"})
+            List<DatabaseMapping> descriptorMappings = (List<DatabaseMapping>) ((ArrayList<DatabaseMapping>) descriptor.getMappings()).clone();
             for (DatabaseMapping mapping : descriptorMappings) {
                 if (mapping.isXMLMapping()) {
                     if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
@@ -194,7 +195,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         for (Object descriptorAlias : project.getAliasDescriptors().keySet()) {
             ClassDescriptor descriptor = project.getAliasDescriptors().get(descriptorAlias);
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
-            Vector<DatabaseMapping> descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
+            @SuppressWarnings({"unchecked"})
+            List<DatabaseMapping> descriptorMappings = (List<DatabaseMapping>) ((ArrayList<DatabaseMapping>) descriptor.getMappings()).clone();
 
             for (DatabaseMapping mapping : descriptorMappings) {
                 if (mapping.isXMLMapping()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -343,7 +344,7 @@ public class JoinedAttributeTestHelper {
             return errorMsg;
         }
 
-        Vector<DatabaseMapping> mappings = desc.getMappings();
+        List<DatabaseMapping> mappings = desc.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = mappings.get(index);
             String mappingErrorMsg = compareAttributes(obj1, obj2, mapping, session, processed);

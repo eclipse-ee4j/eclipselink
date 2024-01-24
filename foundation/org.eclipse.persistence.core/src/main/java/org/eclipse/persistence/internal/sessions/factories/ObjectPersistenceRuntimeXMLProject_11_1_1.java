@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -336,7 +336,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         descriptor.getInheritancePolicy().setParentClass(ClassDescriptor.class);
 
         XMLCompositeCollectionMapping tablesMapping = new XMLCompositeCollectionMapping();
-        tablesMapping.useCollectionClass(NonSynchronizedVector.class);
+        tablesMapping.useCollectionClass(ArrayList.class);
         tablesMapping.setAttributeName("tables/table");
         tablesMapping.setGetMethodName("getTables");
         tablesMapping.setSetMethodName("setTables");

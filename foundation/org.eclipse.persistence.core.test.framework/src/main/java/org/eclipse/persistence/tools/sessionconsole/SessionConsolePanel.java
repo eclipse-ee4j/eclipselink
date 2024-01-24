@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -3536,7 +3536,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
         String[] columns = new String[descriptor.getMappings().size()];
         for (int index = 0; index < descriptor.getMappings().size(); index++) {
-            columns[index] = (descriptor.getMappings().elementAt(index))
+            columns[index] = (descriptor.getMappings().get(index))
                     .getAttributeName();
         }
 
@@ -3546,7 +3546,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             Object object = objectsEnumeration.nextElement();
             String[] values = new String[descriptor.getMappings().size()];
             for (int index = 0; index < descriptor.getMappings().size(); index++) {
-                DatabaseMapping mapping = descriptor.getMappings().elementAt(
+                DatabaseMapping mapping = descriptor.getMappings().get(
                         index);
                 values[index] = String.valueOf(mapping
                         .getAttributeValueFromObject(object));

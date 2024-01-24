@@ -89,10 +89,10 @@ public class Employee1 implements Serializable {
         ExpressionBuilder builder = new ExpressionBuilder();
         descriptor.getQueryManager().setMultipleTableJoinExpression(builder.getField("MUL_EMP.ADDR_ID").equal(builder.getField("MUL_ADDR.ADDR_ID")).and(builder.getField("MUL_ADDR.CNTRY_ID").equal(builder.getField("MUL_CTRY.CNTRY_ID"))));
 
-        Vector tables = new Vector(3);
-        tables.addElement(new DatabaseTable("MUL_CTRY"));
-        tables.addElement(new DatabaseTable("MUL_ADDR"));
-        tables.addElement(new DatabaseTable("MUL_EMP"));
+        List<DatabaseTable> tables = new ArrayList<>(3);
+        tables.add(new DatabaseTable("MUL_CTRY"));
+        tables.add(new DatabaseTable("MUL_ADDR"));
+        tables.add(new DatabaseTable("MUL_EMP"));
         descriptor.setMultipleTableInsertOrder(tables);
     }
 

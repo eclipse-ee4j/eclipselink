@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,6 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 public interface Descriptor <
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
@@ -127,7 +126,7 @@ public interface Descriptor <
      /**
      * Returns mappings
      */
-    Vector<CORE_MAPPING> getMappings();
+    List<CORE_MAPPING> getMappings();
 
 
      /**
@@ -148,7 +147,7 @@ public interface Descriptor <
      /**
      * Return the names of all the primary keys.
      */
-    Vector<String> getPrimaryKeyFieldNames();
+    List<String> getPrimaryKeyFieldNames();
 
      /**
      * INTERNAL:
@@ -166,13 +165,13 @@ public interface Descriptor <
      /**
       * Return the table names.
       */
-     Vector getTableNames();
+     List<String> getTableNames();
 
      /**
       * INTERNAL:
       * Return all the tables.
       */
-     Vector<TABLE> getTables();
+     List<TABLE> getTables();
 
      /**
       * INTERNAL:

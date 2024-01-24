@@ -572,9 +572,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if ((value != null) && !referenceDescriptor.getJavaClass().isInstance(value)) {
             throw QueryException.incorrectClassForObjectComparison(expression, value, this);
         }
-        Enumeration<DatabaseMapping> mappings = referenceDescriptor.getMappings().elements();
-        for (; mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
+        for (DatabaseMapping mapping: referenceDescriptor.getMappings()) {
             if (value == null) {
                 attributeValue = null;
             } else {
@@ -599,9 +597,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         Expression attributeByAttributeComparison = null;
 
         //Enumeration mappingsEnum = getSourceToTargetKeyFields().elements();
-        Enumeration<DatabaseMapping> mappingsEnum = getReferenceDescriptor().getMappings().elements();
-        for (; mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping: getReferenceDescriptor().getMappings()) {
             String attributeName = mapping.getAttributeName();
             Expression join = expression.get(attributeName).equal(argument.get(attributeName));
             if (attributeByAttributeComparison == null) {
@@ -844,7 +840,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected AbstractRecord buildTemplateInsertRow(AbstractSession session) {
         AbstractRecord result = getReferenceDescriptor().getObjectBuilder().buildTemplateInsertRow(session);
         @SuppressWarnings({"unchecked"})
-        List<DatabaseMapping> processedMappings = (List<DatabaseMapping>) getReferenceDescriptor().getMappings().clone();
+        List<DatabaseMapping> processedMappings = (List<DatabaseMapping>) ((ArrayList<DatabaseMapping>) getReferenceDescriptor().getMappings()).clone();
         if (getReferenceDescriptor().hasInheritance()) {
             for (ClassDescriptor child : getReferenceDescriptor().getInheritancePolicy().getChildDescriptors()) {
                 for (DatabaseMapping mapping : child.getMappings()) {
@@ -980,7 +976,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     @Override
     protected Vector<DatabaseField> collectFields() {
-        return getReferenceFields();
+        return new Vector<>(getReferenceFields());
     }
 
     /**
@@ -989,7 +985,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     @Override
     public List<Expression> getOrderByNormalizedExpressions(Expression base) {
-        List<Expression> orderBys = new ArrayList(this.fields.size());
+        List<Expression> orderBys = new ArrayList<>(this.fields.size());
         for (DatabaseField field : this.fields) {
             orderBys.add(base.getField(field));
         }
@@ -1330,7 +1326,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Return the fields used to build the aggregate object.
      */
-    protected Vector<DatabaseField> getReferenceFields() {
+    protected List<DatabaseField> getReferenceFields() {
         return getReferenceDescriptor().getAllFields();
     }
     /**
@@ -1565,7 +1561,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected void initializeReferenceDescriptor(ClassDescriptor clonedDescriptor, AbstractSession session) {
         if (aggregateKeyTable != null){
             clonedDescriptor.setDefaultTable(aggregateKeyTable);
-            Vector<DatabaseTable> tables = new Vector<>(1);
+            List<DatabaseTable> tables = new ArrayList<>(1);
             tables.add(aggregateKeyTable);
             clonedDescriptor.setTables(tables);
         } else {
@@ -2039,7 +2035,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     protected void translateFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
         // EL Bug 326977
-        Vector fieldsToTranslate = (Vector) clonedDescriptor.getFields().clone();
+        @SuppressWarnings({"unchecked"})
+        List<DatabaseField> fieldsToTranslate = (List<DatabaseField>) ((ArrayList<DatabaseField>)clonedDescriptor.getFields()).clone();
         for (Iterator<QueryKey> qkIterator = clonedDescriptor.getQueryKeys().values().iterator(); qkIterator.hasNext();) {
             QueryKey queryKey = qkIterator.next();
             if (queryKey.isDirectQueryKey()) {

@@ -703,7 +703,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * If called with usesOptimisticLocking==true the caller should make sure that descriptor uses optimistic locking policy.
      */
     public Expression buildDeleteExpression(DatabaseTable table, AbstractRecord row, boolean usesOptimisticLocking) {
-        if (usesOptimisticLocking && (this.descriptor.getTables().firstElement().equals(table))) {
+        if (usesOptimisticLocking && (this.descriptor.getTables().get(0).equals(table))) {
             return this.descriptor.getOptimisticLockingPolicy().buildDeleteExpression(table, primaryKeyExpression, row);
         } else {
             return buildPrimaryKeyExpression(table);
@@ -1605,7 +1605,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Build the primary key expression for the secondary table.
      */
     public Expression buildPrimaryKeyExpression(DatabaseTable table) throws DescriptorException {
-        if (this.descriptor.getTables().firstElement().equals(table)) {
+        if (this.descriptor.getTables().get(0).equals(table)) {
             return getPrimaryKeyExpression();
         }
 
@@ -3764,10 +3764,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             nonPrimaryKeyMappings = new ArrayList(10);
         }
 
-        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
-
+        for (DatabaseMapping mapping: this.descriptor.getMappings()) {
             // Add attribute to mapping association
             if (!mapping.isWriteOnly()) {
                 getMappingsByAttribute().put(mapping.getAttributeName(), mapping);
@@ -4611,13 +4608,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 return false;
             }
         } else {
-            for (Enumeration<DatabaseTable> tables = this.descriptor.getTables().elements();
-                 tables.hasMoreElements();) {
-                DatabaseTable table = tables.nextElement();
-
+            for (DatabaseTable table: this.descriptor.getTables()) {
                 SQLSelectStatement sqlStatement = new SQLSelectStatement();
                 sqlStatement.addTable(table);
-                if (table == this.descriptor.getTables().firstElement()) {
+                if (table == this.descriptor.getTables().get(0)) {
                     sqlStatement.setWhereClause((Expression)getPrimaryKeyExpression().clone());
                 } else {
                     sqlStatement.setWhereClause(buildPrimaryKeyExpression(table));
@@ -4640,10 +4634,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
 
         // now ask each of the mappings to verify that the object has been deleted.
-        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
-
+        for (DatabaseMapping mapping: this.descriptor.getMappings()) {
             if (!mapping.verifyDelete(object, session)) {
                 return false;
             }

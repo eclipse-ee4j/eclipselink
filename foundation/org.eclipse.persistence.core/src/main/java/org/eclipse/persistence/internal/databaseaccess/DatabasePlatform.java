@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -478,7 +478,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL
      * Returns null unless the platform supports call with returning
      */
-    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector<DatabaseField> returnFields) {
+    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, List<DatabaseField> returnFields) {
         throw ValidationException.platformDoesNotSupportCallWithReturning(getClass().getSimpleName());
     }
 
@@ -3478,7 +3478,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * This method builds a Struct using the unwrapped connection within the session
      * @return Struct
      */
-    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, Vector<DatabaseField> orderedFields, AbstractSession session, Connection connection) throws SQLException {
+    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, List<DatabaseField> orderedFields, AbstractSession session, Connection connection) throws SQLException {
         java.sql.Connection unwrappedConnection = getConnection(session, connection);
         return createStruct(structTypeName,attributes,unwrappedConnection);
     }

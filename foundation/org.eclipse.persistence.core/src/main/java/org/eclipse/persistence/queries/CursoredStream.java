@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
@@ -173,7 +174,7 @@ public class CursoredStream extends Cursor {
                 }
             }
 
-            selectStatement.setTables((Vector)descriptor.getTables().clone());
+            selectStatement.setTables((List<DatabaseTable>) ((ArrayList<DatabaseTable>)descriptor.getTables()).clone());
 
             // Count * cannot be used with distinct.
             // Count * cannot be used with distinct.
