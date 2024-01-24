@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import junit.framework.Test;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.tests.securitycorba.SecurityWhileConvertingToMethodTest;

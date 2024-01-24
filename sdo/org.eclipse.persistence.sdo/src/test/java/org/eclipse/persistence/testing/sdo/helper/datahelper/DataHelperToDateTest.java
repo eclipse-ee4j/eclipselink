@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,12 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.TimeZone;
-
-import junit.framework.TestCase;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 public class DataHelperToDateTest extends DataHelperTestCases {
 

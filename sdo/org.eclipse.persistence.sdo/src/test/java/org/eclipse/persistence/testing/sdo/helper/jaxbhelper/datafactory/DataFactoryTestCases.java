@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,26 +15,17 @@
 package org.eclipse.persistence.testing.sdo.helper.jaxbhelper.datafactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.List;
 
 import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.sdo.helper.SDODataFactory;
-import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.jaxb.JAXBHelperContext;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 import commonj.sdo.DataObject;
-import commonj.sdo.helper.DataFactory;
-import commonj.sdo.helper.XMLHelper;
-import commonj.sdo.helper.XSDHelper;
 
 public class DataFactoryTestCases extends SDOTestCase {
 

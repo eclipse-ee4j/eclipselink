@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,6 @@
 // dmccann - May 21/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementwrapper;
 
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementWrapper;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement(name = "root", namespace = "http://www.example.com/One")

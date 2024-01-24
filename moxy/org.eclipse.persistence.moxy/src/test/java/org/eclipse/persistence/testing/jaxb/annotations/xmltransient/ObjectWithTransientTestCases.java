@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,6 @@
 //     Denise Smith - October 18, 2012
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransient;
 
-import java.util.ArrayList;
-
-import jakarta.xml.bind.MarshalException;
-
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

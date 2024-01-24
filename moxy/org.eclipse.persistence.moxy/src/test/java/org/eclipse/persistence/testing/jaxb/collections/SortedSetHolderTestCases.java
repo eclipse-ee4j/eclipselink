@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,8 @@
 //     Blaise Doughan - 2.4.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.collections;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.NavigableSet;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import jakarta.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;

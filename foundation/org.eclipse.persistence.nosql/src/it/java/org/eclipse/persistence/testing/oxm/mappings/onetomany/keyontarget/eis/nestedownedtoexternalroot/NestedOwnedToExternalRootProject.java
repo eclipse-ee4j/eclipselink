@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,6 @@ import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileEISConnectionSpec;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISDirectMapping;
 import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
-import org.eclipse.persistence.eis.mappings.EISOneToOneMapping;
 
 import org.eclipse.persistence.testing.oxm.mappings.onetomany.keyontarget.eis.nestedownedtoexternalroot.Company;
 import org.eclipse.persistence.testing.oxm.mappings.onetomany.keyontarget.eis.nestedownedtoexternalroot.Department;

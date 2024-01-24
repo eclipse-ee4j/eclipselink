@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,7 @@
 //     Martin Vojtek - 2.6.0
 package org.eclipse.persistence.testing.jaxb.json.type;
 
-import java.io.File;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.util.List;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -26,7 +23,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONTestCases;
-import org.eclipse.persistence.testing.jaxb.json.rootlevellist.WithXmlRootElementRoot;
 import org.eclipse.persistence.testing.jaxb.json.type.model.NameValue;
 import org.eclipse.persistence.testing.jaxb.json.type.model.Properties;
 

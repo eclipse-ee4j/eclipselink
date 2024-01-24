@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,12 +17,9 @@ import commonj.sdo.DataObject;
 import commonj.sdo.helper.XMLDocument;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
-import org.eclipse.persistence.sdo.helper.extension.XPathExpression;
 import org.eclipse.persistence.sdo.helper.extension.XPathHelper;
 
 public class XPathExpressionTestCases extends SDOTestCase {

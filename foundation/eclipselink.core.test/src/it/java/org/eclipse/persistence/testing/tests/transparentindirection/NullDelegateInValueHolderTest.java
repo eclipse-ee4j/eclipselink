@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.indirection.ValueHolder;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 

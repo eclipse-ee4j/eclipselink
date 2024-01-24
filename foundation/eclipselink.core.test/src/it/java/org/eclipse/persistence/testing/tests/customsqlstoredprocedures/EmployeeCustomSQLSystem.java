@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 //     Markus KARG - SQL Anywhere now using WATCOM-SQL instead of Transact-SQL.
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import java.io.IOException;
 import java.io.Writer;

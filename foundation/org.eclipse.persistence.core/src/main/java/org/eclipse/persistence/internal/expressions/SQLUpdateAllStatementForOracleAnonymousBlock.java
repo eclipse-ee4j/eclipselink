@@ -16,7 +16,6 @@
 package org.eclipse.persistence.internal.expressions;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,16 +19,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBHelper;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import junit.framework.TestCase;
 

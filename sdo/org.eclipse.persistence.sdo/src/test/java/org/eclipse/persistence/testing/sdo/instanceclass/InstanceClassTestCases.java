@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,11 +18,9 @@ import java.io.InputStream;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
-import commonj.sdo.helper.HelperContext;
 
 import org.eclipse.persistence.sdo.SDOSystemProperties;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
-import org.eclipse.persistence.sequencing.StandardSequence;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 public class InstanceClassTestCases extends SDOTestCase {

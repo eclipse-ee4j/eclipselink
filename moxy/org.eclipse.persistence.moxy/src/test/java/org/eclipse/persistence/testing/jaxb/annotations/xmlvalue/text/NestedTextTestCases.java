@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,8 @@
 //     Blaise Doughan - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.text;
 
-import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class NestedTextTestCases extends JAXBWithJSONTestCases {

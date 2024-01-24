@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.jaxb.ConstraintViolationWrapper;
-import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.ExternallyConstrainedEmployee;
@@ -26,7 +25,6 @@ import org.junit.Before;
 
 import jakarta.validation.Validation;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Set;
 

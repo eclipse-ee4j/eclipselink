@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,7 +17,6 @@
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.Assert;
@@ -31,7 +30,6 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
-import org.eclipse.persistence.jpa.jpql.tools.model.JPQLQueryBuilderWrapper;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.Declaration;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.DeclarationResolver;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.Resolver;

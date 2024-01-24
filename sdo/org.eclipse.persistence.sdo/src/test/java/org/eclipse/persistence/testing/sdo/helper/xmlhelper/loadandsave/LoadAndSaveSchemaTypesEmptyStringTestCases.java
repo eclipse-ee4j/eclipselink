@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,9 @@
 //     Denise Smith - 2.3 - initial implementation
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.helper.SDODataHelper;
 
-import commonj.sdo.Property;
 import commonj.sdo.helper.XMLDocument;
 
 import junit.textui.TestRunner;

@@ -15,9 +15,6 @@
 
 package org.eclipse.persistence.jpa.test.uuid.model;
 
-import java.util.UUID;
-
-import jakarta.persistence.Basic;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 

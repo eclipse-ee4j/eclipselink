@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,10 @@
 //     dmccann - Feb 09/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.util.List;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-
 import junit.textui.TestRunner;
 
-import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestCases;
-
-import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
-import commonj.sdo.helper.XMLDocument;
 
 public class SDOXSDHelperExceptionTestCases extends XSDHelperTestCases {
     public SDOXSDHelperExceptionTestCases(String name) {

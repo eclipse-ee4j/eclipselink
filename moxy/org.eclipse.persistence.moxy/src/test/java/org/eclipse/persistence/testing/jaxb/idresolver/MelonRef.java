@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,8 @@
 //  - rbarkhouse - 27 February - 2.3.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.idresolver;
 
-import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlIDREF;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
-import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
-import org.eclipse.persistence.oxm.annotations.XmlJoinNodes;
 
 @XmlRootElement
 class MelonRef {

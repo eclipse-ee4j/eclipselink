@@ -97,7 +97,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
-import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.FetchGroup;

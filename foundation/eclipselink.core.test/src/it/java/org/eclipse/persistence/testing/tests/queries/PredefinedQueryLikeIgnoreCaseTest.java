@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.framework.ReadObjectTest;
 
 /**
  * Test a predefined query that uses a case insensitive like expression.

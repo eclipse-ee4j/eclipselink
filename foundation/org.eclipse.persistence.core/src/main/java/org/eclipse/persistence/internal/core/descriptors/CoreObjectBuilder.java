@@ -18,7 +18,6 @@ import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.oxm.XMLContext;
 
 public abstract class CoreObjectBuilder<
     ABSTRACT_RECORD extends CoreAbstractRecord,

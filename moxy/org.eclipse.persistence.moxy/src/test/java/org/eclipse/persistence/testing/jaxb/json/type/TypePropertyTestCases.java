@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONTestCases;
-import org.eclipse.persistence.testing.jaxb.json.type.model.Customer;
 import org.eclipse.persistence.testing.jaxb.json.type.model.PersonWithType;
 
 /**

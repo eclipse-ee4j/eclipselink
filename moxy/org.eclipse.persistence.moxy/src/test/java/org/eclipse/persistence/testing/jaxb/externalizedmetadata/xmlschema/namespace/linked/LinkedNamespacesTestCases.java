@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.name
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collection;

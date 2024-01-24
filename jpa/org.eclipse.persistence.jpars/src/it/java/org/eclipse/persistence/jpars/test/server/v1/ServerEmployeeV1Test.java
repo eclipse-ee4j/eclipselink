@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,6 @@ package org.eclipse.persistence.jpars.test.server.v1;
 
 import org.eclipse.persistence.jpars.test.server.ServerEmployeeTestBase;
 import org.junit.BeforeClass;
-
-import java.util.Map;
 
 /**
  * ServerEmployeeTest adapted for JPARS 1.0.

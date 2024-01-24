@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,10 @@
 //  - rbarkhouse - 27 November 2012 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
-import java.net.URL;
-import java.util.ArrayList;
-
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 public class CreateByXPathTests extends junit.framework.TestCase {
 

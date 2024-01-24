@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,29 +14,12 @@
 // dmccann - April 30/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
-import junit.framework.TestCase;
-
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
 
 /**
