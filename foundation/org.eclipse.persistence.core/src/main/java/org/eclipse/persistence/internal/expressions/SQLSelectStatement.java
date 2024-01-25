@@ -60,9 +60,9 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -826,7 +826,7 @@ public class SQLSelectStatement extends SQLStatement {
         // For  CR#2627019
         currentAliasNumber = getCurrentAliasNumber();
 
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Void> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 currentAliasNumber = each.assignTableAliasesStartingAt(currentAliasNumber);
@@ -883,7 +883,7 @@ public class SQLSelectStatement extends SQLStatement {
      * This is used by cursored stream to determine if an expression used distinct as the size must account for this.
      */
     public void computeDistinct() {
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Void> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression expression) {
                 if (expression.isQueryKeyExpression() && ((QueryKeyExpression)expression).shouldQueryToManyRelationship()) {
@@ -938,23 +938,24 @@ public class SQLSelectStatement extends SQLStatement {
         // Compute tables should never defer to computeTablesFromTables
         // This iterator will pull all the table aliases out of an expression, and
         // put them in a map.
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Map<DatabaseTable, DatabaseTable>> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 TableAliasLookup aliases = each.getTableAliases();
 
                 if (aliases != null) {
-                    // Insure that an aliased table is only added to a single
+                    // Ensure that an aliased table is only added to a single
                     // FROM clause.
                     if (!aliases.haveBeenAddedToStatement()) {
-                        aliases.addToMap((Map<DatabaseTable, DatabaseTable>)getResult());
+                        aliases.addToMap(getResult());
                         aliases.setHaveBeenAddedToStatement(true);
                     }
                 }
             }
         };
 
-        iterator.setResult(new Hashtable(5));
+        //we want consistent order in the from and Hashtable nor HashMap guarantee ordering
+        iterator.setResult(new LinkedHashMap<>(5));
 
         if (getWhereClause() != null) {
             iterator.iterateOn(getWhereClause());
@@ -967,16 +968,16 @@ public class SQLSelectStatement extends SQLStatement {
 
         //Iterate on fields as well in that rare case where the select is not in the where clause
         for (Object field : getFields()) {
-            if (field instanceof Expression) {
-                iterator.iterateOn((Expression)field);
+            if (field instanceof Expression e) {
+                iterator.iterateOn(e);
             }
         }
 
         //Iterate on non-selected fields as well in that rare case where the from is not in the where clause
         if (hasNonSelectFields()) {
             for (Object field : getNonSelectFields()) {
-                if (field instanceof Expression) {
-                    iterator.iterateOn((Expression)field);
+                if (field instanceof Expression e) {
+                    iterator.iterateOn(e);
                 }
             }
         }
@@ -984,7 +985,7 @@ public class SQLSelectStatement extends SQLStatement {
         // Always iterator on the builder, as the where clause may not contain the builder, i.e. value=value.
         iterator.iterateOn(getBuilder());
 
-        Map<DatabaseTable, DatabaseTable> allTables = (Map<DatabaseTable, DatabaseTable>)iterator.getResult();
+        Map<DatabaseTable, DatabaseTable> allTables = iterator.getResult();
         setTableAliases(allTables);
 
         for (DatabaseTable table : allTables.values()) {
@@ -997,7 +998,8 @@ public class SQLSelectStatement extends SQLStatement {
      * no ambiguity
      */
     public void computeTablesFromTables() {
-        Map<DatabaseTable, DatabaseTable> allTables = new Hashtable<>();
+        //we want consistent order in the from and Hashtable nor HashMap guarantee ordering
+        Map<DatabaseTable, DatabaseTable> allTables = new LinkedHashMap<>();
         AsOfClause asOfClause = null;
 
         if (getBuilder().hasAsOfClause() && !getBuilder().getSession().getProject().hasGenericHistorySupport()) {

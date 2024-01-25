@@ -471,7 +471,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if(!selectStatement.requiresAliases()) {
             return null;
         }
-        HashSet aliasTables = new HashSet();
+        Set<DatabaseTable> aliasTables = new HashSet<>();
         Iterator<Map.Entry<DatabaseTable, DatabaseTable>> itEntries = selectStatement.getTableAliases().entrySet().iterator();
         DatabaseTable aliasTable = null;
         while(itEntries.hasNext()) {
@@ -489,14 +489,14 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // The table has several aliases,
         // remove the aliases that used by DataExpressions
         // with baseExpression NOT the expressionBuilder used by the statement
-        ExpressionIterator expIterator = new ExpressionIterator() {
+        ExpressionIterator<Collection<DatabaseTable>> expIterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 if(each instanceof DataExpression dataExpression) {
                     DatabaseField field = dataExpression.getField();
                     if(field != null) {
                         if(dataExpression.getBaseExpression() != getStatement().getBuilder()) {
-                            ((Collection)getResult()).remove(dataExpression.getAliasedField().getTable());
+                            getResult().remove(dataExpression.getAliasedField().getTable());
                         }
                     }
                 }
@@ -512,14 +512,14 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         expIterator.iterateOn(selectStatement.getWhereClause());
 
         if(aliasTables.size() == 1) {
-            aliasTable = (DatabaseTable)aliasTables.iterator().next();
+            aliasTable = aliasTables.iterator().next();
             return aliasTable.getQualifiedName();
         } else if(aliasTables.isEmpty()) {
             // should never happen
             return aliasTable.getQualifiedName();
         } else {
             // should never happen
-            aliasTable = (DatabaseTable)aliasTables.iterator().next();
+            aliasTable = aliasTables.iterator().next();
             return aliasTable.getQualifiedName();
         }
     }
@@ -2097,7 +2097,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         //     Employee-base example: valueExp = builder.get("manager").get("firstName");
         // Before iterating the table is set into result,
         // if expression requiring select is found, then resul set to null.
-        ExpressionIterator expRequiresSelectIterator = new ExpressionIterator() {
+        ExpressionIterator<DatabaseTable> expRequiresSelectIterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 if(getResult() == null) {
@@ -2124,7 +2124,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     }
                     DatabaseField field = dataExpression.getField();
                     if(field != null) {
-                        if(!field.getTable().equals((DatabaseTable)getResult())) {
+                        if(!field.getTable().equals(getResult())) {
                             setResult(null);
                             return;
                         }
@@ -2209,13 +2209,13 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             //
             // This ExpressionIterator will be used for collecting fields from
             // selection criteria and assigned expressions.
-            ExpressionIterator expIterator = new ExpressionIterator() {
+            ExpressionIterator<Collection<DatabaseField>> expIterator = new ExpressionIterator<>() {
                 @Override
                 public void iterate(Expression each) {
                     if(each instanceof DataExpression dataExpression) {
                         DatabaseField field = dataExpression.getField();
                         if(field != null) {
-                            ((Collection)getResult()).add(field);
+                            getResult().add(field);
                         }
                     }
                 }

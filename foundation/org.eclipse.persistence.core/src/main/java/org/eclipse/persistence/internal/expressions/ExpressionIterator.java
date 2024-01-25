@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,16 +16,16 @@ package org.eclipse.persistence.internal.expressions;
 
 import org.eclipse.persistence.expressions.Expression;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 /**
- * Used to itterate an expression tree, through inner subclasses.
+ * Used to iterate an expression tree, through inner subclasses.
+ * @param <T> result type
  */
-public abstract class ExpressionIterator {
+public abstract class ExpressionIterator<T> {
 
     /** Allow the iteration to build a result. */
-    protected Object result;
+    protected T result;
 
     /** Some iterations require a statement. */
     protected SQLSelectStatement statement;
@@ -40,7 +40,7 @@ public abstract class ExpressionIterator {
         super();
     }
 
-    public Object getResult() {
+    public T getResult() {
         return result;
     }
 
@@ -59,16 +59,16 @@ public abstract class ExpressionIterator {
 
     /**
      * INTERNAL:
-     * This method must be defined by subclasses to implement the logic of the iteratation.
+     * This method must be defined by subclasses to implement the logic of the iteration.
      */
     public abstract void iterate(Expression expression);
 
     /**
      * INTERNAL:
      */
-    public void iterateOn(Vector expressions) {
-        for (Enumeration expressionEnum = expressions.elements(); expressionEnum.hasMoreElements();) {
-            iterate((Expression)expressionEnum.nextElement());
+    public void iterateOn(List<Expression> expressions) {
+        for (Expression expression : expressions) {
+            iterate(expression);
         }
     }
 
@@ -80,7 +80,7 @@ public abstract class ExpressionIterator {
         expression.iterateOn(this);
     }
 
-    public void setResult(Object result) {
+    public void setResult(T result) {
         this.result = result;
     }
 
