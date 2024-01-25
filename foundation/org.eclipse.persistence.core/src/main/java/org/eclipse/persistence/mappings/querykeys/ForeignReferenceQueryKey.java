@@ -168,29 +168,29 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * The returned relationTable still could be null.
      */
     public DatabaseTable getRelationTable(ClassDescriptor referenceDescriptor) {
-        ExpressionIterator expIterator = new ExpressionIterator() {
+        ExpressionIterator<Collection<DatabaseTable>> expIterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 if(each.isTableExpression()) {
-                    ((Collection)this.getResult()).add(((TableExpression)each).getTable());
+                    this.getResult().add(((TableExpression)each).getTable());
                 }
                 else if(each.isDataExpression()) {
                     DatabaseField field = ((DataExpression)each).getField();
                     if(field != null && field.hasTableName()) {
-                        ((Collection)this.getResult()).add(field.getTable());
+                        this.getResult().add(field.getTable());
                     }
                 } else if(each.isParameterExpression()) {
                     DatabaseField field = ((ParameterExpression)each).getField();
                     if(field != null && field.hasTableName()) {
-                        ((Collection)this.getResult()).add(field.getTable());
+                        this.getResult().add(field.getTable());
                     }
                 }
             }
         };
 
-        expIterator.setResult(new HashSet());
+        expIterator.setResult(new HashSet<>());
         expIterator.iterateOn(this.joinCriteria);
-        HashSet<DatabaseTable> tables = (HashSet)expIterator.getResult();
+        Collection<DatabaseTable> tables = expIterator.getResult();
 
         DatabaseTable relationTable = null;
         Iterator<DatabaseTable> it = tables.iterator();

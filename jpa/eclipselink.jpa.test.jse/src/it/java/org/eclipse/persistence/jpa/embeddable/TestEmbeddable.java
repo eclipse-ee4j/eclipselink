@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -52,13 +53,13 @@ public class TestEmbeddable {
             queryEmbed.setParameter(1, "95051");
             queryEmbed.getResultList();
             Assert.assertEquals(1, _sql.size());
-            Assert.assertEquals("SELECT t0.VENDOR FROM SPECPHONE t0, SPECEMPLOYEE_SPECPHONE t2, SPECEMPLOYEE t1 WHERE ((t1.ZIPCODE = ?) AND ((t2.SpecEmployee_ID = t1.ID) AND (t0.ID = t2.phones_ID)))", _sql.remove(0));
+            Assert.assertEquals("SELECT t0.VENDOR FROM SPECEMPLOYEE t1, SPECEMPLOYEE_SPECPHONE t2, SPECPHONE t0 WHERE ((t1.ZIPCODE = ?) AND ((t2.SpecEmployee_ID = t1.ID) AND (t0.ID = t2.phones_ID)))", _sql.remove(0));
 
             queryEmbed = em.createQuery("SELECT p.vendor FROM SpecEmployee e JOIN e.contactInfo c JOIN c.phones p WHERE e.contactInfo.primaryAddress.zipcode = ?1");
             queryEmbed.setParameter(1, "95052");
             queryEmbed.getResultList();
             Assert.assertEquals(1, _sql.size());
-            Assert.assertEquals("SELECT t0.VENDOR FROM SPECPHONE t0, SPECEMPLOYEE_SPECPHONE t2, SPECEMPLOYEE t1 WHERE ((t1.ZIPCODE = ?) AND ((t2.SpecEmployee_ID = t1.ID) AND (t0.ID = t2.phones_ID)))", _sql.remove(0));
+            Assert.assertEquals("SELECT t0.VENDOR FROM SPECEMPLOYEE t1, SPECEMPLOYEE_SPECPHONE t2, SPECPHONE t0 WHERE ((t1.ZIPCODE = ?) AND ((t2.SpecEmployee_ID = t1.ID) AND (t0.ID = t2.phones_ID)))", _sql.remove(0));
         } finally {
             if (em.isOpen()) {
                 em.close();

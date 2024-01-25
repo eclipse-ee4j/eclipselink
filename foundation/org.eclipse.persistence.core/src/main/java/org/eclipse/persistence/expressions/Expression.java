@@ -1095,7 +1095,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * equality operations between two field nodes.
      */
     public Expression convertToUseOuterJoin() {
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Void> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 each.convertNodeToUseOuterJoin();
