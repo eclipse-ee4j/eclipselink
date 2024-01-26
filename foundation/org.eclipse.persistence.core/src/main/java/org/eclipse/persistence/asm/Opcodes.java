@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ public class Opcodes {
     private final static String ASM_OPCCODES_OW2 = "org.objectweb.asm.Opcodes";
 
     private final static Map<String, String> ASM_OPCCODES_MAP = new HashMap<>();
+    private final static Map<String, Integer> OPCODES_CACHE = new HashMap<>();
 
     static {
         ASM_OPCCODES_MAP.put(ASMFactory.ASM_SERVICE_OW2, ASM_OPCCODES_OW2);
@@ -33,11 +34,18 @@ public class Opcodes {
     }
 
     public static int valueInt(String fieldName) {
-        return ((int) Util.getFieldValue(ASM_OPCCODES_MAP, fieldName, Integer.TYPE));
+        return valueInteger(fieldName);
     }
 
     public static Integer valueInteger(String fieldName) {
-        return ((Integer) Util.getFieldValue(ASM_OPCCODES_MAP, fieldName, Integer.class));
+        Integer result = OPCODES_CACHE.get(fieldName);
+        if (result != null) {
+            return result;
+        } else {
+            result = (int) Util.getFieldValue(ASM_OPCCODES_MAP, fieldName, Integer.TYPE);
+            OPCODES_CACHE.put(fieldName, result);
+            return result;
+        }
     }
 
     public static Class getOpcodesClass() {
