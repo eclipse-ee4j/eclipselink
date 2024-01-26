@@ -79,7 +79,6 @@ public class ClassWeaver extends ClassVisitor {
     public static final String FETCHGROUP_SHORT_SIGNATURE = "org/eclipse/persistence/queries/FetchGroup";
     public static final String FETCHGROUP_SIGNATURE = "Lorg/eclipse/persistence/queries/FetchGroup;";
     public static final String SESSION_SIGNATURE = "Lorg/eclipse/persistence/sessions/Session;";
-    public static final String ENTITY_MANAGER_IMPL_SHORT_SIGNATURE = "org/eclipse/persistence/internal/jpa/EntityManagerImpl";
     public static final String PBOOLEAN_SIGNATURE = "Z";
     public static final String LONG_SIGNATURE = "J";
 
@@ -598,32 +597,22 @@ public class ClassWeaver extends ClassVisitor {
             // e.g. if it is an integer: Integer.valueOf(attribute)
             // This is the first part of the wrapping
             String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
-            if (wrapper != null) {
-                cv_set.visitTypeInsn(Opcodes.valueInt("NEW"), wrapper);
-                cv_set.visitInsn(Opcodes.valueInt("DUP"));
-            }
-
             // load the method argument
             cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             cv_set.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
 
             if (wrapper != null) {
-                // invoke the constructor for wrapping
-                // e.g. Integer.valueOf(variableName)
-                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
-
-                // wrap the method argument
-                // e.g. Integer.valueOf(argument)
-                cv_set.visitTypeInsn(Opcodes.valueInt("NEW"), wrapper);
-                cv_set.visitInsn(Opcodes.valueInt("DUP"));
+                //convert from global field e.g. Integer.valueOf(this.intField)
+                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), wrapper, "valueOf", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")L" + wrapper + ";", false);
+                //convert from method argument e.g. Integer.valueOf(var1)
                 cv_set.visitVarInsn(opcode, 1);
-                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
+                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), wrapper, "valueOf", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")L" + wrapper + ";", false);
             } else {
                 // if we are not wrapping the argument, just load it
                 cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
             }
-            // _persistence_propertyChange("variableName", variableName,
-            // argument);
+            // _persistence_propertyChange("variableName", variableName, argument);
+            //e.g.  this._persistence_propertyChange("intField", Integer.valueOf(this.intField), Integer.valueOf(var1));
             cv_set.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", false);
         } else {
             if (attributeDetails.weaveValueHolders()) {
@@ -881,10 +870,34 @@ public class ClassWeaver extends ClassVisitor {
         // create the _persistence_shallow_clone() method
         MethodVisitor cv_clone = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_shallow_clone", "()Ljava/lang/Object;", null, null);
 
+        Label l0 = ASMFactory.createLabel();
+        Label l1 = ASMFactory.createLabel();
+        Label l2 = ASMFactory.createLabel();
+        // try {
+        cv_clone.visitTryCatchBlock(l0, l1, l2, "java/lang/CloneNotSupportedException");
+        cv_clone.visitLabel(l0);
         // return super.clone();
         cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
         cv_clone.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), "java/lang/Object", "clone", "()Ljava/lang/Object;", false);
-
+        // } catch (CloneNotSupportedException e) {
+        cv_clone.visitLabel(l1);
+        cv_clone.visitInsn(Opcodes.valueInt("ARETURN"));
+        cv_clone.visitLabel(l2);
+        cv_clone.visitFrame(Opcodes.valueInt("F_SAME1"), 0, null, 1, new Object[]{"java/lang/CloneNotSupportedException"});
+        cv_clone.visitVarInsn(Opcodes.valueInt("ASTORE"), 1);
+        // throw new InternalError(e);
+        Label l3 = ASMFactory.createLabel();
+        cv_clone.visitLabel(l3);
+        cv_clone.visitTypeInsn(Opcodes.valueInt("NEW"), "java/lang/InternalError");
+        cv_clone.visitInsn(Opcodes.valueInt("DUP"));
+        cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_clone.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), "java/lang/InternalError", "<init>", "(Ljava/lang/Throwable;)V", false);
+        cv_clone.visitInsn(Opcodes.valueInt("ATHROW"));
+        Label l4 = ASMFactory.createLabel();
+        cv_clone.visitLabel(l4);
+        cv_clone.visitLocalVariable("e", "Ljava/lang/CloneNotSupportedException;", null, l3, l4, 1);
+        cv_clone.visitLocalVariable("this", "L" + classDetails.getClassName() + ";", null, l0, l4, 0);
+        // Method end - implicit return
         cv_clone.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_clone.visitMaxs(0, 0);
     }
@@ -1193,33 +1206,62 @@ public class ClassWeaver extends ClassVisitor {
         cv_isAttributeFetched.visitInsn(Opcodes.valueInt("IRETURN"));
         cv_isAttributeFetched.visitMaxs(0, 0);
 
-        MethodVisitor cv_checkFetched = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null);
-        cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
-        gotoReturn = ASMFactory.createLabel();
-        cv_checkFetched.visitJumpInsn(Opcodes.valueInt("IFNE"), gotoReturn);
-        cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        cv_checkFetched.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), FETCHGROUP_TRACKER_SHORT_SIGNATURE);
-        cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttribute", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V", false);
-        cv_checkFetched.visitLabel(gotoReturn);
-        cv_checkFetched.visitInsn(Opcodes.valueInt("RETURN"));
-        cv_checkFetched.visitMaxs(0, 0);
+        MethodVisitor cv_checkFetched = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null); {
+            Label l0 = ASMFactory.createLabel();
+            cv_checkFetched.visitLabel(l0);
+            // if (!this._persistence_isAttributeFetched(attributeName)) {
+            cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
+            Label l1 = ASMFactory.createLabel();
+            cv_checkFetched.visitJumpInsn(Opcodes.valueInt("IFNE"), l1);
+            // String errorMsg = _persistence_getFetchGroup().
+            cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_getFetchGroup", "()Lorg/eclipse/persistence/queries/FetchGroup;", false);
+            // .onUnfetchedAttribute(entity, attributeName);
+            cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), "org/eclipse/persistence/queries/FetchGroup", "onUnfetchedAttribute", "(Lorg/eclipse/persistence/queries/FetchGroupTracker;Ljava/lang/String;)Ljava/lang/String;", false);
+            cv_checkFetched.visitVarInsn(Opcodes.valueInt("ASTORE"), 2);
+            cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
+            cv_checkFetched.visitJumpInsn(Opcodes.valueInt("IFNULL"), l1);
+            cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
+            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), "org/eclipse/persistence/exceptions/StaticWeaveException", "exceptionPerformWeaving", "(Ljava/lang/String;)Lorg/eclipse/persistence/exceptions/StaticWeaveException;", false);
+            cv_checkFetched.visitInsn(Opcodes.valueInt("ATHROW"));
+            cv_checkFetched.visitLabel(l1);
+            cv_checkFetched.visitFrame(Opcodes.valueInt("F_APPEND"), 1, new Object[]{"java/lang/String"}, 0, null);
+            cv_checkFetched.visitInsn(Opcodes.valueInt("RETURN"));
+            cv_checkFetched.visitMaxs(0, 0);
+        }
 
         MethodVisitor cv_checkFetchedForSet = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", null, null);
-        cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
-        gotoReturn = ASMFactory.createLabel();
-        cv_checkFetchedForSet.visitJumpInsn(Opcodes.valueInt("IFNE"), gotoReturn);
-        cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        cv_checkFetchedForSet.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), FETCHGROUP_TRACKER_SHORT_SIGNATURE);
-        cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttributeForSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V", false);
-        cv_checkFetchedForSet.visitLabel(gotoReturn);
-        cv_checkFetchedForSet.visitInsn(Opcodes.valueInt("RETURN"));
-        cv_checkFetchedForSet.visitMaxs(0, 0);
+        {
+            Label l0 = ASMFactory.createLabel();
+            cv_checkFetchedForSet.visitLabel(l0);
+            // if (!this._persistence_isAttributeFetched(attributeName)) {
+            cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
+            Label l1 = ASMFactory.createLabel();
+            cv_checkFetchedForSet.visitJumpInsn(Opcodes.valueInt("IFNE"), l1);
+            // String errorMsg = _persistence_getFetchGroup().
+            cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_getFetchGroup", "()Lorg/eclipse/persistence/queries/FetchGroup;", false);
+            // .onUnfetchedAttribute(entity, attributeName);
+            cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), "org/eclipse/persistence/queries/FetchGroup", "onUnfetchedAttributeSet", "(Lorg/eclipse/persistence/queries/FetchGroupTracker;Ljava/lang/String;)Ljava/lang/String;", false);
+            cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ASTORE"), 2);
+            cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
+            cv_checkFetchedForSet.visitJumpInsn(Opcodes.valueInt("IFNULL"), l1);
+            cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
+            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), "org/eclipse/persistence/exceptions/StaticWeaveException", "exceptionPerformWeaving", "(Ljava/lang/String;)Lorg/eclipse/persistence/exceptions/StaticWeaveException;", false);
+            cv_checkFetchedForSet.visitInsn(Opcodes.valueInt("ATHROW"));
+            cv_checkFetchedForSet.visitLabel(l1);
+            cv_checkFetchedForSet.visitFrame(Opcodes.valueInt("F_APPEND"), 1, new Object[]{"java/lang/String"}, 0, null);
+            cv_checkFetchedForSet.visitInsn(Opcodes.valueInt("RETURN"));
+            cv_checkFetchedForSet.visitMaxs(0, 0);
+        }
     }
 
     /**
