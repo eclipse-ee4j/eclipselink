@@ -96,6 +96,9 @@ public class ClassWeaver extends ClassVisitor {
     public static final String JPA_TRANSIENT_DESCRIPTION = "Ljakarta/persistence/Transient;";
     public static final String XML_TRANSIENT_DESCRIPTION = "Ljakarta/xml/bind/annotation/XmlTransient;";
 
+    // Jakarta Persistence API
+    public static final String JPA_ENTITY_NOT_FOUND_EXCEPTION_SHORT_SIGNATURE = "jakarta/persistence/EntityNotFoundException";
+
     public static final String PERSISTENCE_SET = Helper.PERSISTENCE_SET;
     public static final String PERSISTENCE_GET = Helper.PERSISTENCE_GET;
 
@@ -878,7 +881,7 @@ public class ClassWeaver extends ClassVisitor {
         cv_clone.visitLabel(l0);
         // return super.clone();
         cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        cv_clone.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), "java/lang/Object", "clone", "()Ljava/lang/Object;", false);
+        cv_clone.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), "java/lang/Object", "clone", "()" + OBJECT_SIGNATURE, false);
         // } catch (CloneNotSupportedException e) {
         cv_clone.visitLabel(l1);
         cv_clone.visitInsn(Opcodes.valueInt("ARETURN"));
@@ -1206,27 +1209,30 @@ public class ClassWeaver extends ClassVisitor {
         cv_isAttributeFetched.visitInsn(Opcodes.valueInt("IRETURN"));
         cv_isAttributeFetched.visitMaxs(0, 0);
 
-        MethodVisitor cv_checkFetched = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null); {
+        MethodVisitor cv_checkFetched = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_checkFetched", "(" + STRING_SIGNATURE + ")V", null, null); {
             Label l0 = ASMFactory.createLabel();
             cv_checkFetched.visitLabel(l0);
             // if (!this._persistence_isAttributeFetched(attributeName)) {
             cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
+            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(" + STRING_SIGNATURE + ")Z", false);
             Label l1 = ASMFactory.createLabel();
             cv_checkFetched.visitJumpInsn(Opcodes.valueInt("IFNE"), l1);
             // String errorMsg = _persistence_getFetchGroup().
             cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_getFetchGroup", "()Lorg/eclipse/persistence/queries/FetchGroup;", false);
+            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_getFetchGroup", "()" + FETCHGROUP_SIGNATURE, false);
             // .onUnfetchedAttribute(entity, attributeName);
             cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), "org/eclipse/persistence/queries/FetchGroup", "onUnfetchedAttribute", "(Lorg/eclipse/persistence/queries/FetchGroupTracker;Ljava/lang/String;)Ljava/lang/String;", false);
+            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), FETCHGROUP_SHORT_SIGNATURE, "onUnfetchedAttribute", "(" + FETCHGROUP_TRACKER_SIGNATURE + STRING_SIGNATURE + ")" + STRING_SIGNATURE, false);
             cv_checkFetched.visitVarInsn(Opcodes.valueInt("ASTORE"), 2);
             cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
             cv_checkFetched.visitJumpInsn(Opcodes.valueInt("IFNULL"), l1);
+            // throw new EntityNotFoundException(errorMsg);
+            cv_checkFetched.visitTypeInsn(Opcodes.valueInt("NEW"), JPA_ENTITY_NOT_FOUND_EXCEPTION_SHORT_SIGNATURE);
+            cv_checkFetched.visitInsn(Opcodes.valueInt("DUP"));
             cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
-            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), "org/eclipse/persistence/exceptions/StaticWeaveException", "exceptionPerformWeaving", "(Ljava/lang/String;)Lorg/eclipse/persistence/exceptions/StaticWeaveException;", false);
+            cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), JPA_ENTITY_NOT_FOUND_EXCEPTION_SHORT_SIGNATURE, "<init>", "(" + STRING_SIGNATURE + ")V", false);
             cv_checkFetched.visitInsn(Opcodes.valueInt("ATHROW"));
             cv_checkFetched.visitLabel(l1);
             cv_checkFetched.visitFrame(Opcodes.valueInt("F_APPEND"), 1, new Object[]{"java/lang/String"}, 0, null);
@@ -1234,28 +1240,31 @@ public class ClassWeaver extends ClassVisitor {
             cv_checkFetched.visitMaxs(0, 0);
         }
 
-        MethodVisitor cv_checkFetchedForSet = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", null, null);
+        MethodVisitor cv_checkFetchedForSet = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_checkFetchedForSet", "(" + STRING_SIGNATURE + ")V", null, null);
         {
             Label l0 = ASMFactory.createLabel();
             cv_checkFetchedForSet.visitLabel(l0);
             // if (!this._persistence_isAttributeFetched(attributeName)) {
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
+            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(" + STRING_SIGNATURE + ")Z", false);
             Label l1 = ASMFactory.createLabel();
             cv_checkFetchedForSet.visitJumpInsn(Opcodes.valueInt("IFNE"), l1);
             // String errorMsg = _persistence_getFetchGroup().
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_getFetchGroup", "()Lorg/eclipse/persistence/queries/FetchGroup;", false);
+            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_getFetchGroup", "()" + FETCHGROUP_SIGNATURE, false);
             // .onUnfetchedAttribute(entity, attributeName);
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), "org/eclipse/persistence/queries/FetchGroup", "onUnfetchedAttributeSet", "(Lorg/eclipse/persistence/queries/FetchGroupTracker;Ljava/lang/String;)Ljava/lang/String;", false);
+            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), FETCHGROUP_SHORT_SIGNATURE, "onUnfetchedAttributeSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + STRING_SIGNATURE + ")" + STRING_SIGNATURE, false);
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ASTORE"), 2);
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
             cv_checkFetchedForSet.visitJumpInsn(Opcodes.valueInt("IFNULL"), l1);
+            // throw new EntityNotFoundException(errorMsg);
+            cv_checkFetchedForSet.visitTypeInsn(Opcodes.valueInt("NEW"), JPA_ENTITY_NOT_FOUND_EXCEPTION_SHORT_SIGNATURE);
+            cv_checkFetchedForSet.visitInsn(Opcodes.valueInt("DUP"));
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
-            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), "org/eclipse/persistence/exceptions/StaticWeaveException", "exceptionPerformWeaving", "(Ljava/lang/String;)Lorg/eclipse/persistence/exceptions/StaticWeaveException;", false);
+            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), JPA_ENTITY_NOT_FOUND_EXCEPTION_SHORT_SIGNATURE, "<init>", "(" + STRING_SIGNATURE + ")V", false);
             cv_checkFetchedForSet.visitInsn(Opcodes.valueInt("ATHROW"));
             cv_checkFetchedForSet.visitLabel(l1);
             cv_checkFetchedForSet.visitFrame(Opcodes.valueInt("F_APPEND"), 1, new Object[]{"java/lang/String"}, 0, null);
