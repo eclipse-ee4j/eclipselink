@@ -199,7 +199,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
                 returnString = (String)value;
             }
             XPathFragment frag = new XPathFragment();
-            if(isNamespaceAware && uri != null && uri.length() >0){
+            if(isNamespaceAware && uri != null && !uri.isEmpty()){
 
                 String prefix = nr.resolveNamespaceURI(uri);
                 if(prefix == null){
@@ -207,7 +207,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
                     //marshalRecord.namespaceDeclaration(prefix, uri);
                        frag.setGeneratedPrefix(true);
                 }
-                if(prefix != null && prefix.length() >0){
+                if(prefix != null && !prefix.isEmpty()){
                     frag.setPrefix(prefix);
                     returnString = prefix + namespaceSep + returnString;
                 }

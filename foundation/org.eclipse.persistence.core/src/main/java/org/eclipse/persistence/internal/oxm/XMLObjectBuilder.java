@@ -291,7 +291,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             unmarshaller.getUnmarshalListener().beforeUnmarshal(domainObject, parent);
         }
         concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, null, databaseRow, query, joinManager, null, false, query.getSession());
-        if (isXmlDescriptor() && ((Descriptor) concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
+        if (isXmlDescriptor() && !((Descriptor) concreteDescriptor).getPrimaryKeyFieldNames().isEmpty()) {
             Object pk = extractPrimaryKeyFromRow(databaseRow, query.getSession());
             if ((pk != null) && (((CacheId) pk).getPrimaryKey().length > 0)) {
                 DOMRecord domRecord = (DOMRecord) databaseRow;
@@ -430,7 +430,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             return session.getDescriptor(domainObject.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session);
         }
         List<DatabaseField> descriptorPrimaryKeyFields = getDescriptor().getPrimaryKeyFields();
-        if (null == descriptorPrimaryKeyFields || descriptorPrimaryKeyFields.size() == 0) {
+        if (null == descriptorPrimaryKeyFields || descriptorPrimaryKeyFields.isEmpty()) {
             return null;
         }
         return super.extractPrimaryKeyFromObject(domainObject, session);

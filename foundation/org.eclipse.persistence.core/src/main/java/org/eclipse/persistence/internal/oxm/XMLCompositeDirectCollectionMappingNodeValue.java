@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -195,7 +195,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
 
         Object value = unmarshalRecord.getCharacters().toString();
-        if(((String)value).length() == 0 && !xmlField.usesSingleNode()){
+        if(((String) value).isEmpty() && !xmlField.usesSingleNode()){
             if( xmlCompositeDirectCollectionMapping.getNullValue() != null){
                 value = xmlCompositeDirectCollectionMapping.getNullValue();
             }
@@ -228,7 +228,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
 
         Object value = unmarshalRecord.getCharacters().toString();
-        if(((String)value).length() == 0 && !xmlField.usesSingleNode()){
+        if(((String) value).isEmpty() && !xmlField.usesSingleNode()){
             if( xmlCompositeDirectCollectionMapping.getNullValue() != null){
                 value = xmlCompositeDirectCollectionMapping.getNullValue();
             }
@@ -311,7 +311,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             boolean isElementOpen = false;
             if (Constants.QNAME_QNAME.equals(schemaType)) {
                 QName fieldValue = (QName) value;
-                if ((fieldValue.getNamespaceURI() == null || fieldValue.getNamespaceURI().equals("")) && marshalRecord.getNamespaceResolver().getDefaultNamespaceURI() != null) {
+                if ((fieldValue.getNamespaceURI() == null || fieldValue.getNamespaceURI().isEmpty()) && marshalRecord.getNamespaceResolver().getDefaultNamespaceURI() != null) {
                     // In this case, an extra xmlns="" declaration is going to be added. This may
                     // require adjusting the namespace of the current fragment.
                     String defaultNamespaceURI = namespaceResolver.getDefaultNamespaceURI();

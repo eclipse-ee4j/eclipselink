@@ -1083,7 +1083,7 @@ public abstract class DatabaseCall extends DatasourceCall {
             boolean hasParameterizedIN = false;
             List<Object> parameters = getParameters();
             int size = parameters.size();
-            List<Object> translatedParametersValues = new ArrayList<Object>(size);
+            List<Object> translatedParametersValues = new ArrayList<>(size);
 
             for (int index = 0; index < size; index++) {
                 Object parameter = parameters.get(index);

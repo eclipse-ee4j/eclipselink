@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -222,7 +222,7 @@ public class JavaType {
      */
     public List<String> getXmlSeeAlso() {
         if (xmlSeeAlso == null) {
-            xmlSeeAlso = new ArrayList<String>();
+            xmlSeeAlso = new ArrayList<>();
         }
         return this.xmlSeeAlso;
     }
@@ -751,7 +751,7 @@ public class JavaType {
          */
         public List<JAXBElement<? extends JavaAttribute>> getJavaAttribute() {
             if (javaAttribute == null) {
-                javaAttribute = new ArrayList<JAXBElement<? extends JavaAttribute>>();
+                javaAttribute = new ArrayList<>();
             }
             return this.javaAttribute;
         }

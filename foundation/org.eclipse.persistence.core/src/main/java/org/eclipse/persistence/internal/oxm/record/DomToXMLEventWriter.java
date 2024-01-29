@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,12 +75,12 @@ public class DomToXMLEventWriter{
             namespace = newNamespace;
             localName = newName;
             nodeName = newName;
-            if(newNamespace != null && newNamespace.length() > 0) {
+            if(newNamespace != null && !newNamespace.isEmpty()) {
                 NamespaceResolver tempNR = new NamespaceResolver();
                 tempNR.setDOM(elem);
                 prefix = tempNR.resolveNamespaceURI(namespace);
 
-                if(prefix == null || prefix.length() == 0){
+                if(prefix == null || prefix.isEmpty()){
                     String defaultNamespace = elem.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
                     if(defaultNamespace == null){
                         prefix = tempNR.generatePrefix();
@@ -100,16 +100,16 @@ public class DomToXMLEventWriter{
 
         String defaultNamespace = xew.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
         boolean needToAddDefaultNS = false;
-        if(prefix != null && prefix.length() > 0) {
+        if(prefix != null && !prefix.isEmpty()) {
             String namespaceURI = xew.getNamespaceContext().getNamespaceURI(prefix);
             xew.add(xmlEventFactory.createStartElement(prefix, namespace, localName));
             if(!(namespace.equals(namespaceURI))) {
                 xew.add(xmlEventFactory.createNamespace(prefix, namespace));
             }
         } else {
-            if(namespace == null || namespace.length() == 0) {
+            if(namespace == null || namespace.isEmpty()) {
                 xew.add(xmlEventFactory.createStartElement("", "", nodeName));
-                if(defaultNamespace != null &&  defaultNamespace.length() >0) {
+                if(defaultNamespace != null && !defaultNamespace.isEmpty()) {
                     //write default namespace declaration
                     xew.add(xmlEventFactory.createNamespace(Constants.EMPTY_STRING));
                 }
@@ -166,9 +166,9 @@ public class DomToXMLEventWriter{
                 writeElement((Element)next, null, null, xew);
             }
         }
-        if(elem.getPrefix() != null && elem.getPrefix().length() > 0) {
+        if(elem.getPrefix() != null && !elem.getPrefix().isEmpty()) {
             xew.add(xmlEventFactory.createEndElement(elem.getPrefix(), elem.getNamespaceURI(), elem.getLocalName()));
-        } else if(elem.getNamespaceURI() != null && elem.getNamespaceURI().length() > 0) {
+        } else if(elem.getNamespaceURI() != null && !elem.getNamespaceURI().isEmpty()) {
             xew.add(xmlEventFactory.createEndElement("", elem.getNamespaceURI(), elem.getLocalName()));
         } else {
             xew.add(xmlEventFactory.createEndElement("", "", elem.getNodeName()));

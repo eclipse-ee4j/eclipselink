@@ -537,7 +537,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
             if(null != xmlDescriptor && null == getSchema()) {
                 RootLevelXmlAdapter adapter= null;
-                if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
+                if(!jaxbContext.getTypeMappingInfoToJavaTypeAdapters().isEmpty()){
                     adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
                 }
                 UnmarshalRecord wrapper = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) xmlUnmarshaller.getXMLContext().getSession());
@@ -579,11 +579,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 return unmarshal(streamReader, type.getType());
             }
             RootLevelXmlAdapter adapter= null;
-            if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
+            if(!jaxbContext.getTypeMappingInfoToJavaTypeAdapters().isEmpty()){
                 adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
             }
             Class<?> unmarshalClass = null;
-            if(jaxbContext.getTypeMappingInfoToGeneratedType().size() >0){
+            if(!jaxbContext.getTypeMappingInfoToGeneratedType().isEmpty()){
                 unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
             }
 
@@ -818,116 +818,121 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (MOXySystemProperties.moxyLogPayload != null && xmlUnmarshaller.isLogPayload() == null) {
             xmlUnmarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
         }
-        if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
-            MediaType mType = null;
-            if(value instanceof MediaType) {
-                mType = (MediaType) value;
-            } else if(value instanceof String) {
-                mType = MediaType.getMediaType((String)value);
-            }
-            if(mType == null){
-                throw new PropertyException(key, Constants.EMPTY_STRING);
-            }
-            xmlUnmarshaller.setMediaType(mType);
-        } else if (key.equals(UnmarshallerProperties.UNMARSHALLING_CASE_INSENSITIVE)){
-            if(value == null){
-                throw new PropertyException(key, Constants.EMPTY_STRING);
-            }
-            xmlUnmarshaller.setCaseInsensitive((Boolean)value);
-        } else if (key.equals(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)){
-            if(value == null){
-                throw new PropertyException(key, Constants.EMPTY_STRING);
-            }
-            xmlUnmarshaller.setAutoDetectMediaType((Boolean)value);
-        } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)){
-            xmlUnmarshaller.setAttributePrefix((String)value);
-        } else if (UnmarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
-            if(value == null){
-                throw new PropertyException(key, Constants.EMPTY_STRING);
-            }
-            xmlUnmarshaller.setIncludeRoot((Boolean)value);
-        } else if (UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER.equals(key)){
-            if (value == null){
-                xmlUnmarshaller.setNamespaceResolver(null);
-            } else if (value instanceof Map){
-                Map<String, String> namespaces = (Map<String, String>)value;
-                NamespaceResolver nr = new NamespaceResolver();
-                Iterator<Entry<String, String>> namesapcesIter = namespaces.entrySet().iterator();
-                for (int i=0;i<namespaces.size(); i++){
-                    Entry<String, String> nextEntry = namesapcesIter.next();
-                    nr.put(nextEntry.getValue(), nextEntry.getKey());
+        switch (key) {
+            case UnmarshallerProperties.MEDIA_TYPE -> {
+                MediaType mType = null;
+                if (value instanceof MediaType) {
+                    mType = (MediaType) value;
+                } else if (value instanceof String) {
+                    mType = MediaType.getMediaType((String) value);
                 }
-                xmlUnmarshaller.setNamespaceResolver(nr);
-            } else if (value instanceof NamespacePrefixMapper){
-                xmlUnmarshaller.setNamespaceResolver(new PrefixMapperNamespaceResolver((NamespacePrefixMapper)value, null));
+                if (mType == null) {
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                xmlUnmarshaller.setMediaType(mType);
             }
-        } else if (UnmarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){
-            xmlUnmarshaller.setValueWrapper((String)value);
-        } else if (UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){
-            if(value == null){
-                throw new PropertyException(key, Constants.EMPTY_STRING);
+            case UnmarshallerProperties.UNMARSHALLING_CASE_INSENSITIVE -> {
+                if (value == null) {
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                xmlUnmarshaller.setCaseInsensitive((Boolean) value);
             }
-            xmlUnmarshaller.setNamespaceSeparator((Character)value);
-        } else if (UnmarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
-            xmlUnmarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean)value);
-        } else if (UnmarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
-            xmlUnmarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean)value);
-        } else if (UnmarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
-            xmlUnmarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String)value);
-        } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
-            setIDResolver((IDResolver) value);
-        } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
-            if(value == null){
-                setIDResolver(null);
-            }else {
-                setIDResolver(new IDResolverWrapper(value));
+            case UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE -> {
+                if (value == null) {
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                xmlUnmarshaller.setAutoDetectMediaType((Boolean) value);
             }
-        } else if (UnmarshallerProperties.OBJECT_GRAPH.equals(key)) {
-            if(value instanceof ObjectGraphImpl) {
-                xmlUnmarshaller.setUnmarshalAttributeGroup(((ObjectGraphImpl) value).getAttributeGroup());
-            } else if(value instanceof String || value == null) {
-                xmlUnmarshaller.setUnmarshalAttributeGroup(value);
-            } else {
-                throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
+            case UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX -> xmlUnmarshaller.setAttributePrefix((String) value);
+            case UnmarshallerProperties.JSON_INCLUDE_ROOT -> {
+                if (value == null) {
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                xmlUnmarshaller.setIncludeRoot((Boolean) value);
             }
-        } else if (UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
-            xmlUnmarshaller.setWrapperAsCollectionName((Boolean) value);
-        } else if (UnmarshallerProperties.BEAN_VALIDATION_MODE.equals(key)){
-            if(value == null){
-                throw new PropertyException(key, Constants.EMPTY_STRING);
+            case UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER -> {
+                if (value == null) {
+                    xmlUnmarshaller.setNamespaceResolver(null);
+                } else if (value instanceof Map) {
+                    Map<String, String> namespaces = (Map<String, String>) value;
+                    NamespaceResolver nr = new NamespaceResolver();
+                    Iterator<Entry<String, String>> namesapcesIter = namespaces.entrySet().iterator();
+                    for (int i = 0; i < namespaces.size(); i++) {
+                        Entry<String, String> nextEntry = namesapcesIter.next();
+                        nr.put(nextEntry.getValue(), nextEntry.getKey());
+                    }
+                    xmlUnmarshaller.setNamespaceResolver(nr);
+                } else if (value instanceof NamespacePrefixMapper) {
+                    xmlUnmarshaller.setNamespaceResolver(new PrefixMapperNamespaceResolver((NamespacePrefixMapper) value, null));
+                }
             }
-            this.beanValidationMode = ((BeanValidationMode) value);
-        } else if (UnmarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
-            // Null value is allowed
-            this.prefValidatorFactory = value;
-        } else if (UnmarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
-            if (value == null) {
-                throw new PropertyException(key, Constants.EMPTY_STRING);
+            case UnmarshallerProperties.JSON_VALUE_WRAPPER -> xmlUnmarshaller.setValueWrapper((String) value);
+            case UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR -> {
+                if (value == null) {
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                xmlUnmarshaller.setNamespaceSeparator((Character) value);
             }
-            this.beanValidationGroups = ((Class<?>[]) value);
-        } else if (UnmarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
-            if(value == null){
-                throw new PropertyException(key, Constants.EMPTY_STRING);
+            case UnmarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX -> xmlUnmarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean) value);
+            case UnmarshallerProperties.JSON_TYPE_COMPATIBILITY -> xmlUnmarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean) value);
+            case UnmarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME -> xmlUnmarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String) value);
+            case UnmarshallerProperties.ID_RESOLVER -> setIDResolver((IDResolver) value);
+            case SUN_ID_RESOLVER, SUN_JSE_ID_RESOLVER -> {
+                if (value == null) {
+                    setIDResolver(null);
+                } else {
+                    setIDResolver(new IDResolverWrapper(value));
+                }
             }
-            this.bvNoOptimisation = ((boolean) value);
-        } else if (UnmarshallerProperties.DISABLE_SECURE_PROCESSING.equals(key)) {
-            if(value == null){
-                throw new PropertyException(key, Constants.EMPTY_STRING);
+            case UnmarshallerProperties.OBJECT_GRAPH -> {
+                if (value instanceof ObjectGraphImpl) {
+                    xmlUnmarshaller.setUnmarshalAttributeGroup(((ObjectGraphImpl) value).getAttributeGroup());
+                } else if (value instanceof String || value == null) {
+                    xmlUnmarshaller.setUnmarshalAttributeGroup(value);
+                } else {
+                    throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
+                }
             }
-            boolean disabled = value instanceof String
-                    ? Boolean.parseBoolean((String) value)
-                    : (boolean) value;
-            xmlUnmarshaller.setDisableSecureProcessing(disabled);
-        } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
-            xmlUnmarshaller.setLogPayload(((boolean) value));
-        } else if (UnmarshallerProperties.MOXY_LOGGING_LEVEL.equals(key)) {
-            if (value instanceof String) {
-                AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
-            } else {
-                AbstractSessionLog.getLog().setLevel(((LogLevel) value).getId(), SessionLog.MOXY);
+            case UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME -> xmlUnmarshaller.setWrapperAsCollectionName((Boolean) value);
+            case UnmarshallerProperties.BEAN_VALIDATION_MODE -> {
+                if (value == null) {
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                this.beanValidationMode = ((BeanValidationMode) value);
             }
-        } else {
-            throw new PropertyException(key, value);
+            case UnmarshallerProperties.BEAN_VALIDATION_FACTORY ->
+                // Null value is allowed
+                    this.prefValidatorFactory = value;
+            case UnmarshallerProperties.BEAN_VALIDATION_GROUPS -> {
+                if (value == null) {
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                this.beanValidationGroups = ((Class<?>[]) value);
+            }
+            case UnmarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION -> {
+                if (value == null) {
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                this.bvNoOptimisation = ((boolean) value);
+            }
+            case UnmarshallerProperties.DISABLE_SECURE_PROCESSING -> {
+                if (value == null) {
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                boolean disabled = value instanceof String
+                        ? Boolean.parseBoolean((String) value)
+                        : (boolean) value;
+                xmlUnmarshaller.setDisableSecureProcessing(disabled);
+            }
+            case UnmarshallerProperties.MOXY_LOG_PAYLOAD -> xmlUnmarshaller.setLogPayload(((boolean) value));
+            case UnmarshallerProperties.MOXY_LOGGING_LEVEL -> {
+                if (value instanceof String) {
+                    AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
+                } else {
+                    AbstractSessionLog.getLog().setLevel(((LogLevel) value).getId(), SessionLog.MOXY);
+                }
+            }
+            default -> throw new PropertyException(key, value);
         }
     }
 
@@ -942,71 +947,93 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
-            return xmlUnmarshaller.getMediaType();
-        } else if (key.equals(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)) {
-            return xmlUnmarshaller.isAutoDetectMediaType();
-        } else if (key.equals(UnmarshallerProperties.UNMARSHALLING_CASE_INSENSITIVE)) {
-            return xmlUnmarshaller.isCaseInsensitive();
-        } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)) {
-            return xmlUnmarshaller.getAttributePrefix();
-        } else if (key.equals(UnmarshallerProperties.JSON_INCLUDE_ROOT)) {
-            return xmlUnmarshaller.isIncludeRoot();
-        }  else if (key.equals(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR)) {
-            return xmlUnmarshaller.getNamespaceSeparator();
-        } else if (key.equals(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER)) {
-            if(xmlUnmarshaller.getNamespaceResolver() == null){
-                return null;
+        switch (key) {
+            case UnmarshallerProperties.MEDIA_TYPE -> {
+                return xmlUnmarshaller.getMediaType();
             }
-            if (xmlUnmarshaller.getNamespaceResolver() instanceof PrefixMapperNamespaceResolver wrapper) {
-                return wrapper.getPrefixMapper();
-            } else {
-                Map<String, String> nsMap = new HashMap<String, String>();
-                Map<String, String> prefixesToNS = xmlUnmarshaller.getNamespaceResolver().getPrefixesToNamespaces();
-                // Reverse the prefixesToNS map
-                Iterator<Entry<String, String>> namesapcesIter = prefixesToNS.entrySet().iterator();
-                for (int i = 0; i < prefixesToNS.size(); i++) {
-                    Entry<String, String> nextEntry = namesapcesIter.next();
-                    nsMap.put(nextEntry.getValue(), nextEntry.getKey());
+            case UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE -> {
+                return xmlUnmarshaller.isAutoDetectMediaType();
+            }
+            case UnmarshallerProperties.UNMARSHALLING_CASE_INSENSITIVE -> {
+                return xmlUnmarshaller.isCaseInsensitive();
+            }
+            case UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX -> {
+                return xmlUnmarshaller.getAttributePrefix();
+            }
+            case UnmarshallerProperties.JSON_INCLUDE_ROOT -> {
+                return xmlUnmarshaller.isIncludeRoot();
+            }
+            case UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR -> {
+                return xmlUnmarshaller.getNamespaceSeparator();
+            }
+            case UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER -> {
+                if (xmlUnmarshaller.getNamespaceResolver() == null) {
+                    return null;
                 }
-                return nsMap;
+                if (xmlUnmarshaller.getNamespaceResolver() instanceof PrefixMapperNamespaceResolver wrapper) {
+                    return wrapper.getPrefixMapper();
+                } else {
+                    Map<String, String> nsMap = new HashMap<>();
+                    Map<String, String> prefixesToNS = xmlUnmarshaller.getNamespaceResolver().getPrefixesToNamespaces();
+                    // Reverse the prefixesToNS map
+                    Iterator<Entry<String, String>> namesapcesIter = prefixesToNS.entrySet().iterator();
+                    for (int i = 0; i < prefixesToNS.size(); i++) {
+                        Entry<String, String> nextEntry = namesapcesIter.next();
+                        nsMap.put(nextEntry.getValue(), nextEntry.getKey());
+                    }
+                    return nsMap;
+                }
             }
-        } else if (key.equals(UnmarshallerProperties.JSON_VALUE_WRAPPER)) {
-            return xmlUnmarshaller.getValueWrapper();
-        } else if (UnmarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
-            return xmlUnmarshaller.getJsonTypeConfiguration().isUseXsdTypesWithPrefix();
-        } else if (UnmarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
-            return xmlUnmarshaller.getJsonTypeConfiguration().isJsonTypeCompatibility();
-        } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
-            return xmlUnmarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName();
-        } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
-            return xmlUnmarshaller.getIDResolver();
-        } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
-            IDResolverWrapper wrapper = (IDResolverWrapper) xmlUnmarshaller.getIDResolver();
-            if(wrapper == null){
-                return null;
+            case UnmarshallerProperties.JSON_VALUE_WRAPPER -> {
+                return xmlUnmarshaller.getValueWrapper();
             }
-            return wrapper.getResolver();
-        } else if (UnmarshallerProperties.OBJECT_GRAPH.equals(key)) {
-            Object graph = xmlUnmarshaller.getUnmarshalAttributeGroup();
-            if(graph instanceof CoreAttributeGroup) {
-                return new ObjectGraphImpl((CoreAttributeGroup)graph);
+            case UnmarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX -> {
+                return xmlUnmarshaller.getJsonTypeConfiguration().isUseXsdTypesWithPrefix();
             }
-            return graph;
-        } else if(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
-            return xmlUnmarshaller.isWrapperAsCollectionName();
-        } else if (UnmarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
-            return this.beanValidationMode;
-        } else if (UnmarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
-            return this.prefValidatorFactory;
-        } else if (UnmarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
-            return this.beanValidationGroups;
-        } else if (UnmarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
-            return this.bvNoOptimisation;
-        } else if (UnmarshallerProperties.DISABLE_SECURE_PROCESSING.equals(key)) {
-            return xmlUnmarshaller.isSecureProcessingDisabled();
-        } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
-            return xmlUnmarshaller.isLogPayload();
+            case UnmarshallerProperties.JSON_TYPE_COMPATIBILITY -> {
+                return xmlUnmarshaller.getJsonTypeConfiguration().isJsonTypeCompatibility();
+            }
+            case MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME -> {
+                return xmlUnmarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName();
+            }
+            case UnmarshallerProperties.ID_RESOLVER -> {
+                return xmlUnmarshaller.getIDResolver();
+            }
+            case SUN_ID_RESOLVER, SUN_JSE_ID_RESOLVER -> {
+                IDResolverWrapper wrapper = (IDResolverWrapper) xmlUnmarshaller.getIDResolver();
+                if (wrapper == null) {
+                    return null;
+                }
+                return wrapper.getResolver();
+            }
+            case UnmarshallerProperties.OBJECT_GRAPH -> {
+                Object graph = xmlUnmarshaller.getUnmarshalAttributeGroup();
+                if (graph instanceof CoreAttributeGroup) {
+                    return new ObjectGraphImpl((CoreAttributeGroup) graph);
+                }
+                return graph;
+            }
+            case UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME -> {
+                return xmlUnmarshaller.isWrapperAsCollectionName();
+            }
+            case UnmarshallerProperties.BEAN_VALIDATION_MODE -> {
+                return this.beanValidationMode;
+            }
+            case UnmarshallerProperties.BEAN_VALIDATION_FACTORY -> {
+                return this.prefValidatorFactory;
+            }
+            case UnmarshallerProperties.BEAN_VALIDATION_GROUPS -> {
+                return this.beanValidationGroups;
+            }
+            case UnmarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION -> {
+                return this.bvNoOptimisation;
+            }
+            case UnmarshallerProperties.DISABLE_SECURE_PROCESSING -> {
+                return xmlUnmarshaller.isSecureProcessingDisabled();
+            }
+            case UnmarshallerProperties.MOXY_LOG_PAYLOAD -> {
+                return xmlUnmarshaller.isLogPayload();
+            }
         }
         throw new PropertyException(key);
     }
@@ -1101,13 +1128,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     private Class<?> getClassToUnmarshalTo(Class<?> originalClass) {
         Class<?> classToUnmarshalTo = originalClass;
-        if(jaxbContext.getArrayClassesToGeneratedClasses() != null && jaxbContext.getArrayClassesToGeneratedClasses().size() >0) {
+        if(jaxbContext.getArrayClassesToGeneratedClasses() != null && !jaxbContext.getArrayClassesToGeneratedClasses().isEmpty()) {
             Class<?> generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(originalClass.getCanonicalName());
             if(generatedClass != null){
                 classToUnmarshalTo = generatedClass;
             }
         }
-        if(jaxbContext.getCollectionClassesToGeneratedClasses() != null && jaxbContext.getCollectionClassesToGeneratedClasses().size() >0){
+        if(jaxbContext.getCollectionClassesToGeneratedClasses() != null && !jaxbContext.getCollectionClassesToGeneratedClasses().isEmpty()){
             Class<?> generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(originalClass);
             if(generatedClass != null){
                 classToUnmarshalTo = generatedClass;
@@ -1172,7 +1199,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
         private Class<T> clazz;
         private JAXBElement<T> jaxbElement;
-        private Map<String, String> namespaces = new HashMap<String, String>(3);
+        private Map<String, String> namespaces = new HashMap<>(3);
         private StringBuilder stringBuilder = new StringBuilder();
         private String xsiType;
         private boolean xsiNil;
@@ -1217,12 +1244,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
 
             QName qName;
-            if(namespaceURI != null && namespaceURI.length() == 0) {
+            if(namespaceURI != null && namespaceURI.isEmpty()) {
                 qName = new QName(qualifiedName);
             } else {
                 qName = new QName(namespaceURI, localName);
             }
-            jaxbElement = new JAXBElement<T>(qName, clazz, value);
+            jaxbElement = new JAXBElement<>(qName, clazz, value);
         }
 
         public JAXBElement<T> getJaxbElement() {
@@ -1300,7 +1327,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             acceptCharacters = false;
 
             if (!qualifiedName.equals("item")) {
-                if (namespaceURI != null && namespaceURI.length() == 0) {
+                if (namespaceURI != null && namespaceURI.isEmpty()) {
                     qName = new QName(qualifiedName);
                 } else {
                     qName = new QName(namespaceURI, localName);
@@ -1369,7 +1396,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 T newArray = (T) Array.newInstance(componentClass, currentIndex);
                 System.arraycopy(unmarshalledArray, 0, newArray, 0, currentIndex);
 
-                jaxbElement = new JAXBElement<T>(qName, arrayClass, newArray);
+                jaxbElement = new JAXBElement<>(qName, arrayClass, newArray);
             }
             return jaxbElement;
         }

@@ -213,17 +213,17 @@ public class EntityResult extends SQLResult {
      */
     public void getValueFromRecordForMapping(DatabaseRecord entityRecord,DatabaseMapping mapping, FieldResult fieldResult, DatabaseRecord databaseRecord){
         ClassDescriptor currentDescriptor = mapping.getReferenceDescriptor();
-        /** check if this FieldResult contains any other FieldResults, process it if it doesn't */
+        /* check if this FieldResult contains any other FieldResults, process it if it doesn't */
         if (fieldResult.getFieldResults()==null){
             DatabaseField dbfield = processValueFromRecordForMapping(currentDescriptor,fieldResult.getMultipleFieldIdentifiers(),1);
-            /** If it is a 1:1 mapping we need to do the target to source field conversion.  If it is an aggregate, it is fine as it is*/
+            /* If it is a 1:1 mapping we need to do the target to source field conversion.  If it is an aggregate, it is fine as it is*/
             if (mapping.isOneToOneMapping()){
                 dbfield = (((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));
             }
             entityRecord.put(dbfield, databaseRecord.get(fieldResult.getColumn()));
             return;
         }
-        /** This processes each FieldResult stored in the collection of FieldResults individually */
+        /* This processes each FieldResult stored in the collection of FieldResults individually */
         Iterator<FieldResult> fieldResults = fieldResult.getFieldResults().iterator();
         while (fieldResults.hasNext()){
             FieldResult tempFieldResult = fieldResults.next();

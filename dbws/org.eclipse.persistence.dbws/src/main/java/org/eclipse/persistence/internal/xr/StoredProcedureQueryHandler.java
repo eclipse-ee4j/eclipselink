@@ -103,7 +103,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                 }
             }
             else {
-                if (getOutArguments().size() == 0 && getInOutArguments().size() == 0) {
+                if (getOutArguments().isEmpty() && getInOutArguments().isEmpty()) {
                     if (isStoredFunctionQueryHandler()) {
                         if (!xrService.descriptorsByQName.containsKey(type)) {
                             databaseQueryToInitialize = new ValueReadQuery();

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -176,14 +176,14 @@ public class DBPlatformHelper {
     }
 
     private static String[] validateLineForReturnAsKeyValueArray(String line) {
-        if (line == null || line.length() == 0) {
+        if (line == null || line.isEmpty()) {
             return null;
         }
         // trim leading AND trailing space
         line = line.trim();
 
         // check for comment and empty line
-        if (line.length() == 0 || line.startsWith("#")) {
+        if (line.isEmpty() || line.startsWith("#")) {
             return null;
         }
 

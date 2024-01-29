@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -635,11 +634,11 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> inOutArguments = getArguments(arguments, ParameterType.INOUT);
         inArguments.addAll(inOutArguments);
         List<PLSQLargument> outArguments = getArguments(arguments, ParameterType.OUT);
-        Collections.sort(inArguments, new InArgComparer());
+        inArguments.sort(new InArgComparer());
         for (PLSQLargument arg : inArguments) {
             arg.databaseType.buildInDeclare(sb, arg);
         }
-        Collections.sort(outArguments, new OutArgComparer());
+        outArguments.sort(new OutArgComparer());
         for (PLSQLargument arg : outArguments) {
             arg.databaseType.buildOutDeclare(sb, arg);
         }
@@ -1173,7 +1172,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         DatabaseRecord newOutputRow = new DatabaseRecord();
         List<PLSQLargument> outArguments = getArguments(arguments, ParameterType.OUT);
         outArguments.addAll(getArguments(arguments, ParameterType.INOUT));
-        Collections.sort(outArguments, new Comparator<PLSQLargument>() {
+        outArguments.sort(new Comparator<>() {
             @Override
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.originalIndex - o2.originalIndex;
@@ -1211,7 +1210,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
         List<PLSQLargument> inArguments = getArguments(specifiedArguments, ParameterType.IN);
         inArguments.addAll(getArguments(specifiedArguments, ParameterType.INOUT));
-        Collections.sort(inArguments, new Comparator<PLSQLargument>() {
+        inArguments.sort(new Comparator<>() {
             @Override
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.inIndex - o2.inIndex;
@@ -1227,7 +1226,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
         List<PLSQLargument> outArguments = getArguments(specifiedArguments, ParameterType.OUT);
         outArguments.addAll(getArguments(specifiedArguments, ParameterType.INOUT));
-        Collections.sort(outArguments, new Comparator<PLSQLargument>() {
+        outArguments.sort(new Comparator<>() {
             @Override
             public int compare(PLSQLargument o1, PLSQLargument o2) {
                 return o1.outIndex - o2.outIndex;
@@ -1344,13 +1343,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         private static final long serialVersionUID = -4182293492217092689L;
         @Override
         public int compare(PLSQLargument arg0, PLSQLargument arg1) {
-            if (arg0.inIndex < arg1.inIndex) {
-                return -1;
-            }
-            if (arg0.inIndex > arg1.inIndex) {
-                return 1;
-            }
-            return 0;
+            return Integer.compare(arg0.inIndex, arg1.inIndex);
         }
     }
 
@@ -1364,13 +1357,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         private static final long serialVersionUID = -4182293492217092689L;
         @Override
         public int compare(PLSQLargument arg0, PLSQLargument arg1) {
-            if (arg0.inIndex < arg1.outIndex) {
-                return -1;
-            }
-            if (arg0.inIndex > arg1.outIndex) {
-                return 1;
-            }
-            return 0;
+            return Integer.compare(arg0.inIndex, arg1.outIndex);
         }
     }
 }

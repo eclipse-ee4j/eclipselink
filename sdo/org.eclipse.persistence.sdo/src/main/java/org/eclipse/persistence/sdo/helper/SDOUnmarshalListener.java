@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -124,7 +124,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                 for (int j = 0, modifiedDomsSize=modifiedDoms.size(); j < modifiedDomsSize; j++) {
                     Element nextNode = (Element)modifiedDoms.get(j);
                     String refValue = nextNode.getAttributeNS(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY_REF);
-                    if ((refValue == null) || (refValue.length() == 0)) {
+                    if ((refValue == null) || (refValue.isEmpty())) {
                         throw SDOException.missingRefAttribute();
                     }
                     //nextModifiedDO is the real modified current data object
@@ -142,7 +142,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                     }
                     String unsetValue = nextNode.getAttributeNS(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY_UNSET);
                     List unsetValueList = new ArrayList();
-                    if ((unsetValue != null) && (unsetValue.length() > 0)) {
+                    if ((unsetValue != null) && (!unsetValue.isEmpty())) {
                         XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
                         unsetValueList = xmlConversionManager.convertObject(unsetValue, List.class);
                     }
@@ -362,7 +362,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
 
     private List<SDOChangeSummary> getChangeSummaries() {
         if(null == changeSummaries) {
-            changeSummaries = new ArrayList<SDOChangeSummary>();
+            changeSummaries = new ArrayList<>();
         }
         return changeSummaries;
     }

@@ -1540,7 +1540,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      */
     private static Map<Integer, ExpressionOperator> initializeInternalOperators() {
-        Map<Integer, ExpressionOperator> allTempOperators = new HashMap<Integer, ExpressionOperator>();
+        Map<Integer, ExpressionOperator> allTempOperators = new HashMap<>();
 
         // Aggregate Function Operators
         addOperator(allTempOperators, count());
@@ -1602,7 +1602,7 @@ public class ExpressionOperator implements Serializable {
      * Initialize a mapping to the platform operator names for usage with exceptions.
      */
     public static String getPlatformOperatorName(int operator) {
-        String name = (String)getPlatformOperatorNames().get(operator);
+        String name = getPlatformOperatorNames().get(operator);
         if (name == null) {
             name = String.valueOf(operator);
         }
@@ -2550,7 +2550,7 @@ public class ExpressionOperator implements Serializable {
      * Reset all the operators.
      */
     public static void resetOperators() {
-        allOperators = new HashMap<Integer, ExpressionOperator>();
+        allOperators = new HashMap<>();
     }
 
     /**

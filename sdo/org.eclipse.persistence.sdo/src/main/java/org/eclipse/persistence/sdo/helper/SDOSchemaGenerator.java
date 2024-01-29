@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,7 +72,7 @@ public class SDOSchemaGenerator {
      */
     public String generate(List types, SchemaLocationResolver aSchemaLocationResolver) {
         schemaLocationResolver = aSchemaLocationResolver;
-        if ((types == null) || (types.size() == 0)) {
+        if ((types == null) || (types.isEmpty())) {
             throw new IllegalArgumentException("No Schema was generated from null or empty list of types.");
         }
 
@@ -97,32 +97,36 @@ public class SDOSchemaGenerator {
                     theImport.setNamespace(next.getNamespaceURI());
                     String schemaLocation = "classpath:/xml/";
                     String customLocation = null;
-                    if (next.getNamespaceURI().equals(SDOConstants.SDO_URL)) {
-                        if(schemaLocationResolver != null) {
-                            customLocation = schemaLocationResolver.resolveSchemaLocation(firstType, SDOConstants.SDO_BOOLEAN);
+                    switch (next.getNamespaceURI()) {
+                        case SDOConstants.SDO_URL -> {
+                            if (schemaLocationResolver != null) {
+                                customLocation = schemaLocationResolver.resolveSchemaLocation(firstType, SDOConstants.SDO_BOOLEAN);
+                            }
+                            if (customLocation != null) {
+                                schemaLocation = customLocation;
+                            } else {
+                                schemaLocation += "sdoModel.xsd";
+                            }
                         }
-                        if(customLocation != null) {
-                            schemaLocation = customLocation;
-                        } else {
-                            schemaLocation += "sdoModel.xsd";
+                        case SDOConstants.SDOXML_URL -> {
+                            if (schemaLocationResolver != null) {
+                                customLocation = schemaLocationResolver.resolveSchemaLocation(firstType, new SDOType(SDOConstants.SDOXML_URL, "XMLInfo"));
+                            }
+                            if (customLocation != null) {
+                                schemaLocation = customLocation;
+                            } else {
+                                schemaLocation += "sdoXML.xsd";
+                            }
                         }
-                    } else if (next.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) {
-                        if(schemaLocationResolver != null) {
-                            customLocation = schemaLocationResolver.resolveSchemaLocation(firstType, new SDOType(SDOConstants.SDOXML_URL, "XMLInfo"));
-                        }
-                        if(customLocation != null) {
-                            schemaLocation = customLocation;
-                        } else {
-                            schemaLocation += "sdoXML.xsd";
-                        }
-                    } else if (next.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) {
-                        if(schemaLocationResolver != null) {
-                            customLocation = schemaLocationResolver.resolveSchemaLocation(firstType, SDOConstants.SDO_BOOLEANOBJECT);
-                        }
-                        if(customLocation != null) {
-                            schemaLocation = customLocation;
-                        } else {
-                            schemaLocation += "sdoJava.xsd";
+                        case SDOConstants.SDOJAVA_URL -> {
+                            if (schemaLocationResolver != null) {
+                                customLocation = schemaLocationResolver.resolveSchemaLocation(firstType, SDOConstants.SDO_BOOLEANOBJECT);
+                            }
+                            if (customLocation != null) {
+                                schemaLocation = customLocation;
+                            } else {
+                                schemaLocation += "sdoJava.xsd";
+                            }
                         }
                     }
                     theImport.setSchemaLocation(schemaLocation);
@@ -157,7 +161,7 @@ public class SDOSchemaGenerator {
      * @return String The generated XSD.
     */
     public String generate(List types, Map<String, String> aNamespaceToSchemaLocation) {
-        if ((types == null) || (types.size() == 0)) {
+        if ((types == null) || (types.isEmpty())) {
             throw new IllegalArgumentException("No Schema was generated from null or empty list of types.");
         }
 
@@ -256,7 +260,7 @@ public class SDOSchemaGenerator {
             simpleType.setName(sdoType.getName());
         }
 
-        if ((sdoType.getAppInfoElements() != null) && (sdoType.getAppInfoElements().size() > 0)) {
+        if ((sdoType.getAppInfoElements() != null) && (!sdoType.getAppInfoElements().isEmpty())) {
             Annotation annotation = new Annotation();
 
             annotation.setAppInfo(sdoType.getAppInfoElements());
@@ -269,7 +273,7 @@ public class SDOSchemaGenerator {
             simpleType.getAttributesMap().put(qname, sdoType.getName());
         }
 
-        if ((sdoType.getAliasNames() != null) && (sdoType.getAliasNames().size() > 0)) {
+        if ((sdoType.getAliasNames() != null) && (!sdoType.getAliasNames().isEmpty())) {
             String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
             String aliasNamesString = buildAliasNameString(sdoType.getAliasNames());
             QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_ALIASNAME, sdoXmlPrefix);
@@ -323,13 +327,13 @@ public class SDOSchemaGenerator {
         }
 
         complexType.setAbstractValue(sdoType.isAbstract());
-        if ((sdoType.getAppInfoElements() != null) && (sdoType.getAppInfoElements().size() > 0)) {
+        if ((sdoType.getAppInfoElements() != null) && (!sdoType.getAppInfoElements().isEmpty())) {
             Annotation annotation = new Annotation();
             annotation.setAppInfo(sdoType.getAppInfoElements());
             complexType.setAnnotation(annotation);
         }
 
-        if ((sdoType.getAliasNames() != null) && (sdoType.getAliasNames().size() > 0)) {
+        if ((sdoType.getAliasNames() != null) && (!sdoType.getAliasNames().isEmpty())) {
             String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
             String aliasNamesString = buildAliasNameString(sdoType.getAliasNames());
 
@@ -379,7 +383,7 @@ public class SDOSchemaGenerator {
         List properties = type.getDeclaredProperties();
         NestedParticle nestedParticle = null;
 
-        if ((properties == null) || (properties.size() == 0)) {
+        if ((properties == null) || (properties.isEmpty())) {
             if (type.isOpen()) {
                 nestedParticle = new Sequence();
             } else {
@@ -562,7 +566,7 @@ public class SDOSchemaGenerator {
         }
         elem.setMinOccurs(Occurs.ZERO);
         elem.setNillable(sdoProperty.isNullable());
-        if ((sdoProperty.getAppInfoElements() != null) && (sdoProperty.getAppInfoElements().size() > 0)) {
+        if ((sdoProperty.getAppInfoElements() != null) && (!sdoProperty.getAppInfoElements().isEmpty())) {
             Annotation annotation = new Annotation();
             annotation.setAppInfo(sdoProperty.getAppInfoElements());
             elem.setAnnotation(annotation);
@@ -668,7 +672,7 @@ public class SDOSchemaGenerator {
             attr.setName(property.getName());
         }
 
-        if ((((SDOProperty)property).getAppInfoElements() != null) && (((SDOProperty)property).getAppInfoElements().size() > 0)) {
+        if ((((SDOProperty)property).getAppInfoElements() != null) && (!((SDOProperty) property).getAppInfoElements().isEmpty())) {
             Annotation annotation = new Annotation();
             annotation.setAppInfo(((SDOProperty)property).getAppInfoElements());
             attr.setAnnotation(annotation);

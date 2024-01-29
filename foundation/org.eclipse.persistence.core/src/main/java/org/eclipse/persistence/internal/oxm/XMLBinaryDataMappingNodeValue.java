@@ -87,7 +87,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 xmlRootFrag.setNamespaceURI(xmlRoot.getNamespaceURI());
             }else{
                 xmlRootFrag.setXPath(xmlRoot.getLocalName());
-                if(xmlRoot.getNamespaceURI() != null && xmlRoot.getNamespaceURI().length() > 0) {
+                if(xmlRoot.getNamespaceURI() != null && !xmlRoot.getNamespaceURI().isEmpty()) {
                     xmlRootFrag.setNamespaceURI(xmlRoot.getNamespaceURI());
                 }
             }

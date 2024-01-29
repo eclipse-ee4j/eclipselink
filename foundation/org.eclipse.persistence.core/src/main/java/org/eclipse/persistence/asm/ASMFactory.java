@@ -313,7 +313,7 @@ public class ASMFactory {
             LOG.log(SessionLog.SEVERE, "Error Java versions map from Opcodes.class fields.", ex);
             throw new RuntimeException(ex);
         }
-        final List<String> versions = new ArrayList<String>(versionMap.keySet());
+        final List<String> versions = new ArrayList<>(versionMap.keySet());
         final String oldest = versions.get(0);
         final String latest = versions.get(versions.size() - 1);
 
@@ -323,7 +323,7 @@ public class ASMFactory {
             v = System.getProperty("java.specification.version");
         } else {
             try {
-                v = AccessController.doPrivileged(new PrivilegedAction<String>() {
+                v = AccessController.doPrivileged(new PrivilegedAction<>() {
                     @Override
                     public String run() {
                         return System.getProperty("java.specification.version");

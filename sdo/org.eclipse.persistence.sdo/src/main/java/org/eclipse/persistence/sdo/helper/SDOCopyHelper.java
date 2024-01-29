@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -349,7 +349,7 @@ public class SDOCopyHelper implements CopyHelper {
                     // check if the target copies are in our map (inside copy tree scope)
                     // when containment = false then targetDOCopy is empty
                     // Assume: all items in the list share the same property
-                    isPropertyInsideCopyTreeScope = ((List)targetDOCopy).size() > 0;
+                    isPropertyInsideCopyTreeScope = !((List) targetDOCopy).isEmpty();
                 } else {
                     // handle 1-1 DataObject
                     // lookup copy of targetDO in map

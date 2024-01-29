@@ -1669,7 +1669,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * This method return the clones of the list of expressions.
      */
     private List<Expression> cloneExpressions(List<Expression> originalExpressions, Map<Expression, Expression> clonedExpressions){
-        if ((originalExpressions == null) || (originalExpressions.size() == 0) || (clonedExpressions == null)) {
+        if ((originalExpressions == null) || (originalExpressions.isEmpty()) || (clonedExpressions == null)) {
             return originalExpressions;
         }
         List<Expression> newExpressions = new ArrayList<>(originalExpressions.size());

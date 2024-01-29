@@ -112,18 +112,18 @@ public class MongoConnectionSpec extends EISConnectionSpec {
 
             String user = (String)properties.get("user");
             Object password = properties.get("password");
-            if (password instanceof String) {
-                password = ((String) password).toCharArray();
+            if (password instanceof String s) {
+                password = s.toCharArray();
             }
-            if ((user != null) && (user.length() != 0)) {
+            if ((user != null) && (!user.isEmpty())) {
                 spec.setUser(user);
                 spec.setPassword((char[])password);
             }
 
             // Allows setting of read preference as a property.
             Object preference = properties.get(READ_PREFERENCE);
-            if (preference instanceof ReadPreference) {
-                spec.setReadPreference((ReadPreference)preference);
+            if (preference instanceof ReadPreference rp) {
+                spec.setReadPreference(rp);
             } else if (preference instanceof String constant) {
                 if (constant.equals("PRIMARY")) {
                     spec.setReadPreference(ReadPreference.primary());
@@ -136,44 +136,36 @@ public class MongoConnectionSpec extends EISConnectionSpec {
 
             // Allows setting of write concern as a property.
             Object concern = properties.get(WRITE_CONCERN);
-            if (concern instanceof WriteConcern) {
-                spec.setWriteConcern((WriteConcern)concern);
+            if (concern instanceof WriteConcern wc) {
+                spec.setWriteConcern(wc);
             } else if (concern instanceof String constant) {
-                if (constant.equals("ACKNOWLEDGED")) {
-                    spec.setWriteConcern(WriteConcern.ACKNOWLEDGED);
-                } else if (constant.equals("JOURNALED")) {
-                    spec.setWriteConcern(WriteConcern.JOURNALED);
-                } else if (constant.equals("MAJORITY")) {
-                    spec.setWriteConcern(WriteConcern.MAJORITY);
-                } else if (constant.equals("NONE")) {
-                    spec.setWriteConcern(/*FIXME: WriteConcern.NONE*/ new WriteConcern("none"));
-                } else if (constant.equals("UNACKNOWLEDGED")) {
-                    spec.setWriteConcern(WriteConcern.UNACKNOWLEDGED);
-                } else if (constant.equals("W1")) {
-                    spec.setWriteConcern(WriteConcern.W1);
-                } else if (constant.equals("W2")) {
-                    spec.setWriteConcern(WriteConcern.W2);
-                } else if (constant.equals("W2")) {
-                    spec.setWriteConcern(WriteConcern.W2);
-                } else {
-                    throw new EISException("Invalid read preference property value: " + constant);
+                switch (constant) {
+                    case "ACKNOWLEDGED" -> spec.setWriteConcern(WriteConcern.ACKNOWLEDGED);
+                    case "JOURNALED" -> spec.setWriteConcern(WriteConcern.JOURNALED);
+                    case "MAJORITY" -> spec.setWriteConcern(WriteConcern.MAJORITY);
+                    case "NONE" -> spec.setWriteConcern(/*FIXME: WriteConcern.NONE*/ new WriteConcern("none"));
+                    case "UNACKNOWLEDGED" -> spec.setWriteConcern(WriteConcern.UNACKNOWLEDGED);
+                    case "W1" -> spec.setWriteConcern(WriteConcern.W1);
+                    case "W2" -> spec.setWriteConcern(WriteConcern.W2);
+                    case "W3" -> spec.setWriteConcern(WriteConcern.W3);
+                    default -> throw new EISException("Invalid read preference property value: " + constant);
                 }
             }
 
             // Allows setting of options as a property.
             Object options = properties.get(OPTIONS);
-            if (options instanceof Number) {
-                spec.setOptions(((Number)options).intValue());
-            } else if (options instanceof String) {
-                spec.setOptions(Integer.parseInt(((String)options)));
+            if (options instanceof Number n) {
+                spec.setOptions(n.intValue());
+            } else if (options instanceof String s) {
+                spec.setOptions(Integer.parseInt(s));
             }
 
             // Allows setting of serverSelectionTimeout as a property.
             Object serverSelectionTimeout = properties.get(SERVER_SELECTION_TIMEOUT);
-            if (serverSelectionTimeout instanceof Number) {
-                spec.setServerSelectionTimeout(((Number)serverSelectionTimeout).intValue());
-            } else if (serverSelectionTimeout instanceof String) {
-                spec.setServerSelectionTimeout(Integer.parseInt(((String)serverSelectionTimeout)));
+            if (serverSelectionTimeout instanceof Number n) {
+                spec.setServerSelectionTimeout(n.intValue());
+            } else if (serverSelectionTimeout instanceof String s) {
+                spec.setServerSelectionTimeout(Integer.parseInt(s));
             }
         }
 

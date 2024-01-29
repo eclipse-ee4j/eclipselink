@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -58,8 +58,8 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
 
     public BatchFetchPolicy(BatchFetchType type) {
         this.type = type;
-        this.dataResults = new HashMap<Object, List<AbstractRecord>>();
-        this.dataResults.put(this, new ArrayList<AbstractRecord>());
+        this.dataResults = new HashMap<>();
+        this.dataResults.put(this, new ArrayList<>());
     }
 
     @Override
@@ -71,9 +71,9 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
             throw new InternalError(error.getMessage());
         }
 
-        Map<Object, List<AbstractRecord>> dataResults = new HashMap<Object, List<AbstractRecord>>();
+        Map<Object, List<AbstractRecord>> dataResults = new HashMap<>();
         if (this.dataResults != null && this.dataResults.containsKey(this)) {
-            List<AbstractRecord> list = new ArrayList<AbstractRecord>(this.dataResults.get(this));
+            List<AbstractRecord> list = new ArrayList<>(this.dataResults.get(this));
             dataResults.put(clone, list);
         }
         clone.setDataResults(dataResults);

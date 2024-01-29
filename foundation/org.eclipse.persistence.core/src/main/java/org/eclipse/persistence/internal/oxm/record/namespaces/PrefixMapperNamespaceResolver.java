@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -120,7 +120,7 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
     @Override
     public void put(String prefix, String uri) {
         String newPrefix = prefixMapper.getPreferredPrefix(uri, prefix, true);
-        if(newPrefix == null || newPrefix.length() == 0) {
+        if(newPrefix == null || newPrefix.isEmpty()) {
             super.put(prefix, uri);
         } else {
             super.put(newPrefix, uri);

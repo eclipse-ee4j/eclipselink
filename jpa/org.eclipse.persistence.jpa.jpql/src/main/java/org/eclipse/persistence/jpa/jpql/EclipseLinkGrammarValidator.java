@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,19 +70,22 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<ExtractExpression> buildExtractExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<ExtractExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             protected String encapsulatedExpressionInvalidKey(ExtractExpression expression) {
                 return ExtractExpression_InvalidExpression;
             }
+
             @Override
             protected String encapsulatedExpressionMissingKey(ExtractExpression expression) {
                 return ExtractExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(ExtractExpression expression) {
                 return ExtractExpression_MissingLeftParenthesis;
             }
+
             @Override
             protected int lengthBeforeEncapsulatedExpression(ExtractExpression expression) {
                 return expression.getDatePart().length() +
@@ -90,6 +93,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                         (expression.hasFrom() ? 4 /* FROM */ : 0) +
                         (expression.hasSpaceAfterFrom() ? 1 : 0);
             }
+
             @Override
             public String rightParenthesisMissingKey(ExtractExpression expression) {
                 return ExtractExpression_MissingRightParenthesis;
@@ -111,19 +115,22 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<TableExpression> buildTableExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<TableExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             protected String encapsulatedExpressionInvalidKey(TableExpression expression) {
                 return TableExpression_InvalidExpression;
             }
+
             @Override
             protected String encapsulatedExpressionMissingKey(TableExpression expression) {
                 return TableExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(TableExpression expression) {
                 return TableExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(TableExpression expression) {
                 return TableExpression_MissingRightParenthesis;

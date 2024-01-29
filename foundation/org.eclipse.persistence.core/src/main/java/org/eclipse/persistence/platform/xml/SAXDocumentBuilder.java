@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,13 +112,13 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
 
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if (null != namespaceURI && namespaceURI.length() == 0) {
+        if (null != namespaceURI && namespaceURI.isEmpty()) {
             namespaceURI = null;
         }
         Element element = getInitializedDocument().createElementNS(namespaceURI, qName);
         Node parentNode = nodes.get(nodes.size()-1);
 
-        if ((stringBuffer.length() > 0) && !(nodes.size() == 1)) {
+        if ((!stringBuffer.isEmpty()) && !(nodes.size() == 1)) {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
             parentNode.appendChild(text);
             stringBuffer.reset();
@@ -136,10 +136,10 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
                 prefix = nextEntry.getKey();
                 uri = nextEntry.getValue();
 
-                boolean prefixEmpty = prefix.length() == 0;
+                boolean prefixEmpty = prefix.isEmpty();
                 String elemNamespaceURI = element.getNamespaceURI();
                 boolean elementNamespaceNull = elemNamespaceURI == null;
-                boolean elementNamespaceEmpty = elemNamespaceURI != null && elemNamespaceURI.length() == 0;
+                boolean elementNamespaceEmpty = elemNamespaceURI != null && elemNamespaceURI.isEmpty();
                 boolean isRootElement = element.getParentNode().getNodeType() == Node.DOCUMENT_NODE;
 
                 if (prefixEmpty && isRootElement && (elementNamespaceEmpty || elementNamespaceNull)) {
@@ -155,7 +155,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
         String attributeNamespaceURI;
         for (int x = 0; x < numberOfAttributes; x++) {
             attributeNamespaceURI = atts.getURI(x);
-            if (null != attributeNamespaceURI && attributeNamespaceURI.length() == 0) {
+            if (null != attributeNamespaceURI && attributeNamespaceURI.isEmpty()) {
                 attributeNamespaceURI = null;
             }
 
@@ -172,7 +172,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         Element endedElement = (Element)nodes.remove(nodes.size()-1);
-        if (stringBuffer.length() > 0) {
+        if (!stringBuffer.isEmpty()) {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
             endedElement.appendChild(text);
             stringBuffer.reset();
@@ -205,7 +205,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
     }
 
     protected void addNamespaceDeclaration(Element parentElement, String prefix, String uri) {
-        if (prefix.length() == 0 || javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(prefix)) {
+        if (prefix.isEmpty() || javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(prefix)) {
             //handle default/target namespaces
             parentElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, uri);
         } else {
@@ -241,7 +241,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
     @Override
     public void endCDATA() throws SAXException {
         CDATASection cdata = (CDATASection)nodes.get(nodes.size()-1).getFirstChild();
-        if (stringBuffer.length() > 0) {
+        if (!stringBuffer.isEmpty()) {
             cdata.setData(stringBuffer.toString());
             stringBuffer.reset();
         }

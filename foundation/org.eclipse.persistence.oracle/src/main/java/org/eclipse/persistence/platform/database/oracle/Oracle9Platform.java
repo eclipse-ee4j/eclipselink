@@ -975,7 +975,7 @@ public class Oracle9Platform extends Oracle8Platform {
     @Override
     public ConnectionCustomizer createConnectionCustomizer(Accessor accessor, AbstractSession session) {
         Object proxyTypeValue = session.getProperty(PersistenceUnitProperties.ORACLE_PROXY_TYPE);
-        if (proxyTypeValue == null || ((proxyTypeValue instanceof String) && ((String)proxyTypeValue).length() == 0)) {
+        if (proxyTypeValue == null || ((proxyTypeValue instanceof String) && ((String) proxyTypeValue).isEmpty())) {
             return null;
         } else {
             return new OracleJDBC_10_1_0_2ProxyConnectionCustomizer(accessor, session);

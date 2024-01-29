@@ -429,7 +429,7 @@ public class WSDLGenerator {
             // i.e. String tableNameAlias = opName.substring(opName.indexOf('_') + 1);
             requestType.setName(opName + REQUEST_SUFFIX + TYPE_SUFFIX);
             Sequence requestSequence = null;
-            if (op.getParameters().size() > 0) {
+            if (!op.getParameters().isEmpty()) {
                 requestSequence = new Sequence();
                 for (Parameter p : op.getParameters()) {
                     Element arg = new Element();

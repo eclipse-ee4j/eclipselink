@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -139,10 +139,10 @@ public class TypeInfo {
      *
      */
     public TypeInfo(Helper helper, JavaClass javaClass) {
-        propertyNames = new ArrayList<String>();
-        properties = new HashMap<String, Property>();
-        originalProperties = new HashMap<String, Property>();
-        propertyList = new ArrayList<Property>();
+        propertyNames = new ArrayList<>();
+        properties = new HashMap<>();
+        originalProperties = new HashMap<>();
+        propertyList = new ArrayList<>();
         xmlNameTransformer = DEFAULT_NAME_TRANSFORMER;
         isSetXmlTransient = false;
         isXmlElementNillable = false;
@@ -188,7 +188,7 @@ public class TypeInfo {
         if (propOrder == null) {
             return new String[0];
         }
-        return propOrder.toArray(new String[propOrder.size()]);
+        return propOrder.toArray(new String[0]);
     }
 
     /**
@@ -204,7 +204,7 @@ public class TypeInfo {
         if (order == null) {
             propOrder = null;
         } else if (order.length == 0) {
-            propOrder = new ArrayList<String>();
+            propOrder = new ArrayList<>();
         } else {
             propOrder = new ArrayList(order.length);
             for (String next : order) {
@@ -405,7 +405,7 @@ public class TypeInfo {
     }
 
     public boolean isAnonymousComplexType() {
-        return this.schemaTypeName == null || this.schemaTypeName.equals("");
+        return this.schemaTypeName == null || this.schemaTypeName.isEmpty();
     }
 
     /**
@@ -425,7 +425,7 @@ public class TypeInfo {
      */
     public HashMap<String, JavaClass> getPackageLevelAdaptersByClass() {
         if(!hasPackageLevelAdaptersByClass()) {
-            packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
+            packageLevelAdaptersByClass = new HashMap<>();
         }
         return packageLevelAdaptersByClass;
     }
@@ -531,7 +531,7 @@ public class TypeInfo {
      *
      */
     public List<Property> getNonTransientPropertiesInPropOrder() {
-        List<Property> propertiesInOrder = new ArrayList<Property>();
+        List<Property> propertiesInOrder = new ArrayList<>();
         String[] propOrder = getPropOrder();
         if (propOrder.length == 0 || propOrder[0].equals(EMPTY_STRING)) {
             ArrayList<String> propertyNames = getPropertyNames();
@@ -539,7 +539,7 @@ public class TypeInfo {
                 addPropertyToList(propertiesInOrder, propertyNames.get(i), null);
             }
         } else {
-            ArrayList<String> propertyNamesCopy = new ArrayList<String>(getPropertyNames());
+            ArrayList<String> propertyNamesCopy = new ArrayList<>(getPropertyNames());
             for (int i = 0; i < propOrder.length; i++) {
                 // generate mappings based on the propOrder.
                 addPropertyToList(propertiesInOrder, propOrder[i], propertyNamesCopy);
@@ -1031,7 +1031,7 @@ public class TypeInfo {
      */
     public void addXmlKeyProperty(Property xmlKeyProp) {
         if (xmlKeyProperties == null) {
-            xmlKeyProperties = new ArrayList<Property>();
+            xmlKeyProperties = new ArrayList<>();
         }
         xmlKeyProperties.add(xmlKeyProp);
     }
@@ -1062,7 +1062,7 @@ public class TypeInfo {
      */
     public Map<String, List<Property>> getAdditionalProperties() {
         if (!hasAdditionalProperties()) {
-            additionalProperties = new HashMap<String, List<Property>>();
+            additionalProperties = new HashMap<>();
         }
         return additionalProperties;
     }
@@ -1111,7 +1111,7 @@ public class TypeInfo {
      */
     public List<Property> getPredicateProperties() {
         if(predicateProperties == null) {
-            predicateProperties = new ArrayList<Property>();
+            predicateProperties = new ArrayList<>();
         }
         return predicateProperties;
     }
@@ -1136,7 +1136,7 @@ public class TypeInfo {
      * Return true if the list of predicate properties hasn't been initialized.
      */
     public boolean hasPredicateProperties() {
-        return this.predicateProperties != null && this.predicateProperties.size() > 0;
+        return this.predicateProperties != null && !this.predicateProperties.isEmpty();
     }
 
     public boolean isLocationAware() {
@@ -1174,7 +1174,7 @@ public class TypeInfo {
 
     public List<XmlNamedObjectGraph> getObjectGraphs() {
         if(this.objectGraphs == null) {
-            this.objectGraphs = new ArrayList<XmlNamedObjectGraph>();
+            this.objectGraphs = new ArrayList<>();
         }
         return this.objectGraphs;
     }

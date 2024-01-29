@@ -270,7 +270,7 @@ public class JsonSchemaGenerator {
         if(converter == null) {
             return null;
         }
-        List<String> enumeration = new ArrayList<String>();
+        List<String> enumeration = new ArrayList<>();
         for(Object nextValue: converter.getAttributeToFieldValues().values()) {
             enumeration.add(nextValue.toString());
         }
@@ -713,7 +713,7 @@ public class JsonSchemaGenerator {
 
         if(this.prefixMapper != null) {
             String namespaceUri = frag.getNamespaceURI();
-            if(namespaceUri != null && namespaceUri.length() != 0) {
+            if(namespaceUri != null && !namespaceUri.isEmpty()) {
                 String prefix = prefixMapper.getPreferredPrefix(namespaceUri, null, true);
                 if(prefix != null) {
                     name = prefix + NAMESPACE_SEPARATOR + name;
@@ -828,7 +828,7 @@ public class JsonSchemaGenerator {
     }
 
     private static void initJavaTypeToJsonType() {
-        javaTypeToJsonType = new HashMap<Class, JsonType>();
+        javaTypeToJsonType = new HashMap<>();
         javaTypeToJsonType.put(CoreClassConstants.APBYTE, JsonType.ARRAY);
         javaTypeToJsonType.put(CoreClassConstants.BIGDECIMAL, JsonType.NUMBER);
         javaTypeToJsonType.put(CoreClassConstants.BIGINTEGER, JsonType.INTEGER);
@@ -919,7 +919,7 @@ public class JsonSchemaGenerator {
     }
 
     private List<ClassDescriptor> getAllDescriptorsForInheritance(XMLDescriptor descriptor) {
-        ArrayList<ClassDescriptor> descriptors = new ArrayList<ClassDescriptor>();
+        ArrayList<ClassDescriptor> descriptors = new ArrayList<>();
         QNameInheritancePolicy policy = (QNameInheritancePolicy) descriptor.getInheritancePolicy();
         descriptors.add(descriptor);
         descriptors.addAll(policy.getAllChildDescriptors());

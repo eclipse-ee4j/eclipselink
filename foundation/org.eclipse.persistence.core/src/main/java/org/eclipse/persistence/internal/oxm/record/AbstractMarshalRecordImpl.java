@@ -74,7 +74,7 @@ public class AbstractMarshalRecordImpl<
             return null;
         }
         Map<String, String> prefixesToNamespaces = descriptorNamespaceResolver.getPrefixesToNamespaces();
-        if(prefixesToNamespaces.size() == 0) {
+        if(prefixesToNamespaces.isEmpty()) {
             return null;
         }
         List returnList = new ArrayList(prefixesToNamespaces.size());
@@ -84,18 +84,18 @@ public class AbstractMarshalRecordImpl<
             //if isn't already on a parentadd namespace to this element
             String prefix = marshalRecordNamespaceResolver.resolveNamespaceURI(entry.getValue());
 
-            if (prefix == null || prefix.length() == 0) {
+            if (prefix == null || prefix.isEmpty()) {
                 //if there is no prefix already declared for this uri in the nr add this one
                 //unless that prefix is already bound to another namespace uri
                 prefix = entry.getKey();
                 if(hasCustomNamespaceMapper) {
                     String newPrefix = getMarshaller().getNamespacePrefixMapper().getPreferredPrefix(entry.getValue(), prefix, true);
-                    if(newPrefix != null && !(newPrefix.length() == 0)) {
+                    if(newPrefix != null && !(newPrefix.isEmpty())) {
                         prefix = newPrefix;
                     }
                 }
                 String uri = marshalRecordNamespaceResolver.resolveNamespacePrefix(prefix);
-                if(hasCustomNamespaceMapper || allowOverride || uri == null || uri.length() == 0) {
+                if(hasCustomNamespaceMapper || allowOverride || uri == null || uri.isEmpty()) {
                     //if this uri is unknown, the cutom mapper will return the preferred prefix for this uri
                     marshalRecordNamespaceResolver.put(entry.getKey(), entry.getValue());
                     returnList.add(new Namespace(prefix, entry.getValue()));
@@ -178,7 +178,7 @@ public class AbstractMarshalRecordImpl<
                 if(leafType == null
                         || isRootElement && marshaller.isApplicationJSON() && !marshaller.isIncludeRoot()
                         || !(leafType.getLocalPart().equals(classIndicatorLocal))
-                        || (classIndicatorUri == null && (leafType.getNamespaceURI() != null && leafType.getNamespaceURI().length() >0))
+                        || (classIndicatorUri == null && (leafType.getNamespaceURI() != null && !leafType.getNamespaceURI().isEmpty()))
                         || (classIndicatorUri != null && !classIndicatorUri.equals(leafType.getNamespaceURI()))
                        ){
                     if (inheritancePolicy.hasClassExtractor()) {
@@ -290,7 +290,7 @@ public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Desc
     public void attributeWithoutQName(String namespaceURI, String localName,
             String prefix, String value) {
         String qualifiedName = localName;
-        if(prefix != null && prefix.length() >0){
+        if(prefix != null && !prefix.isEmpty()){
             qualifiedName = prefix + getNamespaceSeparator() + qualifiedName;
         }
         attribute(namespaceURI, localName, qualifiedName, value);

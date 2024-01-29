@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -184,7 +184,7 @@ public class Helper {
         if (result == null) { return null; }
 
         Collection<JavaClass> args = result.getActualTypeArguments();
-        if (args.size() >0) {
+        if (!args.isEmpty()) {
             jClass = args.iterator().next();
         }
         return jClass;
@@ -427,7 +427,7 @@ public class Helper {
      */
     public static String getQualifiedJavaTypeName(String javaTypeName, String packageName) {
         // prepend the package name if not already present
-        if (packageName != null && packageName.length() > 0 && !packageName.equals(DEFAULT) && !javaTypeName.contains(PKG_SEPARATOR)) {
+        if (packageName != null && !packageName.isEmpty() && !packageName.equals(DEFAULT) && !javaTypeName.contains(PKG_SEPARATOR)) {
             return packageName + PKG_SEPARATOR + javaTypeName;
         }
         return javaTypeName;

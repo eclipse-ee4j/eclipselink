@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -320,7 +320,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     @Override
     public void initialize(AbstractSession session) {
         // If the version field is not in the primary table, then they cannot be batched together.
-        if (this.descriptor.getTables().size() > 0) {
+        if (!this.descriptor.getTables().isEmpty()) {
             this.descriptor.setHasMultipleTableConstraintDependecy(true);
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class XMLInteraction extends MappedInteraction {
     public void prepare(AbstractSession session) {
         DatabaseQuery q = getQuery();
         ClassDescriptor desc = q != null ? q.getDescriptor() : null;
-        if (getInputRootElementName().length() == 0) {
+        if (getInputRootElementName().isEmpty()) {
             if (desc != null && desc.isEISDescriptor()) {
                 EISDescriptor descriptor = (EISDescriptor) desc;
                 setInputRootElementName(descriptor.getDataTypeName());
@@ -103,7 +103,7 @@ public class XMLInteraction extends MappedInteraction {
                 setInputRootElementName("input");
             }
         }
-        if (getOutputRootElementName().length() == 0) {
+        if (getOutputRootElementName().isEmpty()) {
             if (desc != null && desc.isEISDescriptor()) {
                 EISDescriptor descriptor = (EISDescriptor) desc;
                 setOutputRootElementName(descriptor.getDataTypeName());
@@ -139,7 +139,7 @@ public class XMLInteraction extends MappedInteraction {
         // The input record can either be build from the interaction arguments,
         // or the modify row.
         if ((getInputRow() != null) && (!hasArguments())) {
-            if (getInputResultPath().length() == 0) {
+            if (getInputResultPath().isEmpty()) {
                 if (getInputRow() instanceof XMLRecord) {
                     dom = (Element)((XMLRecord)getInputRow()).getDOM();
                     // Rename the root element if specified to be different.
@@ -189,7 +189,7 @@ public class XMLInteraction extends MappedInteraction {
         if (row == null) {
             return null;
         }
-        if (getOutputResultPath().length() > 0) {
+        if (!getOutputResultPath().isEmpty()) {
             row = (AbstractRecord)row.get(getOutputResultPath());
             // Handle the case were the output row is mapped into a database row of values.
         } else if (hasOutputArguments()) {
@@ -212,7 +212,7 @@ public class XMLInteraction extends MappedInteraction {
             return new Vector<>(0);
         }
         AbstractRecord row = accessor.getEISPlatform().createDatabaseRowFromDOMRecord(record, this, accessor);
-        if (getOutputResultPath().length() > 0) {
+        if (!getOutputResultPath().isEmpty()) {
             @SuppressWarnings({"unchecked"})
             Vector<AbstractRecord> values = (Vector<AbstractRecord>)row.getValues(getOutputResultPath());
             if (values == null) {

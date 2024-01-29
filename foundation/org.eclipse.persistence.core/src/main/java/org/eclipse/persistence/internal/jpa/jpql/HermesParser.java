@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -234,24 +234,16 @@ public final class HermesParser implements JPAQueryBuilder {
      * of EclipseLink
      */
     private JPQLGrammar jpqlGrammar() {
-        switch(validationLevel) {
-            case ParserValidationType.JPA10:
-                return JPQLGrammar1_0.instance();
-            case ParserValidationType.JPA20:
-                return JPQLGrammar2_0.instance();
-            case ParserValidationType.JPA21:
-                return JPQLGrammar2_1.instance();
-            case ParserValidationType.JPA22:
-                return JPQLGrammar2_2.instance();
-            case ParserValidationType.JPA30:
-                return JPQLGrammar3_0.instance();
-            case ParserValidationType.JPA31:
-                return JPQLGrammar3_1.instance();
-            case ParserValidationType.JPA32:
-                return JPQLGrammar3_2.instance();
-            default:
-                return DefaultEclipseLinkJPQLGrammar.instance();
-        }
+        return switch (validationLevel) {
+            case ParserValidationType.JPA10 -> JPQLGrammar1_0.instance();
+            case ParserValidationType.JPA20 -> JPQLGrammar2_0.instance();
+            case ParserValidationType.JPA21 -> JPQLGrammar2_1.instance();
+            case ParserValidationType.JPA22 -> JPQLGrammar2_2.instance();
+            case ParserValidationType.JPA30 -> JPQLGrammar3_0.instance();
+            case ParserValidationType.JPA31 -> JPQLGrammar3_1.instance();
+            case ParserValidationType.JPA32 -> JPQLGrammar3_2.instance();
+            default -> DefaultEclipseLinkJPQLGrammar.instance();
+        };
     }
 
     @Override

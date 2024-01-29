@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,12 +72,8 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
         }
         try {
             return ((Collection)container).add(elementToAdd);
-        } catch (ClassCastException ex1) {
+        } catch (ClassCastException | UnsupportedOperationException | IllegalArgumentException ex1) {
             throw QueryException.cannotAddElement(element, container, ex1);
-        } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotAddElement(element, container, ex2);
-        } catch (UnsupportedOperationException ex3) {
-            throw QueryException.cannotAddElement(element, container, ex3);
         }
     }
 

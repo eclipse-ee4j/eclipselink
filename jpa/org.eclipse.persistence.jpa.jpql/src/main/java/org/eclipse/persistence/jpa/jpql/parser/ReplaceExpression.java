@@ -45,10 +45,10 @@ public final class ReplaceExpression extends AbstractTripleEncapsulatedExpressio
 
     @Override
     public String getParameterQueryBNFId(int index) {
-        switch (index) {
-            case 0:  return InternalReplaceStringExpressionBNF.ID;
-            default: return InternalReplacePositionExpressionBNF.ID;
-        }
+        return switch (index) {
+            case 0 -> InternalReplaceStringExpressionBNF.ID;
+            default -> InternalReplacePositionExpressionBNF.ID;
+        };
     }
 
     @Override

@@ -173,7 +173,7 @@ public class XPathEngine <
         XMLNodeList createdElements = new XMLNodeList();
 
         //CR:### If the value is null, then the node(s) must not be created.
-        if ((value == null) || (value instanceof Collection && (((Collection)value).size() == 0))) {
+        if ((value == null) || (value instanceof Collection && (((Collection) value).isEmpty()))) {
             return createdElements;
         }
         Node nextElement = element;
@@ -478,11 +478,11 @@ public class XPathEngine <
             if(predicate != null) {
                 XPathFragment predicateFragment = predicate.getXPathFragment();
                 if(predicateFragment.isAttribute()) {
-                    if(predicateFragment.getNamespaceURI() == null || predicateFragment.getNamespaceURI().length() == 0) {
+                    if(predicateFragment.getNamespaceURI() == null || predicateFragment.getNamespaceURI().isEmpty()) {
                         newElement.setAttribute(predicateFragment.getLocalName(), fragment.getPredicate().getValue());
                     } else {
                         String name = predicateFragment.getLocalName();
-                        if(predicateFragment.getPrefix() != null && predicateFragment.getPrefix().length() != 0) {
+                        if(predicateFragment.getPrefix() != null && !predicateFragment.getPrefix().isEmpty()) {
                             name = predicateFragment.getPrefix() + Constants.COLON + name;
                         }
                         newElement.setAttributeNS(predicateFragment.getNamespaceURI(), name, fragment.getPredicate().getValue());
@@ -510,11 +510,11 @@ public class XPathEngine <
                     if(predicate != null) {
                         XPathFragment predicateFragment = predicate.getXPathFragment();
                         if(predicateFragment.isAttribute()) {
-                            if(predicateFragment.getNamespaceURI() == null || predicateFragment.getNamespaceURI().length() == 0) {
+                            if(predicateFragment.getNamespaceURI() == null || predicateFragment.getNamespaceURI().isEmpty()) {
                                 newElement.setAttribute(predicateFragment.getLocalName(), fragment.getPredicate().getValue());
                             } else {
                                 String name = predicateFragment.getLocalName();
-                                if(predicateFragment.getPrefix() != null && predicateFragment.getPrefix().length() != 0) {
+                                if(predicateFragment.getPrefix() != null && !predicateFragment.getPrefix().isEmpty()) {
                                     name = predicateFragment.getPrefix() + Constants.COLON + name;
                                 }
                                 newElement.setAttributeNS(predicateFragment.getNamespaceURI(), name, fragment.getPredicate().getValue());
@@ -537,11 +537,11 @@ public class XPathEngine <
                 if(predicate != null) {
                     XPathFragment predicateFragment = predicate.getXPathFragment();
                     if(predicateFragment.isAttribute()) {
-                        if(predicateFragment.getNamespaceURI() == null || predicateFragment.getNamespaceURI().length() == 0) {
+                        if(predicateFragment.getNamespaceURI() == null || predicateFragment.getNamespaceURI().isEmpty()) {
                             newElement.setAttribute(predicateFragment.getLocalName(), fragment.getPredicate().getValue());
                         } else {
                             String name = predicateFragment.getLocalName();
-                            if(predicateFragment.getPrefix() != null && predicateFragment.getPrefix().length() != 0) {
+                            if(predicateFragment.getPrefix() != null && !predicateFragment.getPrefix().isEmpty()) {
                                 name = predicateFragment.getPrefix() + Constants.COLON + name;
                             }
                             newElement.setAttributeNS(predicateFragment.getNamespaceURI(), name, fragment.getPredicate().getValue());
@@ -580,7 +580,7 @@ public class XPathEngine <
             String existingPrefix = domResolver.resolveNamespaceURI(namespace);
             String elementName = fragment.getShortName();
             if(existingPrefix != null) {
-                if(existingPrefix.length() > 0) {
+                if(!existingPrefix.isEmpty()) {
                     elementName = existingPrefix + Constants.COLON + fragment.getLocalName();
                 } else {
                     elementName = fragment.getLocalName();
@@ -602,7 +602,7 @@ public class XPathEngine <
         XPathFragment nextFragment = fragment.getNextFragment();
         if ((nextFragment != null) && nextFragment.isAttribute()) {
             addAttribute(nextFragment, xmlField, element, value, session);
-        } else if (value instanceof String && ((String)value).length() > 0) {
+        } else if (value instanceof String && !((String) value).isEmpty()) {
             addText(xmlField, element, (String)value);
         } else if (value == XMLRecord.NIL) {
             addXsiNilToElement(element, xmlField);
@@ -623,7 +623,7 @@ public class XPathEngine <
         String existingPrefix = domResolver.resolveNamespaceURI(namespace);
         String elementName = nodeName;
         if(existingPrefix != null) {
-            if(existingPrefix.length() > 0) {
+            if(!existingPrefix.isEmpty()) {
                 elementName = existingPrefix + Constants.COLON + lastFragment.getLocalName();
             } else {
                 elementName = lastFragment.getLocalName();
@@ -684,7 +684,7 @@ public class XPathEngine <
 
                         String type;
                         String prefix = this.resolveNamespacePrefixForURI(qname.getNamespaceURI(), namespaceResolver);
-                        if (prefix == null || prefix.length() == 0) {
+                        if (prefix == null || prefix.isEmpty()) {
                             if(qname.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)){
                                 prefix = namespaceResolver.generatePrefix(Constants.SCHEMA_PREFIX);
                             }else{
@@ -922,7 +922,7 @@ public class XPathEngine <
                             if(parentElement == null && parent.getNodeType() == Node.ELEMENT_NODE) {
                                 parentElement = (Element)parent;
                             }
-                            if(stringValue.length() == 0 && ((node.getNodeType() == Node.TEXT_NODE) || (node.getNodeType() == Node.CDATA_SECTION_NODE)) && parentElement != null) {
+                            if(stringValue.isEmpty() && ((node.getNodeType() == Node.TEXT_NODE) || (node.getNodeType() == Node.CDATA_SECTION_NODE)) && parentElement != null) {
                                 parentElement.removeChild(node);
                             } else {
                                 node.setNodeValue(stringValue);
@@ -969,7 +969,7 @@ public class XPathEngine <
 
     public List<XMLEntry> replaceCollection(List<Field> xmlFields, List<XMLEntry> values, Node contextNode, DocumentPreservationPolicy docPresPolicy, Field lastUpdatedField, CoreAbstractSession session) {
         List<XMLEntry> oldNodes = unmarshalXPathEngine.selectNodes(contextNode, xmlFields, getNamespaceResolverForField(xmlFields.get(0)));
-        if(oldNodes == null || oldNodes.size() == 0) {
+        if(oldNodes == null || oldNodes.isEmpty()) {
             return oldNodes;
         }
 

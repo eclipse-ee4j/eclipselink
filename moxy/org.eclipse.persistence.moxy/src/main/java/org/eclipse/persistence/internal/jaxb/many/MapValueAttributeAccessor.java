@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -97,12 +97,10 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
     public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         nestedAccessor.initializeAttributes(theJavaClass);
 
-        if(mapClassName.equals("java.util.Map")){
-            mapClassName = "java.util.HashMap";
-        } else if(mapClassName.equals("java.util.concurrent.ConcurrentMap")){
-            mapClassName = "java.util.concurrent.ConcurrentHashMap";
-        } else if(mapClassName.equals("java.util.SortedMap")){
-            mapClassName = "java.util.TreeMap";
+        switch (mapClassName) {
+            case "java.util.Map" -> mapClassName = "java.util.HashMap";
+            case "java.util.concurrent.ConcurrentMap" -> mapClassName = "java.util.concurrent.ConcurrentHashMap";
+            case "java.util.SortedMap" -> mapClassName = "java.util.TreeMap";
         }
 
         try{

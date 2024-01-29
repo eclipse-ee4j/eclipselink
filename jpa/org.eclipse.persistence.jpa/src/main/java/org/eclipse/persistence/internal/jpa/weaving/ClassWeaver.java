@@ -1357,7 +1357,7 @@ public class ClassWeaver extends ClassVisitor {
         String newSignature = null;
         // fix the signature to include any new methods we weave
         if (signature != null) {
-            StringBuffer newSignatureBuf = new StringBuffer();
+            StringBuilder newSignatureBuf = new StringBuilder();
             newSignatureBuf.append(signature);
 
             for (int i = interfaces.length; i < newInterfaces.length; i++) {

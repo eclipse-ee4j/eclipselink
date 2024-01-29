@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
+import java.util.Objects;
 
 /**
  * <p>This class represents the pairing of a local name and a namespace uri.
@@ -99,13 +100,13 @@ public class XPathQName {
                     }
                 }
         }
-        return ((localName == qName.localName) || ((localName != null) && localName.equals(qName.localName)));
+        return (Objects.equals(localName, qName.localName));
     }
 
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        if(null != namespaceUri && namespaceUri.length() > 0) {
+        if(null != namespaceUri && !namespaceUri.isEmpty()) {
             stringBuilder.append('{');
             stringBuilder.append(namespaceUri);
             stringBuilder.append('}');

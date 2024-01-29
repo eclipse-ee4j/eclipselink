@@ -244,7 +244,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      */
     @Override
     public String toString() {
-        StringBuffer aBuffer = new StringBuffer("SingularAttributeImpl[");
+        StringBuilder aBuffer = new StringBuilder("SingularAttributeImpl[");
         aBuffer.append(getType());
         aBuffer.append(",");
         aBuffer.append(getMapping());

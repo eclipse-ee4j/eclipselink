@@ -371,7 +371,7 @@ public class EISDescriptor extends ClassDescriptor {
                 String xPath = field.getName();
                 String columnDefinition = field.getColumnDefinition();
                 // Moxy requires /text on elements.
-                if ((xPath.indexOf('@') == -1) && (xPath.indexOf("/text()") == -1)) {
+                if ((xPath.indexOf('@') == -1) && (!xPath.contains("/text()"))) {
                     xPath = xPath + "/text()";
                 }
                 field = new XMLField(xPath);

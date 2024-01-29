@@ -573,7 +573,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    @Override
    protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {
        if (sourceObject instanceof String) {
-           if(((String) sourceObject).length() == 0) {
+           if(((String) sourceObject).isEmpty()) {
                return 0d;
            }else if(Constants.POSITIVE_INFINITY.equals(sourceObject)){
                return Double.POSITIVE_INFINITY;
@@ -595,7 +595,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    @Override
    protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {
        if (sourceObject instanceof String) {
-           if(((String) sourceObject).length() == 0) {
+           if(((String) sourceObject).isEmpty()) {
                return 0f;
            } else if(Constants.POSITIVE_INFINITY.equals(sourceObject)){
                return Float.POSITIVE_INFINITY;
@@ -614,7 +614,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    @Override
    protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {
        if(sourceObject instanceof String sourceString) {
-           if(sourceString.length() == 0) {
+           if(sourceString.isEmpty()) {
                return 0;
            } else if(sourceString.charAt(0) == PLUS) {
                return super.convertObjectToInteger(sourceString.substring(1));
@@ -632,7 +632,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
   @Override
   protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
       if(sourceObject instanceof String sourceString) {
-          if(sourceString.length() == 0) {
+          if(sourceString.isEmpty()) {
               return 0L;
           } else if(sourceString.charAt(0) == PLUS) {
               return super.convertObjectToLong(sourceString.substring(1));
@@ -650,7 +650,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
   @Override
   protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
       if(sourceObject instanceof String sourceString) {
-          if(sourceString.length() == 0) {
+          if(sourceString.isEmpty()) {
               return 0;
           } else if(sourceString.charAt(0) == PLUS) {
               return super.convertObjectToShort(sourceString.substring(1));
@@ -670,7 +670,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
   @Override
   protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {
       if(sourceObject instanceof String sourceString) {
-          if(sourceString.length() == 0) {
+          if(sourceString.isEmpty()) {
               return BigDecimal.ZERO;
           } else if(sourceString.charAt(0) == PLUS) {
               return super.convertObjectToNumber(sourceString.substring(1));
@@ -686,7 +686,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    @Override
    protected BigInteger convertObjectToBigInteger(Object sourceObject) throws ConversionException {
        if(sourceObject instanceof String sourceString) {
-           if(sourceString.length() == 0) {
+           if(sourceString.isEmpty()) {
                return null;
            } else if(sourceString.charAt(0) == PLUS) {
                return super.convertObjectToBigInteger(sourceString.substring(1));
@@ -702,7 +702,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    @Override
    protected BigDecimal convertObjectToBigDecimal(Object sourceObject) throws ConversionException {
        if(sourceObject instanceof String sourceString) {
-           if(sourceString.length() == 0) {
+           if(sourceString.isEmpty()) {
                return null;
            }
            try {
@@ -733,7 +733,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     @Override
     protected Byte convertObjectToByte(Object sourceObject) throws ConversionException {
         if(sourceObject instanceof String sourceString) {
-            if(sourceString.length() == 0) {
+            if(sourceString.isEmpty()) {
                 return 0;
             } else if(sourceString.charAt(0) == PLUS) {
                 return super.convertObjectToByte(sourceString.substring(1));
@@ -813,7 +813,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString) {
         // Trim in case of leading or trailing whitespace
         String trimmedSourceString = sourceString.trim();
-        if(trimmedSourceString.length() == 0) {
+        if(trimmedSourceString.isEmpty()) {
             return null;
         }
         XMLGregorianCalendar calToReturn = null;
@@ -860,7 +860,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      *
      */
     public Duration convertStringToDuration(String sourceString) {
-        if(sourceString == null || sourceString.length() == 0) {
+        if(sourceString == null || sourceString.isEmpty()) {
             return null;
         }
         return getDatatypeFactory().newDuration(sourceString);
@@ -1155,7 +1155,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
                 truncIndex--;
             }
             milliStr = new String(numbChar, 0, truncIndex + 1);
-            if (milliStr.length() > 0 && !"0".equals(milliStr)) {
+            if (!milliStr.isEmpty() && !"0".equals(milliStr)) {
                 milliStr = '.' + milliStr;
                 result = pre + milliStr + post;
             } else {
@@ -1664,7 +1664,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     }
 
     protected File convertStringToFile(String path) {
-        if(path == null || path.length() == 0) {
+        if(path == null || path.isEmpty()) {
             return null;
         }
         return new File(path);

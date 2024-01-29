@@ -358,7 +358,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                         }
                     }
 
-                    if (null == nodeValue && fieldNodes.size() > 0) {
+                    if (null == nodeValue && !fieldNodes.isEmpty()) {
                         nodeValue = fieldNodes.get(0).getNodeValue();
                     }
                 }

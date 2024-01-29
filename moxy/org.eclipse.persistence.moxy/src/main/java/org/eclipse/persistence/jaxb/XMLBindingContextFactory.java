@@ -38,14 +38,11 @@ public class XMLBindingContextFactory implements jakarta.xml.bind.JAXBContextFac
         Map<String, Object> opts = map != null ? (Map<String, Object>) map : Collections.emptyMap();
         Object factory = opts.getOrDefault(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DEFAULT);
         if (factory instanceof String) {
-            switch ((String) factory) {
-                case JAXBContextProperties.Factory.DEFAULT:
-                    return JAXBContextFactory.createContext(types, opts);
-                case JAXBContextProperties.Factory.DYNAMIC:
-                    return DynamicJAXBContextFactory.createContext(types, opts);
-                default:
-                    throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[] {factory}));
-            }
+            return switch ((String) factory) {
+                case JAXBContextProperties.Factory.DEFAULT -> JAXBContextFactory.createContext(types, opts);
+                case JAXBContextProperties.Factory.DYNAMIC -> DynamicJAXBContextFactory.createContext(types, opts);
+                default -> throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[]{factory}));
+            };
         }
         throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[] {factory}));
     }
@@ -56,14 +53,11 @@ public class XMLBindingContextFactory implements jakarta.xml.bind.JAXBContextFac
         Map<String, Object> opts = map != null ? (Map<String, Object>) map : Collections.emptyMap();
         Object factory = opts.getOrDefault(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DEFAULT);
         if (factory instanceof String) {
-            switch ((String) factory) {
-                case JAXBContextProperties.Factory.DEFAULT:
-                    return JAXBContextFactory.createContext(string, cl, opts);
-                case JAXBContextProperties.Factory.DYNAMIC:
-                    return DynamicJAXBContextFactory.createContext(string, cl, opts);
-                default:
-                    throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[] {factory}));
-            }
+            return switch ((String) factory) {
+                case JAXBContextProperties.Factory.DEFAULT -> JAXBContextFactory.createContext(string, cl, opts);
+                case JAXBContextProperties.Factory.DYNAMIC -> DynamicJAXBContextFactory.createContext(string, cl, opts);
+                default -> throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[]{factory}));
+            };
         }
         throw new JAXBException(ExceptionLocalization.buildMessage("jaxb_context_factory_property_invalid", new Object[] {factory}));
     }

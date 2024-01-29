@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,7 +134,7 @@ public class WarArchiver extends JarArchiver {
     protected JarOutputStream buildJarOutputStream() {
         JarOutputStream jarOutputStream = null;
         try {
-            if (jarFilename == null || jarFilename.length() == 0) {
+            if (jarFilename == null || jarFilename.isEmpty()) {
                 jarFilename = DEFAULT_WAR_FILENAME;
             }
             jarOutputStream = new JarOutputStream(new FileOutputStream(

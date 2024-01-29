@@ -221,7 +221,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             expression = expression.get(queryKeyName);
         } else {
             // Single level aggregate
-            if (aggregateName.equals("")) {
+            if (aggregateName.isEmpty()) {
                 expression = builder.get(queryKeyName);
             } else {
                 expression = builder.get(aggregateName).get(queryKeyName);
@@ -356,16 +356,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public Object buildElementUnitOfWorkClone(Object element, Object parent, Integer refreshCascade, UnitOfWorkImpl unitOfWork, boolean isExisting, boolean isFromSharedCache) {
         // optimize registration to knowledge of existence
         if (refreshCascade != null ){
-            switch(refreshCascade){
-            case ObjectBuildingQuery.CascadeAllParts :
-                return unitOfWork.mergeClone(element, MergeManager.CASCADE_ALL_PARTS, true);
-            case ObjectBuildingQuery.CascadePrivateParts :
-                return unitOfWork.mergeClone(element, MergeManager.CASCADE_PRIVATE_PARTS, true);
-            case ObjectBuildingQuery.CascadeByMapping :
-                return unitOfWork.mergeClone(element, MergeManager.CASCADE_BY_MAPPING, true);
-            default:
-                return unitOfWork.mergeClone(element, MergeManager.NO_CASCADE, true);
-            }
+            return switch (refreshCascade) {
+                case ObjectBuildingQuery.CascadeAllParts -> unitOfWork.mergeClone(element, MergeManager.CASCADE_ALL_PARTS, true);
+                case ObjectBuildingQuery.CascadePrivateParts -> unitOfWork.mergeClone(element, MergeManager.CASCADE_PRIVATE_PARTS, true);
+                case ObjectBuildingQuery.CascadeByMapping -> unitOfWork.mergeClone(element, MergeManager.CASCADE_BY_MAPPING, true);
+                default -> unitOfWork.mergeClone(element, MergeManager.NO_CASCADE, true);
+            };
         }else{
             if (isExisting) {
                 return unitOfWork.registerExistingObject(element, isFromSharedCache);

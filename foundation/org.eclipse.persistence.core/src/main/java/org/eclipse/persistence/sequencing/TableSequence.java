@@ -182,11 +182,11 @@ public class TableSequence extends QuerySequence {
 
     @Override
     public void onConnect() {
-        if(this.table.getName().length() == 0) {
+        if(this.table.getName().isEmpty()) {
             this.table.setName(((DatabasePlatform)getDatasourcePlatform()).getDefaultSequenceTableName());
         }
-        if ((this.qualifier == null || this.qualifier.length() == 0) &&
-                (this.table.getTableQualifier() != null && this.table.getTableQualifier().length() != 0)) {
+        if ((this.qualifier == null || this.qualifier.isEmpty()) &&
+                (this.table.getTableQualifier() != null && !this.table.getTableQualifier().isEmpty())) {
             this.qualifier = this.table.getTableQualifier();
         }
         super.onConnect();

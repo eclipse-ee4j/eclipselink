@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -179,21 +179,14 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor8<MetadataAnnotatedEleme
     }
 
     private static String getName(TypeMirror type) {
-        String name = null;
-        switch (type.getKind()) {
-            case ARRAY:
-                name = getName(((ArrayType) type).getComponentType()) + "[]";
-                break;
-            case TYPEVAR:
-                name = ((TypeVariable) type).asElement().toString();
-                break;
-            case DECLARED:
-                name = ((DeclaredType) type).asElement().toString();
-                break;
-            default:
+        String name = switch (type.getKind()) {
+            case ARRAY -> getName(((ArrayType) type).getComponentType()) + "[]";
+            case TYPEVAR -> ((TypeVariable) type).asElement().toString();
+            case DECLARED -> ((DeclaredType) type).asElement().toString();
+            default ->
                 // type.getKind().isPrimitive()
-                name = type.toString();
-        }
+                    type.toString();
+        };
         //ignore ElementType.TYPE_USE annotations which may be applied
         //on the componentType in the array
         //XXX: on jdk8, returned String from TypeMirror.toString() looks like:

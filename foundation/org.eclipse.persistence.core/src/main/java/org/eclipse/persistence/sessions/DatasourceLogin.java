@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /** Implementation of platform-specific behaviors. */
     protected Platform platform;
 
-    /** findbugs: removed the encrypted String that holds the expiry key */
+    /* findbugs: removed the encrypted String that holds the expiry key */
 
     /** The securable object holder and flag*/
     private boolean isEncryptedPasswordSet;
@@ -298,8 +298,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      */
     public static String getVersion() {
         if (versionString == null) {
-            Object[] args = { Version.getProduct(), Version.getVersionString() };
-            versionString = MessageFormat.format(versionStringTemplate, args);
+            versionString = MessageFormat.format(versionStringTemplate, Version.getProduct(), Version.getVersionString());
         }
         return versionString;
     }

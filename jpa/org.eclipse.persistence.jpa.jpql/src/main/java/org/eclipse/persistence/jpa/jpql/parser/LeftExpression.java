@@ -47,10 +47,10 @@ public final class LeftExpression extends AbstractDoubleEncapsulatedExpression {
 
     @Override
     public String parameterExpressionBNF(int index) {
-        switch (index) {
-            case 0:  return InternalLeftStringExpressionBNF.ID;
-            default: return InternalLeftPositionExpressionBNF.ID;
-        }
+        return switch (index) {
+            case 0 -> InternalLeftStringExpressionBNF.ID;
+            default -> InternalLeftPositionExpressionBNF.ID;
+        };
     }
 
     @Override

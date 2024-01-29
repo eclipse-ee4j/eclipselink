@@ -43,6 +43,7 @@ module eclipselink {
     requires static jakarta.messaging;
     requires static jakarta.resource;
 
+    requires static org.objectweb.asm;
     requires static com.sun.xml.bind.core;
 
     exports org.eclipse.persistence.jpa.jpql;

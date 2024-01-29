@@ -128,12 +128,10 @@ public class NoSqlMetadata extends ORMetadata {
             }
         }
         if (this.dataFormat != null) {
-            if (this.dataFormat.equals("XML")) {
-                newDescriptor.setDataFormat(EISDescriptor.XML);
-            } else if (this.dataFormat.equals("MAPPED")) {
-                newDescriptor.setDataFormat(EISDescriptor.MAPPED);
-            } else if (this.dataFormat.equals("INDEXED")) {
-                newDescriptor.setDataFormat(EISDescriptor.INDEXED);
+            switch (this.dataFormat) {
+                case "XML" -> newDescriptor.setDataFormat(EISDescriptor.XML);
+                case "MAPPED" -> newDescriptor.setDataFormat(EISDescriptor.MAPPED);
+                case "INDEXED" -> newDescriptor.setDataFormat(EISDescriptor.INDEXED);
             }
         }
         newDescriptor.setAlias("");

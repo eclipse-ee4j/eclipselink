@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1489,7 +1489,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             String beginQuote = session.getDatasourcePlatform().getStartDelimiter();
             String endQuote = session.getDatasourcePlatform().getEndDelimiter();
             //Ensure this tablename hasn't already been quoted.
-            if (getReferenceTable().getName().indexOf(beginQuote) == -1) {
+            if (!getReferenceTable().getName().contains(beginQuote)) {
                 getReferenceTable().setName(beginQuote + getReferenceTable().getName() + endQuote);
             }
         }
@@ -1777,7 +1777,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * The reference keys on the reference table are initialized
      */
     protected void initializeReferenceKeys(AbstractSession session) throws DescriptorException {
-        if (getReferenceKeyFields().size() == 0) {
+        if (getReferenceKeyFields().isEmpty()) {
             throw DescriptorException.noReferenceKeyIsSpecified(this);
         }
 
@@ -1806,8 +1806,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             throw DescriptorException.referenceTableNotSpecified(this);
         }
 
-        if (platform.getTableQualifier().length() > 0) {
-            if (getReferenceTable().getTableQualifier().length() == 0) {
+        if (!platform.getTableQualifier().isEmpty()) {
+            if (getReferenceTable().getTableQualifier().isEmpty()) {
                 getReferenceTable().setTableQualifier(platform.getTableQualifier());
             }
         }

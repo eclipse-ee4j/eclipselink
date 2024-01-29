@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ import java.security.PrivilegedExceptionAction;
  */
 public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXEnabledPlatform {
     public static final String SERVER_LOG_CLASS = "com.ibm.ws.jpa.container.eclipselink.logging.EclipseLinkLogger";
-    /**
+    /*
      * The following constants and attributes are used to determine the module and application name
      * to satisfy the requirements for 248746 where we provide an identifier pair for JMX sessions.
      * Each application can have several modules. 1) Application name - the persistence unit
@@ -52,15 +52,15 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
      * (there is a 1-many relationship for module:session(s))
      */
     static {
-        /**
+        /*
          * Override by subclass: Search String in application server ClassLoader for the
          * application:persistence_unit name
          */
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "[app:";
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "]";
-        /** Override by subclass: Search String in application server session for ejb modules */
+        /* Override by subclass: Search String in application server session for ejb modules */
         APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = ".jar!/";
-        /** Override by subclass: Search String in application server session for war modules */
+        /* Override by subclass: Search String in application server session for war modules */
         APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = ".war!/";
         APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "]";
 

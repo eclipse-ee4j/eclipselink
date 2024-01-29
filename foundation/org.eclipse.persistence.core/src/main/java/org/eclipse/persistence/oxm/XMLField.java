@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -702,7 +702,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * INTERNAL:
     */
     public void setUserXMLTypesForDeploymentXML(ArrayList pairs) throws Exception {
-        if (pairs.size() > 0) {
+        if (!pairs.isEmpty()) {
             userXMLTypes = new HashMap();
             Iterator iter = pairs.iterator();
             while (iter.hasNext()) {
@@ -735,7 +735,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * INTERNAL:
     */
     public void setUserJavaTypesForDeploymentXML(ArrayList pairs) throws Exception {
-        if (pairs.size() > 0) {
+        if (!pairs.isEmpty()) {
             userJavaTypes = new HashMap();
             Iterator iter = pairs.iterator();
             while (iter.hasNext()) {

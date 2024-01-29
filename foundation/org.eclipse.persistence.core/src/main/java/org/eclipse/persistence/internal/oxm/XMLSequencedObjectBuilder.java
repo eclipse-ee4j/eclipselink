@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,9 +51,7 @@ public class XMLSequencedObjectBuilder extends XMLObjectBuilder {
         try {
             Collection settings = PrivilegedAccessHelper.invokeMethod(getSettingsMethod, obj, new Object[0]);
             return settings;
-        } catch(IllegalAccessException ex) {
-
-        } catch(InvocationTargetException ex) {
+        } catch(IllegalAccessException | InvocationTargetException ex) {
 
         }
         return new java.util.ArrayList();

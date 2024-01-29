@@ -381,9 +381,9 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
 
                 if (nr != null) {
                     String prefix = nr.resolveNamespaceURI(attributeName.getNamespaceURI());
-                    if ((prefix != null) && prefix.length() > 0) {
+                    if ((prefix != null) && !prefix.isEmpty()) {
                         qualifiedName = prefix + XMLConstants.COLON + qualifiedName;
-                    } else if (attributeName.getNamespaceURI() != null && attributeName.getNamespaceURI().length() > 0) {
+                    } else if (attributeName.getNamespaceURI() != null && !attributeName.getNamespaceURI().isEmpty()) {
                         String generatedPrefix = nr.generatePrefix();
                         qualifiedName = generatedPrefix + XMLConstants.COLON + qualifiedName;
                         nr.put(generatedPrefix, attributeName.getNamespaceURI());

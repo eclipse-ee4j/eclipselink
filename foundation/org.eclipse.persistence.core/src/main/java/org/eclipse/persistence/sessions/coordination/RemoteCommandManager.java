@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -144,7 +144,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         logDebug("starting_rcm", args);
 
         // replace the $HOST substring of the URL with the discovered ipAddress
-        if ((getUrl() != null) && (getUrl().indexOf(ServiceId.HOST_TOKEN) >= 0)) {
+        if ((getUrl() != null) && (getUrl().contains(ServiceId.HOST_TOKEN))) {
             try {
                 // discover local IP address
                 String ipAddress = InetAddress.getLocalHost().getHostAddress();

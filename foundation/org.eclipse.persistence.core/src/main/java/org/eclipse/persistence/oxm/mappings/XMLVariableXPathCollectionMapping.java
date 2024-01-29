@@ -233,14 +233,14 @@ public List<DatabaseField> getFields() {
             }
             XPathFragment frag = new XPathFragment();
             frag.setLocalName(returnString);
-            if(isNamespaceAware && uri != null && uri.length() >0){
+            if(isNamespaceAware && uri != null && !uri.isEmpty()){
                 String prefix = nr.resolveNamespaceURI(uri);
                 if(prefix == null){
                        prefix = nr.generatePrefix();
                     //marshalRecord.namespaceDeclaration(prefix, uri);
                        frag.setGeneratedPrefix(true);
                 }
-                if(prefix != null && prefix.length() >0){
+                if(prefix != null && !prefix.isEmpty()){
                     frag.setPrefix(prefix);
                     //returnString = prefix + sep + returnString;
                 }

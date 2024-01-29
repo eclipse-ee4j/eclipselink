@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class MongoCodecs {
         if (codecRegistry == null) {
             synchronized (MongoCodecs.class) {
                 if (codecRegistry == null) {
-                    Map<BsonType, Class<?>> replacements = new HashMap<BsonType, Class<?>>();
+                    Map<BsonType, Class<?>> replacements = new HashMap<>();
                     replacements.put(BsonType.TIMESTAMP, Timestamp.class);
                     // make it use ByteArrayCodec instead of BinaryCodec
                     // see also https://jira.mongodb.org/browse/JAVA-2025

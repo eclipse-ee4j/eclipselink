@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public abstract class ArrayValue<T> extends ManyValue<T, Object> {
     @Override
     public void setItem(Object array) {
         int arraySize = Array.getLength(array);
-        adaptedValue = new ArrayList<T>(arraySize);
+        adaptedValue = new ArrayList<>(arraySize);
         for(int x=0; x<arraySize; x++) {
             adaptedValue.add((T) Array.get(array, x));
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -266,7 +266,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     /**
      * This {@link Filter} is used to say the {@link Expression} is invalid without doing anything.
      */
-    protected static final Filter<Expression> INVALID_IDENTIFIER_FILTER = new Filter<Expression>() {
+    protected static final Filter<Expression> INVALID_IDENTIFIER_FILTER = new Filter<>() {
         @Override
         public boolean accept(Expression expression) {
             return false;
@@ -281,7 +281,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     /**
      * This {@link Filter} is used to say the {@link Expression} is valid without doing anything.
      */
-    protected static final Filter<Expression> VALID_IDENTIFIER_FILTER = new Filter<Expression>() {
+    protected static final Filter<Expression> VALID_IDENTIFIER_FILTER = new Filter<>() {
         @Override
         public boolean accept(Expression expression) {
             return true;
@@ -344,7 +344,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      * word has to be an empty string.
      */
     protected void addArithmeticIdentifiers() {
-        if (word.length() == 0) {
+        if (word.isEmpty()) {
             addExpressionFactoryIdentifiers(ArithmeticExpressionFactory.ID);
         }
     }
@@ -355,7 +355,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      */
     protected void addStringIdentifiers() {
         if (this.queryContext.getGrammar() instanceof JPQLGrammar3_2) {
-            if (word.length() == 0) {
+            if (word.isEmpty()) {
                 addExpressionFactoryIdentifiers(StringExpressionFactory.ID);
             }
         }
@@ -409,7 +409,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      */
     protected void addComparisonIdentifiers(Expression expression) {
 
-        if (word.length() == 0) {
+        if (word.isEmpty()) {
 
             for (String identifier : getExpressionFactory(ComparisonExpressionFactory.ID).identifiers()) {
                 Filter<Expression> filter = getFilter(identifier);
@@ -438,7 +438,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     protected void addCompositeIdentifier(String identifier, int offset) {
 
         // No need to check by fragmenting the composite identifier
-        if ((word.length() == 0) && (offset == -1)) {
+        if ((word.isEmpty()) && (offset == -1)) {
             addIdentifier(identifier);
         }
         else if (isValidVersion(identifier)) {
@@ -888,7 +888,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     protected Filter<Expression> buildCollectionCompoundTypeFilter() {
-        return new Filter<Expression>() {
+        return new Filter<>() {
             @Override
             public boolean accept(Expression expression) {
                 IType type = queryContext.getType(expression);
@@ -1095,7 +1095,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     protected Filter<Expression> buildNonCollectionCompoundTypeFilter() {
-        return new Filter<Expression>() {
+        return new Filter<>() {
             @Override
             public boolean accept(Expression expression) {
                 IType type = queryContext.getType(expression);
@@ -2338,7 +2338,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     protected boolean isValidProposal(String proposal, String word) {
 
         // There is no word to match the first letters
-        if (word.length() == 0) {
+        if (word.isEmpty()) {
             return true;
         }
 
@@ -3165,37 +3165,37 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
             if (position == length) {
 
                 // Only add some JOIN identifiers if the actual identifier is shorter or incomplete
-                if (identifier == LEFT) {
-                    addIdentifier(LEFT_JOIN);
-                    addIdentifier(LEFT_OUTER_JOIN);
+                switch (identifier) {
+                    case LEFT -> {
+                        addIdentifier(LEFT_JOIN);
+                        addIdentifier(LEFT_OUTER_JOIN);
 
-                    if (isJoinFetchIdentifiable() ||
-                        !expression.hasAs() && !expression.hasIdentificationVariable()) {
+                        if (isJoinFetchIdentifiable() ||
+                                !expression.hasAs() && !expression.hasIdentificationVariable()) {
 
-                        addIdentifier(LEFT_JOIN_FETCH);
-                        addIdentifier(LEFT_OUTER_JOIN_FETCH);
+                            addIdentifier(LEFT_JOIN_FETCH);
+                            addIdentifier(LEFT_OUTER_JOIN_FETCH);
+                        }
                     }
-                }
-                else if (identifier == INNER) {
-                    addIdentifier(INNER_JOIN);
+                    case INNER -> {
+                        addIdentifier(INNER_JOIN);
 
-                    if (isJoinFetchIdentifiable() ||
-                        !expression.hasAs() && !expression.hasIdentificationVariable()) {
+                        if (isJoinFetchIdentifiable() ||
+                                !expression.hasAs() && !expression.hasIdentificationVariable()) {
 
-                        addIdentifier(INNER_JOIN_FETCH);
+                            addIdentifier(INNER_JOIN_FETCH);
+                        }
                     }
-                }
-                else if (identifier.equals("LEFT_OUTER")) {
-                    addIdentifier(LEFT_OUTER_JOIN);
+                    case "LEFT_OUTER" -> {
+                        addIdentifier(LEFT_OUTER_JOIN);
 
-                    if (isJoinFetchIdentifiable() ||
-                        !expression.hasAs() && !expression.hasIdentificationVariable()) {
+                        if (isJoinFetchIdentifiable() ||
+                                !expression.hasAs() && !expression.hasIdentificationVariable()) {
 
-                        addIdentifier(LEFT_OUTER_JOIN_FETCH);
+                            addIdentifier(LEFT_OUTER_JOIN_FETCH);
+                        }
                     }
-                }
-                else {
-                    addLeftIdentificationVariables(expression);
+                    default -> addLeftIdentificationVariables(expression);
                 }
             }
 
@@ -4272,7 +4272,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         int position = queryPosition.getPosition(expression) - corrections.peek();
-        boolean hasIdentifier = (identifier.length() > 0);
+        boolean hasIdentifier = (!identifier.isEmpty());
         boolean virtualSpace = hasVirtualSpace();
 
         // Within the identifier
@@ -4484,7 +4484,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
         if (!isLocked(expression)) {
             int position = queryPosition.getPosition(expression) - corrections.peek();
-            boolean virtualSpace = (position == 1) && (word.length() == 0);
+            boolean virtualSpace = (position == 1) && (word.isEmpty());
 
             // 1. Within the first word of the invalid fragment
             // 2. Or after the ending whitespace
@@ -6499,7 +6499,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     /**
      * This is used to determine how {@link AppendableExpressionVisitor} should perform the check.
      */
-    protected static enum AppendableType {
+    protected enum AppendableType {
 
         /**
          * Determines whether the arithmetic operators (+, -, *, /) can be appended as valid proposals.
@@ -9050,14 +9050,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         protected Filter<IMapping> buildFilter(String suffix) {
-            if (suffix.length() == 0) {
+            if (suffix.isEmpty()) {
                 return filter;
             }
             return new AndFilter<>(filter, buildMappingNameFilter(suffix));
         }
 
         protected Filter<IMapping> buildMappingNameFilter(final String suffix) {
-            return new Filter<IMapping>() {
+            return new Filter<>() {
                 @Override
                 public boolean accept(IMapping mapping) {
                     return mapping.getName().startsWith(suffix);
@@ -9585,7 +9585,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     /**
      * The various ways of retrieving identification variables from the declaration expression.
      */
-    protected static enum IdentificationVariableType {
+    protected enum IdentificationVariableType {
 
         /**
          * Retrieves all the identification variables declared in the declaration portion of the

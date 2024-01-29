@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -407,7 +407,7 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
         }
 
         protected StateObjectUpdater<ConstructorExpressionStateObject> buildConstructorUpdater() {
-            return new StateObjectUpdater<ConstructorExpressionStateObject>() {
+            return new StateObjectUpdater<>() {
                 @Override
                 public void update(ConstructorExpressionStateObject stateObject, CharSequence newValue) {
                     stateObject.setClassName(newValue);
@@ -416,7 +416,7 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
         }
 
         protected StateObjectUpdater<StateFieldPathExpressionStateObject> buildPathExpressionStateObjectUpdater() {
-            return new StateObjectUpdater<StateFieldPathExpressionStateObject>() {
+            return new StateObjectUpdater<>() {
                 @Override
                 public void update(StateFieldPathExpressionStateObject stateObject, CharSequence newValue) {
                     stateObject.setPath(newValue);

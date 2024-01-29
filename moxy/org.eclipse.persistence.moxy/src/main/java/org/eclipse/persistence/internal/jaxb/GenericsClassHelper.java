@@ -186,7 +186,7 @@ public class GenericsClassHelper {
      * could not be resolved
      */
     private static ClassTypePair resolveTypeVariable(Class<?> c, Class<?> dc, TypeVariable tv) {
-        return resolveTypeVariable(c, dc, tv, new HashMap<TypeVariable, Type>());
+        return resolveTypeVariable(c, dc, tv, new HashMap<>());
     }
 
     private static ClassTypePair resolveTypeVariable(Class<?> c, Class<?> dc, TypeVariable tv,
@@ -217,7 +217,7 @@ public class GenericsClassHelper {
 
         TypeVariable[] typeParameters = c.getTypeParameters();
 
-        Map<TypeVariable, Type> submap = new HashMap<TypeVariable, Type>();
+        Map<TypeVariable, Type> submap = new HashMap<>();
         for (int i = 0; i < typeArguments.length; i++) {
             // Substitute a type variable with the Java class
             if (typeArguments[i] instanceof TypeVariable) {

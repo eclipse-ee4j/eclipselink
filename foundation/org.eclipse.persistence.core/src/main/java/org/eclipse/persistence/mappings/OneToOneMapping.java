@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -101,8 +101,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /** Maps the target primary/foreign key fields to the source foreign/primary key fields. */
     protected Map<DatabaseField, DatabaseField> targetToSourceKeyFields;
 
-    /** Keeps track of which fields are foreign keys on a per field basis (can have mixed foreign key relationships). */
-    /** These are used for non-unit of work modification to check if the value of the 1-1 was changed and a deletion is required. */
+    /** Keeps track of which fields are foreign keys on a per field basis (can have mixed foreign key relationships).
+        These are used for non-unit of work modification to check if the value of the 1-1 was changed and a deletion is required. */
     protected boolean shouldVerifyDelete;
     protected transient Expression privateOwnedCriteria;
 
@@ -1364,7 +1364,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public void postInitializeSourceAndTargetExpressions() {
         // EL Bug 426500
         // postInitialize and set source expression fields using my descriptor
-        if (this.sourceExpressionsToPostInitialize != null && this.sourceExpressionsToPostInitialize.size() > 0) {
+        if (this.sourceExpressionsToPostInitialize != null && !this.sourceExpressionsToPostInitialize.isEmpty()) {
             ClassDescriptor descriptor = getDescriptor();
             ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
             for (Iterator<Expression> expressions = this.sourceExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
@@ -1382,7 +1382,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
 
         // postInitialize and set target expression fields using my reference descriptor
-        if (this.targetExpressionsToPostInitialize != null && this.targetExpressionsToPostInitialize.size() > 0) {
+        if (this.targetExpressionsToPostInitialize != null && !this.targetExpressionsToPostInitialize.isEmpty()) {
             ClassDescriptor descriptor = getReferenceDescriptor();
             ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
             for (Iterator<Expression> expressions = this.targetExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
@@ -2325,7 +2325,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     @Override
     public List<Expression> getOrderByNormalizedExpressions(Expression base) {
-        if (this.foreignKeyFields.size() > 0) {
+        if (!this.foreignKeyFields.isEmpty()) {
             List<Expression> orderBys = new ArrayList(this.foreignKeyFields.size());
             for (DatabaseField field : this.foreignKeyFields) {
                 orderBys.add(((QueryKeyExpression)base).getBaseExpression().getField(field));

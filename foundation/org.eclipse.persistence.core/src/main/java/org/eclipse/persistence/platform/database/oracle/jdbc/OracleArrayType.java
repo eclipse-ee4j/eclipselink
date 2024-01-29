@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,7 +94,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
     @Override
     public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
         // Validate.
-        if ((getTypeName() == null) || getTypeName().equals("")) {
+        if ((getTypeName() == null) || getTypeName().isEmpty()) {
             throw QueryException.typeNameNotSet(this);
         }
         sb.append("  ");
@@ -110,7 +110,7 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
     @Override
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
         // Validate.
-        if ((getTypeName() == null) || getTypeName().equals("")) {
+        if ((getTypeName() == null) || getTypeName().isEmpty()) {
             throw QueryException.typeNameNotSet(this);
         }
         sb.append("  ");

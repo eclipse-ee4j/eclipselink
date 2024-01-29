@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -165,9 +165,7 @@ public class XDKParser implements XMLParser {
     public Document parse(InputSource inputSource) throws XMLPlatformException {
         try {
             return getDocumentBuilder().parse(inputSource);
-        } catch (SAXException e) {
-            throw XMLPlatformException.xmlPlatformParseException(e);
-        } catch (IOException e) {
+        } catch (SAXException | IOException e) {
             throw XMLPlatformException.xmlPlatformParseException(e);
         }
     }
@@ -191,9 +189,7 @@ public class XDKParser implements XMLParser {
             return getDocumentBuilder().parse(inputStream);
         } catch (SAXParseException e) {
             throw XMLPlatformException.xmlPlatformSAXParseException(e);
-        } catch (SAXException e) {
-            throw XMLPlatformException.xmlPlatformParseException(e);
-        } catch (IOException e) {
+        } catch (SAXException | IOException e) {
             throw XMLPlatformException.xmlPlatformParseException(e);
         }
     }

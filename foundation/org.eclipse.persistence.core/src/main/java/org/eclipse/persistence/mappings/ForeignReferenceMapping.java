@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -733,7 +733,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
 
             List<Expression> nestedJoins = extractNestedNonAggregateExpressions(joinManager.getJoinedAttributeExpressions(), nestedQuery.getExpressionBuilder(), false);
-            if (nestedJoins.size() > 0) {
+            if (!nestedJoins.isEmpty()) {
                 // Recompute the joined indexes based on the nested join expressions.
                 nestedQuery.getJoinedAttributeManager().clear();
                 nestedQuery.getJoinedAttributeManager().setJoinedAttributeExpressions_(nestedJoins);
@@ -2270,7 +2270,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
         }
 
-        // CR #4365, 2023825 - moved up from the block below, needs to be set with
+        // CR #4365, 2024825 - moved up from the block below, needs to be set with
         // indirection off. Clone the query and set its id.
         // All indirections are triggered in sopObject, therefore if sopObject is used then indirection on targetQuery to be triggered, too.
         if (!this.indirectionPolicy.usesIndirection() || shouldUseSopObject) {

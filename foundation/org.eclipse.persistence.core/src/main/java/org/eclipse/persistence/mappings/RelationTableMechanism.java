@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -504,7 +504,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Indicates whether the mechanism has relation table.
      */
     public boolean hasRelationTable() {
-        return relationTable != null && relationTable.getName().length() > 0;
+        return relationTable != null && !relationTable.getName().isEmpty();
     }
 
     /**
@@ -533,7 +533,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             String beginQuote = session.getDatasourcePlatform().getStartDelimiter();
             String endQuote = session.getDatasourcePlatform().getEndDelimiter();
             //Ensure this table name hasn't already been quoted.
-            if (getRelationTable().getName().indexOf(beginQuote) == -1) {
+            if (!getRelationTable().getName().contains(beginQuote)) {
                 getRelationTable().setName(beginQuote + getRelationTable().getName() + endQuote);
             }
         }
@@ -689,8 +689,8 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             throw DescriptorException.noRelationTable(mapping);
         }
 
-        if (platform.getTableQualifier().length() > 0) {
-            if (getRelationTable().getTableQualifier().length() == 0) {
+        if (!platform.getTableQualifier().isEmpty()) {
+            if (getRelationTable().getTableQualifier().isEmpty()) {
                 getRelationTable().setTableQualifier(platform.getTableQualifier());
             }
         }
@@ -729,7 +729,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * All the source relation key field names are converted to DatabaseField and stored.
      */
     protected void initializeSourceRelationKeys(ForeignReferenceMapping mapping) throws DescriptorException {
-        if (getSourceRelationKeyFields().size() == 0) {
+        if (getSourceRelationKeyFields().isEmpty()) {
             throw DescriptorException.noSourceRelationKeysSpecified(mapping);
         }
 
@@ -776,7 +776,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * All the target relation key field names are converted to DatabaseField and stored.
      */
     protected void initializeTargetRelationKeys(ForeignReferenceMapping mapping) {
-        if (getTargetRelationKeyFields().size() == 0) {
+        if (getTargetRelationKeyFields().isEmpty()) {
             throw DescriptorException.noTargetRelationKeysSpecified(mapping);
         }
 

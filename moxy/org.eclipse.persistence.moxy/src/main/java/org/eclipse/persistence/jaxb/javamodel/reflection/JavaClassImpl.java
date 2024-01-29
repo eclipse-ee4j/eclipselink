@@ -419,7 +419,7 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public boolean hasActualTypeArguments() {
-        return getActualTypeArguments().size() > 0;
+        return !getActualTypeArguments().isEmpty();
     }
 
     public JavaField getJavaField(Field field) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -829,7 +829,7 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     @Override
     protected boolean isCallableStatementRequired() {
-        return super.isCallableStatementRequired() || (getProcedureArgumentNames().size() > 0 && getProcedureArgumentNames().get(0) != null);
+        return super.isCallableStatementRequired() || (!getProcedureArgumentNames().isEmpty() && getProcedureArgumentNames().get(0) != null);
     }
 
     @Override
@@ -857,7 +857,7 @@ public class StoredProcedureCall extends DatabaseCall {
             AbstractRecord translationRow, AbstractSession session) throws SQLException {
 
         List<String> procedureArgs = getProcedureArgumentNames();
-        if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
+        if(procedureArgs.isEmpty() || procedureArgs.get(0) == null) {
             return super.prepareStatement(accessor, translationRow, session);
         }
 
@@ -1058,7 +1058,7 @@ public class StoredProcedureCall extends DatabaseCall {
     @Override
     public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
         List<String> procedureArgs = getProcedureArgumentNames();
-        if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
+        if(procedureArgs.isEmpty() || procedureArgs.get(0) == null) {
             return super.getOutputParameterValue(statement, index, session);
         }
 
@@ -1116,7 +1116,7 @@ public class StoredProcedureCall extends DatabaseCall {
     }
 
     private boolean isIndexBased(List<String> procedureArgs, AbstractSession session) {
-        boolean hasNoArgs = procedureArgs.size() == 0 || procedureArgs.get(0) == null;
+        boolean hasNoArgs = procedureArgs.isEmpty() || procedureArgs.get(0) == null;
         boolean isNamingIntoIndexed = false;
         if (session != null && session.getProject() != null) {
             isNamingIntoIndexed = session.getProject().namingIntoIndexed();

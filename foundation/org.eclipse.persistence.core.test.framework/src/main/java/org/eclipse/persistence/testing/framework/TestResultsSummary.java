@@ -98,20 +98,16 @@ public class TestResultsSummary implements ResultInterface, Comparable<TestResul
         String testOutcome = testCase.getTestResult().getOutcome();
 
         incrementTotalTests();
-        if (testOutcome.equals("Passed")) {
-            incrementPassed();
-        } else if (testOutcome.equals("Warning")) {
-            incrementWarnings();
-        } else if (testOutcome.equals("FatalError")) {
-            incrementFatalErrors();
-        } else if (testOutcome.equals("Error")) {
-            incrementErrors();
-        } else if (testOutcome.equals("Problem")) {
-            incrementProblems();
-        } else if (testOutcome.equals("You decide")) {
-            ;
-        } else {
-            throw new Error("Wrong test result");
+        switch (testOutcome) {
+            case "Passed" -> incrementPassed();
+            case "Warning" -> incrementWarnings();
+            case "FatalError" -> incrementFatalErrors();
+            case "Error" -> incrementErrors();
+            case "Problem" -> incrementProblems();
+            case "You decide" -> {
+                ;
+            }
+            default -> throw new Error("Wrong test result");
         }
         getResults().addElement(testCase.getTestResult());
         testCase.getTestResult().setSummary(this);

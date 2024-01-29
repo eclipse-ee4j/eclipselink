@@ -1342,7 +1342,7 @@ public abstract class Expression implements Serializable, Cloneable {
      **/
     public Expression decode(Map decodeableItems, String defaultItem) {
 
-        /**
+        /*
          * decode works differently than most of the functionality in the expression framework.
          * It takes a variable number of arguments and as a result, the printed strings for
          * a decode call have to be built when the number of arguments are known.

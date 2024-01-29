@@ -377,7 +377,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
             Object objectValue = null;
             if (isUnmappedContent(next)) {
                 if ((next.getNodeType() == Node.TEXT_NODE) && this.isMixedContent()) {
-                    if (next.getNodeValue().trim().length() > 0) {
+                    if (!next.getNodeValue().trim().isEmpty()) {
                         objectValue = next.getNodeValue();
                         objectValue = convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
                         cp.addInto(objectValue, container, session);
@@ -396,7 +396,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
                         String schemaType = ((Element) next).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         QName schemaTypeQName = null;
                         XPathFragment frag = new XPathFragment();
-                        if ((null != schemaType) && (schemaType.length() > 0)) {
+                        if ((null != schemaType) && (!schemaType.isEmpty())) {
                             frag.setXPath(schemaType);
                             if (frag.hasNamespace()) {
                                 String prefix = frag.getPrefix();
@@ -517,7 +517,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
                     if (wasXMLRoot) {
                         if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                             String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                            if ((prefix == null) || prefix.length() == 0) {
+                            if ((prefix == null) || prefix.isEmpty()) {
                                 xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                                 prefix = record.getNamespaceResolver().generatePrefix();
                             }
@@ -540,10 +540,10 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
                     if (wasXMLRoot) {
                         if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                             String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                            if ((prefix == null) || prefix.length() == 0) {
+                            if ((prefix == null) || prefix.isEmpty()) {
                                 prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                             }
-                            if ((prefix == null) || prefix.length() == 0) {
+                            if ((prefix == null) || prefix.isEmpty()) {
                                 xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                                 prefix = record.getNamespaceResolver().generatePrefix();
                             }
@@ -615,10 +615,10 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
             if (wasXMLRoot) {
                 if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                     String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                    if ((prefix == null) || prefix.length() == 0) {
+                    if ((prefix == null) || prefix.isEmpty()) {
                         prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                     }
-                    if ((prefix == null) || prefix.length() == 0) {
+                    if ((prefix == null) || prefix.isEmpty()) {
                         xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                         prefix = record.getNamespaceResolver().generatePrefix();
                     }
@@ -637,7 +637,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
         if (wasXMLRoot) {
             if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                 String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                if ((prefix == null) || prefix.length() == 0) {
+                if ((prefix == null) || prefix.isEmpty()) {
                     xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                     prefix = record.getNamespaceResolver().generatePrefix();
                 }

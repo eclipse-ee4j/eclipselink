@@ -306,10 +306,10 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                             frag.setNamespaceAware(unmarshalRecord.isNamespaceAware());
                             String xpath = leafType.getLocalPart();
                             String uri = leafType.getNamespaceURI();
-                            if (uri != null && uri.length() > 0) {
+                            if (uri != null && !uri.isEmpty()) {
                                 frag.setNamespaceURI(uri);
                                 String prefix = ((Descriptor)xmlCompositeObjectMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                                if (prefix != null && prefix.length() > 0) {
+                                if (prefix != null && !prefix.isEmpty()) {
                                     xpath = prefix + Constants.COLON + xpath;
                                 }
                             }
@@ -397,7 +397,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
 
-            if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() != 0) {
+            if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && !builder.getNodes().isEmpty()) {
 
                 if(unmarshalRecord.getTypeQName() != null){
                     Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
@@ -462,7 +462,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
 
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
-            if ((((keepAsElementPolicy.isKeepUnknownAsElement()) || (keepAsElementPolicy.isKeepAllAsElement())))&& (builder.getNodes().size() != 0) ) {
+            if ((((keepAsElementPolicy.isKeepUnknownAsElement()) || (keepAsElementPolicy.isKeepAllAsElement())))&& (!builder.getNodes().isEmpty()) ) {
                 if(unmarshalRecord.getTypeQName() != null){
                     Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
                     if(theClass != null){

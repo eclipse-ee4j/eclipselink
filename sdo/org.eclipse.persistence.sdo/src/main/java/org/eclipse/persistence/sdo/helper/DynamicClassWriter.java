@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,9 +70,7 @@ public class DynamicClassWriter {
                 Field parentEndPropertyIndexField = PrivilegedAccessHelper.getField(parentClass, END_PROPERTY_INDEX, true);
                 Integer parentEndPropertyIndex = PrivilegedAccessHelper.getValueFromField(parentEndPropertyIndexField, parentClass);
                 startPropertyIndex = parentEndPropertyIndex + 1;
-            } catch (NoSuchFieldException e) {
-                startPropertyIndex = 0;
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchFieldException | IllegalAccessException e) {
                 startPropertyIndex = 0;
             }
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     private boolean generateTimestamp;
     private boolean generateGenerated;
 
-    private static final Set<String> SUPPORTED_ANNOTATIONS = Collections.unmodifiableSet(new HashSet<String>() {{
+    private static final Set<String> SUPPORTED_ANNOTATIONS = Collections.unmodifiableSet(new HashSet<>() {{
         if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_8) > 0) {
             add("java.persistence/jakarta.persistence.*");
             add("jakarta.persistence/jakarta.persistence.*");
@@ -94,20 +94,8 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         add("org.eclipse.persistence.annotations.*");
     }});
 
-    private static final Set<String> SUPPORTED_OPTIONS = Collections.unmodifiableSet(new HashSet<String>() {{
-        add(CanonicalModelProperties.CANONICAL_MODEL_PREFIX);
-        add(CanonicalModelProperties.CANONICAL_MODEL_SUFFIX);
-        add(CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE);
-        add(CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML);
-        add(CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY);
-        add(CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED);
-        add(CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP);
-        add(CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS);
-        add(CanonicalModelProperties.CANONICAL_MODEL_PROCESSOR_LOG_LEVEL);
-        add(CanonicalModelProperties.CANONICAL_MODEL_GLOBAL_LOG_LEVEL);
-        add(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
-        add("verbose"); //shortcut to enable FINER logging
-    }});
+    //shortcut to enable FINER logging
+    private static final Set<String> SUPPORTED_OPTIONS = Set.of(CanonicalModelProperties.CANONICAL_MODEL_PREFIX, CanonicalModelProperties.CANONICAL_MODEL_SUFFIX, CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE, CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML, CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY, CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED, CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP, CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS, CanonicalModelProperties.CANONICAL_MODEL_PROCESSOR_LOG_LEVEL, CanonicalModelProperties.CANONICAL_MODEL_GLOBAL_LOG_LEVEL, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "verbose");
 
     /**
      * Default constructor.
@@ -279,7 +267,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             writer = file.openWriter();
 
             // Print the package if we have one.
-            if (! canonicalpackage.equals("")) {
+            if (!canonicalpackage.isEmpty()) {
                 writer.append("package ").append(canonicalpackage).append(";\n\n");
             }
 

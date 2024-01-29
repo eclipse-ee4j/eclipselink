@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,7 +108,7 @@ public enum LogCategory {
      *         of the string argument is converted to {@code ALL}.
      */
     public static final LogCategory toValue(final String name) {
-        return name != null  && name.length() > 0 ? stringValuesMap.get(name.toLowerCase()) : ALL;
+        return name != null  && !name.isEmpty() ? stringValuesMap.get(name.toLowerCase()) : ALL;
     }
 
     /** Logging category ID. Continuous integer sequence starting from 0. */

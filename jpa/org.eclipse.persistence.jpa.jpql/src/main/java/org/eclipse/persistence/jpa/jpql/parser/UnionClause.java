@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -268,12 +268,12 @@ public final class UnionClause extends AbstractExpression {
      * {@link Expression#EXCEPT EXCEPT}
      */
     protected String parseIdentifier() {
-        switch (getText().charAt(0)) {
-            case 'U': case 'u': return UNION;
-            case 'I': case 'i': return INTERSECT;
-            case 'E': case 'e': return EXCEPT;
-            default:            return null; // Never happens
-        }
+        return switch (getText().charAt(0)) {
+            case 'U', 'u' -> UNION;
+            case 'I', 'i' -> INTERSECT;
+            case 'E', 'e' -> EXCEPT;
+            default -> null; // Never happens
+        };
     }
 
     @Override

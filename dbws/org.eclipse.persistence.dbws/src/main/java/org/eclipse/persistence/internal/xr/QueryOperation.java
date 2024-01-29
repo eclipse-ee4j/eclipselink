@@ -378,7 +378,7 @@ public class QueryOperation extends Operation {
         // a named query created via ORM metadata processing does not have
         // parameters set, however, the operation should
         List<Object> argVals = new ArrayList<>();
-        if (query.getArguments().size() == 0) {
+        if (query.getArguments().isEmpty()) {
             int idx = 0;
             for (Parameter param : getParameters()) {
                 // for custom SQL query (as configured via ORM metadata
@@ -414,7 +414,7 @@ public class QueryOperation extends Operation {
             // JPA spec returns an ArrayList<Object[]> for stored procedure queries - will need to unwrap.
             // Note that for legacy deployment XML projects this is not the case.
             if (value instanceof ArrayList<?> returnedList) {
-                if (returnedList.size() > 0 && returnedList.get(0) instanceof Object[] objs) {
+                if (!returnedList.isEmpty() && returnedList.get(0) instanceof Object[] objs) {
                     if (isCollection()) {
                         value = new ArrayList<>();
                         for (Object obj : objs) {
@@ -480,7 +480,7 @@ public class QueryOperation extends Operation {
                                 }
                             } else if (isCollection() && value instanceof Vector) {
                                 // could be a collection of populated objects, in which case we just return it
-                                if (((Vector<?>) value).size() > 0 && !(((Vector<?>) value).get(0) instanceof AbstractRecord)) {
+                                if (!((Vector<?>) value).isEmpty() && !(((Vector<?>) value).get(0) instanceof AbstractRecord)) {
                                     return value;
                                 }
                                 XRDynamicEntity_CollectionWrapper xrCollWrapper = new XRDynamicEntity_CollectionWrapper();
@@ -562,7 +562,7 @@ public class QueryOperation extends Operation {
             }
             // now create a record using DatabaseField/value pairs
             DatabaseRecord dr = new DatabaseRecord();
-            if (paramFlds.size() > 0) {
+            if (!paramFlds.isEmpty()) {
                 for (int i=0; i <  ((ArrayList<?>) value).size(); i++) {
                     dr.add(paramFlds.get(i), ((ArrayList<?>) value).get(i));
                 }

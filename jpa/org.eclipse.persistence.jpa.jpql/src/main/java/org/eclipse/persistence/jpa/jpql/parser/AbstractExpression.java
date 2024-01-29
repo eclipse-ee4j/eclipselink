@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -199,11 +199,7 @@ public abstract class AbstractExpression implements Expression {
             }
             return true;
         }
-        catch (NoSuchMethodException e) {
-            // Ignore, just do nothing
-            return false;
-        }
-        catch (IllegalAccessException e) {
+        catch (NoSuchMethodException | IllegalAccessException e) {
             // Ignore, just do nothing
             return false;
         }
@@ -752,7 +748,7 @@ public abstract class AbstractExpression implements Expression {
             String word = wordParser.word();
 
             // A word was parsed, attempt to parse it using first the factory, then the fallback factory
-            if (word.length() > 0) {
+            if (!word.isEmpty()) {
 
                 // Nothing more to parse
                 if (!tolerant && !beginning && isParsingComplete(wordParser, word, expression) ||
@@ -927,7 +923,7 @@ public abstract class AbstractExpression implements Expression {
 
                 // No more text, the query ends with a comma
                 word = wordParser.word();
-                boolean stopParsing = tolerant && (word.length() == 0 || isParsingComplete(wordParser, word, null));
+                boolean stopParsing = tolerant && (word.isEmpty() || isParsingComplete(wordParser, word, null));
 
                 if (wordParser.isTail() || stopParsing) {
 

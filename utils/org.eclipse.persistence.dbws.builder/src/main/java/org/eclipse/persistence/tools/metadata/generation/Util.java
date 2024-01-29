@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -270,78 +270,31 @@ public class Util {
      * Return the JDBC type name for a given JDBC type code.
      */
     public static String getJDBCTypeNameFromType(int jdbcType) {
-        String typeName = null;
-        switch (jdbcType) {
-            case Types.NUMERIC:
-                typeName = NUMERIC_STR;
-                break;
-            case Types.VARCHAR:
-                typeName = VARCHAR_STR;
-                break;
-            case Types.NVARCHAR:
-                typeName = NVARCHAR_STR;
-                break;
-            case Types.DECIMAL:
-                typeName = DECIMAL_STR;
-                break;
-            case Types.CHAR:
-                typeName = CHAR_STR;
-                break;
-            case Types.NCHAR:
-                typeName = NCHAR_STR;
-                break;
-            case Types.FLOAT:
-                typeName = FLOAT_STR;
-                break;
-            case Types.REAL:
-                typeName = REAL_STR;
-                break;
-            case Types.DOUBLE:
-                typeName = DOUBLE_STR;
-                break;
-            case Types.BINARY:
-                typeName = BINARY_STR;
-                break;
-            case Types.BLOB:
-                typeName = BLOB_STR;
-                break;
-            case Types.CLOB:
-                typeName = CLOB_STR;
-                break;
-            case Types.NCLOB:
-                typeName = NCLOB_STR;
-                break;
-            case Types.VARBINARY :
-                typeName = LONGVARBINARY_STR;
-                break;
-            case Types.LONGVARBINARY:
-                typeName = LONGVARBINARY_STR;
-                break;
-            case Types.DATE:
-                typeName = DATE_STR;
-                break;
-            case Types.TIME:
-                typeName = TIME_STR;
-                break;
-            case Types.TIMESTAMP:
-                typeName = TIMESTAMP_STR;
-                break;
-            case Types.BIGINT:
-                typeName = BIGINT_STR;
-                break;
-            case Types.ARRAY:
-                typeName = ARRAY_STR;
-                break;
-            case Types.STRUCT:
-                typeName = STRUCT_STR;
-                break;
-            case Types.ROWID:
-                typeName = ROWID_STR;
-                break;
-            default:
-                typeName = OTHER_STR;
-                break;
-        }
+        String typeName = switch (jdbcType) {
+            case Types.NUMERIC -> NUMERIC_STR;
+            case Types.VARCHAR -> VARCHAR_STR;
+            case Types.NVARCHAR -> NVARCHAR_STR;
+            case Types.DECIMAL -> DECIMAL_STR;
+            case Types.CHAR -> CHAR_STR;
+            case Types.NCHAR -> NCHAR_STR;
+            case Types.FLOAT -> FLOAT_STR;
+            case Types.REAL -> REAL_STR;
+            case Types.DOUBLE -> DOUBLE_STR;
+            case Types.BINARY -> BINARY_STR;
+            case Types.BLOB -> BLOB_STR;
+            case Types.CLOB -> CLOB_STR;
+            case Types.NCLOB -> NCLOB_STR;
+            case Types.VARBINARY -> LONGVARBINARY_STR;
+            case Types.LONGVARBINARY -> LONGVARBINARY_STR;
+            case Types.DATE -> DATE_STR;
+            case Types.TIME -> TIME_STR;
+            case Types.TIMESTAMP -> TIMESTAMP_STR;
+            case Types.BIGINT -> BIGINT_STR;
+            case Types.ARRAY -> ARRAY_STR;
+            case Types.STRUCT -> STRUCT_STR;
+            case Types.ROWID -> ROWID_STR;
+            default -> OTHER_STR;
+        };
         return typeName;
     }
 
@@ -422,7 +375,7 @@ public class Util {
     public static String getGeneratedJavaClassName(String name, String packageName) {
         String first = name.substring(0, 1).toUpperCase();
         String rest = name.toLowerCase().substring(1);
-        return packageName == null || packageName.length() == 0 ? first + rest : packageName.toLowerCase() + DOT + first + rest;
+        return packageName == null || packageName.isEmpty() ? first + rest : packageName.toLowerCase() + DOT + first + rest;
     }
 
     /**
@@ -555,12 +508,12 @@ public class Util {
      * and so on.
      */
     protected static void handleOverloading(List<ProcedureType> procedures) {
-        Map<String, List<ProcedureType>> overloadMap = new HashMap<String, List<ProcedureType>>();
+        Map<String, List<ProcedureType>> overloadMap = new HashMap<>();
         for (ProcedureType procedure : procedures) {
             String procedureName = procedure.getProcedureName();
             List<ProcedureType> multipleProcedures = overloadMap.get(procedureName);
             if (multipleProcedures == null) {
-                multipleProcedures = new ArrayList<ProcedureType>();
+                multipleProcedures = new ArrayList<>();
                 overloadMap.put(procedureName, multipleProcedures);
             }
             multipleProcedures.add(procedure);

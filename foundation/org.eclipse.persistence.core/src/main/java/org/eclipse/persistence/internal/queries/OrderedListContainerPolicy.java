@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -229,12 +229,8 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             } else {
                 ((List)container).add(index, object);
             }
-        } catch (ClassCastException ex1) {
+        } catch (ClassCastException | UnsupportedOperationException | IllegalArgumentException ex1) {
             throw QueryException.cannotAddElement(object, container, ex1);
-        } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotAddElement(object, container, ex2);
-        } catch (UnsupportedOperationException ex3) {
-            throw QueryException.cannotAddElement(object, container, ex3);
         }
     }
 
@@ -626,11 +622,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
     protected void removeFromAtIndex(int index, Object container) {
         try {
             ((List) container).remove(index);
-        } catch (ClassCastException ex1) {
-            throw QueryException.cannotRemoveFromContainer(index, container, this);
-        } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotRemoveFromContainer(index, container, this);
-        } catch (UnsupportedOperationException ex3) {
+        } catch (ClassCastException | UnsupportedOperationException | IllegalArgumentException ex1) {
             throw QueryException.cannotRemoveFromContainer(index, container, this);
         }
     }

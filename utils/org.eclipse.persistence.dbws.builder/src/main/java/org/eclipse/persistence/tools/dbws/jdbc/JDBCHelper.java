@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import static java.sql.DatabaseMetaData.columnNullable;
@@ -262,7 +261,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
      */
     @Override
     public boolean hasTables() {
-        return dbTables.size() != 0;
+        return !dbTables.isEmpty();
     }
 
     @Override
@@ -271,16 +270,16 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         boolean isMySQL = dbwsBuilder.getDatabasePlatform().getClass().getName().contains("MySQL");
         for (ProcedureType storedProcedure : procedureOperationModel.getDbStoredProcedures()) {
             StringBuilder sb = new StringBuilder();
-            if (name == null || name.length() == 0) {
+            if (name == null || name.isEmpty()) {
                 if (storedProcedure.getOverload() > 0) {
                     sb.append(storedProcedure.getOverload());
                     sb.append('_');
                 }
-                if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
+                if (storedProcedure.getCatalogName() != null && !storedProcedure.getCatalogName().isEmpty()) {
                     sb.append(storedProcedure.getCatalogName());
                     sb.append('_');
                 }
-                if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
+                if (storedProcedure.getSchema() != null && !storedProcedure.getSchema().isEmpty()) {
                     sb.append(storedProcedure.getSchema());
                     sb.append('_');
                 }
@@ -300,21 +299,21 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
             }
             sb = new StringBuilder();
             if (!isMySQL) {
-                if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
+                if (storedProcedure.getCatalogName() != null && !storedProcedure.getCatalogName().isEmpty()) {
                     sb.append(storedProcedure.getCatalogName());
                     sb.append('.');
                 }
             }
-            if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
+            if (storedProcedure.getSchema() != null && !storedProcedure.getSchema().isEmpty()) {
                 sb.append(storedProcedure.getSchema());
                 sb.append('.');
             }
             sb.append(storedProcedure.getProcedureName());
             ((StoredProcedureQueryHandler)qh).setName(sb.toString());
-            dbwsBuilder.logMessage(FINEST, "Building QueryOperation for " + sb.toString());
+            dbwsBuilder.logMessage(FINEST, "Building QueryOperation for " + sb);
             // before assigning queryHandler, check for named query in OR project
             List<DatabaseQuery> queries = dbwsBuilder.getOrProject().getQueries();
-            if (queries.size() > 0) {
+            if (!queries.isEmpty()) {
                 for (DatabaseQuery q : queries) {
                     if (q.getName().equals(qo.getName())) {
                         qh = new NamedQueryHandler();
@@ -384,18 +383,13 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                     ProcedureArgument pa = null;
                     Parameter parm = null;
                     ArgumentTypeDirection direction = arg.getDirection();
-                    QName xmlType = null;
-                    switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
-                        case STRUCT:
-                        case ARRAY:
-                        case OTHER:
+                    QName xmlType = switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
+                        case STRUCT, ARRAY, OTHER -> {
                             String typeString = nct.generateSchemaAlias(arg.getTypeName());
-                            xmlType = buildCustomQName(typeString, dbwsBuilder);
-                            break;
-                        default :
-                            xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
-                            break;
-                    }
+                            yield buildCustomQName(typeString, dbwsBuilder);
+                        }
+                        default -> getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
+                    };
                     if (direction == IN) {
                         parm = new Parameter();
                         parm.setName(argName);
@@ -473,7 +467,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
     @Override
     protected List<TableType> loadTables(List<String> catalogPatterns, List<String> schemaPatterns,
         List<String> tableNamePatterns) {
-        List<TableType> tables = new ArrayList<TableType>();
+        List<TableType> tables = new ArrayList<>();
         for (int i = 0, len = catalogPatterns.size(); i < len; i++) {
             String catalogPattern = catalogPatterns.get(i);
             String schemaPattern = schemaPatterns.get(i);
@@ -506,7 +500,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         }
         // did we get a hit?
         if (tablesInfo != null) {
-            dbTables = new ArrayList<TableType>();
+            dbTables = new ArrayList<>();
             try {
                 while (tablesInfo.next()) {
                     String actualTableCatalog = null;
@@ -614,7 +608,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
     @Override
     protected List<ProcedureType> loadProcedures(List<String> catalogPatterns,
         List<String> schemaPatterns, List<String> procedureNamePatterns) {
-        List<ProcedureType> procedures = new ArrayList<ProcedureType>();
+        List<ProcedureType> procedures = new ArrayList<>();
         for (int i = 0, len = catalogPatterns.size(); i < len; i++) {
             String catalogPattern = catalogPatterns.get(i);
             String schemaPattern = schemaPatterns.get(i);
@@ -647,7 +641,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
             procsInfo = databaseMetaData.getProcedures(catalogPattern, schemaPattern, procedurePattern);
             // did we get a hit?
             if (procsInfo != null) {
-                List<ProcedureType> tmpProcs = new ArrayList<ProcedureType>();
+                List<ProcedureType> tmpProcs = new ArrayList<>();
                 while (procsInfo.next()) {
                     String actualCatalogName = procsInfo.getString(PROCS_INFO_CATALOG);
                     String actualSchemaName = procsInfo.getString(PROCS_INFO_SCHEMA);
@@ -660,10 +654,10 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                     else {
                         dbStoredProcedure = new ProcedureType(actualProcedureName);
                     }
-                    if (actualCatalogName != null && actualCatalogName.length() > 0) {
+                    if (actualCatalogName != null && !actualCatalogName.isEmpty()) {
                         dbStoredProcedure.setCatalogName(actualCatalogName);
                     }
-                    if (actualSchemaName != null && actualSchemaName.length() > 0) {
+                    if (actualSchemaName != null && !actualSchemaName.isEmpty()) {
                         dbStoredProcedure.setSchema(actualSchemaName);
                     }
                     tmpProcs.add(dbStoredProcedure);
@@ -675,7 +669,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                  */
                 int numProcs = tmpProcs.size();
                 if (numProcs > 0) {
-                    dbStoredProcedures = new ArrayList<ProcedureType>(numProcs);
+                    dbStoredProcedures = new ArrayList<>(numProcs);
                     ResultSet procedureColumnsInfo = null;
                     procedureColumnsInfo = databaseMetaData.getProcedureColumns(catalogPattern,
                         schemaPattern, procedurePattern, "%");
@@ -756,15 +750,14 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                 sqlException);
         }
         if (dbStoredProcedures != null && !dbStoredProcedures.isEmpty()) {
-            Collections.sort(dbStoredProcedures, new Comparator<ProcedureType>() {
+            dbStoredProcedures.sort(new Comparator<>() {
                 @Override
                 public int compare(ProcedureType o1, ProcedureType o2) {
                     String name1 = o1.getProcedureName();
                     String name2 = o2.getProcedureName();
                     if (!name1.equals(name2)) {
                         return name1.compareTo(name2);
-                    }
-                    else {
+                    } else {
                         return o1.getOverload() - o2.getOverload();
                     }
                 }

@@ -160,7 +160,7 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
             names.add(entity.getName());
         }
 
-        return names.toArray(new String[names.size()]);
+        return names.toArray(new String[0]);
     }
 
     @Override

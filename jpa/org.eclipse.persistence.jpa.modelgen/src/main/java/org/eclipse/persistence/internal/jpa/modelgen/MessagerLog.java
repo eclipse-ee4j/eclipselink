@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -189,7 +189,7 @@ final class MessagerLog extends AbstractSessionLog {
         // Set logging file.
         String loggingFileString = settings.get(PersistenceUnitProperties.LOGGING_FILE);
         if (loggingFileString != null) {
-            if (!loggingFileString.trim().equals("")) {
+            if (!loggingFileString.trim().isEmpty()) {
                 try {
                     FileOutputStream fos = new FileOutputStream(loggingFileString);
                     setWriter(fos);
@@ -261,14 +261,10 @@ final class MessagerLog extends AbstractSessionLog {
     }
 
     private Diagnostic.Kind translateLevelToKind(int level) {
-        switch (level) {
-            case SEVERE:
-            case WARNING:
-                return Diagnostic.Kind.WARNING;
-            case INFO:
-                return Diagnostic.Kind.NOTE;
-            default:
-                return Diagnostic.Kind.OTHER;
-        }
+        return switch (level) {
+            case SEVERE, WARNING -> Diagnostic.Kind.WARNING;
+            case INFO -> Diagnostic.Kind.NOTE;
+            default -> Diagnostic.Kind.OTHER;
+        };
     }
 }

@@ -518,7 +518,7 @@ public class Helper implements Serializable {
     }
 
     public static String getComponentTypeNameFromArrayString(String aString) {
-        if (aString == null || aString.length() == 0) {
+        if (aString == null || aString.isEmpty()) {
             return null;
         }
         // complex array component type case

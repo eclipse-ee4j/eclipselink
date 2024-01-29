@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -129,7 +129,7 @@ public class XMLProcessor {
         this.jModelInput = jModelInput;
         this.aProcessor = annotationsProcessor;
         this.aProcessor.setHasXmlBindings(true);
-        Map<String, XmlEnum> xmlEnumMap = new HashMap<String, XmlEnum>();
+        Map<String, XmlEnum> xmlEnumMap = new HashMap<>();
         aProcessor.init(originalJavaClasses, typeMappingInfos);
 
         // build a map of packages to JavaClass so we only process the
@@ -174,7 +174,7 @@ public class XMLProcessor {
             }
 
             // build an array of JavaModel classes to process
-            JavaClass[] javaClasses = classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
+            JavaClass[] javaClasses = classesToProcess.toArray(new JavaClass[0]);
 
             // handle xml-enums
             // build a map of enum class names to XmlEnum objects
@@ -207,7 +207,7 @@ public class XMLProcessor {
             if (sTypes != null) {
                 xmlSchemaTypes = sTypes.getXmlSchemaType();
             } else {
-                xmlSchemaTypes = new ArrayList<XmlSchemaType>();
+                xmlSchemaTypes = new ArrayList<>();
             }
             // handle package-level xml-schema-type
             if (xmlBindings.getXmlSchemaType() != null) {
@@ -298,7 +298,7 @@ public class XMLProcessor {
                         info.setXmlRootElement(javaType.getXmlRootElement());
                     }
                     // handle @XmlSeeAlso override
-                    if (javaType.getXmlSeeAlso() != null && javaType.getXmlSeeAlso().size() > 0) {
+                    if (javaType.getXmlSeeAlso() != null && !javaType.getXmlSeeAlso().isEmpty()) {
                         info.setXmlSeeAlso(javaType.getXmlSeeAlso());
                     }
                     // handle @XmlType override
@@ -314,7 +314,7 @@ public class XMLProcessor {
                         info.setClassExtractorName(javaType.getXmlClassExtractor().getClazz());
                     }
                     // handle @XmlProperties override
-                    if (javaType.getXmlProperties() != null && javaType.getXmlProperties().getXmlProperty().size() > 0) {
+                    if (javaType.getXmlProperties() != null && !javaType.getXmlProperties().getXmlProperty().isEmpty()) {
                         // may need to merge with @XmlProperties (xml wins in the case of a conflict)
                         if (info.getUserProperties() != null) {
                             info.setUserProperties(mergeUserPropertyMap(javaType.getXmlProperties().getXmlProperty(), info.getUserProperties()));
@@ -384,7 +384,7 @@ public class XMLProcessor {
             }
 
             xmlBindings = xmlBindingMap.get(packageName);
-            JavaClass[] javaClasses = classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
+            JavaClass[] javaClasses = classesToProcess.toArray(new JavaClass[0]);
             // post-build the TypeInfo objects
             javaClasses = aProcessor.postBuildTypeInfo(javaClasses);
 
@@ -434,7 +434,7 @@ public class XMLProcessor {
         Iterator<ArrayList<JavaClass>> classIt = pkgToClassMap.values().iterator();
         while (classIt.hasNext()) {
             ArrayList<JavaClass> jClassList = classIt.next();
-            JavaClass[] jClassArray = jClassList.toArray(new JavaClass[jClassList.size()]);
+            JavaClass[] jClassArray = jClassList.toArray(new JavaClass[0]);
             aProcessor.buildNewTypeInfo(jClassArray);
             aProcessor.checkForCallbackMethods();
         }
@@ -464,7 +464,7 @@ public class XMLProcessor {
             }
         }
 
-        aProcessor.processPropertyTypes(jClasses.toArray(new JavaClass[jClasses.size()]));
+        aProcessor.processPropertyTypes(jClasses.toArray(new JavaClass[0]));
         aProcessor.finalizeProperties();
         aProcessor.createElementsForTypeMappingInfo();
         aProcessor.checkForCallbackMethods();
@@ -497,7 +497,7 @@ public class XMLProcessor {
     private void processJavaType(JavaType javaType, TypeInfo typeInfo, NamespaceInfo nsInfo) {
         // process field/property overrides
         if (null != javaType.getJavaAttributes()) {
-            List<String> processedPropertyNames = new ArrayList<String>();
+            List<String> processedPropertyNames = new ArrayList<>();
             for (JAXBElement jaxbElement : javaType.getJavaAttributes().getJavaAttribute()) {
                 JavaAttribute javaAttribute = (JavaAttribute) jaxbElement.getValue();
 
@@ -560,7 +560,7 @@ public class XMLProcessor {
                         additionalProps = typeInfo.getAdditionalProperties().get(javaAttribute.getJavaAttribute());
                     }
                     if (additionalProps == null) {
-                        additionalProps = new ArrayList<Property>();
+                        additionalProps = new ArrayList<>();
                     }
                     additionalProps.add(propToProcess);
                     typeInfo.getAdditionalProperties().put(javaAttribute.getJavaAttribute(), additionalProps);
@@ -740,7 +740,7 @@ public class XMLProcessor {
             oldProperty.setInverseReferencePropertySetMethodName(xmlInverseReference.getXmlAccessMethods().getSetMethod());
         }
         // set user-defined properties
-        if (xmlInverseReference.getXmlProperties() != null  && xmlInverseReference.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlInverseReference.getXmlProperties() != null  && !xmlInverseReference.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlInverseReference.getXmlProperties().getXmlProperty()));
         }
         // check for container type
@@ -810,7 +810,7 @@ public class XMLProcessor {
             oldProperty.setWriteOnly(xmlAnyAttribute.isWriteOnly());
         }
         // set user-defined properties
-        if (xmlAnyAttribute.getXmlProperties() != null  && xmlAnyAttribute.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlAnyAttribute.getXmlProperties() != null  && !xmlAnyAttribute.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlAnyAttribute.getXmlProperties().getXmlProperty()));
         }
         // check for container type
@@ -894,7 +894,7 @@ public class XMLProcessor {
             oldProperty.setWriteOnly(xmlAnyElement.isWriteOnly());
         }
         // set user-defined properties
-        if (xmlAnyElement.getXmlProperties() != null  && xmlAnyElement.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlAnyElement.getXmlProperties() != null  && !xmlAnyElement.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlAnyElement.getXmlProperties().getXmlProperty()));
         }
         // check for container type
@@ -1061,7 +1061,7 @@ public class XMLProcessor {
             oldProperty.setNullPolicy(jaxbElt.getValue());
         }
         // set user-defined properties
-        if (xmlAttribute.getXmlProperties() != null  && xmlAttribute.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlAttribute.getXmlProperties() != null  && !xmlAttribute.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlAttribute.getXmlProperties().getXmlProperty()));
         }
         return oldProperty;
@@ -1270,7 +1270,7 @@ public class XMLProcessor {
             oldProperty.setNullPolicy(jaxbElt.getValue());
         }
         // set user-defined properties
-        if (xmlElement.getXmlProperties() != null  && xmlElement.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlElement.getXmlProperties() != null  && !xmlElement.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlElement.getXmlProperties().getXmlProperty()));
         }
         return oldProperty;
@@ -1327,7 +1327,7 @@ public class XMLProcessor {
             oldProperty.setWriteOnly(xmlElements.isWriteOnly());
         }
         // set user-defined properties
-        if (xmlElements.getXmlProperties() != null  && xmlElements.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlElements.getXmlProperties() != null  && !xmlElements.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlElements.getXmlProperties().getXmlProperty()));
         }
         // check for container type
@@ -1360,7 +1360,7 @@ public class XMLProcessor {
 
         resetProperty(oldProperty, info);
 
-        List<XmlElementRef> eltRefs = new ArrayList<XmlElementRef>();
+        List<XmlElementRef> eltRefs = new ArrayList<>();
         eltRefs.add(xmlElementRef);
         oldProperty.setXmlElementRefs(eltRefs);
         oldProperty.setIsReference(true);
@@ -1379,7 +1379,7 @@ public class XMLProcessor {
             oldProperty.setXmlElementWrapper(xmlElementRef.getXmlElementWrapper());
         }
         // set user-defined properties
-        if (xmlElementRef.getXmlProperties() != null  && xmlElementRef.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlElementRef.getXmlProperties() != null  && !xmlElementRef.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlElementRef.getXmlProperties().getXmlProperty()));
         }
         if (xmlElementRef.isSetXmlMixed()) {
@@ -1411,7 +1411,7 @@ public class XMLProcessor {
 
         resetProperty(oldProperty, info);
 
-        List<XmlElementRef> eltRefs = new ArrayList<XmlElementRef>();
+        List<XmlElementRef> eltRefs = new ArrayList<>();
         boolean required = true;
         for (XmlElementRef eltRef : xmlElementRefs.getXmlElementRef()) {
             eltRefs.add(eltRef);
@@ -1431,7 +1431,7 @@ public class XMLProcessor {
             oldProperty.setXmlElementWrapper(xmlElementRefs.getXmlElementWrapper());
         }
         // set user-defined properties
-        if (xmlElementRefs.getXmlProperties() != null  && xmlElementRefs.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlElementRefs.getXmlProperties() != null  && !xmlElementRefs.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlElementRefs.getXmlProperties().getXmlProperty()));
         }
         if (xmlElementRefs.isSetXmlMixed()) {
@@ -1525,7 +1525,7 @@ public class XMLProcessor {
             oldProperty.setNullPolicy(jaxbElt.getValue());
         }
         // set user-defined properties
-        if (xmlValue.getXmlProperties() != null  && xmlValue.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlValue.getXmlProperties() != null  && !xmlValue.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlValue.getXmlProperties().getXmlProperty()));
         }
         return oldProperty;
@@ -1595,7 +1595,7 @@ public class XMLProcessor {
             oldProperty.setSetMethodName(xmlTransformation.getXmlAccessMethods().getSetMethod());
         }
         // set user-defined properties
-        if (xmlTransformation.getXmlProperties() != null  && xmlTransformation.getXmlProperties().getXmlProperty().size() > 0) {
+        if (xmlTransformation.getXmlProperties() != null  && !xmlTransformation.getXmlProperties().getXmlProperty().isEmpty()) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlTransformation.getXmlProperties().getXmlProperty()));
         }
         aProcessor.getReferencedByTransformer().add(oldProperty.getType().getName());
@@ -1639,13 +1639,13 @@ public class XMLProcessor {
      *
      */
     private Map<String, ArrayList<JavaClass>> buildPackageToJavaClassMap() {
-        Map<String, ArrayList<JavaClass>> theMap = new HashMap<String, ArrayList<JavaClass>>();
-        Map<String, ArrayList<JavaClass>> xmlBindingsMap = new HashMap<String, ArrayList<JavaClass>>();
+        Map<String, ArrayList<JavaClass>> theMap = new HashMap<>();
+        Map<String, ArrayList<JavaClass>> xmlBindingsMap = new HashMap<>();
 
         XmlBindings xmlBindings;
         for (String packageName : xmlBindingMap.keySet()) {
             xmlBindings = xmlBindingMap.get(packageName);
-            ArrayList<JavaClass> classes = new ArrayList<JavaClass>();
+            ArrayList<JavaClass> classes = new ArrayList<>();
             // add binding classes - the Java Model will be used to get a
             // JavaClass via class name
             JavaTypes jTypes = xmlBindings.getJavaTypes();
@@ -1682,7 +1682,7 @@ public class XMLProcessor {
                 if (allExistingClasses != null) {
                     allExistingClasses.add(jClass);
                 } else {
-                    ArrayList<JavaClass> classes = new ArrayList<JavaClass>();
+                    ArrayList<JavaClass> classes = new ArrayList<>();
                     classes.add(jClass);
                     theMap.put(pkg, classes);
                 }
@@ -2018,7 +2018,7 @@ public class XMLProcessor {
      * @return XmlBindings object representing the merged files.
      */
     public static XmlBindings mergeXmlBindings(List<XmlBindings> bindings) {
-        if(bindings.size() == 0) {
+        if(bindings.isEmpty()) {
             return null;
         }
         XmlBindings rootBindings = bindings.get(0);
@@ -2087,7 +2087,7 @@ public class XMLProcessor {
 
     private static void mergeXmlJavaTypeAdapters(XmlJavaTypeAdapters xmlJavaTypeAdapters, XmlJavaTypeAdapters overrideAdapters) {
         List<XmlJavaTypeAdapter> adapterList = xmlJavaTypeAdapters.getXmlJavaTypeAdapter();
-        HashMap<String, XmlJavaTypeAdapter> adapterMap = new HashMap<String, XmlJavaTypeAdapter>(adapterList.size());
+        HashMap<String, XmlJavaTypeAdapter> adapterMap = new HashMap<>(adapterList.size());
         for(XmlJavaTypeAdapter next:adapterList) {
             adapterMap.put(next.getType(), next);
         }
@@ -2105,7 +2105,7 @@ public class XMLProcessor {
 
     private static void mergeXmlSchemaTypes(XmlSchemaTypes xmlSchemaTypes, XmlSchemaTypes overrideSchemaTypes) {
         List<XmlSchemaType> schemaTypeList = xmlSchemaTypes.getXmlSchemaType();
-        HashMap<String, XmlSchemaType> schemaTypeMap = new HashMap<String, XmlSchemaType>(schemaTypeList.size());
+        HashMap<String, XmlSchemaType> schemaTypeMap = new HashMap<>(schemaTypeList.size());
         for(XmlSchemaType next:schemaTypeList) {
             schemaTypeMap.put(next.getType(), next);
         }
@@ -2137,7 +2137,7 @@ public class XMLProcessor {
             return;
         }
         List<XmlEnum> enumList = xmlEnums.getXmlEnum();
-        Map<String, XmlEnum> enumMap = new HashMap<String, XmlEnum>(enumList.size());
+        Map<String, XmlEnum> enumMap = new HashMap<>(enumList.size());
         for(XmlEnum next:enumList) {
             enumMap.put(next.getJavaEnum(), next);
         }
@@ -2153,8 +2153,8 @@ public class XMLProcessor {
 
     private static void mergeXmlEnumValues(List<XmlEnumValue> xmlEnumValue, List<XmlEnumValue> overrideXmlEnumValue) {
 
-        Map<String, XmlEnumValue> values = new HashMap<String, XmlEnumValue>();
-        List<XmlEnumValue> extraValues = new ArrayList<XmlEnumValue>();
+        Map<String, XmlEnumValue> values = new HashMap<>();
+        List<XmlEnumValue> extraValues = new ArrayList<>();
         for(XmlEnumValue next:xmlEnumValue){
             values.put(next.getJavaEnumValue(), next);
         }
@@ -2172,7 +2172,7 @@ public class XMLProcessor {
 
     private static void mergeJavaTypes(JavaTypes javaTypes, JavaTypes overrideJavaTypes) {
         List<JavaType> javaTypeList = javaTypes.getJavaType();
-        Map<String, JavaType> javaTypeMap = new HashMap<String, JavaType>(javaTypeList.size());
+        Map<String, JavaType> javaTypeMap = new HashMap<>(javaTypeList.size());
         for(JavaType next:javaTypeList) {
             javaTypeMap.put(next.getName(), next);
         }
@@ -2232,7 +2232,7 @@ public class XMLProcessor {
 
     private static void mergeJavaAttributes(JavaAttributes attributes, JavaAttributes overrideAttributes, JavaType javaType) {
         List<JAXBElement<? extends JavaAttribute>> attributeList = attributes.getJavaAttribute();
-        Map<String, JAXBElement> attributeMap = new HashMap<String, JAXBElement>(attributeList.size());
+        Map<String, JAXBElement> attributeMap = new HashMap<>(attributeList.size());
 
         for(JAXBElement next:attributeList) {
             attributeMap.put(((JavaAttribute)next.getValue()).getJavaAttribute(), next);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -138,7 +138,7 @@ public final class SpatialExpressionFactory {
         vParameters.add(geom2);
         //Bug 5885276, the empty string either like " " or "" needs to be substituted
         //by null prior to passing to Geometry call.
-        if (params==null || params.trim().equals("")){
+        if (params==null || params.trim().isEmpty()){
             vParameters.add(null);
         }else{
             vParameters.add(params);

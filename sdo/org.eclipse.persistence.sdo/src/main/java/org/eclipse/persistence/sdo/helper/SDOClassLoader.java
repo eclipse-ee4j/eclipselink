@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,15 +53,10 @@ public class SDOClassLoader extends ClassLoader {
 
         try {
             javaClass = getParent().loadClass(className);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             javaClass = createGeneric(className, type);
             if (javaClass == null) {
                 throw e;
-            }
-        } catch (NoClassDefFoundError error) {
-            javaClass = createGeneric(className, type);
-            if (javaClass == null) {
-                throw error;
             }
         }
         if(!type.isDataType() && null != aHelperContext && null != aHelperContext.getTypeHelper()) {

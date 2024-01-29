@@ -23,7 +23,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -221,7 +220,7 @@ public class CommitOrderDependencyNode {
             childDescriptors.addAll(policy.getAllChildDescriptors());
 
             // Sort Child Descriptors before adding them to related nodes.
-            Collections.sort(childDescriptors, new DescriptorCompare());
+            childDescriptors.sort(new DescriptorCompare());
 
             for (ClassDescriptor child : childDescriptors) {
                 results.add(getOwner().nodeFor(child));

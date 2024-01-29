@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import org.eclipse.persistence.expressions.Expression;
+
 /**
  * INTERNAL
  * <p><b>Purpose</b>: Represent the MEMBER-OF operator
@@ -23,9 +25,6 @@ package org.eclipse.persistence.internal.jpa.parsing;
  *    @author Jon Driscoll and Joel Lucuik
  *    @since since July 2003
  */
-
-import org.eclipse.persistence.expressions.Expression;
-
 public class MemberOfNode extends BinaryOperatorNode {
     private boolean notIndicated = false;
 

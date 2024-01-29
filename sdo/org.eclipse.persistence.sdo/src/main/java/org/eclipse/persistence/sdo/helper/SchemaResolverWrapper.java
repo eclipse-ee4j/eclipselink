@@ -48,7 +48,7 @@ public class SchemaResolverWrapper {
      */
     public SchemaResolverWrapper(SchemaResolver resolver) {
         schemaResolver = resolver;
-        systemIdList = new ArrayList<String>();
+        systemIdList = new ArrayList<>();
     }
 
     /**

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1207,7 +1207,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
-        if ((getFieldName() == null) || (getFieldName().length() == 0)) {
+        if ((getFieldName() == null) || (getFieldName().isEmpty())) {
             session.getIntegrityChecker().handleError(DescriptorException.noFieldNameForMapping(this));
         }
     }

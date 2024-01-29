@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,7 @@ public class IntegrityChecker implements Serializable {
      * This method checks that tables are present in the database.
      */
     public boolean checkTable(DatabaseTable table, AbstractSession session) {
-        if (getTables().size() == 0) {
+        if (getTables().isEmpty()) {
             // load the tables from the session
             initializeTables(session);
         }
@@ -163,7 +163,7 @@ public class IntegrityChecker implements Serializable {
      * Return if any errors occurred.
      */
     public boolean hasErrors() {
-        if ((caughtExceptions != null) && (caughtExceptions.size() > 0)) {
+        if ((caughtExceptions != null) && (!caughtExceptions.isEmpty())) {
             return true;
         }
         return false;

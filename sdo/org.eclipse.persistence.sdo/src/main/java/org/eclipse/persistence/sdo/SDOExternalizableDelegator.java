@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,10 +70,8 @@ public class SDOExternalizableDelegator extends AbstractExternalizableDelegator 
             Field delegateField = privilegedGetDelegateField.run();
             PrivilegedGetValueFromField privilegedGetValueFromDelegateField = new PrivilegedGetValueFromField(delegateField, this);
             return (SDOResolvable) privilegedGetValueFromDelegateField.run();
-        }catch (NoSuchFieldException nsfException){
+        }catch (NoSuchFieldException | IllegalAccessException nsfException){
             throw SDOException.errorAccessingExternalizableDelegator("delegate", nsfException);
-        }catch (IllegalAccessException iaException){
-            throw SDOException.errorAccessingExternalizableDelegator("delegate", iaException);
         }
     }
 
@@ -82,10 +80,8 @@ public class SDOExternalizableDelegator extends AbstractExternalizableDelegator 
             Field delegateField = privilegedGetDelegateField.run();
             PrivilegedSetValueInField privilegedSetValueInDelegateField = new PrivilegedSetValueInField(delegateField, this, resolvable);
             privilegedSetValueInDelegateField.run();
-        } catch (NoSuchFieldException nsfException){
+        } catch (NoSuchFieldException | IllegalAccessException nsfException){
             throw SDOException.errorAccessingExternalizableDelegator("delegate", nsfException);
-        } catch (IllegalAccessException iaException){
-            throw SDOException.errorAccessingExternalizableDelegator("delegate", iaException);
         }
     }
 }

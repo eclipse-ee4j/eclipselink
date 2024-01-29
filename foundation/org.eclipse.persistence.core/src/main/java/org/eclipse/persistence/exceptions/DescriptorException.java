@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -769,7 +769,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException invalidAttributeTypeForProxyIndirection(Class<?> attributeType, Class<?>[] targetInterfaces, DatabaseMapping mapping) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < targetInterfaces.length; i++) {
             buffer.append(targetInterfaces[i].getName());
             if (i != (targetInterfaces.length - 1)) {
@@ -825,7 +825,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException invalidGetMethodReturnTypeForProxyIndirection(Class<?> attributeType, Class<?>[] targetInterfaces, DatabaseMapping mapping) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < targetInterfaces.length; i++) {
             buffer.append(targetInterfaces[i].getName());
             if (i != (targetInterfaces.length - 1)) {
@@ -873,7 +873,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException invalidSetMethodParameterTypeForProxyIndirection(Class<?> attributeType, Class<?>[] targetInterfaces, DatabaseMapping mapping) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < targetInterfaces.length; i++) {
             buffer.append(targetInterfaces[i].getName());
             if (i != (targetInterfaces.length - 1)) {

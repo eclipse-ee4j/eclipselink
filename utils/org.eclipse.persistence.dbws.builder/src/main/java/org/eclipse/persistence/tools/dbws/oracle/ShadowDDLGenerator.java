@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,9 +62,9 @@ public class ShadowDDLGenerator {
     protected PLSQLPackageType plsqlPackageType;
     protected Map<String, Integer> rowTYPETypeCounts;
     protected Map<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> createDDLs =
-        new HashMap<CompositeDatabaseTypeWithEnclosedType, DDLWrapper>();
+            new HashMap<>();
     protected Map<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> dropDDLs =
-        new HashMap<CompositeDatabaseTypeWithEnclosedType, DDLWrapper>();
+            new HashMap<>();
 
     public ShadowDDLGenerator(PLSQLPackageType plsqlPackageType) {
         this.plsqlPackageType = plsqlPackageType;
@@ -81,7 +81,7 @@ public class ShadowDDLGenerator {
         return createDDLs.get(dType).ddl;
     }
     public List<String> getAllCreateDDLs() {
-        List<String> allDDLs = new ArrayList<String>();
+        List<String> allDDLs = new ArrayList<>();
         for (Map.Entry<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> me : createDDLs.entrySet()) {
             allDDLs.add(me.getValue().ddl);
         }
@@ -92,7 +92,7 @@ public class ShadowDDLGenerator {
         return dropDDLs.get(dType).ddl;
     }
     public List<String> getAllDropDDLs() {
-        List<String> allDDLs = new ArrayList<String>();
+        List<String> allDDLs = new ArrayList<>();
         for (Map.Entry<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> me : dropDDLs.entrySet()) {
             allDDLs.add(me.getValue().ddl);
         }
@@ -104,7 +104,7 @@ public class ShadowDDLGenerator {
     }
 
     static class CountROWTYPETypesVisitor extends BaseDatabaseTypeVisitor {
-        Map<String, Integer> rowTYPETypeCounts = new HashMap<String, Integer>();
+        Map<String, Integer> rowTYPETypeCounts = new HashMap<>();
         int initialRowTYPETypeCount = 0;
         @Override
         public void beginVisit(ROWTYPEType rowTYPEType) {
@@ -134,8 +134,8 @@ public class ShadowDDLGenerator {
         static final String FLOAT_DEFAULTSIZE = "63";
         static final String DOUBLE_DEFAULTSIZE = "126";
         static final String LONG_DEFAULTSIZE = "32760";
-        protected Stack<PLSQLRecordType> recordTypes = new Stack<PLSQLRecordType>();
-        protected Stack<ROWTYPEType> rowTYPETypes = new Stack<ROWTYPEType>();
+        protected Stack<PLSQLRecordType> recordTypes = new Stack<>();
+        protected Stack<ROWTYPEType> rowTYPETypes = new Stack<>();
         @Override
         public void beginVisit(PLSQLRecordType recordType) {
             if (recordTypes.isEmpty()) {

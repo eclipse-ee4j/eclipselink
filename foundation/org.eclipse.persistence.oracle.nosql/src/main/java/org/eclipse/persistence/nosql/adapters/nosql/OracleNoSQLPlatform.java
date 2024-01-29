@@ -130,14 +130,11 @@ public class OracleNoSQLPlatform extends EISPlatform {
             if (durability instanceof Durability) {
                 noSqlSpec.setDurability((Durability)durability);
             } else if (durability instanceof String constant) {
-                if (constant.equals("COMMIT_NO_SYNC")) {
-                    noSqlSpec.setDurability(Durability.COMMIT_NO_SYNC);
-                } else if (constant.equals("COMMIT_SYNC")) {
-                    noSqlSpec.setDurability(Durability.COMMIT_SYNC );
-                }  else if (constant.equals("COMMIT_WRITE_NO_SYNC")) {
-                    noSqlSpec.setDurability(Durability.COMMIT_WRITE_NO_SYNC );
-                } else {
-                    throw new EISException("Invalid durability property value: " + constant);
+                switch (constant) {
+                    case "COMMIT_NO_SYNC" -> noSqlSpec.setDurability(Durability.COMMIT_NO_SYNC);
+                    case "COMMIT_SYNC" -> noSqlSpec.setDurability(Durability.COMMIT_SYNC);
+                    case "COMMIT_WRITE_NO_SYNC" -> noSqlSpec.setDurability(Durability.COMMIT_WRITE_NO_SYNC);
+                    default -> throw new EISException("Invalid durability property value: " + constant);
                 }
             }
 
@@ -326,7 +323,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
     protected Object createMajorKey(ClassDescriptor descriptor, AbstractRecord record, EISInteraction interaction, EISAccessor accessor) {
         Object id = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(record, interaction.getQuery().getSession());
         List<String> key = new ArrayList<>(descriptor.getPrimaryKeyFields().size() + 1);
-        if (((EISDescriptor)descriptor).getDataTypeName().length() > 0) {
+        if (!((EISDescriptor) descriptor).getDataTypeName().isEmpty()) {
             key.add(((EISDescriptor)descriptor).getDataTypeName());
         }
         if (id != null) {
@@ -355,7 +352,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
         }
         EISDOMRecord domRecord = null;
         OracleNoSQLRecord noSqlRecord = (OracleNoSQLRecord)record;
-        if (noSqlRecord.size() == 0) {
+        if (noSqlRecord.isEmpty()) {
             return null;
         } else if (noSqlRecord.size() == 1) {
             domRecord = new EISDOMRecord();

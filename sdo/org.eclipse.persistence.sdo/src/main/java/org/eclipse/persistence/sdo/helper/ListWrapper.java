@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -480,7 +480,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
         if ((position < 0) || (position > size())) {
             return false;
         }
-        if ((items == null) || (items.size() == 0)) {
+        if ((items == null) || (items.isEmpty())) {
             return false;
         }
 
@@ -577,7 +577,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
             return false;
         }
 
-        if (itemsToKeep.size() == 0) {
+        if (itemsToKeep.isEmpty()) {
             clear();
             return true;
         }

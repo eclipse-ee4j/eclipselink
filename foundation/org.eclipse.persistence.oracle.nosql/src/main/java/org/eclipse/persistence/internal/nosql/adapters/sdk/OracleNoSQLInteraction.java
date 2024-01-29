@@ -240,7 +240,7 @@ public class OracleNoSQLInteraction implements Interaction {
                     StringTokenizer st = new StringTokenizer((String)inputRecord.get(OracleNoSQLPlatform.QUERY_ARGUMENTS), ";");
                     while (st.hasMoreTokens()) {
                         String argumentName = st.nextToken();
-                        preparedStatement.setVariable("$" + argumentName, OracleNoSQLPlatform.getFieldValue(argumentName + (String) inputRecord.get(OracleNoSQLPlatform.QUERY_ARGUMENT_TYPE_SUFFIX), (String) inputRecord.get(argumentName + OracleNoSQLPlatform.QUERY_ARGUMENT_VALUE_SUFFIX), false));
+                        preparedStatement.setVariable("$" + argumentName, OracleNoSQLPlatform.getFieldValue(argumentName + inputRecord.get(OracleNoSQLPlatform.QUERY_ARGUMENT_TYPE_SUFFIX), inputRecord.get(argumentName + OracleNoSQLPlatform.QUERY_ARGUMENT_VALUE_SUFFIX), false));
                     }
                 }
                 QueryRequest queryRequest = new QueryRequest().setPreparedStatement(preparedStatement);
@@ -420,7 +420,7 @@ public class OracleNoSQLInteraction implements Interaction {
                         }
                     }
                     //Check DOM Element sub elements
-                    if (domRecordListItem.getValues().size() > 0) {
+                    if (!domRecordListItem.getValues().isEmpty()) {
                         for (Map.Entry<DatabaseField, Element> listItemEntry : (Set<Map.Entry<DatabaseField, Element>>) domRecordListItem.entrySet()) {
                             DatabaseMapping mappingCollection = fieldNameMappingCollection.get(listItemEntry.getValue().getLocalName()) != null ? fieldNameMappingCollection.get(listItemEntry.getValue().getLocalName()) : fieldNameMappingCollection.get(listItemEntry.getValue().getLocalName() + "/text()");
                             Converter converter = ((EISDirectMapping) mappingCollection).getConverter();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -238,12 +238,12 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
         }
         String proxyUserPassword = (String)session.getProperty(OracleConnection.PROXY_USER_PASSWORD);
         // set the value if it's not null and not an empty String
-        if(proxyUserPassword != null && proxyUserPassword.length() > 0) {
+        if(proxyUserPassword != null && !proxyUserPassword.isEmpty()) {
             proxyProperties.setProperty(OracleConnection.PROXY_USER_PASSWORD, proxyUserPassword);
         }
         Object proxyRoles = session.getProperty(OracleConnection.PROXY_ROLES);
         // set the value if it's not null and not an empty String
-        if(proxyRoles != null && !((proxyRoles instanceof String) && (((String)proxyRoles).length() == 0))) {
+        if(proxyRoles != null && !((proxyRoles instanceof String) && (((String) proxyRoles).isEmpty()))) {
             proxyProperties.put(OracleConnection.PROXY_ROLES, proxyRoles);
         }
     }

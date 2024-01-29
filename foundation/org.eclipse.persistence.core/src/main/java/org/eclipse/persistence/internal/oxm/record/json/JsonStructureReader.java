@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -172,14 +172,14 @@ public class JsonStructureReader extends XMLReaderAdapter {
             JsonObject jsonObject = (JsonObject) jsonValue;
 
             Set<Entry<String, JsonValue>> children = jsonObject.entrySet();
-            if (children.size() == 0 && unmarshalClass == null) {
+            if (children.isEmpty() && unmarshalClass == null) {
                 return;
             }
 
             Iterator<Entry<String, JsonValue>> iter = children.iterator();
 
             if (includeRoot) {
-                if (children.size() > 0) {
+                if (!children.isEmpty()) {
                     Entry<String, JsonValue> nextEntry = iter.next();
                     parsePair(nextEntry.getKey(), nextEntry.getValue());
                 }
@@ -536,7 +536,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
         }
 
         return ((currentNode.getNonAttributeChildrenMap() == null
-                || currentNode.getNonAttributeChildrenMap().size() == 0
+                || currentNode.getNonAttributeChildrenMap().isEmpty()
                 || (currentNode.getNonAttributeChildrenMap().size() == 1
                 && currentNode.getTextNode() != null)
         ) && textWrapper != null && textWrapper.equals(localName)
@@ -698,7 +698,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                             JsonValue nextValue = nextEntry.getValue();
                             if (nextValue.getValueType() == ValueType.ARRAY) {
                                 JsonArray jsonArray = (JsonArray) nextValue;
-                                if (jsonArray.size() == 0) {
+                                if (jsonArray.isEmpty()) {
                                     attributesList.add(new Attribute(uri, attributeLocalName, attributeLocalName, ""));
                                 }
                                 for (JsonValue nextChildValue : jsonArray) {
@@ -709,7 +709,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                             }
                         }
 
-                        attributes = attributesList.toArray(new Attribute[attributesList.size()]);
+                        attributes = attributesList.toArray(new Attribute[0]);
                         break;
                     }
                     default: {

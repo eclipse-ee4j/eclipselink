@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -853,7 +853,7 @@ public class SDOType implements Type, Serializable {
 
             // we will not fix any type collision at this time as a result of class renaming
             // write fully qualified java class name
-            StringBuffer fullClassName = new StringBuffer(packageName);
+            StringBuilder fullClassName = new StringBuilder(packageName);
             fullClassName.append(mangledClassName);
             setInstanceClassName(fullClassName.toString());
         }
@@ -951,9 +951,7 @@ public class SDOType implements Type, Serializable {
                 SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
                 javaImplClass = loader.loadClass(getImplClassName(), this);
                 xmlDescriptor.setJavaClass(javaImplClass);
-            } catch (ClassNotFoundException e) {
-                throw SDOException.classNotFound(e, getURI(), getName());
-            } catch (SecurityException e) {
+            } catch (ClassNotFoundException | SecurityException e) {
                 throw SDOException.classNotFound(e, getURI(), getName());
             }
         }
@@ -971,7 +969,7 @@ public class SDOType implements Type, Serializable {
     @Override
     public List getInstanceProperties() {
         if(null == propertyValues) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return new ArrayList(getPropertyValues().keySet());
     }

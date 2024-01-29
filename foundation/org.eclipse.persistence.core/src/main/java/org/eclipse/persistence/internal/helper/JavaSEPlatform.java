@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -190,28 +190,27 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      *         Java SE version numbers.
      */
     public static JavaSEPlatform toValue(final int major, final int minor) {
-        switch (major) {
-        case 1:
-            switch (minor) {
-                case 1: return v1_1;
-                case 2: return v1_2;
-                case 3: return v1_3;
-                case 4: return v1_4;
-                case 5: return v1_5;
-                case 6: return v1_6;
-                case 7: return v1_7;
-                case 8: return v1_8;
-                case 9: return v9_0;
-                default: return LATEST;
-            }
-        case 9: return v9_0;
-        case 10: return v10_0;
-        case 11: return v11_0;
-        case 12: return v12_0;
-        case 13: return v13_0;
-        case 14: return v14_0;
-        default: return LATEST;
-        }
+        return switch (major) {
+            case 1 -> switch (minor) {
+                case 1 -> v1_1;
+                case 2 -> v1_2;
+                case 3 -> v1_3;
+                case 4 -> v1_4;
+                case 5 -> v1_5;
+                case 6 -> v1_6;
+                case 7 -> v1_7;
+                case 8 -> v1_8;
+                case 9 -> v9_0;
+                default -> LATEST;
+            };
+            case 9 -> v9_0;
+            case 10 -> v10_0;
+            case 11 -> v11_0;
+            case 12 -> v12_0;
+            case 13 -> v13_0;
+            case 14 -> v14_0;
+            default -> LATEST;
+        };
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,7 +80,6 @@ public class MetadataResource extends AbstractResource {
         PRIMITIVE_TO_JSON.put(float.class, "number");
         PRIMITIVE_TO_JSON.put(int.class, "integer");
         PRIMITIVE_TO_JSON.put(long.class, "integer");
-        PRIMITIVE_TO_JSON.put(short.class, "number");
         PRIMITIVE_TO_JSON.put(short.class, "number");
     }
 

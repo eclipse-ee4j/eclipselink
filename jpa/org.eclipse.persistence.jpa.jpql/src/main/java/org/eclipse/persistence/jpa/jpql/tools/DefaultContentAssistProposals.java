@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -797,7 +797,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
         // Entity names
         if (!entities.isEmpty()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(entities);
@@ -805,7 +805,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
         // Identification variables
         if (!identificationVariables.isEmpty()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(identificationVariables);
@@ -813,7 +813,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
         // Range identification variables
         if (!rangeIdentificationVariables.isEmpty()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(rangeIdentificationVariables);
@@ -821,7 +821,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
         // Mappings
         if (!mappings.isEmpty()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(mappings);
@@ -829,7 +829,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
         // Class names
         for (String className : classNames()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(className);
@@ -837,7 +837,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
         // Table names
         for (String tableName : tableNames()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(tableName);
@@ -845,7 +845,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
         // Column names
         for (String columnName : columnNames()) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(", ");
             }
             sb.append(columnName);
@@ -854,7 +854,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         // Enum constant names
         for (EnumProposals enumProposals : enumConstant()) {
             for (String enumConstant : enumProposals.enumConstants()) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     sb.append(", ");
                 }
                 sb.append(enumConstant);
@@ -862,7 +862,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
         }
 
         // No proposals
-        if (sb.length() == 0) {
+        if (sb.isEmpty()) {
             sb.append("<No Default Proposals>");
         }
 

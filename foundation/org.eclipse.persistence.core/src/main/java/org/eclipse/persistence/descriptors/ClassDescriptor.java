@@ -4572,14 +4572,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * This method is explicitly used by the XML reader.
      */
     public void setDescriptorTypeValue(String value) {
-        if (value.equals("Aggregate collection")) {
-            descriptorIsAggregateCollection();
-        } else if (value.equals("Aggregate")) {
-            descriptorIsAggregate();
-        } else if (value.equals("Interface")) {
-            descriptorIsForInterface();
-        } else {
-            descriptorIsNormal();
+        switch (value) {
+            case "Aggregate collection" -> descriptorIsAggregateCollection();
+            case "Aggregate" -> descriptorIsAggregate();
+            case "Interface" -> descriptorIsForInterface();
+            default -> descriptorIsNormal();
         }
     }
 

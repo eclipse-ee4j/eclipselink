@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.sdo.types.*;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -352,12 +350,7 @@ public class SDOConstants {
     public static final String JAVA_TYPE_GENERATION_DEFAULT_PACKAGE_NAME_SEARCH = JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME + JAVA_PACKAGE_NAME_SEPARATOR;
 
     /** List of the classes allowed to deserialize in SDO*/
-    public static final Set<String> ALLOWED_DESERIALIZATION_CLASS_NAMES = Collections.unmodifiableSet(
-            new HashSet() {{
-                add(org.eclipse.persistence.sdo.SDOExternalizableDelegator.class.getName());
-                add(org.eclipse.persistence.sdo.AbstractExternalizableDelegator.class.getName());
-                add(java.util.ArrayList.class.getName());
-            }});
+    public static final Set<String> ALLOWED_DESERIALIZATION_CLASS_NAMES = Set.of(SDOExternalizableDelegator.class.getName(), AbstractExternalizableDelegator.class.getName(), java.util.ArrayList.class.getName());
 
     static {
         if(null != sdoTypeHelper) {

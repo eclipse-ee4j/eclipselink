@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -276,7 +276,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             for (Map.Entry<DatabaseField, Object> entry : (Set<Map.Entry<DatabaseField, Object>>) translationRow.entrySet()) {
                 arguments.put(entry.getKey(), entry.getValue());
             }
-            if (arguments.size() > 0) {
+            if (!arguments.isEmpty()) {
                 input.put(QUERY_ARGUMENTS, arguments);
             }
             return input;
@@ -329,7 +329,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
     protected Object createMajorKey(ClassDescriptor descriptor, AbstractRecord record, EISInteraction interaction, EISAccessor accessor) {
         Object id = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(record, interaction.getQuery().getSession());
         List<String> key = new ArrayList<>(descriptor.getPrimaryKeyFields().size() + 1);
-        if (((EISDescriptor)descriptor).getDataTypeName().length() > 0) {
+        if (!((EISDescriptor) descriptor).getDataTypeName().isEmpty()) {
             key.add(((EISDescriptor)descriptor).getDataTypeName());
         }
         if (id != null) {
@@ -358,7 +358,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
         }
         EISDOMRecord domRecord = null;
         OracleNoSQLRecord noSqlRecord = (OracleNoSQLRecord)record;
-        if (noSqlRecord.size() == 0) {
+        if (noSqlRecord.isEmpty()) {
             return null;
         } else {
             Map<String, DatabaseMapping> mappings = new HashMap<>();
@@ -524,7 +524,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 row.put(parameterName + QUERY_ARGUMENT_VALUE_SUFFIX, parameterValue);
                 row.put(parameterName + QUERY_ARGUMENT_TYPE_SUFFIX, parameterTypeName);
             }
-            if (parameters.size() > 0) {
+            if (!parameters.isEmpty()) {
                 sqlString = sqlVariables + " " + sqlString;
                 row.put(QUERY_ARGUMENTS, parameterNames);
             }

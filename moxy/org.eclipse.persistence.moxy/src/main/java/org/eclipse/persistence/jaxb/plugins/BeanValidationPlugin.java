@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -526,7 +526,7 @@ public class BeanValidationPlugin extends Plugin {
                     String groups = c.element.getAttribute("groups");
                     String message = c.element.getAttribute("message");
                     String type = c.element.getAttribute("type");
-                    if ("".equals(type)) {
+                    if (type.isEmpty()) {
                         throw new RuntimeException("DOM attribute \"type\" is required in custom facet declarations.");
                     }
                     String value = c.element.getAttribute(VALUE);
@@ -565,7 +565,7 @@ public class BeanValidationPlugin extends Plugin {
                 }
             } catch (IllegalArgumentException programmingByException) {
                 JAnnotationUse annotationUse = fieldVar.annotate(CODEMODEL.ref(c.type));
-                if (!c.value.equals("")) annotationUse.param(VALUE, c.value);
+                if (!c.value.isEmpty()) annotationUse.param(VALUE, c.value);
                 customizeAnnotation(annotationUse, c);
                 continue;
             }
@@ -579,7 +579,7 @@ public class BeanValidationPlugin extends Plugin {
      * as a parameter.
      */
     private void customizeAnnotation(JAnnotationUse a, final FacetCustomization c) {
-        /**
+        /*
          * Transposes an array of Strings into a single String containing
          * the Strings, separated by comma + space (i.e. ", ") and with ".class"
          * extension.
@@ -601,7 +601,7 @@ public class BeanValidationPlugin extends Plugin {
             }
         }
         if (c.groups != null && c.groups.length != 0) a.param("groups", new GroupsParser());
-        if (!c.message.equals("")) a.param("message", c.message);
+        if (!c.message.isEmpty()) a.param("message", c.message);
     }
 
     /* Note:
@@ -646,7 +646,7 @@ public class BeanValidationPlugin extends Plugin {
         }
     }
 
-    private static enum FacetType {
+    private enum FacetType {
         // XML Facets + Restrictions.
         maxExclusive,
         minExclusive,
@@ -815,13 +815,13 @@ public class BeanValidationPlugin extends Plugin {
      */
     private final class RegexMutator {
         private final Map<Pattern, String> shorthandReplacements = simpleRegex
-                ? new LinkedHashMap<Pattern, String>(8) {{
+                ? new LinkedHashMap<>(8) {{
             put(Pattern.compile("\\\\i"), "[_:A-Za-z]");
             put(Pattern.compile("\\\\I"), "[^:A-Z_a-z]");
             put(Pattern.compile("\\\\c"), "[-.0-9:A-Z_a-z]");
             put(Pattern.compile("\\\\C"), "[^-.0-9:A-Z_a-z]");
         }}
-                : new LinkedHashMap<Pattern, String>(32) {{
+                : new LinkedHashMap<>(32) {{
             put(Pattern.compile("\\\\i"), "[:A-Z_a-z\\\\u00C0-\\\\u00D6\\\\u00D8-\\\\u00F6\\\\u00F8-\\\\u02FF\\\\u0370-\\\\u037D\\\\u037F-\\\\u1FFF\\\\u200C-\\\\u200D\\\\u2070-\\\\u218F\\\\u2C00-\\\\u2FEF\\\\u3001-\\\\uD7FF\\\\uF900-\\\\uFDCF\\\\uFDF0-\\\\uFFFD]");
             put(Pattern.compile("\\\\I"), "[^:A-Z_a-z\\\\u00C0-\\\\u00D6\\\\u00D8-\\\\u00F6\\\\u00F8-\\\\u02FF\\\\u0370-\\\\u037D\\\\u037F-\\\\u1FFF\\\\u200C-\\\\u200D\\\\u2070-\\\\u218F\\\\u2C00-\\\\u2FEF\\\\u3001-\\\\uD7FF\\\\uF900-\\\\uFDCF\\\\uFDF0-\\\\uFFFD]");
             put(Pattern.compile("\\\\c"), "[-.0-9:A-Z_a-z\\\\u00B7\\\\u00C0-\\\\u00D6\\\\u00D8-\\\\u00F6\\\\u00F8-\\\\u037D\\\\u037F-\\\\u1FFF\\\\u200C-\\\\u200D\\\\u203F\\\\u2040\\\\u2070-\\\\u218F\\\\u2C00-\\\\u2FEF\\\\u3001-\\\\uD7FF\\\\uF900-\\\\uFDCF\\\\uFDF0-\\\\uFFFD]");
@@ -879,18 +879,7 @@ public class BeanValidationPlugin extends Plugin {
     private static final Set<String> nonFloatingDigitsClasses;
 
     static {
-        Set<String> set = new HashSet<>();
-        set.add("byte");
-        set.add("Byte");
-        set.add("short");
-        set.add("Short");
-        set.add("int");
-        set.add("Integer");
-        set.add("long");
-        set.add("Long");
-        set.add("BigDecimal");
-        set.add("BigInteger");
-        nonFloatingDigitsClasses = Collections.unmodifiableSet(set);
+        nonFloatingDigitsClasses = Set.of("byte", "Byte", "short", "Short", "int", "Integer", "long", "Long", "BigDecimal", "BigInteger");
     }
 
     private static final Set<String> unboundedDigitsClasses;
@@ -899,7 +888,7 @@ public class BeanValidationPlugin extends Plugin {
         Set<String> set = new HashSet<>();
         set.add("BigInteger");
         set.add("BigDecimal");
-        unboundedDigitsClasses = Collections.unmodifiableSet(new HashSet<>(set));
+        unboundedDigitsClasses = Set.copyOf(set);
     }
 
     private static final Set<String> floatingDigitsClasses;
@@ -910,22 +899,13 @@ public class BeanValidationPlugin extends Plugin {
         set.add("Float");
         set.add("double");
         set.add("Double");
-        floatingDigitsClasses = Collections.unmodifiableSet(new HashSet<>(set));
+        floatingDigitsClasses = Set.copyOf(set);
     }
 
     private static final Map<String, MinMaxTuple> nonFloatingDigitsClassesBoundaries;
 
     static {
-        HashMap<String, MinMaxTuple> map = new HashMap<>();
-        map.put("byte", new MinMaxTuple<>(Byte.MIN_VALUE, Byte.MAX_VALUE));
-        map.put("Byte", new MinMaxTuple<>(Byte.MIN_VALUE, Byte.MAX_VALUE));
-        map.put("short", new MinMaxTuple<>(Short.MIN_VALUE, Short.MAX_VALUE));
-        map.put("Short", new MinMaxTuple<>(Short.MIN_VALUE, Short.MAX_VALUE));
-        map.put("int", new MinMaxTuple<>(Integer.MIN_VALUE, Integer.MAX_VALUE));
-        map.put("Integer", new MinMaxTuple<>(Integer.MIN_VALUE, Integer.MAX_VALUE));
-        map.put("long", new MinMaxTuple<>(Long.MIN_VALUE, Long.MAX_VALUE));
-        map.put("Long", new MinMaxTuple<>(Long.MIN_VALUE, Long.MAX_VALUE));
-        nonFloatingDigitsClassesBoundaries = Collections.unmodifiableMap(map);
+        nonFloatingDigitsClassesBoundaries = Map.of("byte", new MinMaxTuple<>(Byte.MIN_VALUE, Byte.MAX_VALUE), "Byte", new MinMaxTuple<>(Byte.MIN_VALUE, Byte.MAX_VALUE), "short", new MinMaxTuple<>(Short.MIN_VALUE, Short.MAX_VALUE), "Short", new MinMaxTuple<>(Short.MIN_VALUE, Short.MAX_VALUE), "int", new MinMaxTuple<>(Integer.MIN_VALUE, Integer.MAX_VALUE), "Integer", new MinMaxTuple<>(Integer.MIN_VALUE, Integer.MAX_VALUE), "long", new MinMaxTuple<>(Long.MIN_VALUE, Long.MAX_VALUE), "Long", new MinMaxTuple<>(Long.MIN_VALUE, Long.MAX_VALUE));
     }
 
     private static final class MinMaxTuple<T extends Number> {

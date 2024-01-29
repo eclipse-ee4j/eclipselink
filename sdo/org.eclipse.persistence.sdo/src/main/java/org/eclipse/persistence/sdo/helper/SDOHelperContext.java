@@ -118,15 +118,15 @@ public class SDOHelperContext implements HelperContext {
 
     // Each application will have its own helper context - it is assumed that application
     // names/loaders are unique within each active server instance
-    private static ConcurrentHashMap<Object, CacheIdentityMap> helperContexts = new ConcurrentHashMap<Object, CacheIdentityMap>();
+    private static ConcurrentHashMap<Object, CacheIdentityMap> helperContexts = new ConcurrentHashMap<>();
     // Each application will have a Map of alias' to identifiers
-    private static ConcurrentHashMap<Object, ConcurrentHashMap<String, String>> aliasMap = new ConcurrentHashMap<Object, ConcurrentHashMap<String, String>>();
+    private static ConcurrentHashMap<Object, ConcurrentHashMap<String, String>> aliasMap = new ConcurrentHashMap<>();
     // Each application could have separate HelperContextResolver
     private static final ConcurrentHashMap<Object, HelperContextResolver> HELPER_CONTEXT_RESOLVERS = new ConcurrentHashMap<>();
     // allow users to set their own classloader to context map pairs
-    private static WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>>();
+    private static WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>> userSetHelperContexts = new WeakHashMap<>();
     // keep a map of application names to application class loaders to handle redeploy
-    private static ConcurrentHashMap<String, ClassLoader> appNameToClassLoaderMap = new ConcurrentHashMap<String, ClassLoader>();
+    private static ConcurrentHashMap<String, ClassLoader> appNameToClassLoaderMap = new ConcurrentHashMap<>();
     // keep a map of application name to the wrapper types for that application
     private static final ConcurrentHashMap<String,Map<SDOWrapperTypeId,SDOWrapperType>> SDO_WRAPPER_TYPES = new ConcurrentHashMap<>();
 
@@ -392,7 +392,7 @@ public class SDOHelperContext implements HelperContext {
         }
         WeakHashMap<String, WeakReference<HelperContext>> currentMap = userSetHelperContexts.get(key);
         if(currentMap == null) {
-            currentMap = new WeakHashMap<String, WeakReference<HelperContext>>();
+            currentMap = new WeakHashMap<>();
             userSetHelperContexts.put(key, currentMap);
         }
         currentMap.put(((SDOHelperContext) value).getIdentifier(), new WeakReference(value));
@@ -828,7 +828,7 @@ public class SDOHelperContext implements HelperContext {
                         String appIdentifier = null;
                         if (appName != null) {
                             if (appVersion != null) {
-                                appIdentifier = appName.toString() + "#" + appVersion.toString();
+                                appIdentifier = appName + "#" + appVersion;
                             } else {
                                 appIdentifier = appName.toString();
                             }
@@ -1046,7 +1046,7 @@ public class SDOHelperContext implements HelperContext {
     private static String getApplicationNameFromWASClassLoader(final ClassLoader loader) {
         String applicationName = null;
         String loaderString = loader.toString().trim();
-        while ((loaderString.startsWith(WAS_NEWLINE)) && (loaderString.length() > 0)) {
+        while ((loaderString.startsWith(WAS_NEWLINE)) && (!loaderString.isEmpty())) {
             loaderString = loaderString.substring(1).trim();
         }
         String[] loaderStringLines = loaderString.split(WAS_NEWLINE, 2);
@@ -1122,7 +1122,7 @@ public class SDOHelperContext implements HelperContext {
      */
     private static boolean wasClassLoaderHasApplicationName(ClassLoader loader) {
         String loaderString = loader.toString().trim();
-        while ((loaderString.startsWith(WAS_NEWLINE)) && (loaderString.length() > 0)) {
+        while ((loaderString.startsWith(WAS_NEWLINE)) && (!loaderString.isEmpty())) {
             loaderString = loaderString.substring(1).trim();
         }
         String[] loaderStringLines = loaderString.split(WAS_NEWLINE, 2);
@@ -1166,11 +1166,11 @@ public class SDOHelperContext implements HelperContext {
         if ((idx = loaderToString.indexOf(JBOSS_VFSZIP)) != -1) {
             appNameSegment = loaderToString.substring(idx + JBOSS_VFSZIP_OFFSET, loaderToString.length() - JBOSS_TRIM_COUNT);
             // handle case where the string contains both .ear and .war (remove the .war portion)
-            if ((appNameSegment.indexOf(JBOSS_WAR) != -1) && (appNameSegment.indexOf(JBOSS_EAR) != -1)) {
+            if ((appNameSegment.contains(JBOSS_WAR)) && (appNameSegment.contains(JBOSS_EAR))) {
                 appNameSegment = appNameSegment.substring(0, appNameSegment.indexOf(JBOSS_EAR) + JBOSS_EAR_OFFSET);
             }
             // handle case where the string contains both .ear and .jar (remove the .jar portion)
-            else if ((appNameSegment.indexOf(JBOSS_JAR) != -1) && (appNameSegment.indexOf(JBOSS_EAR) != -1)) {
+            else if ((appNameSegment.contains(JBOSS_JAR)) && (appNameSegment.contains(JBOSS_EAR))) {
                 appNameSegment = appNameSegment.substring(0, appNameSegment.indexOf(JBOSS_EAR) + JBOSS_EAR_OFFSET);
             }
         }
@@ -1243,7 +1243,7 @@ public class SDOHelperContext implements HelperContext {
      */
     private static boolean jBossClassLoaderHasArchiveFileInfo(ClassLoader loader) {
         // look for "vfszip:<archive-file-name>" or "vfsfile:<archive-file-name>"
-        return (loader.toString().indexOf(JBOSS_VFSZIP) != -1 || loader.toString().indexOf(JBOSS_VFSFILE) != -1);
+        return (loader.toString().contains(JBOSS_VFSZIP) || loader.toString().contains(JBOSS_VFSFILE));
     }
 
     /**
@@ -1316,7 +1316,7 @@ public class SDOHelperContext implements HelperContext {
 
         // may need to add a new entry
         if (null == alias) {
-            alias = new ConcurrentHashMap<String, String>();
+            alias = new ConcurrentHashMap<>();
             // use putIfAbsent to avoid concurrent entries in the map
             ConcurrentHashMap<String, String> existingMap = aliasMap.putIfAbsent(mapKey, alias);
             if (existingMap != null) {
@@ -1332,7 +1332,7 @@ public class SDOHelperContext implements HelperContext {
      */
     private Map<String, Object> getProperties() {
         if (properties == null) {
-            properties = new HashMap<String, Object>();
+            properties = new HashMap<>();
         }
         return properties;
     }

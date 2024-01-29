@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,7 +103,7 @@ public class DBWSBuilderModelProject extends Project {
             public Object getAttributeValueFromObject(Object object) throws DescriptorException {
                 DBWSBuilderModel model = (DBWSBuilderModel)object;
                 Vector<Association> associations =
-                    new Vector<Association>();
+                        new Vector<>();
                 for (Map.Entry<String, String> me : model.properties.entrySet()) {
                     associations.add(new Association(me.getKey(), me.getValue()));
                 }

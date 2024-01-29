@@ -326,12 +326,12 @@ public final class ReferenceResolver {
         final Iterator<Reference> mapIterator = luckyReferences.iterator();
         final Iterator<Reference> listIterator = unluckyReferences.iterator();
 
-        /**
+        /*
          * Speed up array which lowers time complexity by a factor of n.
          */
         boolean[] a = null;
 
-        /**
+        /*
          * Represents position of last Reference that did not fit into hash map.
          */
         Integer lastPosition;

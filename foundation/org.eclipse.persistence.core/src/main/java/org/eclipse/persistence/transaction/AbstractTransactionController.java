@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,22 +62,25 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     /** PERF: Cache the active uow in a thread local. */
     protected ThreadLocal<UnitOfWorkImpl> activeUnitOfWorkThreadLocal;
 
-    /** Table of external transaction object keys and sequencing listeners values. */
-    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0 */
+    /** Table of external transaction object keys and sequencing listeners values.
+     *  Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0
+     */
     protected ConcurrentMap<Object, AbstractSynchronizationListener> sequencingListeners;
 
-    /** Table of external transaction object keys and listeners that are currently in beforeCompletion. */
-    /** Request for a new sequencing callback may be triggered by beforeCompletion of existing listener - */
-    /** in this case avoid creating yet another listener for sequencing but rather use the listener */
-    /** that has initiated the request */
-    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0 */
+    /** Table of external transaction object keys and listeners that are currently in beforeCompletion.
+     * Request for a new sequencing callback may be triggered by beforeCompletion of existing listener -
+     * in this case avoid creating yet another listener for sequencing but rather use the listener
+     * that has initiated the request
+     * Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0
+     */
     protected ConcurrentMap<Object, AbstractSynchronizationListener> currentlyProcessedListeners;
 
-    /** Indicates how many sessions require sequencing callbacks: */
-    /** 0 - sequencing callbacks not used; */
-    /** 1 - the session is DatabaseSession or ServerSession and requires sequencing callbacks, */
-    /** or the session is a session broker with only one member requiring sequencing callbacks. */
-    /** more - the session is a session broker with several members requiring sequencing callbacks. */
+    /** Indicates how many sessions require sequencing callbacks:
+     * 0 - sequencing callbacks not used;
+     * 1 - the session is DatabaseSession or ServerSession and requires sequencing callbacks,
+     * or the session is a session broker with only one member requiring sequencing callbacks.
+     * more - the session is a session broker with several members requiring sequencing callbacks.
+     */
     protected int numSessionsRequiringSequencingCallback;
 
     /** Allow exception in before/after completion to be wrapped. */

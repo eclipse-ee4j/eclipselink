@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
     @Override
     public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){
         try {
-            if(namespaceURI == null || namespaceURI.length() == 0) {
+            if(namespaceURI == null || namespaceURI.isEmpty()) {
                 xmlStreamWriter.writeAttribute(localName, value);
             } else {
                 xmlStreamWriter.writeAttribute(xmlStreamWriter.getNamespaceContext().getPrefix(namespaceURI), namespaceURI, localName, value);
@@ -118,7 +118,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
     @Override
     public void attribute(String namespaceURI, String localName, String name, String value) {
         try {
-             if(namespaceURI == null || namespaceURI.length() == 0) {
+             if(namespaceURI == null || namespaceURI.isEmpty()) {
                  xmlStreamWriter.writeAttribute(localName, value);
              } else {
                 xmlStreamWriter.writeAttribute(xmlStreamWriter.getNamespaceContext().getPrefix(namespaceURI), namespaceURI, localName, value);
@@ -169,7 +169,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                 } else {
                     String defaultNamespace = namespaceContext.getNamespaceURI(Constants.EMPTY_STRING);
                     xmlStreamWriter.writeStartElement(Constants.EMPTY_STRING, xPathFragment.getLocalName(), Constants.EMPTY_STRING);
-                    if(defaultNamespace != null && defaultNamespace.length() > 0 ) {
+                    if(defaultNamespace != null && !defaultNamespace.isEmpty()) {
                         xmlStreamWriter.writeDefaultNamespace(Constants.EMPTY_STRING);
                     }
                 }

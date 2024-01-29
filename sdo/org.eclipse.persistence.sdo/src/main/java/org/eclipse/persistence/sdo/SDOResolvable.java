@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -176,7 +176,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
                 if(this.aHelperContext.getClass() == SDOHelperContext.class) {
                     identifier = ((SDOHelperContext)this.aHelperContext).getIdentifier();
                 }
-                if(identifier != null && !(identifier.equals(""))) {
+                if(identifier != null && !(identifier.isEmpty())) {
                     objectOutput.writeByte(SDO_HELPER_CONTEXT_ID_IDENTIFIER);
                     objectOutput.writeUTF(identifier);
                 } else {

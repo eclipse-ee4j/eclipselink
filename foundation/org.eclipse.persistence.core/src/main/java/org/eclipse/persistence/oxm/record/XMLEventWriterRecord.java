@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                  throw XMLMarshalException.marshalException(e);
              }
          } else {
-             if(namespaceURI == null || namespaceURI.length() == 0) {
+             if(namespaceURI == null || namespaceURI.isEmpty()) {
                  event = xmlEventFactory.createAttribute(localName, value);
              } else {
                  int index = name.indexOf(':');
@@ -148,7 +148,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                  }
                  xmlEventWriter.add(xmlEventFactory.createStartElement(Constants.EMPTY_STRING, Constants.EMPTY_STRING, xPathFragment.getLocalName(), attributesIterator, namespaceDeclarationsIterator));
                  String defaultNamespace = xmlEventWriter.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
-                 if(defaultNamespace != null && defaultNamespace.length() > 0 ) {
+                 if(defaultNamespace != null && !defaultNamespace.isEmpty()) {
                      xmlEventWriter.setDefaultNamespace(Constants.EMPTY_STRING);
                      xmlEventWriter.add(xmlEventFactory.createNamespace(Constants.EMPTY_STRING));
                  }

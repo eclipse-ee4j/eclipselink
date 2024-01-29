@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -254,44 +254,26 @@ public final class Util {
     public static String hexEscape(char c) {
         String outPutString;
         outPutString = Integer.toHexString(c);
-        switch (outPutString.length()) {
-        case 1:
-            outPutString = "_x000" + outPutString.toUpperCase(Locale.US) + "_";
-            break;
-        case 2:
-            outPutString = "_x00" + outPutString.toUpperCase(Locale.US) + "_";
-            break;
-        case 3:
-            outPutString = "_x0" + outPutString.toUpperCase(Locale.US) + "_";
-            break;
-        case 4:
-            outPutString = "_x" + outPutString.toUpperCase(Locale.US) + "_";
-            break;
-        }
+        outPutString = switch (outPutString.length()) {
+            case 1 -> "_x000" + outPutString.toUpperCase(Locale.US) + "_";
+            case 2 -> "_x00" + outPutString.toUpperCase(Locale.US) + "_";
+            case 3 -> "_x0" + outPutString.toUpperCase(Locale.US) + "_";
+            case 4 -> "_x" + outPutString.toUpperCase(Locale.US) + "_";
+            default -> outPutString;
+        };
         return outPutString;
     }
 
     public static String hexEscape(int c) {
         String outPutString;
         outPutString = Integer.toHexString(c);
-        switch (outPutString.length()) {
-        case 1:
-        case 5:
-            outPutString = "_x000" + outPutString.toUpperCase(Locale.US) + "_";
-            break;
-        case 2:
-        case 6:
-            outPutString = "_x00" + outPutString.toUpperCase(Locale.US) + "_";
-            break;
-        case 3:
-        case 7:
-            outPutString = "_x0" + outPutString.toUpperCase(Locale.US) + "_";
-            break;
-        case 4:
-        case 8:
-            outPutString = "_x" + outPutString.toUpperCase(Locale.US) + "_";
-            break;
-        }
+        outPutString = switch (outPutString.length()) {
+            case 1, 5 -> "_x000" + outPutString.toUpperCase(Locale.US) + "_";
+            case 2, 6 -> "_x00" + outPutString.toUpperCase(Locale.US) + "_";
+            case 3, 7 -> "_x0" + outPutString.toUpperCase(Locale.US) + "_";
+            case 4, 8 -> "_x" + outPutString.toUpperCase(Locale.US) + "_";
+            default -> outPutString;
+        };
         return outPutString;
     }
 
@@ -436,7 +418,7 @@ public final class Util {
 
     public static final Map<QName, Class<?>> SCHEMA_2_CLASS;
     static {
-      SCHEMA_2_CLASS = Collections.unmodifiableMap(new HashMap<QName, Class<?>>() {{
+      SCHEMA_2_CLASS = Collections.unmodifiableMap(new HashMap<>() {{
           put(ANY_SIMPLE_TYPE_QNAME, CoreClassConstants.OBJECT);
           put(BASE_64_BINARY_QNAME, APBYTE);
           put(BOOLEAN_QNAME, BOOLEAN);

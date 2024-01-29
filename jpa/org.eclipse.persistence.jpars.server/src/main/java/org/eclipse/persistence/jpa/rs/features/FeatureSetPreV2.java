@@ -48,23 +48,17 @@ public class FeatureSetPreV2 implements FeatureSet {
 
     @Override
     public boolean isSupported(Feature feature) {
-        switch (feature) {
-            case NO_PAGING:
-                return true;
-            case PAGING:
-            default:
-                return false;
-        }
+        return switch (feature) {
+            case NO_PAGING -> true;
+            default -> false;
+        };
     }
 
     @Override
     public FeatureResponseBuilder getResponseBuilder(Feature feature) {
-        switch (feature) {
-            case NO_PAGING:
-            case PAGING:
-            default:
-                return new FeatureResponseBuilderImpl();
-        }
+        return switch (feature) {
+            default -> new FeatureResponseBuilderImpl();
+        };
     }
 
     @Override

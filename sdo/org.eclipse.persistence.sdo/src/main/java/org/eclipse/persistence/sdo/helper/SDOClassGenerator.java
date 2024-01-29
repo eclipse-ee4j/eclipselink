@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,32 +84,37 @@ public class SDOClassGenerator {
         AbstractSessionLog.getLog().setLevel(AbstractSessionLog.FINER);
 
         for (int i = 0; i < argsLength; i++) {
-            if (args[i].equals("-help")) {
-                generator.printUsage(null);
-                System.exit(0);
-            } else if (args[i].equals("-sourceFile")) {
-                if (i == (argsLength - 1)) {
-                    generator.printUsage("sdo_classgenerator_usage_missing_sourcefile_value");
+            switch (args[i]) {
+                case "-help" -> {
+                    generator.printUsage(null);
                     System.exit(0);
                 }
-                sourceFile = args[++i];
-            } else if (args[i].equals("-targetDirectory")) {
-                if (i == (argsLength - 1)) {
-                    generator.printUsage("sdo_classgenerator_usage_missing_targetdir");
-                    System.exit(0);
+                case "-sourceFile" -> {
+                    if (i == (argsLength - 1)) {
+                        generator.printUsage("sdo_classgenerator_usage_missing_sourcefile_value");
+                        System.exit(0);
+                    }
+                    sourceFile = args[++i];
                 }
-                sourceDir = args[++i];
-            } else if (args[i].equals("-logLevel")) {
-                // log level is optional and will default to INFO
-                if (i != (argsLength - 1)) {
-                    AbstractSessionLog.getLog().setLevel(Integer.parseInt(args[++i]));
+                case "-targetDirectory" -> {
+                    if (i == (argsLength - 1)) {
+                        generator.printUsage("sdo_classgenerator_usage_missing_targetdir");
+                        System.exit(0);
+                    }
+                    sourceDir = args[++i];
                 }
-            } else if (args[i].equals("-noInterfaces")) {
-                // This option introduced in EclipseLink 2.0
-                generator.setInterfaceGenerator(false);
-            } else if (args[i].equals("-noImpls")) {
-                // This option introduced in EclipseLink 2.0
-                generator.setImplGenerator(false);
+                case "-logLevel" -> {
+                    // log level is optional and will default to INFO
+                    if (i != (argsLength - 1)) {
+                        AbstractSessionLog.getLog().setLevel(Integer.parseInt(args[++i]));
+                    }
+                }
+                case "-noInterfaces" ->
+                    // This option introduced in EclipseLink 2.0
+                        generator.setInterfaceGenerator(false);
+                case "-noImpls" ->
+                    // This option introduced in EclipseLink 2.0
+                        generator.setImplGenerator(false);
             }
         }
         if (null == sourceFile) {
@@ -289,7 +294,7 @@ public class SDOClassGenerator {
 
         java.util.List documentation = (java.util.List)sdoType.get(SDOConstants.DOCUMENTATION_PROPERTY);
 
-        if ((documentation != null) && (documentation.size() > 0)) {
+        if ((documentation != null) && (!documentation.isEmpty())) {
             currentClassBuffer.append(indent);
             currentClassBuffer.append(buildJavaDoc(documentation));
         }
@@ -380,7 +385,7 @@ public class SDOClassGenerator {
             int lineCount = 0;
             while (stok.hasMoreTokens()) {
                 String nextLine = stok.nextToken().trim();
-                if (nextLine.length() > 0) {
+                if (!nextLine.isEmpty()) {
                     if (lineCount > 0 || (lineCount == 0 && !getterSetter)) {
                         javaDocBuffer.append(indent).append(SDOConstants.JAVADOC_LINE);
                     }
@@ -487,7 +492,7 @@ public class SDOClassGenerator {
         String methodName = SDOUtil.getMethodName(property.getName(), returnType);
 
         if (!(property.getType().isChangeSummaryType() && methodName.equals("getChangeSummary"))) {
-            if ((documentation != null) && (documentation.size() > 0)) {
+            if ((documentation != null) && (!documentation.isEmpty())) {
                 classBuffer.getMethodBuffer().append(buildGetterJavaDoc(documentation, property.getName()));
             }
             classBuffer.getMethodBuffer().append(indent);
@@ -537,7 +542,7 @@ public class SDOClassGenerator {
             return;
         }
 
-        if ((documentation != null) && (documentation.size() > 0)) {
+        if ((documentation != null) && (!documentation.isEmpty())) {
             classBuffer.getMethodBuffer().append(buildSetterJavaDoc(documentation, property.getName()));
         }
 
@@ -576,7 +581,7 @@ public class SDOClassGenerator {
     }
 
     private void pushIndent() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < INDENT_TAB; i++) {
             buf.append(" ");
         }
@@ -584,7 +589,7 @@ public class SDOClassGenerator {
     }
 
     private void popIndent() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int size = indent.length() - INDENT_TAB;
         for (int i = 0; i < size; i++) {
             buf.append(" ");

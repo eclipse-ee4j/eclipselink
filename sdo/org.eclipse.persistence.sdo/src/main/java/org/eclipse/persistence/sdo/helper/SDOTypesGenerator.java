@@ -123,7 +123,7 @@ public class SDOTypesGenerator {
 
     public java.util.List<Type> define(Schema schema, boolean includeAllTypes, boolean processImports) {
         // Initialize the List of Types before we process the schema
-        java.util.List<Type> returnList = new ArrayList<Type>();
+        java.util.List<Type> returnList = new ArrayList<>();
 
         setReturnAllTypes(includeAllTypes);
         setProcessImports(processImports);
@@ -196,7 +196,7 @@ public class SDOTypesGenerator {
                     SDOType baseType = (SDOType) nextSDOType.getBaseTypes().get(0);
                     while (baseType != null) {
                         descriptorsToAdd.add(baseType);
-                        if (baseType.getBaseTypes().size() == 0) {
+                        if (baseType.getBaseTypes().isEmpty()) {
                             // baseType should now be root of inheritance
                             baseType.setupInheritance(null);
                             baseType = null;
@@ -227,7 +227,7 @@ public class SDOTypesGenerator {
             Iterator<java.util.List<GlobalRef>> globalRefsIter = getGlobalRefs().values().iterator();
             while (globalRefsIter.hasNext()) {
                 java.util.List<GlobalRef> nextList = globalRefsIter.next();
-                if (nextList.size() > 0) {
+                if (!nextList.isEmpty()) {
                     GlobalRef ref = nextList.get(0);
                     throw SDOException.referencedPropertyNotFound(((SDOProperty) ref.getProperty()).getUri(), ref.getProperty().getName());
                 }
@@ -253,7 +253,7 @@ public class SDOTypesGenerator {
     }
 
     private void processImports(java.util.List<Import> imports) {
-        if ((imports == null) || (imports.size() == 0) || !isProcessImports()) {
+        if ((imports == null) || (imports.isEmpty()) || !isProcessImports()) {
             return;
         }
         Iterator<Import> iter = imports.iterator();
@@ -268,7 +268,7 @@ public class SDOTypesGenerator {
     }
 
     private void processIncludes(java.util.List<Include> includes) {
-        if ((includes == null) || (includes.size() == 0) || !isProcessImports()) {
+        if ((includes == null) || (includes.isEmpty()) || !isProcessImports()) {
             return;
         }
         Iterator<Include> iter = includes.iterator();
@@ -481,7 +481,7 @@ public class SDOTypesGenerator {
         Annotation annotation = complexType.getAnnotation();
         if (annotation != null) {
             java.util.List documentation = annotation.getDocumentation();
-            if ((documentation != null) && (documentation.size() > 0)) {
+            if ((documentation != null) && (!documentation.isEmpty())) {
                 currentType.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, documentation);
             }
         }
@@ -1459,7 +1459,7 @@ public class SDOTypesGenerator {
 
         if (annotation != null) {
             java.util.List documentation = annotation.getDocumentation();
-            if ((documentation != null) && (documentation.size() > 0)) {
+            if ((documentation != null) && (!documentation.isEmpty())) {
                 p.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, documentation);
             }
         }

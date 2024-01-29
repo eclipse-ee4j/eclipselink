@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -499,7 +499,7 @@ public class PackageRenamer {
         } catch (IOException exception) {
             throw new PackageRenamerException("Error while reading the name of the log file: " + exception.getMessage());
         }
-        if ((aLine != null) && (aLine.length() == 0)) {
+        if ((aLine != null) && (aLine.isEmpty())) {
             return buildAndCheckLogWriter(SYSTEM_OUT);
         } else {
             return buildAndCheckLogWriter(aLine);
@@ -528,7 +528,7 @@ public class PackageRenamer {
         // stringContainAllFile = readAllStringsFromFile(sourceFileName);
         FileInputStream fis = null;
         try {
-            fis = new FileInputStream(new java.io.File(sourceFileName));
+            fis = new FileInputStream(sourceFileName);
             byte[] buf = new byte[BUFSIZ];
             StringBuilder strBuf = new StringBuilder((int)new java.io.File(sourceFileName).length());
             int i = 0;
@@ -646,7 +646,7 @@ public class PackageRenamer {
         for (Enumeration<Object> enumtr = properties.keys(); enumtr.hasMoreElements();) {
             String key = (String)enumtr.nextElement();
 
-            if (aSourceFileNameWithoutRoot.indexOf(key) != -1) {
+            if (aSourceFileNameWithoutRoot.contains(key)) {
                 // replacing the old package name.
                 aSourceFileNameWithoutRoot = replace(aSourceFileNameWithoutRoot, key, (String)properties.get(key));
             }

@@ -932,7 +932,7 @@ public class SchemaModelGenerator {
         // may need to add a global element
         Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
         String targetNS = workingSchema.getTargetNamespace();
-        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
+        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.isEmpty())) {
             if (s.getTopLevelElements().get(frag.getLocalName()) == null) {
                 Element globalElement = new Element();
                 globalElement.setName(frag.getLocalName());
@@ -959,7 +959,7 @@ public class SchemaModelGenerator {
         Element globalElement = null;
         Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
         String targetNS = workingSchema.getTargetNamespace();
-        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
+        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.isEmpty())) {
             globalElement = s.getTopLevelElements().get(frag.getLocalName());
             if (globalElement == null) {
                 globalElement = new Element();
@@ -1034,7 +1034,7 @@ public class SchemaModelGenerator {
         if (fragUri != null) {
             Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
             String targetNS = workingSchema.getTargetNamespace();
-            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
+            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.isEmpty())) {
                 // must generate a global element are create a reference to it
                 // if the global element exists, use it; otherwise create a new one
                 globalElement = s.getTopLevelElements().get(frag.getLocalName());
@@ -1151,15 +1151,12 @@ public class SchemaModelGenerator {
         String uri = schemaType.getNamespaceURI();
         String prefix = workingSchema.getNamespaceResolver().resolveNamespaceURI(uri);
         if (prefix == null && !areNamespacesEqual(uri, workingSchema.getDefaultNamespace())) {
-            if (uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_PREFIX);
-            } else if (uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)) {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
-            } else if (uri.equals(Constants.REF_URL)) {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix(Constants.REF_PREFIX);
-            } else {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix();
-            }
+            prefix = switch (uri) {
+                case javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI -> workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_PREFIX);
+                case javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI -> workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
+                case Constants.REF_URL -> workingSchema.getNamespaceResolver().generatePrefix(Constants.REF_PREFIX);
+                default -> workingSchema.getNamespaceResolver().generatePrefix();
+            };
             workingSchema.getNamespaceResolver().put(prefix, uri);
         }
         if (prefix != null) {
@@ -1287,7 +1284,7 @@ public class SchemaModelGenerator {
             // may need to add a global element
             Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
             String targetNS = workingSchema.getTargetNamespace();
-            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
+            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.isEmpty())) {
                 if (s.getTopLevelElements().get(frag.getShortName()) == null) {
                     Element globalElement = new Element();
                     globalElement.setName(frag.getLocalName());

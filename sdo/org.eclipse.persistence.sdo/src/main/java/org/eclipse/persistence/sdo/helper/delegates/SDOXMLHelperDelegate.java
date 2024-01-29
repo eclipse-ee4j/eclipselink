@@ -100,8 +100,8 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         // This ClassLoader is internal to SDO so no inter servlet-ejb container context issues should arise
         loader = new SDOClassLoader(aClassLoader, aContext);
         // WeakHashMap needs to be synchronized to prevent endless loop under the heavy load
-        xmlMarshallerMap = Collections.synchronizedMap(new WeakHashMap<Thread, XMLMarshaller>());
-        xmlUnmarshallerMap = Collections.synchronizedMap(new WeakHashMap<Thread, XMLUnmarshaller>());
+        xmlMarshallerMap = Collections.synchronizedMap(new WeakHashMap<>());
+        xmlUnmarshallerMap = Collections.synchronizedMap(new WeakHashMap<>());
     }
 
     /**

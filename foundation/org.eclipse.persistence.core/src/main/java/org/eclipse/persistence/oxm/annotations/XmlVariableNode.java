@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Matt MacIvor - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.oxm.annotations;
 
-/**
- * <p><b>Purpose</b>: This annotation indicates that the value of a specified attribute on a
- * referenced class should be used as the tag name when marshalling/unmarshalling the object(s)
- * by EclipseLink.
- */
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -27,9 +21,13 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * <p><b>Purpose</b>: This annotation indicates that the value of a specified attribute on a
+ * referenced class should be used as the tag name when marshalling/unmarshalling the object(s)
+ * by EclipseLink.
+ */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
-
 public @interface XmlVariableNode {
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -555,7 +555,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 // If using 1-m joins, must select all rows.
                 if (shouldSetRowsForJoins) {
                     List rows = getQueryMechanism().selectAllRows();
-                    if (rows.size() > 0) {
+                    if (!rows.isEmpty()) {
                         row = (AbstractRecord)rows.get(0);
                     }
                     getJoinedAttributeManager().setDataResults(rows, session);

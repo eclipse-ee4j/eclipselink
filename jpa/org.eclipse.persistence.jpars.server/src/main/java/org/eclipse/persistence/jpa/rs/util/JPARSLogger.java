@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -183,9 +183,9 @@ public class JPARSLogger {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 context.marshall(object, mediaType, outputStream, true);
                 if (object instanceof PersistenceWeavedRest) {
-                    exiting(sessionLog, sourceClass, sourceMethod, new Object[] { object.getClass().getName(), outputStream.toString(StandardCharsets.UTF_8.name())});
+                    exiting(sessionLog, sourceClass, sourceMethod, new Object[] { object.getClass().getName(), outputStream.toString(StandardCharsets.UTF_8)});
                 } else {
-                    exiting(sessionLog, sourceClass, sourceMethod, new Object[] { outputStream.toString(StandardCharsets.UTF_8.name()) });
+                    exiting(sessionLog, sourceClass, sourceMethod, new Object[] { outputStream.toString(StandardCharsets.UTF_8) });
                 }
             } catch (Throwable throwable) {
                 exception(throwable.getMessage(), new Object[] {}, throwable);
@@ -364,7 +364,7 @@ public class JPARSLogger {
 
     private static SessionLogEntry newLogEntry(Session session) {
         SessionLogEntry entry = session instanceof AbstractSession
-                ? new SessionLogEntry((AbstractSession) session)
+                ? new SessionLogEntry(session)
                 : new SessionLogEntry(null);
         entry.setLevel(SessionLog.FINEST);
         entry.setNameSpace(SessionLog.JPARS);

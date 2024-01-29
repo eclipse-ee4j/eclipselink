@@ -1605,24 +1605,21 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * to the given mapping.
      */
     protected void processConvert(DatabaseMapping mapping, String converterName, MetadataClass referenceClass, boolean isForMapKey, boolean hasConverts) {
-        if (converterName.equals(Convert.SERIALIZED)) {
-            processSerialized(mapping, referenceClass, isForMapKey);
-        } else if (converterName.equals(Convert.CLASS_INSTANCE)){
-            new ClassInstanceMetadata().process(mapping, this, referenceClass, isForMapKey);
-        } else if (converterName.equals(Convert.XML)){
-            new XMLMetadata().process(mapping, this, referenceClass, isForMapKey);
-        } else if (converterName.equals(Convert.JSON)){
-            new JSONMetadata().process(mapping, this, referenceClass, isForMapKey);
-        } else if (converterName.equals(Convert.KRYO)){
-            new KryoMetadata().process(mapping, this, referenceClass, isForMapKey);
-        } else {
-            AbstractConverterMetadata converter = getProject().getConverter(converterName);
+        switch (converterName) {
+            case Convert.SERIALIZED -> processSerialized(mapping, referenceClass, isForMapKey);
+            case Convert.CLASS_INSTANCE -> new ClassInstanceMetadata().process(mapping, this, referenceClass, isForMapKey);
+            case Convert.XML -> new XMLMetadata().process(mapping, this, referenceClass, isForMapKey);
+            case Convert.JSON -> new JSONMetadata().process(mapping, this, referenceClass, isForMapKey);
+            case Convert.KRYO -> new KryoMetadata().process(mapping, this, referenceClass, isForMapKey);
+            default -> {
+                AbstractConverterMetadata converter = getProject().getConverter(converterName);
 
-            if (converter == null) {
-                throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
-            } else {
-                // Process the converter for this mapping.
-                converter.process(mapping, this, referenceClass, isForMapKey);
+                if (converter == null) {
+                    throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
+                } else {
+                    // Process the converter for this mapping.
+                    converter.process(mapping, this, referenceClass, isForMapKey);
+                }
             }
         }
 

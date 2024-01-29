@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -420,22 +420,31 @@ public class MetadataClass extends MetadataAnnotatedElement {
         if (isArray()) {
             return getName().replace('.', '/');
         } else if (isPrimitive()) {
-            if (getName().equals("int")) {
-                return "I";
-            } else if (getName().equals("long")) {
-                return "J";
-            } else if (getName().equals("short")) {
-                return "S";
-            } else if (getName().equals("boolean")) {
-                return "Z";
-            } else if (getName().equals("float")) {
-                return "F";
-            } else if (getName().equals("double")) {
-                return "D";
-            } else if (getName().equals("char")) {
-                return "C";
-            } else if (getName().equals("byte")) {
-                return "B";
+            switch (getName()) {
+                case "int" -> {
+                    return "I";
+                }
+                case "long" -> {
+                    return "J";
+                }
+                case "short" -> {
+                    return "S";
+                }
+                case "boolean" -> {
+                    return "Z";
+                }
+                case "float" -> {
+                    return "F";
+                }
+                case "double" -> {
+                    return "D";
+                }
+                case "char" -> {
+                    return "C";
+                }
+                case "byte" -> {
+                    return "B";
+                }
             }
         }
         return "L" + getName().replace('.', '/') + ";";

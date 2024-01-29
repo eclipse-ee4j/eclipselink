@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -744,7 +744,7 @@ public class MergeManager {
      * This is used to merge objects from the unit of work into the shared (or isolated) cache.
      */
     protected CacheKey mergeChangesOfWorkingCopyIntoOriginal(Object clone, ObjectChangeSet objectChangeSet, ClassDescriptor descriptor, AbstractSession targetSession, UnitOfWorkImpl unitOfWork) {
-        /** This is the merge used by the unit of work on commit.
+        /* This is the merge used by the unit of work on commit.
             *** This is a very complex method that handles several different use cases of the unit of work. ***
             These include:
             #1 - normal merge of new and changed objects with pre-acquired merge locks

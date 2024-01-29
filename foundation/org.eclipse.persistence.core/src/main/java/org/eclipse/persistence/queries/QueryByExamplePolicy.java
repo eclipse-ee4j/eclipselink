@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.HashMap;
@@ -238,9 +239,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
             } else {
                 throw QueryException.methodDoesNotExistOnExpression(operation, argTypes);
             }
-        } catch (IllegalAccessException iae) {
-            throw QueryException.methodDoesNotExistOnExpression(operation, argTypes);
-        } catch (java.lang.reflect.InvocationTargetException ite) {
+        } catch (IllegalAccessException | InvocationTargetException iae) {
             throw QueryException.methodDoesNotExistOnExpression(operation, argTypes);
         }
         return expression;

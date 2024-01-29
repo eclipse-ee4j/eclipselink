@@ -51,6 +51,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 
@@ -425,7 +426,7 @@ public class ReportQueryResult implements Serializable, Map {
         }
 
         private boolean compare(Object object1, Object object2) {
-            return (object1 == null ? object2 == null : object1.equals(object2));
+            return (Objects.equals(object1, object2));
         }
     }
 
@@ -506,7 +507,7 @@ public class ReportQueryResult implements Serializable, Map {
             if (result.getId() == null) {
                 return false;
             }
-            return getId().equals(getId());
+            return getId().equals(result.getId());
         }
 
         return true;

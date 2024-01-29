@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -398,7 +398,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
         if (this.table.getName() == null) {
             return false;
         }
-        return !(this.table.getName().equals(""));
+        return !(this.table.getName().isEmpty());
     }
 
     /**
@@ -549,7 +549,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      * added when the DatabaseField is written to SQL
      */
     public void setName(String name, String startDelimiter, String endDelimiter) {
-        if ((startDelimiter != null) && (endDelimiter != null) && !startDelimiter.equals("")&& !endDelimiter.equals("") && name.startsWith(startDelimiter) && name.endsWith(endDelimiter)){
+        if ((startDelimiter != null) && (endDelimiter != null) && !startDelimiter.isEmpty() && !endDelimiter.isEmpty() && name.startsWith(startDelimiter) && name.endsWith(endDelimiter)){
             this.name = name.substring(startDelimiter.length(), name.length() - endDelimiter.length());
             this.useDelimiters = true;
         } else {

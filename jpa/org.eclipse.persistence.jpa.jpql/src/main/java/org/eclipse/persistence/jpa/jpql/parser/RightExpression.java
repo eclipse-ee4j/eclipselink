@@ -46,10 +46,10 @@ public final class RightExpression extends AbstractDoubleEncapsulatedExpression 
 
     @Override
     public String parameterExpressionBNF(int index) {
-        switch (index) {
-            case 0:  return InternalRightStringExpressionBNF.ID;
-            default: return InternalRightPositionExpressionBNF.ID;
-        }
+        return switch (index) {
+            case 0 -> InternalRightStringExpressionBNF.ID;
+            default -> InternalRightPositionExpressionBNF.ID;
+        };
     }
 
     @Override

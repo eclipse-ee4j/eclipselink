@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -114,7 +114,7 @@ public class DeleteOperation extends Operation {
         Object toBeDeleted;
 
         // a query created via ORM metadata processing does not have parameters set, however, the operation should
-        if (query.getArguments().size() == 0) {
+        if (query.getArguments().isEmpty()) {
             int idx = 0;
             for (Parameter  param : getParameters()) {
                 // for custom SQL query (as configured via ORM metadata processing) we add args by position

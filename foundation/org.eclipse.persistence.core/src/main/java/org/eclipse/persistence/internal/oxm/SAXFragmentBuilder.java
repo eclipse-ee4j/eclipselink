@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,20 +46,20 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (!mixedContent) {
-            boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().length() == 0;
+            boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().isEmpty();
             if (bufferContainsOnlyWhitespace) {
                 stringBuffer.reset();
             }
         }
 
-        if ((stringBuffer.length() > 0) && !(nodes.size() == 1)) {
+        if ((!stringBuffer.isEmpty()) && !(nodes.size() == 1)) {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
             Node parent = this.nodes.get(nodes.size() - 1);
             parent.appendChild(text);
             processNamespacesForText(text.getTextContent(), (Element)parent);
             stringBuffer.reset();
         }
-        if (null != namespaceURI && namespaceURI.length() == 0) {
+        if (null != namespaceURI && namespaceURI.isEmpty()) {
             namespaceURI = null;
         }
         if(qName == null){
@@ -67,7 +67,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             if(namespaceURI != null){
                 if(owningRecord != null){
                     String prefix = owningRecord.resolveNamespaceUri(namespaceURI);
-                    if(prefix != null && prefix.length() > 0){
+                    if(prefix != null && !prefix.isEmpty()){
                         qName = prefix +Constants.COLON+ qName;
                     }
                 }
@@ -77,7 +77,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         if ((namespaceURI != null) && (qNameColonIndex == -1)) {
             //check for a prefix from the unmarshal record:
             String prefix = owningRecord.resolveNamespaceUri(namespaceURI);
-            if (prefix != null && prefix.length() >0){
+            if (prefix != null && !prefix.isEmpty()){
                 qName = prefix + Constants.COLON + qName;
                 qNameColonIndex = prefix.length();
             }
@@ -95,7 +95,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             if (element.getParentNode() != null) {
                 parentUri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(element.getParentNode(), prefix);
             }
-            if ((parentUri == null) || parentUri.length() == 0) {
+            if ((parentUri == null) || parentUri.isEmpty()) {
                 startPrefixMapping(prefix, namespaceURI);
             }
         }
@@ -116,7 +116,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             attributeQName = atts.getQName(x);
             attributeValue = atts.getValue(x);
             // Empty string will be treated as a null URI
-            if (null != attributeNamespaceURI && attributeNamespaceURI.length() == 0) {
+            if (null != attributeNamespaceURI && attributeNamespaceURI.isEmpty()) {
                 attributeNamespaceURI = null;
             }
             // Handle case where prefix/uri are not set on an xmlns prefixed attribute
@@ -134,7 +134,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         if (super.nodes.size() == 2) {
             Element endedElement = (Element)nodes.get(nodes.size() -1);
-            if (stringBuffer.length() > 0) {
+            if (!stringBuffer.isEmpty()) {
                 Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
                 endedElement.appendChild(text);
                 stringBuffer.reset();
@@ -160,7 +160,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
 
         if (super.nodes.size() == 2) {
             Element endedElement = (Element)nodes.get(nodes.size() -1);
-            if (stringBuffer.length() > 0) {
+            if (!stringBuffer.isEmpty()) {
                 Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
                 endedElement.appendChild(text);
                 stringBuffer.reset();

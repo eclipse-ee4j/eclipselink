@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -355,10 +355,10 @@ public class HistoryPolicy implements Cloneable, Serializable {
 
         // In this configuration descriptor tables, history tables, and start/end fields
         // are all in the same order.
-        if (!getHistoricalTables().isEmpty() && getHistoricalTables().get(0).getName().equals("")) {
+        if (!getHistoricalTables().isEmpty() && getHistoricalTables().get(0).getName().isEmpty()) {
             for (int i = 0; i < getHistoricalTables().size(); i++) {
                 DatabaseTable table = getHistoricalTables().get(i);
-                if (table.getName().equals("")) {
+                if (table.getName().isEmpty()) {
                     DatabaseTable mirrored = getDescriptor().getTables().get(i + offset);
                     table.setName(mirrored.getName());
                     table.setTableQualifier(mirrored.getTableQualifier());
@@ -478,7 +478,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * added with descriptor.addMirroringHistoryTableName().
      */
     public void addHistoryTableName(String sourceTableName, String historyTableName) {
-        if ((sourceTableName == null) || sourceTableName.equals("")) {
+        if ((sourceTableName == null) || sourceTableName.isEmpty()) {
             addHistoryTableName(historyTableName);
         }
         HistoricalDatabaseTable table = new HistoricalDatabaseTable(sourceTableName);
@@ -689,14 +689,14 @@ public class HistoryPolicy implements Cloneable, Serializable {
     protected void verifyTableQualifiers(DatasourcePlatform platform) {
         String tableQualifier = platform.getTableQualifier();
 
-        if (tableQualifier.length() == 0) {
+        if (tableQualifier.isEmpty()) {
             return;
         }
 
         for (DatabaseTable table : getHistoricalTables()) {
             // Build a scratch table to see if history table name has a qualifier.
             DatabaseTable scratchTable = new DatabaseTable(table.getQualifiedName());
-            if (scratchTable.getTableQualifier().length() == 0) {
+            if (scratchTable.getTableQualifier().isEmpty()) {
                 scratchTable.setTableQualifier(tableQualifier);
                 ((HistoricalDatabaseTable)table).setHistoricalName(scratchTable.getQualifiedNameDelimited(platform));
             }

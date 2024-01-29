@@ -28,6 +28,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -58,9 +59,9 @@ public abstract class CompoundExpression extends Expression {
             return false;
         }
         CompoundExpression expression = (CompoundExpression) object;
-        return ((this.operator == expression.operator) || ((this.operator != null) && this.operator.equals(expression.operator)))
-            && ((this.firstChild == expression.firstChild) || ((this.firstChild != null) && this.firstChild.equals(expression.firstChild)))
-            && ((this.secondChild == expression.secondChild) || ((this.secondChild != null) && this.secondChild.equals(expression.secondChild)));
+        return (Objects.equals(this.operator, expression.operator))
+            && (Objects.equals(this.firstChild, expression.firstChild))
+            && (Objects.equals(this.secondChild, expression.secondChild));
     }
 
     /**

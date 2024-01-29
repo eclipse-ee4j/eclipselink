@@ -693,10 +693,10 @@ public class SDODataObject implements DataObject, SequencedObject {
         Type sdotype = null;
         boolean isMany = false;
         boolean isContainment = false;
-        Class<? extends Object> valueClass = value.getClass();
+        Class<?> valueClass = value.getClass();
 
         if (value instanceof Collection) {
-            if (((Collection)value).size() > 0) {
+            if (!((Collection) value).isEmpty()) {
                 Object firstObject = ((Collection)value).iterator().next();
                 if (firstObject != null) {
                     valueClass = firstObject.getClass();
@@ -745,10 +745,10 @@ public class SDODataObject implements DataObject, SequencedObject {
         propertyDO.set("name", name);
         boolean isMany = false;
         boolean isContainment = false;
-        Class<? extends Object> valueClass = value.getClass();
+        Class<?> valueClass = value.getClass();
 
         if (value instanceof Collection) {
-            if (((Collection)value).size() > 0) {
+            if (!((Collection) value).isEmpty()) {
                 Object firstObject = ((Collection)value).iterator().next();
                 if (firstObject != null) {
                     valueClass = firstObject.getClass();
@@ -1069,7 +1069,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     public SDODataObject getDataObject(Property property) throws IllegalArgumentException, ClassCastException {
         if(property != null && property.isMany()) {
             List value = (List)get(property);
-            if(value.size() > 0) {
+            if(!value.isEmpty()) {
                 return (SDODataObject)value.get(0);
             } else {
                 return null;
@@ -2092,7 +2092,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                 int colonIndex = qualifiedName.indexOf(':');
                 if (colonIndex > -1) {
                     String prefix = qualifiedName.substring(0, colonIndex);
-                    if ((prefix != null) && !prefix.equals("")) {
+                    if ((prefix != null) && !prefix.isEmpty()) {
                         propertyUri = ((SDOType)((DataObject)next).getType()).getXmlDescriptor().getNonNullNamespaceResolver().resolveNamespacePrefix(prefix);
                     }
                     propertyName = qualifiedName.substring(colonIndex + 1, qualifiedName.length());
@@ -2935,7 +2935,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             return val;
         }
         List l = (ListWrapper) val;
-        if (l.size() == 0) {
+        if (l.isEmpty()) {
             return null;
         }
         return l.get(0);

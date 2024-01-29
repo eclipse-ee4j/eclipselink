@@ -135,7 +135,7 @@ public class MappedInteraction extends EISInteraction {
             // The input record can either be build from the interaction arguments,
             // or the modify row.
             if ((getInputRow() != null) && (!hasArguments())) {
-                if (getInputResultPath().length() == 0) {
+                if (getInputResultPath().isEmpty()) {
                     record = (MappedRecord)createRecordElement(getInputRecordName(), getInputRow(), accessor);
                 } else {
                     record = accessor.getRecordFactory().createMappedRecord(getInputRecordName());
@@ -207,7 +207,7 @@ public class MappedInteraction extends EISInteraction {
                 row.put(field, mappedRecord.get(getOutputArgumentNames().get(index)));
             }
             return row;
-        } else if (getOutputResultPath().length() > 0) {
+        } else if (!getOutputResultPath().isEmpty()) {
             // Extract the desired nested record from the output.
             mappedRecord = (MappedRecord)mappedRecord.get(getOutputResultPath());
         }

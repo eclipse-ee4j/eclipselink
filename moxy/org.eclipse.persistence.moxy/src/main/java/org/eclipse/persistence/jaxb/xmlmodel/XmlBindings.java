@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -543,7 +543,7 @@ public class XmlBindings {
          */
         public List<JavaType> getJavaType() {
             if (javaType == null) {
-                javaType = new ArrayList<JavaType>();
+                javaType = new ArrayList<>();
             }
             return this.javaType;
         }
@@ -603,7 +603,7 @@ public class XmlBindings {
          */
         public List<XmlEnum> getXmlEnum() {
             if (xmlEnum == null) {
-                xmlEnum = new ArrayList<XmlEnum>();
+                xmlEnum = new ArrayList<>();
             }
             return this.xmlEnum;
         }
@@ -663,7 +663,7 @@ public class XmlBindings {
          */
         public List<XmlRegistry> getXmlRegistry() {
             if (xmlRegistry == null) {
-                xmlRegistry = new ArrayList<XmlRegistry>();
+                xmlRegistry = new ArrayList<>();
             }
             return this.xmlRegistry;
         }

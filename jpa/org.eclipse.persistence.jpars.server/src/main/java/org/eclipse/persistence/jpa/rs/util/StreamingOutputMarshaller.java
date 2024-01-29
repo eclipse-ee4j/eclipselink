@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -197,7 +197,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
         MediaType mediaType = MediaType.TEXT_PLAIN_TYPE;
         if (headers != null) {
             List<MediaType> accepts = headers.getAcceptableMediaTypes();
-            if (accepts != null && accepts.size() > 0) {
+            if (accepts != null && !accepts.isEmpty()) {
                 try {
                     mediaType = StreamingOutputMarshaller.mediaType(accepts);
                 } catch (Exception ex) {

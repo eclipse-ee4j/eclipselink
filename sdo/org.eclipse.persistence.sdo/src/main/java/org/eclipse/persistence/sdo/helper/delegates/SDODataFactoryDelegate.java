@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ public class SDODataFactoryDelegate implements SDODataFactory {
         boolean loadersAreRelated = false;
 
         // check the hierarchy to see if the interface loader is a parent of the context loader
-        List<ClassLoader> visitedLoaders = new ArrayList<ClassLoader>();
+        List<ClassLoader> visitedLoaders = new ArrayList<>();
         while (contextLoader != null && !loadersAreRelated) {
             if(visitedLoaders.contains(contextLoader)) {
                 //if we encounter a loader we've already checked, break out

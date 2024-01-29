@@ -1208,7 +1208,7 @@ public class ConcurrencyUtil {
         writer.write(createStringWithSummaryOfDeferredLocksOnThread(lockManager, threadName));
         // (d) On the topic of the defferred locks we can also try to do better and explain why the algorithm
         // keeps returning false that the build object is not yet complete
-        if (waitingToReleaseDeferredLocksJustification != null && waitingToReleaseDeferredLocksJustification.length() > 0) {
+        if (waitingToReleaseDeferredLocksJustification != null && !waitingToReleaseDeferredLocksJustification.isEmpty()) {
             writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_resources_acquired_deferred_8", new Object[] {waitingToReleaseDeferredLocksJustification}));
         } else {
             writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_resources_acquired_deferred_9"));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -123,14 +123,14 @@ public class XPathFragment<XML_FIELD extends Field> {
         shortName = xpathString;
 
         // handle case:  company[name/text()="Oracle"]
-        if(xpathString.length() > 0){
+        if(!xpathString.isEmpty()){
             if ((xpath.indexOf('[') != -1) && (xpath.indexOf(']') == -1)) {
                 setShouldExecuteSelectNodes(true);
                 return;
             }
 
             // handle case:  ancestor::*/jaxb:class/@name
-            if (xpath.indexOf("::") != -1) {
+            if (xpath.contains("::")) {
                 setShouldExecuteSelectNodes(true);
                 return;
             }
@@ -192,7 +192,7 @@ public class XPathFragment<XML_FIELD extends Field> {
 
     public String getShortName() {
         if(shortName == null){
-            if(prefix !=null && prefix.length() >0){
+            if(prefix !=null && !prefix.isEmpty()){
                   shortName = prefix + Constants.COLON + localName;
               }else{
                   shortName = localName;
@@ -238,7 +238,7 @@ public class XPathFragment<XML_FIELD extends Field> {
     }
 
     public void setNamespaceURI(String namespaceURI) {
-        if (isSelfFragment || namespaceURI !=null && namespaceURI.length() == 0) {
+        if (isSelfFragment || namespaceURI !=null && namespaceURI.isEmpty()) {
             this.namespaceURI = null;
         } else {
             this.namespaceURI = namespaceURI;

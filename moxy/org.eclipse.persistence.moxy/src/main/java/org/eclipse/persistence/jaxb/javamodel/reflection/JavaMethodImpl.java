@@ -63,7 +63,7 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public Collection getActualTypeArguments() {
-        ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
+        ArrayList<JavaClass> argCollection = new ArrayList<>();
         Type[] params = jMethod.getGenericParameterTypes();
         for (Type type : params) {
             if (type instanceof ParameterizedType pType) {
@@ -89,7 +89,7 @@ public class JavaMethodImpl implements JavaMethod {
 
     @Override
     public Collection getAnnotations() {
-        ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
+        ArrayList<JavaAnnotation> annotationCollection = new ArrayList<>();
         if (!isMetadataComplete) {
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {

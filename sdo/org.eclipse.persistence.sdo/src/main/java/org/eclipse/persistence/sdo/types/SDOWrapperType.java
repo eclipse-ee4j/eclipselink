@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,7 +104,7 @@ public class SDOWrapperType extends SDOType implements Type {
 
         initializeDescriptor(xmlDescriptor, schemaTypes[0], aPropertyType, valueProperty);
 
-        descriptorsMap = new HashMap<QName, XMLDescriptor>();
+        descriptorsMap = new HashMap<>();
         descriptorsMap.put(schemaTypes[0], xmlDescriptor);
         setSchemaContext(xmlDescriptor, schemaTypes[0]);
 
@@ -122,9 +122,7 @@ public class SDOWrapperType extends SDOType implements Type {
                     } else {
                         d.setJavaClass(implClasses[i]);
                     }
-                } catch (ClassNotFoundException e) {
-                    throw SDOException.classNotFound(e, getURI(), getName());
-                } catch (SecurityException e) {
+                } catch (ClassNotFoundException | SecurityException e) {
                     throw SDOException.classNotFound(e, getURI(), getName());
                 }
 
@@ -215,12 +213,12 @@ public class SDOWrapperType extends SDOType implements Type {
 
     @Override
     public List getAliasNames() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
     public List getBaseTypes() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
@@ -265,7 +263,7 @@ public class SDOWrapperType extends SDOType implements Type {
 
     @Override
     public String toString() {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         str.append(getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()));
         str.append("{uri=");
         str.append(getURI());

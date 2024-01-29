@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -266,7 +266,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             platformName = DBPlatformHelper.getDBPlatform(vendorName, minorVersion, majorVersion, getSessionLog());
             getLogin().setPlatformClassName(platformName);
         } catch (EclipseLinkException classNotFound) {
-            if (platformName != null && platformName.indexOf("Oracle") != -1) {
+            if (platformName != null && platformName.contains("Oracle")) {
                 try {
                     // If we are running against Oracle, it is possible that we are
                     // running in an environment where the extension OracleXPlatform classes can 

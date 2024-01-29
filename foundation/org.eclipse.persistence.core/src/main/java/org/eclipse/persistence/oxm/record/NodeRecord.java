@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -291,7 +291,7 @@ public class NodeRecord extends MarshalRecord {
      */
     @Override
     public void characters(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             if (node instanceof CDATASection) {
                 ((CDATASection) node).setData(value);
             } else {
@@ -378,7 +378,7 @@ public class NodeRecord extends MarshalRecord {
                 for (Iterator<Map.Entry<String, String>> entries = prefixMappings.entrySet().iterator(); entries.hasNext();) {
                     Map.Entry<String, String> entry = entries.next();
                     String namespaceDeclarationPrefix = entry.getKey();
-                    if(null == namespaceDeclarationPrefix || 0 == namespaceDeclarationPrefix.length()) {
+                    if(null == namespaceDeclarationPrefix || namespaceDeclarationPrefix.isEmpty()) {
                         String namespaceDeclarationURI = entry.getValue();
                         if(null == namespaceDeclarationURI) {
                             element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE , Constants.EMPTY_STRING);

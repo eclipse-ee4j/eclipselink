@@ -251,7 +251,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      */
     public void setSourceForeignKeyFields(List<DatabaseField> fields) {
         sourceForeignKeyFields = fields;
-        if ((fields != null) && (fields.size() > 0)) {
+        if ((fields != null) && (!fields.isEmpty())) {
             this.setIsForeignKeyRelationship(true);
         }
     }
@@ -286,7 +286,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      */
     public void setSourceForeignKeysToTargetKeys(Map<DatabaseField, DatabaseField> sourceToTargetKeyFields) {
         this.sourceForeignKeysToTargetKeys = sourceToTargetKeyFields;
-        if ((sourceToTargetKeyFields != null) && (sourceToTargetKeyFields.keySet().size() > 0)) {
+        if ((sourceToTargetKeyFields != null) && (!sourceToTargetKeyFields.keySet().isEmpty())) {
             this.setIsForeignKeyRelationship(true);
         }
     }
@@ -1054,7 +1054,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     public Vector getForeignKeyRows(AbstractRecord row, AbstractSession session) {
         Vector<AbstractRecord> subRows = new Vector<>();
         if (getForeignKeyGroupingElement() == null) {
-            if (this.getSourceForeignKeyFields().size() > 0) {
+            if (!this.getSourceForeignKeyFields().isEmpty()) {
                 Object values = row.getValues(this.getSourceForeignKeyFields().get(0));
 
                 if (values != null) {
@@ -1091,7 +1091,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             return;
         }
 
-        if (((getSourceForeignKeysToTargetKeys()) == null) || (getSourceForeignKeysToTargetKeys().size() == 0)) {
+        if (((getSourceForeignKeysToTargetKeys()) == null) || (getSourceForeignKeysToTargetKeys().isEmpty())) {
             return;
         }
 
@@ -1104,7 +1104,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             // the reference objects have not been instantiated - use the value from the original row
             if (getForeignKeyGroupingElement() != null) {
                 row.put(this.getForeignKeyGroupingElement(), referenceRow.getValues(this.getForeignKeyGroupingElement()));
-            } else if (getSourceForeignKeyFields().size() > 0) {
+            } else if (!getSourceForeignKeyFields().isEmpty()) {
                 DatabaseField foreignKeyField = getSourceForeignKeyFields().get(0);
                 row.put(foreignKeyField, referenceRow.getValues(foreignKeyField));
             }
@@ -1145,7 +1145,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         if (isForeignKeyRelationship() && !isReadOnly()) {
             if (getForeignKeyGroupingElement() != null) {
                 row.put(getForeignKeyGroupingElement(), null);
-            } else if (this.getSourceForeignKeyFields().size() > 0) {
+            } else if (!this.getSourceForeignKeyFields().isEmpty()) {
                 row.put(getSourceForeignKeyFields().get(0), null);
             }
         } else {
@@ -1168,7 +1168,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             if (!getForeignKeyGroupingElement().getTable().equals(table)) {
                 return;
             }
-        } else if (this.getSourceForeignKeyFields().size() > 0) {
+        } else if (!this.getSourceForeignKeyFields().isEmpty()) {
             if (!getSourceForeignKeyFields().get(0).getTable().equals(table)) {
                 return;
             }
@@ -1186,7 +1186,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         if (isForeignKeyRelationship() && !isReadOnly()) {
             if (getForeignKeyGroupingElement() != null) {
                 row.put(getForeignKeyGroupingElement(), null);
-            } else if (this.getSourceForeignKeyFields().size() > 0) {
+            } else if (!this.getSourceForeignKeyFields().isEmpty()) {
                 row.put(getSourceForeignKeyFields().get(0), null);
             }
         } else {
@@ -1245,7 +1245,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         if (isForeignKeyRelationship() && !isReadOnly()) {
             if (getForeignKeyGroupingElement() != null) {
                 row.put(getForeignKeyGroupingElement(), null);
-            } else if (this.getSourceForeignKeyFields().size() > 0) {
+            } else if (!this.getSourceForeignKeyFields().isEmpty()) {
                 row.put(getSourceForeignKeyFields().get(0), null);
             }
         } else {

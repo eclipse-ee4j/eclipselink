@@ -218,7 +218,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     protected Providers providers;
 
     private String attributePrefix = null;
-    private Map<Set<Class<?>>, JAXBContext> contextCache = new HashMap<Set<Class<?>>, JAXBContext>();
+    private Map<Set<Class<?>>, JAXBContext> contextCache = new HashMap<>();
     private boolean formattedOutput = false;
     private boolean includeRoot = false;
     private boolean marshalEmptyCollections = true;
@@ -257,19 +257,17 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             }
             return asSet(clazz);
         } else if(genericType instanceof ParameterizedType) {
-            Set<Class<?>> result = new LinkedHashSet<Class<?>>();
+            Set<Class<?>> result = new LinkedHashSet<>();
             result.add((Class<?>)((ParameterizedType) genericType).getRawType());
             Type[] types = ((ParameterizedType) genericType).getActualTypeArguments();
-            if(types.length > 0){
-                for (Type upperType : types) {
-                    result.addAll(getDomainClasses(upperType));
-                }
+            for (Type upperType : types) {
+                result.addAll(getDomainClasses(upperType));
             }
             return result;
         } else if (genericType instanceof GenericArrayType genericArrayType) {
             return getDomainClasses(genericArrayType.getGenericComponentType());
         } else if(genericType instanceof WildcardType) {
-            Set<Class<?>> result = new LinkedHashSet<Class<?>>();
+            Set<Class<?>> result = new LinkedHashSet<>();
             Type[] upperTypes = ((WildcardType)genericType).getUpperBounds();
             if(upperTypes.length > 0){
                 for (Type upperType : upperTypes) {
@@ -580,7 +578,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             //special case for List<JAXBElement<String>>
             //this is quick fix, MOXyJsonProvider should be refactored as stated in issue #459541
             if (domainClasses.size() == 3) {
-                Class<?>[] domainArray = domainClasses.toArray(new Class<?>[domainClasses.size()]);
+                Class<?>[] domainArray = domainClasses.toArray(new Class<?>[0]);
                 if (JAXBElement.class.isAssignableFrom(domainArray[1]) && String.class == domainArray[2]) {
                     return true;
                 }

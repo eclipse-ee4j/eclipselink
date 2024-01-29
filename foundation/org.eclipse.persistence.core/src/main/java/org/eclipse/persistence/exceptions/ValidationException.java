@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1647,7 +1647,7 @@ public class ValidationException extends EclipseLinkException {
     * Action:  Check that the required amendment method exists on the class specified.
     */
     public static ValidationException sessionAmendmentExceptionOccured(Exception exception, String amendmentMethod, String amendmentClass, Class<?>[] parameters) {
-        StringBuffer buf = new StringBuffer(30);
+        StringBuilder buf = new StringBuilder(30);
         for (int i = 0; i < (parameters.length - 1); i++) {
             buf.append(parameters[i].getName());
             if (i != (parameters.length - 1)) {
@@ -1804,14 +1804,11 @@ public class ValidationException extends EclipseLinkException {
     }
 
     public static ValidationException illegalOperationForUnitOfWorkLifecycle(int lifecycle, String operation) {
-        switch (lifecycle) {
-        case UnitOfWorkImpl.CommitTransactionPending:
-            return unitOfWorkInTransactionCommitPending(operation);
-        case UnitOfWorkImpl.WriteChangesFailed:
-            return unitOfWorkAfterWriteChangesFailed(operation);
-        case UnitOfWorkImpl.Death:default:
-            return inActiveUnitOfWork(operation);
-        }
+        return switch (lifecycle) {
+            case UnitOfWorkImpl.CommitTransactionPending -> unitOfWorkInTransactionCommitPending(operation);
+            case UnitOfWorkImpl.WriteChangesFailed -> unitOfWorkAfterWriteChangesFailed(operation);
+            default -> inActiveUnitOfWork(operation);
+        };
     }
 
     public static ValidationException unitOfWorkInTransactionCommitPending(String operation) {

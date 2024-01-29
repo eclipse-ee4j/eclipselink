@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      *      String)
      */
     public DynamicClassWriter(String parentClassName) {
-        if (parentClassName == null || parentClassName.length() == 0) {
+        if (parentClassName == null || parentClassName.isEmpty()) {
             throw DynamicException.illegalParentClassName(parentClassName);
         }
         this.parentClassName = parentClassName;
@@ -158,7 +158,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         ClassWriter cw = new EclipseLinkASMClassWriter();
 
         // public class Foo extends DynamicEntityImpl {
-        cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), classNameAsSlashes, null, parentClassNameAsSlashes, interfaces != null ? interfaces.toArray(new String[interfaces.size()]) : null);
+        cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), classNameAsSlashes, null, parentClassNameAsSlashes, interfaces != null ? interfaces.toArray(new String[0]) : null);
 
         // public static DynamicPropertiesManager DPM = new
         // DynamicPropertiesManager();

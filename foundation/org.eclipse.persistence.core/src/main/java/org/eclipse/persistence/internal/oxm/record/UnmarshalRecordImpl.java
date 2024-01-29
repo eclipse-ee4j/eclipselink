@@ -861,7 +861,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 if ((null == xPathNode.getXPathFragment()) && (parentNodeValue != null)) {
                     XPathFragment parentFragment = new XPathFragment();
                     parentFragment.setNamespaceAware(isNamespaceAware());
-                    if(namespaceURI != null && namespaceURI.length() == 0){
+                    if(namespaceURI != null && namespaceURI.isEmpty()){
                         parentFragment.setLocalName(qName);
                         parentFragment.setNamespaceURI(null);
                     } else {
@@ -922,7 +922,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
                         // Some parsers don't set the URI/local name for namespace
                         // attributes
-                        if ((attLocalName == null) || (attLocalName.length() == 0)) {
+                        if ((attLocalName == null) || (attLocalName.isEmpty())) {
                             String qname = atts.getQName(i);
                             if (qname != null) {
                                 int qnameLength = qname.length();
@@ -999,7 +999,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     }
 
     private void updateXPathFragment(String qName, String localName, String namespaceURI) {
-        if (namespaceURI != null && namespaceURI.length() == 0) {
+        if (namespaceURI != null && namespaceURI.isEmpty()) {
             xPathFragment.setLocalName(qName);
             xPathFragment.setNamespaceURI(null);
         } else {
@@ -1021,7 +1021,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 messageBuilder.append(localName);
                 messageBuilder.append("\"). Expected elements are ");
                 List<XPathNode> nonAttributeChildren = xPathNode.getNonAttributeChildren();
-                if(nonAttributeChildren == null || nonAttributeChildren.size() == 0) {
+                if(nonAttributeChildren == null || nonAttributeChildren.isEmpty()) {
                     messageBuilder.append("(none)");
                 } else {
                     for(int x=0, size=nonAttributeChildren.size(); x<size; x++) {
@@ -1058,9 +1058,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 unmappedContentHandler = (UnmappedContentHandler)privilegedNewInstanceFromClass.run();
             } catch (ClassCastException e) {
                 throw XMLMarshalException.unmappedContentHandlerDoesntImplement(e, unmappedContentHandlerClass.getName());
-            } catch (IllegalAccessException e) {
-                throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
-            } catch (InstantiationException e) {
+            } catch (IllegalAccessException | InstantiationException e) {
                 throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
             }
         }
@@ -1115,7 +1113,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             } else {
                 XPathNode textNode = xPathNode.getTextNode();
 
-                if (null != textNode && getStringBuffer().length() == 0) {
+                if (null != textNode && getStringBuffer().isEmpty()) {
                     NodeValue textNodeUnmarshalNodeValue = textNode.getUnmarshalNodeValue();
                     if(textNode.isWhitespaceAware()){
                         if (textNodeUnmarshalNodeValue.isMappingNodeValue()) {
@@ -1250,7 +1248,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             if (null != textNode) {
                 if(textNode.getUnmarshalNodeValue().isMixedContentNodeValue()) {
                     String tmpString = new String(ch, start, length);
-                    if (!textNode.isWhitespaceAware() && tmpString.trim().length() == 0) {
+                    if (!textNode.isWhitespaceAware() && tmpString.trim().isEmpty()) {
                         return;
                     }
                 }

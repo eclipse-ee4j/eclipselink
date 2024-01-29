@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     private DynamicClassLoader dynamicClassLoader;
 
-    private static final Map<String, JPrimitiveType> jPrimitiveTypes = new HashMap<String, JPrimitiveType>();
+    private static final Map<String, JPrimitiveType> jPrimitiveTypes = new HashMap<>();
     static {
         JCodeModel tempCodeModel = new JCodeModel();
         jPrimitiveTypes.put("java.lang.Boolean", tempCodeModel.BOOLEAN);

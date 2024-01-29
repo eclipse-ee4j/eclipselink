@@ -169,7 +169,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      */
     @Override
     public boolean hasTables() {
-        return dbTables.size() != 0;
+        return !dbTables.isEmpty();
     }
 
     @Override
@@ -223,7 +223,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             QueryHandler qh = null;
             // before assigning queryHandler, check for named query in OR project
             List<DatabaseQuery> queries = dbwsBuilder.getOrProject().getQueries();
-            if (queries.size() > 0) {
+            if (!queries.isEmpty()) {
                 for (DatabaseQuery q : queries) {
                     if (q.getName().equals(qo.getName())) {
                         qh = new NamedQueryHandler();
@@ -246,7 +246,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
             Result result = null;
 
-            /**
+            /*
              * For multiple OUT args as well as a stored function with OUT args, we want
              * the result to be a collection and the type to be "xsd:any".  We will
              * force SimpleXMLFormat for now as well.
@@ -317,7 +317,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         if (arg.getEnclosedType().isPLSQLType()) {
                             String packageName = ((PLSQLType) arg.getEnclosedType()).getParentType().getPackageName();
                             // may need to prepend package name
-                            String typeString = (packageName != null && packageName.length() > 0) ? packageName + UNDERSCORE + arg.getTypeName() : arg.getTypeName();
+                            String typeString = (packageName != null && !packageName.isEmpty()) ? packageName + UNDERSCORE + arg.getTypeName() : arg.getTypeName();
                             // may need to strip off %
                             typeString = typeString.contains(PERCENT) ? typeString.replace(PERCENT, UNDERSCORE) : typeString;
                             xmlType = buildCustomQName(nct.generateSchemaAlias(typeString), dbwsBuilder);
@@ -325,16 +325,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             // handle advanced JDBC types
                             xmlType = buildCustomQName(nct.generateSchemaAlias(arg.getTypeName()), dbwsBuilder);
                         } else {
-                            switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
-                                case STRUCT:
-                                case ARRAY:
+                            xmlType = switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
+                                case STRUCT, ARRAY -> {
                                     String typeString = nct.generateSchemaAlias(arg.getTypeName());
-                                    xmlType = buildCustomQName(typeString, dbwsBuilder);
-                                    break;
-                                default :
-                                    xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
-                                    break;
-                            }
+                                    yield buildCustomQName(typeString, dbwsBuilder);
+                                }
+                                default -> getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
+                            };
                         }
                     }
                     if (direction == null || direction == IN) {
@@ -466,7 +463,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 case OTHER:
                     String returnTypeName;
                     // if user overrides returnType, assume they're right
-                    if (returnType != null && returnType.length() > 0) {
+                    if (returnType != null && !returnType.isEmpty()) {
                         returnTypeName = returnType;
                     } else {
                         returnType = rargDataType.getTypeName();
@@ -476,7 +473,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             packageName = ((PLSQLType) rargDataType).getParentType().getPackageName();
                         }
                         // may need to prepend a package name
-                        returnTypeName = (packageName != null && packageName.length() > 0) ? packageName + UNDERSCORE + returnType : returnType;
+                        returnTypeName = (packageName != null && !packageName.isEmpty()) ? packageName + UNDERSCORE + returnType : returnType;
                         // may need to strip off %
                         returnTypeName = returnTypeName.contains(PERCENT) ? returnTypeName.replace(PERCENT, UNDERSCORE) : returnTypeName;
                         returnTypeName = nct.generateSchemaAlias(returnTypeName);
@@ -486,7 +483,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 case STRUCT:
                 case ARRAY:
                     // if user overrides returnType, assume they're right
-                    if (returnType == null || returnType.length() == 0) {
+                    if (returnType == null || returnType.isEmpty()) {
                         returnType = rargDataType.getTypeName().toLowerCase().concat(TYPE_STR);
                     }
                     result.setType(buildCustomQName(returnType, dbwsBuilder));
@@ -527,7 +524,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         StringBuilder sb = new StringBuilder();
         String modelName = opModel.getName();
 
-        if (modelName != null && modelName.length() > 0) {
+        if (modelName != null && !modelName.isEmpty()) {
             sb.append(modelName);
             // handle pattern matching
             if (opModel.getProcedurePattern().contains(Util.PERCENT)) {
@@ -544,11 +541,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 sb.append(storedProcedure.getOverload());
                 sb.append(UNDERSCORE);
             }
-            if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
+            if (storedProcedure.getCatalogName() != null && !storedProcedure.getCatalogName().isEmpty()) {
                 sb.append(storedProcedure.getCatalogName());
                 sb.append(UNDERSCORE);
             }
-            if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
+            if (storedProcedure.getSchema() != null && !storedProcedure.getSchema().isEmpty()) {
                 sb.append(storedProcedure.getSchema());
                 sb.append(UNDERSCORE);
             }
@@ -567,13 +564,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected String getQualifiedProcedureName(ProcedureOperationModel procedureOperationModel, ProcedureType storedProcedure) {
         StringBuilder sb = new StringBuilder();
         if (procedureOperationModel.getSchemaPattern() != null &&
-            procedureOperationModel.getSchemaPattern().length() > 0 &&
+                !procedureOperationModel.getSchemaPattern().isEmpty() &&
             storedProcedure.getSchema() != null &&
-            storedProcedure.getSchema().length() > 0) {
+                !storedProcedure.getSchema().isEmpty()) {
             sb.append(storedProcedure.getSchema());
             sb.append(DOT);
         }
-        if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
+        if (storedProcedure.getCatalogName() != null && !storedProcedure.getCatalogName().isEmpty()) {
             sb.append(storedProcedure.getCatalogName());
             sb.append(DOT);
         }
@@ -634,7 +631,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             if (schemaPattern == null) {
                 schemaPattern = dbwsBuilder.getUsername().toUpperCase();
             }
-            if (catalogPattern == null || catalogPattern.length() == 0 || TOPLEVEL.equals(catalogPattern)) {
+            if (catalogPattern == null || catalogPattern.isEmpty() || TOPLEVEL.equals(catalogPattern)) {
                 topLevelSchemaPatterns.add(schemaPattern);
                 topLevelProcedureNamePatterns.add(procedureNamePatterns.get(i));
             } else {
@@ -646,10 +643,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 packageNames.add(catalogPattern);
             }
         }
-        if (topLevelProcedureNamePatterns.size() > 0) {
+        if (!topLevelProcedureNamePatterns.isEmpty()) {
             try {
                 List<ProcedureType> topLevelProcedures = dtBuilder.buildProcedures(dbwsBuilder.getConnection(), topLevelSchemaPatterns, topLevelProcedureNamePatterns);
-                if (topLevelProcedures != null && topLevelProcedures.size() > 0) {
+                if (topLevelProcedures != null && !topLevelProcedures.isEmpty()) {
                     allProcsAndFuncs.addAll(topLevelProcedures);
                 }
             } catch (ParseException e) {
@@ -657,14 +654,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
             try {
                 List<FunctionType> topLevelFunctions = dtBuilder.buildFunctions(dbwsBuilder.getConnection(), topLevelSchemaPatterns, topLevelProcedureNamePatterns);
-                if (topLevelFunctions != null && topLevelFunctions.size() > 0) {
+                if (topLevelFunctions != null && !topLevelFunctions.isEmpty()) {
                     allProcsAndFuncs.addAll(topLevelFunctions);
                 }
             } catch (ParseException e) {
                 dbwsBuilder.logMessage(Level.WARNING, e.getMessage());
             }
         }
-        if (packagePatterns.size() > 0) {
+        if (!packagePatterns.isEmpty()) {
             try {
                 //unravel map
                 List<String> schemaPats = new ArrayList<>();
@@ -1331,7 +1328,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
 
         String cat = procType.getCatalogName();
-        String catalogPrefix = (cat == null || cat.length() == 0) ? EMPTY_STRING : cat + DOT;
+        String catalogPrefix = (cat == null || cat.isEmpty()) ? EMPTY_STRING : cat + DOT;
         call.setProcedureName(catalogPrefix + procType.getProcedureName());
         String returnType = opModel.getReturnType();
         boolean hasResponse = returnType != null;
@@ -1846,7 +1843,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected String getStructureNameForField(FieldType fType, String packageName) {
         DatabaseType type = fType.getEnclosedType();
         String structureName = type.getTypeName();
-        if (packageName != null && packageName.length() > 0 && !packageName.equals(TOPLEVEL)) {
+        if (packageName != null && !packageName.isEmpty() && !packageName.equals(TOPLEVEL)) {
             structureName = packageName + UNDERSCORE + structureName;
         }
         return structureName;
@@ -1899,11 +1896,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * @return the Oracle specific DatabaseType if such exists
      */
     private org.eclipse.persistence.internal.helper.DatabaseType translateToOracleType(org.eclipse.persistence.internal.helper.DatabaseType databaseType) {
-        switch (databaseType.getTypeName()) {
-            case "NVARCHAR":
-                return JDBCTypes.NVARCHAR2_TYPE;
-            default:
-                return databaseType;
-        }
+        return switch (databaseType.getTypeName()) {
+            case "NVARCHAR" -> JDBCTypes.NVARCHAR2_TYPE;
+            default -> databaseType;
+        };
     }
 }

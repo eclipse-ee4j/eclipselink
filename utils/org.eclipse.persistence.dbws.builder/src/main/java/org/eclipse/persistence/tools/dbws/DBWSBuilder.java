@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
 
     public static final Map<String,DBWSPackager> PACKAGERS;
     static {
-        Map<String,DBWSPackager> packagersMap = new HashMap<String,DBWSPackager>();
+        Map<String,DBWSPackager> packagersMap = new HashMap<>();
         ServiceLoader<DBWSPackager> packagers = ServiceLoader.load(DBWSPackager.class);
         for (DBWSPackager packager : packagers) {
             packagersMap.put(packager.getPackagerLabel(), packager);
@@ -130,9 +130,9 @@ public class DBWSBuilder extends DBWSBuilderModel {
     protected XRServiceModel xrServiceModel = new DBWSModel();
     protected DBWSBuilderHelper builderHelper = null;
     protected NamingConventionTransformer topTransformer;
-    protected Set<String> typeDDL = new HashSet<String>();
-    protected Set<String> typeDropDDL = new HashSet<String>();
-    public List<String> requireCRUDOperations = new ArrayList<String>();
+    protected Set<String> typeDDL = new HashSet<>();
+    protected Set<String> typeDropDDL = new HashSet<>();
+    public List<String> requireCRUDOperations = new ArrayList<>();
 
     public DBWSBuilder() {
         super();
@@ -192,7 +192,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
                     DBWSBuilderModel model = (DBWSBuilderModel)unmarshaller.unmarshal(builderFile);
                     properties = model.properties;
                     operations = model.operations;
-                    if (operations.size() == 0) {
+                    if (operations.isEmpty()) {
                         logMessage(SEVERE, "No operations specified");
                         return;
                     }
@@ -385,7 +385,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
         // misc setup
         xrServiceModel.setName(getProjectName());
         String sessionsFileName = getSessionsFileName();
-        if (sessionsFileName != null && sessionsFileName.length() > 0) {
+        if (sessionsFileName != null && !sessionsFileName.isEmpty()) {
             xrServiceModel.setSessionsFile(sessionsFileName);
         }
         //has someone manually set a custom NamingConventionTransformer?
@@ -394,7 +394,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
             ServiceLoader<NamingConventionTransformer> transformers = ServiceLoader.load(NamingConventionTransformer.class);
             Iterator<NamingConventionTransformer> transformerIter = transformers.iterator();
             topTransformer = transformerIter.next();
-            LinkedList<NamingConventionTransformer> transformerList = new LinkedList<NamingConventionTransformer>();
+            LinkedList<NamingConventionTransformer> transformerList = new LinkedList<>();
             // check for user-provided transformer in front of default transformers
             if (!((DefaultNamingConventionTransformer)topTransformer).isDefaultTransformer()) {
                 // ditch all default transformers, except for the last one - SQLX2003Transformer
@@ -470,11 +470,11 @@ public class DBWSBuilder extends DBWSBuilderModel {
         }
         if (!useProjectXML) {
             // check for any named queries - SimpleXMLFormatProject's sometimes need them
-            if (orProject.getQueries().size() > 0) {
+            if (!orProject.getQueries().isEmpty()) {
                 useProjectXML = true;
             }
             // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
-            else if (orProject.getDescriptors().size() > 0) {
+            else if (!orProject.getDescriptors().isEmpty()) {
                 Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
                 for (ClassDescriptor desc : descriptors) {
                     if (desc.isObjectRelationalDataTypeDescriptor()) {
@@ -505,11 +505,11 @@ public class DBWSBuilder extends DBWSBuilderModel {
         }
         if (!useProjectXML) {
             // check for any named queries - SimpleXMLFormatProject's sometimes need them
-            if (orProject.getQueries().size() > 0) {
+            if (!orProject.getQueries().isEmpty()) {
                 useProjectXML = true;
             }
             // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
-            else if (orProject.getDescriptors().size() > 0) {
+            else if (!orProject.getDescriptors().isEmpty()) {
                 Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
                 for (ClassDescriptor desc : descriptors) {
                     if (desc.isObjectRelationalDataTypeDescriptor()) {
@@ -548,7 +548,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
             // check nested operations
             if (op.isTableOperation()) {
                 TableOperationModel top = (TableOperationModel)op;
-                if (top.additionalOperations != null && top.additionalOperations.size() > 0) {
+                if (top.additionalOperations != null && !top.additionalOperations.isEmpty()) {
                     for (OperationModel addOp : top.additionalOperations) {
                         if (addOp.binaryAttachment) {
                             return true;
@@ -633,7 +633,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
      */
     public String getProjectName() {
         String prjName = properties.get(PROJNAME_KEY);
-        return (prjName != null && prjName.length() > 0) ? prjName : DEFAULT_PROJECT_NAME;
+        return (prjName != null && !prjName.isEmpty()) ? prjName : DEFAULT_PROJECT_NAME;
     }
     /**
      * Sets the projectName property.
@@ -666,7 +666,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
         if (NO_SESSIONS_FILENAME.equals(sessionsFileName)) {
             return null;
         }
-        if (sessionsFileName == null || sessionsFileName.length() == 0) {
+        if (sessionsFileName == null || sessionsFileName.isEmpty()) {
             sessionsFileName = DBWS_SESSIONS_XML;
             setSessionsFileName(sessionsFileName);
         }
@@ -678,7 +678,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
 
     public String getPlatformClassname() {
         String platformClassname = properties.get(PLATFORM_CLASSNAME_KEY);
-        if (platformClassname == null || platformClassname.length() == 0) {
+        if (platformClassname == null || platformClassname.isEmpty()) {
             platformClassname = DEFAULT_PLATFORM_CLASSNAME;
             setPlatformClassname(platformClassname);
         }
@@ -761,7 +761,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
 
     public String getWsdlLocationURI() {
         String wsdlLocationURI = properties.get(WSDL_URI_KEY);
-        if (wsdlLocationURI == null || wsdlLocationURI.length() == 0) {
+        if (wsdlLocationURI == null || wsdlLocationURI.isEmpty()) {
             wsdlLocationURI = DEFAULT_WSDL_LOCATION_URI;
         }
         return wsdlLocationURI;
@@ -876,7 +876,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
             if (om.isSQLOperation()) {
                 SQLOperationModel sqlOm = (SQLOperationModel)om;
                 String buildSql = sqlOm.getBuildSql();
-                if (buildSql != null && buildSql.length() > 0) {
+                if (buildSql != null && !buildSql.isEmpty()) {
                     flag = true;
                     break;
                 }
