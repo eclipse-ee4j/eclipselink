@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A TableExpression allows for a raw database table to be referenced in a query.
@@ -69,7 +70,7 @@ public class TableExpression extends DataExpression {
             return false;
         }
         TableExpression expression = (TableExpression) object;
-        return ((this.table == expression.table) || ((this.table != null) && this.table.equals(expression.table)));
+        return (Objects.equals(this.table, expression.table));
     }
 
     /**
@@ -141,7 +142,7 @@ public class TableExpression extends DataExpression {
         }
         // Bug4736461  Only setTableQualifier if getDatasourceLogin().getTableQualifier() is an empty string to make the window much smaller when
         // DatabaseTable.qualifiedName is reset
-        if (getTable().getTableQualifier().length() == 0 && (normalizer.getSession().getDatasourceLogin().getTableQualifier().length() != 0)) {
+        if (getTable().getTableQualifier().isEmpty() && (!normalizer.getSession().getDatasourceLogin().getTableQualifier().isEmpty())) {
             getTable().setTableQualifier(normalizer.getSession().getDatasourceLogin().getTableQualifier());
         }
         return super.normalize(normalizer);

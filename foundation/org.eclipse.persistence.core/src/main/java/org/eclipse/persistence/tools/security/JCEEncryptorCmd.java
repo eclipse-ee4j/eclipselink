@@ -30,6 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.charset.StandardCharsets;
 
 public final class JCEEncryptorCmd {
 
@@ -84,7 +85,7 @@ public final class JCEEncryptorCmd {
             try {
                 // try AES/CBC second
                 bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
-                password = new String(decryptCipherAES_CBC.doFinal(bytePassword), "UTF-8");
+                password = new String(decryptCipherAES_CBC.doFinal(bytePassword), StandardCharsets.UTF_8);
             } catch (Exception w) {
                 ObjectInputStream oisAes = null;
                 try {

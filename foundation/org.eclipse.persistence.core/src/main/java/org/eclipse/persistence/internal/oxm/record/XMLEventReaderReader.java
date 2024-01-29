@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,7 +135,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
 
                 QName name = endElement.getName();
                 String prefix = endElement.getName().getPrefix();
-                if(null == prefix || prefix.length() == 0) {
+                if(null == prefix || prefix.isEmpty()) {
                     contentHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), name.getLocalPart());
                 } else {
                     contentHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), prefix + Constants.COLON + name.getLocalPart());
@@ -194,7 +194,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                 QName qName = startElement.getName();
                 String prefix = qName.getPrefix();
                 indexedAttributeList.setIterators(startElement.getAttributes(), startElement.getNamespaces());
-                if(null == prefix || prefix.length() == 0) {
+                if(null == prefix || prefix.isEmpty()) {
                     contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), qName.getLocalPart(), indexedAttributeList);
                 } else {
                     contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), prefix + Constants.COLON + qName.getLocalPart(), indexedAttributeList);
@@ -228,7 +228,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                     String uri = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
                     String localName = next.getPrefix();
                     String qName;
-                    if(null == localName || localName.length() == 0) {
+                    if(null == localName || localName.isEmpty()) {
                         localName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
                         qName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
                     } else {
@@ -244,7 +244,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                     String localName = next.getName().getLocalPart();
                     String prefix = next.getName().getPrefix();
                     String qName;
-                    if(null == prefix || prefix.length() == 0) {
+                    if(null == prefix || prefix.isEmpty()) {
                         qName = localName;
                     } else {
                         qName = prefix + Constants.COLON + localName;
@@ -253,7 +253,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                     attributesList.add(new Attribute(uri, localName, qName, value));
                 }
 
-                attributes = attributesList.toArray(new Attribute[attributesList.size()]);
+                attributes = attributesList.toArray(new Attribute[0]);
             }else{
                 attributes = NO_ATTRIBUTES;
 

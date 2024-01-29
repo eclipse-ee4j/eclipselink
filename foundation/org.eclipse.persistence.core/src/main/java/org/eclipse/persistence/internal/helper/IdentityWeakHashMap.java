@@ -14,26 +14,6 @@
 //     Gordon Yorke
 package org.eclipse.persistence.internal.helper;
 
-
-/**
- * INTERNAL:
- * <p>
- * <b>Purpose</b>: Define a {@link Map} that manages key equality by reference,
- * not equals(). This is required to track objects throughout the lifecycle
- * of a {@link org.eclipse.persistence.sessions.UnitOfWork}, regardless if the domain
- * object redefines its equals() method. Additionally, this implementation does
- * <b>not</b> permit nulls either as values or as keys.  Any Entry that has a null in the key or
- * in the value will be assumed to have garbage collected.
- * This class also uses weak references to the contents of the map allowing for garbage
- * collection to reduce the size of the Map
- *
- * This work is an extension of the original work completed on the IdentityWeakHashMap as completed by
- * Mike Norman.
- *
- * @author Gordon Yorke (EclipseLink 1.0M4)
- *
- */
-
 // J2SE imports
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -54,6 +34,24 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose</b>: Define a {@link Map} that manages key equality by reference,
+ * not equals(). This is required to track objects throughout the lifecycle
+ * of a {@link org.eclipse.persistence.sessions.UnitOfWork}, regardless if the domain
+ * object redefines its equals() method. Additionally, this implementation does
+ * <b>not</b> permit nulls either as values or as keys.  Any Entry that has a null in the key or
+ * in the value will be assumed to have garbage collected.
+ * This class also uses weak references to the contents of the map allowing for garbage
+ * collection to reduce the size of the Map
+ *
+ * This work is an extension of the original work completed on the IdentityWeakHashMap as completed by
+ * Mike Norman.
+ *
+ * @author Gordon Yorke (EclipseLink 1.0M4)
+ *
+ */
 public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, Cloneable, Serializable {
     static final long serialVersionUID = -5176951017503351630L;
 

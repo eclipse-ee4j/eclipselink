@@ -116,7 +116,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
                  }
             }
-            if(mixedValues.size() >0){
+            if(!mixedValues.isEmpty()){
                 frags.add(SIMPLE_FRAGMENT);
                 values.add(mixedValues);
             }
@@ -305,7 +305,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     private void startElementProcessText(UnmarshalRecord unmarshalRecord, Object collection) {
         String value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
-        if (value.length() > 0 && xmlAnyCollectionMapping.isMixedContent()) {
+        if (!value.isEmpty() && xmlAnyCollectionMapping.isMixedContent()) {
             unmarshalRecord.addAttributeValue(this, value);
         }
     }
@@ -350,7 +350,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         if (originalValue.getNamespaceURI() != null) {
             xmlRootFragment.setNamespaceURI((originalValue).getNamespaceURI());
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI((originalValue).getNamespaceURI());
-            if (prefix == null || prefix.length() == 0) {
+            if (prefix == null || prefix.isEmpty()) {
                 prefix = marshalRecord.getNamespaceResolver().generatePrefix();
                 generatedNamespace = new Namespace(prefix, xmlRootFragment.getNamespaceURI());
                 xmlRootFragment.setGeneratedPrefix(true);

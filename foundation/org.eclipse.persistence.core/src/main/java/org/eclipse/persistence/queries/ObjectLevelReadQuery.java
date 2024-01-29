@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,6 +71,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
@@ -450,12 +451,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         } else if (query.hasOrderByExpressions()) {
             return false;
         }
-        if (! ((this.referenceClass == query.referenceClass) || ((this.referenceClass != null) && this.referenceClass.equals(query.referenceClass)))) {
+        if (! (Objects.equals(this.referenceClass, query.referenceClass))) {
             return false;
         }
         Expression selectionCriteria = getSelectionCriteria();
         Expression otherSelectionCriteria = query.getSelectionCriteria();
-        return ((selectionCriteria == otherSelectionCriteria) || ((selectionCriteria != null) && selectionCriteria.equals(otherSelectionCriteria)));
+        return (Objects.equals(selectionCriteria, otherSelectionCriteria));
     }
 
     /**
@@ -2357,7 +2358,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // Ensure the subclass call cache is initialized if a table per class inheritance descriptor.
         // This must be initialized in the query before it is cloned, and never cloned.
         if (this.descriptor.hasTablePerClassPolicy()
-                && (this.descriptor.getTablePerClassPolicy().getChildDescriptors().size() > 0)) {
+                && (!this.descriptor.getTablePerClassPolicy().getChildDescriptors().isEmpty())) {
             getConcreteSubclassQueries();
         }
     }

@@ -90,7 +90,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
                     }
                 }
             }
-            if ((createdSet != null) && (createdSet.size() > 0)) {
+            if ((createdSet != null) && (!createdSet.isEmpty())) {
                 Iterator anIterator = createdSet.iterator();
                 SDODataObject nextCreatedDO = null;
                 while (anIterator.hasNext()) {
@@ -383,7 +383,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
         while (theDataObject != null) {
             NamespaceResolver nr = ((SDOType)theDataObject.getType()).getXmlDescriptor().getNonNullNamespaceResolver();
             String resolvedPrefix = nr.resolveNamespaceURI(uri);
-            if ((resolvedPrefix != null) && !resolvedPrefix.equals("") && resolvedPrefix.equals(prefix)) {
+            if ((resolvedPrefix != null) && !resolvedPrefix.isEmpty() && resolvedPrefix.equals(prefix)) {
                 return false;
             }
             theDataObject = theDataObject.getContainer();

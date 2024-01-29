@@ -2968,7 +2968,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return queries;
     }
 
-    /**
+    /*
      * ADVANCED:
      * Return an attribute group of a particular name.
      */
@@ -3088,7 +3088,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return null;
     }
 
-    /**
+    /*
      * Returns an AttributeGroup by name
      */
 
@@ -4552,23 +4552,13 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             return;
         }
         if (shouldLogMessages(logLevel)) {
-            int level;
-            switch (logLevel) {
-            case CommandProcessor.LOG_ERROR:
-                level = SessionLog.SEVERE;
-                break;
-            case CommandProcessor.LOG_WARNING:
-                level = SessionLog.WARNING;
-                break;
-            case CommandProcessor.LOG_INFO:
-                level = SessionLog.FINER;
-                break;
-            case CommandProcessor.LOG_DEBUG:
-                level = SessionLog.FINEST;
-                break;
-            default:
-                level = SessionLog.ALL;
-            }
+            int level = switch (logLevel) {
+                case CommandProcessor.LOG_ERROR -> SessionLog.SEVERE;
+                case CommandProcessor.LOG_WARNING -> SessionLog.WARNING;
+                case CommandProcessor.LOG_INFO -> SessionLog.FINER;
+                case CommandProcessor.LOG_DEBUG -> SessionLog.FINEST;
+                default -> SessionLog.ALL;
+            };
             log(level, SessionLog.PROPAGATION, message, null, null, false);
         }
     }
@@ -4961,11 +4951,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void copyDescriptorNamedQueries(boolean allowSameQueryNameDiffArgsCopyToSession) {
         for (ClassDescriptor descriptor : getProject().getOrderedDescriptors()) {
             Map<String, List<DatabaseQuery>> queries  = descriptor.getQueryManager().getQueries();
-            if ((queries != null) && (queries.size() > 0)) {
+            if ((queries != null) && (!queries.isEmpty())) {
                 for (Iterator<Map.Entry<String, List<DatabaseQuery>>> keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
                     Map.Entry<String, List<DatabaseQuery>> entry = keyValueItr.next();
                     List<DatabaseQuery> thisQueries = entry.getValue();
-                    if ((thisQueries != null) && (thisQueries.size() > 0)){
+                    if ((thisQueries != null) && (!thisQueries.isEmpty())){
                         for( Iterator<DatabaseQuery> thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
                             DatabaseQuery queryToBeAdded = thisQueriesItr.next();
                             if (allowSameQueryNameDiffArgsCopyToSession){

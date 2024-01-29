@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,7 +116,7 @@ public class JAXBHelperContext extends SDOHelperContext {
      */
     public JAXBHelperContext(JAXBContext aJAXBContext, ClassLoader aClassLoader) {
         super(aClassLoader);
-        wrapperDataObjects = new IdentityWeakHashMap<Object, SDODataObject>();
+        wrapperDataObjects = new IdentityWeakHashMap<>();
         jaxbContext = (org.eclipse.persistence.jaxb.JAXBContext) aJAXBContext;
     }
 
@@ -269,9 +269,9 @@ public class JAXBHelperContext extends SDOHelperContext {
      */
     List<DataObject> wrap(Collection<Object> entities, Property containmentProperty, DataObject container) {
         if(null == entities) {
-            return new ArrayList<DataObject>(0);
+            return new ArrayList<>(0);
         }
-        List<DataObject> dataObjects = new ArrayList<DataObject>(entities.size());
+        List<DataObject> dataObjects = new ArrayList<>(entities.size());
         for(Object entity: entities) {
             dataObjects.add(wrap(entity, containmentProperty, container));
         }
@@ -316,9 +316,9 @@ public class JAXBHelperContext extends SDOHelperContext {
      */
     public List<Object> unwrap(Collection<DataObject> dataObjects) {
         if(null == dataObjects) {
-            return new ArrayList<Object>(0);
+            return new ArrayList<>(0);
         }
-        List<Object> entities = new ArrayList<Object>(dataObjects.size());
+        List<Object> entities = new ArrayList<>(dataObjects.size());
         for(DataObject dataObject: dataObjects) {
             entities.add(unwrap(dataObject));
         }

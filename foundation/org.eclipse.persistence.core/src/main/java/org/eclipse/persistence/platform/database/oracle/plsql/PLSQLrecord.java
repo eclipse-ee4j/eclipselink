@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -132,7 +132,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         if (hasCompatibleType()) {
             super.buildInDeclare(sb, inArg);
         } else {
-            if ((getTypeName() == null) || getTypeName().equals("")) {
+            if ((getTypeName() == null) || getTypeName().isEmpty()) {
                 throw QueryException.typeNameNotSet(this);
             }
             sb.append("  ");
@@ -148,7 +148,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
         if (hasCompatibleType()) {
             super.buildOutDeclare(sb, outArg);
         } else {
-            if ((getTypeName() == null) || getTypeName().equals("")) {
+            if ((getTypeName() == null) || getTypeName().isEmpty()) {
                 throw QueryException.typeNameNotSet(this);
             }
             sb.append("  ");

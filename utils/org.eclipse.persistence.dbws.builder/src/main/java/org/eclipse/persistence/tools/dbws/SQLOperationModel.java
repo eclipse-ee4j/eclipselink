@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
 public class SQLOperationModel extends ModelWithBuildSql {
 
     protected String sql;
-    protected ArrayList<BindingModel> bindings = new ArrayList<BindingModel>();
+    protected ArrayList<BindingModel> bindings = new ArrayList<>();
 
     public SQLOperationModel() {
     }
@@ -92,12 +92,12 @@ public class SQLOperationModel extends ModelWithBuildSql {
         SimpleXMLFormat sxf = null;
         if (isSimpleXMLFormat() || getReturnType() == null) {
             sxf = new SimpleXMLFormat();
-            if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
+            if (simpleXMLFormatTag != null && !simpleXMLFormatTag.isEmpty()) {
                 sxf.setSimpleXMLFormatTag(simpleXMLFormatTag);
             }
             result.setType(SXF_QNAME);
         }
-        if (xmlTag != null && xmlTag.length() > 0) {
+        if (xmlTag != null && !xmlTag.isEmpty()) {
             if (sxf == null) {
                 sxf = new SimpleXMLFormat();
                 result.setType(SXF_QNAME);
@@ -117,7 +117,7 @@ public class SQLOperationModel extends ModelWithBuildSql {
             attachment.setMimeType(DEFAULT_ATTACHMENT_MIMETYPE);
             result.setAttachment(attachment);
         }
-        if (returnType != null && returnType.length() > 0) {
+        if (returnType != null && !returnType.isEmpty()) {
             result.setType(qNameFromString("{" +builder.getTargetNamespace() + "}" +
                 returnType, builder.schema));
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.cache;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +43,7 @@ public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
         while (true) {
             Future<V> f = cache.get(key);
             if (f == null) {
-                Callable<V> evaluation = new Callable<V>() {
+                Callable<V> evaluation = new Callable<>() {
                     @Override
                     public V call() throws InterruptedException {
                         return c.compute(taskArg);
@@ -125,8 +126,8 @@ public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
             MemoizerKey cacheKey = (MemoizerKey) o;
 
             //noinspection SimplifiableIfStatement
-            if (key != null ? !key.equals(cacheKey.key) : cacheKey.key != null) return false;
-            return !(task != null ? !task.equals(cacheKey.task) : cacheKey.task != null);
+            if (!Objects.equals(key, cacheKey.key)) return false;
+            return !(!Objects.equals(task, cacheKey.task));
 
         }
 

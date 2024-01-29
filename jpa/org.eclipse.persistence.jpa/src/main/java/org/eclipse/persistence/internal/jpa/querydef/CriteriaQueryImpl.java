@@ -161,7 +161,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             ((SelectionImpl)select).findRootAndParameters(this);
         }
         if (this.queryResult == ResultType.CONSTRUCTOR) {
-            populateAndSetConstructorSelection((ConstructorSelectionImpl<T>) null, this.queryType, selections);
+            populateAndSetConstructorSelection(null, this.queryType, selections);
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
             if (selections.length == 1 && selections[0].getJavaType().equals(this.queryType)) {
                 this.selection = (SelectionImpl<? extends T>) selections[0];
@@ -833,14 +833,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 OrderImpl orderImpl = (OrderImpl) order;
                 org.eclipse.persistence.expressions.Expression orderExp = ((ExpressionImpl<?>) orderImpl.getExpression()).getCurrentNode();
                 orderExp = orderImpl.isAscending() ? orderExp.ascending() : orderExp.descending();
-                switch (orderImpl.getNullPrecedence()) {
-                    case FIRST:
-                        orderExp = orderExp.nullsFirst();
-                        break;
-                    case LAST:
-                        orderExp = orderExp.nullsLast();
-                        break;
-                }
+                orderExp = switch (orderImpl.getNullPrecedence()) {
+                    case FIRST -> orderExp.nullsFirst();
+                    case LAST -> orderExp.nullsLast();
+                    default -> orderExp;
+                };
                 query.addOrdering(orderExp);
             }
         }

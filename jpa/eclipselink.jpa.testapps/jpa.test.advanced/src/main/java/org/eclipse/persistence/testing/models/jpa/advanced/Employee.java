@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -394,7 +394,7 @@ public class Employee implements Serializable, Cloneable {
     public Time[] buildNormalHours(DataRecord row, Session session) {
         Time[] hours = new Time[2];
 
-        /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
+        /* This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
         hours[0] = session.getDatasourcePlatform().convertObject(row.get("START_TIME"), Time.class);
         hours[1] = session.getDatasourcePlatform().convertObject(row.get("END_TIME"), Time.class);
         return hours;

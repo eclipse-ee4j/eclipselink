@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,10 +135,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
                             String xpath = leafType.getLocalPart();
                             String uri = leafType.getNamespaceURI();
-                            if (uri != null && uri.length() > 0) {
+                            if (uri != null && !uri.isEmpty()) {
                                 frag.setNamespaceURI(uri);
                                 String prefix = ((Descriptor) xmlCompositeCollectionMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                                if (prefix != null && prefix.length() > 0) {
+                                if (prefix != null && !prefix.isEmpty()) {
                                     xpath = prefix + Constants.COLON + xpath;
                                 }
                             }

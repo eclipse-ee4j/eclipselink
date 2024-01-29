@@ -27,8 +27,6 @@ import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,17 +70,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
 
     static {
         // For quick look up of equivalent event strings from event codes.
-        Map<Integer, String> mappings = new HashMap<>(9);
-        mappings.put(DescriptorEventManager.PostBuildEvent, POST_BUILD);
-        mappings.put(DescriptorEventManager.PostCloneEvent, POST_CLONE);
-        mappings.put(DescriptorEventManager.PostDeleteEvent, POST_DELETE);
-        mappings.put(DescriptorEventManager.PostInsertEvent, POST_INSERT);
-        mappings.put(DescriptorEventManager.PostRefreshEvent, POST_REFRESH);
-        mappings.put(DescriptorEventManager.PostUpdateEvent, POST_UPDATE);
-        mappings.put(DescriptorEventManager.PrePersistEvent, PRE_PERSIST);
-        mappings.put(DescriptorEventManager.PreRemoveEvent, PRE_REMOVE);
-        mappings.put(DescriptorEventManager.PreUpdateWithChangesEvent, PRE_UPDATE_WITH_CHANGES);
-        m_eventStrings = Collections.unmodifiableMap(mappings);
+        m_eventStrings = Map.of(DescriptorEventManager.PostBuildEvent, POST_BUILD, DescriptorEventManager.PostCloneEvent, POST_CLONE, DescriptorEventManager.PostDeleteEvent, POST_DELETE, DescriptorEventManager.PostInsertEvent, POST_INSERT, DescriptorEventManager.PostRefreshEvent, POST_REFRESH, DescriptorEventManager.PostUpdateEvent, POST_UPDATE, DescriptorEventManager.PrePersistEvent, PRE_PERSIST, DescriptorEventManager.PreRemoveEvent, PRE_REMOVE, DescriptorEventManager.PreUpdateWithChangesEvent, PRE_UPDATE_WITH_CHANGES);
     }
     /**
      * INTERNAL:

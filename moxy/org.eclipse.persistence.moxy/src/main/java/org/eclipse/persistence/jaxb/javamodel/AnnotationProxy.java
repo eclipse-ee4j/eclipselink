@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,7 +108,7 @@ public class AnnotationProxy implements InvocationHandler {
     public static <A extends Annotation> A getProxy(Map<String, Object> components, Class<A> annoClass, ClassLoader cl, ConversionManager conversionMgr) {
         // add the 'annotationType' method name/value pair to the components map
         if (components == null) {
-            components = new HashMap<String, Object>();
+            components = new HashMap<>();
         }
         components.put(ANNOTATION_TYPE_METHOD_NAME, annoClass.getName());
 

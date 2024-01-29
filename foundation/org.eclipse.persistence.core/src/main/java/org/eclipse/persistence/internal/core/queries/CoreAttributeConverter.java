@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,18 +134,17 @@ public class CoreAttributeConverter {
                 switch (s) {
                 // Initial state or after path elements separator received.
                 case DOT:
-                    switch (c) {
-                    // Path elements separator at the beginning or two path element separators
-                    // next to each other results in zero length path.
-                    case StringHelper.DOT:
-                        throw new IllegalArgumentException("Name or path value contains empty path element");
-                    // Whitespace at the beginning.
-                    case TAB: case LF: case FF: case CR: case SPACE:
-                        throw new IllegalArgumentException("Path element starts with whitespace.");
-                    // First regular character.
-                    default:
-                        s = ConvertState.CH;
-                    }
+                    s = switch (c) {
+                        // Path elements separator at the beginning or two path element separators
+                        // next to each other results in zero length path.
+                        case StringHelper.DOT -> throw new IllegalArgumentException("Name or path value contains empty path element");
+
+                        // Whitespace at the beginning.
+                        case TAB, LF, FF, CR, SPACE -> throw new IllegalArgumentException("Path element starts with whitespace.");
+
+                        // First regular character.
+                        default -> ConvertState.CH;
+                    };
                     break;
                 // After space in the middle of path.
                 case SP:
@@ -168,7 +167,7 @@ public class CoreAttributeConverter {
                     case StringHelper.DOT:
                         // Lazy initialization of elements storage.
                         if (elements == null) {
-                            elements = new ArrayDeque(4);
+                            elements = new ArrayDeque<>(4);
                         }
                         // Store finished path element.
                         elements.addLast(new String(chars, begIndex, index - begIndex));

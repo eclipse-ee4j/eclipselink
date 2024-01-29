@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -126,7 +126,7 @@ public class GroupByNode extends MajorNode {
         StringBuilder repr = new StringBuilder();
         for (Iterator<Node> i = groupByItems.iterator(); i.hasNext(); ) {
             Node expr = i.next();
-            if (repr.length() > 0) {
+            if (!repr.isEmpty()) {
                 repr.append(", ");
             }
             repr.append(expr.getAsString());

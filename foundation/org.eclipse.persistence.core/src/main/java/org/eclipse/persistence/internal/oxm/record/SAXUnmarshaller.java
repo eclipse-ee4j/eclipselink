@@ -347,8 +347,6 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } finally {
                 inputStream.close();
             }
-        } catch (FileNotFoundException e) {
-            throw XMLMarshalException.unmarshalException(e);
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         } finally {
@@ -372,8 +370,6 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } finally {
                 inputStream.close();
             }
-        } catch (FileNotFoundException e) {
-            throw XMLMarshalException.unmarshalException(e);
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         } finally {
@@ -1076,7 +1072,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     private InputStream getInputStreamFromString(String stringValue) {
-        if (stringValue.length() == 0) {
+        if (stringValue.isEmpty()) {
             throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
         }
         URL url = null;

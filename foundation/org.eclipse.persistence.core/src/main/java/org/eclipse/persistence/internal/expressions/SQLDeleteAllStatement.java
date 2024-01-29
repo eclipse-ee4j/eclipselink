@@ -199,7 +199,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
         String str = selectCall.getSQLString();
         writer.write(str);
 
-        boolean hasWhereClause = str.toUpperCase().indexOf(" WHERE ") >= 0;
+        boolean hasWhereClause = str.toUpperCase().contains(" WHERE ");
 
         // join aliased fields to original fields
         // Examples:
@@ -216,11 +216,11 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                 writer.write(tableAliasInSelectCall);
                 writer.write('.');
             }
-            writer.write(((DatabaseField)aliasedFields.get(i)).getNameDelimited(platform));
+            writer.write(aliasedFields.get(i).getNameDelimited(platform));
             writer.write(" = ");
             writer.write(table.getQualifiedNameDelimited(platform));
             writer.write('.');
-            writer.write(((DatabaseField)originalFields.get(i)).getNameDelimited(platform));
+            writer.write(originalFields.get(i).getNameDelimited(platform));
         }
 
         // add parameters

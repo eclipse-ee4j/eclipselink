@@ -180,9 +180,9 @@ public class PostgreSQLPlatform extends DatabasePlatform {
                 if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
                     printer.getCall().setUsesBinding(false);
                 }
-                if (items.size() > 0) {
+                if (!items.isEmpty()) {
                     Expression firstItem = items.get(0);
-                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    Expression secondItem = items.size() > 1 ? items.get(1) : null;
                     printDuo(firstItem, secondItem, printer);
                 } else {
                     throw new IllegalArgumentException("List of items shall contain at least one item");
@@ -208,9 +208,9 @@ public class PostgreSQLPlatform extends DatabasePlatform {
             }
             @Override
             public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
-                if (items.size() > 0) {
+                if (!items.isEmpty()) {
                     Expression firstItem = items.get(0);
-                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    Expression secondItem = items.size() > 1 ? items.get(1) : null;
                     printJavaDuo(firstItem, secondItem, printer);
                 } else {
                     throw new IllegalArgumentException("List of items shall contain at least one item");

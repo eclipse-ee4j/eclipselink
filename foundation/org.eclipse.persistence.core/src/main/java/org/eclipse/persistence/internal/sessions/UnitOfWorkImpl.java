@@ -145,8 +145,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
     private String creationThreadStackTrace;
 
-    /** Fix made for weak caches to avoid garbage collection of the originals. **/
-    /** As well as used as lookup in merge algorithm for aggregates and others **/
+    /* Fix made for weak caches to avoid garbage collection of the originals. */
+    /* As well as used as lookup in merge algorithm for aggregates and others */
     protected transient Map<Object, Object> cloneToOriginals;
     protected transient AbstractSession parent;
 
@@ -1534,10 +1534,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 try {
                     acquireWriteLocks();
                     commitTransaction();
-                } catch (RuntimeException throwable) {
-                    releaseWriteLocks();
-                    throw throwable;
-                } catch (Error throwable) {
+                } catch (RuntimeException | Error throwable) {
                     releaseWriteLocks();
                     throw throwable;
                 }
@@ -1614,20 +1611,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             setWasNonObjectLevelModifyQueryExecuted(false);
                             try {
                                 commitTransaction();
-                            } catch (RuntimeException commitFailed) {
+                            } catch (RuntimeException | Error commitFailed) {
                                 try {
                                     rollbackTransaction();
                                 } catch (RuntimeException ignore) {
                                     // Ignore
                                 }
                                 throw commitFailed;
-                            } catch (Error error) {
-                                try {
-                                    rollbackTransaction();
-                                } catch (RuntimeException ignore) {
-                                    // Ignore
-                                }
-                                throw error;
                             }
                         }
                     }
@@ -3037,7 +3027,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         DescriptorIterator iterator = new DescriptorIterator() {
             @Override
             public void iterate(Object object) {
-                if (object != null && !isObjectRegistered(object) && getVisitedStack() != null && getVisitedStack().size() > 0) {
+                if (object != null && !isObjectRegistered(object) && getVisitedStack() != null && !getVisitedStack().isEmpty()) {
                     log(SessionLog.WARNING, SessionLog.CACHE, "stack_of_visited_objects_that_refer_to_the_corrupt_object", getVisitedStack());
                     log(SessionLog.WARNING, SessionLog.CACHE, "corrupt_object_referenced_through_mapping", getCurrentMapping());
                     log(SessionLog.WARNING, SessionLog.CACHE, "corrupt_object", object);
@@ -5979,7 +5969,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return true if there are any pessimistic locked objects in this unit of work, false otherwise.
      */
     public boolean hasPessimisticLockedObjects() {
-        return (this.pessimisticLockedObjects != null) && (this.pessimisticLockedObjects.size() != 0);
+        return (this.pessimisticLockedObjects != null) && (!this.pessimisticLockedObjects.isEmpty());
     }
 
     /**

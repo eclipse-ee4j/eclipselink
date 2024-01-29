@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -437,7 +437,7 @@ public class SchemaGenerator {
     }
     public void addToSchemaType(TypeInfo ownerTypeInfo, java.util.List<Property> properties, TypeDefParticle compositor, ComplexType type, Schema workingSchema) {
         //If there are no properties we don't want a sequence/choice or all tag written out
-        if (properties.size() == 0) {
+        if (properties.isEmpty()) {
             type.setAll(null);
             type.setSequence(null);
             type.setChoice(null);
@@ -1160,7 +1160,7 @@ public class SchemaGenerator {
 
             // handle Attribute case
             if (frag.isAttribute()) {
-                if (fragSchema == null || (fragSchema.isAttributeFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isAttributeFormDefault() && fragUri.length() > 0)) {
+                if (fragSchema == null || (fragSchema.isAttributeFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isAttributeFormDefault() && !fragUri.isEmpty())) {
                     // must generate a global attribute and create a reference to it
                     // if the global attribute exists, use it; otherwise create a new one
                     // if fragSchema is null, just generate the ref
@@ -1201,7 +1201,7 @@ public class SchemaGenerator {
             }
 
             // here we are dealing with an Element
-            if ((fragSchema.isElementFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isElementFormDefault() && fragUri.length() > 0)) {
+            if ((fragSchema.isElementFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isElementFormDefault() && !fragUri.isEmpty())) {
                 // must generate a global element and create a reference to it
                 // if the global element exists, use it; otherwise create a new one
                 globalElement = fragSchema.getTopLevelElements().get(frag.getLocalName());
@@ -1310,7 +1310,7 @@ public class SchemaGenerator {
      * @param particle the sequence/choice/all to search for an existing element
      */
     protected Element elementExistsInParticle(String elementName, String refString, TypeDefParticle particle) {
-        if (particle == null || particle.getElements() == null || particle.getElements().size() == 0) {
+        if (particle == null || particle.getElements() == null || particle.getElements().isEmpty()) {
             return null;
         }
         java.util.List<Element> existingElements = particle.getElements();

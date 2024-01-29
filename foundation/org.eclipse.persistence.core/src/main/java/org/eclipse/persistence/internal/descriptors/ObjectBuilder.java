@@ -185,9 +185,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /** PERF: is there an cache index field that's would not be selected by SOP query. Ignored unless descriptor uses SOP and CachePolicy has cache indexes. */
     protected boolean hasCacheIndexesInSopObject = false;
     /** Semaphore related properties. Transient to avoid serialization in clustered/replicated environments see CORBA tests*/
-    private static final transient ThreadLocal<Boolean> SEMAPHORE_THREAD_LOCAL_VAR = new ThreadLocal<>();
-    private static final transient int SEMAPHORE_MAX_NUMBER_THREADS = ConcurrencyUtil.SINGLETON.getNoOfThreadsAllowedToObjectBuildInParallel();
-    private static final transient Semaphore SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING = new Semaphore(SEMAPHORE_MAX_NUMBER_THREADS);
+    private static final ThreadLocal<Boolean> SEMAPHORE_THREAD_LOCAL_VAR = new ThreadLocal<>();
+    private static final int SEMAPHORE_MAX_NUMBER_THREADS = ConcurrencyUtil.SINGLETON.getNoOfThreadsAllowedToObjectBuildInParallel();
+    private static final Semaphore SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING = new Semaphore(SEMAPHORE_MAX_NUMBER_THREADS);
     private transient ConcurrencySemaphore objectBuilderSemaphore = new ConcurrencySemaphore(SEMAPHORE_THREAD_LOCAL_VAR, SEMAPHORE_MAX_NUMBER_THREADS, SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING, this, "object_builder_semaphore_acquired_01");
 
     public ObjectBuilder(ClassDescriptor descriptor) {

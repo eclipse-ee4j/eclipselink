@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -261,7 +261,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         if (originalValue.getNamespaceURI() != null) {
             xmlRootFragment.setNamespaceURI((originalValue).getNamespaceURI());
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI((originalValue).getNamespaceURI());
-            if (prefix == null || prefix.length() == 0) {
+            if (prefix == null || prefix.isEmpty()) {
                 prefix = marshalRecord.getNamespaceResolver().generatePrefix("ns0");
                 generatedNamespace = new Namespace(prefix, xmlRootFragment.getNamespaceURI());
                 xmlRootFragment.setGeneratedPrefix(true);

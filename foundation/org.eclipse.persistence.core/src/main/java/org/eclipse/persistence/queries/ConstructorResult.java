@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -164,11 +165,7 @@ public class ConstructorResult extends SQLResult {
             } else {
                 return PrivilegedAccessHelper.invokeConstructor(constructor, constructorArgs);
             }
-        } catch (IllegalAccessException exception) {
-            throw QueryException.exceptionWhileInitializingConstructor(exception, query, targetClass);
-        } catch (java.lang.reflect.InvocationTargetException exception) {
-            throw QueryException.exceptionWhileInitializingConstructor(exception, query, targetClass);
-        } catch (InstantiationException exception) {
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException exception) {
             throw QueryException.exceptionWhileInitializingConstructor(exception, query, targetClass);
         }
     }

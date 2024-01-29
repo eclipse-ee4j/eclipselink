@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -131,7 +131,7 @@ public class JavaModelImpl implements JavaModel {
 
     public Map<String, JavaClassImpl> getCachedJavaClasses() {
         if(this.cachedJavaClasses == null) {
-            this.cachedJavaClasses = new HashMap<String, JavaClassImpl>();
+            this.cachedJavaClasses = new HashMap<>();
         }
         return this.cachedJavaClasses;
     }

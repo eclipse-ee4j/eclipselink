@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,15 +72,9 @@ public class XMLHelper {
             }
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (SAXNotRecognizedException ex) {
+        } catch (SAXNotRecognizedException | AbstractMethodError | SAXNotSupportedException ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException(ex);
-        } catch (SAXNotSupportedException ex) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
-            throw new IllegalStateException(ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 
@@ -99,18 +93,9 @@ public class XMLHelper {
             factory.setNamespaceAware(true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (ParserConfigurationException ex) {
+        } catch (ParserConfigurationException | AbstractMethodError | SAXNotSupportedException | SAXNotRecognizedException ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException( ex);
-        } catch (SAXNotRecognizedException ex) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
-            throw new IllegalStateException( ex);
-        } catch (SAXNotSupportedException ex) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
-            throw new IllegalStateException( ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 
@@ -127,12 +112,9 @@ public class XMLHelper {
             }
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (XPathFactoryConfigurationException ex) {
+        } catch (XPathFactoryConfigurationException | AbstractMethodError ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException( ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 
@@ -149,12 +131,9 @@ public class XMLHelper {
             }
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (TransformerConfigurationException ex) {
+        } catch (TransformerConfigurationException | AbstractMethodError ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException( ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 
@@ -173,12 +152,9 @@ public class XMLHelper {
             factory.setNamespaceAware(true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (ParserConfigurationException ex) {
+        } catch (ParserConfigurationException | AbstractMethodError ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException( ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 

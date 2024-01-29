@@ -748,7 +748,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
 
         Map<QName, Class<?>> qNamesToDeclaredClasses = getQNamesToDeclaredClasses();
-        if (qNamesToDeclaredClasses != null && qNamesToDeclaredClasses.size() > 0) {
+        if (qNamesToDeclaredClasses != null && !qNamesToDeclaredClasses.isEmpty()) {
             Class<?> declaredClass = qNamesToDeclaredClasses.get(qname);
             if (declaredClass != null) {
                 return createJAXBElement(qname, declaredClass, value);
@@ -977,7 +977,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                     metadataComplete.put(packageName, true);
                 }
             }
-            if (metadataComplete.size() > 0) {
+            if (!metadataComplete.isEmpty()) {
                 jModel.setMetadataCompletePackageMap(metadataComplete);
             }
 
@@ -1077,12 +1077,12 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             super(properties, classLoader);
             this.typeMappingInfo = Arrays.copyOf(typeMappingInfo, typeMappingInfo.length);
 
-            Arrays.sort(this.typeMappingInfo, new Comparator<TypeMappingInfo>() {
+            Arrays.sort(this.typeMappingInfo, new Comparator<>() {
                 @Override
                 public int compare(TypeMappingInfo javaClass1, TypeMappingInfo javaClass2) {
                     String sourceName = getNameForType(javaClass1.getType());
                     String targetName = getNameForType(javaClass2.getType());
-                    if(sourceName == null ||  targetName == null){
+                    if (sourceName == null || targetName == null) {
                         return -1;
                     }
 
@@ -1091,14 +1091,14 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
                 private String getNameForType(Type type) {
                     if (type instanceof Class) {
-                        return ((Class)type).getCanonicalName();
+                        return ((Class) type).getCanonicalName();
                     } else if (type instanceof GenericArrayType) {
                         Class<?> genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
                         return genericTypeClass.getCanonicalName();
                     } else {
                         // assume parameterized type
                         ParameterizedType pType = (ParameterizedType) type;
-                        return ((Class)pType.getRawType()).getCanonicalName();
+                        return ((Class) pType.getRawType()).getCanonicalName();
                     }
                 }
             });
@@ -1154,7 +1154,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                     }
                 }
 
-                if (metadataComplete.size() > 0) {
+                if (!metadataComplete.isEmpty()) {
                     jModel.setMetadataCompletePackageMap(metadataComplete);
                 }
             }
@@ -1199,7 +1199,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
             for (TypeMappingInfo typeMappingInfo : typesToBeBound) {
                 Type classToLookup = typeMappingInfo.getType();
-                if (contextState.getTypeMappingInfoToGeneratedType() != null && contextState.getTypeMappingInfoToGeneratedType().size() > 0) {
+                if (contextState.getTypeMappingInfoToGeneratedType() != null && !contextState.getTypeMappingInfoToGeneratedType().isEmpty()) {
                     Class<?> generatedClass = contextState.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
                     if (generatedClass != null) {
                         classToLookup = generatedClass;
@@ -1450,7 +1450,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
 
         private Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
-            if (typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() > 0) {
+            if (typeToTypeMappingInfo != null && !typeToTypeMappingInfo.isEmpty()) {
                 return new HashMap<>();
             }
             return generator.getAnnotationsProcessor().getTypeMappingInfosToSchemaTypes();
@@ -1496,7 +1496,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         private void initTypeToSchemaType() {
             this.typeToSchemaType = new HashMap<>();
 
-            if (typeToTypeMappingInfo == null || typeToTypeMappingInfo.size() == 0) {
+            if (typeToTypeMappingInfo == null || typeToTypeMappingInfo.isEmpty()) {
                 return;
             }
 

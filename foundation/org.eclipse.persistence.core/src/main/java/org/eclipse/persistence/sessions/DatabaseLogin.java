@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ import java.sql.Connection;
  */
 public class DatabaseLogin extends DatasourceLogin {
 
-    /**
+    /*
      * Transaction isolation levels used in setTransactionIsolation().
      * These constants are from java.sql.Connection.
      */
@@ -719,10 +719,10 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     protected boolean oracleDriverIs(String urlPrefix) {
         try {
-            if (getDriverURLHeader().length() != 0) {
-                return getDriverURLHeader().indexOf(urlPrefix) != -1;
+            if (!getDriverURLHeader().isEmpty()) {
+                return getDriverURLHeader().contains(urlPrefix);
             } else {
-                return getDatabaseURL().indexOf(urlPrefix) != -1;
+                return getDatabaseURL().contains(urlPrefix);
             }
         } catch (ValidationException e) {
             // this exception will be thrown if we are using something other than a DefaultConnector

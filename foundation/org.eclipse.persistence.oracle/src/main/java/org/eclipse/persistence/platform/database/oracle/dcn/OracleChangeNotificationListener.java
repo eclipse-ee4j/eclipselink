@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -83,7 +83,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
     public void register(Session session) {
         final AbstractSession databaseSession = (AbstractSession)session;
         // Determine which tables should be tracked for change events.
-        this.descriptorsByTable = new HashMap<DatabaseTable, ClassDescriptor>();
+        this.descriptorsByTable = new HashMap<>();
         for (ClassDescriptor descriptor : session.getDescriptors().values()) {
             if (!descriptor.getTables().isEmpty()) {
                 if ((descriptor.getCachePolicy().getDatabaseChangeNotificationType() != null)
@@ -104,7 +104,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
                 // Register with the database change notification, the connection is not relevant, the events occur after the connection is closed,
                 // and a different connection can be used to unregister the event listener.
                 this.register = connection.registerDatabaseChangeNotification(properties);
-                final List<DatabaseField> fields = new ArrayList<DatabaseField>();
+                final List<DatabaseField> fields = new ArrayList<>();
                 fields.add(new DatabaseField(ROWID));
                 this.register.addListener(new DatabaseChangeListener() {
                     @Override
@@ -172,7 +172,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
             }
         }
         final DatabaseField rowId = descriptor.buildField(new DatabaseField(ROWID));
-        final List<DatabaseField> fields = new ArrayList<DatabaseField>();
+        final List<DatabaseField> fields = new ArrayList<>();
         fields.add(rowId);
         // May already have the index if has inheritance.
         CacheIndex existingIndex = descriptor.getCachePolicy().getCacheIndex(fields);

@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.annotation.adapters.XmlAdapter;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
@@ -329,7 +327,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), refDesc.getJavaClass());
 
                         xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(
-                                (Class<? extends XmlAdapter<?,?>>) Class.forName(adapterClassName, true, cl)));
+                                Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);
 
@@ -345,7 +343,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
 
                         xmlChoiceMapping.setContainerPolicy(jaxbMapping.getContainerPolicy());
                         xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(
-                                (Class<? extends XmlAdapter<?,?>>) Class.forName(adapterClassName, true, cl)));
+                                Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);
                     }

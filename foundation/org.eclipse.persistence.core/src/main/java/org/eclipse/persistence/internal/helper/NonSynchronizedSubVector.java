@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -155,7 +155,7 @@ public class NonSynchronizedSubVector<E> extends NonSynchronizedVector<E> {
 
     @Override
     public Enumeration<E> elements() {
-        return new Enumeration<E>() {
+        return new Enumeration<>() {
             int count = 0;
 
             @Override
@@ -205,8 +205,8 @@ public class NonSynchronizedSubVector<E> extends NonSynchronizedVector<E> {
             throw new IndexOutOfBoundsException(
                 "Index: "+index+", Size: "+size);
 
-        return new ListIterator<E>() {
-            private ListIterator<E> i = l.listIterator(index+offset);
+        return new ListIterator<>() {
+            private ListIterator<E> i = l.listIterator(index + offset);
 
             @Override
             public boolean hasNext() {

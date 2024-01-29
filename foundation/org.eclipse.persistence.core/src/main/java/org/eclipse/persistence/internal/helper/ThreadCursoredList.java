@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -260,36 +260,36 @@ public class ThreadCursoredList<E> extends Vector<E> {
      */
     @Override
     public Enumeration<E> elements() {
-        return new Enumeration<E>() {
-                int count = 0;
+        return new Enumeration<>() {
+            int count = 0;
 
-                @Override
-                public boolean hasMoreElements() {
-                    synchronized (ThreadCursoredList.this) {
-                        boolean result = count < ThreadCursoredList.this.getSize();
-                        while ((!result) && (!isComplete())) {
-                            waitUntilAdd();
-                            result = count < ThreadCursoredList.this.getSize();
-                        }
-                        return result;
+            @Override
+            public boolean hasMoreElements() {
+                synchronized (ThreadCursoredList.this) {
+                    boolean result = count < ThreadCursoredList.this.getSize();
+                    while ((!result) && (!isComplete())) {
+                        waitUntilAdd();
+                        result = count < ThreadCursoredList.this.getSize();
+                    }
+                    return result;
+                }
+            }
+
+            @Override
+            public E nextElement() {
+                synchronized (ThreadCursoredList.this) {
+                    boolean result = count < ThreadCursoredList.this.getSize();
+                    while ((!result) && (!isComplete())) {
+                        waitUntilAdd();
+                        result = count < ThreadCursoredList.this.getSize();
+                    }
+                    if (result) {
+                        return get(count++);
                     }
                 }
-
-                @Override
-                public E nextElement() {
-                    synchronized (ThreadCursoredList.this) {
-                        boolean result = count < ThreadCursoredList.this.getSize();
-                        while ((!result) && (!isComplete())) {
-                            waitUntilAdd();
-                            result = count < ThreadCursoredList.this.getSize();
-                        }
-                        if (result) {
-                            return get(count++);
-                        }
-                    }
-                    throw new NoSuchElementException("Vector Enumeration");
-                }
-            };
+                throw new NoSuchElementException("Vector Enumeration");
+            }
+        };
     }
 
     /**
@@ -306,7 +306,7 @@ public class ThreadCursoredList<E> extends Vector<E> {
      */
     @Override
     public synchronized E firstElement() {
-        while ((!isComplete()) && (super.size() < 1)) {
+        while ((!isComplete()) && (super.isEmpty())) {
             waitUntilAdd();
         }
         return super.firstElement();
@@ -422,7 +422,7 @@ public class ThreadCursoredList<E> extends Vector<E> {
      */
     @Override
     public ListIterator<E> listIterator(final int index) {
-        return new ListIterator<E>() {
+        return new ListIterator<>() {
             int count = index;
 
             @Override

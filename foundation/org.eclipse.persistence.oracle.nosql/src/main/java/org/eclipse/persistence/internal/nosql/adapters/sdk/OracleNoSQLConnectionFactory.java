@@ -92,23 +92,21 @@ public class OracleNoSQLConnectionFactory implements ConnectionFactory {
         try {
             switch (connectionSpec.getService()) {
                 case CLOUD: {
-                    switch (connectionSpec.getAuthPrincipalType()) {
-                        case USER:
-                            authorizationProvider = new SignatureProvider();
-                            break;
-                        case INSTANCE:
+                    authorizationProvider = switch (connectionSpec.getAuthPrincipalType()) {
+                        case USER -> new SignatureProvider();
+                        case INSTANCE -> {
                             if (connectionSpec.getCompartment() == null) {
                                 throw new IllegalArgumentException("Compartment is required for Instance/Resource " + "Principal authorization");
                             }
-                            authorizationProvider = SignatureProvider.createWithInstancePrincipal();
-                            break;
-                        case RESOURCE:
+                            yield SignatureProvider.createWithInstancePrincipal();
+                        }
+                        case RESOURCE -> {
                             if (connectionSpec.getCompartment() == null) {
                                 throw new IllegalArgumentException("Compartment is required for Instance/Resource " + "Principal authorization");
                             }
-                            authorizationProvider = SignatureProvider.createWithResourcePrincipal();
-                            break;
-                    }
+                            yield SignatureProvider.createWithResourcePrincipal();
+                        }
+                    };
                     break;
                 }
                 case ON_PREMISE:

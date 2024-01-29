@@ -222,27 +222,27 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      */
     @Override
     public Set<Map.Entry<K,V>> entrySet() {
-        return new Set<Map.Entry<K,V>> (){
-            Set<Map.Entry<K,V>> delegateSet = IndirectMap.this.getDelegate().entrySet();
+        return new Set<>() {
+            Set<Map.Entry<K, V>> delegateSet = IndirectMap.this.getDelegate().entrySet();
 
             @Override
-            public int size(){
+            public int size() {
                 return this.delegateSet.size();
             }
 
             @Override
-            public boolean isEmpty(){
+            public boolean isEmpty() {
                 return this.delegateSet.isEmpty();
             }
 
             @Override
-            public boolean contains(Object o){
+            public boolean contains(Object o) {
                 return this.delegateSet.contains(o);
             }
 
             @Override
-            public Iterator<Map.Entry<K,V>> iterator(){
-                return new Iterator<Map.Entry<K,V>>() {
+            public Iterator<Map.Entry<K, V>> iterator() {
+                return new Iterator<>() {
                     Iterator<Map.Entry<K, V>> delegateIterator = delegateSet.iterator();
                     Map.Entry<K, V> currentObject;
 
@@ -273,40 +273,40 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public Object[] toArray(){
+            public Object[] toArray() {
                 return this.delegateSet.toArray();
             }
 
             @Override
-            public <T> T[] toArray(T[] a){
+            public <T> T[] toArray(T[] a) {
                 return this.delegateSet.toArray(a);
             }
 
             @Override
-            public boolean add(Map.Entry<K, V> o){
+            public boolean add(Map.Entry<K, V> o) {
                 return this.delegateSet.add(o);
             }
 
             @Override
-            public boolean remove(Object o){
+            public boolean remove(Object o) {
                 if (!(o instanceof Map.Entry)) {
                     return false;
                 }
-                return (IndirectMap.this.remove(((Map.Entry)o).getKey()) != null);
+                return (IndirectMap.this.remove(((Map.Entry) o).getKey()) != null);
             }
 
             @Override
-            public boolean containsAll(Collection<?> c){
+            public boolean containsAll(Collection<?> c) {
                 return this.delegateSet.containsAll(c);
             }
 
             @Override
-            public boolean addAll(Collection<? extends Map.Entry<K, V>> c){
+            public boolean addAll(Collection<? extends Map.Entry<K, V>> c) {
                 return this.delegateSet.addAll(c);
             }
 
             @Override
-            public boolean retainAll(Collection<?> c){
+            public boolean retainAll(Collection<?> c) {
                 boolean result = false;
                 Iterator<Map.Entry<K, V>> objects = delegateSet.iterator();
                 while (objects.hasNext()) {
@@ -321,14 +321,14 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public boolean removeAll(Collection<?> c){
+            public boolean removeAll(Collection<?> c) {
                 boolean result = false;
                 for (Object object : c) {
-                    if ( ! (object instanceof Map.Entry)){
+                    if (!(object instanceof Map.Entry)) {
                         continue;
                     }
-                    Object removed = IndirectMap.this.remove(((Map.Entry)object).getKey());
-                    if (removed != null){
+                    Object removed = IndirectMap.this.remove(((Map.Entry) object).getKey());
+                    if (removed != null) {
                         result = true;
                     }
                 }
@@ -336,17 +336,17 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public void clear(){
+            public void clear() {
                 IndirectMap.this.clear();
             }
 
             @Override
-            public boolean equals(Object o){
+            public boolean equals(Object o) {
                 return this.delegateSet.equals(o);
             }
 
             @Override
-            public int hashCode(){
+            public int hashCode() {
                 return this.delegateSet.hashCode();
             }
 
@@ -534,27 +534,27 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     @Override
     public Set<K> keySet() {
 
-        return new Set<K> (){
+        return new Set<>() {
             Set<K> delegateSet = IndirectMap.this.getDelegate().keySet();
 
             @Override
-            public int size(){
+            public int size() {
                 return this.delegateSet.size();
             }
 
             @Override
-            public boolean isEmpty(){
+            public boolean isEmpty() {
                 return this.delegateSet.isEmpty();
             }
 
             @Override
-            public boolean contains(Object o){
+            public boolean contains(Object o) {
                 return this.delegateSet.contains(o);
             }
 
             @Override
-            public Iterator<K> iterator(){
-                return new Iterator<K>() {
+            public Iterator<K> iterator() {
+                return new Iterator<>() {
                     Iterator<K> delegateIterator = delegateSet.iterator();
                     K currentObject;
 
@@ -583,37 +583,37 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public Object[] toArray(){
+            public Object[] toArray() {
                 return this.delegateSet.toArray();
             }
 
             @Override
-            public Object[] toArray(Object[] a){
+            public Object[] toArray(Object[] a) {
                 return this.delegateSet.toArray(a);
             }
 
             @Override
-            public boolean add(K o){
+            public boolean add(K o) {
                 return this.delegateSet.add(o);
             }
 
             @Override
-            public boolean remove(Object o){
+            public boolean remove(Object o) {
                 return (IndirectMap.this.remove(o) != null);
             }
 
             @Override
-            public boolean containsAll(Collection<?> c){
+            public boolean containsAll(Collection<?> c) {
                 return this.delegateSet.containsAll(c);
             }
 
             @Override
-            public boolean addAll(Collection<? extends K> c){
+            public boolean addAll(Collection<? extends K> c) {
                 return this.delegateSet.addAll(c);
             }
 
             @Override
-            public boolean retainAll(Collection<?> c){
+            public boolean retainAll(Collection<?> c) {
                 boolean result = false;
                 Iterator<K> objects = delegateSet.iterator();
                 while (objects.hasNext()) {
@@ -628,10 +628,10 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public boolean removeAll(Collection<?> c){
+            public boolean removeAll(Collection<?> c) {
                 boolean result = false;
-                for (Iterator<?> cs = c.iterator(); cs.hasNext(); ){
-                    if (IndirectMap.this.remove(cs.next()) != null ) {
+                for (Iterator<?> cs = c.iterator(); cs.hasNext(); ) {
+                    if (IndirectMap.this.remove(cs.next()) != null) {
                         result = true;
                     }
                 }
@@ -639,17 +639,17 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public void clear(){
+            public void clear() {
                 IndirectMap.this.clear();
             }
 
             @Override
-            public boolean equals(Object o){
+            public boolean equals(Object o) {
                 return this.delegateSet.equals(o);
             }
 
             @Override
-            public int hashCode(){
+            public int hashCode() {
                 return this.delegateSet.hashCode();
             }
 
@@ -1012,27 +1012,27 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      */
     @Override
     public Collection<V> values() {
-        return new Collection<V>() {
+        return new Collection<>() {
             protected Collection<V> delegateCollection = IndirectMap.this.getDelegate().values();
 
             @Override
-            public int size(){
+            public int size() {
                 return delegateCollection.size();
             }
 
             @Override
-            public boolean isEmpty(){
+            public boolean isEmpty() {
                 return delegateCollection.isEmpty();
             }
 
             @Override
-            public boolean contains(Object o){
+            public boolean contains(Object o) {
                 return delegateCollection.contains(o);
             }
 
             @Override
             public Iterator<V> iterator() {
-                return new Iterator<V>() {
+                return new Iterator<>() {
                     Iterator<V> delegateIterator = delegateCollection.iterator();
                     V currentObject;
 
@@ -1050,7 +1050,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
                     @Override
                     public void remove() {
                         for (Map.Entry entry : IndirectMap.this.getDelegate().entrySet()) {
-                            if (entry.getValue().equals(currentObject)){
+                            if (entry.getValue().equals(currentObject)) {
                                 IndirectMap.this.raiseRemoveChangeEvent(entry.getKey(), entry.getValue());
                             }
                         }
@@ -1065,25 +1065,25 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public Object[] toArray(){
+            public Object[] toArray() {
                 return this.delegateCollection.toArray();
             }
 
             @Override
-            public <T> T[] toArray(T[] a){
+            public <T> T[] toArray(T[] a) {
                 return this.delegateCollection.toArray(a);
             }
 
             @Override
-            public boolean add(V o){
+            public boolean add(V o) {
                 return this.delegateCollection.add(o);
             }
 
             @Override
-            public boolean remove(Object o){
-                for (Iterator<Map.Entry<K, V>> entryIt = IndirectMap.this.getDelegate().entrySet().iterator(); entryIt.hasNext();) {
+            public boolean remove(Object o) {
+                for (Iterator<Map.Entry<K, V>> entryIt = IndirectMap.this.getDelegate().entrySet().iterator(); entryIt.hasNext(); ) {
                     Map.Entry<K, V> entry = entryIt.next();
-                    if (entry.getValue().equals(o)){
+                    if (entry.getValue().equals(o)) {
                         IndirectMap.this.raiseRemoveChangeEvent(entry.getKey(), entry.getValue());
                         entryIt.remove();
                         return true;
@@ -1093,20 +1093,20 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public boolean containsAll(Collection<?> c){
+            public boolean containsAll(Collection<?> c) {
                 return this.delegateCollection.containsAll(c);
             }
 
             @Override
-            public boolean addAll(Collection<? extends V> c){
+            public boolean addAll(Collection<? extends V> c) {
                 return this.delegateCollection.addAll(c);
             }
 
             @Override
-            public boolean removeAll(Collection<?> c){
+            public boolean removeAll(Collection<?> c) {
                 boolean result = false;
-                for (Iterator<?> iterator = c.iterator(); iterator.hasNext();){
-                    if (remove(iterator.next()) ){
+                for (Iterator<?> iterator = c.iterator(); iterator.hasNext(); ) {
+                    if (remove(iterator.next())) {
                         result = true;
                     }
                 }
@@ -1114,11 +1114,11 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public boolean retainAll(Collection<?> c){
+            public boolean retainAll(Collection<?> c) {
                 boolean result = false;
-                for (Iterator<Map.Entry<K, V>> iterator = IndirectMap.this.entrySet().iterator(); iterator.hasNext();){
+                for (Iterator<Map.Entry<K, V>> iterator = IndirectMap.this.entrySet().iterator(); iterator.hasNext(); ) {
                     Map.Entry<K, V> entry = iterator.next();
-                    if (! c.contains(entry.getValue()) ) {
+                    if (!c.contains(entry.getValue())) {
                         iterator.remove();
                         result = true;
                     }
@@ -1127,17 +1127,17 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             }
 
             @Override
-            public void clear(){
+            public void clear() {
                 IndirectMap.this.clear();
             }
 
             @Override
-            public boolean equals(Object o){
+            public boolean equals(Object o) {
                 return this.delegateCollection.equals(o);
             }
 
             @Override
-            public int hashCode(){
+            public int hashCode() {
                 return this.delegateCollection.hashCode();
             }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -212,11 +212,11 @@ public class XMLFragmentReader extends DOMReader {
      */
     protected String resolveNamespacePrefix(String prefix) {
         String uri = null;
-        if (null == prefix || prefix.length() == 0) {
+        if (null == prefix || prefix.isEmpty()) {
             for (int i = nsresolverList.size() - 1; i >= 0; i--) {
                 NamespaceResolver next = nsresolverList.get(i);
                 uri = next.getDefaultNamespaceURI();
-                if ((uri != null) && uri.length() > 0) {
+                if ((uri != null) && !uri.isEmpty()) {
                     break;
                 }
             }
@@ -224,7 +224,7 @@ public class XMLFragmentReader extends DOMReader {
             for (int i = nsresolverList.size() - 1; i >= 0; i--) {
                 NamespaceResolver next = nsresolverList.get(i);
                 uri = next.resolveNamespacePrefix(prefix);
-                if ((uri != null) && uri.length() > 0) {
+                if ((uri != null) && !uri.isEmpty()) {
                     break;
                 }
             }

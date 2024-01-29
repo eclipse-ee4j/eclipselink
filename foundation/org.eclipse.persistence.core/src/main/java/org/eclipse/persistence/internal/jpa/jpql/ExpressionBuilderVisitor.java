@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2006, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -162,7 +162,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -448,7 +447,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = ExpressionMath.add(leftExpression, rightExpression);
 
         // Set the expression type
-        Collections.sort(types, NumericTypeComparator.instance());
+        types.sort(NumericTypeComparator.instance());
         type[0] = types.get(0);
     }
 
@@ -932,7 +931,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = ExpressionMath.divide(leftExpression, rightExpression);
 
         // Set the expression type
-        Collections.sort(types, NumericTypeComparator.instance());
+        types.sort(NumericTypeComparator.instance());
         type[0] = types.get(0);
     }
 
@@ -1586,7 +1585,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = ExpressionMath.multiply(leftExpression, rightExpression);
 
         // Set the expression type
-        Collections.sort(types, NumericTypeComparator.instance());
+        types.sort(NumericTypeComparator.instance());
         type[0] = types.get(0);
     }
 
@@ -1963,7 +1962,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = ExpressionMath.subtract(leftExpression, rightExpression);
 
         // Set the expression type
-        Collections.sort(types, NumericTypeComparator.instance());
+        types.sort(NumericTypeComparator.instance());
         type[0] = types.get(0);
     }
 

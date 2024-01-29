@@ -180,7 +180,7 @@ public class PersistenceUnitProcessor {
         URL result;
         String protocol = pxmlURL.getProtocol();
         if("file".equals(protocol)) { // NOI18N
-            StringBuffer path = new StringBuffer();
+            StringBuilder path = new StringBuilder();
             boolean firstElement = true;
             for (int i=0;i<descriptorDepth;i++){
                 if (!firstElement){
@@ -238,7 +238,7 @@ public class PersistenceUnitProcessor {
         } else if ("bundleresource".equals(protocol)) {
             result = new URL("bundleresource://" + pxmlURL.getAuthority());
         } else {
-            StringBuffer path = new StringBuffer();
+            StringBuilder path = new StringBuilder();
             for (int i=0;i<descriptorDepth;i++){
                 path.append("../"); // 315097 URL use standard separators
             }

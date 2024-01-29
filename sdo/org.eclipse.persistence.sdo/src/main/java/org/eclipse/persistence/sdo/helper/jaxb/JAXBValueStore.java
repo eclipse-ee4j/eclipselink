@@ -67,14 +67,14 @@ public class JAXBValueStore implements ValueStore {
 
     public JAXBValueStore(JAXBHelperContext aJAXBHelperContext, SDOType sdoType) {
         this.jaxbHelperContext = aJAXBHelperContext;
-        this.listWrappers = new WeakHashMap<Property, JAXBListWrapper>();
+        this.listWrappers = new WeakHashMap<>();
         this.descriptor = jaxbHelperContext.getObjectDescriptor(sdoType);
         this.entity = this.descriptor.getInstantiationPolicy().buildNewInstance();
     }
 
     public JAXBValueStore(JAXBHelperContext aJAXBHelperContext, Object anEntity) {
         this.jaxbHelperContext = aJAXBHelperContext;
-        this.listWrappers = new WeakHashMap<Property, JAXBListWrapper>();
+        this.listWrappers = new WeakHashMap<>();
         JAXBContext jaxbContext = (JAXBContext) jaxbHelperContext.getJAXBContext();
         this.descriptor = (XMLDescriptor) jaxbContext.getXMLContext().getSession(anEntity).getDescriptor(anEntity);
         this.entity = anEntity;

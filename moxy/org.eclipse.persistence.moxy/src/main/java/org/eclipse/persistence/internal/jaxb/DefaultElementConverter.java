@@ -41,7 +41,7 @@ public class DefaultElementConverter implements XMLConverter {
     @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         if(dataValue instanceof Element element) {
-            if(element.getTextContent().length() == 0) {
+            if(element.getTextContent().isEmpty()) {
                 element.setTextContent(defaultValue);
             }
         }

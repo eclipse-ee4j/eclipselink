@@ -147,7 +147,7 @@ public abstract class DatasourceCall implements Call {
      */
     public List<Boolean> getParameterBindings() {
         if (parameterBindings == null) {
-            parameterBindings = new ArrayList<Boolean>();
+            parameterBindings = new ArrayList<>();
         }
         return parameterBindings;
     }
@@ -187,7 +187,7 @@ public abstract class DatasourceCall implements Call {
      */
     public List<DatabaseField> getOutputCursors() {
         if (outputCursors == null) {
-            outputCursors = new ArrayList<DatabaseField>();
+            outputCursors = new ArrayList<>();
         }
 
         return outputCursors;
@@ -495,7 +495,7 @@ public abstract class DatasourceCall implements Call {
      */
     public void translateCustomQuery() {
         if (this.shouldProcessTokenInQuotes) {
-            if (getQueryString().indexOf(this.query.getParameterDelimiter()) == -1) {
+            if (!getQueryString().contains(this.query.getParameterDelimiter())) {
                 if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf('?') == -1) {
                     return;
                 }
@@ -952,7 +952,7 @@ public abstract class DatasourceCall implements Call {
             // Must translate field parameters and may get new bound parameters for large data.
             List<Object> parameterFields = getParameters();
             List<ParameterType> parameterTypes = getParameterTypes();
-            setParameters(new ArrayList<Object>(parameterFields.size()));
+            setParameters(new ArrayList<>(parameterFields.size()));
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
                 String token;
@@ -1089,7 +1089,7 @@ public abstract class DatasourceCall implements Call {
 
         boolean hasParameterizedIN = false;
         int size = parameters.size();
-        List<Object> translatedParametersValues = new ArrayList<Object>(size);
+        List<Object> translatedParametersValues = new ArrayList<>(size);
 
         Writer writer = new CharArrayWriter(queryString.length() + 50);
         try {
@@ -1100,7 +1100,7 @@ public abstract class DatasourceCall implements Call {
             List<Boolean> canBindParameters = getParameterBindings();
 
             // clear the parameters list 
-            setParameters(new ArrayList<Object>(parameterFields.size()));
+            setParameters(new ArrayList<>(parameterFields.size()));
 
             for (int parameterIndex = 0; parameterIndex < size; parameterIndex++) {
                 tokenIndex = queryString.indexOf(marker, tokenIndex + 1);
@@ -1320,12 +1320,12 @@ public abstract class DatasourceCall implements Call {
                 }
             }
 
-            if(writer.toString().length() > 0) {
+            if(!writer.toString().isEmpty()) {
                 String token = queryString.substring(lastIndex);
                 writer.write(token);
                 setQueryString(writer.toString());
             }
-            if(translatedParametersValues.size() > 0) {
+            if(!translatedParametersValues.isEmpty()) {
                 setParameters(translatedParametersValues);
             }
 
@@ -1350,7 +1350,7 @@ public abstract class DatasourceCall implements Call {
         try {
             // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
             List<Object> parameters = getParameters();            
-            List<Object> parametersValues = new ArrayList<Object>(parameters.size());
+            List<Object> parametersValues = new ArrayList<>(parameters.size());
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
                 String token;
@@ -1367,7 +1367,7 @@ public abstract class DatasourceCall implements Call {
                     // Parameter expressions are used for nesting and correct mapping conversion of the value.
                     if (parameter instanceof Collection<?> values) {
                         writer.write("(");
-                        if ((values.size() > 0) && (values.iterator().next() instanceof List)) {
+                        if ((!values.isEmpty()) && (values.iterator().next() instanceof List)) {
                             // Support nested lists.
                             int size = values.size();
                             Iterator<?> valuesIterator = values.iterator();

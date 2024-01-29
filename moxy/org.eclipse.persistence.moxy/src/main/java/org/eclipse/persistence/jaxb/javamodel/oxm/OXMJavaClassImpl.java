@@ -123,11 +123,11 @@ public class OXMJavaClassImpl implements JavaClass {
                 Class<?> jTypeClass = PrivilegedAccessHelper.getClassForName(this.javaName);
                 jType = PrivilegedAccessHelper.newInstanceFromClass(jTypeClass);
             } catch (Exception e) {
-                return new ArrayList<JavaClass>();
+                return new ArrayList<>();
             }
         }
 
-        ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
+        ArrayList<JavaClass> argCollection = new ArrayList<>();
         if (jType instanceof ParameterizedType pType) {
             Type[] params = pType.getActualTypeArguments();
             for (Type type : params) {
@@ -184,7 +184,7 @@ public class OXMJavaClassImpl implements JavaClass {
      */
     @Override
     public Collection<JavaConstructor> getConstructors() {
-        ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>(1);
+        ArrayList<JavaConstructor> constructors = new ArrayList<>(1);
         constructors.add(new OXMJavaConstructorImpl(this));
         return constructors;
     }
@@ -196,7 +196,7 @@ public class OXMJavaClassImpl implements JavaClass {
      */
     @Override
     public Collection<JavaClass> getDeclaredClasses() {
-        return new ArrayList<JavaClass>();
+        return new ArrayList<>();
     }
 
     /**
@@ -216,7 +216,7 @@ public class OXMJavaClassImpl implements JavaClass {
      */
     @Override
     public Collection<JavaConstructor> getDeclaredConstructors() {
-        ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>(1);
+        ArrayList<JavaConstructor> constructors = new ArrayList<>(1);
         constructors.add(new OXMJavaConstructorImpl(this));
         return constructors;
     }
@@ -250,7 +250,7 @@ public class OXMJavaClassImpl implements JavaClass {
      */
     @Override
     public Collection<JavaField> getDeclaredFields() {
-        List<JavaField> fieldsToReturn = new ArrayList<JavaField>();
+        List<JavaField> fieldsToReturn = new ArrayList<>();
 
         if (this.enumValues != null) {
             for (Iterator<String> iterator = this.enumValues.iterator(); iterator.hasNext();) {
@@ -331,7 +331,7 @@ public class OXMJavaClassImpl implements JavaClass {
      */
     @Override
     public Collection<JavaMethod> getDeclaredMethods() {
-        return new ArrayList<JavaMethod>();
+        return new ArrayList<>();
     }
 
     /**
@@ -355,7 +355,7 @@ public class OXMJavaClassImpl implements JavaClass {
      */
     @Override
     public Collection<JavaMethod> getMethods() {
-        return new ArrayList<JavaMethod>();
+        return new ArrayList<>();
     }
 
     /**
@@ -659,7 +659,7 @@ public class OXMJavaClassImpl implements JavaClass {
      */
     @Override
     public Collection<JavaAnnotation> getAnnotations() {
-        return new ArrayList<JavaAnnotation>();
+        return new ArrayList<>();
     }
 
     /**
@@ -682,7 +682,7 @@ public class OXMJavaClassImpl implements JavaClass {
      */
     @Override
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
-        return new ArrayList<JavaAnnotation>();
+        return new ArrayList<>();
     }
 
     /**

@@ -319,7 +319,7 @@ public final class EntityManagerProperties {
      */
     public static final String COMPOSITE_UNIT_PROPERTIES = PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES;
 
-    private static final Set<String> supportedProperties = new HashSet<String>() {
+    private static final Set<String> supportedProperties = new HashSet<>() {
 
         {
             add(JOIN_EXISTING_TRANSACTION);

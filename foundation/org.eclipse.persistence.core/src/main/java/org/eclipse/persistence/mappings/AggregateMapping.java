@@ -289,7 +289,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         return getObjectBuilder(sourceAttributeValue, session).buildNewInstance();
     }
 
-    /**
+    /*
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
@@ -298,12 +298,12 @@ public abstract class AggregateMapping extends DatabaseMapping {
         // no identity, this is a no-op.
 //    }
 
-    /**
+    /*
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
 //    public void cascadeRegisterNewIfRequired(Object object, UnitOfWork uow, Map visitedObjects){
-        //aggregate objects are not registeres as they have no identity, this is a no-op.
+        //aggregate objects are not registered as they have no identity, this is a no-op.
 //    }
 
     /**

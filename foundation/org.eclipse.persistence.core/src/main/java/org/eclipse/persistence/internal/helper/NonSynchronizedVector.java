@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,11 @@ import java.util.function.UnaryOperator;
  */
 public class NonSynchronizedVector<E> extends Vector<E> {
     public static <E> NonSynchronizedVector<E> newInstance(int initialCapacity, int capacityIncrement) {
-        return new NonSynchronizedVector<E>(initialCapacity, capacityIncrement);
+        return new NonSynchronizedVector<>(initialCapacity, capacityIncrement);
     }
 
     public static <E> NonSynchronizedVector<E> newInstance(int initialCapacity) {
-        return new NonSynchronizedVector<E>(initialCapacity);
+        return new NonSynchronizedVector<>(initialCapacity);
     }
 
     public static <E> NonSynchronizedVector<E> newInstance() {
@@ -158,7 +158,7 @@ public class NonSynchronizedVector<E> extends Vector<E> {
 
     @Override
     public Enumeration<E> elements() {
-        return new Enumeration<E>() {
+        return new Enumeration<>() {
             int count = 0;
 
             public boolean hasMoreElements() {
@@ -499,7 +499,7 @@ public class NonSynchronizedVector<E> extends Vector<E> {
         while (e1.hasNext() && e2.hasNext()) {
             E o1 = e1.next();
             Object o2 = e2.next();
-            if (!(o1==null ? o2==null : o1.equals(o2)))
+            if (!(Objects.equals(o1, o2)))
                 return false;
         }
         return !(e1.hasNext() || e2.hasNext());
@@ -532,7 +532,7 @@ public class NonSynchronizedVector<E> extends Vector<E> {
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        return new NonSynchronizedSubVector<E>(this, fromIndex, toIndex);
+        return new NonSynchronizedSubVector<>(this, fromIndex, toIndex);
     }
 
     @Override

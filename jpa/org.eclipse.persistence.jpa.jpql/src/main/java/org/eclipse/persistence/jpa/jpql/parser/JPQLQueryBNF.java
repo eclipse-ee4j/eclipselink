@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -161,7 +161,7 @@ public abstract class JPQLQueryBNF {
     }
 
     private static Filter<JPQLQueryBNF> buildNonCompoundFilter() {
-        return new Filter<JPQLQueryBNF>() {
+        return new Filter<>() {
             @Override
             public boolean accept(JPQLQueryBNF queryBNF) {
                 return !queryBNF.isCompound();

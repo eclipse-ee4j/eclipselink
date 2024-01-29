@@ -393,9 +393,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                 if (concreteClass == null) {
                     throw DescriptorException.missingClassForIndicatorFieldValue(classFieldValue, getDescriptor());
                 }
-            } catch (ClassNotFoundException e) {
-                throw DescriptorException.missingClassForIndicatorFieldValue(classFieldValue, getDescriptor());
-            } catch (ClassCastException e) {
+            } catch (ClassNotFoundException | ClassCastException e) {
                 throw DescriptorException.missingClassForIndicatorFieldValue(classFieldValue, getDescriptor());
             }
         }
@@ -1022,7 +1020,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         initializeWithAllSubclassesExpression();
         if (hasView()) {
             // Set the table qualifier on the inheritance view.
-            if ((session.getDatasourcePlatform().getTableQualifier().length() != 0) && (getReadAllSubclassesView().getTableQualifier().length() == 0)) {
+            if ((!session.getDatasourcePlatform().getTableQualifier().isEmpty()) && (getReadAllSubclassesView().getTableQualifier().isEmpty())) {
                 getReadAllSubclassesView().setTableQualifier(session.getDatasourcePlatform().getTableQualifier());
             }
         }
@@ -1550,7 +1548,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * @see #setOnlyInstancesExpression(Expression)
      */
     public void setClassExtractionMethodName(String staticClassClassExtractionMethod) {
-        if ((staticClassClassExtractionMethod == null) || (staticClassClassExtractionMethod.length() == 0)) {
+        if ((staticClassClassExtractionMethod == null) || (staticClassClassExtractionMethod.isEmpty())) {
             return;
         }
         if (!(getClassExtractor() instanceof MethodClassExtractor)) {

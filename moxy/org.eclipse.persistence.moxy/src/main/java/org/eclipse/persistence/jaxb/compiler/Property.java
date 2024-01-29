@@ -81,7 +81,7 @@ public class Property implements Cloneable {
     private boolean isAnyElement = false;
     private Helper helper;
     private Map<Object, Object> userProperties;
-    private List<Facet> facets = new ArrayList<Facet>();
+    private List<Facet> facets = new ArrayList<>();
     private boolean isXmlValueExtension;
     private boolean isXmlIdExtension;
 
@@ -203,7 +203,7 @@ public class Property implements Cloneable {
 
         // If no generic superclass was found, use the old method of looking at
         // marshal method return type.  This mechanism is used for Dynamic JAXB.
-        ArrayList<JavaMethod> marshalMethods = new ArrayList<JavaMethod>();
+        ArrayList<JavaMethod> marshalMethods = new ArrayList<>();
 
         // Look for marshal method
         for (JavaMethod method : adapterCls.getMethods()) {
@@ -376,7 +376,7 @@ public class Property implements Cloneable {
             Map<String, JavaClass> variableToType = null;
 
             if(cls instanceof JavaClassImpl){
-                variableToType = new HashMap<String, JavaClass>();
+                variableToType = new HashMap<>();
                 TypeVariable[] tvs = ((JavaClassImpl)cls).getJavaClass().getTypeParameters();
                 if(tvs.length == typeArgsArray.length){
                     for (int x = 0; x < tvs.length; x++) {
@@ -1087,7 +1087,7 @@ public class Property implements Cloneable {
      */
     public void addReferencedElement(ElementDeclaration element) {
         if (referencedElements == null) {
-            referencedElements = new ArrayList<ElementDeclaration>();
+            referencedElements = new ArrayList<>();
         }
         if (!referencedElements.contains(element)) {
             referencedElements.add(element);

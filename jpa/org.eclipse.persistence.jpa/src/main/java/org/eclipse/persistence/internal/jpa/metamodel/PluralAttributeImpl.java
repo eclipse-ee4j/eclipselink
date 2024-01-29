@@ -182,7 +182,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
 
     @Override
     public String toString() {
-        StringBuffer aBuffer = new StringBuffer(getJavaType().getSimpleName());
+        StringBuilder aBuffer = new StringBuilder(getJavaType().getSimpleName());
         aBuffer.append("AttributeImpl[");
         //aBuffer.append(getElementType());
         //aBuffer.append(",");

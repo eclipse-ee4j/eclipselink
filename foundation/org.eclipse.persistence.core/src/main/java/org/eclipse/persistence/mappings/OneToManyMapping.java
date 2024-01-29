@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1127,7 +1127,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public void postInitializeSourceAndTargetExpressions() {
         // EL Bug 426500
         // postInitialize and set source expression fields using my descriptor
-        if (this.sourceExpressionsToPostInitialize != null && this.sourceExpressionsToPostInitialize.size() > 0) {
+        if (this.sourceExpressionsToPostInitialize != null && !this.sourceExpressionsToPostInitialize.isEmpty()) {
             ClassDescriptor descriptor = getDescriptor();
             ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
             for (Iterator<Expression> expressions = this.sourceExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
@@ -1145,7 +1145,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         // postInitialize and set target expression fields using my reference descriptor
-        if (this.targetExpressionsToPostInitialize != null && this.targetExpressionsToPostInitialize.size() > 0) {
+        if (this.targetExpressionsToPostInitialize != null && !this.targetExpressionsToPostInitialize.isEmpty()) {
             ClassDescriptor descriptor = getReferenceDescriptor();
             ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
             for (Iterator<Expression> expressions = this.targetExpressionsToPostInitialize.iterator(); expressions.hasNext();) {

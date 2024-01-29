@@ -478,7 +478,7 @@ public class ProviderHelper extends XRServiceFactory {
         try {
             XMLContext xmlContext = dbwsAdapter.getXMLContext();
             XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
-            if (attachments != null && attachments.size() > 0) {
+            if (attachments != null && !attachments.isEmpty()) {
                 unmarshaller.setAttachmentUnmarshaller(new XMLAttachmentUnmarshaller() {
                     Map<String,DataHandler> attachments;
                     public XMLAttachmentUnmarshaller setAttachments(Map<String, DataHandler> attachments) {

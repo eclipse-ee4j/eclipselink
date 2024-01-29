@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -145,7 +145,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
             // hold results of setCustomSQLArgumentType and useCustomSQLCursorOutputAsResultSet methods
             List<Object> updatedParameters = null;
             List<ParameterType> updatedParameterTypes = null;
-            if (getParameters().size() > 0) {
+            if (!getParameters().isEmpty()) {
                 updatedParameters = getParameters();
                 setParameters(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance());
                 updatedParameterTypes = getParameterTypes();

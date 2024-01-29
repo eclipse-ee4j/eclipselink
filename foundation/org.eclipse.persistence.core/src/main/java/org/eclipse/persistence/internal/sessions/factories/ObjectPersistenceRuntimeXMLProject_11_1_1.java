@@ -858,21 +858,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         @Override
         public Object buildNewInstance() throws DescriptorException {
-            Object arg = null;
-            switch (argType) {
-                case STORED_PROCEDURE_ARG:
-                    arg = new StoredProcedureArgument();
-                    break;
-                case STORED_PROCEDURE_INOUT_ARG:
-                    arg = new StoredProcedureInOutArgument();
-                    break;
-                case STORED_PROCEDURE_OUT_ARG:
-                    arg = new StoredProcedureOutArgument();
-                    break;
-                case STORED_PROCEDURE_OUTCURSOR_ARG:
-                    arg = new StoredProcedureOutCursorArgument();
-                    break;
-            }
+            Object arg = switch (argType) {
+                case STORED_PROCEDURE_ARG -> new StoredProcedureArgument();
+                case STORED_PROCEDURE_INOUT_ARG -> new StoredProcedureInOutArgument();
+                case STORED_PROCEDURE_OUT_ARG -> new StoredProcedureOutArgument();
+                case STORED_PROCEDURE_OUTCURSOR_ARG -> new StoredProcedureOutCursorArgument();
+            };
             return arg;
         }
     }

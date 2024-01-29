@@ -131,7 +131,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
             }
         }
 
-        return names.toArray(new String[names.size()]);
+        return names.toArray(new String[0]);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -415,7 +415,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             return null;
         }
         String namespaceURI = qName.getNamespaceURI();
-        if(null == namespaceURI || 0 == namespaceURI.length()) {
+        if(null == namespaceURI || namespaceURI.isEmpty()) {
             if(getNamespaceResolver() != null && getNamespaceResolver().getDefaultNamespaceURI() != null) {
                 //need to add a default namespace declaration.
                 defaultNamespaceDeclaration(namespaceURI);
@@ -745,9 +745,9 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         if(!this.hasCustomNamespaceMapper()) {
             return xPathFragment.getShortName();
         }
-        if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
+        if(xPathFragment.getNamespaceURI() != null && !xPathFragment.getNamespaceURI().isEmpty()) {
             String prefix = this.getPrefixForFragment(xPathFragment);
-            if(prefix != null && prefix.length() > 0) {
+            if(prefix != null && !prefix.isEmpty()) {
                 return prefix + Constants.COLON + xPathFragment.getLocalName();
             }
         }
@@ -770,7 +770,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             return xPathFragment.getPrefix();
         }
         String uri = xPathFragment.getNamespaceURI();
-        if(uri == null || uri.length() == 0) {
+        if(uri == null || uri.isEmpty()) {
             return Constants.EMPTY_STRING;
         }
 

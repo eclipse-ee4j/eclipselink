@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,9 +67,7 @@ public class AnyMappingContentHandler extends DeferredContentHandler {
                  unmappedContentHandler = (UnmappedContentHandler)privilegedNewInstanceFromClass.run();
              } catch (ClassCastException e) {
                  throw XMLMarshalException.unmappedContentHandlerDoesntImplement(e, unmappedContentHandlerClass.getName());
-             } catch (IllegalAccessException e) {
-                 throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
-             } catch (InstantiationException e) {
+             } catch (IllegalAccessException | InstantiationException e) {
                  throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
              }
          }

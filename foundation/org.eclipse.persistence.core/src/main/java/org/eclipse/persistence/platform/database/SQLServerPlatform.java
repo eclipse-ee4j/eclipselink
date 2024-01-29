@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,8 +58,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -97,10 +95,8 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     @Override
     public Map<Object, Object> connectionProperties() {
         // All MS SQL Server properties must be of String type.
-        Map<String, String> connectionProperties = new HashMap<>();
         // Send Time values as TIME type.
-        connectionProperties.put("sendTimeAsDatetime", Boolean.FALSE.toString());
-        return Collections.unmodifiableMap(connectionProperties);
+        return Map.of("sendTimeAsDatetime", Boolean.FALSE.toString());
     }
 
     @Override

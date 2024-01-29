@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,7 +101,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (isInCharacterBlock) {
-            if (!currentBuffer.toString().trim().equals("") && !currentDataObjects.empty()) {
+            if (!currentBuffer.toString().trim().isEmpty() && !currentDataObjects.empty()) {
                 DataObject dObj = (DataObject) currentDataObjects.peek();
                 dObj.getSequence().addText(currentBuffer.toString());
 
@@ -191,11 +191,11 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
 
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        if ((currentDataObjects.size() == 0) && (currentProperties.size() == 0)) {
+        if ((currentDataObjects.isEmpty()) && (currentProperties.isEmpty())) {
             return;
         }
 
-        if ((currentDataObjects.size() == 1) && (currentProperties.size() == 0)) {
+        if ((currentDataObjects.size() == 1) && (currentProperties.isEmpty())) {
             parentRecord.getUnmarshaller().getUnmarshalListener().afterUnmarshal(currentDataObjects.peek(), null);
             currentDataObjects.pop();
             depth--;
@@ -230,9 +230,9 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 //if depth and stack size are the same it means complex or simple.
                 DataObject nextDO = (DataObject)currentDataObjects.peek();
 
-                if (nextDO.getInstanceProperties().size() > 0) {
+                if (!nextDO.getInstanceProperties().isEmpty()) {
                     simple = false;
-                    if (!currentBuffer.toString().trim().equals("")) {
+                    if (!currentBuffer.toString().trim().isEmpty()) {
                         DataObject dObj = (DataObject) currentDataObjects.peek();
                         dObj.getSequence().addText(currentBuffer.toString());
                     }
@@ -244,7 +244,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         }
 
         lastEvent = END_ELEMENT;
-        if (simple && (!isInCharacterBlock || (currentBuffer.length() == 0))) {
+        if (simple && (!isInCharacterBlock || (currentBuffer.isEmpty()))) {
             return;
         }
 
@@ -393,7 +393,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     private SDOProperty defineNewSDOProperty(String uri, String localName, boolean isElement, Type type) {
         DataObject currentDataObject = (DataObject)currentDataObjects.peek();
 
-        if ((uri != null) && uri.equals("")) {
+        if ((uri != null) && uri.isEmpty()) {
             uri = NO_NAMESPACE;
         }
 

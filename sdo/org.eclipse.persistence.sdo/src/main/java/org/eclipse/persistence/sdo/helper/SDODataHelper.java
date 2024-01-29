@@ -261,7 +261,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        StringBuffer dur = new StringBuffer();
+        StringBuilder dur = new StringBuilder();
         dur.append("P");
         dur.append(calendar.get(Calendar.YEAR));
         dur.append("Y");

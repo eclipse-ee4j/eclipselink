@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -242,15 +242,13 @@ public class DynamicClassLoader extends ClassLoader {
                 if (bytes != null) {
                     String outputPath = PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
 
-                    if (!outputPath.equals("")) {
+                    if (!outputPath.isEmpty()) {
                         Helper.outputClassFile(className, bytes, outputPath);
                     }
                 }
                 return defineDynamicClass(className, bytes);
-            } catch (ClassFormatError cfe) {
+            } catch (ClassFormatError | ClassCircularityError cfe) {
                 throw new ClassNotFoundException(className, cfe);
-            } catch (ClassCircularityError cce) {
-                throw new ClassNotFoundException(className, cce);
             }
         }
 
@@ -308,7 +306,7 @@ public class DynamicClassLoader extends ClassLoader {
         }
 
         public String[] getLiteralLabels() {
-            return literalLabels.toArray(new String[literalLabels.size()]);
+            return literalLabels.toArray(new String[0]);
         }
 
         public void addLiteralLabel(String literalLabel) {

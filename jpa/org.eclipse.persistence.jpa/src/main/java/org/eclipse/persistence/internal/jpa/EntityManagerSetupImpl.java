@@ -3236,35 +3236,41 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         String batchWritingSettingString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.BATCH_WRITING, persistenceProperties, this.session);
         if (batchWritingSettingString != null) {
              this.session.getPlatform().setUsesBatchWriting(batchWritingSettingString != BatchWriting.None);
-             if (batchWritingSettingString == BatchWriting.JDBC) {
-                 this.session.getPlatform().setUsesJDBCBatchWriting(true);
-                 this.session.getPlatform().setUsesNativeBatchWriting(false);
-             } else if (batchWritingSettingString == BatchWriting.Buffered) {
-                 this.session.getPlatform().setUsesJDBCBatchWriting(false);
-                 this.session.getPlatform().setUsesNativeBatchWriting(false);
-             } else if (batchWritingSettingString == BatchWriting.OracleJDBC) {
-                 this.session.getPlatform().setUsesNativeBatchWriting(true);
-                 this.session.getPlatform().setUsesJDBCBatchWriting(true);
-             } else if (batchWritingSettingString == BatchWriting.None) {
-                 // Nothing required.
-             } else {
-                 if (batchWritingSettingString.equalsIgnoreCase("ExaLogic")) {
-                     batchWritingSettingString = "oracle.toplink.exalogic.batch.DynamicParameterizedBatchWritingMechanism";
-                 }
-                 BatchWritingMechanism mechanism = null;
-                 try {
-                     Class<? extends BatchWritingMechanism> cls = findClassForProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, loader);
-                     Constructor<? extends BatchWritingMechanism> constructor = cls.getConstructor();
-                     mechanism = constructor.newInstance();
-                 } catch (Exception exception) {
-                     if (batchWritingSettingString.indexOf('.') == -1) {
-                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-illegal-property-value", new Object[]{PersistenceUnitProperties.BATCH_WRITING, batchWritingSettingString}));
-                     } else {
-                         throw EntityManagerSetupException.failedToInstantiateProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, exception);
-                     }
-                 }
-                 this.session.getPlatform().setBatchWritingMechanism(mechanism);
-             }
+            switch (batchWritingSettingString) {
+                case BatchWriting.JDBC -> {
+                    this.session.getPlatform().setUsesJDBCBatchWriting(true);
+                    this.session.getPlatform().setUsesNativeBatchWriting(false);
+                }
+                case BatchWriting.Buffered -> {
+                    this.session.getPlatform().setUsesJDBCBatchWriting(false);
+                    this.session.getPlatform().setUsesNativeBatchWriting(false);
+                }
+                case BatchWriting.OracleJDBC -> {
+                    this.session.getPlatform().setUsesNativeBatchWriting(true);
+                    this.session.getPlatform().setUsesJDBCBatchWriting(true);
+                }
+                case BatchWriting.None -> {
+                    // Nothing required.
+                }
+                default -> {
+                    if (batchWritingSettingString.equalsIgnoreCase("ExaLogic")) {
+                        batchWritingSettingString = "oracle.toplink.exalogic.batch.DynamicParameterizedBatchWritingMechanism";
+                    }
+                    BatchWritingMechanism mechanism = null;
+                    try {
+                        Class<? extends BatchWritingMechanism> cls = findClassForProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, loader);
+                        Constructor<? extends BatchWritingMechanism> constructor = cls.getConstructor();
+                        mechanism = constructor.newInstance();
+                    } catch (Exception exception) {
+                        if (batchWritingSettingString.indexOf('.') == -1) {
+                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-illegal-property-value", new Object[]{PersistenceUnitProperties.BATCH_WRITING, batchWritingSettingString}));
+                        } else {
+                            throw EntityManagerSetupException.failedToInstantiateProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, exception);
+                        }
+                    }
+                    this.session.getPlatform().setBatchWritingMechanism(mechanism);
+                }
+            }
         }
         // Set batch size.
         String sizeString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.BATCH_WRITING_SIZE, persistenceProperties, this.session);
@@ -4736,7 +4742,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     @Deprecated
     protected void writeDDLToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc,
             TableCreationType ddlType) {
-        writeDDLToFiles(mgr, appLocation, createDDLJdbc, dropDDLJdbc, ddlType, Collections.EMPTY_MAP);
+        writeDDLToFiles(mgr, appLocation, createDDLJdbc, dropDDLJdbc, ddlType, Collections.emptyMap());
     }
 
     /**
@@ -4868,12 +4874,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-invalid-source-script-type", new Object[]{ source , source.getClass()}));
                 }
 
-                StringBuffer sqlBuffer;
+                StringBuilder sqlBuffer;
                 int data = reader.read();
 
                 // While there is still data to read, read line by line.
                 while (data != -1) {
-                    sqlBuffer = new StringBuffer();
+                    sqlBuffer = new StringBuilder();
                     char aChar = (char) data;
 
                     // Read till the end of the line or maybe even file.

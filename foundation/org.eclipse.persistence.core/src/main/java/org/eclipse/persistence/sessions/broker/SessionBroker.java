@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -876,7 +876,7 @@ public class SessionBroker extends DatabaseSessionImpl {
                 getSessionNamesByClass().put(descriptorClass, name);
                 if(this.shouldUseDescriptorAliases) {
                     String alias = descriptor.getAlias();
-                    if(alias != null && alias.length() > 0) {
+                    if(alias != null && !alias.isEmpty()) {
                         ClassDescriptor anotherDescriptor = getDescriptorForAlias(alias);
                         if(anotherDescriptor != null) {
                             if(anotherDescriptor.getJavaClass() != descriptor.getJavaClass()) {

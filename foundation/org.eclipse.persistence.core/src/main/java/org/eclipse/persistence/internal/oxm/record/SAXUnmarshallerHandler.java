@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -186,14 +186,14 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         try {
             String name;
-            if (localName == null || localName.length() == 0) {
+            if (localName == null || localName.isEmpty()) {
                 name = qName;
             } else {
                 name = localName;
             }
 
             XPathQName rootQName;
-            if (namespaceURI == null || namespaceURI.length() == 0) {
+            if (namespaceURI == null || namespaceURI.isEmpty()) {
                 rootQName = new XPathQName(name, xmlReader.isNamespaceAware() );
             } else {
                 rootQName = new XPathQName(namespaceURI, name, xmlReader.isNamespaceAware() );
@@ -245,7 +245,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     String descLocalName = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getLocalName();
                     if( descLocalName != null && descLocalName.equals(localName) ){
                         String descUri = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getNamespaceURI();
-                        if(!xmlReader.isNamespaceAware() || (xmlReader.isNamespaceAware() && ((namespaceURI == null && descUri == null ) || (namespaceURI !=null &&namespaceURI.length() == 0 && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))))){
+                        if(!xmlReader.isNamespaceAware() || (xmlReader.isNamespaceAware() && ((namespaceURI == null && descUri == null ) || (namespaceURI !=null && namespaceURI.isEmpty() && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))))){
                             //found a descriptor based on root element then know we won't need to wrap in an XMLRoot
                            shouldWrap = false;
                         }
@@ -317,9 +317,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                         unmappedContentHandler = (UnmappedContentHandler)privilegedNewInstanceFromClass.run();
                     } catch (ClassCastException e) {
                         throw XMLMarshalException.unmappedContentHandlerDoesntImplement(e, unmappedContentHandlerClass.getName());
-                    } catch (IllegalAccessException e) {
-                        throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
-                    } catch (InstantiationException e) {
+                    } catch (IllegalAccessException | InstantiationException e) {
                         throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
                     }
 

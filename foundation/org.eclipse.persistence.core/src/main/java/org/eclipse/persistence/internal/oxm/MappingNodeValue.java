@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,7 @@ public abstract class MappingNodeValue extends NodeValue {
             }
 
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
-            if ((prefix == null) || prefix.length() == 0) {
+            if ((prefix == null) || prefix.isEmpty()) {
 
                 if(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(qname.getNamespaceURI())){
                     prefix = marshalRecord.getNamespaceResolver().generatePrefix(Constants.SCHEMA_PREFIX);

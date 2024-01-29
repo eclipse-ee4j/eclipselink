@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class OPStack {
     /** Visibility reduced from [public] in 2.1.0. May 15 2007 */
     private Stack stack;
 
-    /** Visibility reduced from [public] in 2.1.0. May 15 2007 */
+    /* Visibility reduced from [public] in 2.1.0. May 15 2007 */
 
     //private String expression;
 
@@ -105,7 +105,7 @@ public class OPStack {
      * @return
      */
     private Token getNextToken() {
-        if (tokens.size() > 0) {
+        if (!tokens.isEmpty()) {
             Token tok = (Token)tokens.get(0);
             tokens.remove(0);
             return tok;
@@ -119,7 +119,7 @@ public class OPStack {
      * @param exp
      */
     private void parseExpression(String exp) {
-        StringBuffer sbuf = new StringBuffer();
+        StringBuilder sbuf = new StringBuilder();
         char ch;
         Token tok;
         for (int i = 0; i < exp.length(); i++) {
@@ -129,42 +129,42 @@ public class OPStack {
                 if (((i + 2) < exp.length()) && ((exp.charAt(i + 1) == 'o') && (exp.charAt(i + 2) == 'r'))) {
                     tok = new Token(sbuf.toString(), Token.ARG);
                     tokens.add(tok);
-                    sbuf = new StringBuffer();
+                    sbuf = new StringBuilder();
                     sbuf.append(exp.charAt(++i));
                     sbuf.append(exp.charAt(++i));
                     tok = new Token(sbuf.toString(), Token.DI, Token.OR_PR);
                     tokens.add(tok);
-                    sbuf = new StringBuffer();
+                    sbuf = new StringBuilder();
                 } else if (((i + 3) < exp.length()) && ((exp.charAt(i + 1) == 'a') && (exp.charAt(i + 2) == 'n') && (exp.charAt(i + 3) == 'd'))) {
                     tok = new Token(sbuf.toString(), Token.ARG);
                     tokens.add(tok);
-                    sbuf = new StringBuffer();
+                    sbuf = new StringBuilder();
                     sbuf.append(exp.charAt(++i));
                     sbuf.append(exp.charAt(++i));
                     sbuf.append(exp.charAt(++i));
                     tok = new Token(sbuf.toString(), Token.DI, Token.AND_PR);
                     tokens.add(tok);
-                    sbuf = new StringBuffer();
+                    sbuf = new StringBuilder();
                 }
             } else if (ch == '=') {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
                 tok = new Token(Character.toString(ch), Token.DI, Token.EQ_PR);
                 tokens.add(tok);
-                sbuf = new StringBuffer();
+                sbuf = new StringBuilder();
             } else if ((ch == '!') && (((i + 1) < exp.length()) && (exp.charAt(i + 1) == '='))) {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
-                sbuf = new StringBuffer();
+                sbuf = new StringBuilder();
                 sbuf.append(ch);
                 sbuf.append(exp.charAt(++i));
                 tok = new Token(sbuf.toString().trim(), Token.DI, Token.NEQ_PR);
                 tokens.add(tok);
-                sbuf = new StringBuffer();
+                sbuf = new StringBuilder();
             } else if (ch == '<') {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
-                sbuf = new StringBuffer();
+                sbuf = new StringBuilder();
                 sbuf.append(ch);
                 if (((i + 1) < exp.length()) && (exp.charAt(i + 1) == '=')) {
                     sbuf.append(exp.charAt(++i));
@@ -173,11 +173,11 @@ public class OPStack {
                     tok = new Token(sbuf.toString().trim(), Token.DI, Token.LT_PR);
                 }
                 tokens.add(tok);
-                sbuf = new StringBuffer();
+                sbuf = new StringBuilder();
             } else if (ch == '>') {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
-                sbuf = new StringBuffer();
+                sbuf = new StringBuilder();
                 sbuf.append(ch);
                 if (((i + 1) < exp.length()) && (exp.charAt(i + 1) == '=')) {
                     sbuf.append(exp.charAt(++i));
@@ -186,20 +186,20 @@ public class OPStack {
                     tok = new Token(sbuf.toString().trim(), Token.DI, Token.GT_PR);
                 }
                 tokens.add(tok);
-                sbuf = new StringBuffer();
+                sbuf = new StringBuilder();
             } else if (ch == '(') {
-                if (sbuf.length() > 0) {
+                if (!sbuf.isEmpty()) {
                     tok = new Token(sbuf.toString(), Token.ARG);
                     tokens.add(tok);
-                    sbuf = new StringBuffer();
+                    sbuf = new StringBuilder();
                 }
                 tok = new Token(Character.toString(ch), Token.OPEN);
                 tokens.add(tok);
             } else if (ch == ')') {
-                if (sbuf.length() > 0) {
+                if (!sbuf.isEmpty()) {
                     tok = new Token(sbuf.toString(), Token.ARG);
                     tokens.add(tok);
-                    sbuf = new StringBuffer();
+                    sbuf = new StringBuilder();
                 }
                 tok = new Token(Character.toString(ch), Token.CLOSE);
                 tokens.add(tok);
@@ -209,10 +209,10 @@ public class OPStack {
                 }
             }
         }
-        if (sbuf.length() > 0) {
+        if (!sbuf.isEmpty()) {
             tok = new Token(sbuf.toString(), Token.ARG);
             tokens.add(tok);
-            sbuf = new StringBuffer();
+            sbuf = new StringBuilder();
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,14 +117,14 @@ public class SDOUtil {
         String strToken;
         String prefix;
         int position = 0;
-        StringBuffer pkgName = new StringBuffer();
+        StringBuilder pkgName = new StringBuilder();
         if (null == uriString || uriString.equals(SDOConstants.EMPTY_STRING)) {
             AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, INVALID_URI_WARNING,//
                     new Object[] { uriString, SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME }, false);
             return SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME;
         }
 
-        /**
+        /*
          * Step 1: (Remove the schema and ":" part)
          * An XML namespace is represented by a URI. Since XML Namespace will be
          *     mapped to a Java package, it is necessary to specify a default mapping from a
@@ -178,7 +178,7 @@ public class SDOUtil {
                 }
             }
         } finally {
-            /**
+            /*
              * Step 2: remove trailing file type, one of .?? or .??? or .html.
              * //example.org/go/file
              * Note: The trailing host fragment will be removed for non http|urn schemes such as file:.
@@ -186,7 +186,7 @@ public class SDOUtil {
             int potentialPathSepIndex = uriString.lastIndexOf('/'); // Don't handle ? param separator on purpose
             int potentialHostSepIndex = uriString.indexOf('/');
             int potentialFileExtIndex = uriString.lastIndexOf('.');
-            /**
+            /*
              * When to remove the last .ext or trailing host fragment.
              * Valid scheme    |  has file ext    = remove/keep last {.[^.]+} fragment
              * 0 | 0 Remove host prefix            ie: file://site.com -> file.site
@@ -204,7 +204,7 @@ public class SDOUtil {
                 }
             }
 
-            /**
+            /*
              * Step 3: (split string into word list) 3. Parse the remaining
              * String into a list of strings using / and : as separators
              * Treat consecutive separators as a single separator.
@@ -216,25 +216,25 @@ public class SDOUtil {
                 return SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME;
             }
 
-            /**
+            /*
              * Step 4: (unescape each escape sequence octet) 4. For each string
              * in the list produced by previous step, unescape each escape
              * sequence octet. {"example.org", "go", "file" } Generating a
              * Java package name 4/19/06 JAXB 2.0 - Final Release 341
              */
-            ArrayList<String> strings = new ArrayList<String>(length);
+            ArrayList<String> strings = new ArrayList<>(length);
             while (aTokenizer.hasMoreTokens()) {
                 strToken = aTokenizer.nextToken();
                 strings.add(decodeUriHexadecimalEscapeSequence(strToken));
             }
 
-            /**
+            /*
              * Step 5: replace [-] with [.] if the scheme is a URN 5. If the
              * scheme is a urn, replace all dashes, -, occurring in the
              * first component with [.].2
              */
 
-            /**
+            /*
              * Step 6: Apply algorithm described in Section 7.7 Unique Package
              * Names in [JLS] to derive a unique package name from the
              * potential internet domain name contained within the first
@@ -264,7 +264,7 @@ public class SDOUtil {
                 }
             }
 
-            /**
+            /*
              * Step 7: (convert each string to be all lower case) 7. For each
              * string in the list, convert each string to be all lower case.
              * {org, example, go, file }
@@ -274,7 +274,7 @@ public class SDOUtil {
                 strings.set(position++, aString.toLowerCase());
             }
 
-            /**
+            /*
              * Step 8: (convert each string to a valid identifier) 8. For each
              * string remaining, the following conventions are adopted from
              * [JLS] Section 7.7, Unique Package Names. Follow step 8a-c
@@ -282,9 +282,9 @@ public class SDOUtil {
              */
             position = 0;
             for (String aString : strings) {
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
 
-                /**
+                /*
                  * Step 8a: If the string component contains a hyphen, or any other
                  * special character not allowed in an identifier, convert it
                  * into an underscore.
@@ -298,7 +298,7 @@ public class SDOUtil {
                     }
                 }
 
-                /**
+                /*
                  * Step 8b:
                  * From the Java Language Specification section 7.7 b. If any of
                  * the resulting package name components are keywords then
@@ -307,7 +307,7 @@ public class SDOUtil {
                  * See the enum com.sun.tools.javac.parser.Token for a list of keywords
                  */
 
-                /**
+                /*
                  * Step 8c: If any of the resulting package name components start with
                  * a digit, or any other character that is not allowed as an
                  * initial character of an identifier, have an underscore
@@ -320,7 +320,7 @@ public class SDOUtil {
                     buffer.insert(0, '.');
                 }
 
-                pkgName.append(buffer.toString());
+                pkgName.append(buffer);
             }
             if(invalidOriginalFormat) {
                 AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST,//
@@ -340,7 +340,7 @@ public class SDOUtil {
      */
     private static String decodeUriHexadecimalEscapeSequence(String uri) {
         // This function is used by the Java Package Name generation algorithm that implements JAXB 2.0 D.5.1
-        StringBuffer sb = new StringBuffer(uri.length());
+        StringBuilder sb = new StringBuilder(uri.length());
         for (int index = 0; index < uri.length(); index++) {
             char c = uri.charAt(index);
             // Escape sequence found - get the hex value and convert
@@ -352,7 +352,7 @@ public class SDOUtil {
                     String g = uri.substring(index + 1, index + 3);
                     // Convert base 16 to base 10 to char and append
                     sb.append((char)Integer.parseInt(g, 16));
-                    /**
+                    /*
                      * Increase the index by 2 - so we skip the 2 digit hex code after the %
                      * See JAXB 2.0 spec p.348 section D.5.1.4
                      * "For each string in the list produced by step 3.  Unescape each escape sequence octet.
@@ -397,7 +397,7 @@ public class SDOUtil {
         preProcessSDOReservedNames(s);
 
         String[] as = getWordList(s);
-        StringBuffer stringbuffer = new StringBuffer();
+        StringBuilder stringbuffer = new StringBuilder();
         StringBuffer stringbuffer1 = new StringBuffer();
         if (as.length == 0) {
             return stringbuffer.toString();
@@ -478,7 +478,7 @@ public class SDOUtil {
      * @return
      */
     public static String setMethodName(String s) {
-        StringBuffer stringbuffer = new StringBuffer();
+        StringBuilder stringbuffer = new StringBuilder();
         stringbuffer.append(SET).append(methodName(s));
         return stringbuffer.toString();
     }
@@ -494,7 +494,7 @@ public class SDOUtil {
      * @return
      */
     public static String getMethodName(String s, String returnType) {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         if (returnType.equals(ClassConstants.PBOOLEAN.getName()) || returnType.equals(ClassConstants.BOOLEAN.getName())) {
             stringBuffer.append(IS);
         } else {
@@ -515,7 +515,7 @@ public class SDOUtil {
      * @return
      */
     public static String getBooleanGetMethodName(String s, String returnType){
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append(SDOUtil.GET);
         stringBuffer.append(SDOUtil.className(s, true, false, false));
         return stringBuffer.toString();
@@ -527,7 +527,7 @@ public class SDOUtil {
      * @return
      */
     public static String constantName(String s) {
-        StringBuffer stringbuffer = new StringBuffer();
+        StringBuilder stringbuffer = new StringBuilder();
         String[] as = getWordList(s);
         if (as.length > 0) {
             stringbuffer.append(as[0].toUpperCase());

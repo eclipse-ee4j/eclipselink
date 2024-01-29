@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -142,7 +142,7 @@ public class JNDIConnector implements Connector {
             // JDBCLogin usually initializes these values with an empty string.
             // WebLogic data source does not support the getConnection() call with arguments
             // it only supports the zero argument call. DM 26/07/2000
-            if ((user == null) || (user.length() == 0)) {
+            if ((user == null) || (user.isEmpty())) {
                 return dataSource.getConnection();
             } else {
                 Object passwordObject = properties.get("password");

@@ -1314,7 +1314,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public String getQualifiedName(String name) {
-        if (getTableQualifier().equals("")) {
+        if (getTableQualifier().isEmpty()) {
             return name;
         } else {
             return getTableQualifier() + "." + name;
@@ -1387,7 +1387,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public String getSequenceTableName() {
         if (getDefaultSequence().isTable()) {
             String tableName = ((TableSequence)getDefaultSequence()).getTableName();
-            if(tableName.length() == 0) {
+            if(tableName.isEmpty()) {
                 tableName = this.getDefaultSequenceTableName();
             }
             return tableName;
@@ -2703,7 +2703,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                 databaseCall.bindParameter(writer, dbValue);
                 nBoundParameters = 1;
             } else if (parameter instanceof UUID) {
-                appendString(((UUID)dbValue).toString(), writer);
+                appendString(dbValue.toString(), writer);
             } else {
                 // Assume database driver primitive that knows how to print itself, this is required for drivers
                 // such as Oracle JDBC, Informix JDBC and others, as well as client specific classes.
@@ -3061,7 +3061,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                 DatabaseField field = itFields.next();
                 FieldDefinition fieldDef;
                 //gfbug3307, should use columnDefinition if it was defined.
-                if ((field.getColumnDefinition()!= null) && (field.getColumnDefinition().length() == 0)) {
+                if ((field.getColumnDefinition()!= null) && (field.getColumnDefinition().isEmpty())) {
                     Class<?> type = ConversionManager.getObjectClass(field.getType());
                     // Default type to VARCHAR, if unknown.
                     if (type == null) {
@@ -3130,11 +3130,11 @@ public class DatabasePlatform extends DatasourcePlatform {
      * well as the value returned from the DatabasePlatform's getTableCreationSuffix()
      */
     public void writeTableCreationSuffix(Writer writer, String tableCreationSuffix) throws IOException {
-        if(tableCreationSuffix!=null && tableCreationSuffix.length() > 0) {
+        if(tableCreationSuffix!=null && !tableCreationSuffix.isEmpty()) {
             writer.write(" " + tableCreationSuffix);
         }
         String defaultTableCreationSuffix = getTableCreationSuffix();
-        if (defaultTableCreationSuffix !=null && defaultTableCreationSuffix.length()>0) {
+        if (defaultTableCreationSuffix !=null && !defaultTableCreationSuffix.isEmpty()) {
             writer.write(" " + defaultTableCreationSuffix);
         }
     }
@@ -3661,7 +3661,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else {
             queryString.append("CREATE INDEX ");
         }
-        if (!qualifier.equals("")) {
+        if (!qualifier.isEmpty()) {
             queryString.append(qualifier).append(".");
         }
         queryString.append(indexName).append(" ON ").append(fullTableName).append(" (");
@@ -3700,7 +3700,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public String buildDropIndex(String fullTableName, String indexName, String qualifier) {
         StringBuilder queryString = new StringBuilder();
         queryString.append("DROP INDEX ");
-        if (!qualifier.equals("")) {
+        if (!qualifier.isEmpty()) {
             queryString.append(qualifier).append(".");
         }
         queryString.append(indexName);

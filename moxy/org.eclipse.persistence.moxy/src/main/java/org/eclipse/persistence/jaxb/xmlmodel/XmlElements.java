@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,7 +135,7 @@ public class XmlElements
      */
     public List<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> getXmlElement() {
         if (xmlElement == null) {
-            xmlElement = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlElement>();
+            xmlElement = new ArrayList<>();
         }
         return this.xmlElement;
     }
@@ -236,7 +236,7 @@ public class XmlElements
      */
     public List<XmlJoinNodes> getXmlJoinNodes() {
         if (xmlJoinNodes == null) {
-            xmlJoinNodes = new ArrayList<XmlJoinNodes>();
+            xmlJoinNodes = new ArrayList<>();
         }
         return this.xmlJoinNodes;
     }
@@ -248,7 +248,7 @@ public class XmlElements
      * more entries, false otherwise
      */
     public boolean hasXmlJoinNodes() {
-        return getXmlJoinNodes().size() > 0;
+        return !getXmlJoinNodes().isEmpty();
     }
 
     /**

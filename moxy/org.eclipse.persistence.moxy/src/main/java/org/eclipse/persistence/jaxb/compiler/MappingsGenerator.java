@@ -300,7 +300,7 @@ public class MappingsGenerator {
                 AttributeGroup group = descriptor.getAttributeGroup(next.getName());
                 Map<String, List<CoreAttributeGroup>> subgraphs = processSubgraphs(next.getXmlNamedSubgraph());
                 for(XmlNamedAttributeNode nextAttributeNode:next.getXmlNamedAttributeNode()) {
-                    if(nextAttributeNode.getSubgraph() == null || nextAttributeNode.getSubgraph().length() == 0) {
+                    if(nextAttributeNode.getSubgraph() == null || nextAttributeNode.getSubgraph().isEmpty()) {
                         group.addAttribute(nextAttributeNode.getName());
                     } else {
                         List<CoreAttributeGroup> nestedGroups = subgraphs.get(nextAttributeNode.getSubgraph());
@@ -333,7 +333,7 @@ public class MappingsGenerator {
                     AttributeGroup subclassGroup = new AttributeGroup(next.getName(), nextSubclass.getType(), true);
                     group.getSubClassGroups().put(nextSubclass.getType(), subclassGroup);
                     for(XmlNamedAttributeNode nextAttributeNode:nextSubclass.getXmlNamedAttributeNode()) {
-                        if(nextAttributeNode.getSubgraph() == null || nextAttributeNode.getSubgraph().length() == 0) {
+                        if(nextAttributeNode.getSubgraph() == null || nextAttributeNode.getSubgraph().isEmpty()) {
                             subclassGroup.addAttribute(nextAttributeNode.getName());
                         } else {
                             List<CoreAttributeGroup> nestedGroups = subgraphs.get(nextAttributeNode.getSubgraph());
@@ -392,11 +392,11 @@ public class MappingsGenerator {
                     }
                     if(group.getTypeName().equals(typeName)) {
                         for(XmlNamedAttributeNode attributeNode:attributeNodes) {
-                            if(attributeNode.getSubgraph() == null || attributeNode.getSubgraph().length() == 0) {
+                            if(attributeNode.getSubgraph() == null || attributeNode.getSubgraph().isEmpty()) {
                                 group.addAttribute(attributeNode.getName());
                             } else {
                                 List<CoreAttributeGroup> nestedGroups = subgroups.get(attributeNode.getSubgraph());
-                                if(nestedGroups == null || nestedGroups.size() == 0) {
+                                if(nestedGroups == null || nestedGroups.isEmpty()) {
                                     //TODO: Exception or check for root level ones on target class
                                 } else {
                                     group.addAttribute(attributeNode.getName(), nestedGroups.get(0));
@@ -463,7 +463,7 @@ public class MappingsGenerator {
         JavaClass manyValueJavaClass = helper.getJavaClass(ManyValue.class);
         if (!manyValueJavaClass.isAssignableFrom(javaClass)){
             if(isDefaultNamespaceAllowed
-                    && namespace.length() != 0
+                    && !namespace.isEmpty()
                     && globalNamespaceResolver.getDefaultNamespaceURI() == null
                     && !resolverForDescriptor.getPrefixesToNamespaces().containsValue(namespace)) {
                 globalNamespaceResolver.setDefaultNamespaceURI(namespace);
@@ -472,7 +472,7 @@ public class MappingsGenerator {
             if (rootElem == null) {
                 descriptor.setDefaultRootElement("");
             } else {
-                if (namespace.length() == 0) {
+                if (namespace.isEmpty()) {
                     descriptor.setDefaultRootElement(elementName);
                 } else {
                     descriptor.setDefaultRootElement(getQualifiedString(getPrefixForNamespace(namespace, resolverForDescriptor), elementName));
@@ -623,12 +623,12 @@ public class MappingsGenerator {
 
     private void setSchemaContext(Descriptor desc, TypeInfo info) {
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
-        if (info.getClassNamespace() == null || info.getClassNamespace().equals("")) {
+        if (info.getClassNamespace() == null || info.getClassNamespace().isEmpty()) {
             schemaRef.setSchemaContext("/" + info.getSchemaTypeName());
             schemaRef.setSchemaContextAsQName(new QName(info.getSchemaTypeName()));
         } else {
             String prefix = desc.getNonNullNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
-            if (prefix != null && !prefix.equals("")) {
+            if (prefix != null && !prefix.isEmpty()) {
                 schemaRef.setSchemaContext("/" + prefix + ":" + info.getSchemaTypeName());
                 schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName(), prefix));
             } else {
@@ -1368,7 +1368,7 @@ public class MappingsGenerator {
                     namespace = "";
                 }
             }
-            if (namespace.equals("")) {
+            if (namespace.isEmpty()) {
                 wrapperXPath += (wrapper.getName() + "/");
             } else {
                 String prefix = getPrefixForNamespace(namespace, getNamespaceResolverForDescriptor(namespaceInfo));
@@ -1376,7 +1376,7 @@ public class MappingsGenerator {
             }
         }
         if(property.isMixedContent() && isCollection) {
-            if(wrapperXPath.length() == 0) {
+            if(wrapperXPath.isEmpty()) {
                 ((ChoiceCollectionMapping)mapping).setMixedContent(true);
             } else {
                 ((ChoiceCollectionMapping)mapping).setMixedContent(wrapperXPath.substring(0, wrapperXPath.length() - 1));
@@ -2126,7 +2126,7 @@ public class MappingsGenerator {
                 }
             } else if (helper.isCollectionType(theType)) {
                 Collection args = theType.getActualTypeArguments();
-                if (args.size() > 0) {
+                if (!args.isEmpty()) {
                     JavaClass itemType = (JavaClass) args.iterator().next();
                     Class<?> declaredClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
                             () -> PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader()),
@@ -2279,7 +2279,7 @@ public class MappingsGenerator {
             }
         } else if (helper.isCollectionType(collectionType)){
             Collection args = collectionType.getActualTypeArguments();
-            if (args.size() >0){
+            if (!args.isEmpty()){
                 JavaClass itemType = (JavaClass)args.iterator().next();
                 try {
                     Class<?> declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader());
@@ -2682,7 +2682,7 @@ public class MappingsGenerator {
         if (property.getInverseReferencePropertyName() != null) {
             mapping.getInverseReferenceMapping().setAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
-            if (property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
+            if (property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().isEmpty() && !property.getInverseReferencePropertySetMethodName().isEmpty()) {
                 mapping.getInverseReferenceMapping().setGetMethodName(property.getInverseReferencePropertySetMethodName());
                 mapping.getInverseReferenceMapping().setSetMethodName(property.getInverseReferencePropertySetMethodName());
                 JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getInverseReferenceMapping().getGetMethodName(), new JavaClass[]{});
@@ -2735,7 +2735,7 @@ public class MappingsGenerator {
         if (property.getInverseReferencePropertyName() != null) {
             mapping.getInverseReferenceMapping().setAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
-            if (property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
+            if (property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().isEmpty() && !property.getInverseReferencePropertySetMethodName().isEmpty()) {
                 mapping.getInverseReferenceMapping().setGetMethodName(property.getInverseReferencePropertySetMethodName());
                 mapping.getInverseReferenceMapping().setSetMethodName(property.getInverseReferencePropertySetMethodName());
                 JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getInverseReferenceMapping().getGetMethodName(), new JavaClass[]{});
@@ -2841,7 +2841,7 @@ public class MappingsGenerator {
                     }
                 }
 
-                if (namespace.equals("")) {
+                if (namespace.isEmpty()) {
                     xPathBuilder.append(wrapper.getName()).append("/");
                 } else {
             String prefix = getPrefixForNamespace(namespace, getNamespaceResolverForDescriptor(namespaceInfo));
@@ -2860,7 +2860,7 @@ public class MappingsGenerator {
                 } else {
                     QName name = property.getSchemaName();
                     String namespace = name.getNamespaceURI();
-                    if (namespace.equals("")) {
+                    if (namespace.isEmpty()) {
                         xPathBuilder.append(ATT).append(name.getLocalPart());
                     } else {
                         String prefix = getPrefixForNamespace(namespace, getNamespaceResolverForDescriptor(namespaceInfo));
@@ -3000,7 +3000,7 @@ public class MappingsGenerator {
 
                 }
             }else if(type != null && !type.isTransient()){
-                if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {
+                if(next.getNamespaceURI() == null || next.getNamespaceURI().isEmpty()) {
                     type.getDescriptor().addRootElement(next.getLocalPart());
                 } else {
                     Descriptor descriptor = type.getDescriptor();
@@ -3196,7 +3196,7 @@ public class MappingsGenerator {
                           desc.setResultAlwaysXMLRoot(true);
                       }
                   } else {
-                      if(namespaceUri.equals("")) {
+                      if(namespaceUri.isEmpty()) {
                           desc.setDefaultRootElement(next.getLocalPart());
                       } else {
                           NamespaceResolver resolver = new org.eclipse.persistence.oxm.NamespaceResolver();
@@ -3390,7 +3390,7 @@ public class MappingsGenerator {
                 parameterTypes.add(typeClass);
             }
             isSetNullPolicy.setIsSetParameters(parameters.toArray());
-            isSetNullPolicy.setIsSetParameterTypes(parameterTypes.toArray(new Class<?>[parameterTypes.size()]));
+            isSetNullPolicy.setIsSetParameterTypes(parameterTypes.toArray(new Class<?>[0]));
             absNullPolicy = isSetNullPolicy;
         }
         // handle commmon settings

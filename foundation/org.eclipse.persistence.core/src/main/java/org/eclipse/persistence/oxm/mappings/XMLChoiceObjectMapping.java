@@ -648,7 +648,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     @Override
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
-        if(this.fieldToClassNameMappings.size() > 0) {
+        if(!this.fieldToClassNameMappings.isEmpty()) {
             Set<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet();
             Iterator<Entry<XMLField, String>> iter = entries.iterator();
             while(iter.hasNext()){
@@ -664,7 +664,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
 
 
     public void setChoiceFieldToClassAssociations(ArrayList associations) {
-        if(associations.size() > 0) {
+        if(!associations.isEmpty()) {
             for(Object next:associations) {
                 XMLChoiceFieldToClassAssociation<Converter, XMLField> association = (XMLChoiceFieldToClassAssociation<Converter, XMLField>)next;
                 this.addChoiceElement(association.getXmlField(), association.getClassName());

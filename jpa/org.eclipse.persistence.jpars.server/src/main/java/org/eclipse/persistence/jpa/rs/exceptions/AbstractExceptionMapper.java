@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,8 +47,6 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractExceptionMapper {
@@ -59,33 +57,9 @@ public abstract class AbstractExceptionMapper {
     UriInfo uriInfo;
 
     private static final Map<String, Status> HTTP_STATUS_CODE_MAPPING =
-            Collections.unmodifiableMap(new HashMap<>() {
-                {
-                    put(ClassNotFoundException.class.getName(), Status.BAD_REQUEST);
-                    put(ConversionException.class.getName(), Status.BAD_REQUEST);
-                    put(DatabaseException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(EntityExistsException.class.getName(), Status.CONFLICT);
-                    put(EntityNotFoundException.class.getName(), Status.NOT_FOUND);
-                    put(IOException.class.getName(), Status.BAD_REQUEST);
-                    put(IllegalAccessException.class.getName(), Status.BAD_REQUEST);
-                    put(IllegalArgumentException.class.getName(), Status.BAD_REQUEST);
-                    put(IllegalStateException.class.getName(), Status.BAD_REQUEST);
-                    put(InvocationTargetException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(JAXBException.class.getName(), Status.NOT_FOUND); // TODO: we might want to change this http status in v2.0
-                    put(MalformedURLException.class.getName(), Status.BAD_REQUEST);
-                    put(NamingException.class.getName(), Status.BAD_REQUEST);
-                    put(NoResultException.class.getName(), Status.NOT_FOUND);
-                    put(NoSuchMethodException.class.getName(), Status.BAD_REQUEST);
-                    put(NonUniqueResultException.class.getName(), Status.NOT_FOUND);
-                    put(NumberFormatException.class.getName(), Status.BAD_REQUEST);
-                    put(OptimisticLockException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(PersistenceException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(PessimisticLockException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(QueryTimeoutException.class.getName(), Status.BAD_REQUEST);// TODO: we might want to change this http status in v2.0
-                    put(RollbackException.class.getName(), Status.BAD_REQUEST);
-                    put(TransactionRequiredException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                }
-            });
+            Map.ofEntries(Map.entry(ClassNotFoundException.class.getName(), Status.BAD_REQUEST), Map.entry(ConversionException.class.getName(), Status.BAD_REQUEST), Map.entry(DatabaseException.class.getName(), Status.INTERNAL_SERVER_ERROR), Map.entry(EntityExistsException.class.getName(), Status.CONFLICT), Map.entry(EntityNotFoundException.class.getName(), Status.NOT_FOUND), Map.entry(IOException.class.getName(), Status.BAD_REQUEST), Map.entry(IllegalAccessException.class.getName(), Status.BAD_REQUEST), Map.entry(IllegalArgumentException.class.getName(), Status.BAD_REQUEST), Map.entry(IllegalStateException.class.getName(), Status.BAD_REQUEST), Map.entry(InvocationTargetException.class.getName(), Status.INTERNAL_SERVER_ERROR), Map.entry(JAXBException.class.getName(), Status.NOT_FOUND), // TODO: we might want to change this http status in v2.0
+                    Map.entry(MalformedURLException.class.getName(), Status.BAD_REQUEST), Map.entry(NamingException.class.getName(), Status.BAD_REQUEST), Map.entry(NoResultException.class.getName(), Status.NOT_FOUND), Map.entry(NoSuchMethodException.class.getName(), Status.BAD_REQUEST), Map.entry(NonUniqueResultException.class.getName(), Status.NOT_FOUND), Map.entry(NumberFormatException.class.getName(), Status.BAD_REQUEST), Map.entry(OptimisticLockException.class.getName(), Status.INTERNAL_SERVER_ERROR), Map.entry(PersistenceException.class.getName(), Status.INTERNAL_SERVER_ERROR), Map.entry(PessimisticLockException.class.getName(), Status.INTERNAL_SERVER_ERROR), Map.entry(QueryTimeoutException.class.getName(), Status.BAD_REQUEST),// TODO: we might want to change this http status in v2.0
+                    Map.entry(RollbackException.class.getName(), Status.BAD_REQUEST), Map.entry(TransactionRequiredException.class.getName(), Status.INTERNAL_SERVER_ERROR));
 
     // An absolute URI that identifies the problem type.  When dereferenced, it SHOULD provide human-readable documentation for the problem type (e.g., using HTML)."
     private static final String PROBLEM_TYPE = "http://www.eclipse.org/eclipselink/documentation/";

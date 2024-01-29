@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2009, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2009, 2023 SAP, IBM Corporation. All rights reserved.
+ * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2024 SAP, IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,11 +65,11 @@ public class SAPNetWeaver_7_1_Platform extends ServerPlatformBase {
         return super.getServerNameAndVersion();
     }
 
-    @Override
     /**
      * SAP NetWeaver does not support dynamic byte code weaving. We return the original class loader
      * in order to prevent dynamic weaving.
      */
+    @Override
     public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo) {
         ClassLoader realClassLoader = puInfo.getClassLoader();
         AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_sap_temp_classloader_bypassed",//

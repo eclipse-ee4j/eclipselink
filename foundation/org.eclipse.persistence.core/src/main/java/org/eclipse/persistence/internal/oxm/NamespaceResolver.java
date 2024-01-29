@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -125,7 +125,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      */
     @Override
     public String resolveNamespacePrefix(String prefix) {
-        if (null == prefix || prefix.length() == 0) {
+        if (null == prefix || prefix.isEmpty()) {
             return defaultNamespaceURI;
         }
         String uri = null;
@@ -208,7 +208,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @param namespaceURI The namespace URI associated with the specified prefix
      */
     public void put(String prefix, String namespaceURI) {
-        if (null == prefix || 0 == prefix.length()) {
+        if (null == prefix || prefix.isEmpty()) {
             defaultNamespaceURI = namespaceURI;
         } else {
             //Replace same namespace with given prefix and put them to the end of list.

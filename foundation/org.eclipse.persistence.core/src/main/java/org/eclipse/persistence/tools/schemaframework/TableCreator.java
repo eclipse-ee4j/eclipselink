@@ -889,11 +889,11 @@ public class TableCreator {
                 if (isNullable == null) {
                     return UNKNOWN;
                 }
-                switch (isNullable.toUpperCase()) {
-                case "NO": return NO;
-                case "YES": return YES;
-                default: return UNKNOWN;
-                }
+                return switch (isNullable.toUpperCase()) {
+                    case "NO" -> NO;
+                    case "YES" -> YES;
+                    default -> UNKNOWN;
+                };
             }
 
             // Parse NULLABLE database column description
@@ -901,11 +901,11 @@ public class TableCreator {
                 if (nullable == null) {
                     return UNKNOWN;
                 }
-                switch (nullable) {
-                case 0: return NO;
-                case 1: return YES;
-                default: return UNKNOWN;
-                }
+                return switch (nullable) {
+                    case 0 -> NO;
+                    case 1 -> YES;
+                    default -> UNKNOWN;
+                };
             }
 
         }

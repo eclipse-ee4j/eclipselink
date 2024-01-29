@@ -187,7 +187,7 @@ public class PropertiesHandler {
      * Empty String value indicates that the default property value should be used.
      */
     protected static boolean shouldUseDefault(String value) {
-        return value != null &&  value.length() == 0;
+        return value != null && value.isEmpty();
     }
 
     protected static abstract class Prop {

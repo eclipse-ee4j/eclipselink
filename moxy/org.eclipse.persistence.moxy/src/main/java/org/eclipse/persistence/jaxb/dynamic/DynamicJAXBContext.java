@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -183,7 +183,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
 
         public DynamicJAXBContextState(DynamicClassLoader loader) {
             super();
-            helpers = new ArrayList<DynamicHelper>();
+            helpers = new ArrayList<>();
         }
 
         public DynamicJAXBContextState(XMLContext ctx) {
@@ -369,7 +369,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             DynamicJAXBContextState state = new DynamicJAXBContextState((DynamicClassLoader) classLoader);
 
             StringTokenizer st = new StringTokenizer(sessions, ":");
-            ArrayList<Project> dynamicProjects = new ArrayList<Project>(st.countTokens());
+            ArrayList<Project> dynamicProjects = new ArrayList<>(st.countTokens());
 
             XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
 

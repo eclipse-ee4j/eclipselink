@@ -394,7 +394,7 @@ public class ReportQuery extends ReadAllQuery {
      * Method used to abstract addToConstructorItem behavour from the public addItem methods
      */
     private void addItem(ReportItem item){
-        if (this.addToConstructorItem && (getItems().size() > 0) && (getItems().get(getItems().size() - 1).isConstructorItem())) {
+        if (this.addToConstructorItem && (!getItems().isEmpty()) && (getItems().get(getItems().size() - 1).isConstructorItem())) {
             ((ConstructorReportItem)getItems().get(getItems().size() - 1)).addItem(item);
         } else {
             getItems().add(item);
@@ -1142,7 +1142,7 @@ public class ReportQuery extends ReadAllQuery {
         }
         // Oct 19, 2000 JED
         // Added exception to be thrown if no attributes have been added to the query
-        if (getItems().size() > 0) {
+        if (!getItems().isEmpty()) {
             try {
                 for (ReportItem item : getItems()) {
                     item.initialize(this);

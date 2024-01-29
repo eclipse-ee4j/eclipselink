@@ -565,7 +565,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     @Override
     public String toString() {
-        StringBuffer aBuffer = new StringBuffer();
+        StringBuilder aBuffer = new StringBuilder();
         aBuffer.append(this.getClass().getSimpleName());
         aBuffer.append("@");
         aBuffer.append(hashCode());

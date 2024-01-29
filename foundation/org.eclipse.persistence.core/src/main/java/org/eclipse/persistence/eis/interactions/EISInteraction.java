@@ -212,7 +212,7 @@ public abstract class EISInteraction extends DatasourceCall {
      */
     @Override
     public void prepare(AbstractSession session) {
-        if (getInputRecordName().length() == 0) {
+        if (getInputRecordName().isEmpty()) {
             DatabaseQuery q = getQuery();
             ClassDescriptor classDescriptor = q != null ? q.getDescriptor() : null;
             if (classDescriptor != null && classDescriptor.isEISDescriptor()) {
@@ -252,7 +252,7 @@ public abstract class EISInteraction extends DatasourceCall {
                 // currently the SDK uses the table name of the row's field for this,
                 // ideally this would be a property on the row.
                 String recordName = elementName;
-                if (valuesRow.size() > 0) {
+                if (!valuesRow.isEmpty()) {
                     recordName = valuesRow.getFields().get(0).getTableName();
                 }
                 MappedRecord record = accessor.getRecordFactory().createMappedRecord(recordName);
@@ -390,7 +390,7 @@ public abstract class EISInteraction extends DatasourceCall {
         } else if (record instanceof MappedRecord mappedRecord) {
 
             // Handle the case of a single output argument of the entire row contained within the return record.
-            if (getOutputResultPath().length() > 0) {
+            if (!getOutputResultPath().isEmpty()) {
                 Object element = mappedRecord.get(getOutputResultPath());
 
                 // Handles nested rows inside an IndexedRecord, MappedRecord or List.

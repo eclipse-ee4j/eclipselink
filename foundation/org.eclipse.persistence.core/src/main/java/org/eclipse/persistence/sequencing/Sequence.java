@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -343,7 +343,7 @@ public abstract class Sequence implements Serializable, Cloneable {
         if(qualifier == null) {
             qualifier = "";
         }
-        this.isCustomQualifier = qualifier.length() > 0;
+        this.isCustomQualifier = !qualifier.isEmpty();
         this.qualifier = qualifier;
     }
 
@@ -365,7 +365,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      * INTERNAL:
      */
     public String getQualified(String str) {
-        if (qualifier.equals("")) {
+        if (qualifier.isEmpty()) {
             return str;
         } else {
             return qualifier + "." + str;

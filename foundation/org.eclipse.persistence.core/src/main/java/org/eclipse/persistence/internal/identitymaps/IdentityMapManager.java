@@ -465,7 +465,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     public void clearQueryCache(ReadQuery query) {
         if (query != null) {// PERF: use query name, unless no name.
             Object queryKey = query.getName();
-            if ((queryKey == null) || ((String)queryKey).length() == 0) {
+            if ((queryKey == null) || ((String) queryKey).isEmpty()) {
                 queryKey = query;
             }
             this.queryResults.remove(queryKey);
@@ -1029,7 +1029,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
         // PERF: use query name, unless no name.
         Object queryKey = query.getName();
-        if ((queryKey == null) || ((String)queryKey).length() == 0) {
+        if ((queryKey == null) || ((String) queryKey).isEmpty()) {
             queryKey = query;
         }
         IdentityMap map = this.queryResults.get(queryKey);
@@ -1408,7 +1408,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
         // PERF: use query name, unless no name.
         Object queryKey = query.getName();
-        if ((queryKey == null) || ((String)queryKey).length() == 0) {
+        if ((queryKey == null) || ((String) queryKey).isEmpty()) {
             queryKey = query;
         }
         IdentityMap map = this.queryResults.get(queryKey);

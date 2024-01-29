@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -266,7 +266,7 @@ public class CommitManager {
             if (order != CommitOrderType.NONE) {
                 changes = new ArrayList(objectChangesList.values());
                 if (order == CommitOrderType.CHANGES) {
-                    Collections.sort((List)changes, new ObjectChangeSet.ObjectChangeSetComparator());
+                    ((List) changes).sort(new ObjectChangeSet.ObjectChangeSetComparator());
                 } else {
                     Collections.sort((List)changes);
                 }

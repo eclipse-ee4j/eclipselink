@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1283,7 +1283,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             // This is as required by JDBC spec to access metadata for queries using column aliases.
             // Reconsider whether to migrate this change to other versions of Eclipselink with older native query support
             String columnName = metaData.getColumnLabel(index + 1);
-            if ((columnName == null) || columnName.equals("")) {
+            if ((columnName == null) || columnName.isEmpty()) {
                 columnName = "C" + (index + 1);// Some column may be unnamed.
             }
             DatabaseField column = new DatabaseField(columnName);
@@ -1469,32 +1469,33 @@ public class DatabaseAccessor extends DatasourceAccessor {
             isPrimitive = (Short) value == 0;
         // Sometimes field type is just Number and it's child type is stored as field.typeName
         } else if (fieldType == ClassConstants.NUMBER) {
-            switch(field.typeName) {
-                case "java.lang.Byte":
+            isPrimitive = switch (field.typeName) {
+                case "java.lang.Byte" -> {
                     value = resultSet.getByte(columnNumber);
-                    isPrimitive = (Byte) value == 0;
-                    break;
-                case "java.lang.Short":
+                    yield (Byte) value == 0;
+                }
+                case "java.lang.Short" -> {
                     value = resultSet.getShort(columnNumber);
-                    isPrimitive = (Short) value == 0;
-                    break;
-                case "java.lang.Integer":
+                    yield (Short) value == 0;
+                }
+                case "java.lang.Integer" -> {
                     value = resultSet.getInt(columnNumber);
-                    isPrimitive = (Integer) value == 0;
-                    break;
-                case "java.lang.Long":
+                    yield (Integer) value == 0;
+                }
+                case "java.lang.Long" -> {
                     value = resultSet.getLong(columnNumber);
-                    isPrimitive = (Long) value == 0L;
-                    break;
-                case "java.lang.Float":
+                    yield (Long) value == 0L;
+                }
+                case "java.lang.Float" -> {
                     value = resultSet.getFloat(columnNumber);
-                    isPrimitive = (Float) value == 0f;
-                    break;
-                case "java.lang.Double":
+                    yield (Float) value == 0f;
+                }
+                case "java.lang.Double" -> {
                     value = resultSet.getDouble(columnNumber);
-                    isPrimitive = (Double) value == 0f;
-                    break;
-            }
+                    yield (Double) value == 0f;
+                }
+                default -> isPrimitive;
+            };
         } else if ((fieldType == ClassConstants.BOOLEAN) || (fieldType == ClassConstants.PBOOLEAN))  {
             value = resultSet.getBoolean(columnNumber);
             isPrimitive = !((Boolean) value);

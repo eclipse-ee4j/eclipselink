@@ -43,14 +43,10 @@ public class JsonPlatform implements DatabaseJsonPlatform {
      * @return value of {@code true} when provided value is JSON type or {@code false} otherwise
      */
     public boolean isJsonType(final Type type) {
-        switch (type.getTypeName()) {
-            case "jakarta.json.JsonValue":
-            case "jakarta.json.JsonArray":
-            case "jakarta.json.JsonObject":
-                return true;
-            default:
-                return false;
-        }
+        return switch (type.getTypeName()) {
+            case "jakarta.json.JsonValue", "jakarta.json.JsonArray", "jakarta.json.JsonObject" -> true;
+            default -> false;
+        };
     }
 
     /**

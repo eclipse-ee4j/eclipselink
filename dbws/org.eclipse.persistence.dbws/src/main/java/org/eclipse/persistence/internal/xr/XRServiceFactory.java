@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -463,7 +463,7 @@ public class XRServiceFactory  {
             // at this point we may have a legacy deployment XML project, or none set
             oxProject = xrService.oxSession.getProject();
             // check to see if it's a default Project
-            if (oxProject.getName().length() == 0) {
+            if (oxProject.getName().isEmpty()) {
                 // default to SimpleXMLFormat
                 oxProject = new SimpleXMLFormatProject();
             }

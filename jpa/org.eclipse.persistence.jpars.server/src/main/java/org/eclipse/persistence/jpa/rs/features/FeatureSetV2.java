@@ -51,24 +51,18 @@ public class FeatureSetV2 implements FeatureSet {
 
     @Override
     public boolean isSupported(Feature feature) {
-        switch (feature) {
-            case NO_PAGING:
-            case PAGING:
-            case FIELDS_FILTERING:
-                return true;
-            default:
-                return false;
-        }
+        return switch (feature) {
+            case NO_PAGING, PAGING, FIELDS_FILTERING -> true;
+            default -> false;
+        };
     }
 
     @Override
     public FeatureResponseBuilder getResponseBuilder(Feature feature) {
-        switch (feature) {
-            case PAGING:
-                return new PagingResponseBuilder();
-            default:
-                return new SelfLinksResponseBuilder();
-        }
+        return switch (feature) {
+            case PAGING -> new PagingResponseBuilder();
+            default -> new SelfLinksResponseBuilder();
+        };
     }
 
     @Override

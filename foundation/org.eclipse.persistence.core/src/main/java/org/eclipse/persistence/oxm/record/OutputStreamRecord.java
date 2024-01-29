@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -540,7 +540,7 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
                         String prefix = nextEntry.getKey();
                         outputStreamWrite(SPACE);
                         outputStreamWrite(javax.xml.XMLConstants.XMLNS_ATTRIBUTE.getBytes(Constants.DEFAULT_XML_ENCODING));
-                        if(null != prefix && prefix.length() > 0) {
+                        if(null != prefix && !prefix.isEmpty()) {
                             outputStreamWrite((byte)Constants.COLON);
                             outputStreamWrite(prefix.getBytes(Constants.DEFAULT_XML_ENCODING));
                         }

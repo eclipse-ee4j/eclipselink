@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -157,7 +157,7 @@ public class XMLProjectReader {
 
                     String version = document.getDocumentElement().getAttribute("version");
                     // If 10.1.3 format use old format read.
-                    if ((version == null) || (version.indexOf("1.0") == -1)) {
+                    if ((version == null) || (!version.contains("1.0"))) {
                         throw parseException;
                     }
                 }
@@ -169,12 +169,12 @@ public class XMLProjectReader {
         String version = document.getDocumentElement().getAttribute("version");
         // If 10.1.3 format use old format read.
         if (version != null) {
-            if (version.indexOf("10.1.3") != -1) {
+            if (version.contains("10.1.3")) {
                 return read1013Format(document, classLoader);
-            } else if (version.indexOf("11.1.1") != -1) {
+            } else if (version.contains("11.1.1")) {
                    return read1111Format(document, classLoader);
             }
-            if (version.indexOf("TopLink") != -1) {
+            if (version.contains("TopLink")) {
                 //default to read 11.1.1
                 return read1111Format(document, classLoader);
             }
@@ -211,7 +211,7 @@ public class XMLProjectReader {
      * Note the file must be the deployment XML, not the Mapping Workbench project file.
      */
     public static Project read(String fileOrResourceName, ClassLoader classLoader) {
-        if (fileOrResourceName.toLowerCase().indexOf(".mwp") != -1) {
+        if (fileOrResourceName.toLowerCase().contains(".mwp")) {
             throw ValidationException.invalidFileName(fileOrResourceName);
         }
         InputStream fileStream = null;

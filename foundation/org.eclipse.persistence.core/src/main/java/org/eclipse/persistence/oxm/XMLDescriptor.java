@@ -311,7 +311,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         }
     }
 
-    /**
+    /*
      * INTERNAL:
      * Avoid SDK initialization.
 
@@ -549,8 +549,8 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
 
     @Override
     public void setTableNames(List<String> tableNames) {
-        if (null != tableNames && tableNames.size() > 0) {
-            setDefaultRootElementField((String) tableNames.get(0));
+        if (null != tableNames && !tableNames.isEmpty()) {
+            setDefaultRootElementField(tableNames.get(0));
         }
         super.setTableNames(tableNames);
     }
@@ -945,7 +945,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             // root element, return the object as per usual
 
             if(isNamespaceAware){
-                if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.length() == 0)) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.length() == 0)) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
+                if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.isEmpty())) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.isEmpty())) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
                         .equals(elementNamespaceUri))))
                         && (defaultRootName.equals(elementLocalName))) {
                     return false;
@@ -968,7 +968,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * @return true if a new default root element field was created, else false.
      */
     private boolean setDefaultRootElementField(String newDefaultRootElement) {
-        if (null == newDefaultRootElement || 0 == newDefaultRootElement.length()) {
+        if (null == newDefaultRootElement || newDefaultRootElement.isEmpty()) {
             setDefaultRootElementField((XMLField) null);
             return false;
         }

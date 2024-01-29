@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -189,7 +189,7 @@ public class XPathHelper {
 
         // check for simple/complex queries
         String reference = xpFrag.substring(0, idx);
-        if (contents.indexOf(AND_STR) != -1 || contents.indexOf(OR_STR) != -1) {
+        if (contents.contains(AND_STR) || contents.contains(OR_STR)) {
             return processComplexQuery(dataObject, reference, contents);
         }
         return processSimpleQuery(dataObject, reference, contents);
@@ -312,13 +312,11 @@ public class XPathHelper {
     }
 
     private boolean evaluate(boolean b1, boolean b2, int op) {
-        switch (op) {
-        case AND:
-            return b1 && b2;
-        case OR:
-            return b1 || b2;
-        }
-        return false;
+        return switch (op) {
+            case AND -> b1 && b2;
+            case OR -> b1 || b2;
+            default -> false;
+        };
     }
 
     /**
@@ -396,7 +394,7 @@ public class XPathHelper {
         int index = expression.indexOf('@');
         if (index > -1) {
             if (index > 0) {
-                StringBuffer sbuf = new StringBuffer(expression.substring(0, index));
+                StringBuilder sbuf = new StringBuilder(expression.substring(0, index));
                 sbuf.append(expression.substring(index + 1, expression.length()));
                 return sbuf.toString();
             }
@@ -449,25 +447,17 @@ public class XPathHelper {
     }
 
     private String getStringFromOperand(int op) {
-        switch(op) {
-        case EQ:
-            return EQ_STR;
-        case NEQ:
-            return NEQ_STR;
-        case GTE:
-            return GTE_STR;
-        case LTE:
-            return LTE_STR;
-        case GT:
-            return GT_STR;
-        case LT:
-            return LT_STR;
-        case AND:
-            return AND_STR;
-        case OR:
-            return OR_STR;
-        }
-        return "";
+        return switch (op) {
+            case EQ -> EQ_STR;
+            case NEQ -> NEQ_STR;
+            case GTE -> GTE_STR;
+            case LTE -> LTE_STR;
+            case GT -> GT_STR;
+            case LT -> LT_STR;
+            case AND -> AND_STR;
+            case OR -> OR_STR;
+            default -> "";
+        };
     }
 
     /**

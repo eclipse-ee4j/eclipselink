@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -136,7 +136,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
             if(schemaType != null){
                 schemaType = schemaType.trim();
-                if(schemaType.length() > 0) {
+                if(!schemaType.isEmpty()) {
                     XPathFragment frag = new XPathFragment(schemaType, unmarshalRecord.getNamespaceSeparator(), unmarshalRecord.isNamespaceAware());
 
                     QName qname = null;

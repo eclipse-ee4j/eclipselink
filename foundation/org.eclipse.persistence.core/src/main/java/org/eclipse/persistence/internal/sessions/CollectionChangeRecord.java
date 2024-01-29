@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -322,7 +322,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         Map addList = new IdentityHashMap(this.getAddObjectList().size() + 1);
         Map removeList = new IdentityHashMap(this.getRemoveObjectList().size() + 1);
         // If we have ordered lists we need to iterate through those.
-        if (getOrderedAddObjects().size() > 0 || getOrderedRemoveObjectIndices().size() > 0) {
+        if (!getOrderedAddObjects().isEmpty() || !getOrderedRemoveObjectIndices().isEmpty()) {
             // Do the ordered adds first ...
             List<ObjectChangeSet> orderedAddList = new ArrayList(getOrderedAddObjects().size());
             Map orderedAddListIndices = new IdentityHashMap(getOrderedAddObjectIndices().size());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
@@ -43,7 +44,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
 
 
     public JCEEncryptor() throws Exception {
-        /**
+        /*
          * We want to force the initialization of the cipher here. This is a fix
          * for bug #2696486.
          * JDev with JDK 1.3 in some cases will allow a JCE object to be created
@@ -69,7 +70,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             AlgorithmParameterSpec parameterSpecGCM = new GCMParameterSpec(128, ivGCM);
             SecretKey skGCM = Synergizer.getAESGCMMultitasker();
             encryptCipherAES_GCM.init(Cipher.ENCRYPT_MODE, skGCM, parameterSpecGCM);
-            byte[] bytePassword = encryptCipherAES_GCM.doFinal(password.getBytes("UTF-8"));
+            byte[] bytePassword = encryptCipherAES_GCM.doFinal(password.getBytes(StandardCharsets.UTF_8));
             byte[] result = Arrays.copyOf(ivGCM, IV_GCM_LENGTH + bytePassword.length);
             System.arraycopy(bytePassword, 0, result, IV_GCM_LENGTH, bytePassword.length);
             return Helper.buildHexStringFromBytes(result);
@@ -102,7 +103,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             System.arraycopy(input, IV_GCM_LENGTH, bytePassword, 0, input.length - IV_GCM_LENGTH);
             decryptCipherAES_GCM.init(Cipher.DECRYPT_MODE, skGCM, parameterSpecGCM);
             // try AES/GCM first
-            password = new String(decryptCipherAES_GCM.doFinal(bytePassword), "UTF-8");
+            password = new String(decryptCipherAES_GCM.doFinal(bytePassword), StandardCharsets.UTF_8);
         } catch (ArrayIndexOutOfBoundsException | ConversionException | IllegalBlockSizeException ce) {
             // buildBytesFromHexString failed, assume clear text
             password = encryptedPswd;

@@ -196,7 +196,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
         String str = selectCall.getSQLString();
         writer.write(str);
 
-        boolean hasWhereClause = str.toUpperCase().indexOf(" WHERE ") >= 0;
+        boolean hasWhereClause = str.toUpperCase().contains(" WHERE ");
 
         // Auto join
         // Example: AND t0.EMP_ID = EMP_ID

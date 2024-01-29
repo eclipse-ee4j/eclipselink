@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -129,7 +129,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 }
                 if(qNameAware) {
                     String prefix = xmlStreamReader.getPrefix();
-                    if(null == prefix || prefix.length() == 0) {
+                    if(null == prefix || prefix.isEmpty()) {
                         contentHandler.startElement(namespaceURI, localName, localName, indexedAttributeList.reset());
                     } else {
                         contentHandler.startElement(namespaceURI, localName, prefix + Constants.COLON + localName, indexedAttributeList.reset());
@@ -148,7 +148,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 }
                 if(qNameAware) {
                     String prefix = xmlStreamReader.getPrefix();
-                    if(null == prefix || prefix.length() == 0) {
+                    if(null == prefix || prefix.isEmpty()) {
                         contentHandler.endElement(namespaceURI, localName, localName);
                     } else {
                         contentHandler.endElement(namespaceURI, localName, prefix + Constants.COLON + localName);
@@ -244,7 +244,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                         String localName = xmlStreamReader.getAttributeLocalName(x);
                         String prefix = xmlStreamReader.getAttributePrefix(x);
                         String qName;
-                        if(null == prefix || prefix.length() == 0) {
+                        if(null == prefix || prefix.isEmpty()) {
                             qName = localName;
                         } else {
                             qName = prefix + Constants.COLON + localName;
@@ -256,7 +256,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                         String uri = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
                         String localName = xmlStreamReader.getNamespacePrefix(x);
                         String qName;
-                        if(null == localName || localName.length() == 0) {
+                        if(null == localName || localName.isEmpty()) {
                             localName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
                             qName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
                         } else {

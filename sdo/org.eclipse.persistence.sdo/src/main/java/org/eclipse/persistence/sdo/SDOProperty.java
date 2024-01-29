@@ -236,7 +236,7 @@ public class SDOProperty implements Property, Serializable {
     }
 
     public boolean hasAliasNames() {
-        return aliasNames != null && aliasNames.size() > 0;
+        return aliasNames != null && !aliasNames.isEmpty();
     }
 
     /**
@@ -1072,7 +1072,7 @@ public class SDOProperty implements Property, Serializable {
       */
     public Map getPropertyValues() {
         if (propertyValues == null) {
-            propertyValues = new HashMap<Property, Object>(1);
+            propertyValues = new HashMap<>(1);
             if(null != isElement) {
                 propertyValues.put(SDOConstants.XMLELEMENT_PROPERTY, isElement);
             }
@@ -1090,10 +1090,10 @@ public class SDOProperty implements Property, Serializable {
         } else {
             if(null == propertyValues) {
                 if(null != isElement) {
-                    propertyValues = new HashMap<Property, Object>(2);
+                    propertyValues = new HashMap<>(2);
                     propertyValues.put(SDOConstants.XMLELEMENT_PROPERTY, isElement);
                 } else {
-                    propertyValues = new HashMap<Property, Object>(1);
+                    propertyValues = new HashMap<>(1);
                 }
             }
             propertyValues.put(property, value);

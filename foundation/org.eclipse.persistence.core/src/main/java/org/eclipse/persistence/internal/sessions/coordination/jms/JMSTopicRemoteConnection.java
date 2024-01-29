@@ -231,7 +231,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 return;
             }
         } catch (Exception exception) {
-            if (messageId.length() == 0) {
+            if (messageId.isEmpty()) {
                 try {
                     messageId = message.getJMSMessageID();
                 } catch (JMSException ex) {

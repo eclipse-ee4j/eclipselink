@@ -221,18 +221,18 @@ public abstract class BaseDBWSBuilderHelper {
     public static final String PASSWORD_STR = "password";
     public static final String SIMPLEXML_STR = "simple-xml-format";
 
-    protected List<TableType> dbTables = new ArrayList<TableType>();
-    protected List<ProcedureType> dbStoredProcedures = new ArrayList<ProcedureType>();
+    protected List<TableType> dbTables = new ArrayList<>();
+    protected List<ProcedureType> dbStoredProcedures = new ArrayList<>();
     protected DBWSBuilder dbwsBuilder;
     protected XMLSessionConfigProject_11_1_1 sessionConfigProject = new XMLSessionConfigProject_11_1_1();
     protected NamingConventionTransformer nct;
     protected ObjectPersistenceWorkbenchXMLProject workbenchXMLProject = new ObjectPersistenceWorkbenchXMLProject();
 
-    protected Map<String, ClassDescriptor> createdORDescriptors = new HashMap<String, ClassDescriptor>();
-    protected List<String> referencedORDescriptors = new ArrayList<String>();
-    protected List<CompositeDatabaseType> complextypes = new ArrayList<CompositeDatabaseType>();
+    protected Map<String, ClassDescriptor> createdORDescriptors = new HashMap<>();
+    protected List<String> referencedORDescriptors = new ArrayList<>();
+    protected List<CompositeDatabaseType> complextypes = new ArrayList<>();
 
-    protected Map<String, Map<String, String>> crudOps = new HashMap<String, Map<String, String>>();
+    protected Map<String, Map<String, String>> crudOps = new HashMap<>();
 
     public BaseDBWSBuilderHelper(DBWSBuilder dbwsBuilder) {
         this.dbwsBuilder = dbwsBuilder;
@@ -269,7 +269,7 @@ public abstract class BaseDBWSBuilderHelper {
         orProject.addDescriptor(desc);
         XMLDescriptor xdesc = buildOXDescriptor(desc.getAlias(), schemaAlias, desc.getJavaClassName(), dbwsBuilder.getTargetNamespace());
         oxProject.addDescriptor(xdesc);
-        List<String> columnsAlreadyProcessed = new ArrayList<String>();
+        List<String> columnsAlreadyProcessed = new ArrayList<>();
         for (DbColumn dbColumn : columns) {
             String columnName = dbColumn.getFieldName();
             if (!columnsAlreadyProcessed.contains(columnName)) {
@@ -307,7 +307,7 @@ public abstract class BaseDBWSBuilderHelper {
                 if (procedureOperation.isPLSQLProcedureOperation() || procedureOperation.isAdvancedJDBCProcedureOperation()) {
                     for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
                         // build list of arguments to process (i.e. build descriptors for)
-                        List<ArgumentType> args = new ArrayList<ArgumentType>();
+                        List<ArgumentType> args = new ArrayList<>();
                         // return argument
                         if (procType.isFunctionType()) {
                             // assumes that a function MUST have a return type
@@ -353,7 +353,7 @@ public abstract class BaseDBWSBuilderHelper {
      * SQL will be used when building.
      */
     public void buildOROXProjects(NamingConventionTransformer nct) {
-        buildOROXProjects(nct, new ArrayList<CompositeDatabaseType>());
+        buildOROXProjects(nct, new ArrayList<>());
     }
 
     /**
@@ -515,16 +515,16 @@ public abstract class BaseDBWSBuilderHelper {
      * and List&lt;ProcedureType&gt;.
      */
     public void buildDbArtifacts() {
-        List<TableOperationModel> tableOperations = new ArrayList<TableOperationModel>();
-        List<ProcedureOperationModel> procedureOperations = new ArrayList<ProcedureOperationModel>();
+        List<TableOperationModel> tableOperations = new ArrayList<>();
+        List<ProcedureOperationModel> procedureOperations = new ArrayList<>();
         //its possible a builder might have pre-built tables
-        if (dbTables.size() == 0) {
+        if (dbTables.isEmpty()) {
             //do Table operations first
             for (OperationModel operation : dbwsBuilder.operations) {
                 if (operation.isTableOperation()) {
                     TableOperationModel tom = (TableOperationModel)operation;
                     tableOperations.add(tom);
-                    if (tom.additionalOperations != null && tom.additionalOperations.size() > 0) {
+                    if (tom.additionalOperations != null && !tom.additionalOperations.isEmpty()) {
                         for (OperationModel nestedOperation : tom.additionalOperations) {
                             if (nestedOperation.isProcedureOperation()) {
                                 procedureOperations.add((ProcedureOperationModel)nestedOperation);
@@ -533,10 +533,10 @@ public abstract class BaseDBWSBuilderHelper {
                     }
                 }
             }
-            if (tableOperations.size() > 0) {
-                List<String> catalogPatterns = new ArrayList<String>();
-                List<String> schemaPatterns = new ArrayList<String>();
-                List<String> tableNamePatterns = new ArrayList<String>();
+            if (!tableOperations.isEmpty()) {
+                List<String> catalogPatterns = new ArrayList<>();
+                List<String> schemaPatterns = new ArrayList<>();
+                List<String> tableNamePatterns = new ArrayList<>();
                 for (TableOperationModel tableOperation : tableOperations) {
                     catalogPatterns.add(tableOperation.getCatalogPattern());
                     schemaPatterns.add(tableOperation.getSchemaPattern());
@@ -573,16 +573,16 @@ public abstract class BaseDBWSBuilderHelper {
 
         // next do StoredProcedure operations
         // it's possible a builder might have pre-built procedures
-        if (dbStoredProcedures.size() == 0) {
+        if (dbStoredProcedures.isEmpty()) {
             for (OperationModel operation : dbwsBuilder.operations) {
                 if (operation.isProcedureOperation()) {
                     procedureOperations.add((ProcedureOperationModel)operation);
                 }
             }
-            if (procedureOperations.size() > 0) {
-                List<String> catalogPatterns = new ArrayList<String>();
-                List<String> schemaPatterns = new ArrayList<String>();
-                List<String> procedureNamePatterns = new ArrayList<String>();
+            if (!procedureOperations.isEmpty()) {
+                List<String> catalogPatterns = new ArrayList<>();
+                List<String> schemaPatterns = new ArrayList<>();
+                List<String> procedureNamePatterns = new ArrayList<>();
                 for (ProcedureOperationModel procedureOperation : procedureOperations) {
                     catalogPatterns.add(procedureOperation.getCatalogPattern());
                     schemaPatterns.add(procedureOperation.getSchemaPattern());
@@ -628,14 +628,14 @@ public abstract class BaseDBWSBuilderHelper {
     public void buildSchema(NamingConventionTransformer nct) {
         Project oxProject = dbwsBuilder.getOxProject();
         Schema schema = null;
-        List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
+        List<Descriptor> descriptorsToProcess = new ArrayList<>();
         for (Descriptor desc : (List<Descriptor>)(List)oxProject.getOrderedDescriptors()) {
             String alias = desc.getAlias();
             if (!DEFAULT_SIMPLE_XML_FORMAT_TAG.equals(alias)) {
                 descriptorsToProcess.add(desc);
             }
         }
-        if (descriptorsToProcess.size() > 0) {
+        if (!descriptorsToProcess.isEmpty()) {
             // need a deep-copy clone of oxProject; simplest way is to marshall/unmarshall to a stream
             StringWriter sw = new StringWriter();
             XMLProjectWriter.write(oxProject, sw);
@@ -710,7 +710,7 @@ public abstract class BaseDBWSBuilderHelper {
                     String schemaAlias = nct.generateSchemaAlias(tableName);
                     Map<String, String> ops;
                     if (!crudOps.containsKey(tableName)) {
-                        ops = new HashMap<String, String>();
+                        ops = new HashMap<>();
                         crudOps.put(tableName, ops);
                     }
                     ops = crudOps.get(tableName);
@@ -822,7 +822,7 @@ public abstract class BaseDBWSBuilderHelper {
             for (OperationModel operation : dbwsBuilder.operations) {
                 if (operation.isTableOperation()) {
                     TableOperationModel tableModel = (TableOperationModel)operation;
-                    if (tableModel.additionalOperations != null && tableModel.additionalOperations.size() > 0) {
+                    if (tableModel.additionalOperations != null && !tableModel.additionalOperations.isEmpty()) {
                         for (OperationModel additionalOperation : tableModel.additionalOperations) {
                             if (additionalOperation.hasBuildSql()) {
                                 addToOROXProjectsForBuildSql((ModelWithBuildSql) additionalOperation, orProject, dbwsBuilder.getOxProject(), nct);
@@ -930,11 +930,11 @@ public abstract class BaseDBWSBuilderHelper {
         }
         if (!writeORProject) {
             // check for any named queries - SimpleXMLFormatProject sometimes need them
-            if (orProject.getQueries().size() > 0) {
+            if (!orProject.getQueries().isEmpty()) {
                 writeORProject = true;
             }
             // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
-            else if (orProject.getDescriptors().size() > 0) {
+            else if (!orProject.getDescriptors().isEmpty()) {
                 Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
                 for (ClassDescriptor desc : descriptors) {
                     if (desc.isObjectRelationalDataTypeDescriptor()) {
@@ -960,11 +960,11 @@ public abstract class BaseDBWSBuilderHelper {
             }
             if (!writeOXProject) {
                 // check for any named queries - SimpleXMLFormatProject's sometimes need them
-                if (orProject.getQueries().size() > 0) {
+                if (!orProject.getQueries().isEmpty()) {
                     writeOXProject = true;
                 }
                 // check for ObjectRelationalDataTypeDescriptor's - Advanced JDBC object/varray types
-                else if (orProject.getDescriptors().size() > 0) {
+                else if (!orProject.getDescriptors().isEmpty()) {
                     Collection<ClassDescriptor> descriptors = orProject.getDescriptors().values();
                     for (ClassDescriptor desc : descriptors) {
                         if (desc.isObjectRelationalDataTypeDescriptor()) {
@@ -976,7 +976,7 @@ public abstract class BaseDBWSBuilderHelper {
             }
             if (writeOXProject) {
                 List<XmlBindings> xmlBindingsList = XmlBindingsGenerator.generateXmlBindings(oxProject.getOrderedDescriptors());
-                if (xmlBindingsList.size() > 0) {
+                if (!xmlBindingsList.isEmpty()) {
                     XmlBindingsModel model = new XmlBindingsModel();
                     model.setBindingsList(xmlBindingsList);
                     try {
@@ -1051,7 +1051,7 @@ public abstract class BaseDBWSBuilderHelper {
                         // only need one operation to require attachments
                         break;
                     }
-                    if (tom.additionalOperations != null && tom.additionalOperations.size() > 0) {
+                    if (tom.additionalOperations != null && !tom.additionalOperations.isEmpty()) {
                         for (OperationModel om2 : tom.additionalOperations) {
                             if (om2.isProcedureOperation()) {
                                 ProcedureOperationModel pom = (ProcedureOperationModel)om2;
@@ -1190,7 +1190,7 @@ public abstract class BaseDBWSBuilderHelper {
                 throw new IllegalStateException("failure retrieving columnCount", sqlException);
             }
             if (columnCount > 0) {
-                columns = new ArrayList<DbColumn>(columnCount);
+                columns = new ArrayList<>(columnCount);
                 try {
                     for (int i = 1; i <= columnCount; i++) {
                         String dbColumnName = rsMetaData.getColumnLabel(i);
@@ -1369,11 +1369,11 @@ public abstract class BaseDBWSBuilderHelper {
         if (isSimpleXMLFormat || result.getType() == Util.SXF_QNAME) {
             SimpleXMLFormat sxf = new SimpleXMLFormat();
             String simpleXMLFormatTag = procedureOperationModel.getSimpleXMLFormatTag();
-            if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
+            if (simpleXMLFormatTag != null && !simpleXMLFormatTag.isEmpty()) {
                 sxf.setSimpleXMLFormatTag(simpleXMLFormatTag);
             }
             String xmlTag = procedureOperationModel.getXmlTag();
-            if (xmlTag != null && xmlTag.length() > 0) {
+            if (xmlTag != null && !xmlTag.isEmpty()) {
                 sxf.setXMLTag(xmlTag);
             }
 
@@ -1402,7 +1402,7 @@ public abstract class BaseDBWSBuilderHelper {
      * a return argument if pType is a FunctionType.
      */
     protected List<ArgumentType> getArgumentListForProcedureType(ProcedureType pType) {
-        List<ArgumentType> args = new ArrayList<ArgumentType>();
+        List<ArgumentType> args = new ArrayList<>();
         // return argument
         if (pType.isFunctionType()) {
             // assumes that a function MUST have a return type
@@ -1454,19 +1454,19 @@ public abstract class BaseDBWSBuilderHelper {
      *
      */
     protected void logNotFoundWarnings(String message, List<String> schemaPatterns, List<String> catalogPatterns, List<String> targetPatterns) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(message);
         for (int i=0; i < targetPatterns.size(); i++) {
             sb.append(SINGLE_SPACE);
             sb.append(OPEN_SQUARE_BRACKET);
             boolean prependDot = false;
             String schemaName = schemaPatterns.get(i);
-            if (schemaName != null && schemaName.length() > 0) {
+            if (schemaName != null && !schemaName.isEmpty()) {
                 sb.append(schemaName);
                 prependDot = true;
             }
             String pkgName = catalogPatterns.get(i);
-            if (pkgName != null && pkgName.length() > 0) {
+            if (pkgName != null && !pkgName.isEmpty()) {
                 if (prependDot) {
                     sb.append(DOT);
                 }
@@ -1474,7 +1474,7 @@ public abstract class BaseDBWSBuilderHelper {
                 sb.append(pkgName);
             }
             String tgtName = targetPatterns.get(i);
-            if (tgtName != null && tgtName.length() > 0) {
+            if (tgtName != null && !tgtName.isEmpty()) {
                 if (prependDot) {
                     sb.append(DOT);
                 }
@@ -1491,19 +1491,19 @@ public abstract class BaseDBWSBuilderHelper {
      *
      */
     protected void logPackageNotFoundWarnings(String message, List<String> schemaPatterns, List<String> catalogPatterns) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(message);
         for (int i=0; i < catalogPatterns.size(); i++) {
             sb.append(SINGLE_SPACE);
             sb.append(OPEN_SQUARE_BRACKET);
             boolean prependDot = false;
             String schemaName = schemaPatterns.get(i);
-            if (schemaName != null && schemaName.length() > 0) {
+            if (schemaName != null && !schemaName.isEmpty()) {
                 sb.append(schemaName);
                 prependDot = true;
             }
             String pkgName = catalogPatterns.get(i);
-            if (pkgName != null && pkgName.length() > 0) {
+            if (pkgName != null && !pkgName.isEmpty()) {
                 if (prependDot) {
                     sb.append(DOT);
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -126,7 +126,7 @@ public class MethodClassExtractor extends ClassExtractor {
     @Override
     @SuppressWarnings({"unchecked"})
     public <T> Class<T> extractClassFromRow(DataRecord row, org.eclipse.persistence.sessions.Session session) {
-        return (Class<T>) PrivilegedAccessHelper.callDoPrivilegedWithException(
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
                 () -> PrivilegedAccessHelper.invokeMethod(getClassExtractionMethod(), null, new Object[] {row}),
                 (ex) -> {
                     if (ex instanceof IllegalAccessException) {

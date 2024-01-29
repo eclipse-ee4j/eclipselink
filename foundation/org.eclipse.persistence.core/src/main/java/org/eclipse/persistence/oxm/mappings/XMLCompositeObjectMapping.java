@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -537,7 +537,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     if(nextNode.getNodeType() == Node.ELEMENT_NODE){
                         //complex child
                         String type = ((Element) nestedRow.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-                        if(type != null && type.length() > 0) {
+                        if(type != null && !type.isEmpty()) {
                             throw XMLMarshalException.unknownXsiTypeValue(type, (CompositeObjectMapping) this);
                         } else {
                             throw XMLMarshalException.noDescriptorFound((CompositeObjectMapping) this);
@@ -596,13 +596,13 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 toReturn = stringValue;
             }
          }
-        if ((stringValue == null) || stringValue.length() == 0) {
+        if ((stringValue == null) || stringValue.isEmpty()) {
             return toReturn;
         }
 
         String type = ((Element) nestedRow.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
-        if ((null != type) && type.length() > 0) {
+        if ((null != type) && !type.isEmpty()) {
             XPathFragment typeFragment = new XPathFragment(type);
             String namespaceURI = nestedRow.resolveNamespacePrefix(typeFragment.getPrefix());
 
@@ -702,7 +702,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             // Try to find a descriptor based on the schema type
             String type = ((Element) xmlRecord.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
-            if ((null != type) && type.length() > 0) {
+            if ((null != type) && !type.isEmpty()) {
                 XPathFragment typeFragment = new XPathFragment(type);
                 String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
                 typeFragment.setNamespaceURI(namespaceURI);
@@ -716,10 +716,10 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     XPathFragment frag = new XPathFragment();
                     String xpath = leafType.getLocalPart();
                     String uri = leafType.getNamespaceURI();
-                    if ((uri != null) && uri.length() > 0) {
+                    if ((uri != null) && !uri.isEmpty()) {
                         frag.setNamespaceURI(uri);
                         String prefix = ((XMLDescriptor) getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                        if ((prefix != null) && prefix.length() > 0) {
+                        if ((prefix != null) && !prefix.isEmpty()) {
                             xpath = prefix + XMLConstants.COLON + xpath;
                         }
                     }

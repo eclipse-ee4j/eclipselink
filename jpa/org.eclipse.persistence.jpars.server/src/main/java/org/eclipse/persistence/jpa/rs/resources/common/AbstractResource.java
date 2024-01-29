@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,10 @@
 package org.eclipse.persistence.jpa.rs.resources.common;
 
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -254,22 +254,12 @@ public abstract class AbstractResource {
 
     @SuppressWarnings("unused")
     private static String getEncodedUri(String uri) {
-        try {
-            return URLEncoder.encode(uri, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // TODO: Log it
-            return uri;
-        }
+        return URLEncoder.encode(uri, StandardCharsets.UTF_8);
     }
 
     @SuppressWarnings("unused")
     private static String getDecodedUri(String uri) {
-        try {
-            return URLDecoder.decode(uri, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // TODO: Log it
-            return uri;
-        }
+        return URLDecoder.decode(uri, StandardCharsets.UTF_8);
     }
 
     protected void setRequestUniqueId() {

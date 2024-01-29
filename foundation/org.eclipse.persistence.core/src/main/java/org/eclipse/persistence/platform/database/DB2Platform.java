@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -833,7 +833,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         ExpressionOperator operator = new ExpressionOperator();
         operator.setType(ExpressionOperator.FunctionOperator);
         operator.setSelector(ExpressionOperator.Concat);
-        Vector<String> v = new Vector<String>(5);
+        Vector<String> v = new Vector<>(5);
         v.add("VARCHAR(");
         v.add(" || ");
         v.add(")");
@@ -1430,7 +1430,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
         operator.setType(ExpressionOperator.FunctionOperator);
         operator.setSelector(ExpressionOperator.LeftTrim2);
-        Vector<String> v = new Vector<String>(5);
+        Vector<String> v = new Vector<>(5);
         v.add("TRIM(LEADING ");
         v.add(" FROM ");
         v.add(")");
@@ -1503,7 +1503,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
         operator.setType(ExpressionOperator.FunctionOperator);
         operator.setSelector(ExpressionOperator.RightTrim2);
-        Vector<String> v = new Vector<String>(5);
+        Vector<String> v = new Vector<>(5);
         v.add("TRIM(TRAILING ");
         v.add(" FROM ");
         v.add(")");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class ScrollableCursorPolicy extends CursorPolicy {
     protected int resultSetType;
     protected int resultSetConcurrency;
 
-    /** RESULT SET TYPES **/
+    /* RESULT SET TYPES **/
     /** JDBC 2.0 The rows in a result set will be processed in a forward direction; first-to-last. */
     public static final int FETCH_FORWARD = 1000;
 
@@ -50,7 +50,7 @@ public class ScrollableCursorPolicy extends CursorPolicy {
     /** JDBC 2.0 The type for a ResultSet object that is scrollable and generally sensitive to changes made by others. */
     public static final int TYPE_SCROLL_SENSITIVE = 1005;
 
-    /** RESULT SET CONCURRENCY */
+    /* RESULT SET CONCURRENCY */
     /** JDBC 2.0 The concurrency mode for a ResultSet object that may NOT be updated. */
     public static final int CONCUR_READ_ONLY = 1007;
 

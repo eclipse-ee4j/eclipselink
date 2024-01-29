@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -160,19 +160,19 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         // Enable users to disable or enable (default) MBean registration
         String shouldRegisterRuntimeBeanProperty = PrivilegedAccessHelper.getSystemProperty(JMX_REGISTER_RUN_MBEAN_PROPERTY);
         if(null != shouldRegisterRuntimeBeanProperty) {
-            if(shouldRegisterRuntimeBeanProperty.toLowerCase().indexOf("false") > -1) {
+            if(shouldRegisterRuntimeBeanProperty.toLowerCase().contains("false")) {
                 shouldRegisterRuntimeBean = false;
             }
-            if(shouldRegisterRuntimeBeanProperty.toLowerCase().indexOf("true") > -1) {
+            if(shouldRegisterRuntimeBeanProperty.toLowerCase().contains("true")) {
                 shouldRegisterRuntimeBean = true;
             }
         }
         String shouldRegisterDevelopmentBeanProperty = PrivilegedAccessHelper.getSystemProperty(JMX_REGISTER_DEV_MBEAN_PROPERTY);
         if(null != shouldRegisterDevelopmentBeanProperty) {
-            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("false") > -1) {
+            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().contains("false")) {
                 shouldRegisterDevelopmentBean = false;
             }
-            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("true") > -1) {
+            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().contains("true")) {
                 shouldRegisterDevelopmentBean = true;
             }
         }
@@ -314,9 +314,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
                 controller = PrivilegedAccessHelper.newInstanceFromClass(this.getExternalTransactionControllerClass());
             }
             getDatabaseSession().setExternalTransactionController(controller);
-        } catch (InstantiationException instantiationException) {
-            throw ValidationException.cannotCreateExternalTransactionController(getExternalTransactionControllerClass().getName());
-        } catch (IllegalAccessException illegalAccessException) {
+        } catch (InstantiationException | IllegalAccessException instantiationException) {
             throw ValidationException.cannotCreateExternalTransactionController(getExternalTransactionControllerClass().getName());
         }
     }

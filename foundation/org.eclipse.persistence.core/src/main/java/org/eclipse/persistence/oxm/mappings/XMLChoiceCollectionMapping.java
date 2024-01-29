@@ -316,7 +316,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                     if(associatedField == null) {
                         //this may be a reference mapping
                         List<XMLField> sourceFields = classToSourceFieldsMappings.get(value.getClass());
-                        if(sourceFields != null && sourceFields.size() > 0) {
+                        if(sourceFields != null && !sourceFields.isEmpty()) {
                             DatabaseMapping xmlMapping = (DatabaseMapping)this.choiceElementMappings.get(sourceFields.get(0));
                             for(XMLField next:sourceFields) {
                                 fieldValue = ((XMLCollectionReferenceMapping)xmlMapping).buildFieldValue(value, next, session);
@@ -374,7 +374,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
 
     @Override
     public List<DatabaseField> getFields() {
-        if(fields == null || fields.size() == 0) {
+        if(fields == null || fields.isEmpty()) {
             fields = this.collectFields();
         }
         return this.fields;
@@ -728,7 +728,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     @Override
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
-        if(this.fieldToClassNameMappings.size() > 0) {
+        if(!this.fieldToClassNameMappings.isEmpty()) {
 
             Set<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet();
             Iterator<Entry<XMLField, String>> iter = entries.iterator();
@@ -745,7 +745,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
 
 
     public void setChoiceFieldToClassAssociations(ArrayList associations) {
-        if(associations.size() > 0) {
+        if(!associations.isEmpty()) {
             for(Object next:associations) {
                 XMLChoiceFieldToClassAssociation<Converter, XMLField> association = (XMLChoiceFieldToClassAssociation)next;
                 this.addChoiceElement(association.getXmlField(), association.getClassName());
@@ -964,7 +964,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         isMixedContent = true;
 
         String xpath = groupingElement;
-        if(groupingElement.length() == 0) {
+        if(groupingElement.isEmpty()) {
             xpath = "text()";
         } else {
             xpath += "/" + "text()";

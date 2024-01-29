@@ -75,7 +75,7 @@ public class JavaFieldImpl implements JavaField {
 
     @Override
     public Collection getAnnotations() {
-        ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
+        ArrayList<JavaAnnotation> annotationCollection = new ArrayList<>();
         if (!isMetadataComplete) {
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {

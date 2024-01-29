@@ -78,13 +78,13 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
                 String qualifiedName = name.getLocalPart();
                 if (nr != null) {
                     String prefix = nr.resolveNamespaceURI(name.getNamespaceURI());
-                    if ((prefix != null) && prefix.length() > 0) {
+                    if ((prefix != null) && !prefix.isEmpty()) {
                         qualifiedName = prefix + Constants.COLON+ qualifiedName;
-                    } else if (name.getNamespaceURI() != null && name.getNamespaceURI().length() > 0) {
+                    } else if (name.getNamespaceURI() != null && !name.getNamespaceURI().isEmpty()) {
                         String generatedPrefix = nr.generatePrefix();
                         if(marshalRecord.hasCustomNamespaceMapper()) {
                             String customPrefix = marshalRecord.getMarshaller().getNamespacePrefixMapper().getPreferredPrefix(name.getNamespaceURI(), generatedPrefix, true);
-                            if(customPrefix != null && customPrefix.length() > 0) {
+                            if(customPrefix != null && !customPrefix.isEmpty()) {
                                 generatedPrefix = customPrefix;
                             }
                         }

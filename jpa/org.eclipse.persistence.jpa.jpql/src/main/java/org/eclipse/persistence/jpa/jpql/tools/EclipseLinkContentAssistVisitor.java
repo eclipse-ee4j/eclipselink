@@ -555,7 +555,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
                 Expression nameExpression = expression.getExpression();
                 String tableName = queryContext.literal(nameExpression, LiteralType.STRING_LITERAL);
 
-                if (tableName.length() == 0) {
+                if (tableName.isEmpty()) {
                     tableName = queryContext.literal(nameExpression, LiteralType.IDENTIFICATION_VARIABLE);
                 }
 

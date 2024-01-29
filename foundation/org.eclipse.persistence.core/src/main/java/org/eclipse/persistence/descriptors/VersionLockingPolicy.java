@@ -212,9 +212,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     public int compareWriteLockValues(Object value1, Object value2) {
         long longValue1 = ((Number)value1).longValue();
         long longValue2 = ((Number)value2).longValue();
-        if ( longValue1 < longValue2 ) return -1;
-        if ( longValue1 == longValue2 ) return 0;
-        return 1;
+        return Long.compare(longValue1, longValue2);
     }
 
     /**
@@ -429,7 +427,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             this.lockMapping = (AbstractDirectMapping)mapping;
         }
         // If the version field is not in the primary table, then they cannot be batched together.
-        if ((this.descriptor.getTables().size() > 0) && !getWriteLockField().getTable().equals(this.descriptor.getTables().get(0))) {
+        if ((!this.descriptor.getTables().isEmpty()) && !getWriteLockField().getTable().equals(this.descriptor.getTables().get(0))) {
             this.descriptor.setHasMultipleTableConstraintDependecy(true);
         }
     }

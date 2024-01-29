@@ -57,7 +57,7 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
         if (attributeValue != null) {
             if (property.isMany()) {
                 //  handle collection case
-                ArrayList<Object> fragments = new ArrayList<Object>();
+                ArrayList<Object> fragments = new ArrayList<>();
                 Iterator<Object> objects = ((Collection)attributeValue).iterator();
                 while (objects.hasNext()) {
                     fragments.add(buildFragment(property, (SDODataObject)anObject, ((SDODataObject)objects.next())));

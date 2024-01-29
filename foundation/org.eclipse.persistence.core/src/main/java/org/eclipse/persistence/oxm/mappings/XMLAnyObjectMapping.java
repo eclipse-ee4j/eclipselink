@@ -330,7 +330,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             Object objectValue = null;
             org.w3c.dom.Node next = (Node) iter.next();
             if (next.getNodeType() == Node.TEXT_NODE) {
-                if ((i == (length - 1)) || (next.getNodeValue().trim().length() > 0)) {
+                if ((i == (length - 1)) || (!next.getNodeValue().trim().isEmpty())) {
                     objectValue = next.getNodeValue();
                     objectValue = convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
                     return objectValue;
@@ -349,7 +349,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                 String schemaType = ((Element) next).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                 QName schemaTypeQName = null;
                 XPathFragment frag = new XPathFragment();
-                if ((null != schemaType) && (schemaType.length() > 0)) {
+                if ((null != schemaType) && (!schemaType.isEmpty())) {
                     frag.setXPath(schemaType);
                     if (frag.hasNamespace()) {
                         String prefix = frag.getPrefix();
@@ -450,10 +450,10 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             if (wasXMLRoot) {
                 if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                     String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                    if ((prefix == null) || prefix.length() == 0) {
+                    if ((prefix == null) || prefix.isEmpty()) {
                         prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                     }
-                    if ((prefix == null) || prefix.length() == 0) {
+                    if ((prefix == null) || prefix.isEmpty()) {
                         xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                         prefix = row.getNamespaceResolver().generatePrefix();
                     }
@@ -625,7 +625,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         if (wasXMLRoot) {
             if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                 String prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                if ((prefix == null) || prefix.length() == 0) {
+                if ((prefix == null) || prefix.isEmpty()) {
                     xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                     prefix = row.getNamespaceResolver().generatePrefix();
                 }

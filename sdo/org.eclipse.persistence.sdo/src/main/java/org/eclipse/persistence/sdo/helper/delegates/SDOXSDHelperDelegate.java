@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -470,7 +470,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
                     wrec.setWriter(sw);
                     wrec.node(nextElement, new NamespaceResolver());
                     wrec.flush();
-                    appInfoMap.put(key, value == null ? sw.toString() : value + sw.toString());
+                    appInfoMap.put(key, value == null ? sw.toString() : value + sw);
                 }
             }
         }

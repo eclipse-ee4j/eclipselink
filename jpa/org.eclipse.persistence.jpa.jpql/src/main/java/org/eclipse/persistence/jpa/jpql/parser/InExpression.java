@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -356,7 +356,7 @@ public final class InExpression extends AbstractExpression {
                 String word = wordParser.word();
                 wordParser.moveForward(word);
 
-                singleInputParameter = (word.length() > 0) &&
+                singleInputParameter = (!word.isEmpty()) &&
                                        ExpressionTools.isParameter(word.charAt(0)) &&
                                        wordParser.isTail();
             }

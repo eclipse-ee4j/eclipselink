@@ -69,7 +69,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private Map<Class<?>, SDOType> interfacesToSDOTypeHashMap;
 
     /** Map of impl classes -{@literal >} SDOType */
-    private Map<Class<?>, SDOType> implClassesToSDOType = new HashMap<Class<?>, SDOType>();
+    private Map<Class<?>, SDOType> implClassesToSDOType = new HashMap<>();
 
     /** Map containing built-in types for primitive and SDO types */
     private final Map commonjHashMap = new HashMap();
@@ -435,7 +435,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * Initializes the wrappersHashMap HashMap.
      */
     private void initWrappersHashMap() {
-        wrappersHashMap = new HashMap<QName, SDOType>();
+        wrappersHashMap = new HashMap<>();
 
         wrappersHashMap.put(SDOConstants.SDO_BOOLEAN.getQName(), SDO_BOOLEAN_WRAPPER);
         wrappersHashMap.put(SDOConstants.SDO_BYTE.getQName(), SDO_BYTE_WRAPPER);
@@ -816,7 +816,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
                 SDOType baseType = (SDOType)nextType.getBaseTypes().get(0);
                 while (baseType != null && !baseType.isDataType()) {
                     descriptorsToAdd.add(baseType);
-                    if (baseType.getBaseTypes().size() == 0) {
+                    if (baseType.getBaseTypes().isEmpty()) {
                         descriptorsToAdd.add(baseType);
                         // baseType should now be root of inheritance
                         baseType.setupInheritance(null);
@@ -1150,7 +1150,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     @Override
     public void reset() {
-        interfacesToSDOTypeHashMap = new HashMap<Class<?>, SDOType>();
+        interfacesToSDOTypeHashMap = new HashMap<>();
         namespaceResolver = null;
 
         initWrapperTypes();
@@ -1326,7 +1326,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
         NamespaceResolver nr = getNamespaceResolver();
         String existingPrefixForUri = nr.resolveNamespaceURI(uri);
-        if ((existingPrefixForUri == null) || existingPrefixForUri.equals("")) {
+        if ((existingPrefixForUri == null) || existingPrefixForUri.isEmpty()) {
             //doesn't exist so generate one
             //String newPrefix = nr.generatePrefix();
             String newPrefix = generatePrefix(uri);
@@ -1340,15 +1340,12 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     private String generatePrefix(String uri) {
         NamespaceResolver nr = getNamespaceResolver();
-        if (uri.equals(SDOConstants.SDO_URL)) {
-            return nr.generatePrefix("sdo");
-        } else if (uri.equals(SDOConstants.SDOXML_URL)) {
-            return nr.generatePrefix("sdoXML");
-        } else if (uri.equals(SDOConstants.SDOJAVA_URL)) {
-            return nr.generatePrefix("sdoJava");
-        } else {
-            return nr.generatePrefix();
-        }
+        return switch (uri) {
+            case SDOConstants.SDO_URL -> nr.generatePrefix("sdo");
+            case SDOConstants.SDOXML_URL -> nr.generatePrefix("sdoXML");
+            case SDOConstants.SDOJAVA_URL -> nr.generatePrefix("sdoJava");
+            default -> nr.generatePrefix();
+        };
     }
 
     /**
@@ -1360,7 +1357,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         NamespaceResolver nr = getNamespaceResolver();
 
         String existingPrefixForURI = nr.resolveNamespaceURI(uri);
-        if ((existingPrefixForURI != null) && !existingPrefixForURI.equals("")) {
+        if ((existingPrefixForURI != null) && !existingPrefixForURI.isEmpty()) {
             //if there is already a prefix for this uri return that one
             return existingPrefixForURI;
         }

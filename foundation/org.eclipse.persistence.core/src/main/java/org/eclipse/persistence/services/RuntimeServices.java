@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -612,28 +612,18 @@ public abstract class RuntimeServices {
          * @return String (one of OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST, ALL)
          */
         private String getNameForLogLevel(int logLevel) {
-            switch (logLevel) {
-            case SessionLog.ALL:
-                return SessionLog.ALL_LABEL;
-            case SessionLog.SEVERE:
-                return SessionLog.SEVERE_LABEL;
-            case SessionLog.WARNING:
-                return SessionLog.WARNING_LABEL;
-            case SessionLog.INFO:
-                return SessionLog.INFO_LABEL;
-            case SessionLog.CONFIG:
-                return SessionLog.CONFIG_LABEL;
-            case SessionLog.FINE:
-                return SessionLog.FINE_LABEL;
-            case SessionLog.FINER:
-                return SessionLog.FINER_LABEL;
-            case SessionLog.FINEST:
-                return SessionLog.FINEST_LABEL;
-            case SessionLog.OFF:
-                return SessionLog.OFF_LABEL;
-            default:
-                return "N/A";
-            }
+            return switch (logLevel) {
+                case SessionLog.ALL -> SessionLog.ALL_LABEL;
+                case SessionLog.SEVERE -> SessionLog.SEVERE_LABEL;
+                case SessionLog.WARNING -> SessionLog.WARNING_LABEL;
+                case SessionLog.INFO -> SessionLog.INFO_LABEL;
+                case SessionLog.CONFIG -> SessionLog.CONFIG_LABEL;
+                case SessionLog.FINE -> SessionLog.FINE_LABEL;
+                case SessionLog.FINER -> SessionLog.FINER_LABEL;
+                case SessionLog.FINEST -> SessionLog.FINEST_LABEL;
+                case SessionLog.OFF -> SessionLog.OFF_LABEL;
+                default -> "N/A";
+            };
         }
 
         /**
@@ -1096,7 +1086,7 @@ public abstract class RuntimeServices {
          Class<?> registeredClass;
 
          //Check if there aren't any classes registered
-         if (classesRegistered.size() == 0) {
+         if (classesRegistered.isEmpty()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
              return;
          }
@@ -1119,7 +1109,7 @@ public abstract class RuntimeServices {
          String registeredClassName;
 
          //Check if there aren't any classes registered
-         if (classesRegistered.size() == 0) {
+         if (classesRegistered.isEmpty()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
              return;
          }
@@ -1146,7 +1136,7 @@ public abstract class RuntimeServices {
          int sum = 0;
 
          //Check if there aren't any classes registered
-         if (classesRegistered.size() == 0) {
+         if (classesRegistered.isEmpty()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
              return 0;
          }
@@ -1406,7 +1396,7 @@ public abstract class RuntimeServices {
              String mappedClassName;
              List<ClassSummaryDetailBase> classSummaryDetails = new ArrayList<>();
              // Check if there aren't any classes mapped
-             if (mappedClassNames.size() == 0) {
+             if (mappedClassNames.isEmpty()) {
                  return null;
              }
              CompositeType type = buildCompositeTypeForClassSummaryDetails();
@@ -1545,7 +1535,7 @@ public abstract class RuntimeServices {
              String mappedClassName;
              TabularDataSupport rowData = new TabularDataSupport(buildTabularTypeForClassSummaryDetails());
              // Check if there aren't any classes mapped
-             if (mappedClassNames.size() == 0) {
+             if (mappedClassNames.isEmpty()) {
                  return null;
              }
 
@@ -1583,7 +1573,7 @@ public abstract class RuntimeServices {
              String mappedClassName;
              TabularDataSupport rowData = new TabularDataSupport(buildTabularTypeForClassSummaryDetails());
              // Check if there aren't any classes mapped
-             if (mappedClassNames.size() == 0) {
+             if (mappedClassNames.isEmpty()) {
                  return null;
              }
 

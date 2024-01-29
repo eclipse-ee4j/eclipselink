@@ -472,7 +472,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      */
     protected Character convertObjectToChar(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof String) {
-            if (((String)sourceObject).length() < 1) {
+            if (((String) sourceObject).isEmpty()) {
                 // ELBug336192 - Return default null value of char instead of returning null.
                 return getDefaultNullValue(ClassConstants.PCHAR);
             }
@@ -1248,25 +1248,18 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      */
     @SuppressWarnings({"unchecked"})
     public static <T> Class<T> getPrimitiveClass(String classType) {
-        if (classType.equals("int")) {
-            return (Class<T>) Integer.TYPE;
-        } else if (classType.equals("boolean")) {
-            return (Class<T>) Boolean.TYPE;
-        } else if (classType.equals("char")) {
-            return (Class<T>) Character.TYPE;
-        } else if (classType.equals("short")) {
-            return (Class<T>) Short.TYPE;
-        } else if (classType.equals("byte")) {
-            return (Class<T>) Byte.TYPE;
-        } else if (classType.equals("float")) {
-            return (Class<T>) Float.TYPE;
-        } else if (classType.equals("double")) {
-            return (Class<T>) Double.TYPE;
-        } else if (classType.equals("long")) {
-            return (Class<T>) Long.TYPE;
-        }
+        return switch (classType) {
+            case "int" -> (Class<T>) Integer.TYPE;
+            case "boolean" -> (Class<T>) Boolean.TYPE;
+            case "char" -> (Class<T>) Character.TYPE;
+            case "short" -> (Class<T>) Short.TYPE;
+            case "byte" -> (Class<T>) Byte.TYPE;
+            case "float" -> (Class<T>) Float.TYPE;
+            case "double" -> (Class<T>) Double.TYPE;
+            case "long" -> (Class<T>) Long.TYPE;
+            default -> null;
+        };
 
-        return null;
     }
 
     /**

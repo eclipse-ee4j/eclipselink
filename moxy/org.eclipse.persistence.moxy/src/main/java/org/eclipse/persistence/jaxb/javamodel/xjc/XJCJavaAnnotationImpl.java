@@ -114,7 +114,7 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
                             throw new RuntimeException("got " + val.getClass().getName());
                         }
                     }
-                    components.put(key, valuesArray.toArray(new Object[valuesArray.size()]));
+                    components.put(key, valuesArray.toArray(new Object[0]));
                 } else if (xjcValue instanceof JAnnotationStringValue value) {
                     components.put(key, value.toString());
                 } else if (xjcValue instanceof JAnnotationClassValue cval) {

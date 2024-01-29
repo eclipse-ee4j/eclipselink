@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -4242,7 +4242,7 @@ public class PersistenceUnitProperties {
      * processed on the {@code EntityManagerFactory} directly. None of these
      * properties processed during pre-deploy or deploy.
      **/
-    private static final Set<String> supportedNonServerSessionProperties = new HashSet<String>() {
+    private static final Set<String> supportedNonServerSessionProperties = new HashSet<>() {
         {
             add(JOIN_EXISTING_TRANSACTION);
             add(PERSISTENCE_CONTEXT_REFERENCE_MODE);

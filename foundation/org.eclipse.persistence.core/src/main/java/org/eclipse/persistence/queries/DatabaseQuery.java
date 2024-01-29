@@ -950,7 +950,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL: Return the accessor.
      */
     public Accessor getAccessor() {
-        if ((this.accessors == null) || (this.accessors.size() == 0)) {
+        if ((this.accessors == null) || (this.accessors.isEmpty())) {
             return null;
         }
         if (this.accessors instanceof List) {
@@ -1190,7 +1190,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Return the String used to delimit an SQL parameter.
      */
     public String getParameterDelimiter() {
-        if(null == parameterDelimiter || parameterDelimiter.length() == 0) {
+        if(null == parameterDelimiter || parameterDelimiter.isEmpty()) {
             parameterDelimiter = ParameterDelimiterType.DEFAULT;
         }
         return parameterDelimiter;
@@ -2150,7 +2150,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void setEJBQLString(String ejbqlString) {
         // Added the check for when we are building the query from the
         // deployment XML
-        if ((ejbqlString != null) && (!ejbqlString.equals(""))) {
+        if ((ejbqlString != null) && (!ejbqlString.isEmpty())) {
             JPQLCallQueryMechanism mechanism = new JPQLCallQueryMechanism(this, new JPQLCall(ejbqlString));
             setQueryMechanism(mechanism);
         }
@@ -2277,7 +2277,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setParameterDelimiter(String aParameterDelimiter) {
         // 325167: if the parameterDelimiter is invalid - use the default # symbol
-        if(null == aParameterDelimiter || aParameterDelimiter.length() == 0) {
+        if(null == aParameterDelimiter || aParameterDelimiter.isEmpty()) {
             aParameterDelimiter = ParameterDelimiterType.DEFAULT;
         }
         parameterDelimiter = aParameterDelimiter;
@@ -2505,7 +2505,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void setSQLString(String sqlString) {
         // Added the check for when we are building the query from the
         // deployment XML
-        if ((sqlString != null) && (!sqlString.equals(""))) {
+        if ((sqlString != null) && (!sqlString.isEmpty())) {
             setCall(new SQLCall(sqlString));
         }
     }
@@ -2723,7 +2723,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (getReferenceClass() != null) {
             referenceClassString = "referenceClass=" + getReferenceClass().getSimpleName() + " ";
         }
-        if ((getName() != null) && (!getName().equals(""))) {
+        if ((getName() != null) && (!getName().isEmpty())) {
             nameString = "name=\"" + getName() + "\" ";
         }
         if (isSQLCallQuery()) {

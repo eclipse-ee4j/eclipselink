@@ -176,7 +176,7 @@ public class DynamicTypeBuilder {
         // Configure Table names if provided
         if (tableNames != null) {
             if (tableNames.length == 0) {
-                if (descriptor.getTables().size() == 0) {
+                if (descriptor.getTables().isEmpty()) {
                     descriptor.descriptorIsAggregate();
                 }
             } else {

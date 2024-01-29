@@ -276,7 +276,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         Document document = xmlPlatform.createDocument();
 
-        if (defaultRootElementName == null || defaultRootElementName.length() == 0) {
+        if (defaultRootElementName == null || defaultRootElementName.isEmpty()) {
             DocumentFragment fragment = document.createDocumentFragment();
             return fragment;
         } else {
@@ -525,7 +525,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         XMLConversionManager xmlCnvMgr = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (key.isTypedTextField() && (node != null)) {
             String schemaType = node.getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-            if ((null != schemaType) && (schemaType.length() > 0)) {
+            if ((null != schemaType) && (!schemaType.isEmpty())) {
                 QName qname = null;
                 int index = schemaType.indexOf(XMLConstants.COLON);
                 if (index == -1) {
@@ -584,7 +584,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         NodeList replaced = null;
         boolean isEmptyCollection = false;
         if (nodeValue instanceof Collection) {
-            isEmptyCollection = ((Collection)nodeValue).size() == 0;
+            isEmptyCollection = ((Collection) nodeValue).isEmpty();
             replaced = XPathEngine.getInstance().replaceCollection(convertToXMLField(key), dom, (Collection)nodeValue, session);
         } else {
             replaced = XPathEngine.getInstance().replaceValue(convertToXMLField(key), dom, nodeValue, session);
@@ -609,7 +609,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         List<XMLEntry> replaced = null;
 
         replaced = XPathEngine.getInstance().replaceCollection(xmlFields, valuesToWrite, dom, getDocPresPolicy(), lastUpdatedField, session);
-        if(replaced.size() == 0) {
+        if(replaced.isEmpty()) {
             XPathEngine.getInstance().create(xmlFields, dom, valuesToWrite, lastUpdatedField, getDocPresPolicy(), session);
         }
         return replaced;

@@ -981,62 +981,39 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
 
         // Config the login to the selected platform.
         String platform = (String)getLoginChoice().getSelectedItem();
-        if (platform.equals("Last Login Used")) {
-            try {
-                getSessionInspectorPanel().loadLoginFromFile();
-                system.setLogin(getSessionInspectorPanel().getLoginEditor().getLogin());
-            } catch (Throwable error) {
+        switch (platform) {
+            case "Last Login Used" -> {
+                try {
+                    getSessionInspectorPanel().loadLoginFromFile();
+                    system.setLogin(getSessionInspectorPanel().getLoginEditor().getLogin());
+                } catch (Throwable error) {
+                }
             }
-        } else if (platform.equals("Local Oracle DB (thin)")) {
-            system.useOracleThin("localhost:1521:orcl", "scott", "tiger");
-        } else if (platform.equals("Oracle 11gR2 (thin)")) {
-            system.useOracleThin("ottvm030.ca.oracle.com:1521:TOPLINK", "", "password");
-        } else if (platform.equals("Oracle 11gR1 (thin)")) {
-            system.useOracleThin("ottvm028.ca.oracle.com:1521:TOPLINK", "", "password");
-        } else if (platform.equals("Oracle 11gR1 - Austin (thin)")) {
-            system.useOracleThin("adc6160375.us.oracle.com:1521:TOPLINK", "", "password");
-        } else if (platform.equals("Oracle (OCI)")) {
-            system.useOracleOCI();
-        } else if (platform.equals("TimesTen - coredev1")) {
-            system.useTimesTen("coredev1");
-        } else if (platform.equals("TimesTen - coredev2")) {
-            system.useTimesTen("coredev2");
-        } else if (platform.equals("DB2 (App)")) {
-            system.useDB2App();
-        } else if (platform.equals("DB2 (Net)")) {
-            system.useDB2Net();
-        } else if (platform.equals("DB2 (Universal Driver)")) {
-            system.useDB2UniversalDriver();
-        } else if (platform.equals("DB2 (DataDirect)")) {
-            system.useDB2DataDirect();
-        } else if (platform.equals("Derby")) {
-            system.useDerby();
-        } else if (platform.equals("H2")) {
-            system.useH2();
-        } else if (platform.equals("HSQL")) {
-            system.useHSQL();
-        } else if (platform.equals("PostgreSQL")) {
-            system.usePostgres();
-        } else if (platform.equals("Informix IDS 11.1")) {
-            system.useInformix11();
-        } else if (platform.equals("Sybase (JConnect)")) {
-            system.useSybaseJConnect();
-        } else if (platform.equals("Sybase (DataDirect)")) {
-            system.useSybaseDataDirect();
-        } else if (platform.equals("MySQL (Connector/J) - COREDEV1")) {
-            system.useMySQL("qa3");
-        } else if (platform.equals("MySQL (Connector/J) - COREDEV2")) {
-            system.useMySQL("qa4");
-        } else if (platform.equals("SQLServer (Weblogic Thin)")) {
-            system.useSQLServerWeblogicThin();
-        } else if (platform.equals("SQLServer (MS JDBC)")) {
-            system.useSQLServerMSJDBC();
-        } else if (platform.equals("SQLServer (DataDirect)")) {
-            system.useSQLServerDataDirect();
-        } else if (platform.equals("MS Access (JDBCODBC)")) {
-            system.useAccessJDBCODBC();
-        } else if (platform.equals("Symfoware (RDB2_TCP)")) {
-            system.useSymfowareRDB2_TCP();
+            case "Local Oracle DB (thin)" -> system.useOracleThin("localhost:1521:orcl", "scott", "tiger");
+            case "Oracle 11gR2 (thin)" -> system.useOracleThin("ottvm030.ca.oracle.com:1521:TOPLINK", "", "password");
+            case "Oracle 11gR1 (thin)" -> system.useOracleThin("ottvm028.ca.oracle.com:1521:TOPLINK", "", "password");
+            case "Oracle 11gR1 - Austin (thin)" -> system.useOracleThin("adc6160375.us.oracle.com:1521:TOPLINK", "", "password");
+            case "Oracle (OCI)" -> system.useOracleOCI();
+            case "TimesTen - coredev1" -> system.useTimesTen("coredev1");
+            case "TimesTen - coredev2" -> system.useTimesTen("coredev2");
+            case "DB2 (App)" -> system.useDB2App();
+            case "DB2 (Net)" -> system.useDB2Net();
+            case "DB2 (Universal Driver)" -> system.useDB2UniversalDriver();
+            case "DB2 (DataDirect)" -> system.useDB2DataDirect();
+            case "Derby" -> system.useDerby();
+            case "H2" -> system.useH2();
+            case "HSQL" -> system.useHSQL();
+            case "PostgreSQL" -> system.usePostgres();
+            case "Informix IDS 11.1" -> system.useInformix11();
+            case "Sybase (JConnect)" -> system.useSybaseJConnect();
+            case "Sybase (DataDirect)" -> system.useSybaseDataDirect();
+            case "MySQL (Connector/J) - COREDEV1" -> system.useMySQL("qa3");
+            case "MySQL (Connector/J) - COREDEV2" -> system.useMySQL("qa4");
+            case "SQLServer (Weblogic Thin)" -> system.useSQLServerWeblogicThin();
+            case "SQLServer (MS JDBC)" -> system.useSQLServerMSJDBC();
+            case "SQLServer (DataDirect)" -> system.useSQLServerDataDirect();
+            case "MS Access (JDBCODBC)" -> system.useAccessJDBCODBC();
+            case "Symfoware (RDB2_TCP)" -> system.useSymfowareRDB2_TCP();
         }
 
         DatabaseLogin login = system.getLogin();

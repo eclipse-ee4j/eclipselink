@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
- * Copyright (c) 2012, 2023 SAP. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2024 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -167,12 +167,12 @@ public final class HANAPlatform extends DatabasePlatform {
         return fieldTypeMapping;
     }
 
-    @Override
     /**
      * EclipseLink does not support length dependent type mapping.
      * Map varchar types with length > MAX_VARCHAR_UNICODE_LENGTH to CLOB (i.e clob); shorter types to NVARCHAR (n)
      * See also bugs 317597, 202348
      */
+    @Override
     protected void printFieldTypeSize(Writer writer, FieldDefinition field,
             FieldTypeDefinition fieldType) throws IOException {
         String typeName = fieldType.getName();

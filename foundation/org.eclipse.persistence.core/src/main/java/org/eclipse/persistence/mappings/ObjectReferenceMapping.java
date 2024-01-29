@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -120,16 +120,12 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             return null;
         }
         if (refreshCascade != null ){
-            switch(refreshCascade){
-            case ObjectBuildingQuery.CascadeAllParts :
-                return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_ALL_PARTS, true);
-            case ObjectBuildingQuery.CascadePrivateParts :
-                return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_PRIVATE_PARTS, true);
-            case ObjectBuildingQuery.CascadeByMapping :
-                return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_BY_MAPPING, true);
-            default:
-                return unitOfWork.mergeClone(attributeValue, MergeManager.NO_CASCADE, true);
-            }
+            return switch (refreshCascade) {
+                case ObjectBuildingQuery.CascadeAllParts -> unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_ALL_PARTS, true);
+                case ObjectBuildingQuery.CascadePrivateParts -> unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_PRIVATE_PARTS, true);
+                case ObjectBuildingQuery.CascadeByMapping -> unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_BY_MAPPING, true);
+                default -> unitOfWork.mergeClone(attributeValue, MergeManager.NO_CASCADE, true);
+            };
         }else{
             // Optimize registration to knowledge of existence.
             Object registeredObject = null;

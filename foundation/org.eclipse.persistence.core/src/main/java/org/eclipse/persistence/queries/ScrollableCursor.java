@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -164,7 +164,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
     public boolean first() throws DatabaseException {
         clearNextAndPrevious();
         try {
-            if (this.objectCollection.size() > 0) {
+            if (!this.objectCollection.isEmpty()) {
                 setPosition(1);
                 this.resultSet.beforeFirst();
                 return true;
@@ -320,7 +320,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             if (this.nextObject != null) {
                 return false;
             }
-            if ((this.objectCollection.size() > 0) && (getPosition() <= this.objectCollection.size())) {
+            if ((!this.objectCollection.isEmpty()) && (getPosition() <= this.objectCollection.size())) {
                 return false;
             }
             return this.resultSet.isAfterLast();
@@ -351,7 +351,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             return false;
         }
         try {
-            if (this.objectCollection.size() > 0) {
+            if (!this.objectCollection.isEmpty()) {
                 return getPosition() == 1;
             }
             return this.resultSet.isFirst();
@@ -399,7 +399,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             boolean isLast = this.resultSet.last();
             if (!isLast) {
                 // cursor must be empty.
-                if (this.objectCollection.size() > 0) {
+                if (!this.objectCollection.isEmpty()) {
                     setPosition(this.objectCollection.size());
                     isLast = true;
                 }

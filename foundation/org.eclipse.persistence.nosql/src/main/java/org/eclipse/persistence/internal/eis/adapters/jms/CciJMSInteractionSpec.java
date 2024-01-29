@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ public abstract class CciJMSInteractionSpec implements InteractionSpec {
      * @return true if a destination URL has been specified, false otherwise
      */
     public boolean hasDestinationURL() {
-        return (destinationURL != null) && (destinationURL.length() > 0);
+        return (destinationURL != null) && (!destinationURL.isEmpty());
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class CciJMSInteractionSpec implements InteractionSpec {
      * @return true if a message selector has been set, false otherwise
      */
     public boolean hasMessageSelector() {
-        return (messageSelector != null) && (messageSelector.length() > 0);
+        return (messageSelector != null) && (!messageSelector.isEmpty());
     }
 
     /**

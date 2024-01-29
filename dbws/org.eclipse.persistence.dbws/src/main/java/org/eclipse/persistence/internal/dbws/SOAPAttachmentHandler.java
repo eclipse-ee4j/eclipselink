@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
     private HashMap<String, DataHandler> attachments = new HashMap<>();
 
     public boolean hasAttachments() {
-        return attachments.size() > 0;
+        return !attachments.isEmpty();
     }
 
     public Map<String, DataHandler> getAttachments() {
@@ -67,7 +67,7 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
 
     @Override
     public String addMtomAttachment(DataHandler data, String elementName, String namespace) {
-        String name = "cid:" + randomUUID().toString();
+        String name = "cid:" + randomUUID();
         attachments.put(name, data);
         return name;
     }
@@ -75,7 +75,7 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
     @Override
     public String addMtomAttachment(byte[] data, int start, int len, String mimeType,
         String elementName, String namespace) {
-        String name = "cid:" + randomUUID().toString();
+        String name = "cid:" + randomUUID();
         DataHandler dataHandler = new DataHandler(new ByteArrayDataSource(data,
             "application/octet-stream"));
         attachments.put(name, dataHandler);

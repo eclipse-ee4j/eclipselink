@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -306,172 +306,63 @@ public enum JDBCTypes implements JDBCType {
 
         public static DatabaseType getDatabaseTypeForCode(int typeCode) {
 
-            DatabaseType databaseType = null;
-            switch (typeCode) {
-            case ARRAY :
-                databaseType = ARRAY_TYPE;
-                break;
-            case BIGINT :
-                databaseType = BIGINT_TYPE;
-                break;
-            case BINARY :
-                databaseType = BINARY_TYPE;
-                break;
-            case BIT :
-                databaseType = BIT_TYPE;
-                break;
-            case BLOB :
-                databaseType = BLOB_TYPE;
-                break;
-            case BOOLEAN :
-                databaseType = BOOLEAN_TYPE;
-                break;
-            case CHAR :
-                databaseType = CHAR_TYPE;
-                break;
-            case CLOB :
-                databaseType =  CLOB_TYPE;
-                break;
-            case DATALINK :
-                databaseType = DATALINK_TYPE;
-                break;
-            case DATE :
-                databaseType = DATE_TYPE;
-                break;
-            case DECIMAL :
-                databaseType = DECIMAL_TYPE;
-                break;
-            case DISTINCT :
-                databaseType = DISTINCT_TYPE;
-                break;
-            case DOUBLE :
-                databaseType = DOUBLE_TYPE;
-                break;
-            case FLOAT :
-                databaseType = FLOAT_TYPE;
-                break;
-            case INTEGER :
-                databaseType = INTEGER_TYPE;
-                break;
-            case JAVA_OBJECT :
-                databaseType = JAVA_OBJECT_TYPE;
-                break;
-            case LONGVARBINARY :
-                databaseType = LONGVARBINARY_TYPE;
-                break;
-            case LONGVARCHAR :
-                databaseType = LONGVARCHAR_TYPE;
-                break;
-            case NCHAR :
-                databaseType = NCHAR_TYPE;
-                break;
-            case NULL :
-                databaseType = NULL_TYPE;
-                break;
-            case NUMERIC :
-                databaseType = NUMERIC_TYPE;
-                break;
-            case NVARCHAR :
-                databaseType = NVARCHAR_TYPE;
-                break;
-            case OTHER :
-                databaseType = OTHER_TYPE;
-                break;
-            case REAL :
-                databaseType = REAL_TYPE;
-                break;
-            case REF :
-                databaseType = REF_TYPE;
-                break;
-            case SMALLINT :
-                databaseType = SMALLINT_TYPE;
-                break;
-            case STRUCT :
-                databaseType = STRUCT_TYPE;
-                break;
-            case TIME :
-                databaseType = TIME_TYPE;
-                break;
-            case TIMESTAMP :
-                databaseType = TIMESTAMP_TYPE;
-                break;
-            case TINYINT :
-                databaseType = TINYINT_TYPE;
-                break;
-            case VARBINARY :
-                databaseType = VARBINARY_TYPE;
-                break;
-            case VARCHAR :
-                databaseType = VARCHAR_TYPE;
-                break;
-            }
+            DatabaseType databaseType = switch (typeCode) {
+                case ARRAY -> ARRAY_TYPE;
+                case BIGINT -> BIGINT_TYPE;
+                case BINARY -> BINARY_TYPE;
+                case BIT -> BIT_TYPE;
+                case BLOB -> BLOB_TYPE;
+                case BOOLEAN -> BOOLEAN_TYPE;
+                case CHAR -> CHAR_TYPE;
+                case CLOB -> CLOB_TYPE;
+                case DATALINK -> DATALINK_TYPE;
+                case DATE -> DATE_TYPE;
+                case DECIMAL -> DECIMAL_TYPE;
+                case DISTINCT -> DISTINCT_TYPE;
+                case DOUBLE -> DOUBLE_TYPE;
+                case FLOAT -> FLOAT_TYPE;
+                case INTEGER -> INTEGER_TYPE;
+                case JAVA_OBJECT -> JAVA_OBJECT_TYPE;
+                case LONGVARBINARY -> LONGVARBINARY_TYPE;
+                case LONGVARCHAR -> LONGVARCHAR_TYPE;
+                case NCHAR -> NCHAR_TYPE;
+                case NULL -> NULL_TYPE;
+                case NUMERIC -> NUMERIC_TYPE;
+                case NVARCHAR -> NVARCHAR_TYPE;
+                case OTHER -> OTHER_TYPE;
+                case REAL -> REAL_TYPE;
+                case REF -> REF_TYPE;
+                case SMALLINT -> SMALLINT_TYPE;
+                case STRUCT -> STRUCT_TYPE;
+                case TIME -> TIME_TYPE;
+                case TIMESTAMP -> TIMESTAMP_TYPE;
+                case TINYINT -> TINYINT_TYPE;
+                case VARBINARY -> VARBINARY_TYPE;
+                case VARCHAR -> VARCHAR_TYPE;
+                default -> null;
+            };
             return databaseType;
         }
 
         public static Class<?> getClassForCode(int typeCode) {
-            Class<?> clz = STRING;
-            switch (typeCode) {
-                case ARRAY :
-                    clz = Array.class;
-                    break;
-                case DECIMAL :
-                case BIGINT :
-                case NUMERIC :
-                    clz = BIGDECIMAL;
-                    break;
-                case BLOB :
-                case BINARY :
-                case LONGVARBINARY :
-                case VARBINARY :
-                    clz = ClassConstants.BLOB;
-                    break;
-                case CLOB :
-                    clz =  ClassConstants.CLOB;
-                    break;
-                case BOOLEAN :
-                    clz = ClassConstants.BOOLEAN;
-                    break;
-                case DISTINCT :
-                case DATALINK :
-                case JAVA_OBJECT :
-                case OTHER :
-                case REF :
-                    clz = OBJECT;
-                    break;
-                case NULL :
-                    clz = Void_Class;
-                    break;
-                case DATE :
-                    clz = SQLDATE;
-                    break;
-                case TIMESTAMP :
-                    clz = CoreClassConstants.TIMESTAMP;
-                    break;
-                case DOUBLE :
-                    clz = ClassConstants.DOUBLE;
-                    break;
-                case REAL :
-                case FLOAT :
-                    clz = ClassConstants.FLOAT;
-                    break;
-                case INTEGER :
-                    clz = ClassConstants.INTEGER;
-                    break;
-                case BIT :
-                case SMALLINT :
-                case TINYINT :
-                    clz = SHORT;
-                    break;
-                case STRUCT :
-                    clz = Struct.class;
-                    break;
-                case TIME :
-                    clz = CoreClassConstants.TIME;
-                    break;
-                default:
-                    clz = STRING;
-                    break;
-            }
+            Class<?> clz = switch (typeCode) {
+                case ARRAY -> Array.class;
+                case DECIMAL, BIGINT, NUMERIC -> BIGDECIMAL;
+                case BLOB, BINARY, LONGVARBINARY, VARBINARY -> ClassConstants.BLOB;
+                case CLOB -> ClassConstants.CLOB;
+                case BOOLEAN -> ClassConstants.BOOLEAN;
+                case DISTINCT, DATALINK, JAVA_OBJECT, OTHER, REF -> OBJECT;
+                case NULL -> Void_Class;
+                case DATE -> SQLDATE;
+                case TIMESTAMP -> CoreClassConstants.TIMESTAMP;
+                case DOUBLE -> ClassConstants.DOUBLE;
+                case REAL, FLOAT -> ClassConstants.FLOAT;
+                case INTEGER -> ClassConstants.INTEGER;
+                case BIT, SMALLINT, TINYINT -> SHORT;
+                case STRUCT -> Struct.class;
+                case TIME -> CoreClassConstants.TIME;
+                default -> STRING;
+            };
             return clz;
         }
 }

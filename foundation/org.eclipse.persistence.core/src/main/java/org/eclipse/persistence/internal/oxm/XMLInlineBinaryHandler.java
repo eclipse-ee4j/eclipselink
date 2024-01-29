@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -107,7 +107,7 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
                    value = valueFromReader;
                } else {
                    String valueString = value.toString();
-                   if(valueString.length() == 0 && nullPolicy.isNullRepresentedByEmptyNode()){
+                   if(valueString.isEmpty() && nullPolicy.isNullRepresentedByEmptyNode()){
                        value = null;
                    }else{
                        if(field.usesSingleNode()){

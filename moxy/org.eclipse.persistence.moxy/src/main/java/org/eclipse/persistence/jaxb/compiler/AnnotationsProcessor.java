@@ -304,7 +304,7 @@ public final class AnnotationsProcessor {
         init(classes, typeMappingInfos);
         preBuildTypeInfo(classes);
         postBuildTypeInfo(classes);
-        processPropertyTypes(this.typeInfoClasses.toArray(new JavaClass[this.typeInfoClasses.size()]));
+        processPropertyTypes(this.typeInfoClasses.toArray(new JavaClass[0]));
         finalizeProperties();
         createElementsForTypeMappingInfo();
         checkForCallbackMethods();
@@ -475,7 +475,7 @@ public final class AnnotationsProcessor {
                 annotations.add(AnnotationProxy.getProxy(components, XmlJavaTypeAdapter.class, loader, cMgr));
             }
             // return the newly created array of dynamic proxy objects
-            return annotations.toArray(new Annotation[annotations.size()]);
+            return annotations.toArray(new Annotation[0]);
         }
         // no xml-element set on the info, (i.e. no xml overrides) so return the
         // array of Annotation objects
@@ -585,7 +585,7 @@ public final class AnnotationsProcessor {
             processXmlSeeAlso(javaClass, info);
 
             PackageInfo packageInfo = getPackageInfoForPackage(javaClass);
-            if(packageInfo != null && packageInfo.getPackageLevelAdaptersByClass().size() > 0){
+            if(packageInfo != null && !packageInfo.getPackageLevelAdaptersByClass().isEmpty()){
                 for(String adapterClass :packageInfo.getPackageLevelAdaptersByClass().keySet()){
                     JavaClass boundType = packageInfo.getPackageLevelAdaptersByClass().get(adapterClass);
                     info.getPackageLevelAdaptersByClass().put(adapterClass, boundType);
@@ -777,7 +777,7 @@ public final class AnnotationsProcessor {
                     newClasses.add(next);
                 }
             }
-            postBuildTypeInfo(newClasses.toArray(new JavaClass[newClasses.size()]));
+            postBuildTypeInfo(newClasses.toArray(new JavaClass[0]));
         }
         return javaClasses;
     }
@@ -1173,7 +1173,7 @@ public final class AnnotationsProcessor {
         ArrayList<JavaClass> classesToProcess = new ArrayList<>();
         for (JavaClass jClass : classes) {
             List<TypeMappingInfo> infos = this.javaClassToTypeMappingInfos.get(jClass);
-            if(infos != null && infos.size() > 0) {
+            if(infos != null && !infos.isEmpty()) {
                 for(TypeMappingInfo next:infos) {
                     processAdditionalClasses(jClass, next, extraClasses, classesToProcess);
                 }
@@ -1186,7 +1186,7 @@ public final class AnnotationsProcessor {
             processClass(javaClass, classesToProcess);
         }
 
-        return classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
+        return classesToProcess.toArray(new JavaClass[0]);
     }
 
     private void processAdditionalClasses(JavaClass cls, TypeMappingInfo tmi, ArrayList<JavaClass> extraClasses, ArrayList<JavaClass> classesToProcess) {
@@ -1560,12 +1560,12 @@ public final class AnnotationsProcessor {
         // set propOrder
         if (xmlType.isSetPropOrder()) {
             List<String> props = xmlType.getPropOrder();
-            if (props.size() == 0) {
+            if (props.isEmpty()) {
                 info.setPropOrder(new String[0]);
             } else if (props.get(0).equals(EMPTY_STRING)) {
                 info.setPropOrder(new String[] { EMPTY_STRING });
             } else {
-                info.setPropOrder(xmlType.getPropOrder().toArray(new String[xmlType.getPropOrder().size()]));
+                info.setPropOrder(xmlType.getPropOrder().toArray(new String[0]));
             }
         }
 
@@ -1959,9 +1959,7 @@ public final class AnnotationsProcessor {
                             property.setTransient(true);
                         }
                         properties.add(property);
-                    } catch (ClassCastException e) {
-                        // do Nothing
-                    } catch (IllegalAccessException e) {
+                    } catch (ClassCastException | IllegalAccessException e) {
                         // do Nothing
                     } catch (JAXBException ex) {
                         if (ex.getErrorCode() != JAXBException.INVALID_INTERFACE || !helper.isAnnotationPresent(javaField, XmlTransient.class)) {
@@ -2109,7 +2107,7 @@ public final class AnnotationsProcessor {
                     }
                     Property predicateProperty = new Property(helper);
                     predicateProperty.setType(helper.getJavaClass("java.lang.String"));
-                    if(predicatePath.length() > 0) {
+                    if(!predicatePath.isEmpty()) {
                         predicatePath += "/";
                     }
                     predicatePath += fragment.getPredicate().getXPathFragment().getXPath();
@@ -2238,7 +2236,7 @@ public final class AnnotationsProcessor {
                     xmlJoinNode.setReferencedXmlPath(xmlJN.referencedXmlPath());
                     xmlJoinNodeList.add(xmlJoinNode);
                 }
-                if (xmlJoinNodeList.size() > 0) {
+                if (!xmlJoinNodeList.isEmpty()) {
                     xmlJoinNodes = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes();
                     xmlJoinNodes.setXmlJoinNode(xmlJoinNodeList);
                     xmlJoinNodesList.add(xmlJoinNodes);
@@ -2572,7 +2570,7 @@ public final class AnnotationsProcessor {
 
             if(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName)){
                 Collection args = type.getActualTypeArguments();
-                if(args.size() > 0){
+                if(!args.isEmpty()){
                     JavaClass theType = (JavaClass) args.iterator().next();
                     processReferencedClass(theType);
                 }
@@ -3125,7 +3123,7 @@ public final class AnnotationsProcessor {
 
         // default to alphabetical ordering
         // RI compliancy
-        Collections.sort(properties, new PropertyComparitor());
+        properties.sort(new PropertyComparitor());
         return properties;
     }
 
@@ -3185,9 +3183,9 @@ public final class AnnotationsProcessor {
 
         // Not sure who should win if a property exists for both or the correct
         // order
-        if (!publicFieldProperties.isEmpty() && publicMethodProperties.size() == 0) {
+        if (!publicFieldProperties.isEmpty() && publicMethodProperties.isEmpty()) {
             return publicFieldProperties;
-        } else if (!publicMethodProperties.isEmpty() && publicFieldProperties.size() == 0) {
+        } else if (!publicMethodProperties.isEmpty() && publicFieldProperties.isEmpty()) {
             return publicMethodProperties;
         } else {
             // add any non-duplicate method properties to the collection.
@@ -3788,9 +3786,9 @@ public final class AnnotationsProcessor {
             }
         }
 
-        if (classes.size() > 0) {
+        if (!classes.isEmpty()) {
             classesToProcessPropertyTypes.addAll(classes);
-            return classes.toArray(new JavaClass[classes.size()]);
+            return classes.toArray(new JavaClass[0]);
         } else {
             return new JavaClass[0];
         }
@@ -3868,7 +3866,7 @@ public final class AnnotationsProcessor {
             if (JAVA_UTIL_LIST.equals(type.getName())) {
                 isList = true;
                 Collection args = type.getActualTypeArguments();
-                if (args.size() > 0) {
+                if (!args.isEmpty()) {
                     type = (JavaClass) args.iterator().next();
                 }
             }
@@ -3993,7 +3991,7 @@ public final class AnnotationsProcessor {
 
     private void addReferencedElement(Property property, ElementDeclaration referencedElement) {
         property.addReferencedElement(referencedElement);
-        if (referencedElement.getSubstitutableElements() != null && referencedElement.getSubstitutableElements().size() > 0) {
+        if (referencedElement.getSubstitutableElements() != null && !referencedElement.getSubstitutableElements().isEmpty()) {
             for (ElementDeclaration substitutable : referencedElement.getSubstitutableElements()) {
                 if (substitutable != referencedElement) {
                     addReferencedElement(property, substitutable);
@@ -4407,7 +4405,7 @@ public final class AnnotationsProcessor {
             componentClass = helper.getJavaClass(xmlElementType);
         } else{
             Collection args = collectionClass.getActualTypeArguments();
-            if(args.size() >0 ){
+            if(!args.isEmpty()){
                 componentClass = ((JavaClass) args.toArray()[0]);
             }else{
                 componentClass = helper.getJavaClass(Object.class);
@@ -4643,8 +4641,7 @@ public final class AnnotationsProcessor {
                                 nextValue = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                             }
                             av.visit(next.getName(), nextValue);
-                        } catch (InvocationTargetException ex) {
-                        } catch (IllegalAccessException ex) {
+                        } catch (InvocationTargetException | IllegalAccessException ex) {
                         }
                     }
                     av.visitEnd();
