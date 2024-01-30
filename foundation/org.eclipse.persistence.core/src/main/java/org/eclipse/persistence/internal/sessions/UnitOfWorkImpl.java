@@ -98,7 +98,6 @@ import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -4003,8 +4002,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public Vector registerAllObjects(Vector domainObjects) throws DatabaseException, OptimisticLockException {
         Vector clones = new Vector(domainObjects.size());
-        for (Enumeration objectsEnum = domainObjects.elements(); objectsEnum.hasMoreElements();) {
-            clones.addElement(registerObject(objectsEnum.nextElement()));
+        for (Iterator iterator = domainObjects.iterator(); iterator.hasNext();) {
+            clones.addElement(registerObject(iterator.next()));
         }
         return clones;
     }

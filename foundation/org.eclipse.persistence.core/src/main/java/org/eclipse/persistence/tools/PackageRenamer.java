@@ -33,7 +33,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Vector;
@@ -559,8 +559,8 @@ public class PackageRenamer {
 
         // Sorting key package name.
         Vector<Object> aVector = new Vector<>();
-        for (Enumeration<Object> e = properties.keys(); e.hasMoreElements();) {
-            aVector.addElement(e.nextElement());
+        for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
+            aVector.addElement(iterator.next());
         }
         String[] aStringArrayOfSortedKeyPackageName = new String[aVector.size()];
         aVector.copyInto(aStringArrayOfSortedKeyPackageName);
@@ -569,8 +569,8 @@ public class PackageRenamer {
         // Starting to rename.
         boolean alreadyPrint = false;
         int index = aStringArrayOfSortedKeyPackageName.length;
-        for (Enumeration<Object> enumtr = properties.keys(); enumtr.hasMoreElements();) {
-            enumtr.nextElement();
+        for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
+            iterator.next();
             String key = aStringArrayOfSortedKeyPackageName[index - 1];
             String value = (String)properties.get(key);
             index -= 1;
@@ -643,8 +643,8 @@ public class PackageRenamer {
      * @return The new filename, regardless of whether is has been changed
      */
     public String returnNewFileNameIfRequired(String aSourceFileNameWithoutRoot) {
-        for (Enumeration<Object> enumtr = properties.keys(); enumtr.hasMoreElements();) {
-            String key = (String)enumtr.nextElement();
+        for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
 
             if (aSourceFileNameWithoutRoot.contains(key)) {
                 // replacing the old package name.

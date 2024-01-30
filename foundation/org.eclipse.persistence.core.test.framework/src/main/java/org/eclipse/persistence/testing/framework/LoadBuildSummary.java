@@ -21,7 +21,7 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 
 import java.net.InetAddress;
 import java.sql.Timestamp;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -108,10 +108,10 @@ public class LoadBuildSummary {
         } else if (summaries.getValue() == null) {
             summaries.setValue(new Vector<>());
         }
-        for (Enumeration<TestResultsSummary> enumtr = getSummaries().elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary element = enumtr.nextElement();
+        for (Iterator<TestResultsSummary> iterator = getSummaries().iterator(); iterator.hasNext();) {
+            TestResultsSummary element = iterator.next();
             if (element.getName().equals(summary.getName())) {
-                getSummaries().removeElement(element);
+                iterator.remove();
             }
         }
         getSummaries().addElement(summary);
@@ -122,21 +122,21 @@ public class LoadBuildSummary {
         numberOfTests = 0;
         errors = 0;
         fatalErrors = 0;
-        for (Enumeration<TestResultsSummary> enumtr = getSummaries().elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = enumtr.nextElement();
+        for (Iterator<TestResultsSummary> iterator = getSummaries().iterator(); iterator.hasNext();) {
+            TestResultsSummary summary = iterator.next();
             if (summary.getParent() == null) {
                 rootSummaries.addElement(summary);
             }
         }
-        for (Enumeration<TestResultsSummary> enumtr = rootSummaries.elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = enumtr.nextElement();
+        for (Iterator<TestResultsSummary> iterator = rootSummaries.iterator(); iterator.hasNext();) {
+            TestResultsSummary summary = iterator.next();
             numberOfTests += summary.getTotalTests();
             errors += summary.getErrors();
             fatalErrors += summary.getFatalErrors();
         }
 
-        for (Enumeration<TestResult> enumtr = getResults().elements(); enumtr.hasMoreElements();) {
-            TestResult result = enumtr.nextElement();
+        for (Iterator<TestResult> iterator = getResults().iterator(); iterator.hasNext();) {
+            TestResult result = iterator.next();
             if (result.hasError()) {
                 errors++;
             } else if (result.hasFatalError()) {
@@ -178,17 +178,17 @@ public class LoadBuildSummary {
 
     public void initializeLoadBuild() {
         if (getResults() != null) {
-            for (Enumeration<TestResult> enumtr = getResults().elements(); enumtr.hasMoreElements();) {
-                TestResult result = enumtr.nextElement();
+            for (Iterator<TestResult> iterator = getResults().iterator(); iterator.hasNext();) {
+                TestResult result = iterator.next();
                 result.setLoadBuildSummary(this);
             }
         }
         if (getSummaries() != null) {
-            for (Enumeration<TestResultsSummary> enum1 = getSummaries().elements(); enum1.hasMoreElements();) {
-                TestResultsSummary summary = enum1.nextElement();
+            for (Iterator<TestResultsSummary> iterator1 = getSummaries().iterator(); iterator1.hasNext();) {
+                TestResultsSummary summary = iterator1.next();
                 summary.setLoadBuildSummary(this);
-                for (Enumeration<TestResult> enum2 = summary.getResults().elements(); enum2.hasMoreElements();) {
-                    TestResult result = enum2.nextElement();
+                for (Iterator<TestResult> iterator = summary.getResults().iterator(); iterator.hasNext();) {
+                    TestResult result = iterator.next();
                     result.setLoadBuildSummary(this);
                 }
             }
@@ -213,17 +213,17 @@ public class LoadBuildSummary {
 
     public void setLoadBuildSummaryForTests() {
         if (getResults() != null) {
-            for (Enumeration<TestResult> enumtr = getResults().elements(); enumtr.hasMoreElements();) {
-                TestResult result = enumtr.nextElement();
+            for (Iterator<TestResult> iterator = getResults().iterator(); iterator.hasNext();) {
+                TestResult result = iterator.next();
                 result.setLoadBuildSummary(this);
             }
         }
         if (getSummaries() != null) {
-            for (Enumeration<TestResultsSummary> enum1 = getSummaries().elements(); enum1.hasMoreElements();) {
-                TestResultsSummary summary = enum1.nextElement();
+            for (Iterator<TestResultsSummary> iterator1 = getSummaries().iterator(); iterator1.hasNext();) {
+                TestResultsSummary summary = iterator1.next();
                 summary.setLoadBuildSummary(this);
-                for (Enumeration<TestResult> enum2 = summary.getResults().elements(); enum2.hasMoreElements();) {
-                    TestResult result = enum2.nextElement();
+                for (Iterator<TestResult> iterator = summary.getResults().iterator(); iterator.hasNext();) {
+                    TestResult result = iterator.next();
                     result.setLoadBuildSummary(this);
                 }
             }

@@ -239,9 +239,7 @@ public class PersistenceUnitProcessor {
             result = new URL("bundleresource://" + pxmlURL.getAuthority());
         } else {
             StringBuilder path = new StringBuilder();
-            for (int i=0;i<descriptorDepth;i++){
-                path.append("../"); // 315097 URL use standard separators
-            }
+            path.append("../".repeat(Math.max(0, descriptorDepth))); // 315097 URL use standard separators
             // some other protocol
             result = new URL(pxmlURL, path.toString()); // NOI18N
         }

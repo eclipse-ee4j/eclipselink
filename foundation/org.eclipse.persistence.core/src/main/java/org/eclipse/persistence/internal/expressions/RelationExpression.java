@@ -31,7 +31,7 @@ import org.eclipse.persistence.queries.ReportQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -122,8 +122,8 @@ public class RelationExpression extends CompoundExpression {
             }
 
             // Otherwise right vector means an anyof on right, so must check each value.
-            for (Enumeration rightEnum = ((Vector)rightValue).elements(); rightEnum.hasMoreElements(); ) {
-                Object tempRight = rightEnum.nextElement();
+            for (Iterator iterator = ((Vector) rightValue).iterator(); iterator.hasNext(); ) {
+                Object tempRight = iterator.next();
 
                 // Left may also be an anyof some must check each left with each right.
                 if (leftValue instanceof Vector) {

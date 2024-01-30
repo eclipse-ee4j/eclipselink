@@ -32,7 +32,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -92,12 +91,12 @@ public class LOBValueWriter {
     * Fetch the locator(s) from the result set and write LOB value to the table
     */
     public void fetchLocatorAndWriteValue(DatabaseCall dbCall, Object resultSet) throws SQLException {
-        Enumeration<DatabaseField> enumFields = dbCall.getContexts().getFields().elements();
-        Enumeration<?> enumValues = dbCall.getContexts().getValues().elements();
+        Iterator<DatabaseField> iterator1 = dbCall.getContexts().getFields().iterator();
+        Iterator<?> iterator = dbCall.getContexts().getValues().iterator();
         AbstractSession executionSession = dbCall.getQuery().getSession().getExecutionSession(dbCall.getQuery());
-        while (enumFields.hasMoreElements()) {
-            DatabaseField field = enumFields.nextElement();
-            Object value = enumValues.nextElement();
+        while (iterator1.hasNext()) {
+            DatabaseField field = iterator1.next();
+            Object value = iterator.next();
 
             //write the value through the locator
             executionSession.getPlatform().writeLOB(field, value, (ResultSet)resultSet, executionSession);

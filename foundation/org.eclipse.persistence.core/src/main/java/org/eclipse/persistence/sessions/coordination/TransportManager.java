@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,8 +27,8 @@ import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -341,11 +341,11 @@ public abstract class TransportManager {
      */
     public void removeAllConnectionsToExternalServices() {
         synchronized (this) {
-            Enumeration<RemoteConnection> connections = connectionsToExternalServices.elements();
+            Iterator<RemoteConnection> iterator = connectionsToExternalServices.values().iterator();
             connectionsToExternalServices = new Hashtable(3);
 
-            while (connections.hasMoreElements()) {
-                connections.nextElement().close();
+            while (iterator.hasNext()) {
+                iterator.next().close();
             }
         }
     }

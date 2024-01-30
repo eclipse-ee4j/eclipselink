@@ -84,7 +84,6 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -135,8 +134,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     protected Vector aliasFields(ObjectExpression node, Vector fields) {
         Vector result = new Vector(fields.size());
 
-        for (Enumeration e = fields.elements(); e.hasMoreElements();) {
-            DatabaseField eachField = ((DatabaseField)e.nextElement()).clone();
+        for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
+            DatabaseField eachField = ((DatabaseField) iterator.next()).clone();
             eachField.setTable(node.aliasForTable(eachField.getTable()));
             result.addElement(eachField);
         }

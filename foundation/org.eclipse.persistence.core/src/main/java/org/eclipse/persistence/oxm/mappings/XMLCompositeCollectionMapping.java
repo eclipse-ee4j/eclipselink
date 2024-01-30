@@ -57,7 +57,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.QName;
 import java.lang.reflect.Modifier;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -508,8 +508,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             result = cp.containerInstance(nestedRows.size());
         }
 
-        for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-            XMLRecord nestedRow = (XMLRecord) stream.nextElement();
+        for (Iterator iterator = nestedRows.iterator(); iterator.hasNext();) {
+            XMLRecord nestedRow = (XMLRecord) iterator.next();
             Object objectToAdd;
             if (getNullPolicy().valueIsNull((Element) nestedRow.getDOM())) {
                 objectToAdd = null;

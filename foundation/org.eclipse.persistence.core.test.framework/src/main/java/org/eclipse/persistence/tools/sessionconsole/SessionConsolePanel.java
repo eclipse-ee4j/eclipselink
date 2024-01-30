@@ -57,6 +57,7 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -3447,9 +3448,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         columns[3] = "Object";
 
         model.setColumnIdentifiers(columns);
-        for (Enumeration<CacheKey> cacheEnumeration = cacheResults.elements(); cacheEnumeration
-                .hasMoreElements();) {
-            CacheKey key = cacheEnumeration.nextElement();
+        for (Iterator<CacheKey> iterator = cacheResults.iterator(); iterator.hasNext();) {
+            CacheKey key = iterator.next();
             String[] values = new String[4];
             values[0] = key.getKey().toString();
             values[1] = Integer.valueOf(key.getObject().hashCode()).toString();
@@ -3538,9 +3538,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         }
 
         model.setColumnIdentifiers(columns);
-        for (Enumeration<Object> objectsEnumeration = resultObjects.elements(); objectsEnumeration
-                .hasMoreElements();) {
-            Object object = objectsEnumeration.nextElement();
+        for (Iterator<Object> iterator = resultObjects.iterator(); iterator.hasNext();) {
+            Object object = iterator.next();
             String[] values = new String[descriptor.getMappings().size()];
             for (int index = 0; index < descriptor.getMappings().size(); index++) {
                 DatabaseMapping mapping = descriptor.getMappings().get(
@@ -3570,9 +3569,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                     index).getName();
         }
         model.setColumnIdentifiers(columns);
-        for (Enumeration<DatabaseRecord> rowsEnumeration = resultRows.elements(); rowsEnumeration
-                .hasMoreElements();) {
-            DatabaseRecord row = rowsEnumeration.nextElement();
+        for (Iterator<DatabaseRecord> iterator = resultRows.iterator(); iterator.hasNext();) {
+            DatabaseRecord row = iterator.next();
             String[] values = new String[row.getValues().size()];
             for (int index = 0; index < row.getValues().size(); index++) {
                 values[index] = String

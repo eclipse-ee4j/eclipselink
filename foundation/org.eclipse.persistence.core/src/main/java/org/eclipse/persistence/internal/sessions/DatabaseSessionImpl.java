@@ -72,7 +72,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1063,8 +1062,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * the object has been updated or deleted by another user since it was last read.
      */
     public void writeAllObjects(Vector domainObjects) throws DatabaseException, OptimisticLockException {
-        for (Enumeration objectsEnum = domainObjects.elements(); objectsEnum.hasMoreElements();) {
-            writeObject(objectsEnum.nextElement());
+        for (Iterator iterator = domainObjects.iterator(); iterator.hasNext();) {
+            writeObject(iterator.next());
         }
     }
 

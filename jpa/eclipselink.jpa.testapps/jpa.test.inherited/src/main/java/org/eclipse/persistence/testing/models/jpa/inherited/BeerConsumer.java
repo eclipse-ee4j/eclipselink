@@ -54,9 +54,9 @@ import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -315,9 +315,9 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     }
 
     public boolean hasTelephoneNumber(TelephoneNumber telephoneNumber) {
-        Enumeration<TelephoneNumberPK> keys = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keys();
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
+        Iterator<TelephoneNumberPK> iterator = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keySet().iterator();
+        while (iterator.hasNext()) {
+            Object key = iterator.next();
 
             if (telephoneNumbers.get(key).equals(telephoneNumber)) {
                 return true;
@@ -381,9 +381,9 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     }
 
     public void removePhoneNumber(TelephoneNumber telephoneNumber) {
-        Enumeration<TelephoneNumberPK> keys = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keys();
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
+        Iterator<TelephoneNumberPK> iterator = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keySet().iterator();
+        while (iterator.hasNext()) {
+            Object key = iterator.next();
             TelephoneNumber potentialTelephoneNumber = telephoneNumbers.get(key);
 
             if (potentialTelephoneNumber.equals(telephoneNumber)) {

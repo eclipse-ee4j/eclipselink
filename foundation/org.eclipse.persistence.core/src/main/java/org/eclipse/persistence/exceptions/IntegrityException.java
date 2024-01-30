@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  *    <p><b>Purpose</b>: IntegrityExceptions is used to throw all the Descriptors exceptions.
@@ -63,9 +63,9 @@ public class IntegrityException extends ValidationException {
         java.io.PrintWriter writer = new java.io.PrintWriter(swriter);
         writer.println(cr + ExceptionMessageGenerator.getHeader("DescriptorExceptionsHeader"));
         writer.println("---------------------------------------------------------");
-        for (Enumeration<Exception> enumtr = getIntegrityChecker().getCaughtExceptions().elements();
-                 enumtr.hasMoreElements();) {
-            Exception e = enumtr.nextElement();
+        for (Iterator<Exception> iterator = getIntegrityChecker().getCaughtExceptions().iterator();
+             iterator.hasNext();) {
+            Exception e = iterator.next();
             if (e instanceof DescriptorException) {
                 writer.println(cr + e);
             }
@@ -74,9 +74,9 @@ public class IntegrityException extends ValidationException {
         if (getIntegrityChecker().hasRuntimeExceptions()) {
             writer.println(cr + ExceptionMessageGenerator.getHeader("RuntimeExceptionsHeader"));
             writer.println("---------------------------------------------------------");
-            for (Enumeration<Exception> enumtr = getIntegrityChecker().getCaughtExceptions().elements();
-                     enumtr.hasMoreElements();) {
-                Exception e = enumtr.nextElement();
+            for (Iterator<Exception> iterator = getIntegrityChecker().getCaughtExceptions().iterator();
+                 iterator.hasNext();) {
+                Exception e = iterator.next();
                 if (!(e instanceof DescriptorException)) {
                     writer.println(cr + e);
                 }
@@ -116,9 +116,9 @@ public class IntegrityException extends ValidationException {
         String cr = System.lineSeparator();
         writer.println(cr + ExceptionMessageGenerator.getHeader("DescriptorExceptionsHeader"));
         writer.println("---------------------------------------------------------");
-        for (Enumeration<Exception> enumtr = getIntegrityChecker().getCaughtExceptions().elements();
-                 enumtr.hasMoreElements();) {
-            Exception e = enumtr.nextElement();
+        for (Iterator<Exception> iterator = getIntegrityChecker().getCaughtExceptions().iterator();
+             iterator.hasNext();) {
+            Exception e = iterator.next();
             if (e instanceof DescriptorException) {
                 writer.println(cr);
                 e.printStackTrace(writer);
@@ -128,9 +128,9 @@ public class IntegrityException extends ValidationException {
         if (getIntegrityChecker().hasRuntimeExceptions()) {
             writer.println(cr + ExceptionMessageGenerator.getHeader("RuntimeExceptionsHeader"));
             writer.println("---------------------------------------------------------");
-            for (Enumeration<Exception> enumtr = getIntegrityChecker().getCaughtExceptions().elements();
-                     enumtr.hasMoreElements();) {
-                Exception e = enumtr.nextElement();
+            for (Iterator<Exception> iterator = getIntegrityChecker().getCaughtExceptions().iterator();
+                 iterator.hasNext();) {
+                Exception e = iterator.next();
                 if (!(e instanceof DescriptorException)) {
                     writer.println(cr);
                     e.printStackTrace(writer);

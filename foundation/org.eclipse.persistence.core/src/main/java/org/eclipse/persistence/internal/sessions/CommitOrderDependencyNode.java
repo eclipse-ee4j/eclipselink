@@ -23,7 +23,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -192,8 +191,8 @@ public class CommitOrderDependencyNode {
         startTime = getOwner().getNextTime();
         setDiscoveryTime(startTime);
 
-        for (Enumeration e = getRelatedNodes().elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = (CommitOrderDependencyNode)e.nextElement();
+        for (Iterator iterator = getRelatedNodes().iterator(); iterator.hasNext();) {
+            CommitOrderDependencyNode node = (CommitOrderDependencyNode) iterator.next();
             if (node.hasNotBeenVisited()) {
                 node.setPredecessor(this);
                 node.visit();

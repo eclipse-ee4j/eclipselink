@@ -57,7 +57,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -839,9 +838,9 @@ public class SQLSelectStatement extends SQLStatement {
                 getBuilder().assignTableAliasesStartingAt(currentAliasNumber);
             }
         } else {
-            for (Enumeration expressionEnum = allExpressions.elements();
-                     expressionEnum.hasMoreElements();) {
-                Expression expression = (Expression)expressionEnum.nextElement();
+            for (Iterator iterator1 = allExpressions.iterator();
+                 iterator1.hasNext();) {
+                Expression expression = (Expression) iterator1.next();
                 iterator.iterateOn(expression);
             }
         }

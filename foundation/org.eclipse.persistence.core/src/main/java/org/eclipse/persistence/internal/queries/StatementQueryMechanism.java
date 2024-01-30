@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 /**
  * <p><b>Purpose</b>:
@@ -85,9 +85,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
             Vector currentStatements = getSQLStatements();
             if (currentStatements != null) {
                 Vector statementClone = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(currentStatements.size());
-                Enumeration enumtr = currentStatements.elements();
-                while (enumtr.hasMoreElements()) {
-                    statementClone.addElement(((SQLStatement)enumtr.nextElement()).clone());
+                Iterator iterator = currentStatements.iterator();
+                while (iterator.hasNext()) {
+                    statementClone.addElement(((SQLStatement) iterator.next()).clone());
                 }
                 clone.setSQLStatements(statementClone);
             }
@@ -332,9 +332,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         }
 
         if (hasMultipleStatements()) {
-            for (Enumeration statementEnum = getSQLStatements().elements();
-                     statementEnum.hasMoreElements();) {
-                ((SQLModifyStatement)statementEnum.nextElement()).setModifyRow(getModifyRow());
+            for (Iterator iterator = getSQLStatements().iterator();
+                 iterator.hasNext();) {
+                ((SQLModifyStatement) iterator.next()).setModifyRow(getModifyRow());
             }
         } else if (getSQLStatement() != null) {
             ((SQLModifyStatement)getSQLStatement()).setModifyRow(getModifyRow());
@@ -381,9 +381,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         }
 
         if (hasMultipleStatements()) {
-            for (Enumeration statementEnum = getSQLStatements().elements();
-                     statementEnum.hasMoreElements();) {
-                ((SQLModifyStatement)statementEnum.nextElement()).setModifyRow(getModifyRow());
+            for (Iterator iterator = getSQLStatements().iterator();
+                 iterator.hasNext();) {
+                ((SQLModifyStatement) iterator.next()).setModifyRow(getModifyRow());
             }
         } else if (getSQLStatement() != null) {
             ((SQLModifyStatement)getSQLStatement()).setModifyRow(getModifyRow());
@@ -413,12 +413,12 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         getSession().startOperationProfile(SessionProfiler.SqlGeneration, getQuery(), SessionProfiler.ALL);
         try {
             if (hasMultipleStatements()) {
-                for (Enumeration statementEnum = getSQLStatements().elements(); statementEnum.hasMoreElements();) {
+                for (Iterator iterator = getSQLStatements().iterator(); iterator.hasNext();) {
                     DatasourceCall call = null;
                     if (getDescriptor() != null) {
-                        call = getDescriptor().buildCallFromStatement((SQLStatement)statementEnum.nextElement(), getQuery(), getExecutionSession());
+                        call = getDescriptor().buildCallFromStatement((SQLStatement) iterator.next(), getQuery(), getExecutionSession());
                     } else {
-                        call = ((SQLStatement)statementEnum.nextElement()).buildCall(getExecutionSession());
+                        call = ((SQLStatement) iterator.next()).buildCall(getExecutionSession());
                     }
 
                     // In case of update call may be null if no update required.

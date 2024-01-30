@@ -30,7 +30,6 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -699,9 +698,9 @@ public class ReturningPolicy implements Serializable, Cloneable {
             }
 
             if (!infoHashtableUnmapped.isEmpty()) {
-                Enumeration<DatabaseField> fields = infoHashtableUnmapped.keys();
-                while (fields.hasMoreElements()) {
-                    DatabaseField field = fields.nextElement();
+                Iterator<DatabaseField> iterator = infoHashtableUnmapped.keySet().iterator();
+                while (iterator.hasNext()) {
+                    DatabaseField field = iterator.next();
                     Info info = infoHashtableUnmapped.get(field);
                     if (verifyField(session, field, getDescriptor())) {
                         if (field.getType() != null) {
@@ -928,11 +927,11 @@ public class ReturningPolicy implements Serializable, Cloneable {
                     // SQLCall with custom SQL calculates its outputRowFields later (in prepare() method) -
                     // that's why SQLCall can't be verified here.
                     DatabaseCall customCall = (DatabaseCall)query[operation].getDatasourceCall();
-                    Enumeration outputRowFields = customCall.getOutputRowFields().elements();
+                    Iterator iterator = customCall.getOutputRowFields().iterator();
                     Collection<DatabaseField> notFoundInOutputRow = createCollection();
                     notFoundInOutputRow.addAll(main[operation][ALL]);
-                    while (outputRowFields.hasMoreElements()) {
-                        notFoundInOutputRow.remove(outputRowFields.nextElement());
+                    while (iterator.hasNext()) {
+                        notFoundInOutputRow.remove(iterator.next());
                     }
                     if (!notFoundInOutputRow.isEmpty()) {
                         Iterator<DatabaseField> it = notFoundInOutputRow.iterator();

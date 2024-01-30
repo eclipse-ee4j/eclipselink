@@ -52,7 +52,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -273,11 +272,11 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         Expression selectionCriteria = null;
         Expression builder = new ExpressionBuilder();
 
-        Enumeration<DatabaseField> sourceKeys = getSourceKeyFields().elements();
-        for (Enumeration<DatabaseField> targetForeignKeys = getTargetForeignKeyFields().elements();
-             targetForeignKeys.hasMoreElements();) {
-            DatabaseField targetForeignKey = targetForeignKeys.nextElement();
-            DatabaseField sourceKey = sourceKeys.nextElement();
+        Iterator<DatabaseField> iterator1 = getSourceKeyFields().iterator();
+        for (Iterator<DatabaseField> iterator = getTargetForeignKeyFields().iterator();
+             iterator.hasNext();) {
+            DatabaseField targetForeignKey = iterator.next();
+            DatabaseField sourceKey = iterator1.next();
             Expression targetExpression = builder.getField(targetForeignKey);
             Expression sourceExpression = builder.getParameter(sourceKey);
             // store the expressions in order to initialize their fields later
@@ -472,9 +471,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public Vector getSourceKeyFieldNames() {
         Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+        for (Iterator<DatabaseField> iterator = getSourceKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.addElement(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -515,9 +514,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public Vector getTargetForeignKeyFieldNames() {
         Vector fieldNames = new Vector(getTargetForeignKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getTargetForeignKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+        for (Iterator<DatabaseField> iterator = getTargetForeignKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.addElement(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -1370,8 +1369,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public void setSourceKeyFieldNames(Vector fieldNames) {
         Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+        for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.addElement(new DatabaseField((String) iterator.next()));
         }
 
         setSourceKeyFields(fields);
@@ -1437,8 +1436,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public void setTargetForeignKeyFieldNames(Vector fieldNames) {
         Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+        for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.addElement(new DatabaseField((String) iterator.next()));
         }
 
         setTargetForeignKeyFields(fields);

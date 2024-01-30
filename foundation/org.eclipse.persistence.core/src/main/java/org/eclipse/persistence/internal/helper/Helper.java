@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -225,8 +224,8 @@ public class Helper implements Serializable {
     }
 
     public static <E> void addAllToVector(Vector<E> theVector, Vector<? extends E> elementsToAdd) {
-        for (Enumeration<? extends E> stream = elementsToAdd.elements(); stream.hasMoreElements();) {
-            theVector.addElement(stream.nextElement());
+        for (Iterator<? extends E> iterator = elementsToAdd.iterator(); iterator.hasNext();) {
+            theVector.addElement(iterator.next());
         }
     }
 
@@ -636,7 +635,6 @@ public class Helper implements Serializable {
       * Added Nov 9, 2000 JED Patch 2.5.1.8
       */
     public static boolean compareHashtables(Hashtable<?, ?> hashtable1, Hashtable<?, ?> hashtable2) {
-        Enumeration<?> enumtr;
         Object element;
 
         if (hashtable1.size() != hashtable2.size()) {
@@ -645,9 +643,9 @@ public class Helper implements Serializable {
 
         Hashtable<?, ?> clonedHashtable = (Hashtable<?, ?>)hashtable2.clone();
 
-        enumtr = hashtable1.elements();
-        while (enumtr.hasMoreElements()) {
-            element = enumtr.nextElement();
+        Iterator<?> iterator = hashtable1.values().iterator();
+        while (iterator.hasNext()) {
+            element = iterator.next();
             if (clonedHashtable.remove(element) == null) {
                 return false;
             }
@@ -701,12 +699,12 @@ public class Helper implements Serializable {
 
         concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
-        for (Enumeration<? extends E> stream = first.elements(); stream.hasMoreElements();) {
-            concatenation.addElement(stream.nextElement());
+        for (Iterator<? extends E> iterator = first.iterator(); iterator.hasNext();) {
+            concatenation.addElement(iterator.next());
         }
 
-        for (Enumeration<? extends E> stream = second.elements(); stream.hasMoreElements();) {
-            element = stream.nextElement();
+        for (Iterator<? extends E> iterator = second.iterator(); iterator.hasNext();) {
+            element = iterator.next();
             if (!concatenation.contains(element)) {
                 concatenation.addElement(element);
             }
@@ -738,12 +736,12 @@ public class Helper implements Serializable {
 
         concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
-        for (Enumeration<? extends E> stream = first.elements(); stream.hasMoreElements();) {
-            concatenation.addElement(stream.nextElement());
+        for (Iterator<? extends E> iterator = first.iterator(); iterator.hasNext();) {
+            concatenation.addElement(iterator.next());
         }
 
-        for (Enumeration<? extends E> stream = second.elements(); stream.hasMoreElements();) {
-            concatenation.addElement(stream.nextElement());
+        for (Iterator<? extends E> iterator = second.iterator(); iterator.hasNext();) {
+            concatenation.addElement(iterator.next());
         }
 
         return concatenation;
@@ -1224,11 +1222,11 @@ public class Helper implements Serializable {
     public static String printVector(Vector<?> vector) {
         StringWriter stringWriter = new StringWriter();
         stringWriter.write("[");
-        Enumeration<?> enumtr = vector.elements();
-        stringWriter.write(String.valueOf(enumtr.nextElement()));
-        while (enumtr.hasMoreElements()) {
+        Iterator<?> iterator = vector.iterator();
+        stringWriter.write(String.valueOf(iterator.next()));
+        while (iterator.hasNext()) {
             stringWriter.write(" ");
-            stringWriter.write(String.valueOf(enumtr.nextElement()));
+            stringWriter.write(String.valueOf(iterator.next()));
         }
         stringWriter.write("]");
         return stringWriter.toString();
@@ -1238,10 +1236,10 @@ public class Helper implements Serializable {
     public static <K, V> Hashtable<K, V> rehashHashtable(Hashtable<K, V> table) {
         Hashtable<K, V> rehashedTable = new Hashtable<>(table.size() + 2);
 
-        Enumeration<V> values = table.elements();
-        for (Enumeration<K> keys = table.keys(); keys.hasMoreElements();) {
-            K key = keys.nextElement();
-            V value = values.nextElement();
+        Iterator<V> iterator1 = table.values().iterator();
+        for (Iterator<K> iterator = table.keySet().iterator(); iterator.hasNext();) {
+            K key = iterator.next();
+            V value = iterator1.next();
             rehashedTable.put(key, value);
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -623,8 +623,8 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
         }
 
         Object result = cp.containerInstance(fieldValues.size());
-        for (Enumeration stream = fieldValues.elements(); stream.hasMoreElements();) {
-            Object element = stream.nextElement();
+        for (Iterator iterator = fieldValues.iterator(); iterator.hasNext();) {
+            Object element = iterator.next();
             if (this.getValueConverter() != null) {
                 element = getValueConverter().convertDataValueToObjectValue(element, executionSession);
             }

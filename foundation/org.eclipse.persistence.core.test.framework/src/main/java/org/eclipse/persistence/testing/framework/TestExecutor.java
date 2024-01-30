@@ -30,6 +30,7 @@ import java.io.Writer;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -183,8 +184,8 @@ public class TestExecutor {
      * The access other model to reuse their to setup.
      */
     public void addLoadedModels(Vector<TestModel> models) {
-        for (Enumeration<TestModel>theModels = models.elements(); theModels.hasMoreElements();) {
-            TestModel model = theModels.nextElement();
+        for (Iterator<TestModel> iterator = models.iterator(); iterator.hasNext();) {
+            TestModel model = iterator.next();
             getLoadedModels().put(model.getName(), model);
         }
     }
@@ -204,9 +205,9 @@ public class TestExecutor {
      * Return true if the configuredSystems contains an instance of the class of the TestSystem parameter.
      */
     public boolean configuredSystemsContainsInstanceOf(TestSystem system) {
-        for (Enumeration<TestSystem> configuredSystemsEnum = getConfiguredSystems().elements();
-                 configuredSystemsEnum.hasMoreElements();) {
-            if (configuredSystemsEnum.nextElement().getClass().equals(system.getClass())) {
+        for (Iterator<TestSystem> iterator = getConfiguredSystems().iterator();
+             iterator.hasNext();) {
+            if (iterator.next().getClass().equals(system.getClass())) {
                 return true;
             }
         }
@@ -643,18 +644,18 @@ public class TestExecutor {
     public void removeFromConfiguredSystemsInstanceOf(TestSystem system) {
         // find and record the systems to remove
         Vector<TestSystem> systemsToRemove = new Vector<>();
-        for (Enumeration<TestSystem> systemEnum = getConfiguredSystems().elements();
-                 systemEnum.hasMoreElements();) {
-            TestSystem aSystem = systemEnum.nextElement();
+        for (Iterator<TestSystem> iterator = getConfiguredSystems().iterator();
+             iterator.hasNext();) {
+            TestSystem aSystem = iterator.next();
             if (aSystem.getClass().equals(system.getClass())) {
                 systemsToRemove.addElement(aSystem);
             }
         }
 
         // Do the removing
-        for (Enumeration<TestSystem> systemsToRemoveEnum = systemsToRemove.elements();
-                 systemsToRemoveEnum.hasMoreElements();) {
-            getConfiguredSystems().removeElement(systemsToRemoveEnum.nextElement());
+        for (Iterator<TestSystem> iterator = systemsToRemove.iterator();
+             iterator.hasNext();) {
+            getConfiguredSystems().removeElement(iterator.next());
         }
     }
 

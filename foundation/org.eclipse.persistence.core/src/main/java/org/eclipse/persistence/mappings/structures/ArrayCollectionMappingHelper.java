@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -323,8 +323,8 @@ public class ArrayCollectionMappingHelper {
         }
 
         // look for elements that were not in collection1
-        for (Enumeration stream = vector2.elements(); stream.hasMoreElements();) {
-            if (stream.nextElement() != XXX) {
+        for (Iterator iterator = vector2.iterator(); iterator.hasNext();) {
+            if (iterator.next() != XXX) {
                 return false;
             }
         }

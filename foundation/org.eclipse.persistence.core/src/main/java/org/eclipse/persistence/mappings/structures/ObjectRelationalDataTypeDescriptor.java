@@ -37,7 +37,6 @@ import java.sql.Ref;
 import java.sql.Struct;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -150,8 +149,8 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             }
 
             int i = 0;
-            for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-                AbstractRecord nestedRow = (AbstractRecord)stream.nextElement();
+            for (Iterator iterator = nestedRows.iterator(); iterator.hasNext();) {
+                AbstractRecord nestedRow = (AbstractRecord) iterator.next();
                 fields[i++] = this.buildStructureFromRow(nestedRow, session, connection);
             }
 

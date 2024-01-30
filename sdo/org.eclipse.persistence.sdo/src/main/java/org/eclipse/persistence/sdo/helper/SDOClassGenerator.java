@@ -582,18 +582,14 @@ public class SDOClassGenerator {
 
     private void pushIndent() {
         StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < INDENT_TAB; i++) {
-            buf.append(" ");
-        }
+        buf.append(" ".repeat(Math.max(0, INDENT_TAB)));
         indent += buf.toString();
     }
 
     private void popIndent() {
         StringBuilder buf = new StringBuilder();
         int size = indent.length() - INDENT_TAB;
-        for (int i = 0; i < size; i++) {
-            buf.append(" ");
-        }
+        buf.append(" ".repeat(Math.max(0, size)));
         indent = buf.toString();
     }
 

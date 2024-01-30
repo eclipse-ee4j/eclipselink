@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -344,8 +344,8 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     public void logProfileSummaryByClass() {
         Hashtable<Class<?>, Profile> summaries = buildProfileSummaryByClass();
 
-        for (Enumeration<Class<?>> classes = summaries.keys(); classes.hasMoreElements();) {
-            Class<?> domainClass = classes.nextElement();
+        for (Iterator<Class<?>> iterator = summaries.keySet().iterator(); iterator.hasNext();) {
+            Class<?> domainClass = iterator.next();
             Writer writer = getSession().getLog();
             try {
                 writer.write(summaries.get(domainClass).toString());
@@ -362,8 +362,8 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     public void logProfileSummaryByQuery() {
         Hashtable<Class<?>, Profile> summaries = buildProfileSummaryByQuery();
 
-        for (Enumeration<Class<?>> classes = summaries.keys(); classes.hasMoreElements();) {
-            Class<?> queryType = classes.nextElement();
+        for (Iterator<Class<?>> iterator = summaries.keySet().iterator(); iterator.hasNext();) {
+            Class<?> queryType = iterator.next();
             Writer writer = getSession().getLog();
             try {
                 writer.write(summaries.get(queryType).toString());

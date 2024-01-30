@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,6 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -194,8 +193,8 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             sourceToTarget.put(clonedField, getSourceToTargetQueryKeyNames().get(field));
         }
 
-        for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField field = enumtr.nextElement();
+        for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
             foreignKeys.addElement(setOfKeys.get(field));
         }
         clone.setSourceToTargetQueryKeyFields(sourceToTarget);
@@ -345,9 +344,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     public Vector getForeignKeyFieldNames() {
         Vector fieldNames = new Vector(getForeignKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getForeignKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+        for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.addElement(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -609,9 +608,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     public void setClassIndicatorAssociations(Vector classIndicatorAssociations) {
         setTypeIndicatorNameTranslation(new HashMap(classIndicatorAssociations.size() + 1));
         setTypeIndicatorTranslation(new HashMap((classIndicatorAssociations.size() * 2) + 1));
-        for (Enumeration associationsEnum = classIndicatorAssociations.elements();
-                 associationsEnum.hasMoreElements();) {
-            Association association = (Association)associationsEnum.nextElement();
+        for (Iterator iterator = classIndicatorAssociations.iterator();
+             iterator.hasNext();) {
+            Association association = (Association) iterator.next();
             Object classValue = association.getKey();
             if (classValue instanceof Class) {
                 // 904 projects will be a class type.
@@ -629,8 +628,8 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     public void setForeignKeyFieldNames(Vector fieldNames) {
         Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+        for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.addElement(new DatabaseField((String) iterator.next()));
         }
 
         setForeignKeyFields(fields);
@@ -654,9 +653,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     public void setSourceToTargetQueryKeyFieldAssociations(Vector sourceToTargetQueryKeyFieldAssociations) {
         setSourceToTargetQueryKeyFields(new HashMap(sourceToTargetQueryKeyFieldAssociations.size() + 1));
-        for (Enumeration associationsEnum = sourceToTargetQueryKeyFieldAssociations.elements();
-                 associationsEnum.hasMoreElements();) {
-            Association association = (Association)associationsEnum.nextElement();
+        for (Iterator iterator = sourceToTargetQueryKeyFieldAssociations.iterator();
+             iterator.hasNext();) {
+            Association association = (Association) iterator.next();
             Object sourceField = new DatabaseField((String)association.getKey());
             String targetQueryKey = (String)association.getValue();
             getSourceToTargetQueryKeyNames().put(sourceField, targetQueryKey);
@@ -822,9 +821,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             return;
         }
         if (isForeignKeyRelationship()) {
-            Enumeration<DatabaseField> foreignKeys = getForeignKeyFields().elements();
-            while (foreignKeys.hasMoreElements()) {
-                record.put(foreignKeys.nextElement(), null);
+            Iterator<DatabaseField> iterator = getForeignKeyFields().iterator();
+            while (iterator.hasNext()) {
+                record.put(iterator.next(), null);
                 // EL Bug 319759 - if a field is null, then the update call cache should not be used
                 record.setNullValueInFields(true);
             }
@@ -853,10 +852,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             writeFromNullObjectIntoRow(record);
         } else {
             if (isForeignKeyRelationship()) {
-                Enumeration<DatabaseField> sourceFields = getForeignKeyFields().elements();
+                Iterator<DatabaseField> iterator = getForeignKeyFields().iterator();
                 ClassDescriptor descriptor = session.getDescriptor(referenceObject.getClass());
-                while (sourceFields.hasMoreElements()) {
-                    DatabaseField sourceKey = sourceFields.nextElement();
+                while (iterator.hasNext()) {
+                    DatabaseField sourceKey = iterator.next();
                     String targetQueryKey = (String)getSourceToTargetQueryKeyNames().get(sourceKey);
                     DatabaseField targetKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(targetQueryKey);
                     if (targetKeyField == null) {
@@ -894,10 +893,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         } else {
             Object referenceObject = changeSet.getUnitOfWorkClone();
             if (isForeignKeyRelationship()) {
-                Enumeration<DatabaseField> sourceFields = getForeignKeyFields().elements();
+                Iterator<DatabaseField> iterator = getForeignKeyFields().iterator();
                 ClassDescriptor descriptor = session.getDescriptor(referenceObject.getClass());
-                while (sourceFields.hasMoreElements()) {
-                    DatabaseField sourceKey = sourceFields.nextElement();
+                while (iterator.hasNext()) {
+                    DatabaseField sourceKey = iterator.next();
                     String targetQueryKey = (String)getSourceToTargetQueryKeyNames().get(sourceKey);
                     DatabaseField targetKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(targetQueryKey);
                     if (targetKeyField == null) {
@@ -972,10 +971,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             writeFromNullObjectIntoRow(record);
         } else {
             if (isForeignKeyRelationship()) {
-                Enumeration<DatabaseField> sourceFields = getForeignKeyFields().elements();
+                Iterator<DatabaseField> iterator = getForeignKeyFields().iterator();
                 ClassDescriptor descriptor = query.getSession().getDescriptor(referenceObject.getClass());
-                while (sourceFields.hasMoreElements()) {
-                    DatabaseField sourceKey = sourceFields.nextElement();
+                while (iterator.hasNext()) {
+                    DatabaseField sourceKey = iterator.next();
                     String targetQueryKey = (String)getSourceToTargetQueryKeyNames().get(sourceKey);
                     DatabaseField targetKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(targetQueryKey);
                     if (targetKeyField == null) {

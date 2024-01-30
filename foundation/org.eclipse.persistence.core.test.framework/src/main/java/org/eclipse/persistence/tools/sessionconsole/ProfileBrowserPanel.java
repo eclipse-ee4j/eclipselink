@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ import org.eclipse.persistence.tools.profiler.Profile;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -129,9 +129,9 @@ public class ProfileBrowserPanel extends JPanel {
         }
 
         List<Profile> summary = new Vector<>();
-        for (Enumeration<Profile> profilesEnum = summaries.elements();
-             profilesEnum.hasMoreElements(); ) {
-            summary.add(profilesEnum.nextElement());
+        for (Iterator<Profile> iterator = summaries.values().iterator();
+             iterator.hasNext(); ) {
+            summary.add(iterator.next());
         }
         return summary;
     }
@@ -177,9 +177,9 @@ public class ProfileBrowserPanel extends JPanel {
         }
 
         Vector<Profile> summary = new Vector<>();
-        for (Enumeration<Profile> profilesEnum = summaries.elements();
-             profilesEnum.hasMoreElements(); ) {
-            summary.add(profilesEnum.nextElement());
+        for (Iterator<Profile> iterator = summaries.values().iterator();
+             iterator.hasNext(); ) {
+            summary.add(iterator.next());
         }
         return summary;
     }

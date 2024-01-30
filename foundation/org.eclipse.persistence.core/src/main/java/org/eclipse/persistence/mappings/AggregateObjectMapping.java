@@ -1911,9 +1911,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     public void setAggregateToSourceFieldAssociations(Vector<Association> fieldAssociations) {
         Hashtable fieldNames = new Hashtable(fieldAssociations.size() + 1);
-        for (Enumeration<Association> associationsEnum = fieldAssociations.elements();
-             associationsEnum.hasMoreElements();) {
-            Association association = associationsEnum.nextElement();
+        for (Iterator<Association> iterator = fieldAssociations.iterator();
+             iterator.hasNext();) {
+            Association association = iterator.next();
             fieldNames.put(association.getKey(), association.getValue());
         }
 

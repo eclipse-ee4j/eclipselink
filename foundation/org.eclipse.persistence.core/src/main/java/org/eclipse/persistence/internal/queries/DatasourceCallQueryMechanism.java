@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
 import java.util.Collection;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -342,8 +342,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     public Vector executeSelectCall() throws DatabaseException {
         if (hasMultipleCalls()) {
             Vector results = new Vector();
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databseCall = (DatasourceCall) iterator.next();
                 Helper.addAllToVector(results, (Vector)executeCall(databseCall));
             }
 
@@ -542,8 +542,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareDeleteAll() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall call = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall call = (DatasourceCall) iterator.next();
                 call.returnNothing();
             }
         } else {
@@ -558,8 +558,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareDeleteObject() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall call = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall call = (DatasourceCall) iterator.next();
                 call.returnNothing();
             }
         } else {
@@ -574,8 +574,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareDoesExist(DatabaseField field) {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                ((DatasourceCall)callsEnum.nextElement()).returnOneRow();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                ((DatasourceCall) iterator.next()).returnOneRow();
             }
         } else {
             getCall().returnOneRow();
@@ -589,8 +589,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareExecuteNoSelect() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                ((DatasourceCall)callsEnum.nextElement()).returnNothing();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                ((DatasourceCall) iterator.next()).returnNothing();
             }
         } else {
             getCall().returnNothing();
@@ -616,8 +616,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareExecuteSelect() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databseCall = (DatasourceCall) iterator.next();
                 databseCall.returnManyRows();
             }
         } else {
@@ -713,8 +713,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareSelectAllRows() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databseCall = (DatasourceCall) iterator.next();
                 databseCall.returnManyRows();
             }
         } else {
@@ -729,8 +729,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareSelectOneRow() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databseCall = (DatasourceCall) iterator.next();
                 databseCall.returnOneRow();
             }
         } else {
@@ -800,8 +800,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public AbstractRecord selectOneRow() throws DatabaseException {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databaseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databaseCall = (DatasourceCall) iterator.next();
                 AbstractRecord result = (AbstractRecord)executeCall(databaseCall);
                 if (result != null) {
                     return result;
@@ -823,8 +823,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public AbstractRecord selectRowForDoesExist(DatabaseField field) throws DatabaseException {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databaseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databaseCall = (DatasourceCall) iterator.next();
                 AbstractRecord result = (AbstractRecord)executeCall(databaseCall);
                 if (result != null) {
                     return result;
@@ -1023,8 +1023,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
 
         // yes - this is a bit ugly...
         Vector calls = ((DatasourceCallQueryMechanism)this.getDescriptor().getQueryManager().getUpdateQuery().getQueryMechanism()).getCalls();
-        for (Enumeration stream = calls.elements(); stream.hasMoreElements();) {
-            DatasourceCall call = (DatasourceCall)((DatasourceCall)stream.nextElement()).clone();
+        for (Iterator iterator = calls.iterator(); iterator.hasNext();) {
+            DatasourceCall call = (DatasourceCall)((DatasourceCall) iterator.next()).clone();
             call.setQuery(writeQuery);
             sessionToUse.executeCall(call, this.getTranslationRow(), writeQuery);
         }

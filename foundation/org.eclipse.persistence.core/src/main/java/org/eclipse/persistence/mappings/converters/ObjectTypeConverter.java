@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,6 @@ import org.eclipse.persistence.sessions.Session;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -508,9 +507,9 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     public void setFieldToAttributeValueAssociations(Vector fieldToAttributeValueAssociations) {
         setFieldToAttributeValues(new HashMap(fieldToAttributeValueAssociations.size() + 1));
         setAttributeToFieldValues(new HashMap(fieldToAttributeValueAssociations.size() + 1));
-        for (Enumeration associationsEnum = fieldToAttributeValueAssociations.elements();
-                 associationsEnum.hasMoreElements();) {
-            Association association = (Association)associationsEnum.nextElement();
+        for (Iterator iterator = fieldToAttributeValueAssociations.iterator();
+             iterator.hasNext();) {
+            Association association = (Association) iterator.next();
             addConversionValue(association.getKey(), association.getValue());
         }
     }

@@ -24,7 +24,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collections;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -129,30 +129,30 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         Vector<TestResult> testResults = new Vector<>();
 
         if ((selectedSummary.getResults() != null) && (!selectedSummary.getResults().isEmpty())) {
-            for (Enumeration<TestResult> enumtr = selectedSummary.getResults().elements();
-                     enumtr.hasMoreElements();) {
-                TestResult result = enumtr.nextElement();
+            for (Iterator<TestResult> iterator = selectedSummary.getResults().iterator();
+                 iterator.hasNext();) {
+                TestResult result = iterator.next();
                 if (result.hasError() || result.hasFatalError() || result.hasProblem()) {
                     testResults.addElement(result);
                 }
             }
         } else {
             Vector<TestResultsSummary> summariesHasResult = new Vector<>();
-            for (Enumeration<TestResultsSummary> enumtr = selectedSummary.getLoadBuildSummary().getSummaries().elements();
-                 enumtr.hasMoreElements();) {
-                TestResultsSummary summary = enumtr.nextElement();
+            for (Iterator<TestResultsSummary> iterator = selectedSummary.getLoadBuildSummary().getSummaries().iterator();
+                 iterator.hasNext();) {
+                TestResultsSummary summary = iterator.next();
                 if ((summary.getResults() != null) && (!summary.getResults().isEmpty())) {
                     summariesHasResult.addElement(summary);
                 }
             }
-            for (Enumeration<TestResultsSummary> enum1 = summariesHasResult.elements(); enum1.hasMoreElements();) {
-                TestResultsSummary summary = enum1.nextElement();
+            for (Iterator<TestResultsSummary> iterator1 = summariesHasResult.iterator(); iterator1.hasNext();) {
+                TestResultsSummary summary = iterator1.next();
                 TestResultsSummary temp = summary;
                 while (temp.getParent() != null) {
                     if (temp.getParent() == selectedSummary) {
-                        for (Enumeration<TestResult> enum2 = summary.getResults().elements();
-                                 enum2.hasMoreElements();) {
-                            TestResult result = enum2.nextElement();
+                        for (Iterator<TestResult> iterator = summary.getResults().iterator();
+                             iterator.hasNext();) {
+                            TestResult result = iterator.next();
                             if (result.hasError() || result.hasFatalError() || result.hasProblem()) {
                                 testResults.addElement(result);
                             }
@@ -767,8 +767,8 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     public void initilaizeTestSummaryCache(LoadBuildSummary loadBuild) {
         Vector<TestResultsSummary> rootSummaries = new Vector<>();
 
-        for (Enumeration<TestResultsSummary> enumtr = loadBuild.getSummaries().elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = enumtr.nextElement();
+        for (Iterator<TestResultsSummary> iterator = loadBuild.getSummaries().iterator(); iterator.hasNext();) {
+            TestResultsSummary summary = iterator.next();
             if (summary.getParent() == null) {
                 rootSummaries.addElement(summary);
             }
@@ -785,9 +785,9 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
 
         Vector<TestResultsSummary> children = new Vector<>();
 
-        for (Enumeration<TestResultsSummary> enumtr = theSummary.getLoadBuildSummary().getSummaries().elements();
-             enumtr.hasMoreElements();) {
-            TestResultsSummary summary = enumtr.nextElement();
+        for (Iterator<TestResultsSummary> iterator = theSummary.getLoadBuildSummary().getSummaries().iterator();
+             iterator.hasNext();) {
+            TestResultsSummary summary = iterator.next();
             if ((summary.getParent() != null) && summary.getParent().getName().equals(theSummary.getName())) {
                 children.addElement(summary);
             }
@@ -875,8 +875,8 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         loadBuildsCache = summaries;
         tableSelection = LOADBUILD;
         NonEditableDefaultTableModel tableModel = new NonEditableDefaultTableModel(new String[] { "Name", "Time", "Database", "OS", "JVM", "Machine", "TopLink Version", "Tests", "Setup Failures", "Errors", "Fatal Errors", "Problems", "Total Time" }, 0);
-        for (Enumeration enumtr = summaries.elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
+        for (Iterator iterator = summaries.iterator(); iterator.hasNext();) {
+            TestResultsSummary summary = (TestResultsSummary) iterator.next();
 
             Vector<Object> row = new Vector<>();
             row.addElement(summary.getName());
@@ -908,8 +908,8 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         resetButtons();
 
         NonEditableDefaultTableModel tableModel = new NonEditableDefaultTableModel(new String[] { "Name", "Outcome", "Test Time", "Total Time", "Has Exception", "Time", "Database", "OS", "JVM", "Machine", "TopLink Version" }, 0);
-        for (Enumeration<TestResult> enumtr = results.elements(); enumtr.hasMoreElements();) {
-            TestResult result = enumtr.nextElement();
+        for (Iterator<TestResult> iterator = results.iterator(); iterator.hasNext();) {
+            TestResult result = iterator.next();
             Vector<Object> row = new Vector<>();
             row.addElement(result.getName());
             row.addElement(result.getOutcome());
@@ -938,8 +938,8 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         resetButtons();
 
         NonEditableDefaultTableModel tableModel = new NonEditableDefaultTableModel(new String[] { "Name", "Total Tests", "Setup Failures", "Passed", "Errors", "Fatal Errors", "Problems", "Warnings", "Total Time" }, 0);
-        for (Enumeration<TestResultsSummary> enumtr = summaries.elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = enumtr.nextElement();
+        for (Iterator<TestResultsSummary> iterator = summaries.iterator(); iterator.hasNext();) {
+            TestResultsSummary summary = iterator.next();
             Vector<Object> row = new Vector<>();
             row.addElement(summary.getName());
             row.addElement(summary.getTotalTests());

@@ -69,9 +69,9 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -1955,17 +1955,17 @@ public class DatabaseAccessor extends DatasourceAccessor {
         Vector<DatabaseField> sortedFields = new Vector<>(columnNames.size());
         @SuppressWarnings({"unchecked"})
         Vector<DatabaseField> eligableFields = (Vector<DatabaseField>)fields.clone();// Must clone to allow removing to support the same field twice.
-        Enumeration<DatabaseField> columnNamesEnum = columnNames.elements();
+        Iterator<DatabaseField> iterator1 = columnNames.iterator();
         boolean valueFound;
         DatabaseField field;
         DatabaseField column;//DatabaseField from the columnNames vector
-        while (columnNamesEnum.hasMoreElements()) {
+        while (iterator1.hasNext()) {
             field = null;
             valueFound = false;
-            column = columnNamesEnum.nextElement();
-            Enumeration<DatabaseField> fieldEnum = eligableFields.elements();
-            while (fieldEnum.hasMoreElements()) {
-                field = fieldEnum.nextElement();
+            column = iterator1.next();
+            Iterator<DatabaseField> iterator = eligableFields.iterator();
+            while (iterator.hasNext()) {
+                field = iterator.next();
                 if(field != null && field.equals(column)){
                     valueFound = true;
                     sortedFields.addElement(field);

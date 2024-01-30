@@ -26,6 +26,7 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -180,8 +181,8 @@ public class TestModel extends TestCollection {
     private void configure() throws Exception {
         Vector<TestSystem> systems = buildRequiredSystems();
 
-        for (Enumeration<TestSystem> enumtr = systems.elements(); enumtr.hasMoreElements();) {
-            TestSystem system = enumtr.nextElement();
+        for (Iterator<TestSystem> iterator = systems.iterator(); iterator.hasNext();) {
+            TestSystem system = iterator.next();
 
             // To improve test consistency always force systems to be reset.
             if (shouldResetSystemAfterEachTestModel()) {
@@ -193,8 +194,8 @@ public class TestModel extends TestCollection {
 
         systems = buildForcedRequiredSystems();
 
-        for (Enumeration<TestSystem> enumtr = systems.elements(); enumtr.hasMoreElements();) {
-            TestSystem system = enumtr.nextElement();
+        for (Iterator<TestSystem> iterator = systems.iterator(); iterator.hasNext();) {
+            TestSystem system = iterator.next();
             getExecutor().forceConfigureSystem(system);
         }
     }
@@ -211,8 +212,8 @@ public class TestModel extends TestCollection {
             setupEntity();
             setFinishedTests(new Vector<>());
             try {
-                for (Enumeration<Test> tests = getTests().elements(); tests.hasMoreElements();) {
-                    junit.framework.Test test = tests.nextElement();
+                for (Iterator<Test> iterator = getTests().iterator(); iterator.hasNext();) {
+                    junit.framework.Test test = iterator.next();
                     if ((TestExecutor.getDefaultJUnitTestResult() != null) && TestExecutor.getDefaultJUnitTestResult().shouldStop()) {
                             break;
                     }

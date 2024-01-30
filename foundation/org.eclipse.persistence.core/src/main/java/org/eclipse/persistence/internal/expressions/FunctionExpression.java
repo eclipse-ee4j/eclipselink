@@ -41,7 +41,6 @@ import org.eclipse.persistence.queries.ReportQuery;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -390,8 +389,8 @@ public class FunctionExpression extends BaseExpression {
     @Override
     public void iterateOn(ExpressionIterator iterator) {
         super.iterateOn(iterator);
-        for (Enumeration<Expression> childrenEnum = this.children.elements(); childrenEnum.hasMoreElements();) {
-            Expression child = childrenEnum.nextElement();
+        for (Iterator<Expression> iterator1 = this.children.iterator(); iterator1.hasNext();) {
+            Expression child = iterator1.next();
             child.iterateOn(iterator);
         }
     }
@@ -679,9 +678,9 @@ public class FunctionExpression extends BaseExpression {
         }
         if (baseValue instanceof Vector) {// baseValue might be a vector, so the individual values must be extracted before applying the function call to them
             Vector baseVector = new Vector();
-            for (Enumeration valuesToCompare = ((Vector)baseValue).elements();
-                     valuesToCompare.hasMoreElements();) {
-                Object baseObject = valuesToCompare.nextElement();
+            for (Iterator iterator = ((Vector) baseValue).iterator();
+                 iterator.hasNext();) {
+                Object baseObject = iterator.next();
                 if (baseObject == null) {
                     baseVector.addElement(null);
                 } else {

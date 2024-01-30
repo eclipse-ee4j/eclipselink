@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -64,10 +64,10 @@ public class UniqueKeyConstraint implements Serializable {
     public void appendDBString(Writer writer, AbstractSession session) {
         try {
             writer.write("UNIQUE (");
-            for (Enumeration<String> sourceEnum = getSourceFields().elements();
-                 sourceEnum.hasMoreElements();) {
-                writer.write(sourceEnum.nextElement());
-                if (sourceEnum.hasMoreElements()) {
+            for (Iterator<String> iterator = getSourceFields().iterator();
+                 iterator.hasNext();) {
+                writer.write(iterator.next());
+                if (iterator.hasNext()) {
                     writer.write(", ");
                 }
             }
