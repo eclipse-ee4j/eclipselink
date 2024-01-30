@@ -17,7 +17,7 @@ package org.eclipse.persistence.bundles.tests;
  */
 public class Tests {
 
-    public static void main(String s) {
+    public static void main(String[] s) {
         System.out.println("An artifact with tests only.");
     }
 }

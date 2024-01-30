@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -699,8 +699,8 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
         }
 
         Object result = cp.containerInstance(nestedRows.size());
-        for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-            AbstractRecord nestedRow = (AbstractRecord)stream.nextElement();
+        for (Iterator iterator = nestedRows.iterator(); iterator.hasNext();) {
+            AbstractRecord nestedRow = (AbstractRecord) iterator.next();
 
             ClassDescriptor descriptor = this.getReferenceDescriptor();
             if (descriptor.hasInheritance()) {

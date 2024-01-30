@@ -20,6 +20,7 @@ import org.eclipse.persistence.sessions.Session;
 
 import java.io.Writer;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -133,8 +134,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Adds a test collection to itself
      */
     public final void addTests(Vector<? extends Test> theTests) {
-        for (Enumeration<? extends Test> allTests = theTests.elements(); allTests.hasMoreElements();) {
-            junit.framework.Test test = allTests.nextElement();
+        for (Iterator<? extends Test> iterator = theTests.iterator(); iterator.hasNext();) {
+            junit.framework.Test test = iterator.next();
             addTest(test);
         }
     }
@@ -395,8 +396,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
             logHeadNote(log);
         }
 
-        for (Enumeration<Test> tests = getFinishedTests().elements(); tests.hasMoreElements();) {
-            junit.framework.Test test = tests.nextElement();
+        for (Iterator<Test> iterator = getFinishedTests().iterator(); iterator.hasNext();) {
+            junit.framework.Test test = iterator.next();
             if (test instanceof TestEntity testEntity) {
                 if (regression) {
                     if (!(testEntity instanceof TestCase) || !(testEntity.getReport().hasPassed() || ((TestResult)testEntity.getReport()).hasWarning())) {
@@ -427,8 +428,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      */
     public void computeResultSummary() {
         getSummary().resetTotals();
-        for (Enumeration<Test> tests = getFinishedTests().elements(); tests.hasMoreElements();) {
-            junit.framework.Test test = tests.nextElement();
+        for (Iterator<Test> iterator = getFinishedTests().iterator(); iterator.hasNext();) {
+            junit.framework.Test test = iterator.next();
             if (test instanceof TestCase testEntity) {
                 testEntity.appendTestResult(getSummary());
             } else if (test instanceof TestCollection testEntity) {
@@ -462,8 +463,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     @Override
     public void resetNestedCounter() {
         setNestedCounter(INITIAL_VALUE);
-        for (Enumeration<Test> tests = getTests().elements(); tests.hasMoreElements();) {
-            Object test = tests.nextElement();
+        for (Iterator<Test> iterator = getTests().iterator(); iterator.hasNext();) {
+            Object test = iterator.next();
             if (test instanceof TestEntity) {
                 ((TestEntity)test).resetNestedCounter();
             }

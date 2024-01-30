@@ -28,7 +28,6 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -128,9 +127,9 @@ public class ClassTypeExpression extends DataExpression {
             // A new vector must union the object values and the values extracted from it.
             if (object instanceof Vector) {
                 Vector comparisonVector = new Vector(((Vector)object).size() + 2);
-                for (Enumeration valuesToIterate = ((Vector)object).elements();
-                         valuesToIterate.hasMoreElements();) {
-                    Object vectorObject = valuesToIterate.nextElement();
+                for (Iterator iterator1 = ((Vector) object).iterator();
+                     iterator1.hasNext();) {
+                    Object vectorObject = iterator1.next();
                     if (vectorObject == null) {
                         comparisonVector.addElement(null);
                     } else {
@@ -138,9 +137,9 @@ public class ClassTypeExpression extends DataExpression {
 
                         // If a collection of values were extracted union them.
                         if (valueOrValues instanceof Vector) {
-                            for (Enumeration nestedValuesToIterate = ((Vector)valueOrValues).elements();
-                                     nestedValuesToIterate.hasMoreElements();) {
-                                comparisonVector.addElement(nestedValuesToIterate.nextElement());
+                            for (Iterator iterator = ((Vector) valueOrValues).iterator();
+                                 iterator.hasNext();) {
+                                comparisonVector.addElement(iterator.next());
                             }
                         } else {
                             comparisonVector.addElement(valueOrValues);

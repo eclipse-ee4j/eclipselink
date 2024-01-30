@@ -16,8 +16,8 @@ package org.eclipse.persistence.internal.eis.cobol;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -119,11 +119,11 @@ public class CopyBookParser {
         int nestingLevel = maximumNestingLevels;
         Stack<CompositeObject> parents = new Stack<>();
         Hashtable<Object, Integer> parentsToLevels = new Hashtable<>();
-        Enumeration<String> recordsEnum = recordLines.elements();
-        Enumeration<Integer> recordLineNums = lineNums.elements();
-        while (recordsEnum.hasMoreElements()) {
-            currentLine = recordsEnum.nextElement();
-            currentLineNumber = recordLineNums.nextElement();
+        Iterator<String> iterator1 = recordLines.iterator();
+        Iterator<Integer> iterator = lineNums.iterator();
+        while (iterator1.hasNext()) {
+            currentLine = iterator1.next();
+            currentLineNumber = iterator.next();
             StringTokenizer lineTokens = new StringTokenizer(currentLine);
             if (lineTokens.hasMoreTokens()) {
                 String firstToken = lineTokens.nextToken();
@@ -174,12 +174,12 @@ public class CopyBookParser {
         int currentOffset = offset;
         int previousFieldSize = 0;
         Vector<FieldMetaData> fields = object.getFields();
-        Enumeration<FieldMetaData> fieldEnum = fields.elements();
+        Iterator<FieldMetaData> iterator = fields.iterator();
         FieldMetaData previousField = null;
 
         //loop through fields setting their offsets and redefines if it applies
-        while (fieldEnum.hasMoreElements()) {
-            FieldMetaData field = fieldEnum.nextElement();
+        while (iterator.hasNext()) {
+            FieldMetaData field = iterator.next();
 
             //if its a redefine, must first see if it larger and reset offset accordingly
             if (field.isFieldRedefine()) {

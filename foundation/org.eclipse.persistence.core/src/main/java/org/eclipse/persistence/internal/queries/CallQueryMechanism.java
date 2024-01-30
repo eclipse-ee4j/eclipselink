@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,7 +41,7 @@ import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -231,8 +231,8 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     @Override
     public void prepareDeleteAll() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatabaseCall call = (DatabaseCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatabaseCall call = (DatabaseCall) iterator.next();
                 call.returnNothing();
             }
         } else {
@@ -249,8 +249,8 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     public void prepareDeleteObject() {
         boolean usesOptimisticLocking = ((DeleteObjectQuery)getQuery()).usesOptimisticLocking();
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatabaseCall call = (DatabaseCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatabaseCall call = (DatabaseCall) iterator.next();
                 call.returnNothing();
                 if (usesOptimisticLocking) {
                     call.setHasOptimisticLock(true);
@@ -294,8 +294,8 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     @Override
     public void prepareExecuteSelect() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatabaseCall databseCall = (DatabaseCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatabaseCall databseCall = (DatabaseCall) iterator.next();
                 databseCall.returnManyRows();
                 databseCall.setIsFieldMatchingRequired(isCallQueryMechanism());
             }
@@ -313,8 +313,8 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     @Override
     public void prepareSelectAllRows() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatabaseCall call = (DatabaseCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatabaseCall call = (DatabaseCall) iterator.next();
                 call.returnManyRows();
                 if (isCallQueryMechanism()) {
                     call.setIsFieldMatchingRequired(true);
@@ -353,8 +353,8 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     @Override
     public void prepareSelectOneRow() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatabaseCall call = (DatabaseCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatabaseCall call = (DatabaseCall) iterator.next();
                 call.returnOneRow();
                 if (isCallQueryMechanism()) {
                     call.setIsFieldMatchingRequired(true);
@@ -411,8 +411,8 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
      */
     public void setCallHasCustomSQLArguments() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatabaseCall databaseCall = (DatabaseCall)callsEnum.nextElement();
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatabaseCall databaseCall = (DatabaseCall) iterator.next();
                 if (databaseCall.isSQLCall()) {
                     ((SQLCall)databaseCall).setHasCustomSQLArguments(true);
                 }

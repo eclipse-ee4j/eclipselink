@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -415,8 +415,8 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             result = cp.containerInstance(fieldValues.size());
         }
 
-        for (Enumeration stream = fieldValues.elements(); stream.hasMoreElements();) {
-            Object element = stream.nextElement();
+        for (Iterator iterator = fieldValues.iterator(); iterator.hasNext();) {
+            Object element = iterator.next();
 
             // PERF: Direct variable access.
             //Object value = row.get(field);

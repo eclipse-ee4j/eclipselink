@@ -79,7 +79,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -480,8 +479,8 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      */
     protected Vector cloneFields(Vector fields) {
         Vector clonedFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        for (Enumeration fieldsEnum = fields.elements(); fieldsEnum.hasMoreElements();) {
-            clonedFields.addElement(((DatabaseField)fieldsEnum.nextElement()).clone());
+        for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
+            clonedFields.addElement(((DatabaseField) iterator.next()).clone());
         }
 
         return clonedFields;

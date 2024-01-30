@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.internal.eis.cobol;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -77,9 +76,9 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
             fieldCopy.setFieldRedefined(myFieldRedefined.deepCopy());
         }
         fieldCopy.setDependentFieldName(myDependentFieldName);
-        Enumeration<FieldMetaData> fieldsEnum = myCompositeFields.elements();
-        while (fieldsEnum.hasMoreElements()) {
-            FieldMetaData field = fieldsEnum.nextElement();
+        Iterator<FieldMetaData> iterator = myCompositeFields.iterator();
+        while (iterator.hasNext()) {
+            FieldMetaData field = iterator.next();
             fieldCopy.addField(field.deepCopy());
         }
         return fieldCopy;
@@ -91,10 +90,10 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     */
     @Override
     public int getSize() {
-        Enumeration<FieldMetaData> fieldsEnum = myCompositeFields.elements();
+        Iterator<FieldMetaData> iterator = myCompositeFields.iterator();
         int size = 0;
-        while (fieldsEnum.hasMoreElements()) {
-            FieldMetaData field = fieldsEnum.nextElement();
+        while (iterator.hasNext()) {
+            FieldMetaData field = iterator.next();
             if (!field.isFieldRedefine()) {
                 size += field.getSize();
             }
@@ -191,9 +190,9 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     */
     @Override
     public FieldMetaData getFieldNamed(String fieldName) {
-        Enumeration<FieldMetaData> fieldsEnum = getFields().elements();
-        while (fieldsEnum.hasMoreElements()) {
-            FieldMetaData field = fieldsEnum.nextElement();
+        Iterator<FieldMetaData> iterator = getFields().iterator();
+        while (iterator.hasNext()) {
+            FieldMetaData field = iterator.next();
             if (field.getName().equals(fieldName)) {
                 return field;
             }
@@ -231,9 +230,9 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     * writes individual fields on given row
     */
     public void writeCompositeOnRow(CobolRow row, byte[] recordData) {
-        Enumeration<FieldMetaData> fields = getFields().elements();
-        while (fields.hasMoreElements()) {
-            FieldMetaData currentField = fields.nextElement();
+        Iterator<FieldMetaData> iterator = getFields().iterator();
+        while (iterator.hasNext()) {
+            FieldMetaData currentField = iterator.next();
             currentField.writeOnRow(row, recordData);
         }
     }
@@ -292,9 +291,9 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     * This method is used by fields that are array values to write themselves to arrays
     */
     protected void writeCompositeOnArray(CobolRow row, byte[] recordData) {
-        Enumeration<FieldMetaData> fields = getFields().elements();
-        while (fields.hasMoreElements()) {
-            FieldMetaData currentField = fields.nextElement();
+        Iterator<FieldMetaData> iterator = getFields().iterator();
+        while (iterator.hasNext()) {
+            FieldMetaData currentField = iterator.next();
             currentField.writeOnArray(row, recordData);
         }
     }
@@ -304,10 +303,10 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     * is changed.
     */
     protected void resetChildOffsets() {
-        Enumeration<FieldMetaData> childFieldsEnum = myCompositeFields.elements();
+        Iterator<FieldMetaData> iterator = myCompositeFields.iterator();
         int offset = this.getOffset();
-        while (childFieldsEnum.hasMoreElements()) {
-            FieldMetaData field = childFieldsEnum.nextElement();
+        while (iterator.hasNext()) {
+            FieldMetaData field = iterator.next();
             field.setOffset(offset);
             if (field.isComposite()) {
                 ((CompositeFieldMetaData)field).resetChildOffsets();

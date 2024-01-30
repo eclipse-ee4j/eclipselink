@@ -19,7 +19,6 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -175,9 +174,9 @@ public class IntegrityChecker implements Serializable {
      */
     public boolean hasRuntimeExceptions() {
         if (hasErrors()) {
-            for (Enumeration<Exception> exceptionsEnum = getCaughtExceptions().elements();
-                     exceptionsEnum.hasMoreElements();) {
-                if (exceptionsEnum.nextElement() instanceof RuntimeException) {
+            for (Iterator<Exception> iterator = getCaughtExceptions().iterator();
+                 iterator.hasNext();) {
+                if (iterator.next() instanceof RuntimeException) {
                     return true;
                 }
             }

@@ -38,7 +38,7 @@ import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
 import java.io.Serializable;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 
@@ -445,10 +445,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             // Set the default type, only if un-mapped.
             dbField.setType(getDefaultLockingFieldType());
         }
-        Enumeration<DatabaseField> enumtr = this.getUnmappedFields().elements();
-        while (enumtr.hasMoreElements()) {
+        Iterator<DatabaseField> iterator = this.getUnmappedFields().iterator();
+        while (iterator.hasNext()) {
             DatabaseField lockField;
-            lockField = enumtr.nextElement();
+            lockField = iterator.next();
             descriptor.getFields().add(lockField);
         }
     }

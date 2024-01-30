@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -88,22 +88,22 @@ public class TestSystem {
     public void createTables(DatabaseSession session) throws Exception {
         Vector<TableDefinition> tables = buildTables();
         SchemaManager schemaManager = new SchemaManager(session);
-        for (Enumeration<TableDefinition> dropForeignKeyEnum = tables.elements();
-                 dropForeignKeyEnum.hasMoreElements();) {
-            TableDefinition table = dropForeignKeyEnum.nextElement();
+        for (Iterator<TableDefinition> iterator = tables.iterator();
+             iterator.hasNext();) {
+            TableDefinition table = iterator.next();
             try {
                 schemaManager.dropConstraints(table);
             } catch (DatabaseException exception) {
                 // Ignore
             }
         }
-        for (Enumeration<TableDefinition> replaceEnum = tables.elements(); replaceEnum.hasMoreElements();) {
-            TableDefinition table = replaceEnum.nextElement();
+        for (Iterator<TableDefinition> iterator = tables.iterator(); iterator.hasNext();) {
+            TableDefinition table = iterator.next();
             schemaManager.replaceObject(table);
         }
-        for (Enumeration<TableDefinition> createForeignKeyEnum = tables.elements();
-                 createForeignKeyEnum.hasMoreElements();) {
-            TableDefinition table = createForeignKeyEnum.nextElement();
+        for (Iterator<TableDefinition> iterator = tables.iterator();
+             iterator.hasNext();) {
+            TableDefinition table = iterator.next();
             schemaManager.createConstraints(table);
         }
     }

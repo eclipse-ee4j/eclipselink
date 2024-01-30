@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.framework;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -65,9 +65,9 @@ public class TestVariation {
         getMembers(object.getClass(), names, getters, setters, fields, true);
         int numberOfTests = (int)java.lang.Math.pow(2, names.size());
         for (int i = 0; i < numberOfTests; i++) {
-            Enumeration<TestCase> enumtr = testsIn.elements();
-            while (enumtr.hasMoreElements()) {
-                TestWrapper testWrapper = createTest(i, object, names, getters, setters, fields, enumtr.nextElement());
+            Iterator<TestCase> iterator = testsIn.iterator();
+            while (iterator.hasNext()) {
+                TestWrapper testWrapper = createTest(i, object, names, getters, setters, fields, iterator.next());
                 testsOut.addElement(testWrapper);
             }
         }

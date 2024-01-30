@@ -66,7 +66,6 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -509,8 +508,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Set pre-defined queries for the descriptor.  Converts the Vector to a hashtable
      */
     public void setAllQueries(Vector vector) {
-        for (Enumeration enumtr = vector.elements(); enumtr.hasMoreElements();) {
-            addQuery((DatabaseQuery)enumtr.nextElement());
+        for (Iterator iterator = vector.iterator(); iterator.hasNext();) {
+            addQuery((DatabaseQuery) iterator.next());
         }
     }
 

@@ -24,6 +24,7 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -57,11 +58,11 @@ public class SQLUpdateStatement extends SQLModifyStatement {
             ExpressionSQLPrinter printer = null;
 
             Vector fieldsForTable = new Vector();
-            Enumeration valuesEnum = getModifyRow().getValues().elements();
+            Iterator iterator = getModifyRow().getValues().iterator();
             Vector values = new Vector();
             for (Enumeration fieldsEnum = getModifyRow().keys(); fieldsEnum.hasMoreElements();) {
                 DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
-                Object value = valuesEnum.nextElement();
+                Object value = iterator.next();
                 if (field.getTable().equals(getTable()) || (!field.hasTableName())) {
                     fieldsForTable.addElement(field);
                     values.addElement(value);

@@ -16,8 +16,8 @@ package org.eclipse.persistence.sessions.remote.rmi.iiop;
 
 import java.rmi.RemoteException;
 import java.rmi.server.ObjID;
-import java.util.Enumeration;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -201,9 +201,9 @@ public class RMIConnection extends RemoteConnection {
         Vector<Object> clientNextPageObjects = serverNextPageObjects;
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
             clientNextPageObjects = new Vector<>(serverNextPageObjects.size());
-            for (Enumeration<Object> objEnum = serverNextPageObjects.elements(); objEnum.hasMoreElements();) {
+            for (Iterator<Object> iterator = serverNextPageObjects.iterator(); iterator.hasNext();) {
                 // 2612538 - the default size of Map (32) is appropriate
-                Object clientObject = session.getObjectCorrespondingTo(objEnum.nextElement(), transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
+                Object clientObject = session.getObjectCorrespondingTo(iterator.next(), transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
                 clientNextPageObjects.addElement(clientObject);
             }
         }

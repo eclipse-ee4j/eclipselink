@@ -111,7 +111,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -176,11 +175,11 @@ public class ProjectClassGenerator {
     }
 
     protected void addAggregateCollectionMappingLines(NonreflectiveMethodDefinition method, String mappingName, AggregateCollectionMapping mapping) {
-        Enumeration<DatabaseField> targetKeysEnum = mapping.getTargetForeignKeyFields().elements();
-        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
-        while (sourceKeysEnum.hasMoreElements()) {
-            DatabaseField sourceField = sourceKeysEnum.nextElement();
-            DatabaseField targetField = targetKeysEnum.nextElement();
+        Iterator<DatabaseField> iterator1 = mapping.getTargetForeignKeyFields().iterator();
+        Iterator<DatabaseField> iterator = mapping.getSourceKeyFields().iterator();
+        while (iterator.hasNext()) {
+            DatabaseField sourceField = iterator.next();
+            DatabaseField targetField = iterator1.next();
             method.addLine(mappingName + ".addTargetForeignKeyFieldName(\"" + targetField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
         }
     }
@@ -407,11 +406,11 @@ public class ProjectClassGenerator {
             method.addLine(mappingName + ".setAttributeClassification(" + mapping.getDirectField().getType().getName() + ".class);");
         }
 
-        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
-        Enumeration<DatabaseField> referenceKeysEnum = mapping.getReferenceKeyFields().elements();
-        while (referenceKeysEnum.hasMoreElements()) {
-            DatabaseField sourceField = sourceKeysEnum.nextElement();
-            DatabaseField referenceField = referenceKeysEnum.nextElement();
+        Iterator<DatabaseField> iterator1 = mapping.getSourceKeyFields().iterator();
+        Iterator<DatabaseField> iterator = mapping.getReferenceKeyFields().iterator();
+        while (iterator.hasNext()) {
+            DatabaseField sourceField = iterator1.next();
+            DatabaseField referenceField = iterator.next();
             method.addLine(mappingName + ".addReferenceKeyFieldName(\"" + referenceField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
         }
 
@@ -764,19 +763,19 @@ public class ProjectClassGenerator {
             method.addLine(mappingName + ".setRelationTableName(\"" + mapping.getRelationTable().getQualifiedName() + "\");");
         }
 
-        Enumeration<DatabaseField> sourceRelationKeysEnum = mapping.getSourceRelationKeyFields().elements();
-        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
-        while (sourceRelationKeysEnum.hasMoreElements()) {
-            DatabaseField sourceField = sourceKeysEnum.nextElement();
-            DatabaseField relationField = sourceRelationKeysEnum.nextElement();
+        Iterator<DatabaseField> iterator3 = mapping.getSourceRelationKeyFields().iterator();
+        Iterator<DatabaseField> iterator2 = mapping.getSourceKeyFields().iterator();
+        while (iterator3.hasNext()) {
+            DatabaseField sourceField = iterator2.next();
+            DatabaseField relationField = iterator3.next();
             method.addLine(mappingName + ".addSourceRelationKeyFieldName(\"" + relationField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
         }
 
-        Enumeration<DatabaseField> targetRelationKeysEnum = mapping.getTargetRelationKeyFields().elements();
-        Enumeration<DatabaseField> targetKeysEnum = mapping.getTargetKeyFields().elements();
-        while (targetRelationKeysEnum.hasMoreElements()) {
-            DatabaseField targetField = targetKeysEnum.nextElement();
-            DatabaseField relationField = targetRelationKeysEnum.nextElement();
+        Iterator<DatabaseField> iterator1 = mapping.getTargetRelationKeyFields().iterator();
+        Iterator<DatabaseField> iterator = mapping.getTargetKeyFields().iterator();
+        while (iterator1.hasNext()) {
+            DatabaseField targetField = iterator.next();
+            DatabaseField relationField = iterator1.next();
             method.addLine(mappingName + ".addTargetRelationKeyFieldName(\"" + relationField.getQualifiedName() + "\", \"" + targetField.getQualifiedName() + "\");");
         }
 
@@ -873,11 +872,11 @@ public class ProjectClassGenerator {
     }
 
     protected void addOneToManyMappingLines(NonreflectiveMethodDefinition method, String mappingName, OneToManyMapping mapping) {
-        Enumeration<DatabaseField> targetKeysEnum = mapping.getTargetForeignKeyFields().elements();
-        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
-        while (sourceKeysEnum.hasMoreElements()) {
-            DatabaseField sourceField = sourceKeysEnum.nextElement();
-            DatabaseField targetField = targetKeysEnum.nextElement();
+        Iterator<DatabaseField> iterator1 = mapping.getTargetForeignKeyFields().iterator();
+        Iterator<DatabaseField> iterator = mapping.getSourceKeyFields().iterator();
+        while (iterator.hasNext()) {
+            DatabaseField sourceField = iterator.next();
+            DatabaseField targetField = iterator1.next();
             method.addLine(mappingName + ".addTargetForeignKeyFieldName(\"" + targetField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
         }
     }
@@ -1042,10 +1041,10 @@ public class ProjectClassGenerator {
         // Named queries.
         if (!descriptor.getQueryManager().getAllQueries().isEmpty()) {
             method.addLine("// Named Queries.");
-            Enumeration<DatabaseQuery> namedQueries = descriptor.getQueryManager().getAllQueries().elements();
+            Iterator<DatabaseQuery> iterator = descriptor.getQueryManager().getAllQueries().iterator();
             int iteration = 0;
-            while (namedQueries.hasMoreElements()) {
-                addNamedQueryLines(method, namedQueries.nextElement(), descriptor.getQueryManager(), iteration);
+            while (iterator.hasNext()) {
+                addNamedQueryLines(method, iterator.next(), descriptor.getQueryManager(), iteration);
                 ++iteration;
             }
         }

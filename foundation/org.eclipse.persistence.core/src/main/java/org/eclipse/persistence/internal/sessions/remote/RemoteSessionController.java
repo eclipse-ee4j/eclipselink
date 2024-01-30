@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,9 +32,9 @@ import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 
 import java.rmi.server.ObjID;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -262,8 +262,8 @@ public class RemoteSessionController {
             if (stream != null) {
                 //retrieve page size of objects from the cursored stream
                 nextPagesObjects = stream.nextElements(pageSize);
-                for (Enumeration enumtr = nextPagesObjects.elements(); enumtr.hasMoreElements();) {
-                    Object objectNext = enumtr.nextElement();
+                for (Iterator iterator = nextPagesObjects.iterator(); iterator.hasNext();) {
+                    Object objectNext = iterator.next();
                     if (objectNext == null) {
                         break;
                     } else {

@@ -18,7 +18,7 @@ import junit.framework.Test;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -81,8 +81,8 @@ public class TestSuite extends TestCollection {
             System.out.println("Running " + getSummary().getName());
         }
         long startTime = System.nanoTime();
-        for (Enumeration<Test> tests = getTests().elements(); tests.hasMoreElements();) {
-            junit.framework.Test test = tests.nextElement();
+        for (Iterator<Test> iterator = getTests().iterator(); iterator.hasNext();) {
+            junit.framework.Test test = iterator.next();
             if ((TestExecutor.getDefaultJUnitTestResult() != null) && TestExecutor.getDefaultJUnitTestResult().shouldStop()) {
                 break;
             }

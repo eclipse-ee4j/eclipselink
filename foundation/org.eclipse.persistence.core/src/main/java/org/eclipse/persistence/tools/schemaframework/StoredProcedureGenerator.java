@@ -42,7 +42,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -168,9 +167,9 @@ public class StoredProcedureGenerator {
             outputWriter.write("This is a EclipseLink generated class to add stored procedure admendments to a project.  \n * Any changes to this code will be lost when the class is regenerated \n */\npublic class ");
             outputWriter.write(className);
             outputWriter.write("{\n");
-            Enumeration<ClassDescriptor> descriptorEnum = this.storedProcedures.keys();
-            while (descriptorEnum.hasMoreElements()) {
-                descriptor = descriptorEnum.nextElement();
+            Iterator<ClassDescriptor> iterator1 = this.storedProcedures.keySet().iterator();
+            while (iterator1.hasNext()) {
+                descriptor = iterator1.next();
                 if (descriptor.isDescriptorForInterface() || descriptor.isAggregateDescriptor()) {
                     continue;
                 }
@@ -281,8 +280,8 @@ public class StoredProcedureGenerator {
                     //read all
                     outputWriter.write("\tReadAllQuery mappingQuery; \n");
                     outputWriter.write("\tDeleteAllQuery deleteMappingQuery; \n");
-                    for (Enumeration<String> e = mappingHashtable.keys(); e.hasMoreElements();) {
-                        String mappingName = e.nextElement();
+                    for (Iterator<String> iterator = mappingHashtable.keySet().iterator(); iterator.hasNext();) {
+                        String mappingName = iterator.next();
                         definition = mappingHashtable.get(mappingName).get("1MREAD");
                         if (definition != null) {
                             outputWriter.write("\n\t//MAPPING READALL QUERY FOR " + mappingName + "\n");
@@ -538,9 +537,9 @@ public class StoredProcedureGenerator {
                 callVector.addElement(((CallQueryMechanism)query.getQueryMechanism()).getCall());
             }
         }
-        Enumeration<DatasourceCall> enumtr = callVector.elements();
-        while (enumtr.hasMoreElements()) {
-            SQLCall call = (SQLCall)enumtr.nextElement();
+        Iterator<DatasourceCall> iterator1 = callVector.iterator();
+        while (iterator1.hasNext()) {
+            SQLCall call = (SQLCall) iterator1.next();
             statementVector.addElement(this.buildProcedureString(call));
         }
         definition.setStatements(statementVector);
@@ -554,16 +553,16 @@ public class StoredProcedureGenerator {
         }
 
         definition.setName(Helper.truncate(name, MAX_NAME_SIZE));
-        Enumeration<String> fieldsEnum = fieldNames.keys();
+        Iterator<String> iterator = fieldNames.keySet().iterator();
         String prefixArgToken;
         if (getSession().getPlatform().isOracle()) {
             prefixArgToken = getSession().getPlatform().getStoredProcedureParameterPrefix();
         } else {
             prefixArgToken = "";
         }
-        while (fieldsEnum.hasMoreElements()) {
+        while (iterator.hasNext()) {
             Number dataType;
-            dataRow = fieldNames.get(fieldsEnum.nextElement());
+            dataRow = fieldNames.get(iterator.next());
             dataType = (Number)dataRow.get("DATA_TYPE");
             Class<?> type = this.getFieldType(dataType);
             String typeName = (String)dataRow.get("TYPE_NAME");
@@ -618,8 +617,8 @@ public class StoredProcedureGenerator {
                 this.writeDefinition(definition);
             }
             Hashtable<String, Hashtable<String, StoredProcedureDefinition>> mappingDefinitions = this.generateMappingStoredProcedures(desc);
-            for (Enumeration<Hashtable<String, StoredProcedureDefinition>> enum2 = mappingDefinitions.elements(); enum2.hasMoreElements();) {
-                Hashtable<String, StoredProcedureDefinition> table = enum2.nextElement();
+            for (Iterator<Hashtable<String, StoredProcedureDefinition>> iterator1 = mappingDefinitions.values().iterator(); iterator1.hasNext();) {
+                Hashtable<String, StoredProcedureDefinition> table = iterator1.next();
                 definition = table.get("1MREAD");
                 if (definition != null) {
                     this.writeDefinition(definition);

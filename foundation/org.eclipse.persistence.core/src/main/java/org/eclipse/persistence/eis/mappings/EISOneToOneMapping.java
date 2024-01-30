@@ -34,7 +34,6 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -153,8 +152,8 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         clone.setTargetToSourceKeyFields(new HashMap<>(getTargetToSourceKeyFields().size()));
         Map<DatabaseField, DatabaseField> setOfFields = new HashMap<>(getTargetToSourceKeyFields().size());
 
-        for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField field = enumtr.nextElement();
+        for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
 
             DatabaseField fieldClone = field.clone();
             setOfFields.put(field, fieldClone);

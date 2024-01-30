@@ -45,7 +45,7 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.Session;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -355,8 +355,8 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
             result = cp.containerInstance(fieldValues.size());
         }
 
-        for (Enumeration stream = fieldValues.elements(); stream.hasMoreElements();) {
-            Object element = stream.nextElement();
+        for (Iterator iterator = fieldValues.iterator(); iterator.hasNext();) {
+            Object element = iterator.next();
             element = convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
             if (element != null && element.getClass() == ClassConstants.STRING) {
                 if (isCollapsingStringValues) {

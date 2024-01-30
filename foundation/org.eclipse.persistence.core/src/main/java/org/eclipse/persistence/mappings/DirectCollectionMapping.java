@@ -104,7 +104,6 @@ import java.beans.PropertyChangeEvent;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -1351,9 +1350,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public Vector getReferenceKeyFieldNames() {
         Vector fieldNames = new Vector(getReferenceKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getReferenceKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+        for (Iterator<DatabaseField> iterator = getReferenceKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.addElement(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -1418,9 +1417,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public Vector getSourceKeyFieldNames() {
         Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+        for (Iterator<DatabaseField> iterator = getSourceKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.addElement(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -1752,9 +1751,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         SQLInsertStatement statement = new SQLInsertStatement();
         statement.setTable(getReferenceTable());
         AbstractRecord directRow = new DatabaseRecord();
-        for (Enumeration<DatabaseField> referenceEnum = getReferenceKeyFields().elements();
-             referenceEnum.hasMoreElements();) {
-            directRow.put(referenceEnum.nextElement(), null);
+        for (Iterator<DatabaseField> iterator = getReferenceKeyFields().iterator();
+             iterator.hasNext();) {
+            directRow.put(iterator.next(), null);
         }
         directRow.put(getDirectField(), null);
         if(listOrderField != null) {
@@ -1781,8 +1780,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             throw DescriptorException.noReferenceKeyIsSpecified(this);
         }
 
-        for (Enumeration<DatabaseField> referenceEnum = getReferenceKeyFields().elements(); referenceEnum.hasMoreElements();) {
-            DatabaseField field = referenceEnum.nextElement();
+        for (Iterator<DatabaseField> iterator = getReferenceKeyFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
 
             // Update the field first if the mapping is on a table per tenant entity.
             if (getDescriptor().hasTablePerMultitenantPolicy()) {
@@ -2654,9 +2653,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     protected void prepareTranslationRow(AbstractRecord translationRow, Object object, ClassDescriptor descriptor, AbstractSession session) {
         // Make sure that each source key field is in the translation row.
-        for (Enumeration<DatabaseField> sourceFieldsEnum = getSourceKeyFields().elements();
-             sourceFieldsEnum.hasMoreElements();) {
-            DatabaseField sourceKey = sourceFieldsEnum.nextElement();
+        for (Iterator<DatabaseField> iterator = getSourceKeyFields().iterator();
+             iterator.hasNext();) {
+            DatabaseField sourceKey = iterator.next();
             if (!translationRow.containsKey(sourceKey)) {
                 Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
                 translationRow.put(sourceKey, value);
@@ -2902,8 +2901,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public void setReferenceKeyFieldNames(Vector fieldNames) {
         Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+        for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.addElement(new DatabaseField((String) iterator.next()));
         }
 
         setReferenceKeyFields(fields);
@@ -2991,8 +2990,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public void setSourceKeyFieldNames(Vector fieldNames) {
         Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+        for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.addElement(new DatabaseField((String) iterator.next()));
         }
 
         setSourceKeyFields(fields);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -150,8 +150,8 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
             result = cp.containerInstance();
         }
 
-        for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-            Object next = stream.nextElement();
+        for (Iterator iterator = nestedRows.iterator(); iterator.hasNext();) {
+            Object next = iterator.next();
             if (next instanceof Element) {
                 XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element)next);
             }
