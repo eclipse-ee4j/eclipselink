@@ -77,12 +77,13 @@ public class WeavingTest extends JUnitTestCase {
         WeavingEntityInDir weavingEntityInDir = new WeavingEntityInDir(ID);
         weavingEntityInDir.setBooleanField(true);
         weavingEntityInDir.setByteField((byte)1);
-        weavingEntityInDir.setShortFiled((short)2);
+        weavingEntityInDir.setShortField((short)2);
         weavingEntityInDir.setIntField(3);
         weavingEntityInDir.setLongField(4);
         weavingEntityInDir.setFloatField(1.1F);
         weavingEntityInDir.setDoubleField(2.2);
         weavingEntityInDir.setStringField("abcde");
+        weavingEntityInDir.setBlobField(new byte[] {1, 2, 3});
 
         EntityManager em = createEntityManager();
         try {
@@ -125,7 +126,11 @@ public class WeavingTest extends JUnitTestCase {
         WeavingEntityInDir weavingEntityInDir = null;
         EntityManager em = createEntityManager();
         try {
+            beginTransaction(em);
             weavingEntityInDir = em.find(WeavingEntityInDir.class, ID);
+            // Verify _persistence_checkFetchedForSet(...) as blobField has "@Basic(fetch= FetchType.LAZY)"
+            weavingEntityInDir.setBlobField(null);
+            commitTransaction(em);
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);

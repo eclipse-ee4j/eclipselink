@@ -14,9 +14,13 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.weaving;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.Cacheable;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import org.eclipse.persistence.annotations.FetchAttribute;
 import org.eclipse.persistence.annotations.FetchGroup;
 
@@ -30,12 +34,13 @@ public class WeavingEntityInDir {
     private int id;
     private boolean booleanField;
     private byte byteField;
-    private short shortFiled;
+    private short shortField;
     private int intField;
     private long longField;
     private float floatField;
     private double doubleField;
     private String stringField;
+    private byte[] blobField;
 
     public WeavingEntityInDir() {
     }
@@ -69,12 +74,12 @@ public class WeavingEntityInDir {
         this.byteField = byteField;
     }
 
-    public short getShortFiled() {
-        return shortFiled;
+    public short getShortField() {
+        return shortField;
     }
 
-    public void setShortFiled(short shortFiled) {
-        this.shortFiled = shortFiled;
+    public void setShortField(short shortFiled) {
+        this.shortField = shortFiled;
     }
 
     public int getIntField() {
@@ -115,5 +120,16 @@ public class WeavingEntityInDir {
 
     public void setStringField(String stringField) {
         this.stringField = stringField;
+    }
+
+    @Lob
+    @Column(length=4800)
+    @Basic(fetch= FetchType.LAZY)
+    public byte[] getBlobField() {
+        return blobField;
+    }
+
+    public void setBlobField(byte[] blobField) {
+        this.blobField = blobField;
     }
 }

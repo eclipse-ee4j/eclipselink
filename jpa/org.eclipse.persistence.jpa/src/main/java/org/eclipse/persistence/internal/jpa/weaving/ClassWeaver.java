@@ -1136,13 +1136,17 @@ public class ClassWeaver extends ClassVisitor {
      * _persistence_fetchGroup.containsAttribute(attribute); }
      * <p>
      * public void _persistence_checkFetched(String attribute) { if
-     * (this._persistence_fetchGroup != null) {
-     * EntityManagerImpl.processUnfetchedAttribute(this, attribute); } }
+     * (!this._persistence_isAttributeFetched(var1)) {
+     * String var2 = this._persistence_getFetchGroup().onUnfetchedAttribute(this, var1);
+     * if (var2 != null) {
+     * throw new EntityNotFoundException(var2);}}}
      * <p>
      *
      * public void _persistence_checkSetFetched(String attribute) { if
-     * (this._persistence_fetchGroup != null) {
-     * EntityManagerImpl.processUnfetchedAttributeForSet(this, attribute); } }
+     * if (!this._persistence_isAttributeFetched(var1)) {
+     * String var2 = this._persistence_getFetchGroup().onUnfetchedAttributeForSet(this, var1);
+     * if (var2 != null) {
+     * throw new EntityNotFoundException(var2);}}}
      */
     public void addFetchGroupMethods(ClassDetails classDetails) {
         MethodVisitor cv_getSession = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_getSession", "()" + SESSION_SIGNATURE, null, null);
@@ -1256,7 +1260,7 @@ public class ClassWeaver extends ClassVisitor {
             // .onUnfetchedAttribute(entity, attributeName);
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), FETCHGROUP_SHORT_SIGNATURE, "onUnfetchedAttributeSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + STRING_SIGNATURE + ")" + STRING_SIGNATURE, false);
+            cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), FETCHGROUP_SHORT_SIGNATURE, "onUnfetchedAttributeForSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + STRING_SIGNATURE + ")" + STRING_SIGNATURE, false);
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ASTORE"), 2);
             cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
             cv_checkFetchedForSet.visitJumpInsn(Opcodes.valueInt("IFNULL"), l1);
