@@ -143,7 +143,6 @@ public class StaticWeaveException  extends EclipseLinkException {
         return loadingException;
     }
 
-
     public String getResourceName(){
         return resourceName;
     }
