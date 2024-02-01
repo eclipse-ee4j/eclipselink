@@ -1387,6 +1387,10 @@ public abstract class DatasourceCall implements Call {
                                     writer.write(",");
                                 }
                             }
+                        } else if (values.isEmpty()){
+                            //Empty collection passed as parameter is translated into null
+                            parametersValues.add(null);
+                            writer.write("?");
                         } else {
                             parametersValues.addAll(values);
                             int size = values.size();
@@ -1421,6 +1425,10 @@ public abstract class DatasourceCall implements Call {
                             }
                         }
                         writer.write(")");
+                    //handle null passed into ...IN (?) as a parameter
+                    } else if (parameter instanceof DatabaseField && translationRow.get(parameter) == null){
+                        parametersValues.add(null);
+                        writer.write("(?)");
                     } else {
                         parametersValues.add(parameter);
                         writer.write("?");

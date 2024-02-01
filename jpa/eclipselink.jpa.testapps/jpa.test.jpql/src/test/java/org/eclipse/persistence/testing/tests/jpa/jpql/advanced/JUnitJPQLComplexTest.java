@@ -76,6 +76,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -137,9 +138,13 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         tests.add("complexInTest3");
         tests.add("complexInTest4");
         tests.add("complexInTest5");
+        tests.add("complexInTest6NullParameter");
+        tests.add("complexInTest7EmptyCollectionParameter");
         tests.add("complexLengthTest");
         tests.add("complexLikeTest");
-        tests.add("complexNotInTest");
+        tests.add("complexNotInTest1");
+        tests.add("complexNotInTest2NullParameter");
+        tests.add("complexNotInTest3EmptyCollectionParameter");
         tests.add("complexNotLikeTest");
         tests.add("complexParameterTest");
         tests.add("complexReverseAbsTest");
@@ -492,6 +497,30 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         closeEntityManager(em);
     }
 
+    public void complexInTest6NullParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN :lastName");
+
+        query.setParameter("lastName", null);
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
+    public void complexInTest7EmptyCollectionParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN :lastName");
+
+        query.setParameter("lastName", new ArrayList<>());
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
     public void complexLengthTest()
     {
         if ((getPersistenceUnitServerSession()).getPlatform().isSQLServer()) {
@@ -542,7 +571,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
     }
 
-    public void complexNotInTest()
+    public void complexNotInTest1()
     {
         EntityManager em = createEntityManager();
 
@@ -576,6 +605,30 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
         Assert.assertTrue("Complex Not IN test failed", comparer.compareObjects(result, expectedResult));
 
+    }
+
+    public void complexNotInTest2NullParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName NOT IN :lastName");
+
+        query.setParameter("lastName", null);
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
+    public void complexNotInTest3EmptyCollectionParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName NOT IN :lastName");
+
+        query.setParameter("lastName", List.of());
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
     }
 
     public void complexNotLikeTest()
