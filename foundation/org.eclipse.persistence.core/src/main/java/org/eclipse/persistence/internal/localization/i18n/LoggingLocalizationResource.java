@@ -184,7 +184,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "persistence_unit_ignores_statments_cache_setting", "The statement cache cannot be enabled because no connection pool is configured." },
         { "column_size_not_migrated", "DB column size ({0}) is not migrated. See migration doc for details." },
         { "verifiy_columns_read_locking_not_supported", "Optimistic setting \"Read\" on \"verify-columns\" in entity ({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "verifiy_rows_read_locking_not_supported", "Optimistic setting \"Read\" on \"verify-rows\" in entity ({0}) is not directly supported in EclipseLink CMP. See migration doc for details.." },
+        { "verifiy_rows_read_locking_not_supported", "Optimistic setting \"Read\" on \"verify-rows\" in entity ({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "one_to_one_join_outer_migrated", "The one-to-one outer join defined for cmr field ({0}) of entity bean ({1}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "bacth_update_not_supported", "The Batch update setting batch-size with value ({0}) defined on entity bean ({1}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "data_sync_on_ejb_create_not_supported", "The data syncronization setting data-synchronization-option=\"ejbCreate\" defined on entity bean ({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
