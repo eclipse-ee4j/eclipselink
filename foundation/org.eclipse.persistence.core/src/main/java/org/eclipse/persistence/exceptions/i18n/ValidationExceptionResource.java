@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -369,7 +369,7 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
-                                           { "7357", "The \"[{0}]\" URL for \"[{1}]\" resource does not belong to a valid persistence root (as per Jakarta Persistence Specification)"},
+                                           { "7357", "The \"[{0}]\" URL for the \"[{1}]\" resource does not belong to a valid persistence root, as defined by the Jakarta Persistence specification"},
                                            { "7358", "Incorrect ASM service name provided."},
                                            { "7359", "No any ASM service available."},
  };
