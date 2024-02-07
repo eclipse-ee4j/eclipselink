@@ -494,13 +494,13 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "corrupt_object_referenced_through_mapping", "corrupt object referenced through mapping: {0}" },
         { "corrupt_object", "corrupt object: {0}" },
 
-        { "encryptor_decrypt_old_algorithm", "Database password used in {0} was encrypted by deprecated algorithm." +
-                "\nIt is recommended to re-encrypt it by `passwordUpdate.sh` from eclipselink.zip bundle."},
-        { "encryptor_decrypt_old_algorithm_without_session_name", "Database password was encrypted by deprecated algorithm." +
-                    "\nIt is recommended to re-encrypt it by `passwordUpdate.sh` from eclipselink.zip bundle."},
+        { "encryptor_decrypt_old_algorithm", "The Database password used in {0} was encrypted by a deprecated algorithm." +
+                "\nReencrypt it by `passwordUpdate.sh` from eclipselink.zip bundle."},
+        { "encryptor_decrypt_old_algorithm_without_session_name", "The Database password was encrypted by a deprecated algorithm." +
+                    "\nReencrypt it by `passwordUpdate.sh` from eclipselink.zip bundle."},
         { "encryptor_script_usage", "Usage is `passwordUpdate.sh|.cmd -ip <old encrypted password>`"},
-        { "encryptor_script_description", "This application internally decrypt old encrypted password used by some previous version EclipseLink and encrypt it by latest algorithm."},
-        { "encryptor_script_output", "Re-encrypted password is: {0}"}
+        { "encryptor_script_description", "This application internally decrypts an old encrypted password that was used by a previous EclipseLink version and encrypts it by the latest algorithm."},
+        { "encryptor_script_output", "Reencrypted password is: {0}"}
 
     };
 
