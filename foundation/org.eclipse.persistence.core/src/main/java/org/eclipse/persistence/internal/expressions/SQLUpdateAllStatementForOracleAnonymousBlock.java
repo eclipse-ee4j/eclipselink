@@ -16,6 +16,7 @@
 package org.eclipse.persistence.internal.expressions;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -37,7 +38,7 @@ import java.util.Vector;
  * @since TOPLink/Java 1.0
  */
 public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyStatement {
-    protected Map<DatabaseTable, Map<DatabaseField, Object>> tables_databaseFieldsToValues;
+    protected Map<DatabaseTable, Map<DatabaseField, Expression>> tables_databaseFieldsToValues;
     protected Map<DatabaseTable, List<DatabaseField>> tablesToPrimaryKeyFields;
     protected SQLCall selectCall;
 
@@ -59,10 +60,10 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
     public Map<DatabaseTable, List<DatabaseField>> getTablesToPrimaryKeyFields() {
         return tablesToPrimaryKeyFields;
     }
-    public void setTables_databaseFieldsToValues(Map<DatabaseTable, Map<DatabaseField, Object>> tables_databaseFieldsToValues) {
+    public void setTables_databaseFieldsToValues(Map<DatabaseTable, Map<DatabaseField, Expression>> tables_databaseFieldsToValues) {
         this.tables_databaseFieldsToValues = tables_databaseFieldsToValues;
     }
-    public Map<DatabaseTable, Map<DatabaseField, Object>> getTables_databaseFieldsToValues() {
+    public Map<DatabaseTable, Map<DatabaseField, Expression>> getTables_databaseFieldsToValues() {
         return tables_databaseFieldsToValues;
     }
 
