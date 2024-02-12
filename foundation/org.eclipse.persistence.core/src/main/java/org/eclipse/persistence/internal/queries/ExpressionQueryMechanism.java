@@ -797,7 +797,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             DatabaseField field = entry.getKey();
             // here's a Map of left hand fields to right hand expressions
             Expression value = entry.getValue();
-            if(value.isCreateSQLSelectStatement()) {
+            if(value.shouldCreateSQLSelectStatement()) {
                 SQLSelectStatement selStatement = createSQLSelectStatementForAssignedExpressionForUpdateAll(value);
                 SQLCall selCall = (SQLCall)selStatement.buildCall(getSession());
                 databaseFieldsToValuesCopy.put(field, selCall);
@@ -2165,7 +2165,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         prepareUpdateAllUsingTempStorage(tables_databaseFieldsToValues, tablesToPrimaryKeyFields);
                         return;
                     }
-                    valueClone.setCreateSQLSelectStatement(true);
+                    valueClone.setShouldCreateSQLSelectStatement(true);
                 }
                 databaseFieldsToValuesCopy.put(field, valueClone);
             }

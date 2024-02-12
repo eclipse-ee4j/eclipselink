@@ -96,7 +96,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public static boolean shouldUseUpperCaseForIgnoreCase = true;
 
     //flag to control SQLSelectStatement generation
-    private boolean createSQLSelectStatement = false;
+    private boolean shouldCreateSQLSelectStatement = false;
 
     /**
      * Base Expression Constructor.  Not generally used by Developers
@@ -5450,17 +5450,17 @@ public abstract class Expression implements Serializable, Cloneable {
         return null;
     }
 
-    /**
-     * INTERNAL:
-     * Flag to control SQLSelectStatement generation.
-     * true - generate. Usually in case of nested select statement in update query.
-     * false - don't generate (default)
-    */
-    public boolean isCreateSQLSelectStatement() {
-        return createSQLSelectStatement;
+    public boolean shouldCreateSQLSelectStatement() {
+        return shouldCreateSQLSelectStatement;
     }
 
-    public void setCreateSQLSelectStatement(boolean createSQLSelectStatement) {
-        this.createSQLSelectStatement = createSQLSelectStatement;
+    /**
+     * INTERNAL:<p>
+     * Flag to control SQLSelectStatement generation.<p>
+     * true - generate. Usually in case of nested select statement in update query.<p>
+     * false - don't generate (default)
+     */
+    public void setShouldCreateSQLSelectStatement(boolean shouldCreateSQLSelectStatement) {
+        this.shouldCreateSQLSelectStatement = shouldCreateSQLSelectStatement;
     }
 }
