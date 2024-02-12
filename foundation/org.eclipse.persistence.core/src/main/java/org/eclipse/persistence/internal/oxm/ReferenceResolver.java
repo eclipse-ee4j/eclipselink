@@ -140,12 +140,12 @@ public final class ReferenceResolver {
      * Value = p * 3   | 0, 3, 6, 9, 12, 15, 18,  21, 24 |
      * --------------------------------------------------
      * e.g. eighth entry is Entry#7{ key = 14, value = 21 }
-     *
+     * <p>
      * ####################################
      * # Insert element - O(1) guaranteed #
      * ####################################
      * Processing the 9th key:
-     *
+     * <p>
      * 1. Attempt to insert Entry#7 with key '14' into map of references.
      * &gt; h(14) = 5;
      * HashMap buckets:
@@ -153,28 +153,28 @@ public final class ReferenceResolver {
      * entry(key)   | 0 1   3   5   7 8
      *                          ^
      * &gt; Bucket 5 is taken.
-     *
+     * <p>
      * 2. Store the entry in a separate list.
      * List for unlucky references:
      * position     | 0 1 2
      * entry(key)   | 5 5
      *                    ^
-     *
+     * <p>
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                    ^
      * 3. Store the position # p of this element, i.e. what spot it would have
      * taken if all entries were stored in a position list, counting from zero.
-     *
+     * <p>
      * List storing position # of unlucky references:
      * position     | 0 1 2
      * entry # (p)  | 4 5
      *                    ^
-     *
+     * <p>
      * position     | 0 1 2
      * entry # (p)  | 4 5 7
      *                    ^
-     *
+     * <p>
      * #####################################################
      * # Retrieve element - O(1) expected, O(n) worst case #
      * #####################################################
@@ -187,42 +187,42 @@ public final class ReferenceResolver {
      *                          ^
      * Hash function points to bucket # 5. Stored key is 5.
      * &gt; key 5 != 14.
-     *
+     * <p>
      * 2. Iterate through list of unluckyReferences, comparing
      * key to all keys in the list.
-     *
+     * <p>
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                ^
      * &gt; key 5 != 14
-     *
+     * <p>
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                  ^
-     *
+     * <p>
      * &gt; key 5 != 14
-     *
+     * <p>
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                    ^
-     *
+     * <p>
      * &gt; key 14 = 14, retrieve entry.
-     *
+     * <p>
      * ##################################################
      * # Iterate through all elements - O(n) guaranteed #
      * ##################################################
-     *
+     * <p>
      * 1. Create boolean array of size n that keeps track
      *  of unlucky positions:
      * &gt; boolean[] a = new boolean[lastPosition + 1];
-     *
+     * <p>
      * 2. Set a[p] = true for elements that did not fit into
      *  hash map, p = position # of element.
-     *
+     * <p>
      * &gt; for (Integer p : unluckyRefPositions) {
      *   &gt; a[p] = true;
      * &gt; }
-     *
+     * <p>
      * 3. Iterate through LinkedMap and List as if they were one joined collection
      * of size s = map.size() + list.size(), ordered by p = position # of element:
      *  &gt; for (p = 0; p &lt; s; p ++) {

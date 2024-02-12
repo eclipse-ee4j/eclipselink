@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -44,7 +44,7 @@ import java.util.Vector;
  *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
- *
+ * <p>
  * 05/28/2008-1.0M8 Andrei Ilitchev.
  *   - 224964: Provide support for Proxy Authentication through JPA.
  *     Added ConnectionCustomizer, also fixed  postConnect/preDisconnect ExternalConnection calls so that they called in case of reads, too.

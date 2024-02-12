@@ -371,7 +371,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     /**
      * PUBLIC:
      * Answers if the query lock mode is known to be LOCK or LOCK_NOWAIT.
-     *
+     * <p>
      * In the case of DEFAULT_LOCK_MODE and the query reference class being a CMP entity bean,
      * at execution time LOCK, LOCK_NOWAIT, or NO_LOCK will be decided.
      * <p>

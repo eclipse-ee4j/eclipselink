@@ -310,10 +310,10 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
      * limiting the results of a query in SQL.  These limits tend to be used in two ways.
-     *
+     * <p>
      * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
      * 2. MaxRows is the number of rows to be returned
-     *
+     * <p>
      * MySQL uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex
      *
      * @see org.eclipse.persistence.platform.database.MySQLPlatform

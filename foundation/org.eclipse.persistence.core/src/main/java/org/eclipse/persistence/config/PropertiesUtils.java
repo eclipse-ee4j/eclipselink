@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -36,7 +36,7 @@ public class PropertiesUtils {
     /**
      * Attempts to parse and then set the provided kvs String into the
      * appropriate set method on the provided instance.
-     *
+     * <p>
      * Note: Keys and values cannot contain '=' or ','
      *
      * @param instance

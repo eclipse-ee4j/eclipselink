@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * A SerializedConverter is used to serialize an object's value into a database binary, character, or XML field.
  * This annotation allows a named converter that can be used in mappings.
- *
+ * <p>
  * A converter must be be uniquely identified by name and can be defined at
  * the class level and can be specified within an Entity,
  * MappedSuperclass and Embeddable class.
- *
+ * <p>
  * The usage of a SerializedConverter is always specified via the Converter annotation and
  * is supported on a Basic, or ElementCollection mapping.
  *

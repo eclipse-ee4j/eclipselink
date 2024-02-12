@@ -44,7 +44,7 @@ import java.util.Stack;
  * feature without having to change the mapping classes or the object builder.
  * It provides functionality such as a cascading depth, a stack of visited object,
  * and a collection of the visited objects.
- *
+ * <p>
  * NOTE:
  * If this works nicely the merge manager, remote traversals, and maybe
  * even aspects of the commit manager could be converted to use this class.

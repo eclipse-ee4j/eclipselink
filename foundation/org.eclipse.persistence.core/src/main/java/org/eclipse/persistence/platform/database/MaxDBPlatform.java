@@ -89,7 +89,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
 
     /**
      * Maximum length of type VARCHAR UNICODE
-     *
+     * <p>
      * (<a href="http://maxdb.sap.com/doc/7_8/45/33337d9faf2b34e10000000a1553f7/content.htm">link</a>)
      */
     private static final int MAX_VARCHAR_UNICODE_LENGTH = 4000; //
@@ -153,7 +153,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
     /**
      * EclipseLink does not support length dependent type mapping.
      * Map VARCHAR types with length > MAX_VARCHAR_UNICODE_LENGTH to LONG UNICODE (i.e clob); shorter types to VARCHAR (n) UNICODE
-     * See also bugs 317597, 202348
+     * See also bugs 317597, 202448
      */
     @Override
     protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType) throws IOException {

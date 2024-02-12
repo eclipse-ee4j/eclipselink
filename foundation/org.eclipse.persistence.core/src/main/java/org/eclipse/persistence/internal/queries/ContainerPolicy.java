@@ -1177,7 +1177,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Return the next object on the queue. The iterator is the one
      * returned from #iteratorFor().
-     *
+     * <p>
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
@@ -1192,7 +1192,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Return the next object on the queue. The iterator is the one
      * returned from #iteratorFor().
-     *
+     * <p>
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(Object)

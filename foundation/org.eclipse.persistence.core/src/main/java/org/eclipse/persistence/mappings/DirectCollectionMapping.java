@@ -125,7 +125,7 @@ import java.util.Vector;
  *
  * @author Sati
  * @since TOPLink/Java 1.0
- *
+ * <p>
  *     09/18/2009-2.0 Michael O'Brien
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  *         add support for passing BasicMap value type to MapAttributeImpl via new attributeClassification field
@@ -1141,7 +1141,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * At this point, we realize we don't have indirection;
      * so we need to replace the reference object(s) with
      * the corresponding object(s) from the remote session.
-     *
+     * <p>
      * The reference objects for a DirectCollectionMapping
      * are primitives, so they do not need to be replaced.
      */

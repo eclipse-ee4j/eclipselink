@@ -69,9 +69,9 @@ import java.util.logging.Level;
  *      appending entity or class name (like DescriptorCustomizerProp -
  *      it corresponds to "eclipselink.descriptor.customizer." prefix that allows to
  *      define properties like "eclipselink.descriptor.customizer.myPackage.MyClass").
- *
+ * <p>
  * EclipseLink properties and their values defined in org.eclipse.persistence.config package.
- *
+ * <p>
  * To add a new property:
  *   Define a new property in PersistenceUnitProperties;
  *   Add a class containing property's values if required to config package (like CacheType);

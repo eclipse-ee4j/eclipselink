@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,18 +25,18 @@ import java.io.Serializable;
 
 /**
  * <p><b>Purpose</b>: Allows customization of how an object is cloned.
- * An implementer of CopyPolicy can be set on a descriptor to provide
+ * An implementer of {@code CopyPolicy} can be set on a descriptor to provide
  * special cloning routine for how an object is cloned in a unit of work.
- *
- * By default the InstantiationCopyPolicy is used which creates a new instance of
+ * <p>
+ * By default, the {@linkplain InstantiationCopyPolicy} is used which creates a new instance of
  * the class to be copied into.
- *
- * The CloneCopyPolicy can also be used that uses a clone method in the object
+ * <p>
+ * The {@linkplain CloneCopyPolicy} can also be used that uses a clone method in the object
  * to clone the object.  When a clone method is used it avoid the requirement of having to
  * copy over each of the direct attributes.
  *
- * @see org.eclipse.persistence.descriptors.copying.CloneCopyPolicy
- * @see org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy
+ * @see CloneCopyPolicy
+ * @see InstantiationCopyPolicy
  */
 public interface CopyPolicy extends Cloneable, Serializable {
 

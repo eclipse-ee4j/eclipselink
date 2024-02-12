@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * This is a special case of TablePerMultitenantPolicy which can be applied
  * on the project. Can be useful in cases when tenant schema change happens
  * outside of EclipseLink, typically if Proxy DataSource is used.
- *
+ * <p>
  * Use of this policy is limited to projects where following applies
  * <ul>
  * <li>{@literal @}Multitenant entities are not used
@@ -83,14 +83,13 @@ public class SchemaPerMultitenantPolicy extends TablePerMultitenantPolicy {
 
     @Override
     public MultitenantPolicy clone(ClassDescriptor descriptor) {
-        SchemaPerMultitenantPolicy clonedPolicy = null;
         try {
-            clonedPolicy = (SchemaPerMultitenantPolicy) super.clone();
+            SchemaPerMultitenantPolicy clonedPolicy = (SchemaPerMultitenantPolicy) super.clone();
+            clonedPolicy.descriptor = descriptor;
+            return clonedPolicy;
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.getMessage());
         }
-        clonedPolicy.descriptor = descriptor;
-        return clonedPolicy;
     }
 
     @Override

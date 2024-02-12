@@ -3653,7 +3653,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Read all the instances of the class from the database returned through execution the Call string.
      * The Call can be an SQLCall or JPQLCall.
-     *
+     * <p>
      * example: session.readAllObjects(Employee.class, new SQLCall("SELECT * FROM EMPLOYEE"));
      * @see Call
      */
@@ -3721,7 +3721,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Read the first instance of the class from the database returned through execution the Call string.
      * The Call can be an SQLCall or JPQLCall.
-     *
+     * <p>
      * example: session.readObject(Employee.class, new SQLCall("SELECT * FROM EMPLOYEE"));
      * @see SQLCall
      * @see JPQLCall
@@ -5025,9 +5025,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Execute the call on the database. Calling this method will bypass a
      * global setting to disallow native SQL queries. (set by default when
      * one Entity is marked as multitenant)
-     *
+     * <p>
      * The row count is returned.
-     *
+     * <p>
      * The call can be a stored procedure call, SQL call or other type of call.
      *
      * <p>Example:
@@ -5053,12 +5053,12 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Execute the call on the database and return the result. Calling this
      * method will bypass a global setting to disallow native SQL queries. (set
      * by default when one Entity is marked as multitenant)
-     *
+     * <p>
      * The call must return a value, if no value is return executeNonSelectCall
      * must be used.
-     *
+     * <p>
      * The call can be a stored procedure call, SQL call or other type of call.
-     *
+     * <p>
      * A vector of database rows is returned, database row implements Java 2 Map
      * which should be used to access the data.
      *
@@ -5269,7 +5269,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
    /**
     * ADVANCED: Indicates whether an invalid NamedQuery will be tolerated at init time.
-    *
+    * <p>
     * Default is false.
     */
    public void setTolerateInvalidJPQL(boolean b) {
@@ -5278,7 +5278,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
    /**
     * ADVANCED: Indicates whether an invalid NamedQuery will be tolerated at init time.
-    *
+    * <p>
     * Default is false.
     */
    public boolean shouldTolerateInvalidJPQL() {

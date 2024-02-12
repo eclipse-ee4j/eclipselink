@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import java.security.PrivilegedActionException;
 
 /**
  * <b>Purpose</b>: Allows a class name to be converted to and from a new instance of the class.
- *
+ * <p>
  * When using a ClassInstanceConverter, the database will store the Class name and the java object
  * model will contain an instance of that class initialized with its default constructor
  *

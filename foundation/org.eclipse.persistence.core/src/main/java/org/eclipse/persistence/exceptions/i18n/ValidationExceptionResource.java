@@ -48,7 +48,7 @@ import java.util.ListResourceBundle;
 /**
  * INTERNAL:
  * English ResourceBundle for ValidationException messages.
- *
+ * <p>
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Xi Chen
  */

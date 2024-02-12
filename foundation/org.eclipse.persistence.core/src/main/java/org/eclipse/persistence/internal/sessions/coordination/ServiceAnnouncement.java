@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,11 +52,11 @@ public class ServiceAnnouncement {
     /**
      * INTERNAL:
      * Initialize the instance fields from the serialized bytes.
-     *
+     * <p>
      * Assumptions:
      *    - Same character converters exist on the reading and storing sides
      *    - Strings are not greater than 255 bytes (bytes, not characters)
-     *
+     * <p>
      * Byte storage:
      *    - 1 byte to store length of String that is to follow
      *    - String of 'length' bytes follows
@@ -88,11 +88,11 @@ public class ServiceAnnouncement {
     /**
      * INTERNAL:
      * Convert the instance attributes to serialized bytes.
-     *
+     * <p>
      * Assumptions:
      *    - Same character converters exist on the reading and storing sides
      *    - channel, id and converted to bytes &lt; 256 bytes each
-     *
+     * <p>
      * Byte storage:
      *    - 1 byte to store length of String that is to follow
      *    - String of 'length' bytes follows

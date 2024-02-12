@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -147,7 +147,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
      * INTERNAL:
      * This method is added to execute and clear the batched statements on the cloned batch mechanism which
      * is created in executeBatchedStatements(session).
-     *
+     * <p>
      * Introduced in fix for bug#419326.
      */
     private void executeBatch(AbstractSession session) {

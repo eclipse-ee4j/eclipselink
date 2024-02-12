@@ -2226,13 +2226,13 @@ public class SQLSelectStatement extends SQLStatement {
      *     (employee.emp_id = proj_emp.emp_id) and (proj_emp.proj_id = project.proj_id)
      *   tablesInOrder:
      *     employee, proj_emp, project
-     *
+     * <p>
      *   results:
      *     map:
      *          1 -&gt; (employee.emp_id = proj_emp.emp_id)
      *          2 -&gt; (proj_emp.proj_id = project.proj_id)
      *     returned SortedSet: {0, 1, 2}.
-     *
+     * <p>
      *     Note that tablesInOrder must contain all tables used by expression
      */
     public static SortedSet mapTableIndexToExpression(Expression expression, TreeMap map, List<DatabaseTable> tablesInOrder) {
@@ -2293,12 +2293,12 @@ public class SQLSelectStatement extends SQLStatement {
      *     (employee.emp_id = proj_emp.emp_id) and (proj_emp.proj_id = project.proj_id)
      *   tablesInOrder:
      *     employee, proj_emp, project
-     *
+     * <p>
      *   results:
      *     returned map:
      *          proj_emp -&gt; (employee.emp_id = proj_emp.emp_id)
      *          project -&gt; (proj_emp.proj_id = project.proj_id)
-     *
+     * <p>
      *     Note that tablesInOrder must contain all tables used by expression
      */
     public static Map mapTableToExpression(Expression expression, List<DatabaseTable> tablesInOrder) {

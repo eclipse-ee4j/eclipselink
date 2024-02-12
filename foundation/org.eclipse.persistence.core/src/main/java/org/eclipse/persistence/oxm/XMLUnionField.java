@@ -29,7 +29,7 @@ import java.util.Iterator;
  * <p>Subclass of XMLField for fields that are mapped to unions.
  * Maintains a list of schema types instead of just one single schema type.
  * Schema types can be added using the addSchemaType api.
- *
+ * <p>
  * XMLConstants has a list of useful constants including a list of QNames for
  * built-in schema types that can be used when adding schema types.
  *

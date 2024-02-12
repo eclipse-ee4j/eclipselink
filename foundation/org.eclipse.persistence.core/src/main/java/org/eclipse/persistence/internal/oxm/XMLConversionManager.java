@@ -86,7 +86,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Return the DatatypeFactory instance.
      *
      */
@@ -1232,7 +1232,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * This method returns a dateTime string representing a given
      * java.util.Date.
-     *
+     * <p>
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: {@code '2007 BC' --> '-2006 AD'}
      *
@@ -1250,7 +1250,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * This method returns a string representing a given java.util.Date
      * based on a given schema type QName.
-     *
+     * <p>
      * BC dates (sourceDate.getTime() &lt; YEAR_ONE_AD_TIME) are handled
      * as follows: '2007 BC' --&gt; '-2006 AD'.
      *
@@ -1392,7 +1392,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * This method returns a dateTime string representing a given
      * Timestamp.
-     *
+     * <p>
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: {@code '2007 BC' --> '-2006 AD'}
      *
@@ -1422,7 +1422,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * This method returns a string representing a given Timestamp
      * based on a given schema type QName.
-     *
+     * <p>
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: {@code '2007 BC' --> '-2006 AD'}.
      *

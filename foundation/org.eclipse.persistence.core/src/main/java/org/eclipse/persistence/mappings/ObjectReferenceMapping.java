@@ -312,7 +312,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * We are not using a remote valueholder
      * so we need to replace the reference object(s) with
      * the corresponding object(s) from the remote session.
-     *
+     * <p>
      * ObjectReferenceMappings need to unwrap and wrap the
      * reference object.
      */
@@ -1235,7 +1235,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
      * PUBLIC:
      * Set this mapping to use Proxy Indirection.
-     *
+     * <p>
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
      * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
      * Indirection:
@@ -1248,7 +1248,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      *
      * With this policy, proxy objects are returned during object creation.  When a message other than
      * <CODE>toString</CODE> is called on the proxy the real object data is retrieved from the database.
-     *
+     * <p>
      * By default, use the target class' full list of interfaces for the proxy.
      *
      */
@@ -1311,7 +1311,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
      * PUBLIC:
      * Set this mapping to use Proxy Indirection.
-     *
+     * <p>
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
      * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
      * Indirection:
@@ -1335,7 +1335,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
      * PUBLIC:
      * Set this mapping to use Proxy Indirection.
-     *
+     * <p>
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
      * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
      * Indirection:

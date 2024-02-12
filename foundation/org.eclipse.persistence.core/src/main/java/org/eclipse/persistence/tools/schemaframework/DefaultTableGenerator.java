@@ -83,32 +83,32 @@ import java.util.Map;
 
 /**
  * DefaultTableGenerator is a utility class used to generate a default table schema for a EclipseLink project object.
- *
+ * <p>
  * The utility can be used in EclipseLink CMP for OC4J to perform the table auto creation process, which can be triggered
  * at deployment time when EclipseLink project descriptor is absent (default mapping) or present.
- *
+ * <p>
  * The utility can also be used to any EclipseLink application to perform the table drop/creation at runtime.
- *
+ * <p>
  * The utility handles all direct/relational mappings, inheritance, multiple tables, interface with/without tables,
  * optimistic version/timestamp lockings, nested relationships, BLOB/CLOB generation.
- *
+ * <p>
  * The utility is platform-agnostic.
- *
+ * <p>
  * Usage:
  * - CMP
  *  1. set "autocreate-tables=true|false, autodelete-tables=true|false" in oc4j application deployment
  *     descriptor files (config/system-application.xml, config/application.xml, or orion-application.xml in an .ear)
- *
+ * <p>
  *  2. Default Mapping: the same as CMP, plus system properties setting -Declipselink.defaultmapping.autocreate-tables='true|false'
  *     and  -Declipselink.defaultmapping.autodelete-tables='true|false'
- *
+ * <p>
  * - Non-CMP:
  *  1.  Configuration: through sessions.xml
  *  2.  Directly runtime call through schema framework:
  *      SchemaManager mgr = new SchemaManager(session);
  *      mgr.replaceDefaultTables(); //drop and create
  *        mgr.createDefaultTables(); //create only
- *
+ * <p>
  * The utility currently only supports relational project.
  *
  * @author King Wang

@@ -367,13 +367,13 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * Each element of the indexedObjects is a pair of the order index and the corresponding object.
      * The goal of the method is to return back the list of objects (not indexed objects!) in the correct order.
      * The objects should not be altered.
-     *
+     * <p>
      * The default implementation of the method sorts indexedObjects according to their indexes (null less than any non-null).
      * For example:
      *   indexedObjects = {{2, objectA}, {5, ObjectB}}  returns {objectA, objectB};
      *   indexedObjects = {{2, objectA}, {-1, ObjectB}}  returns {objectB, objectA};
      *   indexedObjects = {{2, objectA}, {null, ObjectB}}  returns {objectB, objectA};
-     *
+     * <p>
      * This method could be overridden by the user.
      */
     public List correctOrderList(List<IndexedObject> indexedObjects) {

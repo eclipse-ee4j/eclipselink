@@ -106,7 +106,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * field Valid literal values for the "true" state are: TRUE, 't', 'true',
      * 'y', 'yes', '1' Valid literal values for the false" state are : FALSE,
      * 'f', 'false', 'n', 'no', '0'
-     *
+     * <p>
      * To be consistent with the other data platforms we are using the values
      * '1' and '0' for true and false states of a boolean field.
      */
@@ -123,10 +123,10 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * INTERNAL: Use the JDBC maxResults and firstResultIndex setting to compute
      * a value to use when limiting the results of a query in SQL. These limits
      * tend to be used in two ways.
-     *
+     * <p>
      * 1. MaxRows is the index of the last row to be returned (like JDBC
      * maxResults) 2. MaxRows is the number of rows to be returned
-     *
+     * <p>
      * PostGreSQL uses case #2 and therefore the maxResults has to be altered
      * based on the firstResultIndex
      *

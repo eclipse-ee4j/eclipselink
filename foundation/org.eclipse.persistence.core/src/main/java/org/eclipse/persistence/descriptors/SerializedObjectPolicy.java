@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,26 +25,26 @@ import java.util.List;
 
 /**
  * SerializedObjectPolicy (SOP) could be set on a non-aggregate descriptor.
- *
+ * <p>
  * If SerializedObjectPolicy is specified Eclipselink writes out the whole entity object with its
  * privately owned (and nested privately owned) entities and element collections into an additional
  * (likely BLOB) field in the database.
- *
+ * <p>
  * If SerializedObjectPolicy is set on an entity then SerializedObjectPolicies with the same field are set
  * on all inheriting entities.
- *
+ * <p>
  * The goal is to make reads from the database faster.
  * The draw back is slower writes into the database.
  * So SerializedObjectPolicy may make sense for read-only / read-mostly application
  * for Entity, which always loads all its dependent entities and / or ElementCollections.
- *
+ * <p>
  * To use SerializedObjectPolicy, ObjectLevelReadQuery should set a boolean flag
  * @see ObjectLevelReadQuery#setShouldUseSerializedObjectPolicy
  *
  * In case the serialized object column contains null or obsolete version of the object
  * the query using SerializedObjectPolicy would either throw exception or - if all other fields have been read, too -
  * would build the object using these fields (exactly as in case SerializedObjectPolicy is not used).
- *
+ * <p>
  * Note that currently no default implementation of SerializedObjectPolicy is available
  * and this class should be provided by the user.
  *

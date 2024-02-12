@@ -212,7 +212,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: initializeServerNameAndVersion(): Talk to the relevant server class library, and get the server name
      * and version
-     *
+     * <p>
      * Default is "unknown"
      */
     protected void initializeServerNameAndVersion() {
@@ -223,7 +223,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: getModuleName(): Answer the name of the module (jar name) that my session
        * is associated with.
        * Answer "unknown" if there is no module name available.
-       *
+       * <p>
        * Default behavior is to return "unknown".
      *
      * @return String moduleName
@@ -236,13 +236,13 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of external transaction controller to use
      * For this server platform. This is read-only.
-     *
+     * <p>
        * If the user wants a different external transaction controller class than the provided ServerPlatform(s),
        * we recommend subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
        * and overriding:
-       *
+       * <p>
        * ServerPlatformBase.getExternalTransactionControllerClass()
-       *
+       * <p>
        * for the desired behavior.
      *
      * @return Class externalTransactionControllerClass
@@ -272,7 +272,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: initializeExternalTransactionController(): Populate the DatabaseSession's
      * external transaction controller with an instance of my transaction controller class.
-     *
+     * <p>
      * To change the external transaction controller class, we recommend creating a subclass of
      * ServerPlatformBase, and overriding getExternalTransactionControllerClass().
      */
@@ -335,7 +335,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: isJTAEnabled(): Answer true if the DatabaseSession's external transaction controller class will
      * be populated with my transaction controller class at runtime. If the transaction controller class is
      * overridden in the DatabaseSession, my transaction controller class will be ignored.
-     *
+     * <p>
      * Answer true if TopLink will be configured to register for callbacks for beforeCompletion and afterCompletion.
      *
      * @return boolean isJTAEnabled
@@ -430,7 +430,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: disableJTA(): Configure the receiver such that my external transaction controller class will
      * be ignored, and will NOT be used to populate DatabaseSession's external transaction controller class
      * at runtime.
-     *
+     * <p>
      * TopLink will NOT be configured to register for callbacks for beforeCompletion and afterCompletion.
      *
      * @see #getExternalTransactionControllerClass()
@@ -446,7 +446,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL:  This method is used to unwrap the connection wrapped by
      * the application server.  TopLink needs this unwrapped connection for certain
      * database vendor specific support. (i.e. TIMESTAMPTZ,NCHAR,XMLTYPE)
-     *
+     * <p>
      * Be default we will use the connection's metadata to try to get the connection
      */
     @Override
@@ -462,7 +462,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: launchContainerRunnable(Runnable runnable): Use the container library to
      * start the provided Runnable.
-     *
+     * <p>
      * Default behavior is to use Thread(runnable).start()
      *
      * @param runnable the instance of runnable to be "started"
@@ -491,7 +491,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
 
     /**
      * INTERNAL: getServerLog(): Return the ServerLog for this platform
-     *
+     * <p>
      * Return the default ServerLog in the base
      *
      * @return org.eclipse.persistence.logging.SessionLog
@@ -597,7 +597,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: registerMBean(): Create and deploy the JMX MBean to provide runtime services for my
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing.
      *
      * @see #isRuntimeServicesEnabled()
@@ -644,7 +644,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: serverSpecificUnregisterMBean(): Server specific implementation of the
      * unregistration of the JMX MBean from its server.
-     *
+     * <p>
      * Default is to do nothing. This should be subclassed if required.
      *
      * @see #isRuntimeServicesEnabled()
@@ -656,7 +656,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: serverSpecificRegisterMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for my
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing. This should be subclassed if required.
      *
      * @see #isRuntimeServicesEnabled()

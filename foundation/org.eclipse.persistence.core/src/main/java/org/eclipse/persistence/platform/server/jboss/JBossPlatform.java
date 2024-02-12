@@ -33,11 +33,11 @@ import org.eclipse.persistence.transaction.jboss.JBossTransactionController11;
 
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing JBoss-specific server behavior.
- *
+ * <p>
  * This platform overrides:
- *
+ * <p>
  * getExternalTransactionControllerClass(): to use an JBoss-specific controller class
  *
  */
@@ -122,7 +122,7 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing.
      * Implementing platform classes must override this function and supply
      * the server specific MBean instance for later registration by calling it in the constructor.

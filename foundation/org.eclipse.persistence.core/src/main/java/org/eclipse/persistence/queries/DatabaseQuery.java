@@ -276,11 +276,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * queryTimeout has three possible settings: DefaultTimeout, NoTimeout, and
      * 1..N This applies to both DatabaseQuery.queryTimeout and
      * DescriptorQueryManager.queryTimeout
-     *
+     * <p>
      * DatabaseQuery.queryTimeout: - DefaultTimeout: get queryTimeout from
      * DescriptorQueryManager - NoTimeout, 1..N: overrides queryTimeout in
      * DescriptorQueryManager
-     *
+     * <p>
      * DescriptorQueryManager.queryTimeout: - DefaultTimeout: get queryTimeout
      * from parent DescriptorQueryManager. If there is no parent, default to
      * NoTimeout - NoTimeout, 1..N: overrides parent queryTimeout
@@ -1846,7 +1846,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * called on the original query, and the other is called on the copy of the
      * query. This query is copied for concurrency so this prepare can only
      * setup things that will apply to any future execution of this query.
-     *
+     * <p>
      * Resolve the queryTimeout using the DescriptorQueryManager if required.
      */
     protected void prepare() throws QueryException {
@@ -2310,7 +2310,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Set the number of seconds the driver will wait for a Statement to
      * execute to the given number of seconds. If the limit is exceeded, a
      * DatabaseException is thrown.
-     *
+     * <p>
      * queryTimeout - the new query timeout limit in seconds; DefaultTimeout is
      * the default, which redirects to DescriptorQueryManager's queryTimeout.
      *
@@ -2707,7 +2707,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * flag specifies the behavior when data is read from the database and when
      * data is committed into the database. Calling this method will set a store
      * bypass to true.
-     *
+     * <p>
      * Note: For a cache store mode of REFRESH, see refreshIdentityMapResult()
      * from ObjectLevelReadQuery.
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
 
     /**
      *  Create an instance of WebLogicRuntimeServices to be associated with the provided locale
-     *
+     * <p>
      *  The user must call setSession(Session) afterwards to define the session.
      */
     public WebLogicRuntimeServices(Locale locale) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,10 @@ package org.eclipse.persistence.config;
 
 /**
  * JDBC ResultSet concurrency hint values.
- *
+ * <p>
  * The class contains all the valid values for QueryHints.RESULT_SET_CONCURRENCY query hint.
  * This can be used on ScrollableCursor queries to set the JDBC ResultSet concurrency.
- *
+ * <p>
  * JPA Query Hint Usage:
  *
  * <p><code>query.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ForwardOnly);</code>

@@ -48,13 +48,13 @@ import java.util.Set;
 /**
  * INTERNAL:
  * Privileged Access Helper provides a utility so all calls that require privileged access can use the same code.
- *
+ * <p>
  * Do privileged blocks can be used with a security manager to grant a code base (eclipselink.jar) access to certain
  * Java operations such as reflection.  Generally a security manager is not enabled in a JVM, so this is not an issue.
  * If a security manager is enabled, then either the application can be configured to have access to operations such as
  * reflection, or only EclipseLink can be given access.  If only EclipseLink is desired to be given access then
  * do privileged must be enabled through the System property "eclipselink.security.usedoprivileged"=true.
- *
+ * <p>
  * Note the usage of do privileged has major impacts on performance, so should normally be avoided.
  */
 public class PrivilegedAccessHelper {

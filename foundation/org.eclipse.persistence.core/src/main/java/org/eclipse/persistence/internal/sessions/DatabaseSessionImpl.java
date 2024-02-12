@@ -472,16 +472,16 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * PUBLIC:
      * Answer the server platform to handle server specific behavior for WLS, Oc4j, etc.
-     *
+     * <p>
      * If the user wants a different external transaction controller class or
      * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
-     *
+     * <p>
      * ServerPlatformBase.getExternalTransactionControllerClass()
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
-     *
+     * <p>
      * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
@@ -494,18 +494,18 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * PUBLIC:
      * Set the server platform to handle server specific behavior for WLS, Oc4j, etc
-     *
+     * <p>
      * This is not permitted after the session is logged in.
-     *
+     * <p>
      * If the user wants a different external transaction controller class or
      * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
-     *
+     * <p>
      * ServerPlatformBase.getExternalTransactionControllerClass()
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
-     *
+     * <p>
      * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase

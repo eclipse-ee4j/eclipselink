@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -188,7 +188,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * This method differs slightly from conventional read() operation on a Java stream.  This
      * method return the next object in the collection rather than specifying the number of
      * bytes to be read in.
-     *
+     * <p>
      * Return the next object from the collection, if beyond the read limit read from the cursor
      * @return next object in stream
      * @exception DatabaseException if read pass end of stream

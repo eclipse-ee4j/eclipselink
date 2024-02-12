@@ -407,18 +407,15 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      */
     @Override
     public Object clone() {
-        InheritancePolicy clone = null;
-
         try {
-            clone = (InheritancePolicy)super.clone();
+            InheritancePolicy clone = (InheritancePolicy)super.clone();
             if (hasClassIndicator()) {
                 clone.setClassIndicatorField(clone.getClassIndicatorField().clone());
             }
+            return clone;
         } catch (Exception exception) {
             throw new InternalError("clone failed");
         }
-
-        return clone;
     }
 
     /**
@@ -771,7 +768,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Determines whether the descriptors using this inheritance policy
      * should be used as descriptors for subclasses of the classes they
      * describe if those subclasses do not have their own descriptor
-     *
+     * <p>
      * e.g. If Employee.class has a descriptor and EmployeeSubClass does
      * not have a descriptor, if describesNonPersistenceSubclasses is true
      * Employee's descriptor will be used as the descriptor for Employee
@@ -1271,14 +1268,14 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             }
         }
 
-        Vector tempChildren = new Vector(getChildDescriptors().size());
+        List<ClassDescriptor> tempChildren = new ArrayList<>(getChildDescriptors().size());
         for (ClassDescriptor childDescriptor : getChildDescriptors()) {
             if (session.hasCorrespondingDescriptor(childDescriptor)) {
-                tempChildren.addElement(session.getDescriptor(childDescriptor.getJavaClass()));
+                tempChildren.add(session.getDescriptor(childDescriptor.getJavaClass()));
             } else {
                 session.privilegedAddDescriptor(childDescriptor);
                 childDescriptor.remoteInitialization(session);
-                tempChildren.addElement(childDescriptor);
+                tempChildren.add(childDescriptor);
             }
         }
         setChildDescriptors(tempChildren);
@@ -1633,7 +1630,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Determines whether the descriptors using this inheritance policy
      * should be used as descriptors for subclasses of the classes they
      * describe if those subclasses do not have their own descriptor
-     *
+     * <p>
      * e.g. If Employee.class has a descriptor and EmployeeSubClass does
      * not have a descriptor, if describesNonPersistenceSubclasses is true
      * Employee's descriptor will be used as the descriptor for Employee

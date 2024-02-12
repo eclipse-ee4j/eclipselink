@@ -180,7 +180,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      *    doesn't work for fields locking.
      *    It degenerates into useless pattern: "if the original locking value is unchanged
      *    then the object hasn't been changed".
-     *
+     * <p>
      * Use compareWriteLockValues method only if this method returns true.
      */
     @Override
@@ -410,7 +410,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     /**
      * INTERNAL:
      * This method should merge changes from the parent into the child.
-     *
+     * <p>
      * #see this method in VersionLockingPolicy
      */
     @Override

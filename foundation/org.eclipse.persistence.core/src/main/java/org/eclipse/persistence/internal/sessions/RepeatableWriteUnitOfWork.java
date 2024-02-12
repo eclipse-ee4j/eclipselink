@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -261,7 +261,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     /**
      * Check to see if the descriptor of a superclass can be used to describe this class
-     *
+     * <p>
      * By default, in JPA, classes must have specific descriptors to be considered entities
      * In this implementation, we check whether the inheritance policy has been configured to allow
      * superclass descriptors to describe subclasses that do not have a descriptor themselves

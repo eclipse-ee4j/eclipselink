@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
  * An XmlNameTransformer allows for a user defined class to transform names.
  * The class has the following restriction:
  *  - It must implement the org.eclipse.persistence.oxm.XmlNameTransformer interface
- *
+ * <p>
  * This method will be used to decide what XML name to create from a Java class or attribute name
- *
+ * <p>
  * The XmlNameTransformer must only be set on a package
  */
 @Target({ElementType.PACKAGE, ElementType.TYPE})

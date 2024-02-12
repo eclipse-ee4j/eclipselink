@@ -56,7 +56,7 @@ public class WildFlyRuntimeServices extends RuntimeServices {
 
     /**
      *  Create an instance of WildFlyRuntimeServices to be associated with the provided locale
-     *
+     * <p>
      *  The user must call setSession(Session) afterwards to define the session.
      */
     public WildFlyRuntimeServices(Locale locale) {

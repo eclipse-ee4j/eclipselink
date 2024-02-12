@@ -256,7 +256,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /**
      * Build the hint string used for first rows.
-     *
+     * <p>
      * Allows it to be overridden
      */
     protected String buildFirstRowsHint(int max){

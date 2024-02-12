@@ -62,7 +62,7 @@ import java.util.Vector;
 
 /**
  * Use an XML project for nontransactional, nonpersistent (in-memory) conversions between Java objects and XML documents.
- *
+ * <p>
  * An XMLDescriptor is a set of mappings that describe how an objects's data is to be represented in an
  * XML document. XML descriptors describe Java objects that you map to simple and complex types defined
  * by an XML schema document (XSD). Using XML descriptors in an EclipseLink XML project, you can configure XML mappings.

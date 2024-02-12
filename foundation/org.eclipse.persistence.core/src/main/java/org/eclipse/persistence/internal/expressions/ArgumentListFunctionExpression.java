@@ -27,9 +27,9 @@ import java.util.Map;
  * INTERNAL:
  * This an extended FunctionExpression that allows the argument list to grow after it is created.
  * New expressions may be added to the list and the printing of the database string is handled automatically
- *
+ * <p>
  * This expression's addChild() method is used to construct the list.
- *
+ * <p>
  * Note: This expression is designed to handle addition of children up until the first normalization (execution)
  * of a query involving this expression.  After normalization, the behavior is undefined.
  *

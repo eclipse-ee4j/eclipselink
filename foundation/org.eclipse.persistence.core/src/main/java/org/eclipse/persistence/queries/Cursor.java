@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -425,7 +425,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
     /**
      * PUBLIC:
      * Retrieve the size of the open cursor by executing a count on the same query as the cursor.
-     *
+     * <p>
      * If this cursor is conforming size() can only be an estimate.  cursor size
      * plus number of conforming instances found in memory will be returned.  The
      * union (actual result) may be smaller than this.

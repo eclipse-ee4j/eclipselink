@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -199,7 +199,7 @@ public class FieldTypeDefinition implements Serializable {
     * Return the name. Can be any database primitive type name,
     * this name will then be mapped to the Java primitive type,
     * the database type varies by platform and the mappings can be found in the subclasses of DatabasePlatform.
-    *
+    * <p>
     *    these Java names and their ODBC mappings include;
     *        - Integer        -&gt; SQL_INT
     *        - Float            -&gt; SQL_FLOAT
@@ -318,7 +318,7 @@ public class FieldTypeDefinition implements Serializable {
     * @param name can be any database primitive type name,
     * this name will then be mapped to the Java primitive type,
     * the database type varies by platform and the mappings can be found in the subclasses of DatabasePlatform.
-    *
+    * <p>
     *    these Java names and their ODBC mappings include;
     *        - Integer        -&gt; SQL_INT
     *        - Float            -&gt; SQL_FLOAT

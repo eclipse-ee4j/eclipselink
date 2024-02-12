@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public interface JMXEnabledPlatform {
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
-     *
+     * <p>
      * JMX Implementing platform classes must override this function and supply
      * the server specific MBean instance for later registration by calling it in the constructor.
      *
@@ -49,7 +49,7 @@ public interface JMXEnabledPlatform {
      * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
      * Answer "unknown" if there is no application name available.
      * Default behavior is to return "unknown"
-     *
+     * <p>
      * There are 4 levels of implementation.
      * 1) use the property override weblogic|jboss|glassfish|websphere.applicationName, or
      * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call on WebLogic for example

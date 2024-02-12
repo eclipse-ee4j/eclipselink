@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 import java.util.Vector;
 
 /**
- * <p >It is common for an XML document to include one or more namespaces.
+ * <p>It is common for an XML document to include one or more namespaces.
  * TopLink supports this using its NamespaceResolver. The namespace resolver maintains
  * pairs of namespace prefixes and URIs. TopLink uses these prefixes in conjunction with the
  * XPath statements you specify on EIS mappings to XML records and XML mappings.

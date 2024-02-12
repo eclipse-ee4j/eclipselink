@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,11 @@ package org.eclipse.persistence.config;
 
 /**
  * Query type hint values.
- *
+ * <p>
  * The class contains all the valid values for QueryHints.QUERY_TYPE query hint.
  * A fully qualified class name of a valid subclass of DatabaseQuery can also be used.
  * <p>i.e. "org.acme.persistence.CustomQuery"
- *
+ * <p>
  * JPA Query Hint Usage:
  *
  * <p><code>query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);</code>

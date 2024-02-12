@@ -103,7 +103,7 @@ import java.lang.reflect.Modifier;
  *
  * <p><b>Mapping into the Parent Record</b>: The composite object may be mapped into the parent
  * record in a corresponding XML document.
- *
+ * <p>
  * <!--
  *    <?xml version="1.0" encoding="UTF-8"?>
  *    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -145,7 +145,7 @@ import java.lang.reflect.Modifier;
  *
  * <p><b>Mapping to an Element</b>: The composite object may be mapped to an element in a corresponding
  * XML document.
- *
+ * <p>
  * <!--
  * <?xml version="1.0" encoding="UTF-8"?>
  * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">

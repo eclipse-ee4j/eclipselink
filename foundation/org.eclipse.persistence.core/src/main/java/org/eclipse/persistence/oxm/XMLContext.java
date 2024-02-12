@@ -299,7 +299,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * INTERNAL: Return the session corresponding to this object. Since the
      * object may be mapped by more that one of the projects used to create the
      * XML Context, this method will return the first match.
-     *
+     * <p>
      * The session will be a unit of work if document preservation is not
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.
@@ -313,7 +313,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Return the session corresponding to this class. Since the class
      * may be mapped by more that one of the projects used to create the XML
      * Context, this method will return the first match.
-     *
+     * <p>
      * The session will be a unit of work if document preservation is not
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.
@@ -327,7 +327,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Return the session corresponding to this XMLDescriptor. Since
      * the class may be mapped by more that one of the projects used to create
      * the XML Context, this method will return the first match.
-     *
+     * <p>
      * The session will be a unit of work if document preservation is not
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.

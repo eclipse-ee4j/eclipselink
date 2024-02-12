@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,15 +25,15 @@ import org.eclipse.persistence.sessions.server.ConnectionPool;
  * It allows to create, re-create, customize Sequencing object
  * which is available through DatabaseSession.getSequencing()
  * and provides sequencing values for all descriptors that use sequencing.
- *
+ * <p>
  * Here's the lifecycle of Sequencing object used by DatabaseSession:
  * 1. DatabaseSession created - sequencing object doesn't yet exist;
  * 2. DatabaseSession.login() causes creation of Sequencing object;
  * 3. DatabaseSession.logout() causes destruction of Sequencing object.
- *
+ * <p>
  * In case sequencing object doesn't yet exist all the set parameters' values will be used
  * during its creation.
- *
+ * <p>
  * In case sequencing object already exists:
  * 1. The following methods don't alter sequencing object - the corresponding parameters will only
  *    be used in case a new sequencing object is created:

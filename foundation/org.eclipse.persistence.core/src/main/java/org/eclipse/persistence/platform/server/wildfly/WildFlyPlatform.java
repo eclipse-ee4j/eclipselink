@@ -27,11 +27,11 @@ import org.eclipse.persistence.transaction.wildfly.WildFlyTransactionController1
 
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing WildFly-specific server behavior.
- *
+ * <p>
  * This platform overrides:
- *
+ * <p>
  * getExternalTransactionControllerClass(): to use an WildFly-specific controller class
  *
  */
@@ -116,7 +116,7 @@ public class WildFlyPlatform extends JMXServerPlatformBase implements JMXEnabled
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing.
      * Implementing platform classes must override this function and supply
      * the server specific MBean instance for later registration by calling it in the constructor.

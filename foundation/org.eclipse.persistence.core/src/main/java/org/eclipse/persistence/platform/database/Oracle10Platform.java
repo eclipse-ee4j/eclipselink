@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -48,7 +48,7 @@ public class Oracle10Platform extends Oracle9Platform {
 
     /**
      * Build the hint string used for first rows.
-     * 
+     * <p>
      * Allows it to be overridden
      */
     @Override

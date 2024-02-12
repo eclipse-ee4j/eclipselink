@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * into the database. This annotation allows developers to define a named
  * converter that can be used in their mappings. A converter can be defined on
  * an entity class, method, or field.
- *
+ * <p>
  * A Converter must be be uniquely identified by name and can be defined at
  * the class, field and property level and can be specified within an Entity,
  * MappedSuperclass and Embeddable class.
- *
+ * <p>
  * The usage of a Converter is always specified via the Convert annotation and
  * is supported on a Basic, or ElementCollection mapping.
  *

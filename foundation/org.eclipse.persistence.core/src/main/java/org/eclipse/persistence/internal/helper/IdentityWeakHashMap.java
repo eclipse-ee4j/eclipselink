@@ -45,7 +45,7 @@ import java.util.Set;
  * in the value will be assumed to have garbage collected.
  * This class also uses weak references to the contents of the map allowing for garbage
  * collection to reduce the size of the Map
- *
+ * <p>
  * This work is an extension of the original work completed on the IdentityWeakHashMap as completed by
  * Mike Norman.
  *

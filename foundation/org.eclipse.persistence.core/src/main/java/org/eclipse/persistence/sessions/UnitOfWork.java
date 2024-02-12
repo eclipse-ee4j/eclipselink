@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -237,10 +237,10 @@ public interface UnitOfWork extends Session {
      * when the object is changed in UnitOfWork. The cloneFromUOW must be the clone of from this
      * UnitOfWork and it must implements version locking or timestamp locking.
      * The SQL would look like the followings.
-     *
+     * <p>
      * If shouldModifyVersionField is true,
      * "UPDATE EMPLOYEE SET VERSION = 2 WHERE EMP_ID = 9 AND VERSION = 1"
-     *
+     * <p>
      * If shouldModifyVersionField is false,
      * "UPDATE EMPLOYEE SET VERSION = 1 WHERE EMP_ID = 9 AND VERSION = 1"
      */
@@ -327,7 +327,7 @@ public interface UnitOfWork extends Session {
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged.
      *
      * @return the registered version for the clone being merged.
@@ -343,7 +343,7 @@ public interface UnitOfWork extends Session {
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include
      * references from this clone to independent objects.
      *
@@ -564,7 +564,7 @@ public interface UnitOfWork extends Session {
      * RMI serialization (or other serialization mechanisms), because the RMI object will
      * be a clone this will merge its attributes correctly to preserve object identity
      * within the unit of work and record its changes.
-     *
+     * <p>
      * Only direct attributes are merged.
      *
      * @return the registered version for the clone being merged.

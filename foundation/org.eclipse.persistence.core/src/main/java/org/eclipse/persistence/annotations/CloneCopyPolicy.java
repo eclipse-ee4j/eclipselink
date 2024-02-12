@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,26 +26,26 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an Entity.
  * A CloneCopyPolicy must specify at one or both of the "method" or
  * "workingCopyMethod".
- *
+ * <p>
  * "workingCopyMethod" is used to clone objects that will be returned to the
  * user as they are registered in EclipseLink's transactional mechanism, the
  * UnitOfWork.
- *
+ * <p>
  * "method" will be used for the clone that is used for comparison in
  * conjunction with EclipseLink's DeferredChangeDetectionPolicy
- *
+ * <p>
  * A CloneCopyPolicy should be specified on an Entity, MappedSuperclass or
  * Embeddable.
- *
+ * <p>
  * Example:
  * {@literal @}Entity
  * {@literal @}CloneCopyPolicy(method="myCloneMethod")
- *
+ * <p>
  * or:
- *
+ * <p>
  * {@literal @}Entity
  * {@literal @}CloneCopyPolicy(method="myCloneMethod", workingCopyMethod="myWorkingCopyCloneMethod")
- *
+ * <p>
  * or:
  * {@literal @}Entity
  * {@literal @}CloneCopyPolicy(workingCopyMethodName="myWorkingCopyClone")

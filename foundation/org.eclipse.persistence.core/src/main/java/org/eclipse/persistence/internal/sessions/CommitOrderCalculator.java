@@ -27,7 +27,7 @@ import java.util.Vector;
  * sort to them to get an ordering.
  * This is a throwaway class, which exists only for the lifetime of
  * the calculation.
- *
+ * <p>
  * The algorithm is described in the method comment for orderCommits().
  * This class also includes static methods for quicksort, copied from
  * the standard libraries and adapted for these objects, since that

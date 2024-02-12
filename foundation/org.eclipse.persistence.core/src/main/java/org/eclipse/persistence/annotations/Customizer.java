@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * org.eclipse.persistence.config.DescriptorCustomizer
  * interface and is to run against an entity's class descriptor after all
  * metadata processing has been completed.
- *
+ * <p>
  * The Customizer annotation may be defined on an Entity, MappedSuperclass or
  * Embeddable class. In the case of inheritance, a Customizer is not inherited
  * from its parent classes.

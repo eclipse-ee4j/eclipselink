@@ -687,10 +687,10 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
      * limiting the results of a query in SQL.  These limits tend to be used in two ways.
-     *
+     * <p>
      * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
      * 2. MaxRows is the number of rows to be returned
-     *
+     * <p>
      * By default, we assume case 1 and simply return the value of maxResults.  Subclasses
      * may provide an override
      *
@@ -904,7 +904,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * This method determines if any special processing needs to occur prior to writing a field.
-     *
+     * <p>
      * It does things such as determining if a field must be bound and flagging the parameter as one
      * that must be bound.
      */
@@ -1453,7 +1453,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Return true is the given exception occurred as a result of a lock
      * time out exception (WAIT clause). If sub-platform supports this clause,
      * this method should be necessary checks should be made.
-     *
+     * <p>
      * By default though, this method return false.
      *
      * @see OraclePlatform
@@ -1696,7 +1696,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Used by Exists queries because they just need to select a single row.
      * In most databases, we will select one of the primary key fields.
-     *
+     * <p>
      * On databases where, for some reason we cannot select one of the key fields
      * this method can be overridden
      * @see SymfowarePlatform
@@ -1908,7 +1908,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * that have optimistic locking, and so execution of statements on these objects will be
      * delayed until the batch statement is executed.  Only use this method with platforms that
      * have overridden the prepareBatchStatement, addBatch and executeBatch as required
-     *
+     * <p>
      * Current support is limited to the Oracle9Platform class.
      *
      * @param usesNativeBatchWriting - flag to turn on/off native batch writing
@@ -1939,7 +1939,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * PUBLIC:
      * Set if SQL-Level pagination should be used for FirstResult and MaxRows settings.
      * Default is true.
-     *
+     * <p>
      * Note: This setting is used to disable SQL-level pagination on platforms for which it is
      * implemented.  On platforms where we use JDBC for pagination, it will be ignored
      */
@@ -1956,7 +1956,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Changes the way that OuterJoins are done on the database.  With a value of
      * true, outerjoins are performed in the where clause using the outer join token
      * for that database.
-     *
+     * <p>
      *  With the value of false, outerjoins are performed in the from clause.
      */
     public void setPrintOuterJoinInWhereClause(boolean printOuterJoinInWhereClause) {
@@ -2192,7 +2192,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * PUBLIC:
      * Return if Oracle ROWNUM pagination should be used for FirstResult and MaxRows settings.
      * Default is true.
-     *
+     * <p>
      * Note: This setting is used to disable SQL-level pagination on platforms for which it is
      * implemented.  On platforms where we use JDBC for pagination, it will be ignored
      */

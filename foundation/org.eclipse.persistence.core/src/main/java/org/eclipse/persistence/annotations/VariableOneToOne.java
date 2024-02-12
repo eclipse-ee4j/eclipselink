@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * usually represented by a single pointer (stored in an instance variable)
  * between the source and target objects. In the relational database tables,
  * these mappings are normally implemented using a foreign key and a type code.
- *
+ * <p>
  * A VariableOneToOne can be specified within an Entity, MappedSuperclass
  * and Embeddable class.
  *

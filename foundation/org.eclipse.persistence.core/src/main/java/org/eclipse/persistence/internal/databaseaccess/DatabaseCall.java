@@ -1278,7 +1278,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     /**
      * 
      * INTERNAL:
-     * 
+     * <p>
      * Get the return object from the statement. Use the parameter index to determine what return object to get.
      * @param statement SQL/JDBC statement to call stored procedure/function
      * @param index 0-based index in the argument list
@@ -1291,7 +1291,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     /**
      * 
      * INTERNAL:
-     * 
+     * <p>
      * Get the return object from the statement. Use the parameter name to determine what return object to get.
      * @param statement SQL/JDBC statement to call stored procedure/function
      * @param name parameter name

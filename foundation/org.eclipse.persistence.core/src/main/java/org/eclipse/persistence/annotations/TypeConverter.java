@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,11 +29,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * The TypeConverter annotation is used to specify an EclipseLink
  * org.eclipse.persistence.mappings.converters.TypeConversionConverter for modification
  * of the data value(s) during the reading and writing of a mapped attribute.
- *
+ * <p>
  * A TypeConverter must be be uniquely identified by name and can be defined at
  * the class, field and property level and can be specified within an Entity,
  * MappedSuperclass and Embeddable class.
- *
+ * <p>
  * The usage of an TypeConverter is always specified via the Convert annotation
  * and is supported on a Basic, or ElementCollection mapping.
  *

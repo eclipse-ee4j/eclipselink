@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import jakarta.activation.DataHandler;
  * <p><b>Purpose:</b> Provides an interface through which EclipseLink can allow a user to do
  * special handling for Binary Data. This is used for fields mapped using an XMLBinaryDataMapping
  * to retrieve the binary data during an unmarshal based on a swaRef or MTOM id.
- *
+ * <p>
  * If isXOPPackage returns false, then no other methods on this interface will be called, and it
  * will be assumed that all binary mapped fields have been inlined as base64.
  *

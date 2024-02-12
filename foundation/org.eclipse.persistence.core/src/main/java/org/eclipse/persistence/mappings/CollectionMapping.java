@@ -1367,7 +1367,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     /**
      * ADVANCED:
      * This method should only be called after this mapping's indirection policy has been set
-     *
+     * <p>
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as
@@ -2105,7 +2105,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * ADVANCED:
      * Calling this method will only affect behavior of mappings using transparent indirection
      * This method should only be called after this mapping's indirection policy has been set
-     *
+     * <p>
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as

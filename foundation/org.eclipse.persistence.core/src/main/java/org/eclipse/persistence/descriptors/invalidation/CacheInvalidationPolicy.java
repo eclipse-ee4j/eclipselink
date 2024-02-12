@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,15 +22,16 @@ import java.util.Random;
 
 /**
  * PUBLIC:
- * A CacheInvalidationPolicy is used to set objects in TopLink's identity maps to be invalid
- * following given rules.  CacheInvalidationPolicy is the abstract superclass for all
+ * A {@code CacheInvalidationPolicy} is used to set objects in EclipseLink's identity maps to be invalid
+ * following given rules. {@code CacheInvalidationPolicy} is the abstract superclass for all
  * policies used for cache invalidation.
- * By default in EclipseLink, objects do not expire in the cache.  Several different policies
- * are available to allow objects to expire.  These can be set on the ClassDescriptor.
- * @see org.eclipse.persistence.descriptors.ClassDescriptor
- * @see org.eclipse.persistence.descriptors.invalidation.NoExpiryCacheInvalidationPolicy
- * @see org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy
- * @see org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy
+ * <p>
+ * By default, in EclipseLink, objects do not expire in the cache.  Several different policies
+ * are available to allow objects to expire.  These can be set on the {@linkplain ClassDescriptor}.
+ * @see ClassDescriptor
+ * @see NoExpiryCacheInvalidationPolicy
+ * @see DailyCacheInvalidationPolicy
+ * @see TimeToLiveCacheInvalidationPolicy
  */
 public abstract class CacheInvalidationPolicy implements java.io.Serializable, Cloneable {
     public static final long NO_EXPIRY = -1;
@@ -111,10 +112,11 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
      * PUBLIC:
      * Set whether to update the stored time an object was read when an object is updated.
      * When the read time is updated, it indicates to EclipseLink that the data in the object
-     * is up to date.  This means that cache invalidation checks will occur relative to the
+     * is up-to-date. This means that cache invalidation checks will occur relative to the
      * new read time.
+     * <p>
      * By default, the read time will not be updated when an object is updated.
-     * Often it is possible to be confident that the object is up to date after an update
+     * Often it is possible to be confident that the object is up-to-date after an update
      * because otherwise the update will fail because of the locking policies in use.
      */
     public void setShouldUpdateReadTimeOnUpdate(boolean shouldUpdateReadTime) {
@@ -123,7 +125,7 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
 
     /**
      * PUBLIC:
-     * Return whether objects affected by this CacheInvalidationPolicy should have
+     * Return whether objects affected by this {@code CacheInvalidationPolicy} should have
      * the read time on their cache keys updated when an update occurs.
      */
     public boolean shouldUpdateReadTimeOnUpdate() {
@@ -132,7 +134,7 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
 
     /**
      * PUBLIC:
-     * Set if expired object should be refreshed prior to cloning, default is true.  Applies to Protected Entities and UnitOfWork registration.
+     * Set if expired object should be refreshed prior to cloning, default is true. Applies to Protected Entities and UnitOfWork registration.
      */
     public void setShouldRefreshInvalidObjectsOnClone(boolean shouldRefreshInvalidObjectsOnClone) {
         this.shouldRefreshInvalidObjectsOnClone = shouldRefreshInvalidObjectsOnClone;
@@ -140,26 +142,22 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
 
     /**
      * PUBLIC:
-     * Return if expired object should be refreshed prior to cloning.  Applies to Protected Entities and UnitOfWork registration.
+     * Return if expired object should be refreshed prior to cloning. Applies to Protected Entities and UnitOfWork registration.
      */
-
     public boolean shouldRefreshInvalidObjectsOnClone() {
         return shouldRefreshInvalidObjectsOnClone;
     }
 
     @Override
     public Object clone() {
-        CacheInvalidationPolicy clone = null;
-
         try {
-            clone = (CacheInvalidationPolicy)super.clone();
+            CacheInvalidationPolicy clone = (CacheInvalidationPolicy) super.clone();
             clone.setShouldUpdateReadTimeOnUpdate(this.shouldUpdateReadTimeOnUpdate);
             clone.setShouldRefreshInvalidObjectsOnClone(this.shouldRefreshInvalidObjectsOnClone);
             clone.setIsInvalidationRandomized(this.isInvalidationRandomized);
+            return clone;
         } catch (Exception exception) {
             throw new InternalError("clone failed");
         }
-
-        return clone;
     }
 }

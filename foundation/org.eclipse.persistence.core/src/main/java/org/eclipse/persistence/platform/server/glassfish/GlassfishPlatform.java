@@ -39,11 +39,11 @@ import java.sql.Connection;
 
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing Glassfish server behavior.
- *
+ * <p>
  * This platform overrides:
- *
+ * <p>
  * getExternalTransactionControllerClass(): to use an Glassfish controller class
  *
  */
@@ -160,7 +160,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing.
      * Implementing platform classes must override this function and supply
      * the server specific MBean instance for later registration by calling it in the constructor.

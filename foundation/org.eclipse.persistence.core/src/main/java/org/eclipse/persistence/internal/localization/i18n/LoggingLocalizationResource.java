@@ -64,9 +64,9 @@ import java.util.ListResourceBundle;
  *
  * @author Shannon Chen
  * @since TOPLink/Java 5.0
- *
+ * <p>
  * Internal change on 2006/04/24:
- *
+ * <p>
  * Message id is added for iAS 11 logging compliance.
  * Every message added into this file needs the message id entry as well.
  * Logs by AbstractSessionLog.getLog().log() when the level is below CONFIG=4 (FINE, FINER, FINEST, ALL)

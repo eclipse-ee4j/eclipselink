@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ import org.eclipse.persistence.exceptions.TransactionException;
  * e.g.
  *          controller.setSynchronizationListenerFactory(
  *              new DifferentServerSynchronizationListener());
- *
+ * <p>
  * The default listener factory creates instances of JTATransactionListener.
  *
  * @see JTASynchronizationListener
@@ -253,7 +253,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * INTERNAL:
      * Obtain and return the JTA TransactionManager on this platform.
      * By default try java:comp JNDI lookup.
-     *
+     * <p>
      * This method can be can be overridden by subclasses to obtain the
      * transaction manager by whatever means is appropriate to the server.
      * This method is invoked by the constructor to initialize the transaction

@@ -56,12 +56,12 @@ import java.util.Vector;
  * associations is used to link the source xpaths to their related target
  * xpaths, and hence their primary key (unique identifier) values used when
  * (un)marshalling.
- *
+ * <p>
  * It is important to note that each target xpath is assumed to be set as a primary
  * key field on the target (reference) class descriptor - this is necessary in order
  * to locate the correct target object instance in the session cache when resolving
  * mapping references.
- *
+ * <p>
  * The usesSingleNode flag should be set to true if the keys are to be written out in space-separated
  * lists.
  *

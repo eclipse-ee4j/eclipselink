@@ -283,7 +283,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted
      * objects list if necessary
-     *
+     * <p>
      * This method is used for removal of private owned relationships.
      */
     @Override
@@ -652,7 +652,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
-     *
+     * <p>
      * This method is used for removal of private owned relationships
      *
      */
@@ -680,7 +680,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * shouldExtendPessimisticLockScope and shouldExtendPessimisticLockScopeInSourceQuery are true.
      * Adds fields to be locked to the where clause of the source query.
      * Note that the sourceQuery must be ObjectLevelReadQuery so that it has ExpressionBuilder.
-     *
+     * <p>
      * This method must be implemented in subclasses that allow
      * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
      */
@@ -1009,7 +1009,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Return the query that is used when this mapping is part of a joined relationship
-     *
+     * <p>
      * This method is used when this mapping is used to map the key in a Map
      */
     @Override
@@ -1117,7 +1117,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * If required, get the targetVersion of the source object from the merge manager
-     *
+     * <p>
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
      */
     @Override
@@ -1422,9 +1422,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Build the selection criteria for this mapping.  Allows several variations.
-     *
+     * <p>
      * Either a parameter can be used for the join or simply the database field
-     *
+     * <p>
      * The existing selection criteria can be built upon or a whole new criteria can be built.
      */
     public Expression buildSelectionCriteria(boolean useParameter, boolean usePreviousSelectionCriteria){

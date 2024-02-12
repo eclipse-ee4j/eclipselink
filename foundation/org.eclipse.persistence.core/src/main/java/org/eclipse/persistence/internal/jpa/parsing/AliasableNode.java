@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.jpa.parsing;
 
 /**
  * This interface should be implemented by any node that can be aliased in the select clause.
- *
+ * <p>
  * It will be used to help the select node build a list of aliased expressions
  * @author tware
  *

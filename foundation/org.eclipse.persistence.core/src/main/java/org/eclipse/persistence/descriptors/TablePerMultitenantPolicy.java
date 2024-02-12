@@ -57,7 +57,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     public TablePerMultitenantPolicy(ClassDescriptor desc) {
         descriptor = desc;
         type = TenantTableDiscriminatorType.SUFFIX;
-        tablePerTenantTables = new HashMap(4);
+        tablePerTenantTables = new HashMap<>(4);
         contextProperty = EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT;
     }
 
@@ -83,23 +83,20 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
      */
     @Override
     public MultitenantPolicy clone(ClassDescriptor descriptor) {
-        TablePerMultitenantPolicy clonedPolicy = null;
-
         try {
-            clonedPolicy = (TablePerMultitenantPolicy) super.clone();
+            TablePerMultitenantPolicy clonedPolicy = (TablePerMultitenantPolicy) super.clone();
 
             clonedPolicy.descriptor = descriptor;
 
             // Create a separate hashmap per clone.
-            clonedPolicy.tablePerTenantTables = new HashMap(4);
+            clonedPolicy.tablePerTenantTables = new HashMap<>(4);
             for (DatabaseTable table : this.tablePerTenantTables.keySet()) {
                 clonedPolicy.tablePerTenantTables.put(table, this.tablePerTenantTables.get(table));
             }
+            return clonedPolicy;
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.getMessage());
         }
-
-        return clonedPolicy;
     }
 
     /**
@@ -242,11 +239,11 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
      * This method is used to update the table per tenant descriptor with
      * a table per tenant prefix or suffix on its associated tables. This
      * includes any relation tables from mappings.
-     *
+     * <p>
      * If the given session is a client session than we must clone the tables.
      * Outside of a client session, assume global usage and no cloning is
      * needed.
-     *
+     * <p>
      * This method should only be called at the start of a client session
      * lifecycle and should only be called once.
      */
@@ -316,7 +313,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
      * a table per tenant schema. This includes any relation tables from
      * mappings. This will be done through the setting of a table qualifier on
      * the tables.
-     *
+     * <p>
      * This method should only be called at the start of a client session
      * lifecycle and should only be called once.
      */

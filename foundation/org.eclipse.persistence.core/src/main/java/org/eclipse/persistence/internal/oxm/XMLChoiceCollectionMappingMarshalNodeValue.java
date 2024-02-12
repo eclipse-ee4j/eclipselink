@@ -52,7 +52,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
      * This class is needed to hold field and nodeValue relationship.
      * If we have choice with different fields with the same (java class) type (e.g. via XmlAdapter),
      * there is need to know to which field we are holding the nodeValue.
-     *
+     * <p>
      * It is used in getNodeValueForValue method. If we knew only class relationship to nodeValue,
      * there is no way how to say that this nodeValue is related to the first or second field (or any other field with given java class).
      */

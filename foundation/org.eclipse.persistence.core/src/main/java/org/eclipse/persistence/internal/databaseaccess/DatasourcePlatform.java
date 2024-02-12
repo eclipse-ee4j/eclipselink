@@ -317,7 +317,7 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
@@ -328,7 +328,7 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
@@ -377,7 +377,7 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */
@@ -388,7 +388,7 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */

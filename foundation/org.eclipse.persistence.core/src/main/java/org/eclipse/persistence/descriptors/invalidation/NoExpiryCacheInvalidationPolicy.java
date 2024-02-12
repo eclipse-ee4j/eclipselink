@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,11 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
  * PUBLIC:
- * A cache invalidation policy in which no objects will expire.  The only way for objects
+ * A cache invalidation policy in which no objects will expire. The only way for objects
  * to become invalid in the cache is for them to be explicitly set to invalid through
- * method calls on the IdentityMapAccessor.  This is the default cache invalidation policy.
+ * method calls on the IdentityMapAccessor.
+ * <p>
+ * This is the default cache invalidation policy.
  * @see CacheInvalidationPolicy
  * @see org.eclipse.persistence.sessions.IdentityMapAccessor
  */
@@ -28,7 +30,7 @@ public class NoExpiryCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     /**
      * INTERNAL:
-     * Since this policy implements no expiry, this will always return NO_EXPIRY
+     * Since this policy implements no expiry, this will always return {@linkplain #NO_EXPIRY}.
      */
     @Override
     public long getExpiryTimeInMillis(CacheKey key) {

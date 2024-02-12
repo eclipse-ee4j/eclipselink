@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -159,7 +159,7 @@ public class QueryHints {
     /**
      * "eclipselink.query-results-cache.invalidate-on-change"
      * <p>Configures if the query cache results should be invalidated if any object of any class used in the query if modified.
-     *
+     * <p>
      * Valid values are "true" and "false", true is the default.
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setInvalidateOnChange(boolean)
      */

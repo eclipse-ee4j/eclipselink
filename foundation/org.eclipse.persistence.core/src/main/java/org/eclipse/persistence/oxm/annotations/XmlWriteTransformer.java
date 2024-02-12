@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Annotation for org.eclipse.persistence.mappings.oxm.XMLTransformationMapping.
  * WriteTransformer defines transformation of the attribute value to a single
  * XML value (XPath is specified in the WriteTransformer).
- *
+ * <p>
  * A single XmlWriteTransformer may be specified directly on the method or
  * attribute. Multiple XmlWriteTransformers should be wrapped into
  * XmlWriteTransformers annotation. No XmlWriteTransformers specified for read-only

@@ -23,7 +23,7 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
  * Order By Item
  * <p><b>Responsibilities</b>:<ul>
  * <li> Apply itself to a query correctly
- *
+ * <p>
  * This node represents either an ASC or DESC encountered on the input stream
  * e.g SELECT ... FROM ... WHERE ... ORDER BY emp.salary ASC
  * </ul>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,9 @@ import java.util.Set;
 
 /**
  * PUBLIC:
- *
+ * <p>
  * A QueryResultsCache policy dictates how a query's results will be cached.
- *
+ * <p>
  * It allows an invalidation policy and a maximum number of results to be set.
  * Query results are cached based on the parameter values of a query, and the maximum number
  * of results refers to the maximum number of parameter sets results will be cached for.\

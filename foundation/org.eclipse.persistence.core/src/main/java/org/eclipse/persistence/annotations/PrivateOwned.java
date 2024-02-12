@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * cascaded across the relationship, including, deletion, insertion, refreshing,
  * locking (when cascaded). It also ensures that private objects removed from
  * collections are deleted and object added are inserted.
- *
+ * <p>
  * A PrivateOwned annotation can be used in conjunction with a OneToOne,
  * OneToMany and VariableOneToOne annotation. Private ownership is implied
  * with the BasicCollection and BasicMap annotation.

@@ -600,7 +600,7 @@ public class Helper implements Serializable {
 
     /**
     * PUBLIC:
-    *
+    * <p>
     * Compare two vectors of types. Return true if the size of the vectors is the
     * same and each of the types in the first Vector are assignable from the types
     * in the corresponding objects in the second Vector.
@@ -631,7 +631,7 @@ public class Helper implements Serializable {
     /**
       * PUBLIC:
       * Compare the elements in 2 hashtables to see if they are equal
-      *
+      * <p>
       * Added Nov 9, 2000 JED Patch 2.5.1.8
       */
     public static boolean compareHashtables(Hashtable<?, ?> hashtable1, Hashtable<?, ?> hashtable2) {
@@ -842,7 +842,7 @@ public class Helper implements Serializable {
 
     /**
      * Answer a Date from a long
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
      * @param longObject - milliseconds from the epoch (00:00:00 GMT
      * Jan 1, 1970).  Negative values represent dates prior to the epoch.
@@ -872,9 +872,9 @@ public class Helper implements Serializable {
      * Answer a Date from a string representation.
      * The string MUST be a valid date and in one of the following
      * formats: YYYY/MM/DD, YYYY-MM-DD, YY/MM/DD, YY-MM-DD.
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
-     *
+     * <p>
      * The Date class contains  some minor gotchas that you have to watch out for.
      * @param dateString - string representation of date
      * @return  - date representation of string
@@ -909,7 +909,7 @@ public class Helper implements Serializable {
 
     /**
      * Answer a Date from a timestamp
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
      * @param timestamp - timestamp representation of date
      * @return  - date representation of timestampObject
@@ -1793,7 +1793,7 @@ public class Helper implements Serializable {
 
     /**
      * Answer a Time from a Date
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
      * @param date - time representation of date
      * @return  - time representation of dateObject
@@ -2027,10 +2027,10 @@ public class Helper implements Serializable {
     /**
      * If the size of the original string is larger than the passed in size,
      * this method will remove the vowels from the original string.
-     *
+     * <p>
      * The removal starts backward from the end of original string, and stops if the
      * resulting string size is equal to the passed in size.
-     *
+     * <p>
      * If the resulting string is still larger than the passed in size after
      * removing all vowels, the end of the resulting string will be truncated.
      */
@@ -2073,7 +2073,7 @@ public class Helper implements Serializable {
 
     /**
      * Answer a Date from a long
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
      * @param longObject - milliseconds from the epoch (00:00:00 GMT
      * Jan 1, 1970).  Negative values represent dates prior to the epoch.

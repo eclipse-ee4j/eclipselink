@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ package org.eclipse.persistence.config;
  * This property could be specified while creating either EntityManagerFactory
  * (createEntityManagerFactory or persistence.xml)
  * or EntityManager (createEntityManager); the latter overrides the former.
- *
+ * <p>
  * The "isolated case" mentioned below is the case of some (or all) entities requiring isolated cache.
  * That could be achieved either by specifying the property for one or more entities:
  *   eclipselink.cache.shared.Employee {@literal ->} "false"
@@ -46,7 +46,7 @@ public class ExclusiveConnectionMode {
      * Inside Eclipselink transaction all writes and reads performed through the exclusive connection.
      * Outside Eclipselink transaction a new connection is acquired from connection pool
      * for each read and released back immediately after the query is executed.
-     *
+     * <p>
      * Note that Eclipselink transaction usually starts later then JTA transaction does,
      * or entityManager.beginTransaction method is called: Eclipselink usually waits until
      * it's about to perform a query that potentially alters data base's state to start
@@ -68,7 +68,7 @@ public class ExclusiveConnectionMode {
      *   // Eclipselink transaction is completed, the connection used by Eclipselink transaction is released;
      *   // readQuery5 acquires and immediately releases connection.
      *   readQuery5.getResultList();
-     *
+     * <p>
      * There's a way to force beginning of Eclipselink transaction right before executing the first query after em.getTransaction().begin():
      *   "eclipselink.transaction.join-existing" {@literal ->} true.
      * In the example that setting would force Exclipselink transaction top begin right before readQuery2 is executed
@@ -89,7 +89,7 @@ public class ExclusiveConnectionMode {
      * Outside Eclipelink transaction only isolated entities are read through the exclusive connection;
      * for non isolated entities a new connection is acquired from connection pool
      * for each read and released back immediately after the query is executed.
-     *
+     * <p>
      * In the example presented above all five readQueries
      * would read isolated entity through the exclusive connection,
      * however non-isolated entity would be read the same as in Transactional mode.
@@ -101,10 +101,10 @@ public class ExclusiveConnectionMode {
      * in both isolated and non-isolated cases.
      * Connection is kept exclusive for the whole lifetime of the owning EntityManager.
      * All writes and reads performed through the exclusive connection.
-     *
+     * <p>
      * In the example presented above all five readQueries
      * would read all entity through the exclusive connection.
-     *
+     * <p>
      * Note that though all entities use the exclusive connection
      * only isolated entities use isolated cache; non-isolated entities use shared cache.
      */

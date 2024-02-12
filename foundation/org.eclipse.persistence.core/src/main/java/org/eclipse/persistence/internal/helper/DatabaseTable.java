@@ -345,7 +345,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     /**
      * Set the table name.
      * Used when aliasing table names.
-     *
+     * <p>
      * If the name contains database delimiters, they will be stripped and a flag will be set to have them
      * added when the DatabaseTable is written to SQL
      *

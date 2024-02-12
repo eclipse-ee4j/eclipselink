@@ -115,7 +115,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      * Perform a cache lookup for the query. If the translation row contains
      * all the parameters (which are part of the primary key) from the prepared
      * call, then a cache check will be performed.
-     *
+     * <p>
      * If the object is found in the cache, return it; otherwise return null.
      */
     public Object checkCacheForObject(AbstractRecord translationRow, AbstractSession session) {

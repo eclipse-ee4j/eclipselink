@@ -1315,151 +1315,149 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     @Override
     public Object clone() {
-        ClassDescriptor clonedDescriptor = null;
-
         // clones itself
         try {
-            clonedDescriptor = (ClassDescriptor)super.clone();
-        } catch (Exception exception) {
+            ClassDescriptor clonedDescriptor = (ClassDescriptor) super.clone();
+
+            List<DatabaseMapping> mappingsList = new ArrayList<>();
+
+            // All the mappings
+            for (DatabaseMapping m:  getMappings()) {
+                DatabaseMapping mapping = (DatabaseMapping) m.clone();
+                mapping.setDescriptor(clonedDescriptor);
+                mappingsList.add(mapping);
+            }
+            clonedDescriptor.setMappings(mappingsList);
+
+            Map<String, QueryKey> queryKeys = new HashMap<>(getQueryKeys().size() + 2);
+
+            // All the query keys
+            for (QueryKey queryKey : getQueryKeys().values()) {
+                queryKey = (QueryKey)queryKey.clone();
+                queryKey.setDescriptor(clonedDescriptor);
+                queryKeys.put(queryKey.getName(), queryKey);
+            }
+            clonedDescriptor.setQueryKeys(queryKeys);
+
+            // PrimaryKeyFields
+            List<DatabaseField> primaryKeyList = new ArrayList<>(getPrimaryKeyFields().size());
+            List<DatabaseField> primaryKeyFields = getPrimaryKeyFields();
+            for (int index = 0; index < primaryKeyFields.size(); index++) {
+                DatabaseField primaryKey = primaryKeyFields.get(index).clone();
+                primaryKeyList.add(primaryKey);
+            }
+            clonedDescriptor.setPrimaryKeyFields(primaryKeyList);
+
+            // fields.
+            clonedDescriptor.setFields(new ArrayList<>());
+
+            // Referencing classes
+            clonedDescriptor.referencingClasses = new HashSet<>(referencingClasses);
+
+            // Post-calculate changes
+            if (this.mappingsPostCalculateChanges != null) {
+                clonedDescriptor.mappingsPostCalculateChanges = new ArrayList<>();
+                for (DatabaseMapping databaseMapping : this.mappingsPostCalculateChanges) {
+                    clonedDescriptor.mappingsPostCalculateChanges.add((DatabaseMapping)databaseMapping.clone());
+                }
+            }
+
+            // Post-calculate on delete
+            if (this.mappingsPostCalculateChangesOnDeleted != null) {
+                clonedDescriptor.mappingsPostCalculateChangesOnDeleted = new ArrayList<>();
+                for (DatabaseMapping databaseMapping : this.mappingsPostCalculateChangesOnDeleted) {
+                    clonedDescriptor.mappingsPostCalculateChangesOnDeleted.add((DatabaseMapping)databaseMapping.clone());
+                }
+            }
+
+            // The inheritance policy
+            if (clonedDescriptor.hasInheritance()) {
+                clonedDescriptor.setInheritancePolicy((InheritancePolicy)getInheritancePolicy().clone());
+                clonedDescriptor.getInheritancePolicy().setDescriptor(clonedDescriptor);
+            }
+
+            if (clonedDescriptor.hasSerializedObjectPolicy()) {
+                clonedDescriptor.setSerializedObjectPolicy(getSerializedObjectPolicy().clone());
+            }
+
+            // The returning policy
+            if (clonedDescriptor.hasReturningPolicy()) {
+                clonedDescriptor.setReturningPolicy((ReturningPolicy)getReturningPolicy().clone());
+                clonedDescriptor.getReturningPolicy().setDescriptor(clonedDescriptor);
+            }
+            if (clonedDescriptor.hasReturningPolicies()) {
+                clonedDescriptor.returningPolicies = new ArrayList<>();
+                for (ReturningPolicy returningPolicy : this.returningPolicies) {
+                    clonedDescriptor.returningPolicies.add((ReturningPolicy)returningPolicy.clone());
+                }
+                clonedDescriptor.prepareReturnFields(clonedDescriptor.returningPolicies);
+            }
+
+            // The Object builder
+            clonedDescriptor.setObjectBuilder((ObjectBuilder)getObjectBuilder().clone());
+            clonedDescriptor.getObjectBuilder().setDescriptor(clonedDescriptor);
+
+            clonedDescriptor.setEventManager((DescriptorEventManager)getEventManager().clone());
+            clonedDescriptor.getEventManager().setDescriptor(clonedDescriptor);
+
+            // The Query manager
+            clonedDescriptor.setQueryManager((DescriptorQueryManager)getQueryManager().clone());
+            clonedDescriptor.getQueryManager().setDescriptor(clonedDescriptor);
+
+            //fetch group
+            if (hasFetchGroupManager()) {
+                clonedDescriptor.setFetchGroupManager((FetchGroupManager)getFetchGroupManager().clone());
+            }
+
+            if (this.cachePolicy != null) {
+                clonedDescriptor.setCachePolicy(this.cachePolicy.clone());
+            }
+
+            // Bug 3037701 - clone several more elements
+            if (this.instantiationPolicy != null) {
+                clonedDescriptor.setInstantiationPolicy((InstantiationPolicy)getInstantiationPolicy().clone());
+            }
+            if (this.copyPolicy != null) {
+                clonedDescriptor.setCopyPolicy((CopyPolicy)getCopyPolicy().clone());
+            }
+            if (getOptimisticLockingPolicy() != null) {
+                clonedDescriptor.setOptimisticLockingPolicy((OptimisticLockingPolicy)getOptimisticLockingPolicy().clone());
+            }
+            //bug 5171059 clone change tracking policies as well
+            clonedDescriptor.setObjectChangePolicy(this.getObjectChangePolicyInternal());
+
+            // Clone the tables
+            List<DatabaseTable> tables = new ArrayList<>(3);
+            for (DatabaseTable table : getTables()) {
+                tables.add(table.clone());
+            }
+            clonedDescriptor.setTables(tables);
+
+            // Clone the default table
+            if (getDefaultTable() != null) {
+                clonedDescriptor.setDefaultTable(getDefaultTable().clone());
+            }
+
+            // Clone the CMPPolicy
+            if (getCMPPolicy() != null) {
+                clonedDescriptor.setCMPPolicy(getCMPPolicy().clone());
+                clonedDescriptor.getCMPPolicy().setDescriptor(clonedDescriptor);
+            }
+
+            // Clone the sequence number field.
+            if (getSequenceNumberField() != null) {
+                clonedDescriptor.setSequenceNumberField(getSequenceNumberField().clone());
+            }
+
+            // Clone the multitenant policy.
+            if (hasMultitenantPolicy()) {
+                clonedDescriptor.setMultitenantPolicy(getMultitenantPolicy().clone(clonedDescriptor));
+            }
+
+            return clonedDescriptor;
+        } catch (CloneNotSupportedException exception) {
             throw new AssertionError(exception);
         }
-
-        List<DatabaseMapping> mappingsList = new ArrayList<>();
-
-        // All the mappings
-        for (DatabaseMapping m:  getMappings()) {
-            DatabaseMapping mapping = (DatabaseMapping) m.clone();
-            mapping.setDescriptor(clonedDescriptor);
-            mappingsList.add(mapping);
-        }
-        clonedDescriptor.setMappings(mappingsList);
-
-        Map<String, QueryKey> queryKeys = new HashMap<>(getQueryKeys().size() + 2);
-
-        // All the query keys
-        for (QueryKey queryKey : getQueryKeys().values()) {
-            queryKey = (QueryKey)queryKey.clone();
-            queryKey.setDescriptor(clonedDescriptor);
-            queryKeys.put(queryKey.getName(), queryKey);
-        }
-        clonedDescriptor.setQueryKeys(queryKeys);
-
-        // PrimaryKeyFields
-        List<DatabaseField> primaryKeyList = new ArrayList<>(getPrimaryKeyFields().size());
-        List<DatabaseField> primaryKeyFields = getPrimaryKeyFields();
-        for (int index = 0; index < primaryKeyFields.size(); index++) {
-            DatabaseField primaryKey = primaryKeyFields.get(index).clone();
-            primaryKeyList.add(primaryKey);
-        }
-        clonedDescriptor.setPrimaryKeyFields(primaryKeyList);
-
-        // fields.
-        clonedDescriptor.setFields(new ArrayList<>());
-
-        // Referencing classes
-        clonedDescriptor.referencingClasses = new HashSet<>(referencingClasses);
-
-        // Post-calculate changes
-        if (this.mappingsPostCalculateChanges != null) {
-            clonedDescriptor.mappingsPostCalculateChanges = new ArrayList<>();
-            for (DatabaseMapping databaseMapping : this.mappingsPostCalculateChanges) {
-                clonedDescriptor.mappingsPostCalculateChanges.add((DatabaseMapping)databaseMapping.clone());
-            }
-        }
-
-        // Post-calculate on delete
-        if (this.mappingsPostCalculateChangesOnDeleted != null) {
-            clonedDescriptor.mappingsPostCalculateChangesOnDeleted = new ArrayList<>();
-            for (DatabaseMapping databaseMapping : this.mappingsPostCalculateChangesOnDeleted) {
-                clonedDescriptor.mappingsPostCalculateChangesOnDeleted.add((DatabaseMapping)databaseMapping.clone());
-            }
-        }
-
-        // The inheritance policy
-        if (clonedDescriptor.hasInheritance()) {
-            clonedDescriptor.setInheritancePolicy((InheritancePolicy)getInheritancePolicy().clone());
-            clonedDescriptor.getInheritancePolicy().setDescriptor(clonedDescriptor);
-        }
-
-        if (clonedDescriptor.hasSerializedObjectPolicy()) {
-            clonedDescriptor.setSerializedObjectPolicy(getSerializedObjectPolicy().clone());
-        }
-
-        // The returning policy
-        if (clonedDescriptor.hasReturningPolicy()) {
-            clonedDescriptor.setReturningPolicy((ReturningPolicy)getReturningPolicy().clone());
-            clonedDescriptor.getReturningPolicy().setDescriptor(clonedDescriptor);
-        }
-        if (clonedDescriptor.hasReturningPolicies()) {
-            clonedDescriptor.returningPolicies = new ArrayList<>();
-            for (ReturningPolicy returningPolicy : this.returningPolicies) {
-                clonedDescriptor.returningPolicies.add((ReturningPolicy)returningPolicy.clone());
-            }
-            clonedDescriptor.prepareReturnFields(clonedDescriptor.returningPolicies);
-        }
-
-        // The Object builder
-        clonedDescriptor.setObjectBuilder((ObjectBuilder)getObjectBuilder().clone());
-        clonedDescriptor.getObjectBuilder().setDescriptor(clonedDescriptor);
-
-        clonedDescriptor.setEventManager((DescriptorEventManager)getEventManager().clone());
-        clonedDescriptor.getEventManager().setDescriptor(clonedDescriptor);
-
-        // The Query manager
-        clonedDescriptor.setQueryManager((DescriptorQueryManager)getQueryManager().clone());
-        clonedDescriptor.getQueryManager().setDescriptor(clonedDescriptor);
-
-        //fetch group
-        if (hasFetchGroupManager()) {
-            clonedDescriptor.setFetchGroupManager((FetchGroupManager)getFetchGroupManager().clone());
-        }
-
-        if (this.cachePolicy != null) {
-            clonedDescriptor.setCachePolicy(this.cachePolicy.clone());
-        }
-
-        // Bug 3037701 - clone several more elements
-        if (this.instantiationPolicy != null) {
-            clonedDescriptor.setInstantiationPolicy((InstantiationPolicy)getInstantiationPolicy().clone());
-        }
-        if (this.copyPolicy != null) {
-            clonedDescriptor.setCopyPolicy((CopyPolicy)getCopyPolicy().clone());
-        }
-        if (getOptimisticLockingPolicy() != null) {
-            clonedDescriptor.setOptimisticLockingPolicy((OptimisticLockingPolicy)getOptimisticLockingPolicy().clone());
-        }
-        //bug 5171059 clone change tracking policies as well
-        clonedDescriptor.setObjectChangePolicy(this.getObjectChangePolicyInternal());
-
-        // Clone the tables
-        List<DatabaseTable> tables = new ArrayList<>(3);
-        for (DatabaseTable table : getTables()) {
-            tables.add(table.clone());
-        }
-        clonedDescriptor.setTables(tables);
-
-        // Clone the default table
-        if (getDefaultTable() != null) {
-            clonedDescriptor.setDefaultTable(getDefaultTable().clone());
-        }
-
-        // Clone the CMPPolicy
-        if (getCMPPolicy() != null) {
-            clonedDescriptor.setCMPPolicy(getCMPPolicy().clone());
-            clonedDescriptor.getCMPPolicy().setDescriptor(clonedDescriptor);
-        }
-
-        // Clone the sequence number field.
-        if (getSequenceNumberField() != null) {
-            clonedDescriptor.setSequenceNumberField(getSequenceNumberField().clone());
-        }
-
-        // Clone the multitenant policy.
-        if (hasMultitenantPolicy()) {
-            clonedDescriptor.setMultitenantPolicy(getMultitenantPolicy().clone(clonedDescriptor));
-        }
-
-        return clonedDescriptor;
     }
 
     /**
@@ -2049,7 +2047,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
-     *
+     * <p>
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
@@ -2063,7 +2061,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
-     *
+     * <p>
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
@@ -3333,7 +3331,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * This initialized method is used exclusively for inheritance.  It passes in
      * true if the child descriptor is isolated.
-     *
+     * <p>
      * This is needed by regular aggregate descriptors (because they require review);
      * but not by SDK aggregate descriptors.
      */
@@ -5166,7 +5164,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * When the <CODE>shouldAlwaysRefreshCacheOnRemote</CODE> argument passed into this method is <CODE>true</CODE>,
      * this method configures a <CODE>ClassDescriptor</CODE> to always remotely refresh the cache if data is received from
      * the database by any query in a {@link org.eclipse.persistence.sessions.remote.RemoteSession}.
-     *
+     * <p>
      * However, if a query hits the cache, data is not refreshed regardless of how this setting is configured. For
      * example, by default, when a query for a single object based on its primary key is executed, OracleAS TopLink
      * will first look in the cache for the object. If the object is in the cache, the cached object is returned and
@@ -5561,7 +5559,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * should be called on any object that you intend to change.
      * @return true by default.
      * @see #setShouldRegisterResultsInUnitOfWork
-     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#shouldRegisterResultsInUnitOfWork
+     * @see ObjectLevelReadQuery#shouldRegisterResultsInUnitOfWork()
      */
     public boolean shouldRegisterResultsInUnitOfWork() {
         // bug 2612601
@@ -6035,7 +6033,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Set the locking policy to use timestamp version locking.
      * This updates the timestamp field on all updates, first comparing that the field has not changed to detect locking conflicts.
      * Note: many database have limited precision of timestamps which can be an issue is highly concurrent systems.
-     *
+     * <p>
      * The parameter 'shouldStoreInCache' configures the version lock value to be stored in the cache or in the object.
      * Note: if using a stateless model where the object can be passed to a client and then later updated in a different transaction context,
      * then the version lock value should not be stored in the cache, but in the object to ensure it is the correct value for that object.
@@ -6064,7 +6062,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * PUBLIC:
      * Set the locking policy to use numeric version locking.
      * This updates the version field on all updates, first comparing that the field has not changed to detect locking conflicts.
-     *
+     * <p>
      * The parameter 'shouldStoreInCache' configures the version lock value to be stored in the cache or in the object.
      * Note: if using a stateless model where the object can be passed to a client and then later updated in a different transaction context,
      * then the version lock value should not be stored in the cache, but in the object to ensure it is the correct value for that object.
@@ -6234,7 +6232,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Return the default fetch group on the descriptor.
      * All read object and read all queries will use the default fetch group if
      * no fetch group is explicitly defined for the query.

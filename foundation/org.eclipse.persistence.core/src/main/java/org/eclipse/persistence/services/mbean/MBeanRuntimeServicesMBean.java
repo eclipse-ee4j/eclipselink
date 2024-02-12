@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -175,7 +175,7 @@ public interface MBeanRuntimeServicesMBean {
 
     /**
      *  Set the EclipseLink log level to be used at runtime.
-     *
+     * <p>
      * This does not affect the log level in the project (i.e. The next
      * time the application is deployed, changes are forgotten)
      *
@@ -206,7 +206,7 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *  Provide an instance of 2 Dimensional Array simulating tabular format information about all
      * classes in the session whose class names match the provided filter.
-     *
+     * <p>
      * The 2 Dimensional array contains each item with values being row object array. Each row object array
      * represents EclipseLink class details info with respect to below attributes:
      * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -217,7 +217,7 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *  Provide an instance of 2 Dimensional Array simulating tabular format information about all
      * classes in the session.
-     *
+     * <p>
      * The 2 Dimensional array contains each item with values being row object array. Each row object array
      * represents EclipseLink class details info with respect to below attributes:
      * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -228,7 +228,7 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *  Provide a list of instance of ClassSummaryDetail containing information about the
      * classes in the session whose class names match the provided filter.
-     *
+     * <p>
      * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
      * convert class attribute to JMX required open type, it has:-
      *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -242,7 +242,7 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *  Provide a list of instance of ClassSummaryDetail containing information about all
      * classes in the session.
-     *
+     * <p>
      * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
      * convert class attribute to JMX required open type, it has:-
      *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]

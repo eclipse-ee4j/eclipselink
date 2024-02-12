@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *  - none - Will place no converter on the associated mapping. This can be used
  *  to override a situation where either another converter is defaulted or
  *  another converter is set.
- *
+ * <p>
  *  When these reserved converters are not used, it is necessary to define a
  *  converter to use using the @Converter annotation.
  *

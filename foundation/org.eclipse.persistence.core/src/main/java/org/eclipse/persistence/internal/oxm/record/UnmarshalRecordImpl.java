@@ -1463,9 +1463,9 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     /**
      * INTERNAL:
      * Creates an auxiliary lookup table containing lower-cased localNames of XPathFragments.
-     *
+     * <p>
      * Does NOT pass the Turkey test.
-     *
+     * <p>
      * For future development: Handle ISO-8859-9 encoding.
      * if (encoding.equals("ISO-8859-9")) {
      *      String auxLocalName = entry.getKey().getLocalName().toLowerCase(Locale.forLanguageTag("tr-TR"));

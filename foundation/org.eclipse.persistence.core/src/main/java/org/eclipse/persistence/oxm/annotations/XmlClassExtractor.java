@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,10 +29,10 @@ import java.lang.annotation.Target;
  *    class and implement the extractClassFromRow(Record, Session) method.
  *  - That method must take a database row (a Record/Map) as an argument and
  *    must return the class to use for that row.
- *
+ * <p>
  * This method will be used to decide which class to instantiate when
  * unmarshalling an instance document.
- *
+ * <p>
  * The ClassExtractor must only be set on the root of an entity class or
  * sub-hierarchy in which a different inheritance strategy is applied.
  */

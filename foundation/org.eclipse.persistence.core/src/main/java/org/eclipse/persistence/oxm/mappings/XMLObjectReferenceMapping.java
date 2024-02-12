@@ -56,7 +56,7 @@ import java.util.Vector;
  * associations is used to link the source xpaths to their related target xpaths,
  * and hence their primary key (unique identifier) values used when (un)marshalling.
  * This mapping has a Vector of XMLFields as opposed to a single XMLField.
- *
+ * <p>
  * It is important to note that each target xpath is assumed to be set as a primary
  * key field on the target (reference) class descriptor - this is necessary in order
  * to locate the correct target object instance in the session cache when resolving
@@ -239,7 +239,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     /**
      * Return a QName representation the schema type for a given XMLField, if
      * applicable.
-     *
+     * <p>
      * Note:  This method performs the same functionality as 'getSchemaType' in
      * org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
      *
@@ -259,7 +259,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
     /**
      * Return a single QName representation for a given XMLUnionField, if applicable.
-     *
+     * <p>
      * Note:  This method performs the same functionality as 'getSingleValueToWriteForUnion'
      * in org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
      *
@@ -300,7 +300,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
     /**
      * Return a string representation of a given value, based on a given schema type.
-     *
+     * <p>
      * Note:  This method performs the same functionality as 'getValueToWrite'
      * in org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
      *

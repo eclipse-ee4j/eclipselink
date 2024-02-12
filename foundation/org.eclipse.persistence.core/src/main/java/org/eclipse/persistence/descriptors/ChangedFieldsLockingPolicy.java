@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class ChangedFieldsLockingPolicy extends FieldsLockingPolicy {
      * Create a new changed fields locking policy.
      * This locking policy is based on locking on all changed fields by comparing with
      * their previous values to detect field-level collisions.
-     *
+     * <p>
      * Note: the unit of work must be used for all updates when using field locking. Without
      * a unit of work, there is no way for  to know what the original values were
      * without the back up clone in the unit of work.

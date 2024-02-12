@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * relationships. If this annotation is set on a relationship that relationship
  * will not be cached even though the parent Entity may be cached. Each time the
  * Entity is retrieved the relationship will be reloaded from the data-source.
- *
+ * <p>
  * This may be useful for situations where caching of relationships is not
  * desired or when using different EclipseLink IdentityMap types and having
  * cached references extends the cache lifetime of related Entities using a

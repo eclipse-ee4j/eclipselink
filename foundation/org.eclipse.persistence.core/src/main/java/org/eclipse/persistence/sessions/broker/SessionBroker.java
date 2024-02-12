@@ -99,7 +99,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Return a session broker that behaves as a client session broker.  An
      * acquire session broker is done under the covers on each session inside
      * the session broker, and a new broker is returned.
-     *
+     * <p>
      * NOTE: when finished with the client broker, it should be released.
      */
     public SessionBroker acquireClientSessionBroker() {
@@ -111,7 +111,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Return a session broker that behaves as a client session broker.  An
      * acquire session broker is done under the covers on each session inside
      * the session broker, and a new broker is returned.
-     *
+     * <p>
      * NOTE: when finished with the client broker, it should be released.
      * @param connectionPolicies maps session name to connectionPolicy to be used for this session;
      * @param mapOfProperties maps session name to properties to be used for this session.
@@ -454,13 +454,13 @@ public class SessionBroker extends DatabaseSessionImpl {
      * This allows for common queries to be pre-defined, reused and executed by name.
      * This method should be used if the Session has multiple queries with the same name but
      * different arguments.
-     *
+     * <p>
      * The search order is:
      *    for ClientSessionBroker:
      *      the broker;
      *      it's member ClientSessions (but not their parent ServerSessions);
      *      the parent SessionBroker.
-     *
+     * <p>
      *    for ServerSession or DatabaseSession SessionBroker:
      *      the broker;
      *      it's member ServerSessions (or DatabaseSessions).

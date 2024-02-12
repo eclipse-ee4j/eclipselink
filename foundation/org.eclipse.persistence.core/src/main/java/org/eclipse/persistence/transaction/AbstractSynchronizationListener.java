@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * <p>
  * <b>Purpose</b>: Abstract Synchronization Listener class
- *
+ * <p>
  * <b>Description</b>: This abstract class is paired with the
  * AbstractTransactionController class. It contains most of the implementation
  * logic to handle callback notifications from an external transaction
@@ -267,7 +267,7 @@ public abstract class AbstractSynchronizationListener implements Synchronization
      * for those transaction managers that support this, and rethrow the exception.
      * We hope that the exception will do the trick for those that do not allow
      * marking rollback.
-     *
+     * <p>
      * This method may optionally be overridden by concrete subclass implementations.
      * Different transaction manager vendors may have different reactions to exceptions
      * that get signalled during the commit phase of synchronization.

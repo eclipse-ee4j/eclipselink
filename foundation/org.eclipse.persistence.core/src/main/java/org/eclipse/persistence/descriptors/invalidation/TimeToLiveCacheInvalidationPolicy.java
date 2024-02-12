@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,9 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
  * PUBLIC:
- * A CacheInvalidationPolicy which allows objects to live for a specific amount of time
- * after they are read.  A TimeToLiveCacheInvalidationPolicy is instantiated with a specific
- * number of milliseconds.  This represents how long after an object is read it will expire.
+ * A {@linkplain CacheInvalidationPolicy} which allows objects to live for a specific amount of time
+ * after they are read. A {@code TimeToLiveCacheInvalidationPolicy} is instantiated with a specific
+ * number of milliseconds. This represents how long after an object is read it will expire.
  * @see CacheInvalidationPolicy
  */
 public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
@@ -29,7 +29,8 @@ public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     /**
      * INTERNAL:
-     * Default Constructor for Project XML
+     * Default Constructor for Project XML.
+     * <p>
      * Unless the timeToLive is set by method, objects will expire immediately
      */
     public TimeToLiveCacheInvalidationPolicy() {
@@ -37,7 +38,7 @@ public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     /**
      * PUBLIC:
-     * Construct a TimeToLiveCacheInvalidationPolicy
+     * Construct a {@code TimeToLiveCacheInvalidationPolicy}
      * @param timeToLive the number of milliseconds an object affected by this policy will live.
      */
     public TimeToLiveCacheInvalidationPolicy(long timeToLive) {
@@ -89,15 +90,12 @@ public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     @Override
     public Object clone() {
-        TimeToLiveCacheInvalidationPolicy clone = null;
-
         try {
-            clone = (TimeToLiveCacheInvalidationPolicy)super.clone();
+            TimeToLiveCacheInvalidationPolicy clone = (TimeToLiveCacheInvalidationPolicy) super.clone();
             clone.timeToLive = this.timeToLive;
+            return clone;
         } catch (Exception exception) {
             throw new InternalError("clone failed");
         }
-
-        return clone;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,11 +20,11 @@ package org.eclipse.persistence.config;
  * By default for JPA queries the cache is not checked before accessing the database,
  * but is used after accessing the database to avoid re-building the objects and avoid
  * accessing the database for relationships.
- *
+ * <p>
  * Cache usage can also be used for modify Update-All and Delete-All queries.
  * For modify-all queries it effects how the cache is updated, either NoCache or Invalidate.
  * By default modify-all queries invalidate the cache.
- *
+ * <p>
  * The class contains all the valid values for QueryHints.CACHE_USAGE query hint.
  *
  * <p>JPA Query Hint Usage:

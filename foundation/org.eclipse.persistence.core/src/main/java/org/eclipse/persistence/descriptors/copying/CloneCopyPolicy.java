@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors.copying;
 
+import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -29,16 +30,16 @@ import java.lang.reflect.Method;
 /**
  * <p><b>Purpose</b>: Allows a clone of an object to be created with a method that returns
  * the cloned object.
- *
+ * <p>
  * It is possible to define methods for two types of clones
- *
- * 1. methodName can be set to define the method EclipseLink uses to clone objects for it's
- * own internal use.  The objects created by this method will not be visible to the user, and
- * instead used as a basis for comparison when a DeferredChangeDetectionPolicy used.  This method will
- * also be in place of the workingCopyMethod if it is not provided
- *
- * 2. workingCopyMethod this method is used to create the clone that is returned to the user when an
- * Object is registered in a UnitOfWork
+ * <ul>
+ * <li>{@code methodName} can be set to define the method EclipseLink uses to clone objects for it's
+ * own internal use. The objects created by this method will not be visible to the user, and
+ * instead used as a basis for comparison when a {@linkplain DeferredChangeDetectionPolicy} used. This method will
+ * also be in place of the {@code workingCopyMethod} if it is not provided</li>
+ * <li>{@code workingCopyMethod} this method is used to create the clone that is returned to the user when an
+ * {@code Object} is registered in a {@linkplain UnitOfWork}</li>
+ * </ul>
  */
 public class CloneCopyPolicy extends AbstractCopyPolicy {
 
@@ -53,7 +54,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     }
 
     /**
-     * Clone through calling the clone method.
+     * Clone through calling the {@code clone} method.
      */
     @Override
     public Object buildClone(Object domainObject, Session session) throws DescriptorException {
@@ -75,7 +76,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     }
 
     /**
-     * Clone through the workingCopyClone method, or if not specified the clone method.
+     * Clone through the {@code workingCopyClone} method, or if not specified the {@code clone} method.
      */
     @Override
     public Object buildWorkingCopyClone(Object domainObject, Session session) throws DescriptorException {
@@ -95,7 +96,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     }
 
     /**
-     * Create a new instance, unless a workingCopyClone method is specified, then build a new instance and clone it.
+     * Create a new instance, unless a {@code workingCopyClone} method is specified, then build a new instance and clone it.
      */
     @Override
     public Object buildWorkingCopyCloneFromRow(DataRecord row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
@@ -126,7 +127,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     }
 
     /**
-     * Return the workingCopyClone method.
+     * Return the {@code workingCopyClone} method.
      * This is used to clone within a unit of work.
      */
     protected Method getWorkingCopyMethod() {
@@ -134,7 +135,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     }
 
     /**
-     * Return the workingCopyClone method name.
+     * Return the {@code workingCopyClone} method name.
      * This is used to clone within a unit of work.
      */
     public String getWorkingCopyMethodName() {
@@ -183,7 +184,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     }
 
     /**
-     * Set the workingCopyClone method.
+     * Set the {@code workingCopyClone} method.
      * This is used to clone within a unit of work.
      */
     protected void setWorkingCopyMethod(Method method) {
@@ -191,7 +192,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
     }
 
     /**
-     * Set the workingCopyClone method name.
+     * Set the {@code workingCopyClone} method name.
      * This is used to clone within a unit of work.
      */
     public void setWorkingCopyMethodName(String methodName) {

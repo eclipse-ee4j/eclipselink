@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class RMIRemoteConnection extends RemoteConnection {
      * it to execute the command in the remote VM. The result is currently assumed
      * to be either null if successful, or an exception string if an exception was
      * thrown during execution.
-     *
+     * <p>
      * If a RemoteException occurred then a communication problem occurred. In this
      * case the exception will be wrapped in a CommunicationException and re-thrown.
      */
@@ -63,7 +63,7 @@ public class RMIRemoteConnection extends RemoteConnection {
      * it to execute the command in the remote VM. The result is currently assumed
      * to be either null if successful, or an exception string if an exception was
      * thrown during execution.
-     *
+     * <p>
      * If a RemoteException occurred then a communication problem occurred. In this
      * case the exception will be wrapped in a CommunicationException and re-thrown.
      */

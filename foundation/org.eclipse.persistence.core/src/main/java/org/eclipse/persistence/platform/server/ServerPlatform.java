@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,22 +32,22 @@ import java.sql.SQLException;
 
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the interface describing the behavior for ServerPlatformBase, and any other
  * class that wants to provide behavior for a server.
- *
+ * <p>
  * This interface provides the behavior for
- *
+ * <p>
  * - Which external transaction controller to use
  * - Whether or not to enable JTA (external transaction control)
  * - How to register/unregister for runtime services (JMX/MBean)
  * - Whether or not to enable runtime services
  * - How to launch container Threads
- *
+ * <p>
  * Any subclasses of ServerPlatformBase created by the user must implement this interface.
- *
+ * <p>
  * public API:
- *
+ * <p>
  *  String getServerNameAndVersion()
  *
  * @see ServerPlatformBase
@@ -81,7 +81,7 @@ public interface ServerPlatform {
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of external transaction controller to use
      * For this server platform. This is read-only.
-     *
+     * <p>
      * If the subclasses of the ServerPlatformBase do not provide the Class desired, then
      * a new subclass should be created to return the desired class.
      *
@@ -109,7 +109,7 @@ public interface ServerPlatform {
     /**
      * INTERNAL: initializeExternalTransactionController(): Populate the DatabaseSession's
      * external transaction controller with an instance of my transaction controller class.
-     *
+     * <p>
      * To change the external transaction controller class, we recommend creating a subclass of
      * ServerPlatformBase, and overriding getExternalTransactionControllerClass()
      *
@@ -211,7 +211,7 @@ public interface ServerPlatform {
     /**
      * INTERNAL: launchContainerRunnable(Runnable runnable): Use the container library to
      * start the provided Runnable.
-     *
+     * <p>
      * Default behavior is to use Thread(runnable).start()
      *
      * @param runnable the instance of runnable to be "started"
@@ -220,7 +220,7 @@ public interface ServerPlatform {
 
     /**
      * INTERNAL: getServerLog(): Return the ServerLog for this platform
-     *
+     * <p>
      * Return the default ServerLog in the base
      *
      * @return org.eclipse.persistence.logging.SessionLog
