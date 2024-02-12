@@ -596,7 +596,7 @@ public abstract class RuntimeServices {
 
         /**
          * PUBLIC: Set the EclipseLink log level to be used at runtime.
-         *
+         * <p>
          * This does not affect the log level in the project (i.e. The next
          * time the application is deployed, changes are forgotten)
          *
@@ -704,7 +704,7 @@ public abstract class RuntimeServices {
      /**
       * Provide an instance of 2 Dimensional Array simulating tabular format information about all
       * classes in the session whose class names match the provided filter.
-      *
+      * <p>
       * The 2 Dimensional array contains each item with values being row object array. Each row object array
       * represents EclipseLink class details info with respect to below attributes:
       * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -723,7 +723,7 @@ public abstract class RuntimeServices {
      /**
       * PUBLIC: Provide an instance of 2 Dimensional Array simulating tabular format information about all
       * classes in the session.
-      *
+      * <p>
       * The 2 Dimensional array contains each item with values being row object array. Each row object array
       * represents EclipseLink class details info with respect to below attributes:
       * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -1365,7 +1365,7 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * Answer the CompositeType describing the CompositeData that we return for
       * each IdentityMap (or subclass).
-      *
+      * <p>
       * This is mostly for the client side to see what kind of information is returned.
       * @return javax.management.openmbean.CompositeType
       */
@@ -1380,7 +1380,7 @@ public abstract class RuntimeServices {
      /**
       * Provide a list of instance of ClassSummaryDetail containing information about the
       * classes in the session whose class names match the provided filter.
-      *
+      * <p>
       * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
       * convert class attribute to JMX required open type, it has:-
       *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -1420,7 +1420,7 @@ public abstract class RuntimeServices {
      /**
       * Provide a list of instance of ClassSummaryDetail containing information about all
       * classes in the session.
-      *
+      * <p>
       * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
       * convert class attribute to JMX required open type, it has:-
       *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -1437,7 +1437,7 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * Answer the TabularType describing the TabularData that we return from
       * getCacheSummaryDetails() and getCacheSummaryDetails(String filter)
-      *
+      * <p>
       * This is mostly for the client side to see what kind of information is returned.
       *
       * @return javax.management.openmbean.TabularType
@@ -1512,12 +1512,12 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * Provide an instance of TabularData containing information about the
       * classes in the session whose class names match the provided filter.
-      *
+      * <p>
       * The TabularData contains rowData with values being CompositeData(s)
-      *
+      * <p>
       * CompositeData has:
       *    CompositeType: column names are ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-      *
+      * <p>
       *  Each CompositeData can have get(myColumnName) sent to it.
       *
       *
@@ -1558,12 +1558,12 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * Provide an instance of TabularData containing information about all
       * classes in the session.
-      *
+      * <p>
       * The TabularData contains rowData with values being CompositeData(s)
-      *
+      * <p>
       * CompositeData has:
       *    CompositeType: column names are ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-      *
+      * <p>
       *  Each CompositeData can have get(myColumnName) sent to it.
       *
       */

@@ -273,7 +273,6 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     public <T> T getNewLockValue(ModifyQuery query) {
         Class<?> objectClass = query.getDescriptor().getJavaClass();
         Number value;
-        Number newWriteLockValue = null;
         if (isStoredInCache()) {
             value = (Number)query.getSession().getIdentityMapAccessorInstance().getWriteLockValue(((WriteObjectQuery)query).getPrimaryKey(), objectClass, getDescriptor());
         } else {
@@ -284,7 +283,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
         }
 
         // Increment the value, this goes to the database
-        newWriteLockValue = incrementWriteLockValue(value);
+        Number newWriteLockValue = incrementWriteLockValue(value);
         return (T) newWriteLockValue;
     }
 
@@ -594,7 +593,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     /**
      * INTERNAL:
      * This method should merge changes from the parent into the child.
-     *
+     * <p>
      * #see this method in VersionLockingPolicy
      */
     @Override

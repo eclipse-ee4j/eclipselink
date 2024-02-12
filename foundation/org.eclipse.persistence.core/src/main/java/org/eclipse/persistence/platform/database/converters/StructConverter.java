@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import java.sql.Struct;
  * 2. convertToStruct(Object, Connection) will be invoked when an Object of the class
  * returned by getJavaType() is written to the database.  This conversion happens immediately before the
  * object is written to the database
- *
+ * <p>
  * Note: Many Structs can also be mapped with mappings StructureMapping and ObjectRelationalDataTypeDescriptor
  * This class provides support for advanced types of Structures that require some processing immediately
  * before writing to the database or immediately after reading from the database.

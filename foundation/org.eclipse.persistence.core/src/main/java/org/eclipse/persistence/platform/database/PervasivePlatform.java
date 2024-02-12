@@ -319,7 +319,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
 
     /** Append the receiver's field 'identity' constraint clause to
     *   a writer.
-    *
+    * <p>
     *  Taken from
     *  org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\AccessPlatform.java
     */
@@ -439,7 +439,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     /**
      * INTERNAL:
      * Build the identity query for native sequencing.
-     *
+     * <p>
      * Taken verbatim from org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\SQLServerPlatform.java
      *
      */

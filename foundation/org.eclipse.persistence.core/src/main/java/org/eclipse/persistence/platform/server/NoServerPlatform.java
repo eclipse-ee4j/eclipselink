@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,12 +21,12 @@ import org.eclipse.persistence.sessions.ExternalTransactionController;
 /**
  *
  * PUBLIC:
- *
+ * <p>
  * This platform is used when EclipseLink is not within any server (Oc4j, WebLogic, ...)
  * This is also the default platform for all newly created DatabaseSessions.
- *
+ * <p>
  * This platform has:
- *
+ * <p>
  * - No external transaction controller class
  * - No runtime services (JMX/MBean)
  * - No launching of container Threads
@@ -78,7 +78,7 @@ public final class NoServerPlatform extends ServerPlatformBase {
 
     /**
      * INTERNAL: getServerLog(): Return the ServerLog for this platform
-     *
+     * <p>
      * Return the default ServerLog in the base
      *
      * @return org.eclipse.persistence.logging.SessionLog

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,7 +70,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted
      * objects list if necessary
-     *
+     * <p>
      * This method is used for removal of private owned relationships
      *
      */
@@ -142,7 +142,7 @@ public interface MapKeyMapping extends MapComponentMapping {
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
-     *
+     * <p>
      * This method is used for removal of private owned relationships
      *
      */

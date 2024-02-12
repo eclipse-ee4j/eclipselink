@@ -1187,10 +1187,10 @@ public class PersistenceUnitProperties {
     /**
      * Property for disabling Bean Validation optimisations.
      * Bean Validation features optimisations, which are used to skip BV processes on non-constrained objects.
-     *
+     * <p>
      * This is to make maintenance easier and to allow for debugging in case that some object is not validated,
      * but should be.
-     *
+     * <p>
      * Usage: set to {@link Boolean#TRUE} to disable optimisations, set to {@link Boolean#FALSE} to re-enable them
      * again.
      */
@@ -1946,7 +1946,7 @@ public class PersistenceUnitProperties {
     /**
      * The {@code eclipselink.weaving.internal} property indicates
      * whether internal optimizations should be enabled through weaving.
-     *
+     * <p>
      * Internal optimizations include caching of primary key and session,
      * addition of a serialVersionUID if none exists, optimization of EclipseLink's
      * cloning strategy and optimization of the way EclipseLink gets and sets values from

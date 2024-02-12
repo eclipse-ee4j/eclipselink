@@ -60,7 +60,7 @@ import java.util.Vector;
  *
  * <b>Description</b>: Represents a single row of attribute values (converted using mapping) for
  * a ReportQuery. The attributes can be from various objects.
- *
+ * <p>
  * <b>Responsibilities</b>:<ul>
  * <li> Converted field values into object attribute values.
  * <li> Provide access to values by index or item name

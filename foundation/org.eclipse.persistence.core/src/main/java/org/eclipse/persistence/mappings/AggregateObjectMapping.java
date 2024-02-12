@@ -95,7 +95,7 @@ import java.util.Vector;
  * <p><b>Purpose</b>:Two objects can be considered to be related by aggregation if there is a strict
  * 1:1 relationship between the objects. This means that the target (child or owned) object
  * cannot exist without the source (parent) object.
- *
+ * <p>
  * In TopLink, it also means the data for the owned object is stored in the same table as
  * the parent.
  *
@@ -309,7 +309,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted
      * objects list if necessary
-     *
+     * <p>
      * This method is used for removal of private owned relationships.
      * AggregateObjectMappings are dealt with in their parent delete, so this is a no-op.
      *
@@ -347,7 +347,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * and place it in the source object.
      * In either situation, when writing, the mapping will place a NULL in all the
      * fields in the database row for the aggregate object.
-     *
+     * <p>
      * Note: Any aggregate that has a relationship mapping automatically does not allow
      * null.
      */
@@ -1081,7 +1081,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
-     *
+     * <p>
      * This method is used for removal of private owned relationships.
      * AggregateObjectMappings are dealt with in their parent delete, so this is a no-op.
      *
@@ -1101,7 +1101,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * and place it in the source object.
      * In either situation, when writing, the mapping will place a NULL in all the
      * fields in the database row for the aggregate object.
-     *
+     * <p>
      * Note: Any aggregate that has a relationship mapping automatically does not allow
      * null.
      */
@@ -1166,7 +1166,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Return the selection criteria necessary to select the target object when this mapping
      * is a map key.
-     *
+     * <p>
      * AggregateObjectMappings do not need any additional selection criteria when they are map keys
      */
     @Override
@@ -1295,7 +1295,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * Return the query that is used when this mapping is part of a joined relationship
-     *
+     * <p>
      * This method is used when this mapping is used to map the key in a Map
      */
     @Override
@@ -1332,7 +1332,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * If required, get the targetVersion of the source object from the merge manager.
-     *
+     * <p>
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
      */
     @Override
@@ -1701,7 +1701,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * To change this behavior, set the value of this variable to false. Then the mapping
      * will build a new instance of the aggregate object that is filled with nulls
      * and place it in the source object.
-     *
+     * <p>
      * Note: Any aggregate that has a relationship mapping automatically does not allow
      * null.
      */
@@ -1945,7 +1945,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * To change this behavior, set the value of this variable to false. Then the mapping
      * will build a new instance of the aggregate object that is filled with nulls
      * and place it in the source object.
-     *
+     * <p>
      * Note: Any aggregate that has a relationship mapping automatically does not allow
      * null.
      */

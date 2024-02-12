@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ import java.util.Collection;
  *    uow.commit();
  * }
  * </code>
- *
+ * <p>
  * <b>Detachment</b>: The detach helper methods are provided to assist with the
  * construction of applications. This helper class was designed for use within
  * session beans (SB) and in the case of local SBs the objects returned are not
@@ -162,7 +162,7 @@ public class SessionFactory {
      * session does not have an external transaction controller or there is
      * not an active JTA transaction then a newly acquire client session is
      * returned on each call.
-     *
+     * <p>
      * This method also properly handles acquire a client session from a broker
      * as well as returning the shared session in the case it is a database
      * session.

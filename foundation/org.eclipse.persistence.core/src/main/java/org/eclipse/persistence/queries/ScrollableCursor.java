@@ -440,7 +440,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * This method differs slightly from conventional read() operation on a Java stream.  This
      * method return the next object in the collection rather than specifying the number of
      * bytes to be read in.
-     *
+     * <p>
      * Return the next object from the collection, if beyond the read limit read from the cursor
      * @return - next object in stream
      * @throws DatabaseException if read pass end of stream
@@ -460,7 +460,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * PUBLIC:
      * This method differs slightly from conventional read() operation on a Java stream.  This
      * method returns the next number of objects in the collection in a vector.
-     *
+     * <p>
      * Return the next specified number of objects from the collection, if beyond the read limit read from the cursor
      * @param number - number of objects to be returned
      * @return - vector containing next number of objects

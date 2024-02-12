@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -745,7 +745,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * PUBLIC:
      * Read all the instances of the class from the database returned through execution the Call string.
      * The Call can be an SQLCall or JPQLCall.
-     *
+     * <p>
      * example: session.readAllObjects(Employee.class, new SQLCall("SELECT * FROM EMPLOYEE"));
      * @see SQLCall
      * @see JPQLCall
@@ -781,7 +781,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * PUBLIC:
      * Read the first instance of the class from the database returned through execution the Call string.
      * The Call can be an SQLCall or JPQLCall.
-     *
+     * <p>
      * example: session.readObject(Employee.class, new SQLCall("SELECT * FROM EMPLOYEE"));
      * @see SQLCall
      * @see JPQLCall
@@ -852,12 +852,12 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
     /**
      * OBSOLETE:
      * Previously used for JTS integration.
-     *
+     * <p>
      * If your application requires to have JTS control transactions a
      * ServerPlatform must be specified before login, either via your sessions.xml or in code.
-     *
+     * <p>
      * A subclass of ServerPlatformBase should handle your requirements.
-     *
+     * <p>
      * If not, we suggest creating your own subclass of ServerPlatformBase to specify the
      * external transaction controller class.
      *

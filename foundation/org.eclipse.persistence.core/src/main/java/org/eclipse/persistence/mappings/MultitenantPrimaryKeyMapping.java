@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     /**
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
-     *
+     * <p>
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
@@ -68,7 +68,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     /**
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
-     *
+     * <p>
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
@@ -92,7 +92,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
      * INTERNAL:
      * Compare the clone and backup clone values and return a change record if
      * the value changed.
-     *
+     * <p>
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
@@ -104,7 +104,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     /**
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
-     *
+     * <p>
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
@@ -188,7 +188,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.
-     *
+     * <p>
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
@@ -201,7 +201,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
      * Merge changes from the source to the target object. This merge is only
      * called when a changeSet for the target does not exist or the target is
      * uninitialized
-     *
+     * <p>
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override

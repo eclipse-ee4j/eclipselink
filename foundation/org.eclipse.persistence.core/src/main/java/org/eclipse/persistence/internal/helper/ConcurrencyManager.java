@@ -842,7 +842,7 @@ public class ConcurrencyManager implements Serializable {
      * Then once IdentityMapAccessor.printIdentityMapLocks() is called the stack call for each
      * lock will be printed as well.  Because locking issues are usually quite time sensitive setting
      * this flag may inadvertently remove the deadlock because of the change in timings.
-     *
+     * <p>
      * There is also a system level property for this setting. "eclipselink.cache.record-stack-on-lock"
      */
     public static void setShouldTrackStack(boolean shouldTrackStack) {

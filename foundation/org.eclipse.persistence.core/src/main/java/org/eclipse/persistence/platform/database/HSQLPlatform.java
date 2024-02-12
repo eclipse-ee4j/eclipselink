@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -42,7 +42,7 @@ import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Provides HSQL specific behavior.
- *
+ * <p>
  * Support HSQL functionality as of 1.8.1.
  * <p>Includes:
  * <ul>
@@ -320,10 +320,10 @@ public class HSQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
      * limiting the results of a query in SQL.  These limits tend to be used in two ways.
-     *
+     * <p>
      * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
      * 2. MaxRows is the number of rows to be returned
-     *
+     * <p>
      * HSQL uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex.
      */
     @Override

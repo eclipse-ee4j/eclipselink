@@ -447,7 +447,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void addDeletedPrivateOwnedObjects(DatabaseMapping mapping, Object object)
     {
         if(deletedPrivateOwnedObjects == null){
-            deletedPrivateOwnedObjects = new IdentityHashMap();
+            deletedPrivateOwnedObjects = new IdentityHashMap<>();
         }
         List<Object> list = deletedPrivateOwnedObjects.get(mapping);
         if(list == null){
@@ -1922,10 +1922,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * when the object is changed in UnitOfWork. The cloneFromUOW must be the clone of from this
      * UnitOfWork and it must implements version locking or timestamp locking.
      * The SQL would look like the followings.
-     *
+     * <p>
      * If shouldModifyVersionField is true,
      * "UPDATE EMPLOYEE SET VERSION = 2 WHERE EMP_ID = 9 AND VERSION = 1"
-     *
+     * <p>
      * If shouldModifyVersionField is false,
      * "UPDATE EMPLOYEE SET VERSION = 1 WHERE EMP_ID = 9 AND VERSION = 1"
      */
@@ -3504,7 +3504,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged.
      *
      * @return the registered version for the clone being merged.
@@ -3570,7 +3570,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include references from
      * dependent objects to independent objects.
      *
@@ -3590,7 +3590,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include references from
      * dependent objects to independent objects.
      *
@@ -3609,7 +3609,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include references from
      * dependent objects to independent objects.
      *
@@ -3639,7 +3639,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include references from
      * dependent objects to independent objects.
      *
@@ -4271,7 +4271,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * INTERNAL:
      * Updated to allow passing in of the object's descriptor
-     *
+     * <p>
      * Register the new object with the unit of work.
      * This will register the new object without cloning.
      * Normally the registerObject method should be used for all registration of new and existing objects.
@@ -4558,14 +4558,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Allows for calling method to provide the descriptor information for this
      * object.  Prevents double lookup of descriptor.
-     *
+     * <p>
      *
      * Register the object with the unit of work.
      * All newly created root domain objects must be registered to be inserted on commit.
      * Also any existing objects that will be edited and were not read from this unit of work
      * must also be registered.
      * Once registered any changes to the objects will be committed to the database on commit.
-     *
+     * <p>
      * calling this method will also sort the objects into different different groups
      * depending on if the object being registered is a bean or a regular Java
      * object and if its updates are deferred, non-deferred or if all modifications
@@ -5308,7 +5308,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or other serialization mechanisms), because the RMI object will
      * be a clone this will merge its attributes correctly to preserve object identity
      * within the unit of work and record its changes.
-     *
+     * <p>
      * Only direct attributes are merged.
      *
      * @return the registered version for the clone being merged.

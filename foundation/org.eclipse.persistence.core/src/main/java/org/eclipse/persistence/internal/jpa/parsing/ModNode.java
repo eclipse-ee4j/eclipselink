@@ -24,7 +24,7 @@ import org.eclipse.persistence.expressions.ExpressionMath;
  * <p><b>Responsibilities</b>:<ul>
  * <li> Answer the correct expression for a MOD
  * <li> Maintain the parts of a MOD statement
- *
+ * <p>
  * e.g.
  * SELECT ... FROM ... WHERE MOD(emp.salary, 2) > 1000
  * </ul>

@@ -32,7 +32,7 @@ import java.sql.Connection;
 
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing WebLogic-specific
  * server behavior.
  * <p>

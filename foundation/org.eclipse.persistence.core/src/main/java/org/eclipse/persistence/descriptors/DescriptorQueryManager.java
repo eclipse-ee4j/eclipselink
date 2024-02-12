@@ -117,11 +117,11 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * queryTimeout has three possible settings: DefaultTimeout, NoTimeout, and 1..N
      * This applies to both DatabaseQuery.queryTimeout and DescriptorQueryManager.queryTimeout
-     *
+     * <p>
      * DatabaseQuery.queryTimeout:
      * - DefaultTimeout: get queryTimeout from DescriptorQueryManager
      * - NoTimeout, 1..N: overrides queryTimeout in DescriptorQueryManager
-     *
+     * <p>
      * DescriptorQueryManager.queryTimeout:
      * - DefaultTimeout: get queryTimeout from parent DescriptorQueryManager. If there is no
      * parent, default to NoTimeout
@@ -272,43 +272,42 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      */
     @Override
     public Object clone() {
-        DescriptorQueryManager manager = null;
         try {
-            manager = (DescriptorQueryManager)super.clone();
-        } catch (Exception exception) {
+            DescriptorQueryManager manager = (DescriptorQueryManager) super.clone();
+
+            // Bug 3037701 - clone the queries
+            manager.setQueries(new LinkedHashMap<>(getQueries().size()));//bug5677655
+            Iterator<List<DatabaseQuery>> iterator = queries.values().iterator();
+            while (iterator.hasNext()) {
+                Iterator<DatabaseQuery> queriesForKey = iterator.next().iterator();
+                while (queriesForKey.hasNext()) {
+                    DatabaseQuery initialQuery = queriesForKey.next();
+                    DatabaseQuery clonedQuery = (DatabaseQuery)initialQuery.clone();
+                    clonedQuery.setDescriptor(manager.getDescriptor());
+                    manager.addQuery(clonedQuery);
+                }
+            }
+            manager.setDoesExistQuery((DoesExistQuery)getDoesExistQuery().clone());
+            if (getReadAllQuery() != null) {
+                manager.setReadAllQuery((ReadAllQuery)getReadAllQuery().clone());
+            }
+            if (getReadObjectQuery() != null) {
+                manager.setReadObjectQuery((ReadObjectQuery)getReadObjectQuery().clone());
+            }
+            if (getUpdateQuery() != null) {
+                manager.setUpdateQuery((UpdateObjectQuery)getUpdateQuery().clone());
+            }
+            if (getInsertQuery() != null) {
+                manager.setInsertQuery((InsertObjectQuery)getInsertQuery().clone());
+            }
+            if (getDeleteQuery() != null) {
+                manager.setDeleteQuery((DeleteObjectQuery)getDeleteQuery().clone());
+            }
+
+            return manager;
+        } catch (CloneNotSupportedException exception) {
             throw new AssertionError(exception);
         }
-
-        // Bug 3037701 - clone the queries
-        manager.setQueries(new LinkedHashMap<>(getQueries().size()));//bug5677655
-        Iterator<List<DatabaseQuery>> iterator = queries.values().iterator();
-        while (iterator.hasNext()) {
-            Iterator<DatabaseQuery> queriesForKey = iterator.next().iterator();
-            while (queriesForKey.hasNext()) {
-                DatabaseQuery initialQuery = queriesForKey.next();
-                DatabaseQuery clonedQuery = (DatabaseQuery)initialQuery.clone();
-                clonedQuery.setDescriptor(manager.getDescriptor());
-                manager.addQuery(clonedQuery);
-            }
-        }
-        manager.setDoesExistQuery((DoesExistQuery)getDoesExistQuery().clone());
-        if (getReadAllQuery() != null) {
-            manager.setReadAllQuery((ReadAllQuery)getReadAllQuery().clone());
-        }
-        if (getReadObjectQuery() != null) {
-            manager.setReadObjectQuery((ReadObjectQuery)getReadObjectQuery().clone());
-        }
-        if (getUpdateQuery() != null) {
-            manager.setUpdateQuery((UpdateObjectQuery)getUpdateQuery().clone());
-        }
-        if (getInsertQuery() != null) {
-            manager.setInsertQuery((InsertObjectQuery)getInsertQuery().clone());
-        }
-        if (getDeleteQuery() != null) {
-            manager.setDeleteQuery((DeleteObjectQuery)getDeleteQuery().clone());
-        }
-
-        return manager;
     }
 
     /**
@@ -517,7 +516,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * PUBLIC:
      * set the pre-defined queries for the descriptor.  Used to write out deployment XML
      */
-    public void setQueries(Map map) {
+    public void setQueries(Map<String, List<DatabaseQuery>> map) {
         queries = map;
     }
 
@@ -644,7 +643,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * CR#3711: Check if the class for this descriptor has a parent class.
      * Then search this parent's descriptor for a query with the same name
      * and arguments.  If nothing found, return null.
-     *
+     * <p>
      * This method should only be used recursively by getQuery().
      */
     protected DatabaseQuery getQueryFromParent(String name, Vector arguments) {
@@ -889,7 +888,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Initialize the queryTimeout to:
-     *
+     * <p>
      * NoTimeout: If queryTimeout is DefaultTimeout, either directly or via inheritance.
      * Parent's Timeout: If queryTimeout is something other than DefaultTimeout via my parent.
      */
@@ -1687,7 +1686,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Return the number of seconds queries will wait for their Statement to execute.
-     *
+     * <p>
      * - DefaultTimeout: get queryTimeout from parent DescriptorQueryManager. If there is no
      * parent, default to NoTimeout
      * - NoTimeout, 1..N: overrides parent queryTimeout
@@ -1704,7 +1703,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * PUBLIC:
      * Set the number of seconds that queries will wait for their Statement to execute.
      * If the limit is exceeded, a DatabaseException is thrown.
-     *
+     * <p>
      * - DefaultTimeout: get queryTimeout from parent DescriptorQueryManager. If there is no
      * parent, default to NoTimeout
      * - NoTimeout, 1..N: overrides parent queryTimeout

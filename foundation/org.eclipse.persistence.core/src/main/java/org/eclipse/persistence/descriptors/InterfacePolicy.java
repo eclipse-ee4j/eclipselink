@@ -90,7 +90,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Add the parent Interface class.
-     *
+     * <p>
      * This method should be called once for each parent Interface of the Descriptor.
      */
     public void addParentInterface(Class<?> parentInterface) {

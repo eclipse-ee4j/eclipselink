@@ -158,7 +158,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     /**
      * INTERNAL:
      * Possible for future development, not currently supported.
-     *
+     * <p>
      * Retrieve the value through using batch reading.
      * This executes a single query to read the target for all of the objects and stores the
      * result of the batch query in the original query to allow the other objects to share the results.
@@ -226,7 +226,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Compare the references of the two objects are the same, not the objects themselves.
      * Used for independent relationships.
      * This is used for testing and validation purposes.
-     *
+     * <p>
      * Must get separate fields for the objects because we may be adding a different class to the
      * attribute because of the interface
      */

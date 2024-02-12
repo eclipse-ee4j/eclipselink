@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * attribute first occurs. It avoids the wasteful practice of loading up all
  * data of the object's attributes, in which the user is interested in only
  * partial of them.
- *
+ * <p>
  * A great deal of caution and careful system use case analysis should be use
  * when using the fetch group feature, as the extra round-trip would well offset
  * the gain from the deferred loading in many cases.
- *
+ * <p>
  * EclipseLink fetch group support is twofold: the pre-defined fetch groups at
  * the Entity or MappedSuperclass level; and dynamic (use case) fetch groups at
  * the query level.

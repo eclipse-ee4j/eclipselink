@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -218,7 +218,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Get the cached results associated with a query.  Results are cached by the
      * values of the parameters to the query so different parameters will have
      * different cached results.
-     *
+     * <p>
      * results are only cached in the parent session for UnitOfWorks
      */
     @Override
@@ -231,7 +231,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      *  Set the results for a query.
      *  Query results are cached based on the parameter values provided to the query
      *  different parameter values access different caches.
-     *
+     * <p>
      *  Results are only cached in the parent session for UnitOfWorks
      */
     @Override

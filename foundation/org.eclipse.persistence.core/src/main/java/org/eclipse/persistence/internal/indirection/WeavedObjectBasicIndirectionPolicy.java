@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 /**
  * A WeavedObjectBasicIndirectionPolicy is used by OneToOne mappings that are LAZY through weaving
  * and which use Property(method) access.
- *
+ * <p>
  * It extends BasicIndirection by providing the capability of calling the set method that was initially
  * mapped in addition to the set method for the weaved valueholder in order to coordinate the value of the
  * underlying property with the value stored in the valueholder

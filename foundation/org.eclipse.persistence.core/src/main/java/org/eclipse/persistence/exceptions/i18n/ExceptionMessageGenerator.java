@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import java.util.Vector;
 /**
  * INTERNAL:
  * Utility class to generate exception messages using ResourceBundles.
- *
+ * <p>
  * Creation date: (12/7/00 10:30:38 AM)
  * @author Rick Barkhouse
  */
@@ -108,7 +108,7 @@ public final class ExceptionMessageGenerator {
 
     /**
      * Get one of the generic headers used for the exception's toString().
-     *
+     * <p>
      * E.g., "EXCEPTION DESCRIPTION: ", "ERROR CODE: ", etc.
      */
     public static String getHeader(String headerLabel) {

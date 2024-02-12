@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
  * It is specifically used on a merge() operation to determine if only the cache
  * should be used to determine if an object exists, or the object should
  * be read (from the database or cache).  By default the object is read.
- *
+ * <p>
  * An existence-checking specification is supported on an Entity or
  * MappedSuperclass annotation.
  *

@@ -707,7 +707,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * <p>Example:
      * The following will fetch along with Employee(s) "Jones" all projects they participate in
      * along with teamLeaders and their addresses, teamMembers and their phones.
-     *
+     * <p>
      * query.setSelectionCriteria(query.getExpressionBuilder().get("lastName").equal("Jones"));
      * Expression projects = query.getExpressionBuilder().anyOf("projects");
      * query.addJoinedAttribute(projects);
@@ -719,7 +719,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * query.addJoinedAttribute(teamMembers);
      * Expression teamMembersPhones = teamMembers.anyOfAllowingNone("phoneNumbers");
      * query.addJoinedAttribute(teamMembersPhones);
-     *
+     * <p>
      * Note that:
      * the order is essential: an expression should be added before any expression derived from it;
      * the object is built once - it won't be rebuilt if it to be read again as a joined attribute:
@@ -1926,7 +1926,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * PUBLIC:
      * Answers if the query lock mode is known to be LOCK or LOCK_NOWAIT.
-     *
+     * <p>
      * In the case of DEFAULT_LOCK_MODE and the query reference class being a CMP entity bean,
      * at execution time LOCK, LOCK_NOWAIT, or NO_LOCK will be decided.
      * <p>
@@ -3458,7 +3458,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * this allows all of the data required for the parts to be read in a single query instead of (n) queries.
      * This should be used when the application knows that it requires the part for all of the objects being read.
      * This can be used for one-to-one, one-to-many, many-to-many and direct collection mappings.
-     *
+     * <p>
      * The use of the expression allows for nested batch reading to be expressed.
      * <p>Example: query.addBatchReadAttribute("phoneNumbers")
      *
@@ -3478,7 +3478,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * this allows all of the data required for the parts to be read in a single query instead of (n) queries.
      * This should be used when the application knows that it requires the part for all of the objects being read.
      * This can be used for one-to-one, one-to-many, many-to-many and direct collection mappings.
-     *
+     * <p>
      * The use of the expression allows for nested batch reading to be expressed.
      * <p>Example: query.addBatchReadAttribute(query.getExpressionBuilder().get("policies").get("claims"))
      *

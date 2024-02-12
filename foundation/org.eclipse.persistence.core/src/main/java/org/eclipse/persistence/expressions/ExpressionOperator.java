@@ -2613,7 +2613,7 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * ADVANCED: Set the array of indexes to use when building the SQL function.
-     *
+     * <p>
      * The index of the array is the position in the printout, from left to right, starting with zero.
      * The value of the array entry is the number of the argument to print at that particular output position.
      * So each argument can be used zero, one or many times.

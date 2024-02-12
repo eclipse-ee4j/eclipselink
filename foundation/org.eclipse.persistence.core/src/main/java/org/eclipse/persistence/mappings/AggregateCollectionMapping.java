@@ -248,7 +248,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * PUBLIC:
-     *
+     * <p>
      * Maps a field name in the aggregate descriptor
      * to a field name in the source table.
      */

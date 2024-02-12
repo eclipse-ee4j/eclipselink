@@ -31,7 +31,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * strategy. Tenant discriminator column(s) are completely user specified and
  * there is no limit on how many tenant discriminator columns an application
  * can define (using the TenantDiscriminatorColumns annotation)
- *
+ * <p>
  * Tenant discriminator column(s) can be specified at the Entity or
  * MappedSuperclass level and must always be accompanied with a
  * Multitenant(SINGLE_TABLE) specification. It is not sufficient to specify

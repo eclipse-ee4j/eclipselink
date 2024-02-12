@@ -69,7 +69,7 @@ public abstract class ObjectExpression extends DataExpression {
      * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
-     *
+     * <p>
      * downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
      * <pre>

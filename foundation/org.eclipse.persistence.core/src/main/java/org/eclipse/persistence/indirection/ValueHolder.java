@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -113,7 +113,7 @@ public class ValueHolder<T> implements WeavedAttributeValueHolderInterface<T>, C
      * Used as part of the implementation of WeavedAttributeValueHolderInterface
      * Used to track whether a valueholder that has been weaved into a class is coordinated
      * with the underlying property
-     *
+     * <p>
      * This method will be called internall when the state of Coordination between the
      * weaved valueholder and the underlying value is known
      */
@@ -128,7 +128,7 @@ public class ValueHolder<T> implements WeavedAttributeValueHolderInterface<T>, C
      * Used as part of the implementation of WeavedAttributeValueHolderInterface
      * Used to determine if this ValueHolder was added instantiated as part of
      * the constructor of a weaved class
-     *
+     * <p>
      * This method will be called when a ValueHolder is instantiated in a weaved class
      */
     @Override

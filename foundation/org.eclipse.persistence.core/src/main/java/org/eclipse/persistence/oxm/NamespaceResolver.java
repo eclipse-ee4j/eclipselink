@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package org.eclipse.persistence.oxm;
 
 /**
- * <p >It is common for an XML document to include one or more namespaces.
+ * <p>It is common for an XML document to include one or more namespaces.
  * TopLink supports this using its NamespaceResolver. The namespace resolver maintains
  * pairs of namespace prefixes and URIs. TopLink uses these prefixes in conjunction with the
  * XPath statements you specify on EIS mappings to XML records and XML mappings.

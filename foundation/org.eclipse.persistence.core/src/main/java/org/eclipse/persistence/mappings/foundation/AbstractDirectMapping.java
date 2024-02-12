@@ -159,7 +159,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted
      * objects list if necessary
-     *
+     * <p>
      * This method is used for removal of private owned relationships
      * DirectMappings are dealt with in their parent delete, so this is a no-op.
      */
@@ -420,7 +420,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
-     *
+     * <p>
      * This method is used for removal of private owned relationships
      * DirectMappings are dealt with in their parent delete, so this is a no-op.
      */

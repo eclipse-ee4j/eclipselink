@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Transformation is an optional annotation for org.eclipse.persistence.mappings.TransformationMapping.
  * TransformationMapping allows to map an attribute to one or more database columns.
- *
+ * <p>
  * Transformation annotation is an optional part of TransformationMapping definition.
  * Unless the TransformationMapping is write-only, it should have a ReadTransformer,
  * it defines transformation of database column(s) value(s)into attribute value.

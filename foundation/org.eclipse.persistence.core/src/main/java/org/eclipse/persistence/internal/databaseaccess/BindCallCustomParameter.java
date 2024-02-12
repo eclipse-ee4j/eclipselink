@@ -56,7 +56,7 @@ public class BindCallCustomParameter implements Serializable {
     * INTERNAL:
     * Binds the custom parameter (obj) into  the passed PreparedStatement
     * for the passed DatabaseCall.
-    *
+    * <p>
     * Called only by DatabasePlatform.setParameterValueInDatabaseCall method
     */
     public BindCallCustomParameter(Object obj) {
@@ -103,11 +103,11 @@ public class BindCallCustomParameter implements Serializable {
      *  1) the dbField is an ObjectRelationalDatabaseField with its sqltype set to Types.STRUCT
      *  2) parameter is not an instanceof java.sql.Struct
      *  3) There is an ObjectRelationalDataTypeDescriptor defined for the parameter object's class
-     *
+     * <p>
      * An Array object will be returned if:
      *  1) the dbField is an ObjectRelationalDatabaseField and sqltype is set to Types.ARRAY
      *  2) parameter is an instanceof collection and is not an instanceof java.sql.Array
-     *
+     * <p>
      * This method will be used recursively on the dbField's nestedField and objects in the collection
      * to build the Array object, allowing for nested structures to be produced ie arrays of arrays
      */

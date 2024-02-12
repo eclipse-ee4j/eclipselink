@@ -73,10 +73,10 @@ import java.util.Set;
  * A MappedKeyMapContainerPolicy should be used for mappings to implementers of Map.
  * It differs from MapContainerPolicy by allowing the MapKey to be an otherwise unmapped
  * column in a table rather than a mapped element of the value in the map.
- *
+ * <p>
  * This container policy holds a reference to a KeyMapping that will be used to construct the key
  * from the database and a reference to its owner which creates the value for the map.
- *
+ * <p>
  * The key of the map can be any implementer of MapKeyMapping and the data representing the
  * key can either be stored in the target table of the value mapping, or in a collection table that
  * associates the source to the target.   The data can either be everything necessary to compose the
@@ -634,7 +634,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * INTERNAL:
      * This method is used to check the key mapping to ensure that it does not write to
      * a field that is written by another mapping.  There are two possibilities:
-     *
+     * <p>
      * 1. The conflicting mapping has already been processed.  In that case, we add MultipleWritableMappings
      * exception to the integrity checker right away
      * 2. There are no conflicting mappings.  In that case, we store the list of fields that this mapping

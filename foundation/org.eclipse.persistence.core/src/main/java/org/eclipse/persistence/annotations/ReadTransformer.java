@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Unless the TransformationMapping is write-only, it should have a
  * ReadTransformer, it defines transformation of database column(s) value(s)
  * into attribute value.
- *
+ * <p>
  * Also unless it's a read-only mapping, either WriteTransformer annotation or
  * WriteTransformers annotation should be specified. Each WriteTransformer
  * defines transformation of the attribute value to a single database column

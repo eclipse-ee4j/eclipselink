@@ -382,7 +382,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * Create SQLDeleteAllStatements for mappings that may be responsible for references
      * to the objects to be deleted
      * in the tables NOT mapped to any class: ManyToManyMapping and DirectCollectionMapping
-     *
+     * <p>
      * NOTE: A similar pattern also used in method buildDeleteAllStatementsForMappingsWithTempTable():
      *  if you are updating this method consider applying a similar update to that method as well.
      *
@@ -413,7 +413,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
     /**
      * Build delete statements with temporary table for ManyToMany and DirectCollection mappings.
-     *
+     * <p>
      * NOTE: A similar pattern also used in method buildDeleteAllStatementsForMappings():
      *  if you are updating this method consider applying a similar update to that method as well.
      *
@@ -1203,7 +1203,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
     /**
      * Pre-build the SQL statement from the expression.
-     *
+     * <p>
      * NOTE: A similar pattern also used in method buildDeleteAllStatementsForTempTable():
      *  if you are updating this method consider applying a similar update to that method as well.
      */
@@ -2568,7 +2568,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Build delete all SQLStatements using temporary table.
      * This is recursively called for multiple table child descriptors.
-     *
+     * <p>
      * NOTE: A similar pattern also used in method prepareDeleteAll():
      *  if you are updating this method consider applying a similar update to that method as well.
      *

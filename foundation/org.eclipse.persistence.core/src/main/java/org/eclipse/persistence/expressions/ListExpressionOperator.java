@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,11 @@ import org.eclipse.persistence.internal.helper.Helper;
  * A ListExpressionOperator is used with an ArgumentListFunctionExpression.  It is capable
  * of expanding the number of arguments it can be an operator for.  It is built from a set
  * of start strings, a repeating set of separators and a set of termination strings
- *
+ * <p>
  * It typically represents a database function that has a variable list of arguments
- *
+ * <p>
  * e.g. COALESCE(arg1, arg2, arg3, .... argn)
- *
+ * <p>
  * In the example above "COALESCE(" is the start string, "," is the separator and ")" is the
  * end string
  *
@@ -79,12 +79,12 @@ public class ListExpressionOperator extends ExpressionOperator {
      * Returns an array of Strings that expects a query argument between each String in the array to form the Expression.
      * The array is built from the defined startStrings, separators, and terminationStrings.
      * Start strings and termination strings take precedence over separator strings.
-     * 
+     * <p>
      * The first defined start string will be added to the array.
      * All subsequent start strings are optional, meaning they will only be added to the array if there are argument spaces available.
-     * 
+     * <p>
      * The defined set of separator strings will be repeated, as a complete set, as long as there are argument spaces available.
-     * 
+     * <p>
      * The last defined termination string will be added to the array.
      * All antecedent termination strings are optional, meaning they will only be added to the array if there are argument spaces available.
      */

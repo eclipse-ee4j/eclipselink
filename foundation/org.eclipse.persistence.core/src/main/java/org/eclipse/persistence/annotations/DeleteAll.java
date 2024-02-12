@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * is deleted, it should use a delete all query.  This typically happens if the
  * relationship is PrivateOwned and its owner is deleted.  In that case, the members
  * of the relationship will be deleted without reading them in.
- *
+ * <p>
  * Use this annotation with caution.  EclipseLink will not validate for you whether the
  * target entity is mapped in such a way as to allow the delete all to work.
  */

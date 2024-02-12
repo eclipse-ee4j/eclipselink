@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,7 +135,7 @@ public class ClassDefinition extends CodeDefinition {
      * - Will not add imports for java.lang.*
      * - Will not add imports for classes in the same package.
      * - Will not parse method bodies, but will unqualify types it finds.
-     *
+     * <p>
      * ?? - Should un-qualification occur during writing?  That way, reflective definitions could take advantage.
      *
      */

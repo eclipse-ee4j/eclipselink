@@ -35,7 +35,7 @@ import java.util.List;
  *
  * <p>The SELECT statement determines the return type of an EJBQL query.
  * The SELECT may also determine the distinct state of a query
- *
+ * <p>
  * A SELECT can be one of the following:
  * <pre>
  *  1. SELECT OBJECT(someObject)... This query will return a collection of objects
@@ -247,7 +247,7 @@ public class SelectNode extends QueryNode {
     /**
      * Verify that the selected alias is a valid alias. If it's not valid,
      * an Exception will be thrown, likely JPQLException.aliasResolutionException.
-     *
+     * <p>
      * Valid: SELECT OBJECT(emp) FROM Employee emp WHERE ...
      * Invalid: SELECT OBJECT(badAlias) FROM Employee emp WHERE ...
      */
@@ -264,7 +264,7 @@ public class SelectNode extends QueryNode {
 
     /**
      * Answer true if the variable name given as argument is SELECTed.
-     *
+     * <p>
      * True: "SELECT OBJECT(emp) ...." &amp; variableName = "emp"
      * False: "SELECT OBJECT(somethingElse) ..." &amp; variableName = "emp"
      */

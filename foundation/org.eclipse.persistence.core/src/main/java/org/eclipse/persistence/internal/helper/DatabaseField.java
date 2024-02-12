@@ -534,7 +534,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
 
     /**
      * Set the unqualified name of the field.
-     *
+     * <p>
      * If the name contains database delimiters, they will be stripped and a flag will be set to have them
      * added when the DatabaseField is written to SQL
      */
@@ -544,7 +544,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
 
     /**
      * Set the unqualified name of the field.
-     *
+     * <p>
      * If the name contains database delimiters, they will be stripped and a flag will be set to have them
      * added when the DatabaseField is written to SQL
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -188,7 +188,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
@@ -196,7 +196,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */

@@ -173,7 +173,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Resolve any mapping references.
      */
     public void resolveReferences() {

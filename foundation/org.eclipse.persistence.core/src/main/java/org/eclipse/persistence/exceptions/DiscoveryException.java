@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
  * Instances of this exception are raised if a problem is detected during the
  * discovery of a TopLink cluster. This occurs as part of the RemoteCommandManager
  * feature.
- *
+ * <p>
  * TopLink exceptions should only ever be thrown by TopLink code.
  */
 public class DiscoveryException extends org.eclipse.persistence.exceptions.RemoteCommandManagerException implements java.io.Serializable {

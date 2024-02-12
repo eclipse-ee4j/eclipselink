@@ -34,9 +34,9 @@ import java.sql.Connection;
 
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing WebSphere-specific server behavior.
- *
+ * <p>
  * This platform has:
  * <ul>
  * <li> WebSphereTransactionController (JTA integration).

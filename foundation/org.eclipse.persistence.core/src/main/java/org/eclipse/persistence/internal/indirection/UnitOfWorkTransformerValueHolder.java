@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
  * implements behavior to access it. The object is read from
  * the database by invoking a user-specified transformer object.
  * This value holder is used only in the unit of work.
- *
+ * <p>
  * Most of the methods ignore the actual attribute values and are
  * simply used to trigger instantiation.
  *

@@ -40,15 +40,15 @@ import java.util.Vector;
 
 /**
  * This class performs package renaming. It demonstrates the following:
- *
+ * <p>
  * a) Reading the properties file to be a reference for changing the package
  * name from your source code.
- *
+ * <p>
  * b) Traverse source root directory for creating a corresponding output directory
  * and finding the java source file(s) to be changing the package name.
- *
+ * <p>
  * c) Search and replace the old TopLink package name(s) with new one(s) according to the reference.
- *
+ * <p>
  * You will be able to see the logging message at the command line window
  * where the PackageRenamer is running.
  *

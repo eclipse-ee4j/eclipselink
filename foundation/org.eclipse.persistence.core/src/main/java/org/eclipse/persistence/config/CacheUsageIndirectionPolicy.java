@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,12 +16,12 @@ package org.eclipse.persistence.config;
 
 /**
  * In-memory querying and conforming indirection policy.
- *
+ * <p>
  * The class contains all the valid values for QueryHints.INDIRECTION_POLICY query hint.
  * This can be used on a query with a CACHE_USAGE hint to configure the behavior of in-memory
  * querying and conforming's treatment of uninstantiated indirection/lazy relationships.
  * This is only relevant when the query traverses a join across a lazy relationship.
- *
+ * <p>
  * JPA Query Hint Usage:
  *
  * <p><code>query.setHint(QueryHints.INDIRECTION_POLICY, CacheUsageIndirectionPolicy.Trigger);</code>

@@ -52,7 +52,7 @@ import java.security.AccessController;
 
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing WebLogic 10 specific behavior.
  * This includes WebLogic 10.3 behavior.
  */
@@ -130,7 +130,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing.
      * Implementing platform classes must override this function and supply
      * the server specific MBean instance for later registration by calling it in the constructor.
@@ -298,7 +298,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * This method will return the application|module name for WebLogic.
      * If the call to executeThread on the MBean fails - return the current classloader
      * Thread.currentThread().getContextClassLoader()
-     *
+     * <p>
      * ER 248746: Use reflection to obtain the application name (EJB, Web or MDB module)
      * Get either a String containing the module/applicationName or a WebLogic classLoader that contains the module/applicationName in the format...
      * weblogic.utils.classloaders.ChangeAwareClassLoader@19bb43f finder: weblogic.utils.classloaders.CodeGenClassFinder@ab7c2e annotation: org.eclipse.persistence.example.jpa.server.weblogic.enterpriseEAR@enterprise
@@ -352,7 +352,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * MBean tree.  The execute thread contains application information.  This code
      * will use the name of the current thread to lookup the corresponding ExecuteThread.
      * The ExecuteThread will allow us to obtain the application name (and version, etc).
-     *
+     * <p>
      * Note that the MBeanServer and ThreadPoolRuntime instances will be cached for
      * performance.
      *

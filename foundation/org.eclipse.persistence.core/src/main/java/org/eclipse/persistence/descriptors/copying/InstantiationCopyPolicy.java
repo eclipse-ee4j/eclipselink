@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import org.eclipse.persistence.sessions.Session;
 
 /**
  * <p><b>Purpose</b>: This is the default copy policy.
- *
+ * <p>
  * It creates a copy by creating a new instance of the object and then using the
  * mappings specified for the object to populate the object.
  */

@@ -60,7 +60,7 @@ public class LOBValueWriter {
 
     /**
      * This is the default constructor for the class.
-     *
+     * <p>
      * Bug 2804663 - Each DatabaseAccessor will now hold on to its own instance
      * of this class, hence a singleton pattern is not applicable.
      */

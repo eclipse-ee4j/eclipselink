@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,15 +19,15 @@ import org.eclipse.persistence.sessions.ExternalTransactionController;
 
 /**
  * INTERNAL:
- *
+ * <p>
  * This is the concrete subclass responsible for handling backward compatibility for 9.0.4.
- *
+ * <p>
  * This platform overrides:
- *
+ * <p>
  * getExternalTransactionControllerClass(): to use a user-specified controller class
- *
+ * <p>
  * This platform adds:
- *
+ * <p>
  * setExternalTransactionControllerClass(Class newClass): to allow the user to define
  * the external transaction controller when the 904 sessions.xml defines an
  * external-transaction-controller-class.
@@ -67,7 +67,7 @@ public final class CustomServerPlatform extends ServerPlatformBase {
        * When the external transaction controller is being initialized, we warn the developer
        * if they have already defined the external transaction controller in some way other
        * than subclassing ServerPlatformBase.
-       *
+       * <p>
        * This warning is omitted in 9.0.4.
      *
        * @see ServerPlatformBase

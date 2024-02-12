@@ -36,9 +36,9 @@ import java.security.PrivilegedExceptionAction;
 
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing WebSphere 7 -specific server behavior.
- *
+ * <p>
  * This platform has: - No JMX MBean runtime services
  *
  */
@@ -119,7 +119,7 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
     /**
      * INTERNAL: prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the databaseSession.
-     *
+     * <p>
      * Default is to do nothing. Implementing platform classes must override this function and
      * supply the server specific MBean instance for later registration by calling it in the
      * constructor.

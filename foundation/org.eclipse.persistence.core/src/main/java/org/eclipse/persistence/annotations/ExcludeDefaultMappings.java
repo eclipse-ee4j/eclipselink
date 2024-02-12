@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Specifies default mappings (those that are not explicitly decorated in XML or
  * using annotations)should be omitted.
- *
+ * <p>
  * An ExcludeDefaultMappings annotation can be specified on an entity,
  * embeddable or mapped superclass and applies solely to the mappings
  * of the class it is defined on.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,7 +60,7 @@ public class SystemProperties {
      * the lock acquisition and print it along with the identity map locks. This
      * should only be set if the thread that owns a lock is not 'stuck' but
      * still owns the lock when a normal printIdentityMapLocks is done.
-     *
+     * <p>
      * This can also be set in code statically through ConcurrencyManager.setShouldTrackStack(true)
      */
     public static final String RECORD_STACK_ON_LOCK = "eclipselink.cache.record-stack-on-lock";

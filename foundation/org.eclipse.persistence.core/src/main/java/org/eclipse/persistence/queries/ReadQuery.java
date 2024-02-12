@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -308,7 +308,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      * and the other is called on the copy of the query.
      * This query is copied for concurrency so this prepare can only setup things that
      * will apply to any future execution of this query.
-     *
+     * <p>
      * Clear the query cache when a query is prepared.
      */
     @Override

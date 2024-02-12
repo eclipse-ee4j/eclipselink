@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * Result type hint values.
- *
+ * <p>
  * The class contains all the valid values for QueryHints.RESULT_TYPE query hint.
  * By default in JPA for non-single select queries an Array of values is returned.
  * If getSingleResult() is called the first array is returned, for getResultList() a List of arrays is returned.
@@ -26,7 +26,7 @@ import org.eclipse.persistence.sessions.DataRecord;
  * <p>or the native query, "SELECT * FROM EMPLOYEE" returns {@literal List<Object[]>}
  * <p>The ResultType can be used to instead return a Map of values (DatabaseRecord, ReportQueryResult).
  * <p>It can also be used to return a single column, or single value.
- *
+ * <p>
  * JPA Query Hint Usage:
  *
  * <p><code>query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);</code>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * A StructConverter is a special type of converter that handles the conversion of a specific
  * database Struct type.  This is normally used for extended database types such as spatial geometric types.
- *
+ * <p>
  * A StructConverter is different than a regular attribute Converter, and does not implement the same interface.
  * A StructConverter will be used to convert any matching Struct type.
  *
@@ -48,7 +48,7 @@ public @interface StructConverter {
      * (Required) The StructConverter class to be used. This class must implement the
      * EclipseLink org.eclipse.persistence.platform.database.converters.StructConverter
      * interface.
-     *
+     * <p>
      * You may also alternatively specify a pre-defined EclipseLink
      * org.eclipse.persistence.config.StructConverterType
      *

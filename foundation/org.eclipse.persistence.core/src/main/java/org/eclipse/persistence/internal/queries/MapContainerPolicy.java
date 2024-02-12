@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010 Frank Schwarz. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -639,7 +639,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Return the next object on the queue. The iterator is the one
      * returned from #iteratorFor().
-     *
+     * <p>
      * This will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
@@ -654,7 +654,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Return the next object on the queue. The iterator is the one
      * returned from #iteratorFor().
-     *
+     * <p>
      * This will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(Object)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,10 +57,10 @@ public abstract class CodeDefinition {
      * If the short name of the typeName is unambiguous (only one package for
      * that short name in the Map), removes the package name and returns the
      * short name, else returns the whole thing.
-     *
+     * <p>
      * Assumes that typeName contains only a package name (optional) and a short name,
      * potentially with subtended brackets.
-     *
+     * <p>
      * (e.g. int -&gt; int, java.util.Vector -&gt; Vector, java.lang.Boolean[] -&gt; Boolean[], etc.)
      */
     protected static String adjustTypeName(String typeName, Map<String, Set<String>> typeNameMap) {
@@ -154,10 +154,10 @@ public abstract class CodeDefinition {
 
     /**
      * Removes the package name, if there is one.  Also removes any trailing brackets.
-     *
+     * <p>
      * Assumes that typeName contains only a package name (optional) and a short name,
      * potentially with subtended brackets.
-     *
+     * <p>
      * (e.g. {@code int -> int}, {@code java.util.Vector -> Vector}, {@code java.lang.Boolean[] -> Boolean}, etc.)
      */
     private static String shortName(String typeName) {

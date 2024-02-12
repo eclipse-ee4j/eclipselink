@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,9 +20,9 @@ import java.util.Calendar;
 
 /**
  * PUBLIC:
- * A CacheInvalidationPolicy that allows objects to expire every day at a specific time.
+ * A {@linkplain CacheInvalidationPolicy} that allows objects to expire every day at a specific time.
  * A daily cache invalidation policy is created with an hour, minute, second and millisecond
- * when objects will expire.  Objects will expire in the cache every day at that time.
+ * when objects will expire. Objects will expire in the cache every day at that time.
  * @see CacheInvalidationPolicy
  */
 public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
@@ -63,7 +63,7 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     /**
      * INTERNAL:
-     * Get the expiry time as a Calendar.  Used for setting the expiry time in deployment XML
+     * Get the expiry time as a {@linkplain Calendar}.  Used for setting the expiry time in deployment XML
      */
     public Calendar getExpiryTime() {
         return expiryTime;
@@ -71,7 +71,7 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     /**
      * INTERNAL:
-     * Return true if this object has expire or is invalid
+     * Return true if this object has expired or is invalid
      */
     @Override
     public boolean isInvalidated(CacheKey key, long currentTimeMillis) {
@@ -127,7 +127,8 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     /**
      * PUBLIC:
-     * Set a new expiry time for this object
+     * Set a new expiry time for this object.
+     * <p>
     * Provide the hour, minute, second and millisecond.  Objects which make use of this policy
      * will be set to expire at that exact time every day.
      */
@@ -144,7 +145,7 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     /**
      * INTERNAL:
-     * Set the expiry time based on a Calendar. Used for setting the expiry time from
+     * Set the expiry time based on a {@linkplain Calendar}. Used for setting the expiry time from
      * deployment XML.
      */
     public void setExpiryTime(Calendar calendar) {
@@ -153,20 +154,17 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
 
     @Override
     public Object clone() {
-        DailyCacheInvalidationPolicy clone = null;
-
         try {
-            clone = (DailyCacheInvalidationPolicy)super.clone();
+            DailyCacheInvalidationPolicy clone = (DailyCacheInvalidationPolicy) super.clone();
             if (this.expiryTime != null) {
-                clone.setExpiryTime((Calendar)this.expiryTime.clone());
+                clone.setExpiryTime((Calendar) this.expiryTime.clone());
             }
             if (this.previousExpiry != null) {
-                clone.previousExpiry = (Calendar)this.previousExpiry.clone();
+                clone.previousExpiry = (Calendar) this.previousExpiry.clone();
             }
+            return clone;
         } catch (Exception exception) {
             throw new InternalError("clone failed");
         }
-
-        return clone;
     }
 }

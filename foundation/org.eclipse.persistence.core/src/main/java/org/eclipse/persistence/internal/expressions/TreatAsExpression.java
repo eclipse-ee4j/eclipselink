@@ -92,7 +92,7 @@ public class TreatAsExpression extends QueryKeyExpression {
      * usages (join query keys, custom defined query keys, or query keys for
      * mappings).
      * Does not apply to Treat
-     *
+     * <p>
      * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
      *
      * @return DatabaseTable

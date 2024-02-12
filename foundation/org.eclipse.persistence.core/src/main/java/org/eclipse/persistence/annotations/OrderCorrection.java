@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * the order list read from the data base is invalid
  * (has nulls, duplicates, negative values, values greater/equal to list size -
  * the only valid order list of n elements is: {0, 1,..., n-1}).
- *
+ * <p>
  * If the annotation is not specified than OrderCorrectionValue.READ_WRITE used.
  *
  * @see "org.eclipse.persistence.jpa.config.OrderColumn"

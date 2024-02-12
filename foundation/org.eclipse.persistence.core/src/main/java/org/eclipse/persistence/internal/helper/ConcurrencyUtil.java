@@ -260,7 +260,7 @@ public class ConcurrencyUtil {
      * a minute) the logic complaining that the thread is stuck and going nowhere logs a very big dump message where the
      * FULL concurrency manager state is explained. So that we can (manually) try to understand the dead lock based on
      * the dumped information
-     *
+     * <p>
      * See also {@link #dateWhenLastConcurrencyManagerStateFullDumpWasPerformed}.
      */
     public long getMaxAllowedFrequencyToProduceMassiveDumpLogMessage() {
@@ -440,7 +440,7 @@ public class ConcurrencyUtil {
      * Invoke the {@link #dumpConcurrencyManagerInformationStep01(Map, Map, Map, Map, Map, Map, Map, Set, Map, Map)} if sufficient time has passed.
      * This log message will potentially create a massive dump in the server log file. So we need to check when was the
      * last time that the masive dump was produced and decide if we can log again the state of the concurrency manager.
-     *
+     * <p>
      * The access to dateWhenLastConcurrencyManagerStateFullDumpWasPerformedLock is synchronized, because we do not want
      * two threads in parallel to star deciding to dump the complete state of the concurrency manager at the same time.
      * Only one thread should succeed in producing the massive dump in a given time window.
@@ -496,7 +496,7 @@ public class ConcurrencyUtil {
      * The current working thread is having problems. It seems to not go forward being stuck either trying to acquire a
      * cache key for writing, as a deferred cache key or it is at the end of the process and it is waiting for some
      * other thread to finish building some objects it needed to defer.
-     *
+     * <p>
      * Now that the system is frozen we want to start spamming into the server log file the state of the concurrency
      * manager since this might help us understand the situation of the system.
      *
@@ -920,7 +920,7 @@ public class ConcurrencyUtil {
      *
      * <P>
      * NOTE: This approach can be easily tested in a basic unit test.
-     *
+     * <p>
      *
      * <a href="https://crunchify.com/how-to-generate-java-thread-dump-programmatically/">Original source of code</a>
      *

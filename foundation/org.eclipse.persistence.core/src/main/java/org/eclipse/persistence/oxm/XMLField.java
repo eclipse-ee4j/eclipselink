@@ -77,7 +77,7 @@ import java.util.StringTokenizer;
  * XML document.  However, there are cases where you must specify which one of a number of possible targets
  * TopLink should use. For example, a java.util.Calendar could be marshalled to a schema date, time, or dateTime,
  * or a byte[] could be marshalled to a schema hexBinary or base64Binary node.
- *
+ * <p>
  * <!--
  *    <?xml version="1.0" encoding="UTF-8"?>
  *    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">

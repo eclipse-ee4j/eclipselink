@@ -874,7 +874,7 @@ public class ExplainDeadLockUtil {
 
     /**
      * This method is nothing more than copy paste code from the algorithm
-     *
+     * <p>
      * {@link ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map, List, boolean)}
      *
      * We re-write this code to instead of returning true/false return an actual DTO object that can allow our dead lock

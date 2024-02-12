@@ -252,7 +252,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
-     *
+     * <p>
      * downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
      * <pre>
@@ -1404,7 +1404,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Calculate the reference table for based on the various QueryKeyExpression
      * usages (join query keys, custom defined query keys, or query keys for
      * mappings).
-     *
+     * <p>
      * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
      *
      * @return DatabaseTable
@@ -1425,7 +1425,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Calculate the source table for based on the various QueryKeyExpression
      * usages (join query keys, custom defined query keys, or query keys for
      * mappings).
-     *
+     * <p>
      * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
      *
      * @return DatabaseTable
@@ -1452,7 +1452,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Calculate the relation table for based on the various QueryKeyExpression
      * usages (join query keys, custom defined query keys, or query keys for
      * mappings).
-     *
+     * <p>
      * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
      *
      * @return DatabaseTable

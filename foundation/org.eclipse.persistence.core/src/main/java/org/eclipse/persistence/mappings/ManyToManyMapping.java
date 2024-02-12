@@ -213,7 +213,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * shouldExtendPessimisticLockScope and shouldExtendPessimisticLockScopeInSourceQuery are true.
      * Adds fields to be locked to the where clause of the source query.
      * Note that the sourceQuery must be ObjectLevelReadQuery so that it has ExpressionBuilder.
-     *
+     * <p>
      * This method must be implemented in subclasses that allow
      * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
      */

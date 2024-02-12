@@ -110,7 +110,7 @@ import java.util.Vector;
  * to it's own node.  It is possible, however, to mapping a collection to a single node;  here the contents of
  * the node is treated as a space-separated list.  This behavior is set on the mapping using the <code>
  * setUsesSingleNode </code> method, with 'true' as the parameter.
- *
+ * <p>
  * <!--
  * <?xml version="1.0" encoding="UTF-8"?><br>
  * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"><br>
@@ -153,7 +153,7 @@ import java.util.Vector;
  * <p><b>Specifying the Content Type of a Collection</b>: By default, TopLink will treat the node values
  * read in by a composite direct collection XML mapping as objects of type String. You can override this behavior
  * by specifying the type of the collection's contents.
- *
+ * <p>
  * <!--
  * <?xml version="1.0" encoding="UTF-8"?><br>
  * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"><br>
@@ -188,7 +188,7 @@ import java.util.Vector;
  * </code>
  *
  * <p><b>Mapping to a List of Unions</b>:
- *
+ * <p>
  * <!--
  * <?xml version="1.0" encoding="UTF-8"?>
  * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">

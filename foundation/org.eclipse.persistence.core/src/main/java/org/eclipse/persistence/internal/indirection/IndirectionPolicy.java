@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -369,7 +369,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * This method will only change the behavior of TransparentIndirectionPolicy.
-     *
+     * <p>
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as
@@ -384,7 +384,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Returns false unless this is a transparent indirection policy
-     *
+     * <p>
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as

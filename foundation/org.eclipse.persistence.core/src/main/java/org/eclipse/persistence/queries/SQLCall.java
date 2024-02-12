@@ -299,7 +299,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
     /**
      * INTERNAL:
      * Only translate the call if it was not previously translated
-     *
+     * <p>
      * This code ensures the translation code for a custom SQLCall is only run once
      * In the case of inheritance we will try to call the translation code once to get the
      * list of types and again for each subclass

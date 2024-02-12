@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * <p><b>Purpose</b>: Allows customization of how an object is cloned.
+ * <p>
  * This class defines common behavior that allows a subclass to be used
  * and set on a descriptor to provide a special cloning routine for how an object
  * is cloned in a unit of work.
@@ -38,7 +39,7 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
     public abstract Object buildClone(Object domainObject, Session session) throws DescriptorException;
 
     /**
-     * By default use the buildClone.
+     * By default, use the {@link #buildClone}.
      */
     @Override
     public Object buildWorkingCopyClone(Object domainObject, Session session) throws DescriptorException {
@@ -46,7 +47,7 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
     }
 
     /**
-     * By default create a new instance.
+     * By default, create a new instance.
      */
     @Override
     public Object buildWorkingCopyCloneFromRow(DataRecord row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {

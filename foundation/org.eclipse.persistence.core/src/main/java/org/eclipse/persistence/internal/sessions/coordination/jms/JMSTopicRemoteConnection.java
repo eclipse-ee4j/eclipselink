@@ -40,7 +40,7 @@ import java.io.Serializable;
  * <b>Purpose</b>: Define the implementation of the abstract RemoteConnection for JMS.
  * <p>
  * <b>Description</b>:  Executing commands implementation of RemoteConnection is done via JMS Publisher.
- *
+ * <p>
  * Using a single TopicConnection for both publishing and subscribing would
  * allow subscriber to ignore messages sent through the same TopicConnection - and therefore
  * allow JMSTopicRemoteConnection to ignore messages that it has itself published.

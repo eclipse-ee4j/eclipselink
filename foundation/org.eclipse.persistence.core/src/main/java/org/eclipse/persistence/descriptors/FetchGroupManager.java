@@ -116,7 +116,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      * All read object and read all queries would use the default fetch group if no fetch group
      * is explicitly defined for the query, unless setShouldUseDefaultFetchGroup(false); is also
      * called on the query.
-     *
+     * <p>
      * Default fetch group should be used carefully. It would be beneficial if most of the system queries
      * are for the subset of the object, so un-needed attributes data would not have to be read, and the
      * users do not have to setup every query for the given fetch group, as default one is always used.
@@ -369,7 +369,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
 
     /**
      * Return a pre-defined named fetch group.
-     *
+     * <p>
      * Lookup the FetchGroup to use given a name taking into
      * consideration descriptor inheritance to ensure parent descriptors are
      * searched for named FetchGroups.
@@ -428,7 +428,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      * All read object and read all queries would use the default fetch group if no fetch group is
      * explicitly defined for the query, unless setShouldUseDefaultFetchGroup(false);
      * is also called on the query.
-     *
+     * <p>
      * Default fetch group should be used carefully. It would be beneficial if most of the system queries
      * are for the subset of the object, so un-needed attributes data would not have to be read, and the
      * users do not have to setup every query for the given fetch group, as default one is always used.
@@ -539,7 +539,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
     private void refreshFetchGroupIntoClones(Object cachedObject, Object workingClone, Object backupClone, FetchGroup fetchGroupInObject, FetchGroup fetchGroupInClone, UnitOfWorkImpl uow) {
         List<DatabaseMapping> mappings = descriptor.getMappings();
         boolean isObjectPartial = (fetchGroupInObject != null);
-        Set fetchedAttributes = isObjectPartial ? fetchGroupInObject.getAttributeNames() : null;
+        Set<String> fetchedAttributes = isObjectPartial ? fetchGroupInObject.getAttributeNames() : null;
         int size = mappings.size();
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = mappings.get(index);
@@ -570,7 +570,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         // Fetched attributes set in working clone.
         Set<String> fetchedAttributesClone = fetchGroupInClone.getAttributeNames();
         // Fetched attributes set in cached object.
-        Set fetchedAttributesCached = null;
+        Set<String> fetchedAttributesCached = null;
         if (fetchGroupInObject != null) {
             fetchedAttributesCached = fetchGroupInObject.getAttributeNames();
         }
@@ -646,7 +646,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             return second;
         }
 
-        Set<String> unionAttributeNames = new HashSet();
+        Set<String> unionAttributeNames = new HashSet<>();
         unionAttributeNames.addAll(first.getAttributeNames());
         unionAttributeNames.addAll(second.getAttributeNames());
         return getEntityFetchGroup(unionAttributeNames);
@@ -667,7 +667,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
             return getEntityFetchGroup(first);
         }
 
-        Set<String> unionAttributeNames = new HashSet();
+        Set<String> unionAttributeNames = new HashSet<>();
         unionAttributeNames.addAll(first.getAttributeNames());
         unionAttributeNames.addAll(second.getAttributeNames());
         EntityFetchGroup newGroup = getEntityFetchGroup(unionAttributeNames);
@@ -788,7 +788,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         if (this.entityFetchGroups == null) {
-            this.entityFetchGroups = new ConcurrentHashMap();
+            this.entityFetchGroups = new ConcurrentHashMap<>();
         }
         if (!(Helper.classImplementsInterface(getDescriptor().getJavaClass(), ClassConstants.FetchGroupTracker_class))) {
             //to use fetch group, the domain class must implement FetchGroupTracker interface

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -390,7 +390,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
-     *
+     * <p>
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
@@ -405,7 +405,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Advanced users could use this interceptor to audit, profile or log cache access.  This Interceptor
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
-     *
+     * <p>
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
@@ -608,7 +608,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * When the <CODE>shouldAlwaysRefreshCacheOnRemote</CODE> argument passed into this method is <CODE>true</CODE>,
      * this method configures a <CODE>ClassDescriptor</CODE> to always remotely refresh the cache if data is received from
      * the database by any query in a {@link org.eclipse.persistence.sessions.remote.RemoteSession}.
-     *
+     * <p>
      * However, if a query hits the cache, data is not refreshed regardless of how this setting is configured. For
      * example, by default, when a query for a single object based on its primary key is executed, OracleAS TopLink
      * will first look in the cache for the object. If the object is in the cache, the cached object is returned and

@@ -841,7 +841,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
     /**
      * Setting this to true indicates that text nodes containing *only* whitespaces should still be
      * added to the collection as strings for mixed content.
-     *
+     * <p>
      * If mixedContent is false, this setting has no effect.
      */
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -87,7 +87,7 @@ public class SubSelectExpression extends BaseExpression {
     /**
      * INTERNAL:
      * This method creates a report query that counts the number of values in baseExpression.anyOf(attribute)
-     *
+     * <p>
      * For most queries, a ReportQuery will be created that does a simple count using an anonymous query.  In the case of
      * a DirectCollectionMapping, the ReportQuery will use the baseExpression to create a join to the table
      * containing the Direct fields and count based on that join.

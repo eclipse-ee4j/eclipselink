@@ -424,7 +424,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
-     *
+     * <p>
      *  downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
      * <blockquote><pre>
@@ -767,7 +767,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *
      * This expression must be manipulated to successfully build a case statement by adding appropriate
      * children to it.
-     *
+     * <p>
      * A child must be added for the "case expression" (name above), a pair of children must be added for
      * each "when then" expression and a child must be added for the else.
      *
@@ -838,7 +838,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *
      * This expression must be manipulated to successfully build a case statement by adding appropriate
      * children to it.
-     *
+     * <p>
      * A pair of children must be added for  each "when then" expression and a child must be added for the else.
      *
      * @see ArgumentListFunctionExpression
@@ -3255,7 +3255,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return a Map.Entry containing the key and the value from a mapping that maps to a java.util.Map
      * This expression can only be used as a return value in a ReportQuery and cannot be used as part of
      * the WHERE clause in any query
-     *
+     * <p>
      * EclipseLink: eb.get("mapAttribute").mapEntry()
      */
     public Expression mapEntry(){
@@ -3268,7 +3268,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return the key from a mapping that maps to a java.util.Map
      * This expression can be used either in as a return value in a ReportQuery or in the WHERE clause in a query
-     *
+     * <p>
      * EclipseLink: eb.get("mapAttribute").mapKey()
      */
     public Expression mapKey(){
@@ -4554,16 +4554,16 @@ public abstract class Expression implements Serializable, Cloneable {
      * We are given an expression that comes from a different context than the one in which this was built,
      * e.g. it is the selection criteria of a mapping, or the criteria on which multiple tables are joined in a descriptor.
      * We need to transform it so it refers to the objects we are dealing with, and AND it into the rest of our expression.
-     *
+     * <p>
      * We want to replace the original base expression with (newBase), and any parameters will be given values based
      * on the context which (this) provides.
-     *
+     * <p>
      * For example, suppose that the main expression is
      *      emp.address.streetName = 'something'
      * and we are trying to twist the selection criteria for the mapping 'address' in Employee. Because that mapping
      * selects addresses, we will use the 'address' node as the base. Values for any parameters will come from the 'emp' node,
      * which was the base of the original expression. Note that the values need not be constants, they can be fields.
-     *
+     * <p>
      * We do this by taking the tree we're trying to merge and traverse it more or less re-executing it
      * it with the appropriate initial receiver and context.
      * Return the root of the new expression tree. This will probably need to be AND'ed with the root of the old tree.

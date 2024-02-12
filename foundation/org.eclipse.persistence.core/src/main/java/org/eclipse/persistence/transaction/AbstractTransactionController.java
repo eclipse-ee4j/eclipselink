@@ -490,7 +490,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * 2. in the very end of connecting sequencing or adding descriptors to sequencing,
      * after it's determined whether sequencing callbacks (and therefore listeners)
      * will be required.
-     *
+     * <p>
      * In SessionBroker case each member's sequencing may call this method.
      * Note that the number of sessions requiring callbacks may never decrease,
      * therefore if isSequencingCallbackRequired method has returned true once,

@@ -165,7 +165,7 @@ public class CoreAttributeGroup<
      *    group.addAttribute("firstName", group1);<br>
      *    group.addAttribute("manager.address", group2);
      * </code>
-     *
+     * <p>
      * Note that existing group corresponding to attributeNameOrPath
      * will be overridden with the passed group.
      *
@@ -187,7 +187,7 @@ public class CoreAttributeGroup<
      *    group.addAttribute("firstName", group1);<br>
      *    group.addAttribute("manager.address", group2);
      * </code>
-     *
+     * <p>
      * Note that existing group corresponding to attributeNameOrPath will be
      * overridden with the passed group.
      *

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * SequencingManager is private to EclipseLink.
  * It provides most of sequencing functionality.
  * It's accessed by DatabaseSession through getSequencingHome() method.
- *
+ * <p>
  * Here's the lifecycle of SequencingManager.
  * InitialState: SequencingManager doesn't exist.
  *   Action: SequencingManager created -{@literal >} Not connected State.
@@ -59,25 +59,25 @@ import java.util.concurrent.ConcurrentHashMap;
  *        getSequencing() could be used;
  *        in case ownwerSession is a ServerSession getSequencingServer() could be used;
  *   Action: onDisconnect is called -{@literal >} Not connected State.
- *
+ * <p>
  * Here's a sketch of SequencingManager architecture.
  * The main 4 objects comprising SessionManager are:
  *      valueGenarationPolicy;
  *      preallocationHandler;
  *      connectionHandler;
  *      state;
- *
+ * <p>
  * That's how they evolve during lifetime of SequencingManager object:
  * Not connected State:
  *      preallocationHandler doesn't have any preallocated sequencing values.
  *      connectionHandler == null;
  *      state == null;
- *
+ * <p>
  * Connected State:
  *      preallocationHandler may contain preallocated sequencing values.
  *      valueGenarationPolicy != null;
  *      state != null;
- *
+ * <p>
  * The most important method of the class is onConnect():
  * that's where, using values of the attributes'(accessible through SequencingControl):
  *      shouldUseSeparateConnection;
@@ -90,7 +90,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *      shouldUseSeparateConnection();
  *      shouldUseTransaction();
  * one of implementors of inner interface State is created.
- *
+ * <p>
  * Once in Connected State, neither changes to attributes, nor to returns of valueGenerationPolicy's
  * four should... methods can change the state object.
  * To change the state object, onDisconnect(), than onConnect() should be called.

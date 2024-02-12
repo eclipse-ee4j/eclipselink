@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,7 +104,7 @@ public class DynamicHelper {
 
     /**
      * Remove a dynamic type from the system.
-     *
+     * <p>
      * This implementation assumes that the dynamic type has no relationships to
      * it and that it is not involved in an inheritance relationship. If there
      * are concurrent processes using this type when it is removed some

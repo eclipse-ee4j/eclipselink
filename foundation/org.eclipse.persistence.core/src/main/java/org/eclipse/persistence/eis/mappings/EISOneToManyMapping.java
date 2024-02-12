@@ -331,7 +331,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Selection criteria is created with source foreign keys and target keys.
      * This criteria is then used to read target records from the table.
-     *
+     * <p>
      * CR#3922 - This method is almost the same as buildSelectionCriteria() the difference
      * is that getSelectionCriteria() is called
      */

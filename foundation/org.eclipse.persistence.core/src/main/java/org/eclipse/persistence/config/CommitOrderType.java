@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@
  *
  * <p><code>properties.add(PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, CommitOrderType.Changes);</code>
  * <p>Property values are case-insensitive.
- *
+ * <p>
  * Defines the ordering of updates and deletes of a set of the same entity type during a commit or flush operation.
  * The commit order of entities is defined by their foreign key constraints, and then sorted alphabetically.\
  * <p>

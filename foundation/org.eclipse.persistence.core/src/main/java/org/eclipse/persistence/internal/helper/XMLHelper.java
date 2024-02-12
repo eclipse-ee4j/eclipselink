@@ -47,7 +47,7 @@ public class XMLHelper {
     /**
      * If true XML security features when parsing XML documents will be disabled.
      * The default value is false.
-     *
+     * <p>
      * Boolean
      * @since 2.6.3
      */

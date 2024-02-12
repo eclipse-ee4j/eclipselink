@@ -285,7 +285,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * INTERNAL: serverSpecificRegisterMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for my
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing. This should be subclassed if required.
      * For platform classes that override the JMXEnabledPlatform - the services MBean
      * is created at platform construction for use during MBean registration here.
@@ -485,7 +485,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * getModuleName(): Answer the name of the context-root of the application that this session is associated with.
      * Answer "unknown" if there is no module name available.
      * Default behavior is to return "unknown" - we override this behavior here for JBoss.
-     *
+     * <p>
      * There are 4 levels of implementation.
      * 1) use the property override jboss.moduleName, or
      * 2) perform a reflective jboss.work.executeThreadRuntime.getModuleName() call, or
@@ -530,7 +530,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
      * Answer "unknown" if there is no application name available.
      * Default behavior is to return "unknown"
-     *
+     * <p>
      * There are 4 levels of implementation.
      * 1) use the property override weblogic.applicationName, or
      * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call, or
