@@ -95,6 +95,9 @@ public abstract class Expression implements Serializable, Cloneable {
         Seting this flag to false will use the lower() function instead. */
     public static boolean shouldUseUpperCaseForIgnoreCase = true;
 
+    //flag to control SQLSelectStatement generation
+    private boolean shouldCreateSQLSelectStatement = false;
+
     /**
      * Base Expression Constructor.  Not generally used by Developers
      */
@@ -5447,4 +5450,17 @@ public abstract class Expression implements Serializable, Cloneable {
         return null;
     }
 
+    public boolean shouldCreateSQLSelectStatement() {
+        return shouldCreateSQLSelectStatement;
+    }
+
+    /**
+     * INTERNAL:<p>
+     * Flag to control SQLSelectStatement generation.<p>
+     * true - generate. Usually in case of nested select statement in update query.<p>
+     * false - don't generate (default)
+     */
+    public void setShouldCreateSQLSelectStatement(boolean shouldCreateSQLSelectStatement) {
+        this.shouldCreateSQLSelectStatement = shouldCreateSQLSelectStatement;
+    }
 }
