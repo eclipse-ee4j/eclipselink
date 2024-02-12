@@ -2149,7 +2149,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             while(itFieldsToValues.hasNext()) {
                 Map.Entry<DatabaseField, Expression> entry2 = itFieldsToValues.next();
                 DatabaseField field = entry2.getKey();
-                Expression value = (Expression) entry2.getValue();
+                Expression value = entry2.getValue();
 
                 // initialize result with the table
                 expRequiresSelectIterator.setResult(table);
@@ -2398,7 +2398,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             Map<DatabaseField, Expression> databaseFieldsToValues = itDatabaseFieldsToValues.next();
             Iterator<Expression> itValues = databaseFieldsToValues.values().iterator();
             while(itValues.hasNext()) {
-                reportQuery.addAttribute("", (Expression)itValues.next());
+                reportQuery.addAttribute("", itValues.next());
             }
         }
 
@@ -2421,7 +2421,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if(databaseFieldsToValues != null) {
             Iterator<Expression> itValues = databaseFieldsToValues.values().iterator();
             while(itValues.hasNext()) {
-                reportQuery.addAttribute("", (Expression)itValues.next());
+                reportQuery.addAttribute("", itValues.next());
             }
         }
 
