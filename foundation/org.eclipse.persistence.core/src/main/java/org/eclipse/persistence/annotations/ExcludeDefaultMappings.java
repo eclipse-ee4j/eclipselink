@@ -23,7 +23,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Specifies default mappings (those that are not explicitly decorated in XML or
- * using annotations)should be omitted.
+ * using annotations) should be omitted.
  * <p>
  * An ExcludeDefaultMappings annotation can be specified on an entity,
  * embeddable or mapped superclass and applies solely to the mappings

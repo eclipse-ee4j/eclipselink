@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,11 +30,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * The hash indexes into the list of connection pools.
  * All write or read request for object's with that hash value are sent to the server.
  * If a query does not include the field as a parameter, then it can either be sent
- * to all server's and unioned, or left to the sesion's default behavior.
+ * to all server's and unioned, or left to the session's default behavior.
  * <p>
  * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
- * Partition policies are globally named to allow reuse,
- * the partitioning policy must also be set using the @Partitioned annotation to be used.
+ * <p>
+ * Partition policies are globally named to allow reuse, the partitioning policy must also be set
+ * using the {@linkplain Partitioned} annotation to be used.
  *
  * @see Partitioned
  * @see org.eclipse.persistence.descriptors.partitioning.HashPartitioningPolicy
@@ -60,7 +61,8 @@ public @interface HashPartitioning {
 
     /**
      * List of connection pool names to partition across.
-     * Defaults to all defined pools in the ServerSession.
+     * <p>
+     * Defaults to all defined pools in the {@linkplain org.eclipse.persistence.sessions.server.ServerSession}.
      */
     String[] connectionPools() default {};
 

@@ -28,15 +28,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation for a user defined property.
- * A single Property may be specified directly on a mapped attribute or its
- * get/set method. Multiple Properties should be wrapped into Properties
+ * A single Property may be specified directly on a mapped attribute or its get/set method.
+ * Multiple occurrences of Property annotation can be wrapped into {@linkplain Properties}
  * annotation.
  * <p>
  * Property may be assigned to either a mapped attribute (or its get/set method)
  * within Entity, MappedSuperclass and Embeddable class;
  * or to Entity, MappedSuperclass and Embeddable class.
  * <p>
- * In case orm xml is used Property an Properties annotations specified on
+ * In case orm xml is used Property and Properties annotations specified on
  * mapped attributes are ignored, specified on a class are merged with the ones
  * specified in orm xml with the latter taking precedence in case of conflicts.
  * <p>
@@ -44,20 +44,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * and MappedSuperclasses. In case of a conflict property value defined directly
  * on a class always overrides the value passed from class's parent.
  *
- * @see "jakarta.persistence.Embeddable"
- * @see "jakarta.persistence.Entity"
- * @see "jakarta.persistence.Id"
- * @see "jakarta.persistence.Basic"
- * @see "jakarta.persistence.ManyToMany"
- * @see "jakarta.persistence.ManyToOne"
- * @see "jakarta.persistence.MappedSuperclass"
- * @see "jakarta.persistence.OneToMany"
- * @see "jakarta.persistence.OneToOne"
- * @see org.eclipse.persistence.annotations.BasicCollection
- * @see org.eclipse.persistence.annotations.BasicMap
- * @see org.eclipse.persistence.annotations.Properties
- * @see org.eclipse.persistence.annotations.Transformation
- * @see org.eclipse.persistence.annotations.VariableOneToOne
+ * @see Properties
+ * @see Transformation
+ * @see VariableOneToOne
  *
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0
@@ -73,14 +62,16 @@ public @interface Property {
 
     /**
      * String representation of Property value,
-     * converted to an instance of valueType.
+     * converted to an instance of {@linkplain #valueType}.
      */
     String value();
 
     /**
      * Property value type.
-     * The value converted to valueType by ConversionManager.
-     * If specified must be a simple type that could be handled by ConversionManager:
+     * The value is converted to valueType by {@linkplain org.eclipse.persistence.internal.helper.ConversionManager}.
+     * <p>
+     * If specified must be a simple type that could be handled by
+     * {@linkplain org.eclipse.persistence.internal.helper.ConversionManager}:
      * numerical, boolean, temporal.
      */
     Class<?> valueType() default String.class;

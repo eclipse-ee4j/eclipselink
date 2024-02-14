@@ -24,7 +24,6 @@ import jakarta.persistence.FetchType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static jakarta.persistence.FetchType.EAGER;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -46,56 +45,58 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface VariableOneToOne {
     /**
-     * (Optional) The interface class that is the target of the association. If
-     * not specified it will be inferred from the type of the object being
+     * The interface class that is the target of the association.
+     * If not specified it will be inferred from the type of the object being
      * referenced.
      */
     Class<?> targetInterface() default void.class;
 
     /**
-     * (Optional) The operations that must be cascaded to the target of the
-     * association.
+     * The operations that must be cascaded to the target of the association.
      */
     CascadeType[] cascade() default {};
 
     /**
-     * (Optional) Defines whether the value of the field or property should
-     * be lazily loaded or must be eagerly fetched. The EAGER strategy is a
+     * Defines whether the value of the field or property should
+     * be lazily loaded or must be eagerly fetched. The {@linkplain jakarta.persistence.FetchType#EAGER} strategy is a
      * requirement on the persistence provider runtime that the value must be
-     * eagerly fetched. The LAZY strategy is a hint to the persistence provider
-     * runtime. If not specified, defaults to EAGER.
+     * eagerly fetched. The {@linkplain jakarta.persistence.FetchType#LAZY} strategy is a hint to the persistence provider
+     * runtime. If not specified, defaults to {@linkplain jakarta.persistence.FetchType#EAGER}.
      */
-    FetchType fetch() default EAGER;
+    FetchType fetch() default FetchType.EAGER;
 
     /**
-     * (Optional) Whether the association is optional. If set to false then a
+     * Whether the association is optional. If set to false then a
      * non-null relationship must always exist.
      */
     boolean optional() default true;
 
     /**
-     * (Optional) Whether to apply the remove operation to entities that have
+     * Whether to apply the remove operation to entities that have
      * been removed from the relationship and to cascade the remove operation to
      * those entities.
      */
     boolean orphanRemoval() default false;
 
     /**
-     * (Optional) The discriminator column will hold the type indicators. If the
-     * DiscriminatorColumn is not specified, the name of the discriminator
-     * column defaults to "DTYPE" and the discriminator type to STRING.
+     * The discriminator column will hold the type indicators. If the
+     * discriminatorColumn is not specified, the name of the discriminator
+     * column defaults to "{@code DTYPE}" and the discriminator type to
+     * {@linkplain jakarta.persistence.DiscriminatorType#STRING}.
      */
     DiscriminatorColumn discriminatorColumn() default @DiscriminatorColumn;
 
     /**
-     * (Optional) The list of discriminator types that can be used with this
+     * The list of discriminator types that can be used with this
      * VariableOneToOne. If none are specified then those entities within the
      * persistence unit that implement the target interface will be added to
      * the list of types. The discriminator type will default as follows:
-     *  - If DiscriminatorColumn type is STRING: Entity.name()
-     *  - If DiscriminatorColumn type is CHAR: First letter of the Entity class
-     *  - If DiscriminatorColumn type is INTEGER: The next integer after the
-     *    highest integer explicitly added.
+     * <ul>
+     *  <li>If {@linkplain #discriminatorColumn()} type is {@linkplain jakarta.persistence.DiscriminatorType#STRING}: Entity.name()</li>
+     *  <li>If {@linkplain #discriminatorColumn()} type is {@linkplain jakarta.persistence.DiscriminatorType#CHAR}: First letter of the Entity class</li>
+     *  <li>If {@linkplain #discriminatorColumn()} type is {@linkplain jakarta.persistence.DiscriminatorType#INTEGER}: The next integer after the
+     *    highest integer explicitly added.</li>
+     * </ul>
      */
     DiscriminatorClass[] discriminatorClasses() default {};
 }

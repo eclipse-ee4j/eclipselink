@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * A CacheInterceptor can be set on an Entity and allows all EclipseLink cache
- * access to be intercepted by the developer provided interceptor. In the case
- * of inheritance, a CacheInterceptor annotation should only be defined on the
+ * access to be intercepted by the developer provided interceptor.
+ * <p>
+ * In the case of inheritance, a CacheInterceptor annotation should only be defined on the
  * root of the inheritance hierarchy.
  *
  * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,16 +21,12 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_OBJECT_CHANGES;
-import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
-import static org.eclipse.persistence.config.CacheIsolationType.SHARED;
 
 /**
  * The Cache annotation is used to configure the EclipseLink object cache.
- * By default EclipseLink uses a shared object cache to cache all objects.
- * The caching type and options can be configured on a per class basis to allow
+ * By default, EclipseLink uses a shared object cache to cache all objects.
+ * The caching type and options can be configured on a per-class basis to allow
  * optimal caching.
- * <p>
  * This includes options for configuring the type of caching,
  * setting the size, disabling the shared cache, expiring objects, refreshing,
  * and cache coordination (clustering).
@@ -39,8 +35,8 @@ import static org.eclipse.persistence.config.CacheIsolationType.SHARED;
  * case of inheritance, a Cache annotation should only be defined on the root
  * of the inheritance hierarchy.
  *
- * @see org.eclipse.persistence.annotations.CacheType
- * @see org.eclipse.persistence.annotations.CacheCoordinationType
+ * @see CacheType
+ * @see CacheCoordinationType
  *
  * @see org.eclipse.persistence.descriptors.ClassDescriptor
  * @see org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy
@@ -52,73 +48,81 @@ import static org.eclipse.persistence.config.CacheIsolationType.SHARED;
 @Retention(RUNTIME)
 public @interface Cache {
     /**
-     * (Optional) The type of cache to use.
-     * The default is SOFT_WEAK.
+     * The type of cache to use.
+     * <p>
+     * The default is {@linkplain CacheType#SOFT_WEAK}.
      */
-    CacheType type() default SOFT_WEAK;
+    CacheType type() default CacheType.SOFT_WEAK;
 
     /**
-     * (Optional) The size of cache to use.
+     * The size of cache to use.
+     * <p>
      * The default is 100.
      */
     int size() default 100;
 
     /**
-     * (Optional) Controls the level of caching this Entity will use.
-     * The default is CacheIsolationType.SHARED which has EclipseLink
+     * Controls the level of caching this Entity will use.
+     * <p>
+     * The default is {@linkplain CacheIsolationType#SHARED} which has EclipseLink
      * Caching all Entities in the Shared Cache.
      * @see org.eclipse.persistence.config.CacheIsolationType
      */
-    CacheIsolationType isolation() default SHARED;
+    CacheIsolationType isolation() default CacheIsolationType.SHARED;
 
     /**
-     * (Optional) Expire cached instance after a fix period of time (ms).
+     * Expire cached instance after a fix period of time (ms).
      * Queries executed against the cache after this will be forced back
      * to the database for a refreshed copy.
-     * By default there is no expiry.
+     * <p>
+     * By default, there is no expiry.
      */
     int expiry() default -1; // minus one is no expiry.
 
     /**
-     * (Optional) Expire cached instance a specific time of day. Queries
+     * Expire cached instance a specific time of day. Queries
      * executed against the cache after this will be forced back to the
      * database for a refreshed copy.
      */
     TimeOfDay expiryTimeOfDay() default @TimeOfDay(specified=false);
 
     /**
-     * (Optional) Force all queries that go to the database to always
+     * Force all queries that go to the database to always
      * refresh the cache.
-     * Default is false.
      * Consider disabling the shared cache instead of forcing refreshing.
+     * <p>
+     * Default is false.
      */
     boolean alwaysRefresh() default false;
 
     /**
-     * (Optional) For all queries that go to the database, refresh the cache
+     * For all queries that go to the database, refresh the cache
      * only if the data received from the database by a query is newer than
      * the data in the cache (as determined by the optimistic locking field).
      * This is normally used in conjunction with alwaysRefresh, and by itself
-     * it only affect explicit refresh calls or queries.
+     * it only affects explicit refresh calls or queries.
+     * <p>
      * Default is false.
      */
     boolean refreshOnlyIfNewer() default false;
 
     /**
-     * (Optional) Setting to true will force all queries to bypass the
+     * Setting to true will force all queries to bypass the
      * cache for hits but still resolve against the cache for identity.
      * This forces all queries to hit the database.
      */
     boolean disableHits() default false;
 
     /**
-     * (Optional) The cache coordination mode.
+     * The cache coordination mode.
+     * <p>
      * Note that cache coordination must also be configured for the persistence unit/session.
      */
-    CacheCoordinationType coordinationType() default SEND_OBJECT_CHANGES;
+    CacheCoordinationType coordinationType() default CacheCoordinationType.SEND_OBJECT_CHANGES;
 
     /**
-     * (Optional) The database change notification mode.
+     * The database change notification mode.
+     * <p>
      * Note that database event listener must also be configured for the persistence unit/session.
      */
     DatabaseChangeNotificationType databaseChangeNotificationType() default DatabaseChangeNotificationType.INVALIDATE;

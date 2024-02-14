@@ -31,6 +31,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * desired or when using different EclipseLink IdentityMap types and having
  * cached references extends the cache lifetime of related Entities using a
  * different caching scheme.
+ * <p>
  * For instance Entity A references Entity B, Entity A is FullIdentityMap and
  * Entity B is WeakIdentityMap. Without removing the caching of the relationship
  * the Entity B's cache effectively become a FullIdentityMap.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,14 +33,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface VirtualAccessMethods {
 
     /**
-     * (Optional) The name of the getter method to use for the virtual property
+     * The name of the getter method to use for the virtual property
      * This method must take a single java.lang.String parameter and return a java.lang.Object.
      * If setMethod is specified, getMethod must be specified
      */
     String get() default "get";
 
     /**
-     * (Optional) The name of the setter method to use for the virtual property
+     * The name of the setter method to use for the virtual property
      * This method must take a java.lang.String parameter and a java.lang.Object parameter.
      * If getMethod is specified, setMethod must be specified
      */

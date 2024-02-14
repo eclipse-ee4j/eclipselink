@@ -32,14 +32,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * A SerializedConverter is used to serialize an object's value into a database binary, character, or XML field.
  * This annotation allows a named converter that can be used in mappings.
  * <p>
- * A converter must be be uniquely identified by name and can be defined at
+ * A converter must be uniquely identified by name and can be defined at
  * the class level and can be specified within an Entity,
  * MappedSuperclass and Embeddable class.
  * <p>
- * The usage of a SerializedConverter is always specified via the Converter annotation and
+ * The usage of a SerializedConverter is always specified via the {@linkplain Converter} annotation and
  * is supported on a Basic, or ElementCollection mapping.
  *
- * @see org.eclipse.persistence.annotations.Converter
+ * @see Converter
  * @see org.eclipse.persistence.sessions.serializers.Serializer
  * @author James Sutherland
  * @since EclipseLink 2.6
@@ -49,21 +49,21 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(SerializedConverters.class)
 public @interface SerializedConverter {
     /**
-     * (Required) Name this converter. The name should be unique across the
-     * whole persistence unit.
+     * The name of this converter. The name should be unique across the whole persistence unit.
      */
     String name();
 
     /**
      * Allows a package name to be passed to the serializer.
+     * <p>
      * This is used by some serializers such as XML, JSON to initialize the
-     * JAXB context from the classes in the package or a jaxb.index file.
+     * XML-Binding context from the classes in the package or a jaxb.index file.
      */
     String serializerPackage() default "";
 
     /**
      * The serializer class to be used. This class must implement the
-     * org.eclipse.persistence.sessions.serializers.Serializer interface.
+     * {@linkplain org.eclipse.persistence.sessions.serializers.Serializer} interface.
      */
     Class<? extends Serializer> serializerClass() default JavaSerializer.class;
 }

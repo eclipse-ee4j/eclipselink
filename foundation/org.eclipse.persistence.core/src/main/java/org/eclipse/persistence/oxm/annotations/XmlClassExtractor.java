@@ -24,11 +24,13 @@ import java.lang.annotation.Target;
 /**
  * A ClassExtractor allows for a user defined class indicator in place of
  * using xsi:type. The class has the following restrictions:
-
- *  - It must extend the org.eclipse.persistence.descriptors.ClassExtractor
- *    class and implement the extractClassFromRow(Record, Session) method.
- *  - That method must take a database row (a Record/Map) as an argument and
- *    must return the class to use for that row.
+ * <ul>
+ *  <li>It must extend the {@linkplain org.eclipse.persistence.descriptors.ClassExtractor} class and implement the
+ *    {@linkplain org.eclipse.persistence.descriptors.ClassExtractor#extractClassFromRow(org.eclipse.persistence.sessions.DataRecord, org.eclipse.persistence.sessions.Session)}
+ * method.</li>
+ *  <li>That method must take a database row (a {@linkplain org.eclipse.persistence.sessions.DataRecord}/Map) as an argument and
+ *    must return the class to use for that row.</li>
+ * </ul>
  * <p>
  * This method will be used to decide which class to instantiate when
  * unmarshalling an instance document.
@@ -39,9 +41,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XmlClassExtractor {
-
     /**
-     * (Required) Defines the name of the class extractor that should be
+     * Defines the name of the class extractor that should be
      * applied to this entity's descriptor.
      */
     Class<? extends ClassExtractor> value();

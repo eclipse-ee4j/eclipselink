@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,12 @@ import java.io.Serializable;
 
 /**
  * PUBLIC:
- *  @version $Header: AttributeTransformer.java 11-jul-2006.10:33:44 gyorke Exp $
- *  @author  mmacivor
- *  @since   10
  *  This interface is used by the Transformation Mapping to build the value for a
  *  the mapped attribute on a read. The user must provide an implementation of this interface to the
  *  Transformation Mapping.
+ *  @version $Header: AttributeTransformer.java 11-jul-2006.10:33:44 gyorke Exp $
+ *  @author  mmacivor
+ *  @since   10
  */
 public interface AttributeTransformer extends Serializable {
 

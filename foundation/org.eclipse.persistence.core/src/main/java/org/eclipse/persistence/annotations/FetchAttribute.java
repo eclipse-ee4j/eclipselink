@@ -23,7 +23,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * A fetch attribute is specified within a fetch group and is used as a
  * performance enhancement that allows a group of attributes of an object to be
- * loaded on demand, which means that the data for an attribute might not loaded
+ * loaded on demand, which means that the data for an attribute might not load
  * from the underlying data source until an explicit access call for the
  * attribute first occurs. It avoids the wasteful practice of loading up all
  * data of the object's attributes, in which the user is interested in only
@@ -44,7 +44,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface FetchAttribute {
     /**
-     * (Required) The fetch attribute name.
+     * The fetch attribute name.
      */
     String name();
 }

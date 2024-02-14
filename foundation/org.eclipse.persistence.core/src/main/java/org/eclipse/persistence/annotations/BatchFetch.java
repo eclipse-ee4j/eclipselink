@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A BatchFetch annotation can be used on any relationship mapping,
+ * A BatchFetch annotation can be used on any relationship mapping
  * (OneToOne, ManyToOne, OneToMany, ManyToMany, ElementCollection, BasicCollection, BasicMap).
  * It allows the related objects to be batch read in a single query.
  * Batch fetching can also be set at the query level, and it is
@@ -35,16 +35,18 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface BatchFetch {
     /**
-     * (Optional) The type of batch-fetch to use.
-     * Either JOIN, EXISTS or IN.
-     * JOIN is the default.
+     * The type of batch-fetch to use.
+     * Either {@linkplain BatchFetchType#JOIN}, {@linkplain BatchFetchType#EXISTS} or {@linkplain BatchFetchType#IN}.
+     * <p>
+     * {@linkplain BatchFetchType#JOIN} is the default.
      */
     BatchFetchType value() default BatchFetchType.JOIN;
 
     /**
      * Define the default batch fetch size.
-     * This is only used for IN type batch reading and defines
+     * This is only used for {@linkplain BatchFetchType#IN} type batch reading and defines
      * the number of keys used in each IN clause.
+     * <p>
      * The default size is 256, or the query's pageSize for cursor queries.
      */
     int size() default -1;

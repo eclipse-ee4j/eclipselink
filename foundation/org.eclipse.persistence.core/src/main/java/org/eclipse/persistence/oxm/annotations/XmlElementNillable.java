@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,25 +20,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <b>Purpose:</b> Provide a means of setting nillable on type and package
- * level, which is not possible with standard XmlElement annotation.
+ * Provide a means of setting nillable on type and package level,
+ * which is not possible with standard {@linkplain jakarta.xml.bind.annotation.XmlElement} annotation.
  * <p>
  * Type level annotation overrides package level annotation.
- * </p>
  * <p>
- * Standard XmlElement with nillable attribute overrides the value of
- * XmlElementNillable annotation.
- * </p>
+ * Standard {@linkplain jakarta.xml.bind.annotation.XmlElement} with nillable attribute overrides
+ * the value of XmlElementNillable annotation.
  *
  * @see jakarta.xml.bind.annotation.XmlElement
  */
 @Target({ ElementType.TYPE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XmlElementNillable {
-
     /**
-     * (Optional) Customize the element declaration to be nillable.
-     * If nillable() is true, then the JavaBean property is mapped to a XML Schema nillable element declaration.
+     * Customize the element declaration to be nillable.
+     * <p>
+     * If nillable() is true, then the JavaBean property is mapped to an XML Schema nillable element declaration.
      */
     boolean nillable() default true;
 }

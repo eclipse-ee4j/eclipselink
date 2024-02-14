@@ -23,13 +23,13 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A PLSQLNamedStoredProcedureQuery annotation allows the definition of queries that
+ * A NamedPLSQLStoredProcedureQuery annotation allows the definition of queries that
  * call PLSQL stored procedures as named queries.
+ * <p>
  * The PLSQL support adds support for complex PLSQL types such as RECORD and TABLE types,
  * that are not accessible from JDBC.
  * <p>
- * A PLSQLNamedStoredProcedureQuery annotation may be defined on an Entity or
- * MappedSuperclass.
+ * A NamedPLSQLStoredProcedureQuery annotation may be defined on an Entity or MappedSuperclass.
  *
  * @author James Sutherland
  * @since EclipseLink 2.3
@@ -38,32 +38,32 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface NamedPLSQLStoredProcedureQuery {
     /**
-     * (Required) Unique name that references this stored procedure query.
+     * Unique name that references this stored procedure query.
      */
     String name();
 
     /**
-     * (Optional) Query hints.
+     * Query hints.
      */
     QueryHint[] hints() default {};
 
     /**
-     * (Optional) Refers to the class of the result.
+     * Refers to the class of the result.
      */
     Class<?> resultClass() default void.class;
 
     /**
-     * (Optional) The name of the SQLResultMapping.
+     * The name of the {@linkplain jakarta.persistence.SqlResultSetMapping}.
      */
     String resultSetMapping() default "";
 
     /**
-     * (Required) The name of the stored procedure.
+     * The name of the stored procedure.
      */
     String procedureName();
 
     /**
-     * (Optional) Defines the parameters to the stored procedure.
+     * Defines the parameters to the stored procedure.
      */
     PLSQLParameter[] parameters() default {};
 }

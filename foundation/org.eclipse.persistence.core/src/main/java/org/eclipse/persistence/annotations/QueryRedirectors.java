@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,6 @@ public @interface QueryRedirectors {
      * ReadObjectQuery Redirector) or a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     *
      */
     Class<?> allQueries() default void.class;
 
@@ -48,8 +47,8 @@ public @interface QueryRedirectors {
      * ReadAllQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * For users executing a JPA Query through the getResultList() API this is the redirector that will be invoked
-     *      */
+     * For users executing a JPA Query through the getResultList() API this is the redirector that will be invoked.
+     */
     Class<?> readAll() default void.class;
 
     /**
@@ -57,7 +56,8 @@ public @interface QueryRedirectors {
      * ReadObjectQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * For users executing a JPA Query through the getSingleResult() API or EntityManager.find() this is the redirector that will be invoked     */
+     * For users executing a JPA Query through the getSingleResult() API or EntityManager.find() this is the redirector that will be invoked.
+     */
     Class<?> readObject() default void.class;
 
     /**
@@ -65,7 +65,8 @@ public @interface QueryRedirectors {
      * ReportQuery that does not have a redirector set directly on the query.
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
-     * For users executing a JPA Query that contains agregate functions or selects multiple entities this is the redirector that will be invoked     */
+     * For users executing a JPA Query that contains aggregate functions or selects multiple entities this is the redirector that will be invoked.
+     */
     Class<?> report() default void.class;
 
     /**

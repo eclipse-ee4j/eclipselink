@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,9 +26,9 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Allow a database INDEX to be define when generating DDL.
- * The @Index can be defined on a Entity class, or on an attribute.
- * The column is defaulted when defined on a attribute.
+ * Allow a database INDEX to be defined when generating DDL.
+ * The Index can be defined on an Entity class, or on an attribute.
+ * The column is defaulted when defined on an attribute.
  *
  * @author James Sutherland
  * @since EclipseLink 2.2

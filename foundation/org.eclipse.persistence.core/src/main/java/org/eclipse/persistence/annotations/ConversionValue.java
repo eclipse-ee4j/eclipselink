@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,9 +20,9 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A ConversionValue annotation is used within an ObjectTypeConverter.
+ * A ConversionValue annotation is used within an {@linkplain ObjectTypeConverter}.
  *
- * @see org.eclipse.persistence.annotations.ObjectTypeConverter
+ * @see ObjectTypeConverter
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -30,12 +30,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface ConversionValue {
     /**
-     * (Required) Specify the database value.
+     * Specify the database value.
      */
     String dataValue();
 
     /**
-     * (Required) Specify the object value.
+     * Specify the object value.
      */
     String objectValue();
 }

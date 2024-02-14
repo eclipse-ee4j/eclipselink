@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * <b>Purpose:</b> Provide a way to allow properties with XmlID annotation have different type than java.lang.String.
+ * Provide a way to allow properties with XmlID annotation have different type than java.lang.String.
  * By default, all properties annotated with XmlID annotation are restricted to have java.lang.String type.
  * <p>If XmlIDExtension annotation is used, there is no restriction of used type with XmlID annotation.</p>
  * <p>Using XmlIDExtension provides way how to achieve backward compatibility with EclipseLink 2.5.x and before.</p>

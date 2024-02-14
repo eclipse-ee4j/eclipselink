@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,32 +20,33 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 /**
- * <p>XmlKey is used to mark a property as a key, to be referenced using a key-based mapping via {@code XmlJoinNode}. This is
- * similar to the {@code XmlID} annotation, but doesn't require the property be bound to the schema type ID. XmlKey is
- * typically used in the composite key use case, since only 1 property can be annotated with the XmlID annotation.
- * </p>
+ * XmlKey is used to mark a property as a key, to be referenced using a key-based mapping via {@linkplain XmlJoinNode}. This is
+ * similar to the {@linkplain jakarta.xml.bind.annotation.XmlID} annotation, but doesn't require the property be bound to the schema type ID. XmlKey is
+ * typically used in the composite key use case, since only 1 property can be annotated with the {@linkplain jakarta.xml.bind.annotation.XmlID} annotation.
  *
  * <p><b>Example:</b>
- * <pre>
- * &#64;XmlRootElement
- * &#64;XmlAccessorType(XmlAccessType.FIELD)
- * public class Employee {
+ * {@snippet :
+ *  @XmlRootElement
+ *  @XmlAccessorType(XmlAccessType.FIELD)
+ *  public class Employee {
  *
- *     &#64;XmlKey
- *     public String id;
+ *      @XmlKey
+ *      public String id;
  *
- *     &#64;XmlKey
- *     public String department;
+ *      @XmlKey
+ *      public String department;
  *
- *     &#64;XmlJoinNodes({
- *         &#64;XmlJoinNode(xmlPath="manager/id/text()", referencedXmlPath="id/text()"),
- *         &#64;XmlJoinNode(xmlPath="manager/dept/text()", referencedXmlPath="department/text()")
- *     })
- *     public Employee manager;
+ *      @XmlJoinNodes({
+ *          @XmlJoinNode(xmlPath="manager/id/text()", referencedXmlPath="id/text()"),
+ *          @XmlJoinNode(xmlPath="manager/dept/text()", referencedXmlPath="department/text()")
+ *      })
+ *      public Employee manager;
+ *  }
  * }
- * </pre>
  *
+ * @see jakarta.xml.bind.annotation.XmlID
  * @see XmlJoinNode
  * @see XmlJoinNodes
  */

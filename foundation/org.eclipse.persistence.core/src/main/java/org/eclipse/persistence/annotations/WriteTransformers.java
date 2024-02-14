@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,23 +23,25 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * An optional annotation for org.eclipse.persistence.mappings.TransformationMapping.
- * A single WriteTransformer may be specified directly on the method or field,
- * multiple WriteTransformers should be wrapped into WriteTransformers annotation.
+ * An optional annotation for {@linkplain org.eclipse.persistence.mappings.TransformationMapping}.
+ * A single {@linkplain WriteTransformer} may be specified directly on the method or field,
+ * multiple {@linkplain WriteTransformer}s can be wrapped into WriteTransformers annotation.
  * No WriteTransformers specified for read-only mapping.
- *
- * @see org.eclipse.persistence.annotations.Transformation
- * @see org.eclipse.persistence.annotations.ReadTransformer
- * @see org.eclipse.persistence.annotations.WriteTransformer
- *
+ * <p>
  * Transformation can be specified within an Entity, MappedSuperclass
  * and Embeddable class.
  *
+ * @see Transformation
+ * @see ReadTransformer
+ * @see WriteTransformer
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface WriteTransformers {
+    /**
+     * An array of WriteTransformer annotations.
+     */
     WriteTransformer[] value();
 }

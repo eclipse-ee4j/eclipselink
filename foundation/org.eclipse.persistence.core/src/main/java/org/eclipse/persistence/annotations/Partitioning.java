@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,13 +28,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * A Partitioning is used to partition the data for a class across multiple difference databases
  * or across a database cluster such as Oracle RAC.
  * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
- * This annotation configures a custom PartitioningPolicy.
+ * This annotation configures a custom {@linkplain org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy}.
  * <p>
  * If multiple partitions are used to process a single transaction, JTA should be used for proper XA transaction support.
  * <p>
  * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
- * Partition policies are globally named to allow reuse,
- * the partitioning policy must also be set using the @Partitioned annotation to be used.
+ * <p>
+ * Partition policies are globally named to allow reuse, the partitioning policy must also be set
+ * using the {@linkplain Partitioned} annotation to be used.
  *
  * @see Partitioned
  * @see org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy
@@ -50,7 +51,7 @@ public @interface Partitioning {
     String name();
 
     /**
-     * (Required) Full package.class name of a subclass of PartitioningPolicy.
+     * A subclass of {@linkplain org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy}.
      */
     Class<? extends PartitioningPolicy> partitioningClass();
 }

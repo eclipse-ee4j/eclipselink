@@ -27,7 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * A fetch group is a performance enhancement that allows a group of attributes
  * of an object to be loaded on demand, which means that the data for an
- * attribute might not loaded from the underlying data source until an explicit
+ * attribute might not load from the underlying data source until an explicit
  * access call for the attribute first occurs. It avoids the wasteful practice
  * of loading up all data of the object's attributes, in which the user is
  * interested in only partial of them.
@@ -42,7 +42,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * Fetch groups can only be used when weaving is enabled or when individual
  * classes that define them explicitly implement the
- * org.eclipse.persistence.queries.FetchGroupTracker interface.
+ * {@linkplain org.eclipse.persistence.queries.FetchGroupTracker} interface.
  *
  * @author Guy Pelletier
  * @since EclipseLink 2.1
@@ -52,18 +52,18 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(FetchGroups.class)
 public @interface FetchGroup {
     /**
-     * (Required) The fetch group name.
+     * The fetch group name.
      */
     String name();
 
     /**
-     * (Optional) Indicates whether all relationship attributes
+     * Indicates whether all relationship attributes
      * specified in the fetch group should be loaded.
      */
     boolean load() default false;
 
     /**
-     * (Required) The list of attributes to fetch.
+     * The list of attributes to fetch.
      */
     FetchAttribute[] attributes();
 }

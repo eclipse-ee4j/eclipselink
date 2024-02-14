@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * A PLSQLRecord annotation is used to define a database PLSQL RECORD type.
+ * <p>
  * This type can be used within PLSQL procedure calls.
  *
  * @see NamedPLSQLStoredProcedureQuery
@@ -33,24 +34,26 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface PLSQLRecord {
 
     /**
-     * (Required) The name of the record type in the database.
+     * The name of the record type in the database.
      */
     String name();
 
     /**
-     * (Required) The name of the database OBJECT TYPE that mirrors the record's structure.
+     * The name of the database OBJECT TYPE that mirrors the record's structure.
+     * <p>
      * The record will be converted to/from this type so it can be passed through JDBC.
      */
     String compatibleType();
 
     /**
-     * (Optional) The Java class to map the object-type to.
-     * This class must be mapped using a @Struct annotation.
+     * The Java class to map the object-type to.
+     * <p>
+     * This class must be mapped using a {@linkplain org.eclipse.persistence.annotations.Struct} annotation.
      */
     Class<?> javaType() default void.class;
 
     /**
-     * (Required) Defines the fields in the record type.
+     * Defines the fields in the record type.
      */
     PLSQLParameter[] fields();
 }

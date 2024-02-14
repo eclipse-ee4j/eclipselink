@@ -29,8 +29,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * A NamedStoredFunctionQuery annotation allows the definition of queries that
  * call stored functions as named queries.
  * <p>
- * A NamedStoredFunctionQuery annotation may be defined on an Entity or
- * MappedSuperclass.
+ * A NamedStoredFunctionQuery annotation may be defined on an Entity or MappedSuperclass.
  *
  * @author James
  * @since EclipseLink 2.3
@@ -40,39 +39,41 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(NamedStoredFunctionQueries.class)
 public @interface NamedStoredFunctionQuery {
     /**
-     * (Required) Unique name that references this stored function query.
+     * Unique name that references this stored function query.
      */
     String name();
 
     /**
-     * (Optional) Query hints.
+     * Query hints.
      */
     QueryHint[] hints() default {};
 
     /**
-     * (Optional) The name of the SQLResultMapping.
+     * The name of the {@linkplain jakarta.persistence.SqlResultSetMapping}.
      */
     String resultSetMapping() default "";
 
     /**
-     * (Required) The name of the stored function.
+     * The name of the stored function.
      */
     String functionName();
 
     /**
-     * (Optional) Defines if the stored procedure should be called by index or by name.
-     * By index requires that the StoredProcedureParameter are defined in the same order as the procedure on the database.
-     * By name requires the database platform support naming procedure parameters.
+     * Defines if the stored function should be called by index or by name.
+     * <p>
+     * By index requires that the {@linkplain #parameters()} are defined in the same order as the function on the database.
+     * <p>
+     * By name requires the database platform support naming function parameters.
      */
     boolean callByIndex() default false;
 
     /**
-     * (Optional) Defines the parameters to the stored function.
+     * Defines the parameters to the stored function.
      */
     StoredProcedureParameter[] parameters() default {};
 
     /**
-     * (Required) Defines the return value of the stored function.
+     * Defines the return value of the stored function.
      */
     StoredProcedureParameter returnParameter();
 }

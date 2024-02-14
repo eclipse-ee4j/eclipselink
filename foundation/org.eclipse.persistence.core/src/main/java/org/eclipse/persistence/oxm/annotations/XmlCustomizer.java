@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,17 +24,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * The XmlCustomizer annotation is used to specify a class that implements the
- * org.eclipse.persistence.config.DescriptorCustomizer
+ * {@linkplain org.eclipse.persistence.config.DescriptorCustomizer}
  * interface and is to run against a class descriptor after all metadata
  * processing has been completed.
  */
 @Target({TYPE})
 @Retention(RUNTIME)
 public @interface XmlCustomizer {
-
     /**
-     * (Required) Defines the name of the descriptor customizer that should be
-     * applied to this classes descriptor.
+     * Defines the name of the descriptor customizer that should be
+     * applied to this class' descriptor.
      */
      Class<? extends DescriptorCustomizer> value();
 

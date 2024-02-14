@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,9 +23,10 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- *  The PrimaryKey annotation allows advanced configuration of the Id.
- *  A validation policy can be given that allows specifying if zero is a valid id value.
- *  The set of primary key columns can also be specified precisely.
+ * The PrimaryKey annotation allows advanced configuration of the Id.
+ * <p>
+ * A validation policy can be given that allows specifying if zero is a valid id value.
+ * The set of primary key columns can also be specified precisely.
  *
  * @author James Sutherland
  * @since EclipseLink 1.1
@@ -34,21 +35,24 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface PrimaryKey {
     /**
-     * (Optional) Configures what id validation is done.
-     * By default 0 is not a valid id value, this can be used to allow 0 id values.
+     * Configures what id validation is done.
+     * <p>
+     * By default, 0 is not a valid id value, this can be used to allow 0 id values.
      */
     IdValidation validation() default IdValidation.ZERO;
 
     /**
-     * (Optional) Configures what cache key type is used to store the object in the cache.
-     * By default the type is determined by what type is optimal for the class.
+     * Configures what cache key type is used to store the object in the cache.
+     * <p>
+     * By default, the type is determined by what type is optimal for the class.
      */
     CacheKeyType cacheKeyType() default CacheKeyType.AUTO;
 
     /**
-     * (Optional) Used to specify the primary key columns directly.
-     * This can be used instead of @Id if the primary key includes a non basic field,
-     * such as a foreign key, or a inheritance discriminator, embedded, or transformation mapped field.
+     * Used to specify the primary key columns directly.
+     * <p>
+     * This can be used instead of {@linkplain jakarta.persistence.Id} if the primary key includes a non-basic field,
+     * such as a foreign key, or an inheritance discriminator, embedded, or transformation mapped field.
      */
     Column[] columns() default {};
 

@@ -15,7 +15,7 @@
 package org.eclipse.persistence.annotations;
 
 /**
- * Enum used with the BatchFetch annotation, or {@code eclipselink.batch.type} query hint.
+ * Enum used with the {@linkplain BatchFetch} annotation, or "{@systemProperty eclipselink.batch.type}" query hint.
  * This can be specified on a mapping or query to configure the type of batch reading to be used.
  *
  * @see BatchFetch
@@ -24,22 +24,26 @@ package org.eclipse.persistence.annotations;
  */
 public enum BatchFetchType {
     /**
-     * This is the default form of batch reading.
      * The original query's selection criteria is joined with the batch query.
+     * <p>
+     * This is the default form of batch reading.
      */
     JOIN,
 
     /**
-     * This uses an SQL EXISTS and a sub-select in the batch query instead of a join.
+     * Use an SQL EXISTS and a sub-select in the batch query instead of a join.
+     * <p>
      * This has the advantage of not requiring an SQL DISTINCT which can have issues
      * with LOBs, or may be more efficient for some types of queries or on some databases.
      */
     EXISTS,
 
     /**
-     * This uses an SQL IN clause in the batch query passing in the source object Ids.
+     * Use an SQL IN clause in the batch query passing in the source object Ids.
+     * <p>
      * This has the advantage of only selecting the objects not already contained in the cache,
      * and can work better with cursors, or if joins cannot be used.
+     * <p>
      * This may only work for singleton Ids on some databases.
      */
     IN

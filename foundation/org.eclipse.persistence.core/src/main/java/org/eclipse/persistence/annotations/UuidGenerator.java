@@ -28,25 +28,25 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Defines a primary key generator that may be
  * referenced by name when a generator element is specified for
- * the {@code GeneratedValue} annotation. A UUID generator
- * may be specified on the entity class or on the primary key
- * field or property. The scope of the generator name is global
+ * the {@linkplain jakarta.persistence.GeneratedValue} annotation.
+ * <p>
+ * A UUID generator may be specified on the entity class or on the primary key
+ * field or property.
+ * <p>
+ * The scope of the generator name is global
  * to the persistence unit (across all generator types).
- *
- * <pre>
- *    Example 1:
- *
- *    &#064;Entity public class Employee {
- *        ...
- *        &#064;UuidGenerator(name="uuid")
- *        &#064;Id
- *        &#064;GeneratedValue(generator="uuid")
- *        int id;
- *        ...
- *    }
- * </pre>
- *
- * @see "jakarta.persistence.GeneratedValue"
+ * <p><b>Example:</b>
+ * {@snippet :
+ *  @Entity
+ *  public class Employee {
+ *      ...
+ *      @UuidGenerator(name="uuid")
+ *      @Id
+ *      @GeneratedValue(generator="uuid")
+ *      int id;
+ *      ...
+ *  }
+ * }
  *
  * @author James Sutherland
  * @since EclipseLink 2.4

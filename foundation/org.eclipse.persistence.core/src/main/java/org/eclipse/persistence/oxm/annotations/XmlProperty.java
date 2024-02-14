@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,9 +24,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation for a user defined property.
- * A single Property may be specified directly on a mapped attribute or its
- * get/set method. Multiple Properties should be wrapped into Properties
- * annotation.
+ * A single XmlProperty may be specified directly on a mapped attribute or its get/set method.
+ * Multiple occurrences of XmlProperty can be wrapped into {@linkplain XmlProperties} annotation.
  */
 @Target({METHOD, FIELD, TYPE})
 @Retention(RUNTIME)
@@ -37,15 +36,18 @@ public @interface XmlProperty {
     String name();
 
     /**
-     * String representation of Property value,
-     * converted to an instance of valueType.
+     * String representation of XmlProperty value,
+     * converted to an instance of {@linkplain #valueType}.
      */
     String value();
 
     /**
      * Property value type.
-     * The value converted to valueType by ConversionManager.
-     * If specified must be a simple type that could be handled by ConversionManager:
+     * <p>
+     * The value converted to valueType by {@linkplain org.eclipse.persistence.internal.oxm.ConversionManager}.
+     * <p>
+     * If specified must be a simple type that could be handled by
+     * {@linkplain org.eclipse.persistence.internal.oxm.ConversionManager}:
      * numerical, boolean, temporal.
      */
     Class<?> valueType() default String.class;

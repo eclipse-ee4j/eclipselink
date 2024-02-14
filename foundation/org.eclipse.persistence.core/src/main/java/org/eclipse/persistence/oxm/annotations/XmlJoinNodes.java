@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,35 +21,40 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
- * <p><b>XmlJoinNodes</b> is a holder for multiple {@code XmlJoinNode} annotations. This is used to specify the source to target
- * associations in a reference mapping with multiple keys. XmlJoinNodes will contain one XmlJoinNode for each key. The
- * targets of the individual XmlJoinNode annotations must be annotated with either {@code XmlID} or {@code XmlKey}.
+ * XmlJoinNodes is a holder for multiple {@linkplain XmlJoinNode} annotations. This is used to specify the source to target
+ * associations in a reference mapping with multiple keys. XmlJoinNodes will contain one {@linkplain XmlJoinNode} for each key. The
+ * targets of the individual {@linkplain XmlJoinNode} annotations must be annotated with either
+ * {@linkplain jakarta.xml.bind.annotation.XmlID} or {@linkplain XmlKey}.
  *
  * <p><b>Example:</b>
- * <pre>
- * &#64;XmlRootElement
- * &#64;XmlAccessorType(XmlAccessType.FIELD)
- * public class Employee {
+ * {@snippet :
+ *  @XmlRootElement
+ *  @XmlAccessorType(XmlAccessType.FIELD)
+ *  public class Employee {
  *
- *     &#64;XmlKey
- *     public String id;
+ *      @XmlKey
+ *      public String id;
  *
- *     &#64;XmlKey
- *     public String department;
+ *      @XmlKey
+ *      public String department;
  *
- *     &#64;XmlJoinNodes({
- *         &#64;XmlJoinNode(xmlPath="manager/id/text()", referencedXmlPath="id/text()"),
- *         &#64;XmlJoinNode(xmlPath="manager/dept/text()", referencedXmlPath="department/text()")
- *     })
- *     public Employee manager;
+ *      @XmlJoinNodes({
+ *          @XmlJoinNode(xmlPath="manager/id/text()", referencedXmlPath="id/text()"),
+ *          @XmlJoinNode(xmlPath="manager/dept/text()", referencedXmlPath="department/text()")
+ *      })
+ *      public Employee manager;
+ *  }
  * }
- * </pre>
  *
+ * @see jakarta.xml.bind.annotation.XmlID
  * @see XmlJoinNode
  * @see XmlKey
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface XmlJoinNodes {
+    /**
+     * An array of XmlJoinNode annotations.
+     */
     XmlJoinNode[] value();
 }

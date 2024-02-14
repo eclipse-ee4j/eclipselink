@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Struct types are extended object-relational data-types supported by some databases.
  * Struct types are user define types in the database such as OBJECT types on Oracle.
- * Structs can normally contains Arrays (VARRAY) or other Struct types, and can be stored in
+ * Structs can normally contain Arrays (VARRAY) or other Struct types, and can be stored in
  * a column or a table.
  * <p>
  * This annotation define a class to map to a database Struct type.
- * The class should normally be an Embeddable, but could also be an Entity if stored in a object table.
+ * The class should normally be an Embeddable, but could also be an Entity if stored in an object table.
  *
  * @see org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor
  * @see org.eclipse.persistence.mappings.structures.StructureMapping
@@ -38,12 +38,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Struct {
     /**
-     * (Required) The database name of the database structure type.
+     * The database name of the database structure type.
      */
     String name();
 
     /**
-     * (Optional) Defines the order of the fields contained in the database structure type.
+     * Defines the order of the fields contained in the database structure type.
      */
     String[] fields() default {};
 }

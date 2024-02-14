@@ -22,28 +22,27 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * An InstantiationCopyPolicy is used to set an
- * org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy on an
- * Entity.
+ * An InstantiationCopyPolicy is used to set an {@linkplain org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy}
+ * on an Entity.
  * <p>
- * InstantiationCopyPolicy is the default CopyPolicy if weaving is not used,
+ * {@linkplain org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy} is the default
+ * {@linkplain org.eclipse.persistence.descriptors.copying.CopyPolicy} if weaving is not used,
  * or if property access is used.
  * <p>
- * A special CloneCopyPolicy is used if weaving and field access is used.
+ * A special {@linkplain org.eclipse.persistence.descriptors.copying.CloneCopyPolicy} is used if weaving and field access is used.
  * <p>
- * An InstantiationCopyPolicy should be specified on an Entity,
- * MappedSuperclass or Embeddable.
- * <p>
- * Example:
- * <pre><code>
- * {@literal @}Entity
- * {@literal @}InstantiationCopyPolicy
+ * An InstantiationCopyPolicy should be specified on an Entity, MappedSuperclass or Embeddable.
+ * <p><b>Example:</b>
+ * {@snippet :
+ * @Entity
+ * @InstantiationCopyPolicy
  * public class Employee {
- * </code></pre>
+ * }
+ * }
  *
  * @see org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy
- * @see org.eclipse.persistence.annotations.CloneCopyPolicy
- * @see org.eclipse.persistence.annotations.CopyPolicy
+ * @see CloneCopyPolicy
+ * @see CopyPolicy
  *
  * @author tware
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,40 +20,53 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *<p><b>Purpose</b>: This annotation is used in conjunction with an XmlElements annotation to
- * specify an XmlPath for each of the XmlElement annotations in the XmlElements.
- * The number of XmlPath annotations must be the same as the number of XmlElement annotations
+ * This annotation is used in conjunction with an XmlElements annotation to
+ * specify an {@linkplain XmlPath} for each of the XmlElement annotations in the XmlElements.
+ * The number of {@linkplain XmlPath} annotations must be the same as the number of XmlElement annotations
  * and the order must be the same.
  *
- * <p><b>Example:</b><br>
- * <code>
- * &nbsp;@XmlRootElement(name="customer")<br>
- * &nbsp;public class Customer {<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlElements({@literal {@XmlElement(type=String.class), @XmlElement(type=Integer.class)}})<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlPaths({@literal {@XmlPath("choice-element/string/text()"), @XmlPath("choice-element/integer/text()")}})<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;public Object choice<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;}</code><br><br>
- * Will create the following Schema:<br>
+ * <p><b>Example:</b>
+ * {@snippet :
+ *  @XmlRootElement(name="customer")
+ *  public class Customer {
+ *      ...
+ *      @XmlElements({
+ *          @XmlElement(type=String.class),
+ *          @XmlElement(type=Integer.class)
+ *      })
+ *      @XmlPaths({
+ *          @XmlPath("choice-element/string/text()"),
+ *          @XmlPath("choice-element/integer/text()")
+ *      })
+ *      public Object choice;
+ *      ...
+ *  }
+ * }
+ * Will create the following Schema:
+ * {@snippet lang="XML":
+ *  ...
+ *    <xsd:choice>
+ *      <xsd:element name="choice-element" minOccurs="0">
+ *        <xsd:complexType>
+ *          <xsd:choice>
+ *            <xsd:element name="string" type="xsd:string" minOccurs="0"/>
+ *            <xsd:element name="integer" type="xsd:int" minOccurs="0"/>
+ *          </xsd:choice>
+ *        </xsd:complexType>
+ *       </xsd:element>
+ *    </xsd:choice>
+ *  ...
+ * }
  *
- * <pre>
- *    ...
- *    &lt;xsd:choice&gt;
- *       &lt;xsd:element name="choice-element" minOccurs="0"&gt;
- *          &lt;xsd:complexType&gt;
- *             &lt;xsd:choice&gt;
- *                &lt;xsd:element name="string" type="xsd:string" minOccurs="0"/&gt;
- *                &lt;xsd:element name="integer" type="xsd:int" minOccurs="0"/&gt;
- *             &lt;/xsd:choice&gt;
- *          &lt;/xsd:complexType&gt;
- *       &lt;/xsd:element&gt;
- *    &lt;/xsd:choice&gt;
- *    ...
- * </pre>
+ * @see jakarta.xml.bind.annotation.XmlElement
+ * @see jakarta.xml.bind.annotation.XmlElements
+ * @see XmlPath
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XmlPaths {
+    /**
+     * An array of XmlPath annotations.
+     */
     XmlPath[] value();
 }

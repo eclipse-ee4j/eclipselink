@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.eclipse.persistence.annotations.Direction.IN;
 
 /**
  * A StoredProcedureParameter annotation is used within a
- * NamedStoredProcedureQuery annotation.
+ * {@linkplain NamedStoredProcedureQuery} and {@linkplain NamedStoredFunctionQuery} annotation.
  *
- * @see org.eclipse.persistence.annotations.NamedStoredProcedureQuery
+ * @see NamedStoredFunctionQuery
+ * @see NamedStoredProcedureQuery
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -36,47 +36,46 @@ import static org.eclipse.persistence.annotations.Direction.IN;
 @Retention(RUNTIME)
 public @interface StoredProcedureParameter {
     /**
-     * (Optional) The direction of the stored procedure parameter.
-     * @deprecated
-     * @see #mode()
+     * The direction of the stored procedure parameter.
+     * @deprecated Use {@linkplain #mode()}.
      */
     @Deprecated
-    Direction direction() default IN;
+    Direction direction() default Direction.IN;
 
     /**
-     * (Optional) The direction of the stored procedure parameter.
+     * The direction of the stored procedure parameter.
      */
     ParameterMode mode() default ParameterMode.IN;
 
     /**
-     * (Optional) Stored procedure parameter name.
+     * Stored procedure parameter name.
      */
     String name() default "";
 
     /**
-     * (Required) The query parameter name.
+     * The query parameter name.
      */
     String queryParameter();
 
     /**
-     * (Optional) Define if the parameter is required, or optional and defaulted by the procedure.
+     * Define if the parameter is required, or optional and defaulted by the procedure.
      */
     boolean optional() default false;
 
     /**
-     * (Optional) The type of Java class desired back from the procedure,
+     * The type of Java class desired back from the procedure,
      * this is dependent on the type returned from the procedure.
      */
     Class<?> type() default void.class;
 
     /**
-     * (Optional) The JDBC type code, this is dependent on the type returned
+     * The JDBC type code, this is dependent on the type returned
      * from the procedure.
      */
     int jdbcType() default -1;
 
     /**
-     * (Optional) The JDBC type name, this may be required for ARRAY or
+     * The JDBC type name, this may be required for ARRAY or
      * STRUCT types.
      */
     String jdbcTypeName() default "";

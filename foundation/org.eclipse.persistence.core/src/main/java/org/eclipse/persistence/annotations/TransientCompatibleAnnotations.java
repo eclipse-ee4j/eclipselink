@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * PUBLIC:
  * This class is used by our JPA annotation processing to discover which annotations may coexist with a
- * {@code jakarta.persistence.Transient annotation}. If {@code jakarta.persistence.Transient} appears on
+ * {@linkplain jakarta.persistence.Transient} annotation. If {@linkplain jakarta.persistence.Transient} appears on
  * a field annotation in the {@code jakarta.persistence} or {@code org.eclipse.persistence} package that
  * is not in the list returned by {@link #getTransientCompatibleAnnotations()} an exception will be thrown.
  *
@@ -28,18 +28,18 @@ import java.util.List;
 public class TransientCompatibleAnnotations {
 
     private static final List<String> transientCompatibleAnnotations = List.of(
-            "jakarta.persistence.PersistenceUnits",
+            "jakarta.persistence.Access",
             "jakarta.persistence.PersistenceUnit",
+            "jakarta.persistence.PersistenceUnits",
             "jakarta.persistence.PersistenceContext",
             "jakarta.persistence.PersistenceContexts",
-            "jakarta.persistence.Access",
             "jakarta.persistence.Transient"
     );
 
     /**
      * PUBLIC:
      * Return a list of classnames of annotations that are compatible with
-     * the {@code jakarta.persistence.Transient} annotation.
+     * the {@linkplain jakarta.persistence.Transient} annotation.
      */
     public static List<String> getTransientCompatibleAnnotations(){
         return transientCompatibleAnnotations;

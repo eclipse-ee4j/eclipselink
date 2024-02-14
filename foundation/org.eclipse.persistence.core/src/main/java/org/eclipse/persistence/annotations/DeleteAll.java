@@ -23,12 +23,12 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A DeleteAll annotation is specified to indicate that when an relationship
- * is deleted, it should use a delete all query.  This typically happens if the
- * relationship is PrivateOwned and its owner is deleted.  In that case, the members
- * of the relationship will be deleted without reading them in.
+ * A DeleteAll annotation is specified to indicate that when a relationship
+ * is deleted, it should use a delete all query. This typically happens if the
+ * relationship is {@linkplain PrivateOwned} and its owner is deleted. In that case,
+ * the members of the relationship will be deleted without reading them in.
  * <p>
- * Use this annotation with caution.  EclipseLink will not validate for you whether the
+ * Use this annotation with caution. EclipseLink will not validate for you whether the
  * target entity is mapped in such a way as to allow the delete all to work.
  */
 @Target({METHOD, FIELD})

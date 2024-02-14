@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,18 +21,19 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
- * <p><b>Purpose:</b> Annotation used to wrap multiple XmlWriteTransformer annotations. Used in conjunction with
- * XmlWriteTransformer and XmlTransformation to specify multiple Field Transformers for a given
+ * Annotation used to wrap multiple {@linkplain XmlWriteTransformer} annotations. Used in conjunction with
+ * {@linkplain XmlWriteTransformer} and {@linkplain XmlTransformation} to specify multiple Field Transformers for a given
  * property.
  *
- *  @see XmlReadTransformer
- *  @see XmlWriteTransformer
- *  @see XmlTransformation
- *
+ * @see XmlReadTransformer
+ * @see XmlWriteTransformer
+ * @see XmlTransformation
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface XmlWriteTransformers {
-
+    /**
+     * An array of XmlWriteTransformer annotations.
+     */
     XmlWriteTransformer[] value() default {};
 }

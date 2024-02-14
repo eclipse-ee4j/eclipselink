@@ -20,29 +20,26 @@ import jakarta.persistence.FetchType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static jakarta.persistence.FetchType.EAGER;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Transformation is an optional annotation for org.eclipse.persistence.mappings.TransformationMapping.
- * TransformationMapping allows to map an attribute to one or more database columns.
+ * Transformation is an optional annotation for {@linkplain org.eclipse.persistence.mappings.TransformationMapping}.
+ * {@linkplain org.eclipse.persistence.mappings.TransformationMapping} allows to map an attribute to one or more database columns.
  * <p>
- * Transformation annotation is an optional part of TransformationMapping definition.
- * Unless the TransformationMapping is write-only, it should have a ReadTransformer,
- * it defines transformation of database column(s) value(s)into attribute value.
- * Also unless it's a read-only mapping, either WriteTransformer annotation or WriteTransformers annotation
- * should be specified. Each WriteTransformer defines transformation of the attribute value to a single
- * database column value (column is specified in the WriteTransformer).
+ * Transformation annotation is an optional part of {@linkplain org.eclipse.persistence.mappings.TransformationMapping} definition.
+ * Unless the {@linkplain org.eclipse.persistence.mappings.TransformationMapping} is write-only, it should have a {@linkplain ReadTransformer}
+ * defining transformation of database column(s) value(s)into attribute value.
+ * Also, unless it's a read-only mapping, either {@linkplain WriteTransformer} annotation or {@linkplain WriteTransformers} annotation
+ * should be specified. Each {@linkplain WriteTransformer} defines transformation of the attribute value to a single
+ * database column value (column is specified in the {@linkplain WriteTransformer}).
+ * <p>
+ * Transformation can be specified within an Entity, MappedSuperclass and Embeddable class.
  *
- * @see org.eclipse.persistence.annotations.ReadTransformer
- * @see org.eclipse.persistence.annotations.WriteTransformer
- * @see org.eclipse.persistence.annotations.WriteTransformers
- *
- * Transformation can be specified within an Entity, MappedSuperclass
- * and Embeddable class.
- *
+ * @see ReadTransformer
+ * @see WriteTransformer
+ * @see WriteTransformers
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0
  */
@@ -50,18 +47,20 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Transformation {
     /**
-     * (Optional) Defines whether the value of the field or property should
-     * be lazily loaded or must be eagerly fetched. The EAGER strategy is a
+     * Defines whether the value of the field or property should
+     * be lazily loaded or must be eagerly fetched. The {@linkplain jakarta.persistence.FetchType#EAGER} strategy is a
      * requirement on the persistence provider runtime that the value must be
-     * eagerly fetched. The LAZY strategy is a hint to the persistence provider
-     * runtime. If not specified, defaults to EAGER.
+     * eagerly fetched. The {@linkplain jakarta.persistence.FetchType#LAZY} strategy is a hint to the persistence provider
+     * runtime.
+     * <p>
+     * If not specified, defaults to {@linkplain jakarta.persistence.FetchType#EAGER}.
      */
-    FetchType fetch() default EAGER;
+    FetchType fetch() default FetchType.EAGER;
 
     /**
-     * (Optional) The optional element is a hint as to whether the value
-     *  of the field or property may be null. It is disregarded
-     *  for primitive types, which are considered non-optional.
+     * The optional element is a hint whether the value
+     * of the field or property may be null. It is disregarded
+     * for primitive types, which are considered non-optional.
      */
     boolean optional() default true;
 }

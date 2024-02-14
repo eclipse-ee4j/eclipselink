@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * <b>Purpose:</b> Used to define the boundaries for a marshal or unmarhsal
- * operation.
+ * Defines the boundaries for a marshal or unmarshal operation.
  *
  * @author mmacivor
  * @since EclipseLink 2.5
@@ -31,7 +30,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface XmlNamedObjectGraph {
     /**
-     * The name of this object graph. Defaults to the name of the class
+     * The name of this object graph. Defaults to the name of the class.
      */
     String name();
 
@@ -41,14 +40,13 @@ public @interface XmlNamedObjectGraph {
     XmlNamedAttributeNode[] attributeNodes();
 
     /**
-     * Optional: a list of named subgraphs that are referenced
+     * A list of named subgraphs that are referenced
      * from the property entries.
      */
     XmlNamedSubgraph[] subgraphs() default {};
 
     /**
-     * Optional: a list of named subgraphs for any subclasses
-     * of this class.
+     * A list of named subgraphs for any subclasses of this class.
      */
     XmlNamedSubgraph[] subclassSubgraphs() default {};
 }
