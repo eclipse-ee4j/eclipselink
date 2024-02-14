@@ -14,6 +14,7 @@
 //     Oracle = 2.2 - Initial contribution
 package org.eclipse.persistence.oxm.annotations;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -29,6 +30,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({METHOD, FIELD, TYPE})
 @Retention(RUNTIME)
+@Repeatable(XmlProperties.class)
 public @interface XmlProperty {
     /**
      * Property name.

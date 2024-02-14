@@ -16,6 +16,7 @@ package org.eclipse.persistence.oxm.annotations;
 
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -41,6 +42,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
+@Repeatable(XmlWriteTransformers.class)
 public @interface XmlWriteTransformer {
     /**
      * User-defined class that must implement the
