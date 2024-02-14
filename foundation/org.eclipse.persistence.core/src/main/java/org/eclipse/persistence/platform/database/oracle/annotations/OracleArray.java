@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.platform.database.oracle.annotations;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE})
 @Retention(RUNTIME)
+@Repeatable(OracleArrays.class)
 public @interface OracleArray {
 
     /**

@@ -16,6 +16,7 @@ package org.eclipse.persistence.platform.database.oracle.annotations;
 
 import jakarta.persistence.QueryHint;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -36,6 +37,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE})
 @Retention(RUNTIME)
+@Repeatable(NamedPLSQLStoredProcedureQueries.class)
 public @interface NamedPLSQLStoredProcedureQuery {
     /**
      * Unique name that references this stored procedure query.

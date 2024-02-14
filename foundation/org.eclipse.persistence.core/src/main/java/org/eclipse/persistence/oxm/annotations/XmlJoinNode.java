@@ -14,6 +14,7 @@
 // dmccann - September 14/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.oxm.annotations;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -47,6 +48,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
+@Repeatable(XmlJoinNodes.class)
 public @interface XmlJoinNode {
     String xmlPath();
     String referencedXmlPath();
