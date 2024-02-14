@@ -23,16 +23,15 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * OrderCorrection annotation may be specified together with OrderColumn annotation.
- * Its OrderCorrectionType value defines what should be done in case
- * the order list read from the data base is invalid
+ * OrderCorrection annotation may be specified together with {@linkplain jakarta.persistence.OrderColumn} annotation.
+ * Its {@linkplain OrderCorrectionType} value defines what should be done in case
+ * the order list read from the database is invalid
  * (has nulls, duplicates, negative values, values greater/equal to list size -
  * the only valid order list of n elements is: {0, 1,..., n-1}).
  * <p>
- * If the annotation is not specified than OrderCorrectionValue.READ_WRITE used.
+ * If the annotation is not specified then {@linkplain OrderCorrectionType#READ_WRITE} used.
  *
- * @see "org.eclipse.persistence.jpa.config.OrderColumn"
- * @see org.eclipse.persistence.annotations.OrderCorrectionType
+ * @see OrderCorrectionType
  *
  */
 @Target({METHOD, FIELD})

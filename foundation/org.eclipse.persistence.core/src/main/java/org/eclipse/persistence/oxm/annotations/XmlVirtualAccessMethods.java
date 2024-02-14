@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,19 +29,21 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface XmlVirtualAccessMethods {
 
     /**
-     * (Optional) Defines the name of the method used to retrieve virtual properties.
+     * Defines the name of the method used to retrieve virtual properties.
      */
     String getMethod() default "get";
 
     /**
-     * (Optional) Defines the name of the method used to store virtual properties.
+     * Defines the name of the method used to store virtual properties.
      */
     String setMethod() default "set";
 
     /**
-     * (Optional) Configure the way that virtual properties will appear in generated schemas.<br><br>
-     * <b>XmlExtensibleSchema.NODES</b> (default) - Virtual properties will appear as individual nodes<br>
-     * <b>XmlExtensibleSchema.ANY</b> - An XSD &lt;any&gt; element will be written to the schema to represent all of the defined virtual properties
+     * Configure the way that virtual properties will appear in generated schemas.
+     * <ul>
+     *  <li>{@linkplain XmlVirtualAccessMethodsSchema#NODES} (default) - Virtual properties will appear as individual nodes.</li>
+     *  <li>{@linkplain XmlVirtualAccessMethodsSchema#ANY} - An XSD {@literal <any>} element will be written to the schema to represent all of the defined virtual properties.</li>
+     * </ul>
      */
     XmlVirtualAccessMethodsSchema schema() default XmlVirtualAccessMethodsSchema.NODES;
 

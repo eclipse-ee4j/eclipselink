@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,19 +22,20 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * <p>An additional criteria can be specified at the Entity or MappedSuperclass
+ * <p>An AdditionalCriteria can be specified at the Entity or MappedSuperclass
  * level. When specified at the mapped superclass level, it applies to all
  * inheriting entities unless those entities define their own additional
  * criteria, at which point the additional criteria from the mapped superclass
  * is ignored.</p>
  *
- * <p>The additional criteria supports any valid JPQL string and must use 'this'
+ * <p>The additional criteria supports any valid JPQL string and must use '{@code this}'
  * as an alias to form your additional criteria. E.G.,</p>
- * <pre>
- * {@literal @}Entity
- * {@literal @}AdditionalCriteria("this.nut.size = :NUT_SIZE and this.nut.color = :NUT_COLOR")
- * public class Bolt {...}
- * </pre>
+ * {@snippet :
+ *  @Entity
+ *  @AdditionalCriteria("this.nut.size = :NUT_SIZE and this.nut.color = :NUT_COLOR")
+ *  public class Bolt {
+ *  }
+ * }
  *
  * <p>Additional criteria parameters are also accepted and are set through
  * properties on the entity manager factory, or on an entity manager. When set
@@ -44,7 +45,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>Properties set on the entity manager will override those similarly named
  * properties set on the entity manager factory.</p>
  *
- * <p>Additional criteria is not supported with any native queries.</p>
+ * <p>AdditionalCriteria is not supported with any native queries.</p>
  *
  * @author Guy Pelletier
  * @since EclipseLink 2.2
@@ -53,7 +54,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface AdditionalCriteria {
     /**
-     * (Required) The JPQL fragment to use as the additional criteria.
+     * The JPQL fragment to use as the additional criteria.
      */
     String value();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,58 +25,66 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- *  A CollectionTable annotation is used in conjunction with a BasicCollection
- *  or a BasicMap annotation. However, if a CollectionTable is not defined, one
+ *  A CollectionTable annotation is used in conjunction with a {@linkplain BasicCollection}
+ *  or a {@linkplain BasicMap} annotation. However, if a CollectionTable is not defined, one
  *  will be defaulted.
  *
- * @see org.eclipse.persistence.annotations.BasicMap
- * @see org.eclipse.persistence.annotations.BasicCollection
+ * @see BasicMap
+ * @see BasicCollection
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  *
- * @deprecated
- * @see jakarta.persistence.CollectionTable
+ * @deprecated Use {@linkplain jakarta.persistence.CollectionTable}.
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 @Deprecated
 public @interface CollectionTable {
     /**
-     * (Optional) The name of the collection table. If it is not specified, it
-     * is defaulted to the concatenation of the following: the name of the
-     * source entity; "_" ; the name of the relationship property or field of
-     * the source entity.
+     * The name of the collection table.
+     * <p>
+     * If it is not specified, it is defaulted to the concatenation of the following:
+     * <ul>
+     * <li>the name of the source entity</li>
+     * <li>"{@code _}"</li>
+     * <li>the name of the relationship property or field of the source entity.</li>
+     * </ul>
      */
     String name() default "";
 
     /**
-     * (Optional) The catalog of the table. It defaults to the persistence unit
-     * default catalog.
+     * The catalog of the table.
+     * <p>
+     * It defaults to the persistence unit default catalog.
      */
     String catalog() default "";
 
     /**
-     * (Optional) The schema of the table. It defaults to the persistence unit
-     * default schema.
+     * The schema of the table.
+     * <p>
+     * It defaults to the persistence unit default schema.
      */
     String schema() default "";
 
     /**
-     * (Optional) Used to specify a primary key column that is used as a foreign
+     * Used to specify a primary key column that is used as a foreign
      * key to join to another table. If the source entity uses a composite
      * primary key, a primary key join column must be specified for each field
      * of the composite primary key. In a single primary key case, a primary key
-     * join column may optionally be specified. Defaulting will apply otherwise
-     * as follows:
-     * name, the same name as the primary key column of the primary table of the
-     * source entity.
-     * referencedColumnName, the same name of primary key column of the primary
-     * table of the source entity.
+     * join column may optionally be specified.
+     * <p>
+     * Defaulting applies otherwise as follows:
+     * <ul>
+     * <li><em>name</em>, the same name as the primary key column of the primary table of the
+     * source entity.</li>
+     * <li><em>referencedColumnName</em>, the same name of primary key column of the primary
+     * table of the source entity.</li>
+     * </ul>
      */
     PrimaryKeyJoinColumn[] primaryKeyJoinColumns() default {};
 
     /**
-     * (Optional) Unique constraints that are to be placed on the table. These
+     * Unique constraints that are to be placed on the table. These
      * are only used if table generation is in effect.
      */
     UniqueConstraint[] uniqueConstraints() default {};

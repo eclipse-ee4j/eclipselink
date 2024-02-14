@@ -25,11 +25,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * A NamedPLSQLStoredFunctionQuery annotation allows the definition of queries that
  * call PLSQL stored functions as named queries.
+ * <p>
  * The PLSQL support adds support for complex PLSQL types such as RECORD and TABLE types,
  * that are not accessible from JDBC.
  * <p>
- * A NamedPLSQLStoredFunctionQuery annotation may be defined on an Entity or
- * MappedSuperclass.
+ * A NamedPLSQLStoredFunctionQuery annotation may be defined on an Entity or MappedSuperclass.
  *
  * @author James Sutherland
  * @since EclipseLink 2.3
@@ -38,32 +38,32 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface NamedPLSQLStoredFunctionQuery {
     /**
-     * (Required) Unique name that references this stored procedure query.
+     * Unique name that references this stored function query.
      */
     String name();
 
     /**
-     * (Optional) Query hints.
+     * Query hints.
      */
     QueryHint[] hints() default {};
 
     /**
-     * (Optional) The name of the SQLResultMapping.
+     * The name of the {@linkplain jakarta.persistence.SqlResultSetMapping}.
      */
     String resultSetMapping() default "";
 
     /**
-     * (Required) The name of the stored procedure.
+     * The name of the stored function.
      */
     String functionName();
 
     /**
-     * (Optional) Defines the parameters to the stored procedure.
+     * Defines the parameters to the stored function.
      */
     PLSQLParameter[] parameters() default {};
 
     /**
-     * (Required) Defines the return value of the stored function.
+     * Defines the return value of the stored function.
      */
     PLSQLParameter returnParameter();
 }

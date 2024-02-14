@@ -27,9 +27,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * A StructConverter is a special type of converter that handles the conversion of a specific
- * database Struct type.  This is normally used for extended database types such as spatial geometric types.
+ * database Struct type. This is normally used for extended database types such as spatial geometric types.
  * <p>
- * A StructConverter is different than a regular attribute Converter, and does not implement the same interface.
+ * A StructConverter is different from a regular attribute Converter, and does not implement the same interface.
+ * <p>
  * A StructConverter will be used to convert any matching Struct type.
  *
  * @see org.eclipse.persistence.platform.database.converters.StructConverter
@@ -39,18 +40,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(StructConverters.class)
 public @interface StructConverter {
     /**
-     * (Required) Name this converter. The name should be unique across the
-     * whole persistence unit.
+     * The name of this converter. The name should be unique across the whole persistence unit.
      */
     String name();
 
     /**
-     * (Required) The StructConverter class to be used. This class must implement the
-     * EclipseLink org.eclipse.persistence.platform.database.converters.StructConverter
-     * interface.
+     * The StructConverter class to be used. This class must implement the
+     * {@linkplain org.eclipse.persistence.platform.database.converters.StructConverter} interface.
      * <p>
-     * You may also alternatively specify a pre-defined EclipseLink
-     * org.eclipse.persistence.config.StructConverterType
+     * You may also alternatively specify a pre-defined
+     * {@linkplain org.eclipse.persistence.config.StructConverterType}
      *
      * @see org.eclipse.persistence.platform.database.converters.StructConverter
      * @see org.eclipse.persistence.config.StructConverterType

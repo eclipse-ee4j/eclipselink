@@ -22,9 +22,8 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * <p><b>Purpose</b>: This annotation indicates that the value of a specified attribute on a
- * referenced class should be used as the tag name when marshalling/unmarshalling the object(s)
- * by EclipseLink.
+ * This annotation indicates that the value of a specified attribute on a referenced class
+ * should be used as the tag name when marshalling/unmarshalling the object(s) by EclipseLink.
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
@@ -41,9 +40,8 @@ public @interface XmlVariableNode {
     Class<?> type() default DEFAULT.class;
 
     /**
-     * Used in {@link XmlVariableNode#type()} to
-     * signal that the type be inferred from the signature
-     * of the property.
+     * Used in {@linkplain XmlVariableNode#type()} to signal
+     * that the type be inferred from the signature of the property.
      */
     final class DEFAULT {}
 

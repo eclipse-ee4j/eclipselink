@@ -30,9 +30,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * Multitenant can be specified at the Entity or MappedSuperclass level.
  *
- * @see org.eclipse.persistence.annotations.MultitenantType
- * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
- * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumns
+ * @see MultitenantType
+ * @see TenantDiscriminatorColumn
+ * @see TenantDiscriminatorColumns
  *
  * @author Guy Pelletier
  * @since EclipseLink 2.3
@@ -41,14 +41,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Multitenant {
     /**
-     * (Optional) Specify the multi-tenant strategy to use.
+     * Specify the multi-tenant strategy to use.
      */
     MultitenantType value() default MultitenantType.SINGLE_TABLE;
 
     /**
-     * (Optional) Indicate if the database requires the tenant criteria to
-     * be added to the SELECT, UPDATE, and DELETE queries. By default this is
-     * done but when set to false the queries will not be modified and it will
+     * Indicate if the database requires the tenant criteria to be added
+     * to the SELECT, UPDATE, and DELETE queries. By default, this is
+     * done but when set to false the queries will not be modified, and it will
      * be up to the application or database to ensure that the correct criteria
      * is applied to all queries.
      */

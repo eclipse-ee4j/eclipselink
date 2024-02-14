@@ -80,7 +80,6 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
  * <p><b>Mapping a transformation</b>:  A transformer can be configured to perform both the
  * XML instance-to-Java attribute transformation at unmarshall time (via attribute transformer) and
  * the Java attribute-to-XML instance transformation at marshal time (via field transformer).
- * <p>
  * <!--
  *    <?xml version="1.0" encoding="UTF-8"?>
  *    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">

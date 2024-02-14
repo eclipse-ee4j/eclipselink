@@ -32,14 +32,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * converter that can be used in their mappings. A converter can be defined on
  * an entity class, method, or field.
  * <p>
- * A Converter must be be uniquely identified by name and can be defined at
+ * A Converter must be uniquely identified by name and can be defined at
  * the class, field and property level and can be specified within an Entity,
  * MappedSuperclass and Embeddable class.
  * <p>
  * The usage of a Converter is always specified via the Convert annotation and
  * is supported on a Basic, or ElementCollection mapping.
  *
- * @see org.eclipse.persistence.annotations.Convert
+ * @see Convert
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -48,14 +48,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(Converters.class)
 public @interface Converter {
     /**
-     * (Required) Name this converter. The name should be unique across the
+     * The name of this converter. The name should be unique across the
      * whole persistence unit.
      */
     String name();
 
     /**
-     * (Required) The converter class to be used. This class must implement the
-     *  org.eclipse.persistence.mappings.converters.Converter interface.
+     * The converter class to be used. This class must implement the
+     *  {@linkplain org.eclipse.persistence.mappings.converters.Converter} interface.
      */
     Class<?> converterClass();
 }

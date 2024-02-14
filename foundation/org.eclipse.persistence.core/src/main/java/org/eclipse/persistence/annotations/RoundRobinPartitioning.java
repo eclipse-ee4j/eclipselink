@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,14 +23,16 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * RoundRobinPartitioning sends requests in a round robin fashion to the set of connection pools.
+ * RoundRobinPartitioning sends requests in a round-robin fashion to the set of connection pools.
+ * <p>
  * It is for load-balancing read queries across a cluster of database machines.
  * It requires that the full database be replicated on each machine, so does not support partitioning.
  * The data should either be read-only, or writes should be replicated on the database.
  * <p>
  * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
- * Partition policies are globally named to allow reuse,
- * the partitioning policy must also be set using the @Partitioned annotation to be used.
+ * <p>
+ * Partition policies are globally named to allow reuse, the partitioning policy must also be set
+ * using the {@linkplain Partitioned} annotation to be used.
  *
  * @see Partitioned
  * @see org.eclipse.persistence.descriptors.partitioning.RoundRobinPartitioningPolicy
@@ -47,12 +49,13 @@ public @interface RoundRobinPartitioning {
 
     /**
      * List of connection pool names to load balance across.
+     * <p>
      * Defaults to all defined pools in the ServerSession.
      */
     String[] connectionPools() default {};
 
     /**
-     * This allows for a set of database to be written to and kept in synch,
+     * This allows for a set of database to be written to and kept in sync,
      * and have reads load-balanced across the databases.
      */
     boolean replicateWrites() default false;

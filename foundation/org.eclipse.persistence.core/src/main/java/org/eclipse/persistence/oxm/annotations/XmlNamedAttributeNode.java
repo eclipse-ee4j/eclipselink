@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A <code>XmlNamedAttributeNode</code> is a member element of a
- * <code>XmlNamedObjectGraph</code>.
+ * A XmlNamedAttributeNode is a member element of a {@linkplain XmlNamedObjectGraph}
+ * and {@linkplain XmlNamedSubgraph}.
  *
  * @see XmlNamedObjectGraph
  * @see XmlNamedSubgraph
@@ -33,13 +33,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface XmlNamedAttributeNode {
     /**
-     * required: the name of the property
+     * The name of the property
      */
     String value();
 
-    /** optional: if this property referenced another JAXB Object,
-     *  specify the name of the object graph to use for that nested object.
-     *   By default, the full object will be read.
+    /**
+     * If this property referenced another JAXB Object,
+     * specify the name of the object graph to use for that nested object.
+     * <p>
+     * By default, the full object will be read.
      */
     String subgraph() default "";
 }

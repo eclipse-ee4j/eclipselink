@@ -19,18 +19,16 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.eclipse.persistence.annotations.ChangeTrackingType.AUTO;
 
 /**
  * The ChangeTracking annotation is used to specify the
- * org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy
- * which computes changes sets for EclipseLink's UnitOfWork commit process.
- * An ObjectChangePolicy is stored on an Entity's descriptor.
+ * {@linkplain org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy}
+ * which computes changes sets for EclipseLink's {@linkplain org.eclipse.persistence.sessions.UnitOfWork} commit process.
+ * An {@linkplain org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy} is stored on an Entity's descriptor.
  * <p>
- * A ChangeTracking annotation may be specified on an Entity,
- * MappedSuperclass or Embeddable.
+ * A ChangeTracking annotation may be defined on an Entity, MappedSuperclass or Embeddable.
  *
- * @see org.eclipse.persistence.annotations.ChangeTrackingType
+ * @see ChangeTrackingType
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -38,7 +36,7 @@ import static org.eclipse.persistence.annotations.ChangeTrackingType.AUTO;
 @Retention(RUNTIME)
 public @interface ChangeTracking {
     /**
-     * (Optional) The type of change tracking to use.
+     * The type of change tracking to use.
      */
-    ChangeTrackingType value() default AUTO;
+    ChangeTrackingType value() default ChangeTrackingType.AUTO;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,10 +21,12 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * The ReadOnly annotation is used to specify that a class is read only. It
- * may be defined on an Entity or MappedSuperclass. In the case of inheritance,
- * a ReadOnly annotation can only be defined on the root of the inheritance
- * hierarchy
+ * The ReadOnly annotation is used to specify that a class is read only.
+ * <p>
+ * It may be defined on an Entity or MappedSuperclass.
+ * <p>
+ * In the case of inheritance, a ReadOnly annotation can only be defined on
+ * the root of the inheritance hierarchy.
  *
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0

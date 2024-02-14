@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@
 package org.eclipse.persistence.annotations;
 
 /**
- * An enum that is used within the TenantTableDiscriminator annotation.
+ * An enum that is used within the {@linkplain TenantTableDiscriminator} annotation.
  *
  * @author Guy Pelletier
  * @since EclipseLink 2.4
@@ -24,13 +24,15 @@ package org.eclipse.persistence.annotations;
 public enum TenantTableDiscriminatorType {
     /**
      * Apply the tenant table discriminator as a schema to all multitenant tables.
+     * <p>
      * NOTE: this strategy requires appropriate database provisioning.
      */
     SCHEMA,
 
     /**
-     * Apply the tenant table discriminator as a suffix to all multitenant tables. This
-     * is the default strategy.
+     * Apply the tenant table discriminator as a suffix to all multitenant tables.
+     * <p>
+     * This is the default strategy.
      */
     SUFFIX,
 

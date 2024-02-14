@@ -22,7 +22,6 @@ import org.eclipse.persistence.sessions.server.Server;
 
 import java.util.Collection;
 
-
 /**
  * Helper class to simplify the development and generation of code that accesses
  * TopLink through the SessionManager (sessions config XML).
@@ -34,7 +33,7 @@ import java.util.Collection;
  * </ul>
  *
  * Basic usage example:
- * <code>
+ * {@snippet :
  * SessionFactory = sessionFactory = new SessionFactory("session-name");
  *
  * ...
@@ -61,7 +60,7 @@ import java.util.Collection;
  *
  *    uow.commit();
  * }
- * </code>
+ * }
  * <p>
  * <b>Detachment</b>: The detach helper methods are provided to assist with the
  * construction of applications. This helper class was designed for use within

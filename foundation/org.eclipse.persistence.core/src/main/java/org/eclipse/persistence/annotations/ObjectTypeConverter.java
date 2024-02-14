@@ -26,19 +26,19 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * The ObjectTypeConverter annotation is used to specify a TopLink
- * org.eclipse.persistence.mappings.converters.ObjectTypeConverter that converts a fixed
+ * The ObjectTypeConverter annotation is used to specify a
+ * {@linkplain org.eclipse.persistence.mappings.converters.ObjectTypeConverter} that converts a fixed
  * number of database data value(s) to Java object value(s) during the reading
  * and writing of a mapped attribute
  * <p>
- * An ObjectTypeConverter must be be uniquely identified by name and can be
+ * An ObjectTypeConverter must be uniquely identified by name and can be
  * defined at the class, field and property level and can be specified within
  * an Entity, MappedSuperclass and Embeddable class.
  * <p>
- * The usage of an ObjectTypeConverter is specified via the Convert annotation
+ * The usage of an ObjectTypeConverter is specified via the {@linkplain Convert} annotation
  * and is supported on a Basic, or ElementCollection mapping.
  *
- * @see org.eclipse.persistence.annotations.Convert
+ * @see Convert
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -47,32 +47,30 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(ObjectTypeConverters.class)
 public @interface ObjectTypeConverter {
     /**
-     * (Required) Name this converter. The name should be unique across the
-     * whole persistence unit.
+     * The name of this converter. The name should be unique across the whole persistence unit.
      */
     String name();
 
     /**
-     * (Optional) Specify the type stored on the database. The default is
-     * inferred from the type of the persistence field or property.
+     * Specify the type stored on the database.
+     * <p>
+     * The default is inferred from the type of the persistence field or property.
      */
     Class<?> dataType() default void.class;
 
     /**
-     * (Optional) Specify the type stored on the entity. The default is inferred
-     * from the type of the persistent field or property.
+     * Specify the type stored on the entity.
+     * <p>The default is inferred from the type of the persistent field or property.
      */
     Class<?> objectType() default void.class;
 
     /**
-     * (Required) Specify the conversion values to be used with the object
-     * converter.
+     * Specify the conversion values to be used with the object converter.
      */
     ConversionValue[] conversionValues();
 
     /**
-     * (Optional) Specify a default object value. Used for legacy data if the
-     * data value is missing.
+     * Specify a default object value. Used for legacy data if the data value is missing.
      */
     String defaultObjectValue() default "";
 }

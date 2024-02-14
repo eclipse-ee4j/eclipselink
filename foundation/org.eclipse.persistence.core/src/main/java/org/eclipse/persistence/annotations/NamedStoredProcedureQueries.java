@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,9 +22,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * A NamedStoredProcedureQueries annotation allows the definition of multiple
- * NamedStoredProcedureQuery.
+ * {@linkplain NamedStoredProcedureQuery}es.
  *
- * @see org.eclipse.persistence.annotations.NamedStoredProcedureQuery
+ * @see NamedStoredProcedureQuery
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -32,7 +32,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface NamedStoredProcedureQueries {
     /**
-     * (Required) An array of named stored procedure query.
+     * An array of NamedStoredProcedureQuery annotations.
      */
     NamedStoredProcedureQuery[] value();
 }

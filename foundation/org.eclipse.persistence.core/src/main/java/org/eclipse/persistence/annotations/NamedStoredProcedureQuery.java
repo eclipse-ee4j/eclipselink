@@ -31,10 +31,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * A NamedStoredProcedureQuery annotation allows the definition of queries that
  * call stored procedures as named queries.
  * <p>
- * A NamedStoredProcedureQuery annotation may be defined on an Entity or
- * MappedSuperclass.
+ * A NamedStoredProcedureQuery annotation may be defined on an Entity or MappedSuperclass.
  *
- * @see org.eclipse.persistence.annotations.StoredProcedureParameter
+ * @see StoredProcedureParameter
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -43,70 +42,72 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(NamedStoredProcedureQueries.class)
 public @interface NamedStoredProcedureQuery {
     /**
-     * (Required) Unique name that references this stored procedure query.
+     * Unique name that references this stored procedure query.
      */
     String name();
 
     /**
-     * (Optional) Query hints.
+     * Query hints.
      */
     QueryHint[] hints() default {};
 
     /**
-     * (Optional) Refers to the class of the result.
-     * @deprecated
-     * @see #resultClasses
+     * Refers to the class of the result.
+     * @deprecated Use {@linkplain #resultClasses()}.
      */
     @Deprecated
     Class<?> resultClass() default void.class;
 
     /**
-     * (Optional) Refers to the classes of the result.
+     * Refers to the classes of the result.
      */
     Class<?>[] resultClasses() default {};
 
     /**
-     * (Optional) The name of the SQLResultMapping.
-     * @deprecated
-     * @see #resultSetMappings
+     * The name of the SQLResultMapping.
+     * @deprecated Use {@linkplain #resultSetMappings()}.
      */
     @Deprecated
     String resultSetMapping() default "";
 
     /**
-     * (Optional) The names of the SQLResultMappings.
+     * The names of the {@linkplain jakarta.persistence.SqlResultSetMapping}.
      */
     String[] resultSetMappings() default {};
 
     /**
-     * (Required) The name of the stored procedure.
+     * The name of the stored procedure.
      */
     String procedureName();
 
     /**
-     * (Optional) Defines if stored procedure returns a result set.
+     * Defines if stored procedure returns a result set.
+     * <p>
      * This is only relevant on databases that support returning result sets
      * from stored procedures.
      */
     boolean returnsResultSet() default false;
 
     /**
-     * (Optional) Defines if the stored procedure returns multiple result sets.
+     * Defines if the stored procedure returns multiple result sets.
+     * <p>
      * This is only relevant on databases that support multiple result sets from
      * stored procedures.
      */
     boolean multipleResultSets() default false;
 
     /**
-     * (Optional) Defines if the stored procedure should be called by index or
-     * by name. By index requires that the StoredProcedureParameter are defined
-     * in the same order as the procedure on the database. By name requires the
-     * database platform support naming procedure parameters.
+     * Defines if the stored procedure should be called by index or by name.
+     * <p>
+     * By index requires that the {@linkplain #parameters()} are defined
+     * in the same order as the procedure on the database.
+     * <p>
+     * By name requires the database platform support naming procedure parameters.
      */
     boolean callByIndex() default false;
 
     /**
-     * (Optional) Defines the parameters to the stored procedure.
+     * Defines the parameters to the stored procedure.
      */
     StoredProcedureParameter[] parameters() default {};
 }

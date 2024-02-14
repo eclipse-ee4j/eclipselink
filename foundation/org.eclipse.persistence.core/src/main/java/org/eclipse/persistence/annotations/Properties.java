@@ -25,33 +25,22 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation for user defined properties.
- * A single Property may be specified directly on a mapped attribute or its get/set method.
- * Multiple Properties should be wrapped into Properties annotation.
+ * A single {@linkplain Property} may be specified directly on a mapped attribute or its get/set method.
+ * Multiple occurrences of {@linkplain Property} annotation can be wrapped into Properties annotation.
  * <p>
  * Properties may be assigned to either a mapped attribute (or its get/set method)
  * within Entity, MappedSuperclass and Embeddable class;
  * or to Entity, MappedSuperclass and Embeddable class.
  * <p>
- * In case orm xml is used Property an Properties annotations specified on mapped attributes are ignored,
+ * In case orm xml is used Property and Properties annotations specified on mapped attributes are ignored,
  * specified on a class are merged with the ones specified in orm xml with the latter taking precedence in case of conflicts.
  * <p>
  * Properties defined in MappedSuperclass are passed to all inheriting Entities and MappedSuperclasses.
  * In case of a conflict property value defined directly on a class always overrides the value passed from class's parent.
  *
- * @see "jakarta.persistence.Embeddable"
- * @see "jakarta.persistence.Entity"
- * @see "jakarta.persistence.Id"
- * @see "jakarta.persistence.Basic"
- * @see "jakarta.persistence.ManyToMany"
- * @see "jakarta.persistence.ManyToOne"
- * @see "jakarta.persistence.MappedSuperclass"
- * @see "jakarta.persistence.OneToMany"
- * @see "jakarta.persistence.OneToOne"
- * @see org.eclipse.persistence.annotations.BasicCollection
- * @see org.eclipse.persistence.annotations.BasicMap
- * @see org.eclipse.persistence.annotations.Property
- * @see org.eclipse.persistence.annotations.Transformation
- * @see org.eclipse.persistence.annotations.VariableOneToOne
+ * @see Property
+ * @see Transformation
+ * @see VariableOneToOne
  *
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0
@@ -59,5 +48,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, TYPE})
 @Retention(RUNTIME)
 public @interface Properties {
+    /**
+     * An array of Property annotations.
+     */
     Property[] value();
 }

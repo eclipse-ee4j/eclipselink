@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Allow a set of cache indexes to be define on an Entity.
+ * Allow a set of cache indexes to be defined on an Entity.
  *
  * @author James Sutherland
  * @since EclipseLink 2.4
@@ -29,5 +29,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE})
 @Retention(RUNTIME)
 public @interface CacheIndexes {
+    /**
+     * An array of CacheIndex annotations.
+     */
     CacheIndex[] value() default {};
 }

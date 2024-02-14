@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,20 +15,20 @@
 package org.eclipse.persistence.platform.database.oracle.annotations;
 
 import org.eclipse.persistence.annotations.Direction;
-import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
-import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.eclipse.persistence.annotations.Direction.IN;
 
 /**
- * A PLSQLParameter annotation is used within a
- * NamedPLSQLStoredProcedureQuery or PLSQLRecord annotation.
+ * A PLSQLParameter annotation is used within a {@linkplain NamedPLSQLStoredProcedureQuery},
+ * {@linkplain NamedPLSQLStoredFunctionQuery}, {@linkplain OracleObject}
+ * or {@linkplain PLSQLRecord} annotation.
  *
+ * @see NamedPLSQLStoredFunctionQuery
  * @see NamedPLSQLStoredProcedureQuery
+ * @see OracleObject
  * @see PLSQLRecord
  * @author James Sutherland
  * @since EclipseLink 2.3
@@ -37,47 +37,51 @@ import static org.eclipse.persistence.annotations.Direction.IN;
 @Retention(RUNTIME)
 public @interface PLSQLParameter {
     /**
-     * (Optional) The direction of the stored procedure parameter.
+     * The direction of the stored procedure parameter.
      */
-    Direction direction() default IN;
+    Direction direction() default Direction.IN;
 
     /**
-     * (Required) Stored procedure parameter name.
+     * Stored procedure parameter name.
      */
     String name();
 
     /**
-     * (Optional) The query parameter name.
+     * The query parameter name.
      */
     String queryParameter() default "";
 
     /**
-     * (Optional) Define if the parameter is required, or optional and defaulted by the procedure.
+     * Define if the parameter is required, or optional and defaulted by the procedure.
      */
     boolean optional() default false;
 
     /**
-     * (Optional) The database data-type for the paramter.
-     * This either one of the type constants defined in OraclePLSQLTypes, or JDBCTypes,
+     * The database data-type for the parameter.
+     * <p>
+     * This is either one of the type constants defined in
+     * {@linkplain org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes},
+     * or {@linkplain org.eclipse.persistence.platform.database.jdbc.JDBCTypes},
      * or a custom record or table type name.
+     *
      * @see PLSQLRecord
-     * @see OraclePLSQLTypes
-     * @see JDBCTypes
+     * @see org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes
+     * @see org.eclipse.persistence.platform.database.jdbc.JDBCTypes
      */
     String databaseType() default "VARCHAR_TYPE";
 
     /**
-     * (Optional) The max length of the field value.
+     * The max length of the field value.
      */
     int length() default 255;
 
     /**
-     * (Optional) If a numeric, the max scale value.
+     * If a numeric, the max scale value.
      */
     int scale() default 0;
 
     /**
-     * (Optional) If a numeric, the max precision value.
+     * If a numeric, the max precision value.
      */
     int precision() default 0;
 }

@@ -23,23 +23,21 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation for org.eclipse.persistence.mappings.TransformationMapping.
- * Unless the TransformationMapping is write-only, it should have a
- * ReadTransformer, it defines transformation of database column(s) value(s)
- * into attribute value.
+ * Annotation for {@linkplain org.eclipse.persistence.mappings.TransformationMapping}.
+ * Unless the {@linkplain org.eclipse.persistence.mappings.TransformationMapping} is write-only, it should have a
+ * {@linkplain ReadTransformer} defining transformation of database column(s) value(s) into attribute value.
  * <p>
- * Also unless it's a read-only mapping, either WriteTransformer annotation or
- * WriteTransformers annotation should be specified. Each WriteTransformer
+ * Also, unless it's a read-only mapping, either {@linkplain WriteTransformer} or
+ * {@linkplain WriteTransformers} annotation should be specified. Each {@linkplain WriteTransformer}
  * defines transformation of the attribute value to a single database column
- * value (column is specified in the WriteTransformer).
- *
- * @see org.eclipse.persistence.annotations.Transformation
- * @see org.eclipse.persistence.annotations.WriteTransformer
- * @see org.eclipse.persistence.annotations.WriteTransformers
- *
+ * value (column is specified in the {@linkplain WriteTransformer}).
+ * <p>
  * Transformation can be specified within an Entity, MappedSuperclass
  * and Embeddable class.
  *
+ * @see Transformation
+ * @see WriteTransformer
+ * @see WriteTransformers
  * @author Andrei Ilitchev
  */
 @Target({METHOD, FIELD})
@@ -47,17 +45,20 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface ReadTransformer {
     /**
      * User-defined class that must implement the
-     * org.eclipse.persistence.mappings.transformers.AttributeTransformer
-     * interface. The class will be instantiated, its buildAttributeValue will
-     * be used to create the value to be assigned to the attribute.
-     * Either transformerClass or method must be specified, but not both.
+     * {@linkplain org.eclipse.persistence.mappings.transformers.AttributeTransformer}
+     * interface. The class will be instantiated, its
+     * {@linkplain org.eclipse.persistence.mappings.transformers.AttributeTransformer#buildAttributeValue(org.eclipse.persistence.sessions.DataRecord, Object, org.eclipse.persistence.sessions.Session) buildAttributeValue}
+     * will be used to create the value to be assigned to the attribute.
+     * <p>
+     * Either transformerClass or {@linkplain #method()} must be specified, but not both.
      */
     Class<?> transformerClass() default void.class;
 
     /**
      * The mapped class must have a method with this name which returns a value
      * to be assigned to the attribute (not assigns the value to the attribute).
-     * Either transformerClass or method must be specified, but not both.
+     * <p>
+     * Either {@linkplain #transformerClass()} or method must be specified, but not both.
      */
     String method() default "";
 }

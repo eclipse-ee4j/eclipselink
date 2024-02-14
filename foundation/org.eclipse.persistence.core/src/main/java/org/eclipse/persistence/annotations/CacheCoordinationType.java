@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.annotations;
 /**
  * An enum that is used within the Cache annotation.
  *
- * @see org.eclipse.persistence.annotations.Cache
+ * @see Cache
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -36,7 +36,7 @@ public enum CacheCoordinationType {
     INVALIDATE_CHANGED_OBJECTS,
 
     /**
-     * Same as SEND_OBJECT_CHANGES except it also includes any newly created
+     * Same as {@linkplain #SEND_OBJECT_CHANGES} except it also includes any newly created
      * objects from the transaction.
      */
     SEND_NEW_OBJECTS_WITH_CHANGES,

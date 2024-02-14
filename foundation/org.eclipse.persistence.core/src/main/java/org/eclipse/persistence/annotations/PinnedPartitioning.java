@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,8 +26,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * PinnedPartitionPolicy pins requests to a single connection pool.
  * <p>
  * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
- * Partition policies are globally named to allow reuse,
- * the partitioning policy must also be set using the @Partitioned annotation to be used.
+ * <p>
+ * Partition policies are globally named to allow reuse, the partitioning policy must also be set
+ * using the {@linkplain Partitioned} annotation to be used.
  *
  * @see Partitioned
  * @see org.eclipse.persistence.descriptors.partitioning.PinnedPartitioningPolicy

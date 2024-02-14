@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A UuidGenerators annotation allows the definition of multiple UuidGenerator.
+ * A UuidGenerators annotation allows the definition of multiple {@linkplain UuidGenerator}s.
  *
  * @see UuidGenerator
  * @author Lukas Jungmann
@@ -32,9 +32,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE, METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface UuidGenerators {
-
     /**
-     * (Required) An array of UuidGenerator.
+     * An array of UuidGenerator annotations.
      */
     UuidGenerator[] value();
 
