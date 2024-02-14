@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,9 @@
 //     Marcel Valovy - 2.6 - initial API and implementation
 package org.eclipse.persistence.testing.perf.reflection;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
-import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -40,7 +30,7 @@ public class SimpleConcurrentReflectionUtils {
 
     /**
      * Retrieves declared fields.
-     * <p/>
+     * <p>
      * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(java.security.PrivilegedAction)
      * privileged calls}.
      *
