@@ -139,6 +139,8 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         tests.add("complexInTest5");
         tests.add("complexInTest6NullParameter");
         tests.add("complexInTest7EmptyCollectionParameter");
+        tests.add("complexInTest8NullPartialParameter");
+        tests.add("complexInTest9EmptyStringPartialParameter");
         tests.add("complexLengthTest");
         tests.add("complexLikeTest");
         tests.add("complexNotInTest1");
@@ -517,6 +519,38 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
         List<Employee> result = query.getResultList();
         Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
+    public void complexInTest8NullPartialParameter() {
+
+        EntityManager em = createEntityManager();
+        Query expectedQuery = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith') ORDER BY e.id");
+        List<Employee> expectedResult = expectedQuery.getResultList();
+
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith', :lastName) ORDER BY e.id");
+        query.setParameter("lastName", null);
+        List<Employee> result = query.getResultList();
+
+        Assert.assertTrue(result.size() > 0);
+        Assert.assertTrue("Complex IN with NULL test failed", comparer.compareObjects(result, expectedResult));
+
+        closeEntityManager(em);
+    }
+
+    public void complexInTest9EmptyStringPartialParameter() {
+
+        EntityManager em = createEntityManager();
+        Query expectedQuery = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith') ORDER BY e.id");
+        List<Employee> expectedResult = expectedQuery.getResultList();
+
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith', :lastName) ORDER BY e.id");
+        query.setParameter("lastName", "");
+        List<Employee> result = query.getResultList();
+
+        Assert.assertTrue(result.size() > 0);
+        Assert.assertTrue("Complex IN with NULL test failed", comparer.compareObjects(result, expectedResult));
+
         closeEntityManager(em);
     }
 
