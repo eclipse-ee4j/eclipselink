@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023,2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.asm.internal.platform.ow2;
 
 import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.Opcodes;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
@@ -23,7 +24,7 @@ public class SerialVersionUIDAdderImpl extends org.eclipse.persistence.asm.Seria
     private class OW2SerialVersionUIDAdder extends SerialVersionUIDAdder {
 
         public OW2SerialVersionUIDAdder(final ClassVisitor classVisitor) {
-            super(ASMFactory.ASM_API_SELECTED, classVisitor);
+            super(Opcodes.ASM_API_SELECTED, classVisitor);
         }
     }
 

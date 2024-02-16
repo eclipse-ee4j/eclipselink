@@ -19,11 +19,11 @@ public class EclipseLinkMethodVisitor extends MethodVisitor {
     protected MethodVisitor methodVisitor;
 
     public EclipseLinkMethodVisitor() {
-        this.methodVisitor = ASMFactory.createMethodVisitor(ASMFactory.ASM_API_SELECTED);
+        this.methodVisitor = ASMFactory.createMethodVisitor(Opcodes.ASM_API_SELECTED);
     }
 
     public EclipseLinkMethodVisitor(MethodVisitor methodVisitor) {
-        this.methodVisitor = ASMFactory.createMethodVisitor(ASMFactory.ASM_API_SELECTED, methodVisitor);
+        this.methodVisitor = ASMFactory.createMethodVisitor(Opcodes.ASM_API_SELECTED, methodVisitor);
     }
 
     @Override

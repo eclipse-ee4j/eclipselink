@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -4217,11 +4217,11 @@ public final class AnnotationsProcessor {
         ClassWriter cw = new EclipseLinkASMClassWriter();
 
         String sig = "Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;>;";
-        cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
+        cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
 
         // Write Field: @... public Map entry
         String fieldSig = L + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;";
-        FieldVisitor fv = cw.visitField(Opcodes.valueInt("ACC_PUBLIC"), "entry", L + mapType.getInternalName() + SEMI_COLON, fieldSig, null);
+        FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC, "entry", L + mapType.getInternalName() + SEMI_COLON, fieldSig, null);
         fv.visitAnnotation(Type.getDescriptor(XmlElement.class), true);
         if (typeMappingInfo != null) {
             Annotation[] annotations = typeMappingInfo.getAnnotations();
@@ -4251,25 +4251,25 @@ public final class AnnotationsProcessor {
         }
         fv.visitEnd();
 
-        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "()V", null, null);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V", false);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V", false);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
         // Write: @XmlTransient public void setItem(???)
         String methodSig = "(L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;)V";
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "setItem", "(L" + mapType.getInternalName() + ";)V", methodSig, null);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setItem", "(L" + mapType.getInternalName() + ";)V", methodSig, null);
         // TODO: Verify that we really want to put @XmlTranient on setItem
         // method
         mv.visitAnnotation("Ljakarta/xml/bind/annotation/XmlTransient;", true);
         Label l0 = ASMFactory.createLabel();
         mv.visitLabel(l0);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        mv.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
+        mv.visitInsn(Opcodes.RETURN);
         Label l1 = ASMFactory.createLabel();
         mv.visitLabel(l1);
 
@@ -4282,27 +4282,27 @@ public final class AnnotationsProcessor {
 
         // Write @XmlTransient public ??? getItem()
         methodSig = "()L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;";
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "getItem", "()L" + mapType.getInternalName() + SEMI_COLON, methodSig, null);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON, methodSig, null);
         mv.visitAnnotation("Ljakarta/xml/bind/annotation/XmlTransient;", true);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitFieldInsn(Opcodes.valueInt("GETFIELD"), qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
-        mv.visitInsn(Opcodes.valueInt("ARETURN"));
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
+        mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_BRIDGE") + Opcodes.valueInt("ACC_SYNTHETIC"), "getItem", "()Ljava/lang/Object;", null, null);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), qualifiedInternalClassName, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON, false);
-        mv.visitInsn(Opcodes.valueInt("ARETURN"));
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON, false);
+        mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_BRIDGE") + Opcodes.valueInt("ACC_SYNTHETIC"), "setItem", "(Ljava/lang/Object;)V", null, null);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        mv.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), mapType.getInternalName());
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), qualifiedInternalClassName, "setItem", "(L" + mapType.getInternalName() + ";)V", false);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "setItem", "(Ljava/lang/Object;)V", null, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitTypeInsn(Opcodes.CHECKCAST, mapType.getInternalName());
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L" + mapType.getInternalName() + ";)V", false);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
 
@@ -4528,9 +4528,9 @@ public final class AnnotationsProcessor {
         String componentClassNameSeparatedBySlash = getObjectType(componentType).getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         String containerClassNameSeperatedBySlash = containerType.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         if("[B".equals(componentClassNameSeparatedBySlash)) {
-            cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
         } else {
-            cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
         }
 
         // Write @XmlType(namespace)
@@ -4544,11 +4544,11 @@ public final class AnnotationsProcessor {
         av.visitEnd();
 
         // Public No-Arg Constructor
-        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "()V", null, null);
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), Type.getInternalName(superType), "<init>", "()V", false);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(superType), "<init>", "()V", false);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
@@ -4564,31 +4564,31 @@ public final class AnnotationsProcessor {
             //    adaptedValue.toArray(array);
             //    return array;
             // }
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "getItem", "()Ljava/lang/Object;", null, null);
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getItem", "()Ljava/lang/Object;", null, null);
             mv.visitCode();
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
             Label l0 = ASMFactory.createLabel();;
-            mv.visitJumpInsn(Opcodes.valueInt("IFNONNULL"), l0);
-            mv.visitInsn(Opcodes.valueInt("ACONST_NULL"));
-            mv.visitInsn(Opcodes.valueInt("ARETURN"));
+            mv.visitJumpInsn(Opcodes.IFNONNULL, l0);
+            mv.visitInsn(Opcodes.ACONST_NULL);
+            mv.visitInsn(Opcodes.ARETURN);
             mv.visitLabel(l0);
-            mv.visitFrame(Opcodes.valueInt("F_SAME"), 0, null, 0, null);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), "java/util/Collection", "size", "()I", true);
-            mv.visitVarInsn(Opcodes.valueInt("ISTORE"), 1);
-            mv.visitVarInsn(Opcodes.valueInt("ILOAD"), 1);
-            mv.visitTypeInsn(Opcodes.valueInt("ANEWARRAY"), componentClassNameSeparatedBySlash);
-            mv.visitVarInsn(Opcodes.valueInt("ASTORE"), 2);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;", true);
-            mv.visitInsn(Opcodes.valueInt("POP"));
+            mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "size", "()I", true);
+            mv.visitVarInsn(Opcodes.ISTORE, 1);
+            mv.visitVarInsn(Opcodes.ILOAD, 1);
+            mv.visitTypeInsn(Opcodes.ANEWARRAY, componentClassNameSeparatedBySlash);
+            mv.visitVarInsn(Opcodes.ASTORE, 2);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+            mv.visitVarInsn(Opcodes.ALOAD, 2);
+            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;", true);
+            mv.visitInsn(Opcodes.POP);
 
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
-            mv.visitInsn(Opcodes.valueInt("ARETURN"));
+            mv.visitVarInsn(Opcodes.ALOAD, 2);
+            mv.visitInsn(Opcodes.ARETURN);
             mv.visitMaxs(2, 3);
             mv.visitEnd();
 
@@ -4598,16 +4598,16 @@ public final class AnnotationsProcessor {
             //    Float[] floatArray = (Float[])array;
             //    adaptedValue =   (Collection<T>) Arrays.asList(floatArray);
             //}
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "setItem", "(Ljava/lang/Object;)V", null, null);
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setItem", "(Ljava/lang/Object;)V", null, null);
             mv.visitCode();
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-            mv.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), "[L"+componentClassNameSeparatedBySlash+";");
-            mv.visitVarInsn(Opcodes.valueInt("ASTORE"), 2);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), "java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;", false);
-            mv.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
-            mv.visitInsn(Opcodes.valueInt("RETURN"));
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, "[L"+componentClassNameSeparatedBySlash+";");
+            mv.visitVarInsn(Opcodes.ASTORE, 2);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitVarInsn(Opcodes.ALOAD, 2);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;", false);
+            mv.visitFieldInsn(Opcodes.PUTFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+            mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(2, 3);
             mv.visitEnd();
         }
@@ -4623,9 +4623,9 @@ public final class AnnotationsProcessor {
         //    return super.getAdaptedValue();
         // }
         if("[B".equals(componentClassNameSeparatedBySlash)) {
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "getAdaptedValue", "()Ljava/util/Collection;", "()Ljava/util/Collection<" + componentClassNameSeparatedBySlash + ">;", null);
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getAdaptedValue", "()Ljava/util/Collection;", "()Ljava/util/Collection<" + componentClassNameSeparatedBySlash + ">;", null);
         } else {
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "getAdaptedValue", "()Ljava/util/Collection;", "()Ljava/util/Collection<L" + componentClassNameSeparatedBySlash + ";>;", null);
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getAdaptedValue", "()Ljava/util/Collection;", "()Ljava/util/Collection<L" + componentClassNameSeparatedBySlash + ";>;", null);
         }
         // Copy annotations
         boolean hasXmlList = false;
@@ -4668,31 +4668,31 @@ public final class AnnotationsProcessor {
         }
 
         mv.visitCode();
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), Type.getInternalName(superType), "getAdaptedValue", "()Ljava/util/Collection;", false);
-        mv.visitInsn(Opcodes.valueInt("ARETURN"));
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(superType), "getAdaptedValue", "()Ljava/util/Collection;", false);
+        mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
         // public void setAdaptedValue(Collection<COMPONENT_TYPE> adaptedValue) {
         //     super.setAdaptedValue(adaptedValue);
         // }
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "setAdaptedValue", "(Ljava/util/Collection;)V", "(Ljava/util/Collection<L" + componentClassNameSeparatedBySlash + ";>;)V", null);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setAdaptedValue", "(Ljava/util/Collection;)V", "(Ljava/util/Collection<L" + componentClassNameSeparatedBySlash + ";>;)V", null);
         mv.visitCode();
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), Type.getInternalName(superType), "setAdaptedValue", "(Ljava/util/Collection;)V", false);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(superType), "setAdaptedValue", "(Ljava/util/Collection;)V", false);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
 
         // public Class<?> containerClass() {
         //     return CONTAINER_TYPE.class;
         // }
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PROTECTED"), "containerClass", "()Ljava/lang/Class;", "()Ljava/lang/Class<*>;", null);
+        mv = cw.visitMethod(Opcodes.ACC_PROTECTED, "containerClass", "()Ljava/lang/Class;", "()Ljava/lang/Class<*>;", null);
         mv.visitCode();
         if(componentType.isPrimitive()) {
-            mv.visitFieldInsn(Opcodes.valueInt("GETSTATIC"), getObjectType(componentType).getQualifiedName().replace(DOT_CHR, SLASH_CHR), "TYPE", "Ljava/lang/Class;");
+            mv.visitFieldInsn(Opcodes.GETSTATIC, getObjectType(componentType).getQualifiedName().replace(DOT_CHR, SLASH_CHR), "TYPE", "Ljava/lang/Class;");
         } else {
             if(containerClassNameSeperatedBySlash.contains(";")) {
                 mv.visitLdcInsn(Type.getType(containerClassNameSeperatedBySlash).unwrap());
@@ -4700,7 +4700,7 @@ public final class AnnotationsProcessor {
                 mv.visitLdcInsn(Type.getType("L" + containerClassNameSeperatedBySlash + ";").unwrap());
             }
         }
-        mv.visitInsn(Opcodes.valueInt("ARETURN"));
+        mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
     }
@@ -4718,10 +4718,10 @@ public final class AnnotationsProcessor {
         //    return COMPONENT_TYPE.class;
         // }
         String componentClassNameSeparatedBySlash = componentType.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
-        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PROTECTED"), "componentClass", "()Ljava/lang/Class;", "()Ljava/lang/Class<L" + componentClassNameSeparatedBySlash + ";>;", null);
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PROTECTED, "componentClass", "()Ljava/lang/Class;", "()Ljava/lang/Class<L" + componentClassNameSeparatedBySlash + ";>;", null);
         mv.visitCode();
         mv.visitLdcInsn(Type.getType("L" + componentClassNameSeparatedBySlash + ";").unwrap());
-        mv.visitInsn(Opcodes.valueInt("ARETURN"));
+        mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
     }
