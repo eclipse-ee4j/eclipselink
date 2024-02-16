@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,12 +58,12 @@ public class SOAPResponseClassLoader extends ClassLoader {
        *   }
        */
       ClassWriter cw = new EclipseLinkASMClassWriter();
-      cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
+      cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
 
-      MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "()V", null, null);
-      mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-      mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), SOAP_RESPONSE_CLASSNAME_SLASHES, "<init>", "()V", false);
-      mv.visitInsn(Opcodes.valueInt("RETURN"));
+      MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+      mv.visitVarInsn(Opcodes.ALOAD, 0);
+      mv.visitMethodInsn(Opcodes.INVOKESPECIAL, SOAP_RESPONSE_CLASSNAME_SLASHES, "<init>", "()V", false);
+      mv.visitInsn(Opcodes.RETURN);
       mv.visitMaxs(0, 0);
       mv.visitEnd();
 

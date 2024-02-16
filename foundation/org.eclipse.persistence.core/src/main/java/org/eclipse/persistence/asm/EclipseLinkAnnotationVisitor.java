@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,11 @@ public abstract class EclipseLinkAnnotationVisitor extends AnnotationVisitor {
     private AnnotationVisitor annotationVisitor;
 
     public EclipseLinkAnnotationVisitor() {
-        this.annotationVisitor = ASMFactory.createAnnotationVisitor(ASMFactory.ASM_API_SELECTED);
+        this.annotationVisitor = ASMFactory.createAnnotationVisitor(Opcodes.ASM_API_SELECTED);
     }
 
     public EclipseLinkAnnotationVisitor(AnnotationVisitor annotationVisitor) {
-        this.annotationVisitor = ASMFactory.createAnnotationVisitor(ASMFactory.ASM_API_SELECTED, annotationVisitor);
+        this.annotationVisitor = ASMFactory.createAnnotationVisitor(Opcodes.ASM_API_SELECTED, annotationVisitor);
     }
 
     @Override

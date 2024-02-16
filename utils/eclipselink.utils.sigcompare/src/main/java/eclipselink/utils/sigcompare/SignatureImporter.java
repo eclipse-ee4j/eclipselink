@@ -42,7 +42,7 @@ public class SignatureImporter {
             if (entry.getName().endsWith(".class")) {
                 InputStream in = zipFile.getInputStream(entry);
                 ClassReader reader = ASMFactory.createClassReader(in);
-                reader.accept(visitor, ClassReader.valueInt("SKIP_CODE") + ClassReader.valueInt("SKIP_DEBUG"));
+                reader.accept(visitor, ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG);
                 in.close();
             }
         }
@@ -63,19 +63,19 @@ public class SignatureImporter {
         protected ClassSignature sig = null;
 
         SignatureClassVisitor() {
-            super(Opcodes.valueInt("ASM5"));
+            super(Opcodes.ASM5);
         }
 
         @Override
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-            if ((access & Opcodes.valueInt("ACC_PUBLIC")) > 0) {
+            if ((access & Opcodes.ACC_PUBLIC) > 0) {
                 this.sig = new ClassSignature(name, superName, interfaces);
             } // TODO: Handle inheritance
         }
 
         @Override
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-            if (this.sig != null && (access & Opcodes.valueInt("ACC_PUBLIC")) > 0) {
+            if (this.sig != null && (access & Opcodes.ACC_PUBLIC) > 0) {
                 this.sig.addField(name, desc);
             }
             return null;
@@ -83,7 +83,7 @@ public class SignatureImporter {
 
         @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-            if (this.sig != null && (access & Opcodes.valueInt("ACC_PUBLIC")) > 0) {
+            if (this.sig != null && (access & Opcodes.ACC_PUBLIC) > 0) {
                 this.sig.addMethod(name, desc);
             }
             return null;

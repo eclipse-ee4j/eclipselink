@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,11 @@ public class EclipseLinkMethodVisitor extends MethodVisitor {
     protected MethodVisitor methodVisitor;
 
     public EclipseLinkMethodVisitor() {
-        this.methodVisitor = ASMFactory.createMethodVisitor(ASMFactory.ASM_API_SELECTED);
+        this.methodVisitor = ASMFactory.createMethodVisitor(Opcodes.ASM_API_SELECTED);
     }
 
     public EclipseLinkMethodVisitor(MethodVisitor methodVisitor) {
-        this.methodVisitor = ASMFactory.createMethodVisitor(ASMFactory.ASM_API_SELECTED, methodVisitor);
+        this.methodVisitor = ASMFactory.createMethodVisitor(Opcodes.ASM_API_SELECTED, methodVisitor);
     }
 
     @Override

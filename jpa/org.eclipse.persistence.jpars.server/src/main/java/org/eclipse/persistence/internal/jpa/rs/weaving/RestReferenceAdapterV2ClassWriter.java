@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,24 +82,24 @@ public class RestReferenceAdapterV2ClassWriter implements EclipseLinkClassWriter
             throws ClassNotFoundException {
 
         final ClassWriter cw = new EclipseLinkASMClassWriter(0);
-        cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), getASMClassName(), "L" + REFERENCE_ADAPTER_SHORT_SIGNATURE + "<L" + getASMParentClassName() + ";>;", REFERENCE_ADAPTER_SHORT_SIGNATURE, null);
+        cw.visit(Opcodes.ACC_PUBLIC+ Opcodes.ACC_SUPER, getASMClassName(), "L" + REFERENCE_ADAPTER_SHORT_SIGNATURE + "<L" + getASMParentClassName() + ";>;", REFERENCE_ADAPTER_SHORT_SIGNATURE, null);
 
         // Default constructor
-        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "()V", null, null);
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "()V", false);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "()V", false);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
         // Another constructor
-        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "(Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", null, null);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", null, null);
         mv.visitCode();
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "(Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", false);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "(Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", false);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
 

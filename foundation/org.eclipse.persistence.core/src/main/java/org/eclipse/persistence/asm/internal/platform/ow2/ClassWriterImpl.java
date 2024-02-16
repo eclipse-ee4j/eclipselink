@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import org.eclipse.persistence.asm.ASMFactory;
 import org.eclipse.persistence.asm.AnnotationVisitor;
 import org.eclipse.persistence.asm.FieldVisitor;
 import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
@@ -94,7 +95,7 @@ public class ClassWriterImpl extends org.eclipse.persistence.asm.ClassWriter {
 
     @Override
     public void visit(final int access, final String name, final String signature, final String superName, final String[] interfaces) {
-        this.visit(ASMFactory.JAVA_CLASS_VERSION, access, name, signature, superName, interfaces);
+        this.visit(Opcodes.JAVA_CLASS_VERSION, access, name, signature, superName, interfaces);
     }
 
     @Override
