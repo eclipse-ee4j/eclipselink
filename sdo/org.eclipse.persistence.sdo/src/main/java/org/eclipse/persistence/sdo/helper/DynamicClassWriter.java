@@ -107,11 +107,11 @@ public class DynamicClassWriter {
         ClassWriter cw = ASMFactory.createClassWriter();
 
         if (null == type.getInstanceClass()) {
-            cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), null);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), null);
         } else {
             String[] interfaces = new String[1];
             interfaces[0] = type.getInstanceClassName().replace('.', '/');
-            cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), interfaces);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), interfaces);
             addPropertyIndices(cw);
             for (Object object : type.getDeclaredProperties()) {
                 SDOProperty sdoProperty = (SDOProperty) object;
@@ -128,7 +128,7 @@ public class DynamicClassWriter {
     }
 
     private void addPropertyIndices(ClassWriter cw) {
-        cw.visitField(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_FINAL") + Opcodes.valueInt("ACC_STATIC"), START_PROPERTY_INDEX, "I", null, startPropertyIndex).visitEnd();
+        cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL+ Opcodes.ACC_STATIC, START_PROPERTY_INDEX, "I", null, startPropertyIndex).visitEnd();
         int declaredPropsSize = type.getDeclaredProperties().size();
 
         Integer endPropertyIndex;
@@ -137,14 +137,14 @@ public class DynamicClassWriter {
         } else {
             endPropertyIndex = startPropertyIndex - 1;
         }
-        cw.visitField(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_FINAL") + Opcodes.valueInt("ACC_STATIC"), END_PROPERTY_INDEX, "I", null, endPropertyIndex).visitEnd();
+        cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL+ Opcodes.ACC_STATIC, END_PROPERTY_INDEX, "I", null, endPropertyIndex).visitEnd();
     }
 
     private void addConstructors(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), null, new String[] { Type.getInternalName(Serializable.class) });
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), Type.getType(parentClass).getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), false);
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), null, new String[] { Type.getInternalName(Serializable.class) });
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getType(parentClass).getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), false);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
     }
@@ -169,24 +169,24 @@ public class DynamicClassWriter {
         } else {
             propertyInstanceClassDescriptor = "L" + returnType.replace('.', '/') + ";";
         }
-        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), outerGetMethodName, "()" + propertyInstanceClassDescriptor, null, null);
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, outerGetMethodName, "()" + propertyInstanceClassDescriptor, null, null);
 
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitIntInsn(Opcodes.valueInt("BIPUSH"), startPropertyIndex + property.getIndexInType());
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitIntInsn(Opcodes.BIPUSH, startPropertyIndex + property.getIndexInType());
 
         String builtIn = SDOUtil.getBuiltInType(returnType);
         if (null != builtIn) {
             if (property.getType().isDataType() && !builtIn.equals(LIST)) {
-                mv.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), typeImplClassDescriptor, GET + builtIn, "(I)" + propertyInstanceClassDescriptor, false);
-                int iReturnOpcode = Type.getType(property.getType().getInstanceClass()).getOpcode(Opcodes.valueInt("IRETURN"));
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, GET + builtIn, "(I)" + propertyInstanceClassDescriptor, false);
+                int iReturnOpcode = Type.getType(property.getType().getInstanceClass()).getOpcode(Opcodes.IRETURN);
                 mv.visitInsn(iReturnOpcode);
             } else {
-                mv.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), typeImplClassDescriptor, GET, "(I)Ljava/lang/Object;", false);
-                mv.visitInsn(Opcodes.valueInt("ARETURN"));
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, GET, "(I)Ljava/lang/Object;", false);
+                mv.visitInsn(Opcodes.ARETURN);
             }
         } else {
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), typeImplClassDescriptor, GET, "(I)Ljava/lang/Object;", false);
-            mv.visitInsn(Opcodes.valueInt("ARETURN"));
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, GET, "(I)Ljava/lang/Object;", false);
+            mv.visitInsn(Opcodes.ARETURN);
         }
         mv.visitMaxs(2, 1);
         mv.visitEnd();
@@ -205,29 +205,29 @@ public class DynamicClassWriter {
         } else {
             propertyInstanceClassDescriptor = "L" + returnType.replace('.', '/') + ";";
         }
-        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), outerSetMethodName, "(" + propertyInstanceClassDescriptor + ")V", null, null);
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, outerSetMethodName, "(" + propertyInstanceClassDescriptor + ")V", null, null);
 
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitIntInsn(Opcodes.valueInt("BIPUSH"), startPropertyIndex + property.getIndexInType());
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitIntInsn(Opcodes.BIPUSH, startPropertyIndex + property.getIndexInType());
 
         String builtIn = SDOUtil.getBuiltInType(returnType);
-        int iLoadOpcode = Opcodes.valueInt("ALOAD");
+        int iLoadOpcode = Opcodes.ALOAD;
         if (null != builtIn) {
             if (property.getType().isDataType() && !builtIn.equals(LIST)) {
-                iLoadOpcode = Type.getType(property.getType().getInstanceClass()).getOpcode(Opcodes.valueInt("ILOAD"));
+                iLoadOpcode = Type.getType(property.getType().getInstanceClass()).getOpcode(Opcodes.ILOAD);
                 mv.visitVarInsn(iLoadOpcode, 1);
-                mv.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), typeImplClassDescriptor, SET + builtIn, "(I" + propertyInstanceClassDescriptor + ")V", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, SET + builtIn, "(I" + propertyInstanceClassDescriptor + ")V", false);
             } else {
                 mv.visitVarInsn(iLoadOpcode, 1);
-                mv.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), typeImplClassDescriptor, SET, "(ILjava/lang/Object;)V", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, SET, "(ILjava/lang/Object;)V", false);
             }
         } else {
             mv.visitVarInsn(iLoadOpcode, 1);
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), typeImplClassDescriptor, SET, "(ILjava/lang/Object;)V", false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, SET, "(ILjava/lang/Object;)V", false);
         }
 
-        mv.visitInsn(Opcodes.valueInt("RETURN"));
-        if (iLoadOpcode == Opcodes.valueInt("DLOAD") || iLoadOpcode == Opcodes.valueInt("LLOAD")) {
+        mv.visitInsn(Opcodes.RETURN);
+        if (iLoadOpcode == Opcodes.DLOAD || iLoadOpcode == Opcodes.LLOAD) {
             mv.visitMaxs(4, 3);
         } else {
             mv.visitMaxs(3, 2);
@@ -243,11 +243,11 @@ public class DynamicClassWriter {
             return;
         }
 
-        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PROTECTED"), method.getName(), Type.getMethodDescriptor(method), null, new String[] { Type.getInternalName(ObjectStreamException.class) });
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PROTECTED, method.getName(), Type.getMethodDescriptor(method), null, new String[] { Type.getInternalName(ObjectStreamException.class) });
 
-        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), Type.getInternalName(parentClass), method.getName(), Type.getMethodDescriptor(method), false);
-        mv.visitInsn(Opcodes.valueInt("ARETURN"));
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(parentClass), method.getName(), Type.getMethodDescriptor(method), false);
+        mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
     }

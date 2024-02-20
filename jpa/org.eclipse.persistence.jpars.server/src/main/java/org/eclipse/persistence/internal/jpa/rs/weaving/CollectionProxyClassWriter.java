@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,10 +106,10 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter {
         MethodVisitor mv;
 
         // public class Proxy extends SuperType implements CollectionProxy
-        cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), getASMClassName(), null, getASMParentClassName(), new String[]{INTERFACE});
+        cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, getASMClassName(), null, getASMParentClassName(), new String[]{INTERFACE});
 
         // private List<LinkV2> links;
-        final FieldVisitor fv = cw.visitField(Opcodes.valueInt("ACC_PRIVATE"), "links", "Ljava/util/List;", "Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/LinkV2;>;", null);
+        final FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE, "links", "Ljava/util/List;", "Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/LinkV2;>;", null);
         fv.visitEnd();
 
         // public CollectionProxy(Collection c) {
@@ -117,24 +117,24 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter {
         //     this.addAll(c);
         // }
         {
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "(Ljava/util/Collection;)V", null, null);
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Ljava/util/Collection;)V", null, null);
             mv.visitCode();
             Label l0 = ASMFactory.createLabel();
             mv.visitLabel(l0);
             mv.visitLineNumber(15, l0);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), getASMParentClassName(), "<init>", "()V", false);
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, getASMParentClassName(), "<init>", "()V", false);
             Label l1 = ASMFactory.createLabel();
             mv.visitLabel(l1);
             mv.visitLineNumber(16, l1);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-            mv.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), getASMClassName(), "addAll", "(Ljava/util/Collection;)Z", false);
-            mv.visitInsn(Opcodes.valueInt("POP"));
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, getASMClassName(), "addAll", "(Ljava/util/Collection;)Z", false);
+            mv.visitInsn(Opcodes.POP);
             Label l2 = ASMFactory.createLabel();
             mv.visitLabel(l2);
             mv.visitLineNumber(17, l2);
-            mv.visitInsn(Opcodes.valueInt("RETURN"));
+            mv.visitInsn(Opcodes.RETURN);
             Label l3 = ASMFactory.createLabel();
             mv.visitLabel(l3);
             mv.visitLocalVariable("this", "L" + getASMClassName() + ";", null, l0, l3, 0);
@@ -148,14 +148,14 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter {
         //    return links;
         // }
         {
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "getLinks", "()Ljava/util/List;", "()Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/LinkV2;>;", null);
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getLinks", "()Ljava/util/List;", "()Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/LinkV2;>;", null);
             mv.visitCode();
             Label l0 = ASMFactory.createLabel();
             mv.visitLabel(l0);
             mv.visitLineNumber(21, l0);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitFieldInsn(Opcodes.valueInt("GETFIELD"), getASMClassName(), "links", "Ljava/util/List;");
-            mv.visitInsn(Opcodes.valueInt("ARETURN"));
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, getASMClassName(), "links", "Ljava/util/List;");
+            mv.visitInsn(Opcodes.ARETURN);
             Label l1 = ASMFactory.createLabel();
             mv.visitLabel(l1);
             mv.visitLocalVariable("this", "L" + getASMClassName() + ";", null, l0, l1, 0);
@@ -168,18 +168,18 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter {
         //    this.links = links;
         // }
         {
-            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "setLinks", "(Ljava/util/List;)V", "(Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/LinkV2;>;)V", null);
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setLinks", "(Ljava/util/List;)V", "(Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/LinkV2;>;)V", null);
             mv.visitCode();
             Label l0 = ASMFactory.createLabel();
             mv.visitLabel(l0);
             mv.visitLineNumber(26, l0);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
-            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
-            mv.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), getASMClassName(), "links", "Ljava/util/List;");
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitFieldInsn(Opcodes.PUTFIELD, getASMClassName(), "links", "Ljava/util/List;");
             Label l1 = ASMFactory.createLabel();
             mv.visitLabel(l1);
             mv.visitLineNumber(27, l1);
-            mv.visitInsn(Opcodes.valueInt("RETURN"));
+            mv.visitInsn(Opcodes.RETURN);
             Label l2 = ASMFactory.createLabel();
             mv.visitLabel(l2);
             mv.visitLocalVariable("this", "L" + getASMClassName()+ ";", null, l0, l2, 0);

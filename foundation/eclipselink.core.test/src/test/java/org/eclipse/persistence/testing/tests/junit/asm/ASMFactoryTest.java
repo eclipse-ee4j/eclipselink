@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.junit.asm;
 
 import org.eclipse.persistence.asm.ASMFactory;
 import org.eclipse.persistence.asm.ClassVisitor;
+import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.config.SystemProperties;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class ASMFactoryTest {
     @Test
     public void createClassVisitorTest() {
         String asmServiceSysProperty = System.getProperty(SystemProperties.ASM_SERVICE, "");
-        ClassVisitor classVisitor = ASMFactory.createClassVisitor(ASMFactory.ASM_API_SELECTED);
+        ClassVisitor classVisitor = ASMFactory.createClassVisitor(Opcodes.ASM_API_SELECTED);
         switch (asmServiceSysProperty) {
             case ASMFactory.ASM_SERVICE_OW2:
                 assertEquals(org.eclipse.persistence.asm.internal.platform.ow2.ClassVisitorImpl.class, classVisitor.getClass());
