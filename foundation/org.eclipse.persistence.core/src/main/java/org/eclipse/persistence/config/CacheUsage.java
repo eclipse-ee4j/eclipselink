@@ -17,21 +17,24 @@ package org.eclipse.persistence.config;
 /**
  * Cache usage hint values.
  * Cache usage allows the cache to be used on queries to avoid accessing the database.
- * By default for JPA queries the cache is not checked before accessing the database,
+ * By default, for JPA queries the cache is not checked before accessing the database,
  * but is used after accessing the database to avoid re-building the objects and avoid
  * accessing the database for relationships.
  * <p>
  * Cache usage can also be used for modify Update-All and Delete-All queries.
  * For modify-all queries it effects how the cache is updated, either NoCache or Invalidate.
- * By default modify-all queries invalidate the cache.
+ * By default, modify-all queries invalidate the cache.
  * <p>
  * The class contains all the valid values for QueryHints.CACHE_USAGE query hint.
  *
- * <p>JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly)
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value CacheUsage.DEFAULT.
@@ -40,7 +43,7 @@ package org.eclipse.persistence.config;
  */
 public class CacheUsage {
     /**
-     * By default the descriptor default is used, which is to not check the cache first.
+     * By default, the descriptor default is used, which is to not check the cache first.
      */
     public static final String  UseEntityDefault = "UseEntityDefault";
     /**
@@ -58,7 +61,7 @@ public class CacheUsage {
      */
     public static final String  CheckCacheByPrimaryKey = "CheckCacheByPrimaryKey";
     /**
-     * Configure the cache to be searched for any matching object before accesing the database.
+     * Configure the cache to be searched for any matching object before accessing the database.
      * This can only be used on queries that return a single entity.
      */
     public static final String  CheckCacheThenDatabase = "CheckCacheThenDatabase";

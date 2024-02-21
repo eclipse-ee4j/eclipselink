@@ -55,46 +55,8 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.annotations.Cache;
-import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.annotations.PrimaryKey;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.MultitenantPolicy;
-import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
-import org.eclipse.persistence.logging.DefaultSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
-import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
-import org.eclipse.persistence.platform.server.CustomServerPlatform;
-import org.eclipse.persistence.platform.server.ServerPlatform;
-import org.eclipse.persistence.queries.JPAQueryBuilder;
-import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.ExternalTransactionController;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.SessionEventListener;
-import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
-import org.eclipse.persistence.sessions.coordination.TransportManager;
-import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.remote.RemoteSession;
-import org.eclipse.persistence.sessions.serializers.Serializer;
-import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
-import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
-import org.eclipse.persistence.tools.profiler.QueryMonitor;
-import org.eclipse.persistence.tools.tuning.SafeModeTuner;
-import org.eclipse.persistence.tools.tuning.SessionTuner;
-
 import java.io.File;
 import java.sql.DriverManager;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -106,17 +68,19 @@ import java.util.concurrent.TimeUnit;
  * the values specified in the persistence.xml file.
  * <p>
  * <b>Usage Example:</b>
- * <pre>{@code Map<String, Object> props = new HashMap<String, Object>();
+ * {@snippet :
+ *  Map<String, Object> props = new HashMap<String, Object>();
  *
- * props.put(PersistenceUnitProperties.JDBC_USER, "user-name");
- * props.put(PersistenceUnitProperties.JDBC_PASSWORD, "password");
+ *  props.put(PersistenceUnitProperties.JDBC_USER, "user-name");
+ *  props.put(PersistenceUnitProperties.JDBC_PASSWORD, "password");
  *
- * EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu-name", props);}</pre>
+ *  EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu-name", props);
+ * }
  * <p>
  * Property values are usually case-insensitive with some common sense
  * exceptions, for instance class names.
  *
- * @see "Persistence#createEntityManagerFactory(String, Map)"
+ * @see jakarta.persistence.Persistence#createEntityManagerFactory(String, Map)
  */
 public class PersistenceUnitProperties {
 
@@ -125,7 +89,7 @@ public class PersistenceUnitProperties {
      * transaction type for the persistence unit. This property overrides the
      * value specified in the persistence.xml.
      * <p>
-     * <b>Allowed Values</b> (case sensitive string)<b>:</b>
+     * <b>Allowed Values</b> (case-sensitive string)<b>:</b>
      * <ul>
      * <li>{@code JTA}
      * <li>{@code RESOURCE_LOCAL}
@@ -147,7 +111,7 @@ public class PersistenceUnitProperties {
     public static final String JTA_DATASOURCE = "jakarta.persistence.jtaDataSource";
 
     /**
-     * The {@code jakarta.persistence.nonJtaDataSource</code>} property specifies the
+     * The {@code jakarta.persistence.nonJtaDataSource} property specifies the
      * non-JTA data source name that will look up a valid
      * {@link javax.sql.DataSource}. This can be used to override the value
      * specified in the persistence.xml.
@@ -173,8 +137,10 @@ public class PersistenceUnitProperties {
      * <li>the fully qualified name for a class that implements {@link java.sql.Driver} interface
      * </ul>
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="jakarta.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="jakarta.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+     * }
      * <p>
      * The previous value for this property {@code eclipselink.jdbc.driver} is now deprecated
      * and should be replaced with this new name.
@@ -191,8 +157,10 @@ public class PersistenceUnitProperties {
      * <li>a string which represents a valid URL for the specified JDBC driver
      * </ul>
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost/mysql" />}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost/mysql" />
+     * }
      * <p>
      * The previous value for this property {@code eclipselink.jdbc.url} is now deprecated
      * and should be replaced with this new name.
@@ -204,8 +172,10 @@ public class PersistenceUnitProperties {
      * The {@code jakarta.persistence.jdbc.user} property specifies the data source
      * or JDBC user name.
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="jakarta.persistence.jdbc.user" value="user-name" />}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="jakarta.persistence.jdbc.user" value="user-name" />
+     * }
      * <p>
      * The previous value for this property {@code eclipselink.jdbc.user} is now deprecated and should
      * be replaced with this new name.
@@ -216,8 +186,10 @@ public class PersistenceUnitProperties {
      * The {@code jakarta.persistence.jdbc.password} property specifies the data
      * source or JDBC password.
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="jakarta.persistence.jdbc.password" value="password" />}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="jakarta.persistence.jdbc.password" value="password" />
+     * }
      * <p>
      * The previous value for this property {@code eclipselink.jdbc.password} is now deprecated
      * and should be replaced with this new name.
@@ -236,7 +208,7 @@ public class PersistenceUnitProperties {
      * <li>{@code true} - use database specific SQL
      * </ul>
      *
-     * @see DatabaseLogin#setUsesNativeSQL(boolean)
+     * @see org.eclipse.persistence.sessions.DatabaseLogin#setUsesNativeSQL(boolean)
      */
     public static final String NATIVE_SQL = "eclipselink.jdbc.native-sql";
 
@@ -251,7 +223,7 @@ public class PersistenceUnitProperties {
      * <li>{@code true} - enable platform specific cast
      * </ul>
      *
-     * @see DatabasePlatform#setIsCastRequired(boolean)
+     * @see org.eclipse.persistence.platform.database.DatabasePlatform#setIsCastRequired(boolean)
      */
     public static final String SQL_CAST = "eclipselink.jdbc.sql-cast";
 
@@ -268,7 +240,7 @@ public class PersistenceUnitProperties {
      * </ul>
      *
      * @see ParserType
-     * @see JPAQueryBuilder
+     * @see org.eclipse.persistence.queries.JPAQueryBuilder
      */
     public static final String JPQL_PARSER = "eclipselink.jpql.parser";
 
@@ -294,7 +266,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code wait} property.<br>
-     * This can be append to any connection pool property,
+     * This can be appended to any connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.default.wait}
      * which specifies the timeout time in milliseconds (ms) that will be waited
      * for an available connection before an exception is thrown.
@@ -314,11 +286,11 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code max} property.<br>
-     * This can be append to any connection pool property,
+     * This can be appended to any connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.default.max}.<br>
      * Specifies the maximum number of read connection in the internal connection pool. If
      * the maximum size is reached, threads requiring a connection will wait
-     * until one is released back to the pool. By default a single shared
+     * until one is released back to the pool. By default, a single shared
      * (exclusive) read/write pool is used with min/max 32 connections and 1
      * initial.
      * <p>
@@ -335,12 +307,12 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code min} property.<br>
-     * This can be append to any connection pool property,
+     * This can be appended to any connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.default.min}.<br>
      * Specifies the minimum number of connections in EclipseLink connection pool.
      * Connections beyond the minimum will be disconnected when returned to the pool,
      * so this should normally be equal to the number of active threads, or server's
-     * thread pool size. By default a single shared (exclusive) read/write pool
+     * thread pool size. By default, a single shared (exclusive) read/write pool
      * is used with min/max 32 connections and 1 initial.
      * <p>
      * Ignored in case external connection pools are used.
@@ -356,11 +328,11 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code initial} property.<br>
-     * This can be append to any connection pool property,
+     * This can be appended to any connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.default.initial}
      * EclipseLink JDBC (internal) connection pools properties. Initial number
      * of connections in EclipseLink connection pool. This is the number of
-     * connections connected at startup. By default a single shared (exclusive)
+     * connections connected at startup. By default, a single shared (exclusive)
      * read/write pool is used with min/max 32 connections and 1 initial.
      * <p>
      * Ignored in case external connection pools are used.
@@ -376,7 +348,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code shared} property.<br>
-     * This can be append to the read connection pool,
+     * This can be appended to the read connection pool,
      * i.e. {@code eclipselink.jdbc.connection_pool.read.shared}.<br>
      * Configures whether connections in EclipseLink read connection pool should
      * be shared (not exclusive). Connection sharing means the same JDBC
@@ -396,10 +368,10 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code url} property.<br>
-     * This can be append to a connection pool property,
+     * This can be appended to a connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.node1.url}.<br>
      * Configures the JDBC url to use for the connection pool.
-     * Only required if different than the default.
+     * Only required if different from the default.
      *
      * @see #CONNECTION_POOL
      */
@@ -407,49 +379,49 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code jtaDataSource} property.<br>
-     * This can be append to a connection pool property,
+     * This can be appended to a connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.node1.jtaDataSource}.<br>
      * Configures the JTA DataSource name to use for the connection pool.
-     * Only required if different than the default.
+     * Only required if different from the default.
      * @see #CONNECTION_POOL
      */
     public static final String CONNECTION_POOL_JTA_DATA_SOURCE = "jtaDataSource";
 
     /**
      * The {@code nonJtaDataSource} property.<br>
-     * This can be append to a connection pool property,
+     * This can be appended to a connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.node1.nonJtaDataSource}.<br>
      * Configures the non JTA DataSource name to use for the connection pool.
-     * Only required if different than the default.
+     * Only required if different from the default.
      * @see #CONNECTION_POOL
      */
     public static final String CONNECTION_POOL_NON_JTA_DATA_SOURCE = "nonJtaDataSource";
 
     /**
      * The {@code user} property.<br>
-     * This can be append to a connection pool property,
+     * This can be appended to a connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.node1.user}.<br>
      * Configures the user name to use for the connection pool.
-     * Only required if different than the default.
+     * Only required if different from the default.
      * @see #CONNECTION_POOL
      */
     public static final String CONNECTION_POOL_USER = "user";
 
     /**
      * The {@code password} property.<br>
-     * This can be append to a connection pool property,
+     * This can be appended to a connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.node1.password}.<br>
      * Configures the password to use for the connection pool.
-     * Only required if different than the default.
+     * Only required if different from the default.
      * @see #CONNECTION_POOL
      */
     public static final String CONNECTION_POOL_PASSWORD = "password";
 
     /**
      * The {@code failover} property.<br>
-     * This can be append to a connection pool property,
+     * This can be appended to a connection pool property,
      * i.e. {@code eclipselink.jdbc.connection_pool.node1.failover}.<br>
-     * Configures the connection pool(s) to fail-over to if this connection pool fails.
+     * Configures the connection pool(s) to fail over to if this connection pool fails.
      * A comma separate list is allowed if multiple failover pools are required.
      * @see #CONNECTION_POOL
      */
@@ -479,16 +451,18 @@ public class PersistenceUnitProperties {
      * <li> {@code wait} - amount of time to wait for a connection from the pool.
      * <li> {@code url} - JDBC URL for the connection.
      * <li> {@code shared} - only for the read connection pool, shares read connections across threads.
-     * <li> {@code jtaDataSource} - JTA DataSource name to use for the connection, if different than the default.
-     * <li> {@code nonJtaDataSource} - non JTA DataSource name to use for the connection, if different than the default.
-     * <li> {@code user} - user to use for the connection, if different than the default.
-     * <li> {@code password} - password to use for the connection, if different than the default.
+     * <li> {@code jtaDataSource} - JTA DataSource name to use for the connection, if different from the default.
+     * <li> {@code nonJtaDataSource} - non JTA DataSource name to use for the connection, if different from the default.
+     * <li> {@code user} - user to use for the connection, if different from the default.
+     * <li> {@code password} - password to use for the connection, if different from the default.
      * </ul>
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.connection-pool.node2.min" value="16"/>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.connection-pool.node2.min" value="16"/>
      *  <property name="eclipselink.connection-pool.node2.max" value="16"/>
-     *  <property name="eclipselink.connection-pool.node2.url" value="jdbc:oracle:thin:@node2:1521:orcl"/>}</pre>
+     *  <property name="eclipselink.connection-pool.node2.url" value="jdbc:oracle:thin:@node2:1521:orcl"/>
+     * }
      *
      * @see #CONNECTION_POOL_READ
      * @see #CONNECTION_POOL_SEQUENCE
@@ -509,7 +483,7 @@ public class PersistenceUnitProperties {
     /**
      * Allow configuring the {@code eclipselink.connection-pool.read.} properties.
      * The read connection pool is used for non-transaction read queries.
-     * By default a separate read connection pool is not used,
+     * By default, a separate read connection pool is not used,
      * and the default pool is used for read queries.
      * <p>
      * One of the following connection pool properties must be appended.
@@ -520,16 +494,18 @@ public class PersistenceUnitProperties {
      * <li> {@code wait} - amount of time to wait for a connection from the pool.
      * <li> {@code url} - JDBC URL for the connection.
      * <li> {@code shared} - only for the read connection pool, shares read connections across threads.
-     * <li> {@code jtaDataSource} - JTA DataSource name to use for the connection, if different than the default.
-     * <li> {@code nonJtaDataSource} - non JTA DataSource name to use for the connection, if different than the default.
-     * <li> {@code user} - user to use for the connection, if different than the default.
-     * <li> {@code password} - password to use for the connection, if different than the default.
+     * <li> {@code jtaDataSource} - JTA DataSource name to use for the connection, if different from the default.
+     * <li> {@code nonJtaDataSource} - non JTA DataSource name to use for the connection, if different from the default.
+     * <li> {@code user} - user to use for the connection, if different from the default.
+     * <li> {@code password} - password to use for the connection, if different from the default.
      * </ul>
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.connection-pool.read.min" value="8"/>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.connection-pool.read.min" value="8"/>
      *  <property name="eclipselink.connection-pool.read.max" value="32"/>
-     *  <property name="eclipselink.connection-pool.read.nonJtaDataSource" value="jdbc/readDataSource"/>}</pre>
+     *  <property name="eclipselink.connection-pool.read.nonJtaDataSource" value="jdbc/readDataSource"/>
+     * }
      *
      * @see #CONNECTION_POOL_INITIAL
      * @see #CONNECTION_POOL_MIN
@@ -550,7 +526,7 @@ public class PersistenceUnitProperties {
      * The sequence connection pool is used to allocate generated Ids.
      * This is only required for TABLE sequencing.
      * <p>
-     * By default a separate sequence connection pool is not used,
+     * By default, a separate sequence connection pool is not used,
      * and the default pool is used for sequencing.
      * <p>
      * One of the following connection pool properties must be appended.
@@ -560,16 +536,18 @@ public class PersistenceUnitProperties {
      * <li> {@code max} - maximum number of connections.
      * <li> {@code wait} - amount of time to wait for a connection from the pool.
      * <li> {@code url} - JDBC URL for the connection.
-     * <li> {@code jtaDataSource} - JTA DataSource name to use for the connection, if different than the default.
-     * <li> {@code nonJtaDataSource} - non JTA DataSource name to use for the connection, if different than the default.
-     * <li> {@code user} - user to use for the connection, if different than the default.
-     * <li> {@code password} - password to use for the connection, if different than the default.
+     * <li> {@code jtaDataSource} - JTA DataSource name to use for the connection, if different from the default.
+     * <li> {@code nonJtaDataSource} - non JTA DataSource name to use for the connection, if different from the default.
+     * <li> {@code user} - user to use for the connection, if different from the default.
+     * <li> {@code password} - password to use for the connection, if different from the default.
      * </ul>
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.connection-pool.sequence.min" value="1"/>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.connection-pool.sequence.min" value="1"/>
      *  <property name="eclipselink.connection-pool.sequence.max" value="1"/>
-     *  <property name="eclipselink.connection-pool.sequence.nonJtaDataSource" value="jdbc/sequenceDataSource"/>}</pre>
+     *  <property name="eclipselink.connection-pool.sequence.nonJtaDataSource" value="jdbc/sequenceDataSource"/>
+     * }
      *
      * @see #CONNECTION_POOL_INITIAL
      * @see #CONNECTION_POOL_MIN
@@ -585,7 +563,7 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_SEQUENCE = "eclipselink.connection-pool.sequence.";
 
     /**
-     * Tell EclipseLink to use it's internal connection pool to pool connections from a datasource.
+     * Tell EclipseLink to use its internal connection pool to pool connections from a datasource.
      * <p>
      * This property is useful when using EclipseLink with Gemini JPA because it internally wraps local
      * database information in a datasource.
@@ -622,7 +600,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.jdbc.connections.max} property specifies
      * the maximum number of read connection in the internal connection pool. If
      * the maximum size is reached, threads requiring a connection will wait
-     * until one is released back to the pool. By default a single shared
+     * until one is released back to the pool. By default, a single shared
      * (exclusive) read/write pool is used with min/max 32 connections and 1
      * initial.
      * <p>
@@ -644,7 +622,7 @@ public class PersistenceUnitProperties {
      * the minimum number of connections in EclipseLink connection pool.
      * Connections beyond the minimum will be disconnected when returned to the pool,
      * so this should normally be equal to the number of active threads, or server's
-     * thread pool size. By default a single shared (exclusive) read/write pool
+     * thread pool size. By default, a single shared (exclusive) read/write pool
      * is used with min/max 32 connections and 1 initial.
      * <p>
      * Ignored in case external connection pools are used.
@@ -664,7 +642,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.jdbc.connections.initial} property
      * EclipseLink JDBC (internal) connection pools properties. Initial number
      * of connections in EclipseLink connection pool. This is the number of
-     * connections connected at startup. By default a single shared (exclusive)
+     * connections connected at startup. By default, a single shared (exclusive)
      * read/write pool is used with min/max 32 connections and 1 initial.
      * <p>
      * Ignored in case external connection pools are used.
@@ -685,7 +663,7 @@ public class PersistenceUnitProperties {
      * specifies the maximum number of connections supported in the internal
      * write connection pool. Maximum number of connections in EclipseLink write
      * connection pool. If the maximum size is reached, threads requiring a
-     * connection will wait until one is released back to the pool. By default a
+     * connection will wait until one is released back to the pool. By default, a
      * single shared (exclusive) read/write pool is used with min/max 32
      * connections and 1 initial.
      * <p>
@@ -707,7 +685,7 @@ public class PersistenceUnitProperties {
      * specifies the minimum number of connections in the internal write
      * connection pool. Connections beyond the minimum will be disconnected when
      * returned to the pool, so this should normally be equal to the number of
-     * active threads, or server's thread pool size. By default a single shared
+     * active threads, or server's thread pool size. By default, a single shared
      * (exclusive) read/write pool is used with min/max 32 connections and 1
      * initial.
      * <p>
@@ -727,7 +705,7 @@ public class PersistenceUnitProperties {
     /**
      * The {@code eclipselink.jdbc.write-connections.initial} property
      * configures the number of connections connected at created at startup in
-     * the write connection pool. By default a single shared (exclusive)
+     * the write connection pool. By default, a single shared (exclusive)
      * read/write pool is used with min/max 32 connections and 1 initial.
      * <p>
      * This property is ignored in case external connection pools are used.
@@ -747,8 +725,8 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.jdbc.read-connections.max} property
      * configures the maximum number of connections in the read connection pool.
      * If the maximum size is reached, threads requiring a connection will wait
-     * until one is released back to the pool (unless shared). By default a
-     * separate read connection pool is not used. By default a single shared
+     * until one is released back to the pool (unless shared). By default, a
+     * separate read connection pool is not used. By default, a single shared
      * (exclusive) read/write pool is used with min/max 32 connections and 1
      * initial.
      * <p>
@@ -776,8 +754,8 @@ public class PersistenceUnitProperties {
      * configures the minimum number of connections in read connection pool.
      * Connections beyond the minimum will be disconnected when returned to the
      * pool, so this should normally be equal to the number of active threads,
-     * or server's thread pool size. By default a separate read connection pool
-     * is not used. By default a single shared (exclusive) read/write pool is
+     * or server's thread pool size. By default, a separate read connection pool
+     * is not used. By default, a single shared (exclusive) read/write pool is
      * used with min/max 32 connections and 1 initial.
      * <p>
      * This property is ignored in case external connection pools are used.
@@ -796,7 +774,7 @@ public class PersistenceUnitProperties {
     /**
      * The {@code eclipselink.jdbc.read-connections.initial} property
      * configures the number of connections connected at created at startup in
-     * the read connection pool. By default a single shared (exclusive)
+     * the read connection pool. By default, a single shared (exclusive)
      * read/write pool is used with min/max 32 connections and 1 initial.
      * <p>
      * This property is ignored in case external connection pools are used.
@@ -838,7 +816,7 @@ public class PersistenceUnitProperties {
      * pool. If the maximum size is reached, threads requiring a connection will
      * wait until one is released back to the pool.
      * <p>
-     * By default a separate sequence connection pool is not used (the sequence
+     * By default, a separate sequence connection pool is not used (the sequence
      * is allocated on the write connection).
      * <p>
      * This property is ignored in case external connection pools are used.
@@ -872,7 +850,7 @@ public class PersistenceUnitProperties {
      * pool, so this should normally be equal to the maximum to avoid
      * connecting/disconnecting.
      * <p>
-     * By default a separate sequence connection pool is not used (the sequence
+     * By default, a separate sequence connection pool is not used (the sequence
      * is allocated on the write connection).
      * <p>
      * This property is ignored in case external connection pools are used.
@@ -902,7 +880,7 @@ public class PersistenceUnitProperties {
      * sequence connection pool. This is the number of connections connected at
      * startup.
      * <p>
-     * By default a separate sequence connection pool is not used (the sequence
+     * By default, a separate sequence connection pool is not used (the sequence
      * is allocated on the write connection).
      * <p>
      * This property is ignored in case external connection pools are used.
@@ -929,7 +907,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code eclipselink.jdbc.sequence-connection-pool} property
-     * configures a separate connection pool should used for sequencing to
+     * configures a separate connection pool used for sequencing to
      * retrieve new value(s). This improves sequence allocation by allocating
      * sequencing outside the current transaction. This can be used with
      * internal or external (DataSource) connection pooling, external must
@@ -978,7 +956,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_SEQUENCE_CONNECTION_POOL_DATASOURCE = "eclipselink.jdbc.sequence-connection-pool.non-jta-data-source";
 
     /**
-     * The {@code eclipselink.partitioning} property specifies the default {@link PartitioningPolicy} for a persistence unit.<br>
+     * The {@code eclipselink.partitioning} property specifies the default {@link org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy} for a persistence unit.<br>
      * A PartitioningPolicy is used to partition the data for a class across multiple difference databases
      * or across a database cluster such as Oracle RAC.<br>
      * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
@@ -987,7 +965,7 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>the name of an existing defined {@link PartitioningPolicy}
+     * <li>the name of an existing defined {@link org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy}
      * </ul>
      *
      * @see org.eclipse.persistence.annotations.Partitioning
@@ -1001,7 +979,7 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>the fully qualified name for a class that implements {@link DataPartitioningCallback} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback} interface
      * i.e. {@code org.eclipse.persistence.platform.database.oracle.ucp.UCPDataPartitioningCallback}
      * </ul>
      *
@@ -1118,12 +1096,15 @@ public class PersistenceUnitProperties {
      * <li>{@code true} - enable internal statement caching.
      * </ul>
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.jdbc.cache-statements" value="false"/>}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.jdbc.cache-statements" value="false"/>
+     * }
      * <p>
-     * <b>Java example:</b><pre>
-     * {@code props.put(PersistenceUnitProperties.CACHE_STATEMENTS, "false");}</pre>
-     *
+     * <b>Java example:</b>
+     * {@snippet :
+     *  props.put(PersistenceUnitProperties.CACHE_STATEMENTS, "false");
+     * }
      */
     public static final String CACHE_STATEMENTS = "eclipselink.jdbc.cache-statements";
 
@@ -1283,7 +1264,7 @@ public class PersistenceUnitProperties {
      * <li>{@code UNSPECIFIED}
      * </ul>
      *
-     * @see "jakarta.persistence.SharedCacheMode"
+     * @see jakarta.persistence.SharedCacheMode
      */
     public static final String SHARED_CACHE_MODE = "jakarta.persistence.sharedCache.mode";
 
@@ -1310,7 +1291,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.cache.extended.logging} property control (enable/disable)
      * usage logging of JPA L2 cache. In case of {@code true} EclipseLink generates messages into log output
      * about cache hit/miss new object population and object removal or invalidation.
-     * This kind of messages will by displayed only if logging level (property {@code eclipselink.logging.level})
+     * This kind of messages will be displayed only if logging level (property {@code eclipselink.logging.level})
      * is {@code FINEST}
      * It displays Entity class, ID and thread info (ID, Name).
      * <p>
@@ -1357,7 +1338,7 @@ public class PersistenceUnitProperties {
     /**
      * The {@code eclipselink.canonicalmodel.prefix} optional property specifies the prefix
      * that will be added to the start of the class name of any canonical model class generated.
-     * By default the prefix is not used.
+     * By default, the prefix is not used.
      *
      * @see #CANONICAL_MODEL_PREFIX_DEFAULT
      */
@@ -1394,7 +1375,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.canonicalmodel.subpackage} optional property specifies
      * a sub-package name that can be used to have the canonical model generator generate its classes
      * in a sub-package of the package where the corresponding entity class is located. By
-     * default the canonical model classes are generated into the same package as the entity classes.
+     * default, the canonical model classes are generated into the same package as the entity classes.
      *
      * @see #CANONICAL_MODEL_SUB_PACKAGE_DEFAULT
      */
@@ -1532,13 +1513,13 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>the fully qualified name for a class that implements {@link DatabaseEventListener} interface,
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.platform.database.events.DatabaseEventListener} interface,
      * for example {@code org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener}
      * <li>{@code DCN} - for Oracle only
      * <li>{@code QCN} - for Oracle only
      * </ul>
      *
-     * @see DatabaseEventListener
+     * @see org.eclipse.persistence.platform.database.events.DatabaseEventListener
      * @see "org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener"
      */
     public static final String DATABASE_EVENT_LISTENER = "eclipselink.cache.database-event-listener";
@@ -1562,17 +1543,17 @@ public class PersistenceUnitProperties {
     /**
      * The {@code eclipselink.logging.logger} property specifies the type of logger.
      * <p>
-     * Default: {@link DefaultSessionLog}
+     * Default: {@link org.eclipse.persistence.logging.DefaultSessionLog}
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>the fully qualified name for a class that implements {@link SessionLog} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.logging.SessionLog} interface
      * <li>one of values defined in {@link LoggerType}
      * </ul>
      *
-     * @see DefaultSessionLog
+     * @see org.eclipse.persistence.logging.DefaultSessionLog
      * @see LoggerType
-     * @see SessionLog
+     * @see org.eclipse.persistence.logging.SessionLog
      */
     public static final String LOGGING_LOGGER = "eclipselink.logging.logger";
 
@@ -1581,24 +1562,28 @@ public class PersistenceUnitProperties {
      *
      * <table>
      * <caption>Logging Levels:</caption>
-     * <tr><td>{@link SessionLog#ALL_LABEL}</td><td>&nbsp;</td><td>ALL</td></tr>
-     * <tr><td>{@link SessionLog#FINEST_LABEL}</td><td>&nbsp;</td><td>FINEST</td></tr>
-     * <tr><td>{@link SessionLog#FINER_LABEL}</td><td>&nbsp;</td><td>FINER</td></tr>
-     * <tr><td>{@link SessionLog#FINE_LABEL}</td><td>&nbsp;</td><td>FINE</td></tr>
-     * <tr><td>{@link SessionLog#CONFIG_LABEL}</td><td>&nbsp;</td><td>CONFIG</td></tr>
-     * <tr><td>{@link SessionLog#INFO_LABEL}</td><td>&nbsp;</td><td>INFO (DEFAULT)</td></tr>
-     * <tr><td>{@link SessionLog#WARNING_LABEL}</td><td>&nbsp;</td><td>WARNING</td></tr>
-     * <tr><td>{@link SessionLog#SEVERE_LABEL}</td><td>&nbsp;</td><td>SEVERE</td></tr>
-     * <tr><td>{@link SessionLog#OFF_LABEL}</td><td>&nbsp;</td><td>OFF</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#ALL_LABEL}</td><td>&nbsp;</td><td>ALL</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#FINEST_LABEL}</td><td>&nbsp;</td><td>FINEST</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#FINER_LABEL}</td><td>&nbsp;</td><td>FINER</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#FINE_LABEL}</td><td>&nbsp;</td><td>FINE</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#CONFIG_LABEL}</td><td>&nbsp;</td><td>CONFIG</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#INFO_LABEL}</td><td>&nbsp;</td><td>INFO (DEFAULT)</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#WARNING_LABEL}</td><td>&nbsp;</td><td>WARNING</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#SEVERE_LABEL}</td><td>&nbsp;</td><td>SEVERE</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#OFF_LABEL}</td><td>&nbsp;</td><td>OFF</td></tr>
      * </table>
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.logging.level" value="FINE" />}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.logging.level" value="FINE" />
+     * }
      * <p>
-     * <b>Java example:</b><pre>
-     * {@code props.put(PersistenceUnitProperties.LOGGING_LEVEL, SessionLog.FINE_LABEL);}</pre>
+     * <b>Java example:</b>
+     * {@snippet :
+     *  props.put(PersistenceUnitProperties.LOGGING_LEVEL, org.eclipse.persistence.logging.SessionLog.FINE_LABEL);
+     * }
      *
-     * @see SessionLog
+     * @see org.eclipse.persistence.logging.SessionLog
      * @see #CATEGORY_LOGGING_LEVEL_
      */
     public static final String LOGGING_LEVEL = "eclipselink.logging.level";
@@ -1609,21 +1594,21 @@ public class PersistenceUnitProperties {
      *
      * <table>
      * <caption>Logger categories:</caption>
-     * <tr><td>{@link SessionLog#CACHE}</td><td>&nbsp;</td><td>cache</td></tr>
-     * <tr><td>{@link SessionLog#CONNECTION}</td><td>&nbsp;</td><td>connection</td></tr>
-     * <tr><td>{@link SessionLog#DMS}</td><td>&nbsp;</td><td>dms</td></tr>
-     * <tr><td>{@link SessionLog#EJB}</td><td>&nbsp;</td><td>ejb</td></tr>
-     * <tr><td>{@link SessionLog#EVENT}</td><td>&nbsp;</td><td>event</td></tr>
-     * <tr><td>{@link SessionLog#JPA}</td><td>&nbsp;</td><td>jpa</td></tr>
-     * <tr><td>{@link SessionLog#METAMODEL}</td><td>&nbsp;</td><td>metamodel</td></tr>
-     * <tr><td>{@link SessionLog#PROPAGATION}</td><td>&nbsp;</td><td>propagation</td></tr>
-     * <tr><td>{@link SessionLog#PROPERTIES}</td><td>&nbsp;</td><td>properties</td></tr>
-     * <tr><td>{@link SessionLog#QUERY}</td><td>&nbsp;</td><td>query</td></tr>
-     * <tr><td>{@link SessionLog#SEQUENCING}</td><td>&nbsp;</td><td>sequencing</td></tr>
-     * <tr><td>{@link SessionLog#SERVER}</td><td>&nbsp;</td><td>server</td></tr>
-     * <tr><td>{@link SessionLog#SQL}</td><td>&nbsp;</td><td>sql</td></tr>
-     * <tr><td>{@link SessionLog#TRANSACTION}</td><td>&nbsp;</td><td>transaction</td></tr>
-     * <tr><td>{@link SessionLog#WEAVER}</td><td>&nbsp;</td><td>weaver</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#CACHE}</td><td>&nbsp;</td><td>cache</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#CONNECTION}</td><td>&nbsp;</td><td>connection</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#DMS}</td><td>&nbsp;</td><td>dms</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#EJB}</td><td>&nbsp;</td><td>ejb</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#EVENT}</td><td>&nbsp;</td><td>event</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#JPA}</td><td>&nbsp;</td><td>jpa</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#METAMODEL}</td><td>&nbsp;</td><td>metamodel</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#PROPAGATION}</td><td>&nbsp;</td><td>propagation</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#PROPERTIES}</td><td>&nbsp;</td><td>properties</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#QUERY}</td><td>&nbsp;</td><td>query</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#SEQUENCING}</td><td>&nbsp;</td><td>sequencing</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#SERVER}</td><td>&nbsp;</td><td>server</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#SQL}</td><td>&nbsp;</td><td>sql</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#TRANSACTION}</td><td>&nbsp;</td><td>transaction</td></tr>
+     * <tr><td>{@link org.eclipse.persistence.logging.SessionLog#WEAVER}</td><td>&nbsp;</td><td>weaver</td></tr>
      * </table>
      * <p>
      * <b>Allowed Values:</b>
@@ -1631,18 +1616,22 @@ public class PersistenceUnitProperties {
      * <li>names of levels defined in {@code java.util.logging.Level}, default value is {@code INFO}.
      * </ul>
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.logging.level.ejb_or_metadata" value="WARNING"/>}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.logging.level.ejb_or_metadata" value="WARNING"/>
+     * }
      * <p>
-     * <b>Java example:</b><pre>
-     * {@code props.put(PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_ + SessionLog.EJB_OR_METADATA, SessionLog.WARNING_LABEL);}</pre>
+     * <b>Java example:</b>
+     * {@snippet :
+     *  props.put(PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_ + SessionLog.EJB_OR_METADATA, SessionLog.WARNING_LABEL);
+     * }
      *
-     * @see SessionLog
+     * @see org.eclipse.persistence.logging.SessionLog
      */
     public static final String CATEGORY_LOGGING_LEVEL_ = LOGGING_LEVEL + ".";
 
     /**
-     * By default sql bind parameters are displayed in exceptions and logs
+     * By default, sql bind parameters are displayed in exceptions and logs
      * when the log level is FINE or greater. To override this behavior you
      * may set this property to specify that the data should or should not be
      * visible.<br>
@@ -1675,7 +1664,7 @@ public class PersistenceUnitProperties {
      * Property {@code eclipselink.logging.thread} indicates if current
      * thread should have its identity included in each log message.
      * <p>
-     * By default ({@code true}) the thread is logged at FINE or less level. This can
+     * By default, ({@code true}) the thread is logged at FINE or less level. This can
      * be turned off ({@code false}) or on ({@code true}).
      * <p>
      * <b>Allowed Values:</b>
@@ -1713,7 +1702,7 @@ public class PersistenceUnitProperties {
     /**
      * Property {@code eclipselink.logging.exceptions} indicates if exception stack traces
      * should be included in each log message.<br>
-     * By default stack trace is logged for SEVERE all the time and at FINER level for WARNING or less.
+     * By default, stack trace is logged for SEVERE all the time and at FINER level for WARNING or less.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
@@ -1739,11 +1728,15 @@ public class PersistenceUnitProperties {
      * its own or with other properties defined by the user. Users are not
      * obligated to use this property and are free to specify their own.
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.tenant-id" value="Oracle" />}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.tenant-id" value="Oracle" />
+     * }
      * <p>
-     * <b>Java example:</b><pre>
-     * {@code props.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "Oracle");}</pre>
+     * <b>Java example:</b>
+     * {@snippet :
+     *  props.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "Oracle");
+     * }
      *
      * @see org.eclipse.persistence.annotations.Multitenant
      * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
@@ -1755,11 +1748,15 @@ public class PersistenceUnitProperties {
      * context property used to distinguish tenants when using global schema per tenant
      * multitenant strategy. It is expected to be set by user when creating an {@code EntityManager}.
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.tenant-schema-id" value="Oracle" />}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.tenant-schema-id" value="Oracle" />
+     * }
      * <p>
-     * <b>Java example:</b><pre>
-     * {@code props.put(PersistenceUnitProperties.MULTITENANT_SCHEMA_PROPERTY_DEFAULT, "Oracle");}</pre>
+     * <b>Java example:</b>
+     * {@snippet :
+     *  props.put(PersistenceUnitProperties.MULTITENANT_SCHEMA_PROPERTY_DEFAULT, "Oracle");
+     * }
      *
      * @see #MULTITENANT_STRATEGY
      * @see org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy
@@ -1768,18 +1765,22 @@ public class PersistenceUnitProperties {
 
     /**
      * Property {@code eclipselink.multitenant.tenants-share-cache}
-     * specifies that multitenant entities will share the L2 cache. By default
+     * specifies that multitenant entities will share the L2 cache. By default,
      * this property is false meaning multitenant entities will have an ISOLATED
      * setting. When setting it to true a PROTECTED cache setting will be used.
      * <p>
      * WARNING: Queries that use the cache may return data from other tenants
      * when using the PROTECTED setting.
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.multitenant.tenants-share-cache" value="true" />}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.multitenant.tenants-share-cache" value="true" />
+     * }
      * <p>
-     * <b>Java example:</b><pre>
-     * {@code props.put(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, true);}</pre>
+     * <b>Java example:</b>
+     * {@snippet :
+     *  props.put(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, true);
+     * }
      *
      * @see #MULTITENANT_SHARED_EMF
      */
@@ -1792,11 +1793,15 @@ public class PersistenceUnitProperties {
      * multitenant entities only). When setting it to {@code false}, users are required
      * to provide a unique session name.
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.multitenant.tenants-share-emf" value=""true" />}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.multitenant.tenants-share-emf" value="true" />
+     * }
      * <p>
-     * <b>Java example:</b><pre>
-     * {@code props.put(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, true);}</pre>
+     * <b>Java example:</b>
+     * {@snippet :
+     *  props.put(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, true);
+     * }
      *
      * @see #SESSION_NAME
      * @see #MULTITENANT_SHARED_CACHE
@@ -1810,15 +1815,19 @@ public class PersistenceUnitProperties {
      * <b>Allowed Values:</b>
      * <ul>
      * <li>{@code external}
-     * <li>the fully qualified name for a class that implements {@link MultitenantPolicy} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.descriptors.MultitenantPolicy} interface
      * with public no-arg constructor
      * </ul>
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.multitenant.strategy" value="external"/>}</pre>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.multitenant.strategy" value="external"/>
+     * }
      * <p>
-     * <b>Java example:</b><pre>
-     * {@code props.put(PersistenceUnitProperties.MULTITENANT_STRATEGY, "external");}</pre>
+     * <b>Java example:</b>
+     * {@snippet :
+     *  props.put(PersistenceUnitProperties.MULTITENANT_STRATEGY, "external");
+     * }
      *
      * @see org.eclipse.persistence.descriptors.MultitenantPolicy
      * @see org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy
@@ -1855,11 +1864,11 @@ public class PersistenceUnitProperties {
      * <b>Allowed Values:</b>
      * <ul>
      * <li>a short string value as defined in {@link TargetDatabase}
-     * <li>the fully qualified name for a class that extends {@link DatabasePlatform} abstract class
+     * <li>the fully qualified name for a class that extends {@link org.eclipse.persistence.platform.database.DatabasePlatform} abstract class
      * </ul>
      *
      * @see TargetDatabase
-     * @see DatabasePlatform
+     * @see org.eclipse.persistence.platform.database.DatabasePlatform
      */
     public static final String TARGET_DATABASE = "eclipselink.target-database";
 
@@ -1881,19 +1890,19 @@ public class PersistenceUnitProperties {
      * <p>
      * <b> Example : </b> To change the value of
      * DatabasePlatform.shouldBindLiterals via configuration, provide the
-     * following :<br><br>
-     *
-     * {@code
-     *  <property name="eclipselink.target-database-properties" value="shouldBindLiterals=true"/>}
+     * following :
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.target-database-properties" value="shouldBindLiterals=true"/>
+     * }
      * <p>
      * <b> Example 2 : </b> To change the value of
      * DatabasePlatform.supportsReturnGeneratedKeys via configuration, provide the
-     * following :<br><br>
-     * 
-     * {@code
-     *  <property name="eclipselink.target-database-properties" value="supportsReturnGeneratedKeys=true"/>}
+     * following :
+     * {@snippet lang="XML" :
+     *  <property name="eclipselink.target-database-properties" value="supportsReturnGeneratedKeys=true"/>
+     * }
      * @see TargetDatabase
-     * @see DatabasePlatform
+     * @see org.eclipse.persistence.platform.database.DatabasePlatform
      */
     public static final String TARGET_DATABASE_PROPERTIES = "eclipselink.target-database-properties";
 
@@ -1902,7 +1911,7 @@ public class PersistenceUnitProperties {
      * configures the exclusion of an EclipseLink ORM mapping file for a
      * specific persistence unit.
      * <p>
-     * By default the first file found at the resource name: "META-INF/eclipselink-orm.xml"
+     * By default, the first file found at the resource name: "META-INF/eclipselink-orm.xml"
      * is processed and overrides configurations specified in annotations, and standard mapping files.
      */
     public static final String EXCLUDE_ECLIPSELINK_ORM_FILE = "eclipselink.exclude-eclipselink-orm";
@@ -1910,12 +1919,12 @@ public class PersistenceUnitProperties {
     /**
      * The {@code eclipselink.session-name} property configures a
      * specific name to use when storing the singleton server session within the
-     * {@link SessionManager}.
+     * {@link org.eclipse.persistence.sessions.factories.SessionManager}.
      * <p>
      * If a sessions-xml file is used this must be the name of the session in the
      * sessions-xml file.
      * <p>
-     * By default a unique session name is generated by EclipseLink, but the
+     * By default, a unique session name is generated by EclipseLink, but the
      * user can provide a customary session name - and make sure it's unique.
      */
     public static final String SESSION_NAME = "eclipselink.session-name";
@@ -2039,7 +2048,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code eclipselink.weaving.mappedsuperclass} property configures
-     * whether {@code MappedSuperclass}es with no direct sub-classes will be woven.
+     * whether {@code MappedSuperclass}es with no direct subclasses will be woven.
      * <p>
      * This property will only be considered if weaving is enabled.
      * <p>
@@ -2067,7 +2076,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code eclipselink.target-server} property configures the
-     * {@link ServerPlatform} that will be used to enable integration with a
+     * {@link org.eclipse.persistence.platform.server.ServerPlatform} that will be used to enable integration with a
      * host container.
      * <p>
      * Default: {@link TargetServer#None}
@@ -2076,10 +2085,10 @@ public class PersistenceUnitProperties {
      * <ul>
      * <li>a short string value as defined in {@link TargetServer} class - this corresponds to
      * server platforms currently supported
-     * <li>the fully qualified name for a class that implements {@link ServerPlatform} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.platform.server.ServerPlatform} interface
      * </ul>
-     * Specifying a name of the class implementing {@link ExternalTransactionController} sets
-     * {@link CustomServerPlatform} with this controller.
+     * Specifying a name of the class implementing {@link org.eclipse.persistence.sessions.ExternalTransactionController} sets
+     * {@link org.eclipse.persistence.platform.server.CustomServerPlatform} with this controller.
      *
      * @see TargetServer
      */
@@ -2087,13 +2096,13 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code eclipselink.jta.controller} property allows to override
-     * JTA transaction controller class of {@link ServerPlatform}.
+     * JTA transaction controller class of {@link org.eclipse.persistence.platform.server.ServerPlatform}.
      * <p>
      * Value of this property is a fully qualified name of a class that implements
-     * {@link ExternalTransactionController} interface.
+     * {@link org.eclipse.persistence.sessions.ExternalTransactionController} interface.
      * <p>
      * If both {@code eclipselink.target-server} and {@code eclipselink.jta.controller}
-     * properties are set and contain classes implementing {@link ExternalTransactionController}
+     * properties are set and contain classes implementing {@link org.eclipse.persistence.sessions.ExternalTransactionController}
      * interface, {@code eclipselink.target-server} value is used.
      */
     public static final String JTA_CONTROLLER = "eclipselink.jta.controller";
@@ -2399,7 +2408,7 @@ public class PersistenceUnitProperties {
     /**
      * When the {@code eclipselink.ddlgen-terminate-statements} property
      * is set to true and a DDL script is being generated, the value of
-     * {@link DatabasePlatform#getStoredProcedureTerminationToken()} is appended to the end of each statement.
+     * {@link org.eclipse.persistence.platform.database.DatabasePlatform#getStoredProcedureTerminationToken()} is appended to the end of each statement.
      * <p>
      * <b>Allowed Values</b> (String)<b>:</b>
      * <ul>
@@ -2414,7 +2423,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.sequencing.default-sequence-to-table} property
      * determines the default behavior when a GeneratedValue of type SEQUENCE is used
      * on a database platform that does not support SEQUENCE generation.
-     * By default IDENTITY generation is used if supported.
+     * By default, IDENTITY generation is used if supported.
      * If this property is set to true, then TABLE sequencing will be used instead.
      */
     public static final String SEQUENCING_SEQUENCE_DEFAULT = "eclipselink.sequencing.default-sequence-to-table";
@@ -2523,11 +2532,11 @@ public class PersistenceUnitProperties {
      * <li>{@code Oracle-JDBC} - use Oracle's native batch writing. This requires the
      * use of an Oracle JDBC driver.
      * <li>{@code None} (DEFAULT): do not use batch writing (turn it off).
-     * <li>the fully qualified name for a class that extends {@link BatchWritingMechanism} abstract class
+     * <li>the fully qualified name for a class that extends {@link org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism} abstract class
      * </ul>
      *
      * @see BatchWriting
-     * @see BatchWritingMechanism
+     * @see org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism
      */
     public static final String BATCH_WRITING = "eclipselink.jdbc.batch-writing";
 
@@ -2555,7 +2564,7 @@ public class PersistenceUnitProperties {
      * will be used.
      * <p>
      * IMPORTANT: For now this property is used for the canonical model
-     * generator but it can later be used as a system property for customizing
+     * generator, but it can later be used as a system property for customizing
      * weaving and application bootstrap usage.
      * <p>
      * This property is only used by EclipseLink when it is locating the
@@ -2582,7 +2591,7 @@ public class PersistenceUnitProperties {
     /**
      * This {@code eclipselink.persistenceunits} property specifies the
      * set of persistence unit names that will be processed when generating the
-     * canonical model. By default all persistence units available in all
+     * canonical model. By default, all persistence units available in all
      * persistence XML files will be used. The value of this property is a comma
      * separated list. When specifying multiple persistence units it is not
      * possible to have persistence units with a comma in their name.
@@ -2595,11 +2604,11 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code eclipselink.exception-handler} property allows an
-     * {@link ExceptionHandler} to be specified. An {@link ExceptionHandler} handles
+     * {@link org.eclipse.persistence.exceptions.ExceptionHandler} to be specified. An {@link org.eclipse.persistence.exceptions.ExceptionHandler} handles
      * exceptions when they are thrown so that an application might address
-     * address expected failures and continue.
+     * expected failures and continue.
      *
-     * @see ExceptionHandler
+     * @see org.eclipse.persistence.exceptions.ExceptionHandler
      */
     public static final String EXCEPTION_HANDLER_CLASS = "eclipselink.exception-handler";
 
@@ -2618,7 +2627,7 @@ public class PersistenceUnitProperties {
      * <p>
      * Use {@link #SESSION_CUSTOMIZER} to configure multiple listeners using API.
      *
-     * @see SessionEventListener
+     * @see org.eclipse.persistence.sessions.SessionEventListener
      * @see #SESSION_CUSTOMIZER
      */
     public static final String SESSION_EVENT_LISTENER_CLASS = "eclipselink.session-event-listener";
@@ -2626,7 +2635,7 @@ public class PersistenceUnitProperties {
     /**
      * The {@code eclipselink.sessions-xml} property configures the use
      * of the specified native sessions.xml configuration file. When specified
-     * this file will load all of the session configuration and mapping
+     * this file will load all the session configuration and mapping
      * information from the native XML. No JPA annotations or XML will be used.
      */
     public static final String SESSIONS_XML = "eclipselink.sessions-xml";
@@ -2661,7 +2670,7 @@ public class PersistenceUnitProperties {
     /**
      * The {@code eclipselink.temporal.mutable} property configures the
      * default for detecting changes to temporal field (Date, Calendar). Default
-     * {@code false} (changes to date object itself are not detected). By default it
+     * {@code false} (changes to date object itself are not detected). By default, it
      * is assumed that temporal fields are replaced, and the temporal object not
      * changed directly. Enabling mutable temporal fields will cause weaving of
      * attribute change tracking to be disabled.
@@ -2672,7 +2681,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.jdbc.allow-native-sql-queries} property
      * specifies whether any user defined SQL is allowed within a persistence
      * unit. This is of particular importance within a multitenant to minimize
-     * the potential impact of revealing multi tenant information. By default
+     * the potential impact of revealing multi tenant information. By default,
      * any persistence unit containing at least one multitenant entity will
      * cause this flag to be set to {@code false}.
      * <p>
@@ -2682,7 +2691,7 @@ public class PersistenceUnitProperties {
      * <li>{@code true} (DEFAULT) - allow native SQL
      * </ul>
      *
-     * @see Project#setAllowNativeSQLQueries(boolean)
+     * @see org.eclipse.persistence.sessions.Project#setAllowNativeSQLQueries(boolean)
      */
     public static final String ALLOW_NATIVE_SQL_QUERIES = "eclipselink.jdbc.allow-native-sql-queries";
 
@@ -2690,17 +2699,17 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.allow-zero-id} property configures if zero
      * is considered a valid id on a new entity. If the id is not considered
      * valid and sequencing is enabled for the entity a new value will be
-     * assigned when it is persisted to the database (INSERT). By default an id
+     * assigned when it is persisted to the database (INSERT). By default, an id
      * value of 0 is assumed to be null/unassigned. This allows 0 to be a valid
-     * id value. This can also be set per class using the {@link PrimaryKey} annotation
-     * and {@link IdValidation}.
+     * id value. This can also be set per class using the {@link org.eclipse.persistence.annotations.PrimaryKey} annotation
+     * and {@link org.eclipse.persistence.annotations.IdValidation}.
      * <p>
      * Caution: This property configures the static singleton on
-     * {@link Helper#isZeroValidPrimaryKey} which will be shared by all
+     * {@link org.eclipse.persistence.internal.helper.Helper#isZeroValidPrimaryKey} which will be shared by all
      * concurrent uses of EclipseLink.
      *
-     * @see PrimaryKey
-     * @see IdValidation
+     * @see org.eclipse.persistence.annotations.PrimaryKey
+     * @see org.eclipse.persistence.annotations.IdValidation
      * @see #ID_VALIDATION
      *
      * @deprecated replaced by {@link #ID_VALIDATION} property with value {@code NULL}.
@@ -2713,11 +2722,11 @@ public class PersistenceUnitProperties {
      * which primary key components values are considered invalid.
      * These values will be also overridden by sequencing.
      * Note that Identity always overrides any existing id value
-     * and so does any sequence with {@link Sequence#shouldAlwaysOverrideExistingValue()} flag
+     * and so does any sequence with {@link org.eclipse.persistence.sequencing.Sequence#shouldAlwaysOverrideExistingValue()} flag
      * set to {@code true}.
      *
-     * @see PrimaryKey
-     * @see IdValidation
+     * @see org.eclipse.persistence.annotations.PrimaryKey
+     * @see org.eclipse.persistence.annotations.IdValidation
      */
     public static final String ID_VALIDATION = "eclipselink.id-validation";
 
@@ -3158,10 +3167,10 @@ public class PersistenceUnitProperties {
      * and deletes of a set of the same entity type during a commit or flush operation.
      * The commit order of entities is defined by their foreign key constraints, and then sorted alphabetically.
      * <p>
-     * By default the commit of a set of the same entity type is ordered by its Id.
+     * By default, the commit of a set of the same entity type is ordered by its Id.
      * <p>
      * Entity type commit order can be modified using a {@link DescriptorCustomizer}
-     * and the {@link ClassDescriptor#addConstraintDependency(Class)} API.
+     * and the {@link org.eclipse.persistence.descriptors.ClassDescriptor#addConstraintDependency(Class)} API.
      * Commit order can also be controlled using the {@code EntityManager#flush()} API.
      * <p>
      * <b>Allowed Values:</b>
@@ -3183,11 +3192,11 @@ public class PersistenceUnitProperties {
      * <b>Allowed Values:</b>
      * <ul>
      * <li>{@code NoProfiler} (DEFAULT)
-     * <li>{@code PerformanceMonitor} - use {@link PerformanceMonitor}
-     * <li>{@code PerformanceProfiler} - use {@link PerformanceProfiler}
-     * <li>{@code QueryMonitor} - use {@link QueryMonitor}
+     * <li>{@code PerformanceMonitor} - use {@link org.eclipse.persistence.tools.profiler.PerformanceMonitor}
+     * <li>{@code PerformanceProfiler} - use {@link org.eclipse.persistence.tools.profiler.PerformanceProfiler}
+     * <li>{@code QueryMonitor} - use {@link org.eclipse.persistence.tools.profiler.QueryMonitor}
      * <li>{@code DMSProfiler} - use {@code org.eclipse.persistence.tools.profiler.oracle.DMSPerformanceProfiler}
-     * <li>the fully qualified name for a class that implements {@link SessionProfiler} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.sessions.SessionProfiler} interface
      * </ul>
      *
      * @see ProfilerType
@@ -3198,14 +3207,14 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.tuning}property configures the type of
      * tuner to use to configure the persistence unit.
      * <p>
-     * A {@link SessionTuner} can be used to define a template for a persistence unit configuration.
+     * A {@link org.eclipse.persistence.tools.tuning.SessionTuner} can be used to define a template for a persistence unit configuration.
      * It allows a set of configuration values to be configured as a single tuning option.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
      * <li>{@code Standard} (DEFAULT)
-     * <li>{@code Safe} - see {@link SafeModeTuner}
-     * <li>Custom tuner - specify a full class name of an implementation of {@link SessionTuner}
+     * <li>{@code Safe} - see {@link org.eclipse.persistence.tools.tuning.SafeModeTuner}
+     * <li>Custom tuner - specify a full class name of an implementation of {@link org.eclipse.persistence.tools.tuning.SessionTuner}
      * </ul>
      *
      * @see TunerType
@@ -3371,7 +3380,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.persistence-context.commit-without-persist-rules}
      * property specifies that the EntityManager will search all managed objects
      * and persist any related non-managed new objects that are found ignoring
-     * any absence of CascadeType.PERSIST settings. Also the Entity life-cycle
+     * any absence of CascadeType.PERSIST settings. Also, the Entity life-cycle
      * Persist operation will not be cascaded to related entities. This setting
      * replicates the traditional EclipseLink native functionality.
      * <p>
@@ -3387,7 +3396,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.persistence-context.flush-mode} property configures the EntityManager FlushMode to be set as a
      * persistence property. This can be set to either {@code AUTO} or {@code COMMIT}.
      * <p>
-     * By default the flush mode is {@code AUTO}, which requires an automatic flush before
+     * By default, the flush mode is {@code AUTO}, which requires an automatic flush before
      * all query execution. This can be used to avoid any flushing until commit.
      * <p>
      * The property set in persistence.xml or passed to
@@ -3395,8 +3404,8 @@ public class PersistenceUnitProperties {
      * factory. Alternatively, to apply the property only to some EntityManagers
      * pass it to createEntityManager method.
      *
-     * @see "jakarta.persistence.EntityManager#setFlushMode(jakarta.persistence.FlushModeType)"
-     * @see "jakarta.persistence.FlushModeType"
+     * @see jakarta.persistence.EntityManager#setFlushMode(jakarta.persistence.FlushModeType)
+     * @see jakarta.persistence.FlushModeType
      */
     public static final String PERSISTENCE_CONTEXT_FLUSH_MODE = "eclipselink.persistence-context.flush-mode";
 
@@ -3423,7 +3432,7 @@ public class PersistenceUnitProperties {
      * <li>oracle.jdbc.OracleConnection.PROXY_CERTIFICATE.
      * </ul>
      * <p>
-     * Typically these properties should be set into EntityManager (either
+     * Typically, these properties should be set into EntityManager (either
      * through createEntityManager method or using proprietary setProperties
      * method on EntityManagerImpl) - that causes EntityManager to use proxy
      * connection for writing and reading inside transaction. If proxy-type and
@@ -3449,13 +3458,13 @@ public class PersistenceUnitProperties {
      * <li>{@code rmi}
      * <li>{@code rmi-iiop}
      * <li>{@code jgroups}
-     * <li>the fully qualified name for a class that extends {@link TransportManager} abstract class.
+     * <li>the fully qualified name for a class that extends {@link org.eclipse.persistence.sessions.coordination.TransportManager} abstract class.
      * </ul>
      *
      * @see CacheCoordinationProtocol
-     * @see Cache#coordinationType()
-     * @see RemoteCommandManager#setTransportManager(org.eclipse.persistence.sessions.coordination.TransportManager)
-     * @see TransportManager
+     * @see org.eclipse.persistence.annotations.Cache#coordinationType()
+     * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setTransportManager(org.eclipse.persistence.sessions.coordination.TransportManager)
+     * @see org.eclipse.persistence.sessions.coordination.TransportManager
      */
     public static final String COORDINATION_PROTOCOL = "eclipselink.cache.coordination.protocol";
 
@@ -3688,7 +3697,7 @@ public class PersistenceUnitProperties {
      * Set if the coordination broadcast should occur asynchronously with the
      * committing thread. This means the coordination will be complete before
      * the thread returns from the commit of the transaction.<br>
-     * Note that JMS is always asynchronous. By default RMI is asynchronous.
+     * Note that JMS is always asynchronous. By default, RMI is asynchronous.
      *
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setShouldPropagateAsynchronously(boolean)
@@ -3703,7 +3712,7 @@ public class PersistenceUnitProperties {
      * RMI also spawns a thread to listen for new node notifications.
      * <p>
      * JMS cache coordination will spawn one thread to receive JMS change notification messages (unless MDB is used).
-     * JMS also spawns a thread to process the change notificaiton (unless MDB is used).
+     * JMS also spawns a thread to process the change notification (unless MDB is used).
      * <p>
      * The default size is 32 threads.
      * <p>
@@ -3718,14 +3727,14 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.cache.coordination.serializer} property
      * configures how cache coordination serializes message sent between nodes.
      * <p>
-     * By default Java serialization is used. Other serializer can be used for improved performance
+     * By default, Java serialization is used. Other serializer can be used for improved performance
      * or integration with other systems.
      * <p>
      * The full class name of the serializer class should be provided.
      *
      * @see #COORDINATION_PROTOCOL
-     * @see Serializer
-     * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setSerializer(Serializer)
+     * @see org.eclipse.persistence.sessions.serializers.Serializer
+     * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setSerializer(org.eclipse.persistence.sessions.serializers.Serializer)
      */
     public static final String COORDINATION_SERIALIZER = "eclipselink.cache.coordination.serializer";
 
@@ -3753,12 +3762,14 @@ public class PersistenceUnitProperties {
      * Composite persistence unit would contain all persistence units found in jar files specified by
      * {@code <jar-file>} elements in persistence.xml.
      * <p>
-     * <b>Persistence XML example:</b><pre>
-     * {@code <jar-file>member1.jar</jar-file>
+     * <b>Persistence XML example:</b>
+     * {@snippet lang="XML" :
+     *  <jar-file>member1.jar</jar-file>
      *  <jar-file>member2.jar</jar-file>
      *  <properties>
      *    <property name="eclipselink.composite-unit" value="true"/>
-     *  </properties>}</pre>
+     *  </properties>
+     * }
      *
      * @see #COMPOSITE_UNIT_MEMBER
      * @see #COMPOSITE_UNIT_PROPERTIES
@@ -3817,12 +3828,12 @@ public class PersistenceUnitProperties {
      * <b>Allowed Values:</b>
      * <ul>
      * <li>{@code rmi}
-     * <li>the fully qualified name for a class that extends {@link RemoteConnection} abstract class
+     * <li>the fully qualified name for a class that extends {@link org.eclipse.persistence.internal.sessions.remote.RemoteConnection} abstract class
      * </ul>
      *
      * @see RemoteProtocol
-     * @see RemoteConnection
-     * @see RemoteSession
+     * @see org.eclipse.persistence.internal.sessions.remote.RemoteConnection
+     * @see org.eclipse.persistence.sessions.remote.RemoteSession
      */
     public static final String REMOTE_PROTOCOL = "eclipselink.remote.protocol";
 
@@ -3908,7 +3919,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.jdbc.connector} property.<br>
      * Allows a custom connector to be used to define how to connect to the database.
      * This is not required if a DataSource or JDBC DriverManager is used.
-     * It can be used to connect to a non standard connection pool,
+     * It can be used to connect to a non-standard connection pool,
      * or provide additional customization in how a connection is obtained.
      *
      * @see org.eclipse.persistence.sessions.JNDIConnector
@@ -3936,7 +3947,7 @@ public class PersistenceUnitProperties {
      * The optimization allows to avoid getting objects from ResultSet if the cached object used.
      * For instance, SELECT id, blob FROM .. with optimization would extract only "id" from ResultSet,
      * and if there is a corresponding cached object and it's not a refresh query, "blob" would never be extracted.
-     * The draw back is keeping ResultSet and connection longer: until objects are built
+     * The drawback is keeping ResultSet and connection longer: until objects are built
      * (or extracted from cache) for all rows and all eager references (direct and nested) for each row.
      * Note that the optimization would not be used if it contradicts other query settings.
      * <p>
@@ -3959,7 +3970,7 @@ public class PersistenceUnitProperties {
      * <p>
      * Default value is {@code org.eclipse.persistence.sessions.serializers.JavaSerializer}
      *
-     * @see org.eclipse.persistence.internal.sessions.AbstractSession#setSerializer(Serializer)
+     * @see org.eclipse.persistence.internal.sessions.AbstractSession#setSerializer(org.eclipse.persistence.sessions.serializers.Serializer)
      * @see org.eclipse.persistence.sessions.serializers.JavaSerializer
      * @see org.eclipse.persistence.sessions.serializers.Serializer
      */
@@ -4028,7 +4039,7 @@ public class PersistenceUnitProperties {
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
-     * It control how much time loop wait before it try acquire lock for current thread again. It value is set above above 0 dead lock detection
+     * It controls how much time loop wait before it tries to acquire lock for current thread again. If the value is set above 0 deadlock detection
      * mechanism and related extended logging will be activated.
      * Default value is 0 (unit is ms). Allowed values are: long
      */
@@ -4036,29 +4047,29 @@ public class PersistenceUnitProperties {
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
-     * It control how much time ConcurrencyManager will wait before it will identify, that thread which builds new object/entity instance
-     * should be identified as a potential dead lock source. It leads into some additional log messages.
+     * It controls how much time ConcurrencyManager will wait before it will identify, that thread which builds new object/entity instance
+     * should be identified as a potential deadlock source. It leads into some additional log messages.
      * Default value is 0 (unit is ms). In this case extended logging is not active. Allowed values are: long
      */
     public static final String CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME = "eclipselink.concurrency.manager.build.object.complete.waittime";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
-     * It control how long we are willing to wait before firing up an exception
+     * It controls how long we are willing to wait before firing up an exception
      * Default value is 40000 (unit is ms). Allowed values are: long
      */
     public static final String CONCURRENCY_MANAGER_MAX_SLEEP_TIME  = "eclipselink.concurrency.manager.maxsleeptime";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager and org.eclipse.persistence.internal.helper.ConcurrencyUtil.
-     * It control how frequently the tiny dump log message is created.
+     * It controls how frequently the tiny dump log message is created.
      * Default value is 40000 (unit is ms). Allowed values are: long
      */
     public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE = "eclipselink.concurrency.manager.maxfrequencytodumptinymessage";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager and org.eclipse.persistence.internal.helper.ConcurrencyUtil.
-     * It control how frequently the massive dump log message is created.
+     * It controls how frequently the massive dump log message is created.
      * Default value is 60000 (unit is ms). Allowed values are: long
      */
     public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE  = "eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage";
@@ -4067,7 +4078,7 @@ public class PersistenceUnitProperties {
      * <p>
      * This property control (enable/disable) if {@code InterruptedException} fired when dead-lock diagnostic is enabled.
      * <p>
-     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <b>Allowed Values</b> (case-sensitive String)<b>:</b>
      * <ul>
      * <li>{@code false} - if aborting frozen thread is not effective it is preferable to not fire the interrupted exception let the system
      * In the places where use this property normally if a thread is stuck it is because it is doing object building.
@@ -4085,7 +4096,7 @@ public class PersistenceUnitProperties {
      * <p>
      * This property control (enable/disable) if {@code ConcurrencyException} fired when dead-lock diagnostic is enabled.
      * <p>
-     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <b>Allowed Values</b> (case-sensitive String)<b>:</b>
      * <ul>
      * <li>{@code false} - if aborting frozen thread is not effective it is preferable to not fire the concurrency exception let the system
      * freeze and die and force the administration to kill the server. This is preferable to aborting the transactions
@@ -4102,7 +4113,7 @@ public class PersistenceUnitProperties {
      * <p>
      * This property control (enable/disable) collection debug/trace information during ReadLock acquisition, when dead-lock diagnostic is enabled.
      * <p>
-     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <b>Allowed Values</b> (case-sensitive String)<b>:</b>
      * <ul>
      * <li>{@code false} (DEFAULT) - don't collect debug/trace information during ReadLock acquisition
      * <li>{@code true} - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
@@ -4220,16 +4231,14 @@ public class PersistenceUnitProperties {
      * INTERNAL: The following properties will not be displayed through logging
      * but instead have an alternate value shown in the log.
      */
-    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<>(1);
-
-    static {
-        PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
-    }
+    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = Map.of(
+            JDBC_PASSWORD, "xxxxxx"
+    ); 
 
     /**
      * INTERNAL: Return the overridden log string.
      *
-     * @param propertyName property which value should be overriden in the log
+     * @param propertyName property which value should be overridden in the log
      * @return the overridden log string
      */
     public static String getOverriddenLogStringForProperty(String propertyName) {
@@ -4242,22 +4251,19 @@ public class PersistenceUnitProperties {
      * processed on the {@code EntityManagerFactory} directly. None of these
      * properties processed during pre-deploy or deploy.
      **/
-    private static final Set<String> supportedNonServerSessionProperties = new HashSet<>() {
-        {
-            add(JOIN_EXISTING_TRANSACTION);
-            add(PERSISTENCE_CONTEXT_REFERENCE_MODE);
-            add(PERSISTENCE_CONTEXT_FLUSH_MODE);
-            add(PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT);
-            add(PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
-            add(PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES);
-            add(VALIDATE_EXISTENCE);
-            add(ORDER_UPDATES);
-            add(FLUSH_CLEAR_CACHE);
-        }
-    };
+    private static final Set<String> supportedNonServerSessionProperties = Set.of(
+            JOIN_EXISTING_TRANSACTION,
+            PERSISTENCE_CONTEXT_REFERENCE_MODE,
+            PERSISTENCE_CONTEXT_FLUSH_MODE,
+            PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT,
+            PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT,
+            PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES,
+            VALIDATE_EXISTENCE,
+            ORDER_UPDATES,
+            FLUSH_CLEAR_CACHE);
 
     public static Set<String> getSupportedNonServerSessionProperties() {
-        return Collections.unmodifiableSet(supportedNonServerSessionProperties);
+        return supportedNonServerSessionProperties;
     }
 
 }

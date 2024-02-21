@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,9 +21,10 @@ package org.eclipse.persistence.config;
 /**
  * Parser type property values.
  *
- * <p>JPA persistence property Usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.JPQL_VALIDATION, ParserValidationType.JPA21);</code>
+ * <p>JPA persistence property usage:
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.JPQL_VALIDATION, ParserValidationType.JPA21);
+ *}
  * <p>Property values are case-insensitive.
  *
  * @see org.eclipse.persistence.queries.JPAQueryBuilder JPAQueryBuilder

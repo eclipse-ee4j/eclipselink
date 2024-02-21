@@ -14,12 +14,10 @@
 //     Gordon Yorke - initial API and implementation
 package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 /**
  * Options for how Entity instances should be shared within an EclipseLink Persistence Unit / ServerSession
- * @see ClassDescriptor#setCacheIsolation(CacheIsolationType)
- * @see org.eclipse.persistence annotations.Cache
+ * @see org.eclipse.persistence.descriptors.ClassDescriptor#setCacheIsolation(CacheIsolationType)
+ * @see org.eclipse.persistence.annotations.Cache
  * @author Gordon Yorke
  * @since EclipseLink 2.2
  */
@@ -47,7 +45,7 @@ public enum CacheIsolationType {
     PROTECTED,
 
     /**
-     * The Entity and its data is not stored in the shared cache but is
+     * The Entity and its data are not stored in the shared cache but is
      * <i>isolated</i> to the Persistence Context/UnitOfWork or
      * IsolatedClientSession. This setting effectively disables second level
      * caching for this entity and should be used when users do not want caching for

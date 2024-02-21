@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,14 +21,19 @@ package org.eclipse.persistence.config;
  * If no caching is desired at all the PersistenceUnitProperties.CACHE_SHARED_ should
  * instead be used.
  *
- * <p>JPA persistence property Usage:
+ * <p>JPA persistence property usage:
  *
  * <p>for all entities append DEFAULT suffix to CACHE_TYPE_ prefix:
- * <p><code>properties.add(PersistenceUnitProperties.CACHE_TYPE_DEFAULT, CacheType.Weak);</code>
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.CACHE_TYPE_DEFAULT, CacheType.Weak);
+ * }
  *
  * <p>for a single entity append either entity name or a full class name to CACHE_TYPE_ prefix:
- * <p><code>properties.add(PersistenceUnitProperties.CACHE_TYPE_ + "Employee", CacheType.Weak);</code>
- * <p><code>properties.add(PersistenceUnitProperties.CACHE_TYPE_ + "my.test.Employee", CacheType.Weak);</code>
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.CACHE_TYPE_ + "Employee", CacheType.Weak);
+ *  // or
+ *  properties.add(PersistenceUnitProperties.CACHE_TYPE_ + "my.test.Employee", CacheType.Weak);
+ * }
  *
  * <p>Values are case-insensitive.
  * "" could be used instead of default value CacheType.DEFAULT.
@@ -82,7 +87,7 @@ public class CacheType {
      * NONE does not cache any objects.
      * It allows any un-referenced objects to be free to garbage collection.
      * This provides no object identity, allows complete garbage collection, and provides no caching benefit.
-     * <p>WARNING: This cache type should normally not be used.  Instead disable the share cache through PersistenceUnitProperties.CACHE_SHARED_.
+     * <p>WARNING: This cache type should normally not be used.  Instead, disable the share cache through PersistenceUnitProperties.CACHE_SHARED_.
      * Lack of object identity can lead to infinite loops for objects that have circular references and no indirection.
      * @see PersistenceUnitProperties#CACHE_SHARED_
      */

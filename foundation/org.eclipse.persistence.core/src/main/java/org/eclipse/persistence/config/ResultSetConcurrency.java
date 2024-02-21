@@ -19,12 +19,14 @@ package org.eclipse.persistence.config;
  * <p>
  * The class contains all the valid values for QueryHints.RESULT_SET_CONCURRENCY query hint.
  * This can be used on ScrollableCursor queries to set the JDBC ResultSet concurrency.
- * <p>
- * JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ForwardOnly);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ForwardOnly);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.RESULT_SET_CONCURRENCY, value=ResultSetConcurrency.ForwardOnly)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.RESULT_SET_CONCURRENCY, value=ResultSetConcurrency.ForwardOnly)
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value ResultSetConcurrency.Updatable.

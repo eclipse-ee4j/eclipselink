@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.config;
 
 /**
  * <b>Purpose:</b> This class is a configuration property used to specify
- * What type of Referenes EclipseLink will use when referencing Entities
+ * What type of References EclipseLink will use when referencing Entities
  * within the Persistence Context / UnitOfWork.  Depending on the configured
  * ReferenceMode some Entities may be garbage collected.
  *
@@ -42,7 +42,7 @@ public enum ReferenceMode {
      * and will not be available for GC until flushed. New and removed objects
      * are also held by hard references. Non change tracked objects will always
      * be held by "hard" references and are not available for GC. This is the
-     * default mode for EclipsLink. See:
+     * default mode for EclipseLink. See:
      * {@link java.lang.ref.WeakReference}
      * {@link org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy}
      */
@@ -56,7 +56,7 @@ public enum ReferenceMode {
      * When a change is made to a change tracked object that object
      * is moved to a hard reference and will not be available for GC until
      * flushed. New and removed objects are also held by hard references until
-     * flush..
+     * flush.
      */
     FORCE_WEAK
 

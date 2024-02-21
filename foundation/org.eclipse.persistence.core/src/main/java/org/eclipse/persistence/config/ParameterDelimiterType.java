@@ -22,12 +22,14 @@ package org.eclipse.persistence.config;
  * The class contains the default value for QueryHints.PARAMETER_DELIMITER query hint.
  * A single char should be specified if the default hash symbol needs to be overridden.
  * <p>i.e. "%"
- * <p>
- * JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.PARAMETER_DELIMITER, "%");</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.PARAMETER_DELIMITER, "%");
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.PARAMETER_DELIMITER, value="%")</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.PARAMETER_DELIMITER, value="%")
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" cannot be used - and will be replaced with the default value ParameterDelimiterType.DEFAULT

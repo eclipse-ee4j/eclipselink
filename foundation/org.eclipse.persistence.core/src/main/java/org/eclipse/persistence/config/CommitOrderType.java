@@ -19,17 +19,19 @@
 /**
  * Commit order type persistence property values.
  *
- * <p>JPA persistence property Usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, CommitOrderType.Changes);</code>
+ * <p>JPA persistence property usage:
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, CommitOrderType.Changes);
+ * }
  * <p>Property values are case-insensitive.
  * <p>
  * Defines the ordering of updates and deletes of a set of the same entity type during a commit or flush operation.
  * The commit order of entities is defined by their foreign key constraints, and then sorted alphabetically.\
  * <p>
- * By default the commit of a set of the same entity type is not ordered.
+ * By default, the commit of a set of the same entity type is not ordered.
  * <p>
- * Entity type commit order can be modified using a DescriptorCustomizer and the ClassDescriptor.addConstraintDependency() API.
+ * Entity type commit order can be modified using a {@linkplain DescriptorCustomizer} and
+ * the {@linkplain org.eclipse.persistence.descriptors.ClassDescriptor#addConstraintDependency(Class)} API.
  * Commit order can also be controlled using the EntityManager.flush() API.
  */
 public class CommitOrderType {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
-
 /**
  * Specify the use of batch writing to optimize transactions with multiple writes,
  * by default batch writing is not used.
@@ -23,9 +21,10 @@ import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
  * execution, or multiple homogeneous parameterized SQL statements to be executed as a single batch execution.
  * <p>Note that not all JDBC drivers, or databases support batch writing.
  *
- * <p>JPA persistence property Usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);</code>
+ * <p>JPA persistence property usage:
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC);
+ * }
  *
  * <p>Property values are case-insensitive
  *
@@ -35,7 +34,7 @@ import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
  * <li>Oracle-JDBC - Oracle JDBC batch API's are used (allows row count to be returned for optimistic locking).
  * <li>&lt;custom-class&gt; - A custom class that extends the BatchWritingMechanism class.
  * </ul>
- * @see BatchWritingMechanism
+ * @see org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism
  */
 public class BatchWriting {
     public static final String  None = "None";
