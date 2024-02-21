@@ -137,9 +137,15 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         tests.add("complexInTest3");
         tests.add("complexInTest4");
         tests.add("complexInTest5");
+        tests.add("complexInTest6NullParameter");
+        tests.add("complexInTest7EmptyCollectionParameter");
+        tests.add("complexInTest8NullPartialParameter");
+        tests.add("complexInTest9EmptyStringPartialParameter");
         tests.add("complexLengthTest");
         tests.add("complexLikeTest");
-        tests.add("complexNotInTest");
+        tests.add("complexNotInTest1");
+        tests.add("complexNotInTest2NullParameter");
+        tests.add("complexNotInTest3EmptyCollectionParameter");
         tests.add("complexNotLikeTest");
         tests.add("complexParameterTest");
         tests.add("complexReverseAbsTest");
@@ -492,6 +498,62 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         closeEntityManager(em);
     }
 
+    public void complexInTest6NullParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN :lastName");
+
+        query.setParameter("lastName", null);
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
+    public void complexInTest7EmptyCollectionParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN :lastName");
+
+        query.setParameter("lastName", new ArrayList<>());
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
+    public void complexInTest8NullPartialParameter() {
+
+        EntityManager em = createEntityManager();
+        Query expectedQuery = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith') ORDER BY e.id");
+        List<Employee> expectedResult = expectedQuery.getResultList();
+
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith', :lastName) ORDER BY e.id");
+        query.setParameter("lastName", null);
+        List<Employee> result = query.getResultList();
+
+        Assert.assertTrue(result.size() > 0);
+        Assert.assertTrue("Complex IN with NULL test failed", comparer.compareObjects(result, expectedResult));
+
+        closeEntityManager(em);
+    }
+
+    public void complexInTest9EmptyStringPartialParameter() {
+
+        EntityManager em = createEntityManager();
+        Query expectedQuery = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith') ORDER BY e.id");
+        List<Employee> expectedResult = expectedQuery.getResultList();
+
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith', :lastName) ORDER BY e.id");
+        query.setParameter("lastName", "");
+        List<Employee> result = query.getResultList();
+
+        Assert.assertTrue(result.size() > 0);
+        Assert.assertTrue("Complex IN with NULL test failed", comparer.compareObjects(result, expectedResult));
+
+        closeEntityManager(em);
+    }
+
     public void complexLengthTest()
     {
         if ((getPersistenceUnitServerSession()).getPlatform().isSQLServer()) {
@@ -542,7 +604,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
     }
 
-    public void complexNotInTest()
+    public void complexNotInTest1()
     {
         EntityManager em = createEntityManager();
 
@@ -576,6 +638,30 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
         Assert.assertTrue("Complex Not IN test failed", comparer.compareObjects(result, expectedResult));
 
+    }
+
+    public void complexNotInTest2NullParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName NOT IN :lastName");
+
+        query.setParameter("lastName", null);
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
+    public void complexNotInTest3EmptyCollectionParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName NOT IN :lastName");
+
+        query.setParameter("lastName", List.of());
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
     }
 
     public void complexNotLikeTest()

@@ -1131,6 +1131,12 @@ public abstract class DatabaseCall extends DatasourceCall {
                         if (parameter instanceof ParameterExpression) {
                             field = ((ParameterExpression)parameter).getField();
                             translatedValue = ((ParameterExpression)parameter).getValue(translationRow, query, session);
+                            Object type = ((ParameterExpression) parameter).getType();
+                            //handle null passed into ...IN (?) as a parameter
+                            if (translatedValue == null && type != null && type.equals(Collection.class)) {
+                                // Must re-translate IN parameters.
+                                hasParameterizedIN = true;
+                            }
                         } else {
                             field = (DatabaseField)parameter;
                             translatedValue = translationRow.get(field);
