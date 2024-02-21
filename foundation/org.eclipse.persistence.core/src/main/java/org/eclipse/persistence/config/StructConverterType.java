@@ -18,8 +18,9 @@ package org.eclipse.persistence.config;
  * This class contains predefined StructConverter types.
  * <p>
  * Users can use these types to define what StructConverter to use. For instance:
- * <p>
- * {@literal @StructConverter(name="JGeom", converter="JGEOMETRY")}
+ * {@snippet :
+ *  @StructConverter(name="JGeom", converter="JGEOMETRY")
+ * }
  *
  * @author tware
  *

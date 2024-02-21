@@ -14,17 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.queries.JPAQueryBuilder;
-
 /**
  * Parser type property values.
  *
- * <p>JPA persistence property Usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.JPQL_PARSER, ParserType.Hermes);</code>
+ * <p>JPA persistence property usage:
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.JPQL_PARSER, ParserType.Hermes);
+ * }
  * <p>Property values are case-insensitive.
  *
- * @see JPAQueryBuilder
+ * @see org.eclipse.persistence.queries.JPAQueryBuilder
  */
 public class ParserType {
     public static final String Hermes = "Hermes";

@@ -18,20 +18,24 @@ package org.eclipse.persistence.config;
  * PessimisticLock hint values.
  * <p>
  * The class contains all the valid values for QueryHints.PESSIMISTIC_LOCK query hint.
- * <p>
- * JPA Query Hint Usage:<ul>
- * <li>{@code query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);}</li>
- * <li>{@code @QueryHint(name=QueryHints.PESSIMISTIC_LOCK, value=PessimisticLock.Lock)}</li>
- * </ul>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
+ * }
+ * <p>or
+ * {@snippet :
+ * @QueryHint(name=QueryHints.PESSIMISTIC_LOCK, value=PessimisticLock.Lock)
+ * }
+ *
  * Hint values are case-insensitive. {@code ""} could be used instead of default value
  * {@link PessimisticLock#DEFAULT}.
  * <p>
  * <B>Note:</B> As of JPA 2.0 there is a standard way to configure pessimistic locking.
  *
  * @see QueryHints
- * @see "jakarta.persistence.LockModeType"
- * @see "jakarta.persistence.EntityManager"
- * @see "jakarta.persistence.Query"
+ * @see jakarta.persistence.LockModeType
+ * @see jakarta.persistence.EntityManager
+ * @see jakarta.persistence.Query
  */
 public class PessimisticLock {
     public static final String  NoLock = "NoLock";

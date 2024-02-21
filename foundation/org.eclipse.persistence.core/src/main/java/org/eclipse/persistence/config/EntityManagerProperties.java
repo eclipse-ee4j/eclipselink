@@ -18,14 +18,12 @@
 //        Now properties' names that could be used both in createEM and createEMF are the same.
 package org.eclipse.persistence.config;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
  * The class defines EclipseLink properties' names for use at the {@code EntityManager} level.
  * <p>
- * This properties are specific to an EnityManger and should be
+ * These properties are specific to an EntityManger and should be
  * passed to createEntityManager methods of {@code EntityManagerFactory}.
  * <p>
  * Property values are usually case-insensitive with some common sense exceptions,
@@ -66,11 +64,14 @@ public final class EntityManagerProperties {
      * its own or with other properties defined by the user. Users are not
      * obligated to use this property and are free to specify their own.
      * <p>
-     * Example: persistence.xml file <code>
-     * {@literal <property name="eclipselink.tenant-id" value="Oracle"/>}
-     * </code> Example: property Map <code>
-     * propertiesMap.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "Oracle");
-     * </code>
+     * Example: persistence.xml file
+     * {@snippet lang="XML" :
+     * <property name="eclipselink.tenant-id" value="Oracle"/>
+     * }
+     * Example: property Map
+     * {@snippet :
+     *  propertiesMap.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "Oracle");
+     * }
      *
      * @see org.eclipse.persistence.annotations.Multitenant
      * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
@@ -117,7 +118,7 @@ public final class EntityManagerProperties {
     /**
      * Specifies that the {@code EntityManager} will search all managed objects and persist any related non-managed
      * new objects that are found ignoring any absence of CascadeType.PERSIST settings.
-     * Also the Entity lifecycle Persist operation will not be cascaded to related entities.
+     * Also, the Entity lifecycle Persist operation will not be cascaded to related entities.
      * This setting replicates the traditional EclipseLink native functionality.
      */
     public static final String PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES = PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES;
@@ -125,14 +126,14 @@ public final class EntityManagerProperties {
     /**
      * Allows the {@code EntityManager} FlushMode to be set as a persistence property.
      * This can be set to either "AUTO" or "COMMIT".
-     * By default the flush mode is AUTO, which requires an automatic flush before all query execution.
+     * By default, the flush mode is AUTO, which requires an automatic flush before all query execution.
      * This can be used to avoid any flushing until commit.
      * The property set in persistence.xml or passed to createEntityManagerFactory affects all EntityManagers
      * created by the factory.
      * Alternatively, to apply the property only to some EntityManagers pass it to createEntityManager method.
      *
-     * @see "jakarta.persistence.EntityManager#setFlushMode(jakarta.persistence.FlushModeType)"
-     * @see "jakarta.persistence.FlushModeType"
+     * @see jakarta.persistence.EntityManager#setFlushMode(jakarta.persistence.FlushModeType)
+     * @see jakarta.persistence.FlushModeType
      */
     public static final String PERSISTENCE_CONTEXT_FLUSH_MODE = PersistenceUnitProperties.PERSISTENCE_CONTEXT_FLUSH_MODE;
 
@@ -143,9 +144,9 @@ public final class EntityManagerProperties {
      * (TARGET_DATABASE property value should be TargetDatabase.Oracle9 or later).
      * The valid values are:
      * OracleConnection.PROXYTYPE_USER_NAME, OracleConnection.PROXYTYPE_DISTINGUISHED_NAME, OracleConnection.PROXYTYPE_CERTIFICATE.
-     * Property property corresponding to the specified type should be also provided:
+     * Property corresponding to the specified type should be also provided:
      * OracleConnection.PROXY_USER_NAME, OracleConnection.PROXY_DISTINGUISHED_NAME, OracleConnection.PROXY_CERTIFICATE.
-     * Typically these properties should be set into {@code EntityManager} (either through createEntityManager method or
+     * Typically, these properties should be set into {@code EntityManager} (either through createEntityManager method or
      * using proprietary setProperties method on EntityManagerImpl) - that causes {@code EntityManager} to use proxy connection for
      * writing and reading inside transaction.
      * If proxy-type and the corresponding proxy property set into {@code EntityManagerFactory} then all connections
@@ -176,7 +177,7 @@ public final class EntityManagerProperties {
     /**
      * JTA DataSource.
      * The value may be either data source or its name.
-     * Note that this property will be ignore in case persistence unit was setup to NOT use JTA:
+     * Note that this property will be ignored in case persistence unit was set up to NOT use JTA:
      * persistence.xml or createEntityManagerFactory had property {@code jakarta.persistence.transactionType} with RESOURCE_LOCAL value.
      * To avoid a conflict resulting in exception don't specify this property together with either JDBC_DRIVER or JDBC_URL;
      * however this property may override JDBC_DRIVER or JDBC_URL specified in persistence.xml or in createEntityManagerFactory method.
@@ -189,7 +190,7 @@ public final class EntityManagerProperties {
     /**
      * NON JTA DataSource.
      * The value may be either data source or its name.
-     * Note that this property will be ignore in case persistence unit was setup to use JTA:
+     * Note that this property will be ignored in case persistence unit was set up to use JTA:
      * persistence.xml or createEntityManagerFactory had property {@code jakarta.persistence.transactionType} with JTA value.
      * To avoid a conflict resulting in exception don't specify this property together with either JDBC_DRIVER or JDBC_URL;
      * however this property may override JDBC_DRIVER or JDBC_URL specified in persistence.xml or in createEntityManagerFactory method.
@@ -269,12 +270,12 @@ public final class EntityManagerProperties {
      * Defines the ordering of updates and deletes of a set of the same entity type during a commit or flush operation.
      * The commit order of entities is defined by their foreign key constraints, and then sorted alphabetically.\
      * <p>
-     * By default the commit of a set of the same entity type is ordered by its Id.
+     * By default, the commit of a set of the same entity type is ordered by its Id.
      * <p>
      * Entity type commit order can be modified using a DescriptorCustomizer and the ClassDescriptor.addConstraintDependency() API.
      * Commit order can also be controlled using the EntityManager.flush() API.
      * <p>
-     * Values (case insensitive):
+     * Values (case-insensitive):
      * <ul>
      * <li>"Id" (DEFAULT) : Updates and deletes are ordered by the object's id.  This can help avoid deadlocks on highly concurrent systems.
      * <li>"Changes": Updates are ordered by the object's changes, then by id.  This can improve batch writing efficiency.
@@ -319,38 +320,34 @@ public final class EntityManagerProperties {
      */
     public static final String COMPOSITE_UNIT_PROPERTIES = PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES;
 
-    private static final Set<String> supportedProperties = new HashSet<>() {
-
-        {
-            add(JOIN_EXISTING_TRANSACTION);
-            add(PERSISTENCE_CONTEXT_REFERENCE_MODE);
-            add(PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT);
-            add(PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
-            add(PERSISTENCE_CONTEXT_FLUSH_MODE);
-            add(PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES);
-            add(ORACLE_PROXY_TYPE);
-            add(EXCLUSIVE_CONNECTION_MODE);
-            add(EXCLUSIVE_CONNECTION_IS_LAZY);
-            add(JTA_DATASOURCE);
-            add(NON_JTA_DATASOURCE);
-            add(JDBC_DRIVER);
-            add(JDBC_URL);
-            add(JDBC_USER);
-            add(JDBC_PASSWORD);
-            add(CONNECTION_POLICY);
-            add(VALIDATE_EXISTENCE);
-            add(ORDER_UPDATES);
-            add(PERSISTENCE_CONTEXT_COMMIT_ORDER);
-            add(FLUSH_CLEAR_CACHE);
-            add(COMPOSITE_UNIT_PROPERTIES);
-        }
-    };
+    private static final Set<String> supportedProperties = Set.of(
+            JOIN_EXISTING_TRANSACTION,
+            PERSISTENCE_CONTEXT_REFERENCE_MODE,
+            PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT,
+            PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT,
+            PERSISTENCE_CONTEXT_FLUSH_MODE,
+            PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES,
+            ORACLE_PROXY_TYPE,
+            EXCLUSIVE_CONNECTION_MODE,
+            EXCLUSIVE_CONNECTION_IS_LAZY,
+            JTA_DATASOURCE,
+            NON_JTA_DATASOURCE,
+            JDBC_DRIVER,
+            JDBC_URL,
+            JDBC_USER,
+            JDBC_PASSWORD,
+            CONNECTION_POLICY,
+            VALIDATE_EXISTENCE,
+            ORDER_UPDATES,
+            PERSISTENCE_CONTEXT_COMMIT_ORDER,
+            FLUSH_CLEAR_CACHE,
+            COMPOSITE_UNIT_PROPERTIES);
 
     private EntityManagerProperties() {
         //no instance please
     }
 
     public static Set<String> getSupportedProperties() {
-        return Collections.unmodifiableSet(supportedProperties);
+        return supportedProperties;
     }
 }

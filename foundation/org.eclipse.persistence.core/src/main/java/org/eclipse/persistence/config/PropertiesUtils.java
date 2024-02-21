@@ -102,7 +102,7 @@ public class PropertiesUtils {
                     parsedParameterValue = Integer.parseInt(parameter);
                 } else if (param == Boolean.class || param == boolean.class) {
                     // Don't use Boolean.parseBoolean(..) as it is to liberal
-                    // with it's interpretation of false values
+                    // with its interpretation of false values
                     String lower = parameter.toLowerCase();
                     if ("true".equals(lower)) {
                         parsedParameterValue = Boolean.TRUE;

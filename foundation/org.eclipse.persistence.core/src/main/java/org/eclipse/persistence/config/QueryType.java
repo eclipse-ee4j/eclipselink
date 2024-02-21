@@ -20,12 +20,14 @@ package org.eclipse.persistence.config;
  * The class contains all the valid values for QueryHints.QUERY_TYPE query hint.
  * A fully qualified class name of a valid subclass of DatabaseQuery can also be used.
  * <p>i.e. "org.acme.persistence.CustomQuery"
- * <p>
- * JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.QUERY_TYPE, value=QueryType.ReadObject)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.QUERY_TYPE, value=QueryType.ReadObject)
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value CacheUsage.DEFAULT.

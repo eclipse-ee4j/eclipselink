@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,10 @@
 /**
  * Profiler type persistence property values.
  *
- * <p>JPA persistence property Usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.PROFILER, ProfilerType.PerformanceProfiler);</code>
+ * <p>JPA persistence property usage:
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.PROFILER, ProfilerType.PerformanceProfiler)
+ * }
  * <p>Property values are case-insensitive.
  *
  * @see org.eclipse.persistence.tools.profiler.QueryMonitor

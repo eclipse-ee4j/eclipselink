@@ -19,12 +19,14 @@ package org.eclipse.persistence.config;
  * <p>
  * The class contains all the valid values for QueryHints.RESULT_SET_TYPE query hint.
  * This can be used on ScrollableCursor queries to set the JDBC ResultSet scroll type.
- * <p>
- * JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.RESULT_SET_TYPE, value=ResultSetType.ForwardOnly)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.RESULT_SET_TYPE, value=ResultSetType.ForwardOnly)
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value ResultSetType.ScrollInsensitive.

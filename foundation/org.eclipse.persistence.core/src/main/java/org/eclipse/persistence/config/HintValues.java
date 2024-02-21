@@ -19,11 +19,14 @@ package org.eclipse.persistence.config;
  * <p>
  * The class defines boolean values used by some EclipseLink query hints.
  *
- * <p>JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.REFRESH, HintValues.TRUE);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.REFRESH, HintValues.TRUE);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.REFRESH, value=HintValues.TRUE)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.REFRESH, value=HintValues.TRUE)
+ * }
  *
  * <p>Hint values are case-insensitive.
  *
