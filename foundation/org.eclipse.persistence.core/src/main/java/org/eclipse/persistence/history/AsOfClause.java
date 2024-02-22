@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,9 +28,9 @@ import java.io.StringWriter;
  * <b>Purpose:</b>Wraps an immutable value for a past time.
  * A session, query, or expression can be as of a past time.
  * <p>
- * For Oracle 9R2 Flasback corresponds to the sub clause which appears between
+ * For Oracle 9R2 Flashback corresponds to the sub clause which appears between
  * the table and alias name in the FROM clause:
- * <code>SELECT ... FROM EMPLOYEE AS OF TIMESTAMP (value) t0, ...</code>
+ * {@code SELECT ... FROM EMPLOYEE AS OF TIMESTAMP (value) t0, ...}
  * </p><p>For generic historical schema support, a special criteria can be added to
  * the where clause for each table in a select:
  * <code>((t0.ROW_START {@literal <=} value) AND ((t0.END IS NULL) OR (t1.END {@literal >} value)))</code>
@@ -104,13 +104,13 @@ public class AsOfClause implements Serializable {
     public void printSQL(ExpressionSQLPrinter printer) {
         printer.printString("AS OF TIMESTAMP (");
         Object value = getValue();
-        if (value instanceof Expression) {
+        if (value instanceof Expression expression) {
             // Sort of an implementation of native sql.
             // Print AS OF TIMESTAMP (SYSDATE - 1000*60*10) not AS OF ('SYSDATE - 1000*60*10').
-            if ((value instanceof ConstantExpression) && (((ConstantExpression)value).getValue() instanceof String)) {
-                printer.printString((String)((ConstantExpression)value).getValue());
+            if ((value instanceof ConstantExpression ce) && (ce.getValue() instanceof String s)) {
+                printer.printString(s);
             } else {
-                printer.printExpression((Expression)value);
+                printer.printExpression(expression);
             }
         } else {
             ConversionManager converter = ConversionManager.getDefaultManager();
@@ -131,10 +131,10 @@ public class AsOfClause implements Serializable {
 
     /**
      * PUBLIC:
-     * Indicates that <code>value</code> is a system change number or an expression
+     * Indicates that {@code value} is a system change number or an expression
      * evaluating to one.
-     * <p>In Oracle the value will have to be printed using the syntax <code>AS OF SCN(value)</code>
-     * instead of <code>AS OF TIMESTAMP(value)</code>.
+     * <p>In Oracle the value will have to be printed using the syntax {@code AS OF SCN(value)}
+     * instead of {@code AS OF TIMESTAMP(value)}.
      * @see AsOfSCNClause
      */
     public boolean isAsOfSCNClause() {

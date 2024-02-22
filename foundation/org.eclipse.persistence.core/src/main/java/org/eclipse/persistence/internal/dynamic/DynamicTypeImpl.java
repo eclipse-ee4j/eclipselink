@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,11 +70,10 @@ public class DynamicTypeImpl implements DynamicType, Cloneable {
 
     @Override
     public Object clone() {
-        // clone yerself
+        // clone yourself
         try {
             return super.clone();
-        }
-        catch (Exception exception) {
+        } catch (CloneNotSupportedException exception) {
             throw new AssertionError(exception);
         }
     }
@@ -105,9 +104,6 @@ public class DynamicTypeImpl implements DynamicType, Cloneable {
         return getDescriptor().getMappings();
     }
 
-    /**
-     * @see DynamicType#getName()
-     */
     @Override
     public String getName() {
         return getDescriptor().getAlias();
@@ -162,9 +158,9 @@ public class DynamicTypeImpl implements DynamicType, Cloneable {
 
     @Override
     public DynamicEntity newDynamicEntity() {
-        DynamicEntity newDynamicEntity = (DynamicEntity)getDescriptor().getInstantiationPolicy().
-            buildNewInstance();
-        return newDynamicEntity;
+        return (DynamicEntity) getDescriptor()
+                .getInstantiationPolicy()
+                .buildNewInstance();
     }
 
     /**

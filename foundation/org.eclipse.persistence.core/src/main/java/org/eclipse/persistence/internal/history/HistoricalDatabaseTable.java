@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.internal.helper.Helper;
  * An impersonating database table is one that pretends to be another database
  * table, and whose true identity is revealed only when printed as SQL.
  * <p>
- * a.k.a HistoricalDatabaseTable, DisguisedDatabaseTable
+ * a.k.a. HistoricalDatabaseTable, DisguisedDatabaseTable
  * <p>
  * More precisely, if a is impersonating b, (a.equals(b) == true) but
  * (a.getQualifiedName().equals(b.getQualifiedName()) == false).
@@ -54,8 +54,8 @@ public class HistoricalDatabaseTable extends DatabaseTable {
     }
 
     /**
-     * Constructs a new database table which appears as <code>guise</code> but
-     * in fact really is <code>identity</code>.
+     * Constructs a new database table which appears as {@code guise} but
+     * in fact really is {@code identity}.
      */
     public HistoricalDatabaseTable(DatabaseTable source, DatabaseTable mirroring, DatasourcePlatform platform) {
         super(source.getName(), source.getTableQualifier());

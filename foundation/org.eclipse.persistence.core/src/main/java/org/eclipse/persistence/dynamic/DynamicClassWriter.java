@@ -48,7 +48,7 @@ import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.
  * Instances of this class and any subclasses are maintained within the
  * {@link DynamicClassLoader#getClassWriters()} and
  * {@link DynamicClassLoader#defaultWriter} for the life of the class loader so
- * it is important that no unnecessary state be maintained that may effect
+ * it is important that no unnecessary state be maintained that may affect
  * memory usage.
  *
  * @author dclarke, mnorman
@@ -158,7 +158,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         ClassWriter cw = new EclipseLinkASMClassWriter();
 
         // public class Foo extends DynamicEntityImpl {
-        cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, interfaces != null ? interfaces.toArray(new String[interfaces.size()]) : null);
+        cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, interfaces != null ? interfaces.toArray(new String[0]) : null);
 
         // public static DynamicPropertiesManager DPM = new
         // DynamicPropertiesManager();
@@ -258,16 +258,16 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
 
         // Add constructors
         // SignatureAttribute methodAttrs1 = new SignatureAttribute("()V");
-        mv = cw.visitMethod(Opcodes.ACC_PRIVATE, "<init>", "(Ljava/lang/String;I)V", null, null);
+        mv = cw.visitMethod(Opcodes.ACC_PRIVATE, INIT, "(Ljava/lang/String;I)V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitVarInsn(Opcodes.ALOAD, 1);
         mv.visitVarInsn(Opcodes.ILOAD, 2);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Enum", "<init>", "(Ljava/lang/String;I)V", false);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Enum", INIT, "(Ljava/lang/String;I)V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(3, 3);
 
         // Add enum constants
-        mv = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+        mv = cw.visitMethod(Opcodes.ACC_STATIC, CLINIT, "()V", null, null);
 
         int lastCount = 0;
         for (int i = 0; i < enumValues.length; i++) {
@@ -282,7 +282,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
             } else {
                 mv.visitIntInsn(Opcodes.SIPUSH, i);
             }
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, internalClassName, "<init>", "(Ljava/lang/String;I)V", false);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, internalClassName, INIT, "(Ljava/lang/String;I)V", false);
             mv.visitFieldInsn(Opcodes.PUTSTATIC, internalClassName, enumValue, "L" + internalClassName + ";");
             lastCount = i;
         }
@@ -319,7 +319,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
 
     /**
      * Verify that the provided class meets the requirements of the writer. In
-     * the case of {@link DynamicClassWriter} this will ensure that the class is
+     * the case of {@code DynamicClassWriter} this will ensure that the class is
      * a subclass of the {@link #parentClass}
      *
      */
@@ -329,7 +329,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
     }
 
     /**
-     * Interfaces the dynamic entity class implements. By default this is none
+     * Interfaces the dynamic entity class implements. By default, this is none
      * but in the case of SDO a concrete interface must be implemented.
      * Subclasses should override this as required.
      *
@@ -340,7 +340,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
     }
 
     /**
-     * Create a copy of this {@link DynamicClassWriter} but with a different
+     * Create a copy of this {@code DynamicClassWriter} but with a different
      * parent class.
      *
      * @see DynamicClassLoader#addClass(String, Class)

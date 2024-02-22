@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,7 @@ import java.util.Map;
  * customized to use a custom AttributeAccessor ({@link ValuesAccessor}).
  * <p>
  * <b>Type/Property Meta-model</b>: This dynamic entity approach also includes a
- * meta-model facade to simplify access to the types and property information so
+ * metamodel facade to simplify access to the types and property information so
  * that clients can more easily understand the model. Each
  * {@link DynamicTypeImpl} wraps the underlying EclipseLink
  * relational-descriptor and the {@link DynamicPropertiesManager} wraps each mapping.
@@ -136,18 +136,15 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
                     throw DynamicException.invalidPropertyName(dpm.getType(), propertyName);
                 }
             }
-            PropertyWrapper wrapper = propertiesMap.get(propertyName);
-            if (wrapper == null) { // properties can be added after constructor is called
-                wrapper = new PropertyWrapper();
-                propertiesMap.put(propertyName, wrapper);
-            }
+            // properties can be added after constructor is called
+            PropertyWrapper wrapper = propertiesMap.computeIfAbsent(propertyName, k -> new PropertyWrapper());
             Object value = wrapper.getValue();
             // trigger any indirection
-            if (value instanceof ValueHolderInterface) {
-                value = ((ValueHolderInterface<?>) value).getValue();
+            if (value instanceof ValueHolderInterface<?> vhi) {
+                value = vhi.getValue();
             }
-            else if (value instanceof IndirectContainer) {
-                value = ((IndirectContainer<?>) value).getValueHolder().getValue();
+            else if (value instanceof IndirectContainer<?> ic) {
+                value = ic.getValueHolder().getValue();
             }
             try {
                 return (T) value;
@@ -178,11 +175,8 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
                     !_persistence_getFetchGroup().containsAttributeInternal(propertyName)) {
                 return false;
             }
-            PropertyWrapper wrapper = propertiesMap.get(propertyName);
-            if (wrapper == null) { // properties can be added after constructor is called
-                wrapper = new PropertyWrapper();
-                propertiesMap.put(propertyName, wrapper);
-            }
+            // properties can be added after constructor is called
+            PropertyWrapper wrapper = propertiesMap.computeIfAbsent(propertyName, k -> new PropertyWrapper());
             return wrapper.isSet();
         }
         else {
@@ -200,7 +194,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     }
 
     /**
-     * Sets the.
+     * Set the persistence value for the given property to the specified value.
      *
      * @param propertyName the property name
      * @param value the value
@@ -218,16 +212,13 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
                 throw DynamicException.invalidPropertyName(dpm.getType(), propertyName);
             }
         }
-        PropertyWrapper wrapper = propertiesMap.get(propertyName);
-        if (wrapper == null) { // properties can be added after constructor is called
-            wrapper = new PropertyWrapper();
-            propertiesMap.put(propertyName, wrapper);
-        }
+        // properties can be added after constructor is called
+        PropertyWrapper wrapper = propertiesMap.computeIfAbsent(propertyName, k -> new PropertyWrapper());
         Object oldValue = null;
         Object wrapperValue = wrapper.getValue();
-        if (wrapperValue instanceof ValueHolderInterface<?>) {
+        if (wrapperValue instanceof ValueHolderInterface<?> vhi) {
             @SuppressWarnings({"unchecked"})
-            ValueHolderInterface<Object> vh = (ValueHolderInterface<Object>) wrapperValue;
+            ValueHolderInterface<Object> vh = (ValueHolderInterface<Object>) vhi;
             if (vh.isInstantiated()) {
                 oldValue = vh.getValue();
             }

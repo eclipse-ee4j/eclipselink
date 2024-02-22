@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -59,13 +59,13 @@ public class AsOfSCNClause extends AsOfClause {
     public void printSQL(ExpressionSQLPrinter printer) {
         printer.printString("AS OF SCN (");
         Object value = getValue();
-        if (value instanceof Expression) {
+        if (value instanceof Expression expression) {
             // Sort of an implementation of native sql.
             // Print AS OF SCN (1000L - 45L) not AS OF ('1000L - 45L').
-            if ((value instanceof ConstantExpression) && (((ConstantExpression)value).getValue() instanceof String)) {
-                printer.printString((String)((ConstantExpression)value).getValue());
+            if ((value instanceof ConstantExpression ce) && (ce.getValue() instanceof String s)) {
+                printer.printString(s);
             } else {
-                printer.printExpression((Expression)value);
+                printer.printExpression(expression);
             }
         } else {
             ConversionManager converter = ConversionManager.getDefaultManager();
