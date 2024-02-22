@@ -38,7 +38,7 @@ import org.eclipse.persistence.sessions.Session;
 
 import javax.xml.namespace.QName;
 import java.util.List;
-import java.util.Vector;
+
 public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMapping implements VariableXPathCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session, XMLUnmarshaller, XMLRecord>, XMLMapping, XMLContainerMapping {
 
     protected String variableAttributeName;
@@ -95,7 +95,7 @@ public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMap
        }
 
     @Override
-    protected Vector collectFields() {
+    protected List<DatabaseField> collectFields() {
         if(field != null){
             return super.collectFields();
         }
@@ -105,10 +105,10 @@ public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMap
         return NO_FIELDS;
     }
 
-@Override
-public List<DatabaseField> getFields() {
-    return collectFields();
-}
+    @Override
+    public List<DatabaseField> getFields() {
+        return collectFields();
+    }
 
 //    public Vector getFields() {
   //      return fields;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
@@ -130,7 +130,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
                     throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
                 }
             } else {
-                return PrivilegedAccessHelper.<T>getClassForName(attributeConverterClassName, true, classLoader);
+                return PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, classLoader);
             }
         } catch (ClassNotFoundException exception) {
             throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);

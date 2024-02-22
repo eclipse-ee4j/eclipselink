@@ -72,7 +72,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * PUBLIC:
@@ -381,8 +380,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     }
 
     @Override
-    protected Vector<DatabaseField> collectFields() {
-        return new Vector<>(fieldToClassMappings.keySet());
+    protected List<DatabaseField> collectFields() {
+        return new ArrayList<>(fieldToClassMappings.keySet());
     }
 
     public void addChoiceElement(String xpath, Class<?> elementType) {

@@ -681,8 +681,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         assertNotNull("The projects mapping from Employee was not found", mapping);
         assertTrue("The projects mapping is no longer a many to many mapping", mapping.isManyToManyMapping());
 
-        Vector<DatabaseField> sourceKeys = ((ManyToManyMapping) mapping).getSourceKeyFields();
-        Vector<DatabaseField> sourceRelationKeys = ((ManyToManyMapping) mapping).getSourceRelationKeyFields();
+        List<DatabaseField> sourceKeys = ((ManyToManyMapping) mapping).getSourceKeyFields();
+        List<DatabaseField> sourceRelationKeys = ((ManyToManyMapping) mapping).getSourceRelationKeyFields();
 
         for (int i = 0; i < sourceKeys.size(); i++) {
             DatabaseField sourcePrimaryKey = sourceKeys.get(i);
@@ -691,8 +691,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertEquals("The projects mapping source relation foreign key field [" + sourceRelationForeignKey.getName() + "(" + sourceRelationForeignKey.getLength() + ")] did not have the same length as the source primary key field [" + sourcePrimaryKey.getName() + "(" + sourcePrimaryKey.getLength() + ")]", sourcePrimaryKey.getLength(), sourceRelationForeignKey.getLength());
         }
 
-        Vector<DatabaseField> targetKeys = ((ManyToManyMapping) mapping).getSourceKeyFields();
-        Vector<DatabaseField> targetRelationKeys = ((ManyToManyMapping) mapping).getSourceRelationKeyFields();
+        List<DatabaseField> targetKeys = ((ManyToManyMapping) mapping).getSourceKeyFields();
+        List<DatabaseField> targetRelationKeys = ((ManyToManyMapping) mapping).getSourceRelationKeyFields();
 
         for (int i = 0; i < targetKeys.size(); i++) {
             DatabaseField targetPrimaryKey = targetKeys.get(i);
@@ -706,8 +706,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         assertNotNull("The responsibilities mapping from Employee was not found", mapping);
         assertTrue("The responsibilities mapping is no longer a direct collection mapping", mapping.isDirectCollectionMapping());
 
-        Vector<DatabaseField> primaryKeys = ((DirectCollectionMapping) mapping).getSourceKeyFields();
-        Vector<DatabaseField> foreignKeys = ((DirectCollectionMapping) mapping).getReferenceKeyFields();
+        List<DatabaseField> primaryKeys = ((DirectCollectionMapping) mapping).getSourceKeyFields();
+        List<DatabaseField> foreignKeys = ((DirectCollectionMapping) mapping).getReferenceKeyFields();
 
         for (int i = 0; i < primaryKeys.size(); i++) {
             DatabaseField primaryKey = primaryKeys.get(i);

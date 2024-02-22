@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.asm;
 
-import org.eclipse.persistence.asm.internal.Util;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -27,7 +26,6 @@ import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;

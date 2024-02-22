@@ -20,7 +20,6 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.Reference;
@@ -84,7 +83,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      */
     public XMLCollectionReferenceMapping() {
         sourceToTargetKeyFieldAssociations = new HashMap<>();
-        sourceToTargetKeys = new NonSynchronizedVector<>();
+        sourceToTargetKeys = new ArrayList();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.usesSingleNode = false;
     }
@@ -347,8 +346,8 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         // set reference class here if necessary
         this.containerPolicy = containerPolicy;
-        if (this.containerPolicy instanceof MapContainerPolicy) {
-            ((MapContainerPolicy) this.containerPolicy).setElementClass(getReferenceClass());
+        if (this.containerPolicy instanceof MapContainerPolicy mapContainerPolicy) {
+            mapContainerPolicy.setElementClass(getReferenceClass());
         }
     }
 

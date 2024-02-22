@@ -215,7 +215,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      */
     public final List<DatabaseTable> getHistoricalTables() {
         if (historicalTables == null) {
-            historicalTables = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+            historicalTables = new ArrayList<>(1);
         }
         return historicalTables;
     }
@@ -523,7 +523,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         startField.setLength(6);
 
         if (startFields == null) {
-            startFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            startFields = new ArrayList<>();
             startFields.add(startField);
             return;
         }

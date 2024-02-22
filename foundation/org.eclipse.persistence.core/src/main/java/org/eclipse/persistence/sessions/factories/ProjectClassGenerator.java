@@ -1526,8 +1526,8 @@ public class ProjectClassGenerator {
     }
 
     protected void addVariableOneToOneMappingLines(NonreflectiveMethodDefinition method, String mappingName, VariableOneToOneMapping mapping) {
-        for (DatabaseField sourceField : (Iterable<DatabaseField>) mapping.getSourceToTargetQueryKeyNames().keySet()) {
-            String targetQueryKey = (String) mapping.getSourceToTargetQueryKeyNames().get(sourceField);
+        for (DatabaseField sourceField : mapping.getSourceToTargetQueryKeyNames().keySet()) {
+            String targetQueryKey = mapping.getSourceToTargetQueryKeyNames().get(sourceField);
             if (mapping.getForeignKeyFields().contains(sourceField)) {
                 method.addLine(mappingName + ".addForeignQueryKeyName(\"" + sourceField.getQualifiedName() + "\", \"" + targetQueryKey + "\");");
             } else {

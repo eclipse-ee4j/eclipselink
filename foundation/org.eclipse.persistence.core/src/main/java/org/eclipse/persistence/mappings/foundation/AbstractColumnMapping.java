@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,8 +42,9 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Maps an attribute or some other property to the corresponding
@@ -118,10 +119,10 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
      * Returns the field this mapping represents.
      */
     @Override
-    protected Vector<DatabaseField> collectFields() {
-        Vector databaseField = new Vector(1);
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> databaseField = new ArrayList<>(1);
 
-        databaseField.addElement(field);
+        databaseField.add(field);
         return databaseField;
     }
 
@@ -144,7 +145,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
 
         // Instantiate any custom converter class
         if (converterClassName != null) {
-            Class<?> converterClass;
+            Class<? extends Converter> converterClass;
             Converter converter;
 
             try {
@@ -156,13 +157,13 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
                     }
 
                     try {
-                        converter = (Converter)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(converterClass));
+                        converter = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(converterClass));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exception.getException());
                     }
                 } else {
                     converterClass = PrivilegedAccessHelper.getClassForName(converterClassName, true, classLoader);
-                    converter = (Converter)PrivilegedAccessHelper.newInstanceFromClass(converterClass);
+                    converter = PrivilegedAccessHelper.newInstanceFromClass(converterClass);
                 }
             } catch (ClassNotFoundException exc) {
                 throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exc);

@@ -83,13 +83,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:Two objects can be considered to be related by aggregation if there is a strict
@@ -959,12 +957,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Object clone() {
         AggregateObjectMapping mappingObject = (AggregateObjectMapping) super.clone();
 
-        Map<String, DatabaseField> aggregateToSourceFields = new HashMap<>();
-        aggregateToSourceFields.putAll(getAggregateToSourceFields());
+        Map<String, DatabaseField> aggregateToSourceFields = new HashMap<>(getAggregateToSourceFields());
         mappingObject.setAggregateToSourceFields(aggregateToSourceFields);
 
-        Map<String, Object[]> nestedTranslations = new HashMap<>();
-        nestedTranslations.putAll(getNestedFieldTranslations());
+        Map<String, Object[]> nestedTranslations = new HashMap<>(getNestedFieldTranslations());
         mappingObject.setNestedFieldTranslations(nestedTranslations);
 
         return mappingObject;
@@ -975,8 +971,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Return the fields handled by the mapping.
      */
     @Override
-    protected Vector<DatabaseField> collectFields() {
-        return new Vector<>(getReferenceFields());
+    protected List<DatabaseField> collectFields() {
+        return new ArrayList<>(getReferenceFields());
     }
 
     /**
@@ -1178,12 +1174,12 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Return a collection of the aggregate to source field  associations.
      */
-    public Vector<Association> getAggregateToSourceFieldAssociations() {
-        Vector<Association> associations = new Vector(getAggregateToSourceFields().size());
+    public List<Association> getAggregateToSourceFieldAssociations() {
+        List<Association> associations = new ArrayList<>(getAggregateToSourceFields().size());
         Iterator<String> aggregateEnum = getAggregateToSourceFields().keySet().iterator();
         Iterator<DatabaseField> sourceEnum = getAggregateToSourceFields().values().iterator();
         while (aggregateEnum.hasNext()) {
-            associations.addElement(new Association(aggregateEnum.next(), sourceEnum.next()));
+            associations.add(new Association(aggregateEnum.next(), sourceEnum.next()));
         }
 
         return associations;
@@ -1387,7 +1383,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
         List<AttributeAccessor> accessorTree = getDescriptor().getAccessorTree();
         if (accessorTree == null){
-            accessorTree = new ArrayList();
+            accessorTree = new ArrayList<>();
         }else{
             accessorTree = new ArrayList<>(accessorTree);
         }
@@ -1909,12 +1905,12 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Set a collection of the aggregate to source field name associations.
      */
-    public void setAggregateToSourceFieldAssociations(Vector<Association> fieldAssociations) {
-        Hashtable fieldNames = new Hashtable(fieldAssociations.size() + 1);
+    public void setAggregateToSourceFieldAssociations(List<Association> fieldAssociations) {
+        Map<String, DatabaseField> fieldNames = new HashMap<>(fieldAssociations.size() + 1);
         for (Iterator<Association> iterator = fieldAssociations.iterator();
              iterator.hasNext();) {
             Association association = iterator.next();
-            fieldNames.put(association.getKey(), association.getValue());
+            fieldNames.put((String) association.getKey(), (DatabaseField) association.getValue());
         }
 
         setAggregateToSourceFields(fieldNames);
@@ -2050,7 +2046,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             for (Iterator<DatabaseMapping> dcIterator = clonedDescriptor.getMappings().iterator(); dcIterator.hasNext();) {
                 DatabaseMapping mapping = dcIterator.next();
                 if (mapping.isForeignReferenceMapping()) {
-                    Collection fkFields = ((ForeignReferenceMapping)mapping).getFieldsForTranslationInAggregate();
+                    Collection<DatabaseField> fkFields = ((ForeignReferenceMapping)mapping).getFieldsForTranslationInAggregate();
                     if (fkFields != null && !fkFields.isEmpty()) {
                         fieldsToTranslate.addAll(fkFields);
                     }

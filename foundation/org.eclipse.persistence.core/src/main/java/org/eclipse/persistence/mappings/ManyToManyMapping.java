@@ -54,7 +54,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Many to many mappings are used to represent the relationships
@@ -309,7 +308,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return source key fields for translation by an AggregateObjectMapping
      */
     @Override
-    public Collection getFieldsForTranslationInAggregate() {
+    public Collection<DatabaseField> getFieldsForTranslationInAggregate() {
         return getRelationTableMechanism().getSourceKeyFields();
     }
 
@@ -392,7 +391,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return the source key field names associated with the mapping.
      * These are in-order with the sourceRelationKeyFieldNames.
      */
-    public Vector getSourceKeyFieldNames() {
+    public List<String> getSourceKeyFieldNames() {
         return this.mechanism.getSourceKeyFieldNames();
     }
 
@@ -400,7 +399,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Return all the source key fields associated with the mapping.
      */
-    public Vector<DatabaseField> getSourceKeyFields() {
+    public List<DatabaseField> getSourceKeyFields() {
         return this.mechanism.getSourceKeyFields();
     }
 
@@ -409,7 +408,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return the source relation key field names associated with the mapping.
      * These are in-order with the sourceKeyFieldNames.
      */
-    public Vector getSourceRelationKeyFieldNames() {
+    public List<String> getSourceRelationKeyFieldNames() {
         return this.mechanism.getSourceRelationKeyFieldNames();
     }
 
@@ -417,7 +416,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Return all the source relation key fields associated with the mapping.
      */
-    public Vector<DatabaseField> getSourceRelationKeyFields() {
+    public List<DatabaseField> getSourceRelationKeyFields() {
         return this.mechanism.getSourceRelationKeyFields();
     }
 
@@ -426,7 +425,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return the target key field names associated with the mapping.
      * These are in-order with the targetRelationKeyFieldNames.
      */
-    public Vector getTargetKeyFieldNames() {
+    public List<String> getTargetKeyFieldNames() {
         return this.mechanism.getTargetKeyFieldNames();
     }
 
@@ -434,7 +433,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Return all the target keys associated with the mapping.
      */
-    public Vector<DatabaseField> getTargetKeyFields() {
+    public List<DatabaseField> getTargetKeyFields() {
         return this.mechanism.getTargetKeyFields();
     }
 
@@ -443,7 +442,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Return the target relation key field names associated with the mapping.
      * These are in-order with the targetKeyFieldNames.
      */
-    public Vector getTargetRelationKeyFieldNames() {
+    public List<String> getTargetRelationKeyFieldNames() {
         return this.mechanism.getTargetRelationKeyFieldNames();
     }
 
@@ -451,7 +450,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Return all the target relation key fields associated with the mapping.
      */
-    public Vector<DatabaseField> getTargetRelationKeyFields() {
+    public List<DatabaseField> getTargetRelationKeyFields() {
         return this.mechanism.getTargetRelationKeyFields();
     }
 
@@ -610,8 +609,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         // Construct an expression to delete from the relation table.
         for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
+            DatabaseField sourceRelationKey = getSourceRelationKeyFields().get(index);
+            DatabaseField sourceKey = getSourceKeyFields().get(index);
 
             subExpression = builder.getField(sourceRelationKey).equal(builder.getParameter(sourceKey));
             expression = subExpression.and(expression);
@@ -1136,7 +1135,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Set the source key field names associated with the mapping.
      * These must be in-order with the sourceRelationKeyFieldNames.
      */
-    public void setSourceKeyFieldNames(Vector fieldNames) {
+    public void setSourceKeyFieldNames(List<String> fieldNames) {
         this.mechanism.setSourceKeyFieldNames(fieldNames);
     }
 
@@ -1144,7 +1143,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Set the source fields.
      */
-    public void setSourceKeyFields(Vector<DatabaseField> sourceKeyFields) {
+    public void setSourceKeyFields(List<DatabaseField> sourceKeyFields) {
         this.mechanism.setSourceKeyFields(sourceKeyFields);
     }
 
@@ -1163,7 +1162,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Set the source relation key field names associated with the mapping.
      * These must be in-order with the sourceKeyFieldNames.
      */
-    public void setSourceRelationKeyFieldNames(Vector fieldNames) {
+    public void setSourceRelationKeyFieldNames(List<String> fieldNames) {
         this.mechanism.setSourceRelationKeyFieldNames(fieldNames);
     }
 
@@ -1171,7 +1170,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Set the source fields.
      */
-    public void setSourceRelationKeyFields(Vector<DatabaseField> sourceRelationKeyFields) {
+    public void setSourceRelationKeyFields(List<DatabaseField> sourceRelationKeyFields) {
         this.mechanism.setSourceRelationKeyFields(sourceRelationKeyFields);
     }
 
@@ -1180,7 +1179,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Set the target key field names associated with the mapping.
      * These must be in-order with the targetRelationKeyFieldNames.
      */
-    public void setTargetKeyFieldNames(Vector fieldNames) {
+    public void setTargetKeyFieldNames(List<String> fieldNames) {
         this.mechanism.setTargetKeyFieldNames(fieldNames);
     }
 
@@ -1188,7 +1187,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Set the target fields.
      */
-    public void setTargetKeyFields(Vector<DatabaseField> targetKeyFields) {
+    public void setTargetKeyFields(List<DatabaseField> targetKeyFields) {
         this.mechanism.setTargetKeyFields(targetKeyFields);
     }
 
@@ -1207,7 +1206,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Set the target relation key field names associated with the mapping.
      * These must be in-order with the targetKeyFieldNames.
      */
-    public void setTargetRelationKeyFieldNames(Vector fieldNames) {
+    public void setTargetRelationKeyFieldNames(List<String> fieldNames) {
         this.mechanism.setTargetRelationKeyFieldNames(fieldNames);
     }
 
@@ -1215,7 +1214,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Set the target fields.
      */
-    public void setTargetRelationKeyFields(Vector<DatabaseField> targetRelationKeyFields) {
+    public void setTargetRelationKeyFields(List<DatabaseField> targetRelationKeyFields) {
         this.mechanism.setTargetRelationKeyFields(targetRelationKeyFields);
     }
 

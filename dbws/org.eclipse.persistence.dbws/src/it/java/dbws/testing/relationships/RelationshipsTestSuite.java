@@ -280,14 +280,271 @@ public class RelationshipsTestSuite {
     public static final String RELATIONSHIPS_OR_PROJECT =
             """
                     <?xml version="1.0" encoding="UTF-8"?>
-                    <object-persistence version="Eclipse Persistence Services - @VERSION@ (Build @BUILD_NUMBER@)"
-                    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence"
-                    >
-                    <name>relationships</name><class-mapping-descriptors><class-mapping-descriptor xsi:type="relational-class-mapping-descriptor"><class>dbws.testing.relationships.RelationshipsAddress</class><alias>address</alias><primary-key><field table="XR_ADDRESS" name="ADDRESS_ID" xsi:type="column"/></primary-key><events xsi:type="event-policy"/><querying xsi:type="query-policy"/><attribute-mappings><attribute-mapping xsi:type="direct-mapping"><attribute-name>addressId</attribute-name><field table="XR_ADDRESS" name="ADDRESS_ID" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>city</attribute-name><field table="XR_ADDRESS" name="CITY" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>country</attribute-name><field table="XR_ADDRESS" name="COUNTRY" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>postalCode</attribute-name><field table="XR_ADDRESS" name="P_CODE" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>province</attribute-name><field table="XR_ADDRESS" name="PROVINCE" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>street</attribute-name><field table="XR_ADDRESS" name="STREET" xsi:type="column"/></attribute-mapping></attribute-mappings><descriptor-type>independent</descriptor-type><instantiation/><copying xsi:type="instantiation-copy-policy"/><change-policy xsi:type="deferred-detection-change-policy"/><tables><table name="XR_ADDRESS"/></tables></class-mapping-descriptor><class-mapping-descriptor xsi:type="relational-class-mapping-descriptor"><class>dbws.testing.relationships.RelationshipsEmployee</class><alias>employee</alias><primary-key><field table="XR_EMPLOYEE" name="EMP_ID" xsi:type="column"/></primary-key><events xsi:type="event-policy"/><querying xsi:type="query-policy"><queries><query name="getAllEmployees" xsi:type="read-all-query"><reference-class>dbws.testing.relationships.RelationshipsEmployee</reference-class><outer-join-subclasses>false</outer-join-subclasses><container xsi:type="list-container-policy"><collection-type>java.util.Vector</collection-type></container><order-by-expressions><expression function="ascending" xsi:type="function-expression"><arguments><argument name="empId" xsi:type="query-key-expression"><base xsi:type="base-expression"/></argument></arguments></expression></order-by-expressions></query></queries></querying><attribute-mappings><attribute-mapping xsi:type="one-to-one-mapping"><attribute-name>address</attribute-name><reference-class>dbws.testing.relationships.RelationshipsAddress</reference-class><private-owned>true</private-owned><foreign-key><field-reference><source-field table="XR_EMPLOYEE" name="ADDR_ID" xsi:type="column"/><target-field table="XR_ADDRESS" name="ADDRESS_ID" xsi:type="column"/></field-reference></foreign-key><foreign-key-fields><field table="XR_EMPLOYEE" name="ADDR_ID" xsi:type="column"/></foreign-key-fields><selection-query xsi:type="read-object-query"/><join-fetch>inner-join</join-fetch></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>empId</attribute-name><field table="XR_EMPLOYEE" name="EMP_ID" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>endDate</attribute-name><field table="XR_EMPLOYEE" name="END_DATE" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>endTime</attribute-name><field table="XR_EMPLOYEE" name="END_TIME" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>firstName</attribute-name><field table="XR_EMPLOYEE" name="F_NAME" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>gender</attribute-name><field table="XR_EMPLOYEE" name="GENDER" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>lastName</attribute-name><field table="XR_EMPLOYEE" name="L_NAME" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="one-to-many-mapping"><attribute-name>phones</attribute-name><reference-class>dbws.testing.relationships.RelationshipsPhone</reference-class><private-owned>true</private-owned><target-foreign-key><field-reference><source-field table="XR_PHONE" name="EMP_ID" xsi:type="column"/><target-field table="XR_EMPLOYEE" name="EMP_ID" xsi:type="column"/></field-reference></target-foreign-key><batch-reading>true</batch-reading><container xsi:type="container-policy"><collection-type>java.util.ArrayList</collection-type></container><selection-query xsi:type="read-all-query"><container xsi:type="container-policy"><collection-type>java.util.ArrayList</collection-type></container><order-by-expressions><expression function="ascending" xsi:type="function-expression"><arguments><argument name="type" xsi:type="query-key-expression"><base xsi:type="base-expression"/></argument></arguments></expression></order-by-expressions></selection-query></attribute-mapping><attribute-mapping xsi:type="direct-collection-mapping"><attribute-name>responsibilities</attribute-name><batch-reading>true</batch-reading><container xsi:type="container-policy"><collection-type>java.util.ArrayList</collection-type></container><selection-query xsi:type="direct-read-query"><maintain-cache>false</maintain-cache><container xsi:type="container-policy"><collection-type>java.util.ArrayList</collection-type></container></selection-query><reference-table>XR_RESPONS</reference-table><direct-field table="XR_RESPONS" name="DESCRIP" xsi:type="column"/><reference-foreign-key><field-reference><source-field table="XR_RESPONS" name="EMP_ID" xsi:type="column"/><target-field table="XR_EMPLOYEE" name="EMP_ID" xsi:type="column"/></field-reference></reference-foreign-key></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>salary</attribute-name><field table="XR_SALARY" name="SALARY" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>startDate</attribute-name><field table="XR_EMPLOYEE" name="START_DATE" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>startTime</attribute-name><field table="XR_EMPLOYEE" name="START_TIME" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>version</attribute-name><field table="XR_EMPLOYEE" name="VERSION" xsi:type="column"/></attribute-mapping></attribute-mappings><descriptor-type>independent</descriptor-type><instantiation/><copying xsi:type="instantiation-copy-policy"/><change-policy xsi:type="deferred-detection-change-policy"/><tables><table name="XR_EMPLOYEE"/><table name="XR_SALARY"/></tables></class-mapping-descriptor><class-mapping-descriptor xsi:type="relational-class-mapping-descriptor"><class>dbws.testing.relationships.RelationshipsPhone</class><alias>phone</alias><primary-key><field table="XR_PHONE" name="EMP_ID" xsi:type="column"/><field table="XR_PHONE" name="TYPE" xsi:type="column"/></primary-key><events xsi:type="event-policy"/><querying xsi:type="query-policy"/><attribute-mappings><attribute-mapping xsi:type="direct-mapping"><attribute-name>areaCode</attribute-name><field table="XR_PHONE" name="AREA_CODE" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>empId</attribute-name><field table="XR_PHONE" name="EMP_ID" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>phonenumber</attribute-name><field table="XR_PHONE" name="P_NUMBER" xsi:type="column"/></attribute-mapping><attribute-mapping xsi:type="direct-mapping"><attribute-name>type</attribute-name><field table="XR_PHONE" name="TYPE" xsi:type="column"/></attribute-mapping></attribute-mappings><descriptor-type>independent</descriptor-type><instantiation/><copying xsi:type="instantiation-copy-policy"/><change-policy xsi:type="deferred-detection-change-policy"/><tables><table name="XR_PHONE"/></tables></class-mapping-descriptor><class-mapping-descriptor xsi:type="class-mapping-descriptor"><class>org.eclipse.persistence.internal.xr.XRDynamicEntity_CollectionWrapper</class><alias>XRDynamicEntity_CollectionWrapper</alias><events xsi:type="event-policy"/><querying xsi:type="query-policy"/><attribute-mappings><attribute-mapping xsi:type="aggregate-collection-mapping"><attribute-name>items</attribute-name><private-owned>true</private-owned><cascade-persist>true</cascade-persist><cascade-merge>true</cascade-merge><cascade-refresh>true</cascade-refresh><cascade-remove>true</cascade-remove><container xsi:type="list-container-policy"><collection-type>java.util.ArrayList</collection-type></container><selection-query xsi:type="read-all-query"><container xsi:type="list-container-policy"><collection-type>java.util.ArrayList</collection-type></container></selection-query></attribute-mapping></attribute-mappings><descriptor-type>aggregate</descriptor-type><caching><cache-size>-1</cache-size></caching><remote-caching><cache-size>-1</cache-size></remote-caching><instantiation/><copying xsi:type="instantiation-copy-policy"/></class-mapping-descriptor></class-mapping-descriptors><login xsi:type="database-login">
-                    <bind-all-parameters>true</bind-all-parameters>
-                    </login>
-                    </object-persistence>""";
+                                         <object-persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                                             version="Eclipse Persistence Services - @VERSION@ (Build @BUILD_NUMBER@)"
+                                                             xmlns="http://www.eclipse.org/eclipselink/xsds/persistence"
+                                         >
+                                             <name>relationships</name>
+                                             <class-mapping-descriptors>
+                                                 <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+                                                     <class>dbws.testing.relationships.RelationshipsAddress</class>
+                                                     <alias>address</alias>
+                                                     <primary-key>
+                                                         <field table="XR_ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+                                                     </primary-key>
+                                                     <events xsi:type="event-policy"/>
+                                                     <querying xsi:type="query-policy"/>
+                                                     <attribute-mappings>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>addressId</attribute-name>
+                                                             <field table="XR_ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>city</attribute-name>
+                                                             <field table="XR_ADDRESS" name="CITY" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>country</attribute-name>
+                                                             <field table="XR_ADDRESS" name="COUNTRY" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>postalCode</attribute-name>
+                                                             <field table="XR_ADDRESS" name="P_CODE" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>province</attribute-name>
+                                                             <field table="XR_ADDRESS" name="PROVINCE" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>street</attribute-name>
+                                                             <field table="XR_ADDRESS" name="STREET" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                     </attribute-mappings>
+                                                     <descriptor-type>independent</descriptor-type>
+                                                     <instantiation/>
+                                                     <copying xsi:type="instantiation-copy-policy"/>
+                                                     <change-policy xsi:type="deferred-detection-change-policy"/>
+                                                     <tables>
+                                                         <table name="XR_ADDRESS"/>
+                                                     </tables>
+                                                 </class-mapping-descriptor>
+                                                 <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+                                                     <class>dbws.testing.relationships.RelationshipsEmployee</class>
+                                                     <alias>employee</alias>
+                                                     <primary-key>
+                                                         <field table="XR_EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                                                     </primary-key>
+                                                     <events xsi:type="event-policy"/>
+                                                     <querying xsi:type="query-policy">
+                                                         <queries>
+                                                             <query name="getAllEmployees" xsi:type="read-all-query">
+                                                                 <reference-class>dbws.testing.relationships.RelationshipsEmployee</reference-class>
+                                                                 <outer-join-subclasses>false</outer-join-subclasses>
+                                                                 <container xsi:type="list-container-policy">
+                                                                     <collection-type>java.util.Vector</collection-type>
+                                                                 </container>
+                                                                 <order-by-expressions>
+                                                                     <expression function="ascending" xsi:type="function-expression">
+                                                                         <arguments>
+                                                                             <argument name="empId" xsi:type="query-key-expression">
+                                                                                 <base xsi:type="base-expression"/>
+                                                                             </argument>
+                                                                         </arguments>
+                                                                     </expression>
+                                                                 </order-by-expressions>
+                                                             </query>
+                                                         </queries>
+                                                     </querying>
+                                                     <attribute-mappings>
+                                                         <attribute-mapping xsi:type="one-to-one-mapping">
+                                                             <attribute-name>address</attribute-name>
+                                                             <reference-class>dbws.testing.relationships.RelationshipsAddress</reference-class>
+                                                             <private-owned>true</private-owned>
+                                                             <foreign-key>
+                                                                 <field-reference>
+                                                                     <source-field table="XR_EMPLOYEE" name="ADDR_ID" xsi:type="column"/>
+                                                                     <target-field table="XR_ADDRESS" name="ADDRESS_ID" xsi:type="column"/>
+                                                                 </field-reference>
+                                                             </foreign-key>
+                                                             <foreign-key-fields>
+                                                                 <field table="XR_EMPLOYEE" name="ADDR_ID" xsi:type="column"/>
+                                                             </foreign-key-fields>
+                                                             <selection-query xsi:type="read-object-query"/>
+                                                             <join-fetch>inner-join</join-fetch>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>empId</attribute-name>
+                                                             <field table="XR_EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>endDate</attribute-name>
+                                                             <field table="XR_EMPLOYEE" name="END_DATE" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>endTime</attribute-name>
+                                                             <field table="XR_EMPLOYEE" name="END_TIME" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>firstName</attribute-name>
+                                                             <field table="XR_EMPLOYEE" name="F_NAME" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>gender</attribute-name>
+                                                             <field table="XR_EMPLOYEE" name="GENDER" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>lastName</attribute-name>
+                                                             <field table="XR_EMPLOYEE" name="L_NAME" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="one-to-many-mapping">
+                                                             <attribute-name>phones</attribute-name>
+                                                             <reference-class>dbws.testing.relationships.RelationshipsPhone</reference-class>
+                                                             <private-owned>true</private-owned>
+                                                             <target-foreign-key>
+                                                                 <field-reference>
+                                                                     <source-field table="XR_PHONE" name="EMP_ID" xsi:type="column"/>
+                                                                     <target-field table="XR_EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                                                                 </field-reference>
+                                                             </target-foreign-key>
+                                                             <batch-reading>true</batch-reading>
+                                                             <container xsi:type="container-policy">
+                                                                 <collection-type>java.util.ArrayList</collection-type>
+                                                             </container>
+                                                             <selection-query xsi:type="read-all-query">
+                                                                 <container xsi:type="container-policy">
+                                                                     <collection-type>java.util.ArrayList</collection-type>
+                                                                 </container>
+                                                                 <order-by-expressions>
+                                                                     <expression function="ascending" xsi:type="function-expression">
+                                                                         <arguments>
+                                                                             <argument name="type" xsi:type="query-key-expression">
+                                                                                 <base xsi:type="base-expression"/>
+                                                                             </argument>
+                                                                         </arguments>
+                                                                     </expression>
+                                                                 </order-by-expressions>
+                                                             </selection-query>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-collection-mapping">
+                                                             <attribute-name>responsibilities</attribute-name>
+                                                             <batch-reading>true</batch-reading>
+                                                             <container xsi:type="container-policy">
+                                                                 <collection-type>java.util.ArrayList</collection-type>
+                                                             </container>
+                                                             <selection-query xsi:type="direct-read-query">
+                                                                 <maintain-cache>false</maintain-cache>
+                                                                 <container xsi:type="container-policy">
+                                                                     <collection-type>java.util.ArrayList</collection-type>
+                                                                 </container>
+                                                             </selection-query>
+                                                             <reference-table>XR_RESPONS</reference-table>
+                                                             <direct-field table="XR_RESPONS" name="DESCRIP" xsi:type="column"/>
+                                                             <reference-foreign-key>
+                                                                 <field-reference>
+                                                                     <source-field table="XR_RESPONS" name="EMP_ID" xsi:type="column"/>
+                                                                     <target-field table="XR_EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+                                                                 </field-reference>
+                                                             </reference-foreign-key>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>salary</attribute-name>
+                                                             <field table="XR_SALARY" name="SALARY" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>startDate</attribute-name>
+                                                             <field table="XR_EMPLOYEE" name="START_DATE" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>startTime</attribute-name>
+                                                             <field table="XR_EMPLOYEE" name="START_TIME" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>version</attribute-name>
+                                                             <field table="XR_EMPLOYEE" name="VERSION" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                     </attribute-mappings>
+                                                     <descriptor-type>independent</descriptor-type>
+                                                     <instantiation/>
+                                                     <copying xsi:type="instantiation-copy-policy"/>
+                                                     <change-policy xsi:type="deferred-detection-change-policy"/>
+                                                     <tables>
+                                                         <table name="XR_EMPLOYEE"/>
+                                                         <table name="XR_SALARY"/>
+                                                     </tables>
+                                                 </class-mapping-descriptor>
+                                                 <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+                                                     <class>dbws.testing.relationships.RelationshipsPhone</class>
+                                                     <alias>phone</alias>
+                                                     <primary-key>
+                                                         <field table="XR_PHONE" name="EMP_ID" xsi:type="column"/>
+                                                         <field table="XR_PHONE" name="TYPE" xsi:type="column"/>
+                                                     </primary-key>
+                                                     <events xsi:type="event-policy"/>
+                                                     <querying xsi:type="query-policy"/>
+                                                     <attribute-mappings>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>areaCode</attribute-name>
+                                                             <field table="XR_PHONE" name="AREA_CODE" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>empId</attribute-name>
+                                                             <field table="XR_PHONE" name="EMP_ID" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>phonenumber</attribute-name>
+                                                             <field table="XR_PHONE" name="P_NUMBER" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                         <attribute-mapping xsi:type="direct-mapping">
+                                                             <attribute-name>type</attribute-name>
+                                                             <field table="XR_PHONE" name="TYPE" xsi:type="column"/>
+                                                         </attribute-mapping>
+                                                     </attribute-mappings>
+                                                     <descriptor-type>independent</descriptor-type>
+                                                     <instantiation/>
+                                                     <copying xsi:type="instantiation-copy-policy"/>
+                                                     <change-policy xsi:type="deferred-detection-change-policy"/>
+                                                     <tables>
+                                                         <table name="XR_PHONE"/>
+                                                     </tables>
+                                                 </class-mapping-descriptor>
+                                                 <class-mapping-descriptor xsi:type="class-mapping-descriptor">
+                                                     <class>org.eclipse.persistence.internal.xr.XRDynamicEntity_CollectionWrapper</class>
+                                                     <alias>XRDynamicEntity_CollectionWrapper</alias>
+                                                     <events xsi:type="event-policy"/>
+                                                     <querying xsi:type="query-policy"/>
+                                                     <attribute-mappings>
+                                                         <attribute-mapping xsi:type="aggregate-collection-mapping">
+                                                             <attribute-name>items</attribute-name>
+                                                             <private-owned>true</private-owned>
+                                                             <cascade-persist>true</cascade-persist>
+                                                             <cascade-merge>true</cascade-merge>
+                                                             <cascade-refresh>true</cascade-refresh>
+                                                             <cascade-remove>true</cascade-remove>
+                                                             <container xsi:type="list-container-policy">
+                                                                 <collection-type>java.util.ArrayList</collection-type>
+                                                             </container>
+                                                             <selection-query xsi:type="read-all-query">
+                                                                 <container xsi:type="list-container-policy">
+                                                                     <collection-type>java.util.ArrayList</collection-type>
+                                                                 </container>
+                                                             </selection-query>
+                                                         </attribute-mapping>
+                                                     </attribute-mappings>
+                                                     <descriptor-type>aggregate</descriptor-type>
+                                                     <caching>
+                                                         <cache-size>-1</cache-size>
+                                                     </caching>
+                                                     <remote-caching>
+                                                         <cache-size>-1</cache-size>
+                                                     </remote-caching>
+                                                     <instantiation/>
+                                                     <copying xsi:type="instantiation-copy-policy"/>
+                                                 </class-mapping-descriptor>
+                                             </class-mapping-descriptors>
+                                             <login xsi:type="database-login">
+                                                 <bind-all-parameters>true</bind-all-parameters>
+                                             </login>
+                                         </object-persistence>""";
 
     static final String RELATIONSHIPS_OX_PROJECT =
             """

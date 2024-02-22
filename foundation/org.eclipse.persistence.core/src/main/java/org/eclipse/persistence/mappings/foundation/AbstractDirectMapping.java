@@ -77,7 +77,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Maps an attribute to the corresponding database field type.
@@ -189,7 +188,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * This can be set to false in this case, or if a Calendar or byte[] is desired to be used as a mutable value it can be set to true.
      */
     public void setIsMutable(boolean isMutable) {
-        if (isMutable == true) {
+        if (isMutable) {
             this.isMutable = Boolean.TRUE;
         } else {
             this.isMutable = Boolean.FALSE;
@@ -861,7 +860,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public List<DatabaseField> getAllFieldsForMapKey(){
-        Vector<DatabaseField> fields = new Vector<>(1);
+        List<DatabaseField> fields = new ArrayList<>(1);
         fields.add(getField());
         return fields;
     }

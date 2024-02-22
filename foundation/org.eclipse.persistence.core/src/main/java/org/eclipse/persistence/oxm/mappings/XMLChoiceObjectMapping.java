@@ -68,7 +68,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * PUBLIC:
@@ -332,8 +331,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     }
 
     @Override
-    protected Vector<DatabaseField> collectFields() {
-        Vector<DatabaseField> fields = new Vector<>(getFieldToClassMappings().keySet());
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> fields = new ArrayList<>(getFieldToClassMappings().keySet());
         return fields;
     }
 

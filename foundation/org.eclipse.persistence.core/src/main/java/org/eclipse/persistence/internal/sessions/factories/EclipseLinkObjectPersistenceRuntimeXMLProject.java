@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.internal.sessions.factories;
 // javase imports
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
@@ -33,6 +32,8 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatasourceLogin;
+
+import java.util.ArrayList;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
@@ -96,7 +97,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         descriptor.setSchemaReference(new XMLSchemaClassPathReference(SCHEMA_DIR + ECLIPSELINK_SCHEMA));
 
         XMLCompositeCollectionMapping projectQueriesMapping = new XMLCompositeCollectionMapping();
-        projectQueriesMapping.useCollectionClass(NonSynchronizedVector.class);
+        projectQueriesMapping.useCollectionClass(ArrayList.class);
         projectQueriesMapping.setAttributeName("queries");
         projectQueriesMapping.setSetMethodName("setQueries");
         projectQueriesMapping.setGetMethodName("getQueries");
