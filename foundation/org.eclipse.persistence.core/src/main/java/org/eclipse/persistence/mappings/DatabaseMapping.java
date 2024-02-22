@@ -42,7 +42,6 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
 import org.eclipse.persistence.internal.queries.AttributeItem;
@@ -79,12 +78,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Defines how an attribute of an object maps to and from the database
@@ -108,7 +107,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     public enum WriteType { INSERT, UPDATE, UNDEFINED }
 
     /** Used to reduce memory for mappings with no fields. */
-    protected static final Vector<DatabaseField> NO_FIELDS = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
+    protected static final List<DatabaseField> NO_FIELDS = Collections.emptyList();
 
     /** Used to share integer instance to reduce memory. */
     protected static final Integer NO_WEIGHT = Integer.MAX_VALUE;
@@ -213,10 +212,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * PUBLIC:
      * Add an unconverted property (to be initialiazed at runtime)
-     *
-     * @param propertyName TODO
-     * @param propertyValue TODO
-     * @param propertyType TODO
      */
     public void addUnconvertedProperty(String propertyName, String propertyValue, String propertyType) {
         List<String> valuePair = new ArrayList<>(2);
@@ -229,21 +224,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
      *
-     * @param clone TODO
-     * @param backup TODO
-     * @param unitOfWork TODO
      */
     public abstract void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork);
 
     /**
      * INTERNAL:
      * Require for cloning, the part must be cloned.
-     *
-     * @param attributeValue TODO
-     * @param clone TODO
-     * @param backup TODO
-     * @param unitOfWork TODO
-     * @return TODO
      */
     public Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         throw DescriptorException.invalidMappingOperation(this, "buildBackupCloneForPartObject");
@@ -252,12 +238,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
-     *
-     * @param original TODO
-     * @param cacheKey TODO
-     * @param clone TODO
-     * @param refreshCascade TODO
-     * @param cloningSession TODO
      */
     public abstract void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession);
 
@@ -277,14 +257,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * working copy clone.
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
-     *
-     * @param databaseRow TODO
-     * @param joinManager TODO
-     * @param clone TODO
-     * @param sharedCacheKey TODO
-     * @param sourceQuery TODO
-     * @param unitOfWork TODO
-     * @param executionSession TODO
      */
     public abstract void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession);
 
@@ -294,12 +266,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * keys are populated.  In this way the minimum original required for
      * instantiating a working copy clone can be built without placing it in
      * the shared cache (no concern over cycles).
-     *
-     * @param databaseRow TODO
-     * @param original TODO
-     * @param joinManager TODO
-     * @param query TODO
-     * @param executionSession TODO
      */
     public void buildShallowOriginalFromRow(AbstractRecord databaseRow, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
         return;
@@ -308,15 +274,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Require for cloning, the part must be cloned.
-     * @param attributeValue TODO
-     * @param original TODO
-     * @param cacheKey TODO
-     * @param clone TODO
-     * @param cloningSession TODO
-     * @param refreshCascade TODO
-     * @param isExisting TODO
-     * @param isFromSharedCache TODO
-     * @return TODO
      */
     public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting, boolean isFromSharedCache) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneForPartObject");
@@ -325,10 +282,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Performs a first level clone of the attribute.  This generally means on the container will be cloned.
-     *
-     * @param attributeValue TODO
-     * @param cloningSession TODO
-     * @return TODO
      */
     public Object buildContainerClone(Object attributeValue, AbstractSession cloningSession){
         return attributeValue;
@@ -338,10 +291,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
-     *
-     * @param copy TODO
-     * @param original TODO
-     * @param group TODO
      */
     public void buildCopy(Object copy, Object original, CopyGroup group) {
     }
@@ -350,13 +299,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribue and it's value.
-     *
-     * @param queryObject TODO
-     * @param policy TODO
-     * @param expressionBuilder TODO
-     * @param processedObjects TODO
-     * @param session TODO
-     * @return TODO
      */
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         if (policy.shouldValidateExample()){
@@ -368,11 +310,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Used to allow object level comparisons.
-     *
-     * @param base TODO
-     * @param value TODO
-     * @param session TODO
-     * @return TODO
      */
     public Expression buildObjectJoinExpression(Expression base, Object value, AbstractSession session) {
         throw QueryException.unsupportedMappingForObjectComparison(this, base);
@@ -381,11 +318,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Used to allow object level comparisons.
-     *
-     * @param base TODO
-     * @param argument TODO
-     * @param session TODO
-     * @return TODO
      */
     public Expression buildObjectJoinExpression(Expression base, Expression argument, AbstractSession session) {
         throw QueryException.unsupportedMappingForObjectComparison(this, base);
@@ -394,20 +326,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
-     *
-     * @param object TODO
-     * @param uow TODO
-     * @param visitedObjects TODO
      */
     abstract public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects);
 
     /**
      * INTERNAL:
      * Cascade removal of orphaned private owned objects from the UnitOfWorkChangeSet
-     *
-     * @param object TODO
-     * @param uow TODO
-     * @param visitedObjects TODO
      */
     public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // no-op by default
@@ -416,23 +340,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
-     *
-     * @param object TODO
-     * @param uow TODO
-     * @param visitedObjects TODO
      */
     abstract public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects);
 
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
-     *
-     * @param object TODO
-     * @param newObjects TODO
-     * @param unregisteredExistingObjects TODO
-     * @param visitedObjects TODO
-     * @param uow TODO
-     * @param cascadeErrors TODO
      */
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         // Do nothing by default, (direct and xml mappings do not require anything).
@@ -443,9 +356,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * Used by AttributeLevelChangeTracking to update a changeRecord with calculated changes
      * as apposed to detected changes.  If an attribute can not be change tracked it's
      * changes can be detected through this process.
-     *
-     * @param changeRecord TODO
-     * @param session TODO
      */
     public void calculateDeferredChanges(ChangeRecord changeRecord, AbstractSession session){
         throw DescriptorException.invalidMappingOperation(this, "calculatedDeferredChanges");
@@ -472,27 +382,22 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /**
      * INTERNAL:
-     * Helper method to clone vector of fields (used in aggregate initialization cloning).
-     *
-     * @param fields TODO
-     * @return TODO
+     * Helper method to clone a list of fields (used in aggregate initialization cloning).
      */
-    protected Vector cloneFields(Vector fields) {
-        Vector clonedFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
-            clonedFields.addElement(((DatabaseField) iterator.next()).clone());
+    protected List<DatabaseField> cloneFields(List<DatabaseField> fields) {
+        List<DatabaseField> clonedFields = new ArrayList<>(fields.size());
+        for (Iterator<DatabaseField> iterator = fields.iterator(); iterator.hasNext();) {
+            clonedFields.add((iterator.next()).clone());
         }
 
         return clonedFields;
     }
 
     /**
-     * This method must be overwritten in the subclasses to return a vector of all the
+     * This method must be overwritten in the subclasses to return a collection of all the
      * fields this mapping represents.
-     *
-     * @return TODO
      */
-    protected Vector<DatabaseField> collectFields() {
+    protected List<DatabaseField> collectFields() {
         return NO_FIELDS;
     }
 
@@ -500,8 +405,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
-     *
-     * @param record TODO
      */
     public void collectQueryParameters(Set<DatabaseField> record){
         //no-op for mappings that do not support PROTECTED cache isolation
@@ -522,23 +425,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * This method was created in VisualAge.
-     * 
-     * @param clone TODO
-     * @param backup TODO
-     * @param owner TODO
-     * @param session TODO
-     * @return prototype.changeset.ChangeRecord  TODO
      */
     abstract public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session);
 
     /**
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
-     *
-     * @param firstObject TODO
-     * @param secondObject TODO
-     * @param session TODO
-     * @return TODO
      */
     public abstract boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session);
 
@@ -547,8 +439,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     *
-     * @param classLoader TODO
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         if (hasUnconvertedProperties()) {
@@ -583,9 +473,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * Convenience method to ensure converters have an opportunity to convert
      * any class names to classes during project setup.
-     *
-     * @param converter TODO
-     * @param classLoader TODO
      */
     protected void convertConverterClassNamesToClasses(Converter converter, ClassLoader classLoader) {
         if (converter instanceof ClassNameConversionRequired) {
@@ -597,15 +484,9 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Builder the unit of work value holder.
      * 
-     * @param attributeValue TODO
-     * @param original TODO
-     * @param clone TODO
-     * @param row TODO
-     * @param cloningSession TODO
      * @param buildDirectlyFromRow indicates that we are building the clone directly
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
-     * @return TODO
      */
     public <T> DatabaseValueHolder<T> createCloneValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         throw DescriptorException.invalidMappingOperation(this, "createUnitOfWorkValueHolder");
@@ -614,8 +495,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * ADVANCED:
      * Returns true if the mapping references a JPA ID attribute for the CMP3Policy and JPA ID classes.
-     *
-     * @return TODO
      */
     public boolean derivesId() {
         return derivesId;
@@ -624,9 +503,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * This method is called to update collection tables prior to commit.
-     *
-     * @param query TODO
-     * @param object TODO
      */
     public void earlyPreDelete(DeleteObjectQuery query, Object object) {
     }
@@ -635,10 +511,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Extract the nested attribute expressions that apply to this mapping.
      * This is used for partial objects, and batch fetching.
-     *
-     * @param expressions TODO
-     * @param newRoot TODO
-     * @return TODO
      */
     protected List<Expression> extractNestedExpressions(List<Expression> expressions, ExpressionBuilder newRoot) {
         List<Expression> nestedExpressions = new ArrayList<>(expressions.size());
@@ -677,12 +549,8 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * This is used for joining, and locking.
      * For aggregates return the nested foreign reference mapping, not the aggregate, as the aggregates are not joined,
      * and share their parent's query.
-     *
-     * @param expressions TODO
-     * @param newRoot TODO
      * @param rootExpressionsAllowed true if newRoot itself can be one of the
      * expressions returned (used for locking)
-     * @return TODO
      */
     protected List<Expression> extractNestedNonAggregateExpressions(List<Expression> expressions, ExpressionBuilder newRoot, boolean rootExpressionsAllowed) {
         List<Expression> nestedExpressions = new ArrayList<>(expressions.size());
@@ -732,9 +600,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * If there is root expression in the list then indicates whether it shouldUseOuterJoin,
      * otherwise return false.
-     *
-     * @param expressions TODO
-     * @return TODO
      */
     protected boolean hasRootExpressionThatShouldUseOuterJoin(List expressions) {
         for (Iterator expressionsEnum = expressions.iterator();
@@ -756,10 +621,8 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /**
      * INTERNAL:
-     * Used to store un-converted properties, which are subsequenctly converted
-     * at runtime (through the convertClassNamesToClasses method.
-     *
-     * @return TODO
+     * Used to store un-converted properties, which are subsequently converted
+     * at runtime (through the convertClassNamesToClasses method).
      */
     public boolean hasUnconvertedProperties() {
         return unconvertedProperties != null;
@@ -770,12 +633,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * An object has been serialized from the server to the client.
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
-     *
-     * @param object TODO
-     * @param objectDescriptors TODO
-     * @param processedObjects TODO
-     * @param query TODO
-     * @param session TODO
      */
     public abstract void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session);
 
@@ -785,12 +642,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * so we need to replace the reference object(s) with
      * the corresponding object(s) from the remote session.
      * The default is to do nothing.
-     *
-     * @param object TODO
-     * @param objectInformation TODO
-     * @param processedObjects TODO
-     * @param query TODO
-     * @param session TODO
      */
     public void fixRealObjectReferences(Object object, Map<Object, ObjectDescriptor> objectInformation, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // do nothing
@@ -801,8 +652,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * Return the attributeAccessor.
      * The attribute accessor is responsible for setting and retrieving the attribute value
      * from the object for this mapping.
-     *
-     * @return TODO
      */
     @Override
     public AttributeAccessor getAttributeAccessor() {
@@ -812,8 +661,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * PUBLIC:
      * The classification type for the attribute this mapping represents
-     *
-     * @return TODO
      */
     @Override
     public Class<?> getAttributeClassification() {
@@ -823,8 +670,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * PUBLIC:
      * Return the name of the attribute set in the mapping.
-     *
-     * @return TODO
      */
     @Override
     public String getAttributeName() {
@@ -854,8 +699,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Return the mapping's containerPolicy.
-     *
-     * @return TODO
      */
     @Override
     public ContainerPolicy getContainerPolicy() {
@@ -865,8 +708,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * ADVANCED:
      * Set the maps id value
-     *
-     * @return TODO
      */
     public DatabaseMapping getDerivedIdMapping() {
         return derivedIdMapping;
@@ -875,8 +716,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Return the descriptor to which this mapping belongs
-     *
-     * @return TODO
      */
     @Override
     public ClassDescriptor getDescriptor() {
@@ -889,8 +728,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * This is required for object relational mapping to print them, but because
      * they are defined in in an Enterprise context they cannot be cast to.
      * Mappings that have a field include direct mappings and object relational mappings.
-     *
-     * @return TODO
      */
     @Override
     public DatabaseField getField() {
@@ -901,7 +738,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent java value.
-     * By default this is unknown.
+     * By default, this is unknown.
      */
     public Class<?> getFieldClassification(DatabaseField fieldToClassify) {
         return null;
@@ -911,8 +748,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Returns the set of fields that should be selected to build this mapping's value(s).
      * This is used by expressions to determine which fields to include in the select clause for non-object expressions.
-     *
-     * @return TODO
      */
     public List<DatabaseField> getSelectFields() {
         return getFields();
@@ -922,18 +757,14 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * INTERNAL:
      * Returns the table(s) that should be selected to build this mapping's value(s).
      * This is used by expressions to determine which tables to include in the from clause for non-object expressions.
-     *
-     * @return TODO
      */
-    public Vector getSelectTables() {
-        return new NonSynchronizedVector<>(0);
+    public List<DatabaseTable> getSelectTables() {
+        return new ArrayList<>(0);
     }
 
     /**
      * INTERNAL:
-     * Returns a vector of all the fields this mapping represents.
-     *
-     * @return TODO
+     * Returns a list of all the fields this mapping represents.
      */
     @Override
     public List<DatabaseField> getFields() {
@@ -953,8 +784,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * PUBLIC:
      * This method is invoked reflectively on the reference object to return the value of the
      * attribute in the object. This method returns the name of the getMethodName or null if not using method access.
-     *
-     * @return TODO
      */
     public String getGetMethodName() {
         if (!getAttributeAccessor().isMethodAttributeAccessor()) {
@@ -966,8 +795,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * ADVANCED:
      * Set the mapped by id value
-     *
-     * @return TODO
      */
     public boolean hasMapsIdValue() {
         return mapsIdValue != null;
@@ -976,8 +803,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * ADVANCED:
      * Set the mapped by id value
-     *
-     * @return TODO
      */
     public String getMapsIdValue() {
         return mapsIdValue;
@@ -988,13 +813,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * return the object on the client corresponding to the specified object.
      * The default is to simply return the object itself, without worrying about
      * maintaining object identity.
-     *
-     * @param object TODO
-     * @param session TODO
-     * @param objectDescriptors TODO
-     * @param processedObjects TODO
-     * @param query TODO
-     * @return TODO
      */
     public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query) {
         return object;
@@ -1003,8 +821,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * used as a temporary store for custom SDK usage
-     *
-     * @return TODO
      */
     public Map getProperties() {
         if (properties == null) {//Lazy initialize to conserve space and allocation time.
@@ -1016,9 +832,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * ADVANCED:
      * Allow user defined properties.
-     *
-     * @param property TODO
-     * @return TODO
      */
     public Object getProperty(Object property) {
         if (properties == null) {
@@ -1370,7 +1183,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      */
     public boolean isLazy() {
         if (isLazy == null) {
-            // False by default for mappings without indirection.
+            // False By default, for mappings without indirection.
             isLazy = Boolean.FALSE;
         }
         return isLazy;
@@ -2276,7 +2089,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Write fields needed for update into the template for with null values.
-     * By default inserted fields are used.
+     * By default, inserted fields are used.
      */
     public void writeUpdateFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
         writeInsertFieldsIntoRow(databaseRow, session);

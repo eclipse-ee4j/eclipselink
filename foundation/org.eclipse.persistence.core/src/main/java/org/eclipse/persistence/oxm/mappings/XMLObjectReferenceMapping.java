@@ -49,7 +49,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * TopLink OXM version of a 1-1 mapping.  A list of source-target key field
@@ -64,7 +63,7 @@ import java.util.Vector;
  */
 public class XMLObjectReferenceMapping extends AggregateMapping implements ObjectReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, UnmarshalRecord, XMLField, XMLRecord>, XMLMapping {
     protected HashMap sourceToTargetKeyFieldAssociations;
-    protected Vector sourceToTargetKeys; // maintain the order of the keys
+    protected List sourceToTargetKeys; // maintain the order of the keys
     private boolean isWriteOnly;
     private XMLInverseReferenceMapping inverseReferenceMapping;
 
@@ -75,7 +74,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      */
     public XMLObjectReferenceMapping() {
         sourceToTargetKeyFieldAssociations = new HashMap();
-        sourceToTargetKeys = new Vector();
+        sourceToTargetKeys = new ArrayList();
     }
 
     /**

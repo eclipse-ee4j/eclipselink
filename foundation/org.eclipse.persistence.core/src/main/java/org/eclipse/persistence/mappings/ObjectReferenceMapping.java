@@ -53,11 +53,12 @@ import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Abstract class for 1:1, variable 1:1 and reference mappings
@@ -68,7 +69,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     protected boolean isForeignKeyRelationship;
 
     /** Keeps track of which fields are foreign keys on a per field basis (can have mixed foreign key relationships). */
-    protected Vector<DatabaseField> foreignKeyFields;
+    protected List<DatabaseField> foreignKeyFields;
 
     protected ObjectReferenceMapping() {
         super();
@@ -559,7 +560,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Return all the fields populated by this mapping, these are foreign keys only.
      */
     @Override
-    protected Vector<DatabaseField> collectFields() {
+    protected List<DatabaseField> collectFields() {
         return getForeignKeyFields();
     }
 
@@ -568,7 +569,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Returns the foreign key names associated with the mapping.
      * These are the fields that will be populated by the 1-1 mapping when writing.
      */
-    public Vector<DatabaseField> getForeignKeyFields() {
+    public List<DatabaseField> getForeignKeyFields() {
         return foreignKeyFields;
     }
 
@@ -577,7 +578,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     * Set the foreign key fields associated with the mapping.
     * These are the fields that will be populated by the 1-1 mapping when writing.
     */
-    protected void setForeignKeyFields(Vector<DatabaseField> foreignKeyFields) {
+    protected void setForeignKeyFields(List<DatabaseField> foreignKeyFields) {
         this.foreignKeyFields = foreignKeyFields;
         if (!foreignKeyFields.isEmpty()) {
             setIsForeignKeyRelationship(true);
@@ -935,9 +936,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     @Override
     public void collectQueryParameters(Set<DatabaseField> cacheFields){
-        for (DatabaseField field : foreignKeyFields) {
-            cacheFields.add(field);
-        }
+        cacheFields.addAll(foreignKeyFields);
     }
 
     /**
@@ -1298,9 +1297,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     public Collection buildTargetInterfaces(Class<?> aClass, Collection targetInterfacesCol) {
         Class<?>[] targetInterfaces = aClass.getInterfaces();
-        for (int index = 0; index < targetInterfaces.length; index++) {
-            targetInterfacesCol.add(targetInterfaces[index]);
-        }
+        targetInterfacesCol.addAll(Arrays.asList(targetInterfaces));
         if (aClass.getSuperclass() == null) {
             return targetInterfacesCol;
         } else {

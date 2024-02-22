@@ -533,7 +533,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             DatabaseMapping idMapping = idAccessor.getMapping();
 
             // Grab the foreign key field and set it as the descriptor's id field.
-            DatabaseField foreignKeyField = oneToOneMapping.getForeignKeyFields().elementAt(0);
+            DatabaseField foreignKeyField = oneToOneMapping.getForeignKeyFields().get(0);
             updatePrimaryKeyField(idAccessor, foreignKeyField);
 
             // Update the field on the mapping.

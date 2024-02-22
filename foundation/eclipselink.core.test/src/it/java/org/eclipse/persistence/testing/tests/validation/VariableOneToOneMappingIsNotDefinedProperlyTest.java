@@ -65,9 +65,9 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
         mapping = (VariableOneToOneMapping)descriptor.getMappingForAttributeName("program");
 
         sourceField = new DatabaseField("ACTOR.PROGRAM_ID");
-        targetQueryKeyName = (String)mapping.getSourceToTargetQueryKeyNames().get(sourceField);
+        targetQueryKeyName = mapping.getSourceToTargetQueryKeyNames().get(sourceField);
         mapping.addForeignQueryKeyName("ACTOR.PROGRAM_ID", "name2");
-        mapping.getForeignKeyFields().removeElement(sourceField);
+        mapping.getForeignKeyFields().remove(sourceField);
 
         actor = Actor.example4();
         databaseRow = new DatabaseRecord();
@@ -90,7 +90,7 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
     @Override
     public void reset() {
         mapping.addForeignQueryKeyName("ACTOR.PROGRAM_ID", targetQueryKeyName);
-        mapping.getForeignKeyFields().removeElement(sourceField);
+        mapping.getForeignKeyFields().remove(sourceField);
     }
 
     @Override

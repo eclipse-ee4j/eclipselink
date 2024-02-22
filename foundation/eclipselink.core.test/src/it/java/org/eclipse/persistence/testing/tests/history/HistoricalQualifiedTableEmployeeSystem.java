@@ -53,13 +53,13 @@ public class HistoricalQualifiedTableEmployeeSystem extends EmployeeSystem {
         }
         mapping.setRelationTableName(user + "." + oldRelationTableName);
 
-        Vector<DatabaseField> targetRelationKeyFields = mapping.getTargetKeyFields();
+        List<DatabaseField> targetRelationKeyFields = mapping.getTargetKeyFields();
         for (DatabaseField targetRelationKeyField : targetRelationKeyFields) {
             String oldName = targetRelationKeyField.getTable().getName();
             targetRelationKeyField.setTableName(user + "." + oldName);
         }
 
-        Vector<DatabaseField> sourceRelationKeyFields = mapping.getSourceRelationKeyFields();
+        List<DatabaseField> sourceRelationKeyFields = mapping.getSourceRelationKeyFields();
         for (DatabaseField sourceRelationKeyField : sourceRelationKeyFields) {
             String oldName = sourceRelationKeyField.getTable().getName();
             sourceRelationKeyField.setTableName(user + "." + oldName);

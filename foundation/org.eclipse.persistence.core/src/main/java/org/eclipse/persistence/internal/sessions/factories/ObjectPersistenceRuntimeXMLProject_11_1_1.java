@@ -26,7 +26,6 @@ import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -1024,7 +1023,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
             StoredProcedureCall spc = (StoredProcedureCall)domainObject;
             // vector of parameters/arguments to be added the call
-            List<StoredProcedureArgument> procedureArguments = (Vector<StoredProcedureArgument>)attributeValue;
+            List<StoredProcedureArgument> procedureArguments = (List<StoredProcedureArgument>)attributeValue;
             for (StoredProcedureArgument spa : procedureArguments) {
                 ParameterType direction = spa.getDirection();
                 DatabaseField dbField = spa.getDatabaseField();
@@ -1074,7 +1073,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         descriptor.addMapping(cursorOutputProcedureMapping);
 
         XMLCompositeCollectionMapping storedProcArgumentsMapping = new XMLCompositeCollectionMapping();
-        storedProcArgumentsMapping.useCollectionClass(NonSynchronizedVector.class);
+        storedProcArgumentsMapping.useCollectionClass(ArrayList.class);
         storedProcArgumentsMapping.setAttributeName("procedureArguments");
         storedProcArgumentsMapping.setAttributeAccessor(new StoredProcedureArgumentsAccessor());
         storedProcArgumentsMapping.setReferenceClass(StoredProcedureArgument.class);
@@ -1379,7 +1378,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
              IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
-                NonSynchronizedVector<Object> aCollection = new NonSynchronizedVector<>();
+                List<Object> aCollection = new ArrayList<>();
                 for(int i = 0, size = aPolicy.getIsSetParameters().length; i<size;i++) {
                     aCollection.add(aPolicy.getIsSetParameters()[i]);
                 }
@@ -1418,7 +1417,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
              IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
-                NonSynchronizedVector<Object> aCollection = new NonSynchronizedVector<>();
+                List<Object> aCollection = new ArrayList<>();
                 for(int i = 0, size = aPolicy.getIsSetParameterTypes().length; i<size;i++) {
                     aCollection.add(aPolicy.getIsSetParameterTypes()[i]);
                 }

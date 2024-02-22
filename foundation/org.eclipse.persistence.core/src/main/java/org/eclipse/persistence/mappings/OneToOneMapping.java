@@ -81,7 +81,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: One to one mappings are used to represent a pointer references
@@ -152,11 +151,11 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public OneToOneMapping() {
         this.selectionQuery = new ReadObjectQuery();
-        this.sourceToTargetKeyFields = new HashMap(2);
-        this.targetToSourceKeyFields = new HashMap(2);
-        this.foreignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.sourceExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.targetExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.sourceToTargetKeyFields = new HashMap<>(2);
+        this.targetToSourceKeyFields = new HashMap<>(2);
+        this.foreignKeyFields = new ArrayList<>(1);
+        this.sourceExpressionsToPostInitialize = new ArrayList<>(1);
+        this.targetExpressionsToPostInitialize = new ArrayList<>(1);
         this.isForeignKeyRelationship = false;
         this.shouldVerifyDelete = true;
     }
@@ -214,7 +213,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     @Override
     public void addForeignKeyField(DatabaseField sourceForeignKeyField, DatabaseField targetPrimaryKeyField) {
         setIsForeignKeyRelationship(true);
-        getForeignKeyFields().addElement(sourceForeignKeyField);
+        getForeignKeyFields().add(sourceForeignKeyField);
 
         getSourceToTargetKeyFields().put(sourceForeignKeyField, targetPrimaryKeyField);
         getTargetToSourceKeyFields().put(targetPrimaryKeyField, sourceForeignKeyField);
@@ -481,9 +480,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public Object clone() {
         OneToOneMapping clone = (OneToOneMapping)super.clone();
         if(this.mechanism == null) {
-            clone.setForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size()));
-            clone.setSourceToTargetKeyFields(new HashMap(getSourceToTargetKeyFields().size()));
-            clone.setTargetToSourceKeyFields(new HashMap(getTargetToSourceKeyFields().size()));
+            clone.setForeignKeyFields(new ArrayList<>(getForeignKeyFields().size()));
+            clone.setSourceToTargetKeyFields(new HashMap<>(getSourceToTargetKeyFields().size()));
+            clone.setTargetToSourceKeyFields(new HashMap<>(getTargetToSourceKeyFields().size()));
 
             // DatabaseField overrides equals, so we need to use an IdentifyHashMap for this implementation
             // to make sure we are using the object references to lookup clone references
@@ -494,7 +493,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                 DatabaseField field = iterator.next();
                 DatabaseField fieldClone = field.clone();
                 fieldToCloneMap.put(field, fieldClone);
-                clone.getForeignKeyFields().addElement(fieldClone);
+                clone.getForeignKeyFields().add(fieldClone);
             }
 
             // lookup references in the map to get the associated clone reference. If it doesn't exist, create a new one.
@@ -548,9 +547,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     @Override
     public void collectQueryParameters(Set<DatabaseField> cacheFields){
-        for (DatabaseField field : sourceToTargetKeyFields.keySet()) {
-            cacheFields.add(field);
-        }
+        cacheFields.addAll(sourceToTargetKeyFields.keySet());
     }
 
     /**
@@ -580,7 +577,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session){
         List<Object> orderedResult = new ArrayList<>(keyInfo.length);
         Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(keyInfo, referenceDescriptor);
-        List foreignKeyValues = new ArrayList(keyInfo.length - fromCache.size());
+        List<Object> foreignKeyValues = new ArrayList<>(keyInfo.length - fromCache.size());
 
         CacheKeyType cacheKeyType = referenceDescriptor.getCachePolicy().getCacheKeyType();
         for (int index = 0; index < keyInfo.length; ++index){
@@ -600,6 +597,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             query.addArgumentValue(foreignKeyValues);
             query.setSession(session);
             query.setSelectionCriteria(referenceDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
+            @SuppressWarnings({"unchecked"})
             Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
             for (Object element: temp){
                 Object pk = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(element, session);
@@ -736,7 +734,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
         Map keyFields = new HashMap();
          for (int index = 0; index < getForeignKeyFields().size(); index++) {
-            DatabaseField targetRelationField = getForeignKeyFields().elementAt(index);
+            DatabaseField targetRelationField = getForeignKeyFields().get(index);
             DatabaseField targetKey = getSourceToTargetKeyFields().get(targetRelationField);
             Object value = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetKey, session);
             keyFields.put(targetRelationField, value);
@@ -953,11 +951,11 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the foreign key field names associated with the mapping.
      * These are only the source fields that are writable.
      */
-    public Vector getForeignKeyFieldNames() {
-        Vector fieldNames = new Vector(getForeignKeyFields().size());
+    public List<String> getForeignKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getForeignKeyFields().size());
         for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator();
              iterator.hasNext();) {
-            fieldNames.addElement(iterator.next().getQualifiedName());
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -968,7 +966,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return source key fields for translation by an AggregateObjectMapping
      */
     @Override
-    public Collection getFieldsForTranslationInAggregate() {
+    public Collection<DatabaseField> getFieldsForTranslationInAggregate() {
         return getSourceToTargetKeyFields().keySet();
     }
 
@@ -1023,7 +1021,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     @Override
     public List<DatabaseField> getAllFieldsForMapKey(){
-        List<DatabaseField> fields = new ArrayList(getReferenceDescriptor().getAllSelectionFields().size() + getForeignKeyFields().size());
+        List<DatabaseField> fields = new ArrayList<>(getReferenceDescriptor().getAllSelectionFields().size() + getForeignKeyFields().size());
         fields.addAll(getReferenceDescriptor().getAllSelectionFields());
         fields.addAll(getForeignKeyFields());
         return fields;
@@ -1031,23 +1029,23 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
-     * Return a vector of the foreign key fields in the same order
+     * Return a list of the foreign key fields in the same order
      * as the corresponding primary key fields are in their descriptor.
      */
-    public Vector getOrderedForeignKeyFields() {
+    public List<DatabaseField> getOrderedForeignKeyFields() {
         List<DatabaseField> primaryKeyFields = getPrimaryKeyDescriptor().getPrimaryKeyFields();
-        Vector result = new Vector(primaryKeyFields.size());
+        List<DatabaseField> result = new ArrayList<>(primaryKeyFields.size());
 
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             DatabaseField pkField = primaryKeyFields.get(index);
             boolean found = false;
-            for (Iterator fkStream = this.getForeignKeysToPrimaryKeys().keySet().iterator();
+            for (Iterator<DatabaseField> fkStream = this.getForeignKeysToPrimaryKeys().keySet().iterator();
                      fkStream.hasNext();) {
-                DatabaseField fkField = (DatabaseField)fkStream.next();
+                DatabaseField fkField = fkStream.next();
 
                 if (this.getForeignKeysToPrimaryKeys().get(fkField).equals(pkField)) {
                     found = true;
-                    result.addElement(fkField);
+                    result.add(fkField);
                     break;
                 }
             }
@@ -1085,14 +1083,14 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Return a collection of the source to target field value associations.
      */
-    public Vector getSourceToTargetKeyFieldAssociations() {
-        Vector associations = new Vector(getSourceToTargetKeyFields().size());
+    public List<Association> getSourceToTargetKeyFieldAssociations() {
+        List<Association> associations = new ArrayList<>(getSourceToTargetKeyFields().size());
         Iterator<DatabaseField> sourceFieldEnum = getSourceToTargetKeyFields().keySet().iterator();
         Iterator<DatabaseField> targetFieldEnum = getSourceToTargetKeyFields().values().iterator();
         while (sourceFieldEnum.hasNext()) {
-            Object fieldValue = sourceFieldEnum.next().getQualifiedName();
-            Object attributeValue = targetFieldEnum.next().getQualifiedName();
-            associations.addElement(new Association(fieldValue, attributeValue));
+            String fieldValue = sourceFieldEnum.next().getQualifiedName();
+            String attributeValue = targetFieldEnum.next().getQualifiedName();
+            associations.add(new Association(fieldValue, attributeValue));
         }
 
         return associations;
@@ -1241,8 +1239,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * The foreign keys primary keys are stored as database fields in the map.
      */
     protected void initializeForeignKeys(AbstractSession session) {
-        HashMap<DatabaseField, DatabaseField> newSourceToTargetKeyFields = new HashMap(getSourceToTargetKeyFields().size());
-        HashMap<DatabaseField, DatabaseField> newTargetToSourceKeyFields = new HashMap(getTargetToSourceKeyFields().size());
+        HashMap<DatabaseField, DatabaseField> newSourceToTargetKeyFields = new HashMap<>(getSourceToTargetKeyFields().size());
+        HashMap<DatabaseField, DatabaseField> newTargetToSourceKeyFields = new HashMap<>(getTargetToSourceKeyFields().size());
         Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = getSourceToTargetKeyFields().entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
@@ -1453,7 +1451,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     sourceKeyExpression = builder.getField(foreignKey);
                 }
 
-                if (usePreviousSelectionCriteria == false) {
+                if (!usePreviousSelectionCriteria) {
                     this.sourceExpressionsToPostInitialize.add(sourceKeyExpression);
                     this.targetExpressionsToPostInitialize.add(targetKeyExpression);
                 }
@@ -1612,7 +1610,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         DatabaseField sourceField = new DatabaseField(sourceForeignKeyFieldName);
 
         setIsForeignKeyRelationship(true);
-        getForeignKeyFields().addElement(sourceField);
+        getForeignKeyFields().add(sourceField);
         getSourceToTargetKeyFields().put(sourceField, new DatabaseField());
     }
 
@@ -1621,10 +1619,10 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the foreign key field names associated with the mapping.
      * These are only the source fields that are writable.
      */
-    public void setForeignKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
-            fields.addElement(new DatabaseField((String) iterator.next()));
+    public void setForeignKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setForeignKeyFields(fields);
@@ -1655,12 +1653,12 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Set a collection of the source to target field associations.
      */
-    public void setSourceToTargetKeyFieldAssociations(Vector sourceToTargetKeyFieldAssociations) {
-        setSourceToTargetKeyFields(new HashMap(sourceToTargetKeyFieldAssociations.size() + 1));
-        setTargetToSourceKeyFields(new HashMap(sourceToTargetKeyFieldAssociations.size() + 1));
-        for (Iterator iterator = sourceToTargetKeyFieldAssociations.iterator();
+    public void setSourceToTargetKeyFieldAssociations(List<Association> sourceToTargetKeyFieldAssociations) {
+        setSourceToTargetKeyFields(new HashMap<>(sourceToTargetKeyFieldAssociations.size() + 1));
+        setTargetToSourceKeyFields(new HashMap<>(sourceToTargetKeyFieldAssociations.size() + 1));
+        for (Iterator<Association> iterator = sourceToTargetKeyFieldAssociations.iterator();
              iterator.hasNext();) {
-            Association association = (Association) iterator.next();
+            Association association = iterator.next();
             DatabaseField sourceField = new DatabaseField((String)association.getKey());
             DatabaseField targetField = new DatabaseField((String)association.getValue());
             getSourceToTargetKeyFields().put(sourceField, targetField);
@@ -2310,9 +2308,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return all the fields populated by this mapping, these are foreign keys only.
      */
     @Override
-    protected Vector<DatabaseField> collectFields() {
+    protected List<DatabaseField> collectFields() {
         if(this.mechanism != null) {
-            return new Vector(0);
+            return new ArrayList<>(0);
         } else {
             return super.collectFields();
         }
@@ -2325,7 +2323,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     @Override
     public List<Expression> getOrderByNormalizedExpressions(Expression base) {
         if (!this.foreignKeyFields.isEmpty()) {
-            List<Expression> orderBys = new ArrayList(this.foreignKeyFields.size());
+            List<Expression> orderBys = new ArrayList<>(this.foreignKeyFields.size());
             for (DatabaseField field : this.foreignKeyFields) {
                 orderBys.add(((QueryKeyExpression)base).getBaseExpression().getField(field));
             }

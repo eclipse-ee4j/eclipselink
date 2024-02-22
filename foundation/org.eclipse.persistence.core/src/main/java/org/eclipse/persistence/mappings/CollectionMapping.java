@@ -394,7 +394,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         String bypassProperty = PrivilegedAccessHelper.getSystemProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
-        if (this.getContainerPolicy().isMapPolicy() ||  (bypassProperty != null && bypassProperty.toLowerCase().equals("true")) ){
+        if (this.getContainerPolicy().isMapPolicy() ||  (bypassProperty != null && bypassProperty.equalsIgnoreCase("true")) ){
             // not supported
             return super.buildExpression(queryObject, policy, expressionBuilder, processedObjects, session);
         }
@@ -1040,11 +1040,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Object eachReferenceObject = queryContainerPolicy.next(objectsIterator, session);
                 AbstractRecord row = rowsIterator.next();
                 Object eachReferenceKey = extractKeyFromTargetRow(row, session);
-                List[] objectsAndRows = referenceObjectsAndRowsByKey.get(eachReferenceKey);
-                if (objectsAndRows == null) {
-                    objectsAndRows = new List[]{new ArrayList(), new ArrayList()};
-                    referenceObjectsAndRowsByKey.put(eachReferenceKey, objectsAndRows);
-                }
+                List[] objectsAndRows = referenceObjectsAndRowsByKey.computeIfAbsent(eachReferenceKey, k -> new List[]{new ArrayList(), new ArrayList()});
                 objectsAndRows[0].add(eachReferenceObject);
                 objectsAndRows[1].add(row);
             }

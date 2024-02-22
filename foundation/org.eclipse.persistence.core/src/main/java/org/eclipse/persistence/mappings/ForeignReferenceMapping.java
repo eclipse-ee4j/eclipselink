@@ -46,7 +46,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
@@ -1041,10 +1040,10 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * Return source key fields for translation by an AggregateObjectMapping
-     * By default, return an empty NonSynchronizedVector
+     * By default, return an empty List
      */
-    public Collection getFieldsForTranslationInAggregate() {
-        return new NonSynchronizedVector(0);
+    public Collection<DatabaseField> getFieldsForTranslationInAggregate() {
+        return new ArrayList<>(0);
     }
 
     /**

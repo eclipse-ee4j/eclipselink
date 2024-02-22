@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.asm.internal.platform.ow2;
 
-import org.eclipse.persistence.asm.ASMFactory;
 import org.eclipse.persistence.asm.AnnotationVisitor;
 import org.eclipse.persistence.asm.FieldVisitor;
 import org.eclipse.persistence.asm.MethodVisitor;

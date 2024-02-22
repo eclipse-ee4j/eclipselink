@@ -36,7 +36,6 @@ import org.eclipse.persistence.sessions.Session;
 
 import javax.xml.namespace.QName;
 import java.util.List;
-import java.util.Vector;
 
 public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  implements VariableXPathObjectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session,  XMLUnmarshaller, XMLRecord>, XMLMapping {
 
@@ -95,7 +94,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
     }
 
       @Override
-        protected Vector collectFields() {
+      protected List<DatabaseField> collectFields() {
             if(field != null){
                 return super.collectFields();
             }

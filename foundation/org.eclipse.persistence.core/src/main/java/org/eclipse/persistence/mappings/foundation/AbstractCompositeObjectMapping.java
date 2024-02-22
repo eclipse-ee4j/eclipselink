@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,9 +36,10 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * Chunks of data from non-relational data sources can have an
@@ -118,9 +119,9 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * Return the fields mapped by the mapping.
      */
     @Override
-    protected Vector collectFields() {
-        Vector fields = new Vector(1);
-        fields.addElement(this.getField());
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> fields = new ArrayList<>(1);
+        fields.add(this.getField());
         return fields;
     }
 

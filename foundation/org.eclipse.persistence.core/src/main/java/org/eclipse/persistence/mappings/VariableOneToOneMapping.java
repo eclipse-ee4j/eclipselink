@@ -26,7 +26,6 @@ import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -45,10 +44,11 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Variable one to one mappings are used to represent a pointer references
@@ -61,7 +61,7 @@ import java.util.Vector;
  */
 public class VariableOneToOneMapping extends ObjectReferenceMapping implements RelationalMapping {
     protected DatabaseField typeField;
-    protected Map sourceToTargetQueryKeyNames;
+    protected Map<DatabaseField, String> sourceToTargetQueryKeyNames;
     protected Map typeIndicatorTranslation;
 
     /** parallel table typeIndicatorTranslation used prior to initialization to avoid type indicators on Mapping Workbench */
@@ -73,10 +73,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     public VariableOneToOneMapping() {
         this.selectionQuery = new ReadObjectQuery();
-        this.sourceToTargetQueryKeyNames = new HashMap(2);
+        this.sourceToTargetQueryKeyNames = new HashMap<>(2);
         this.typeIndicatorTranslation = new HashMap(5);
         this.typeIndicatorNameTranslation = new HashMap(5);
-        this.foreignKeyFields = NonSynchronizedVector.newInstance(1);
+        this.foreignKeyFields = new ArrayList<>(1);
 
         //right now only ForeignKeyRelationships are supported
         this.isForeignKeyRelationship = false;
@@ -121,7 +121,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     public void addForeignQueryKeyName(DatabaseField sourceForeignKeyField, String targetQueryKeyName) {
         getSourceToTargetQueryKeyNames().put(sourceForeignKeyField, targetQueryKeyName);
-        getForeignKeyFields().addElement(sourceForeignKeyField);
+        getForeignKeyFields().add(sourceForeignKeyField);
         this.setIsForeignKeyRelationship(true);
     }
 
@@ -176,17 +176,17 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     @Override
     public Object clone() {
         VariableOneToOneMapping clone = (VariableOneToOneMapping)super.clone();
-        Map setOfKeys = new HashMap(getSourceToTargetQueryKeyNames().size());
-        Map sourceToTarget = new HashMap(getSourceToTargetQueryKeyNames().size());
-        Vector foreignKeys = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size());
+        Map<DatabaseField, DatabaseField> setOfKeys = new HashMap<>(getSourceToTargetQueryKeyNames().size());
+        Map<DatabaseField, String> sourceToTarget = new HashMap<>(getSourceToTargetQueryKeyNames().size());
+        List<DatabaseField> foreignKeys = new ArrayList<>(getForeignKeyFields().size());
 
         if (getTypeField() != null) {
             clone.setTypeField(this.getTypeField().clone());
         }
 
-        for (Iterator enumtr = getSourceToTargetQueryKeyNames().keySet().iterator(); enumtr.hasNext();) {
+        for (Iterator<DatabaseField> enumtr = getSourceToTargetQueryKeyNames().keySet().iterator(); enumtr.hasNext();) {
             // Clone the SourceKeyFields
-            DatabaseField field = (DatabaseField)enumtr.next();
+            DatabaseField field = enumtr.next();
             DatabaseField clonedField = field.clone();
             setOfKeys.put(field, clonedField);
             // on the next line I'm cloning the query key names
@@ -195,7 +195,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
         for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator(); iterator.hasNext();) {
             DatabaseField field = iterator.next();
-            foreignKeys.addElement(setOfKeys.get(field));
+            foreignKeys.add(setOfKeys.get(field));
         }
         clone.setSourceToTargetQueryKeyFields(sourceToTarget);
         clone.setForeignKeyFields(foreignKeys);
@@ -208,13 +208,13 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Return all the fields populated by this mapping.
      */
     @Override
-    protected Vector collectFields() {
+    protected List<DatabaseField> collectFields() {
         DatabaseField type = getTypeField();
 
-        //Get a shallow copy of the Vector
+        //Get a shallow copy of the List
         if (type != null) {
-            Vector sourceFields = (Vector)getForeignKeyFields().clone();
-            sourceFields.addElement(type);
+            List<DatabaseField> sourceFields = new ArrayList<>(getForeignKeyFields());
+            sourceFields.add(type);
             return sourceFields;
         } else {
             return getForeignKeyFields();
@@ -245,12 +245,12 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         if (firstPrivateObject.getClass() != secondPrivateObject.getClass()) {
             return false;
         }
-        Iterator targetKeys = getSourceToTargetQueryKeyNames().values().iterator();
+        Iterator<String> targetKeys = getSourceToTargetQueryKeyNames().values().iterator();
         ClassDescriptor descriptor = session.getDescriptor(firstPrivateObject.getClass());
         ClassDescriptor descriptor2 = session.getDescriptor(secondPrivateObject.getClass());
 
         while (targetKeys.hasNext()) {
-            String queryKey = (String)targetKeys.next();
+            String queryKey = targetKeys.next();
             DatabaseField field = descriptor.getObjectBuilder().getFieldForQueryKeyName(queryKey);
             Object firstObjectField = descriptor.getObjectBuilder().extractValueFromObjectForField(firstPrivateObject, field, session);
             DatabaseField field2 = descriptor2.getObjectBuilder().getFieldForQueryKeyName(queryKey);
@@ -274,19 +274,19 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Return the class indicator associations for XML.
      * List of class-name/value associations.
      */
-    public Vector getClassIndicatorAssociations() {
-        Vector associations = new Vector();
+    public List<Association> getClassIndicatorAssociations() {
+        List<Association> associations = new ArrayList<>();
         Iterator classesEnum = getTypeIndicatorNameTranslation().keySet().iterator();
         Iterator valuesEnum = getTypeIndicatorNameTranslation().values().iterator();
         while (classesEnum.hasNext()) {
             Object className = classesEnum.next();
 
             // If the project was built in runtime is a class, MW is a string.
-            if (className instanceof Class) {
-                className = ((Class)className).getName();
+            if (className instanceof Class c) {
+                className = c.getName();
             }
             Object value = valuesEnum.next();
-            associations.addElement(new TypedAssociation(className, value));
+            associations.add(new TypedAssociation(className, value));
         }
 
         return associations;
@@ -317,7 +317,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             return getTypeField().getType();
         }
 
-        String queryKey = (String)getSourceToTargetQueryKeyNames().get(fieldToClassify);
+        String queryKey = getSourceToTargetQueryKeyNames().get(fieldToClassify);
         if (queryKey == null) {
             return null;
         }
@@ -342,11 +342,11 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Return the foreign key field names associated with the mapping.
      * These are only the source fields that are writable.
      */
-    public Vector getForeignKeyFieldNames() {
-        Vector fieldNames = new Vector(getForeignKeyFields().size());
+    public List<String> getForeignKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getForeignKeyFields().size());
         for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator();
              iterator.hasNext();) {
-            fieldNames.addElement(iterator.next().getQualifiedName());
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -375,14 +375,14 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * PUBLIC:
      * Return a collection of the field to query key associations.
      */
-    public Vector getSourceToTargetQueryKeyFieldAssociations() {
-        Vector associations = new Vector(getSourceToTargetQueryKeyNames().size());
-        Iterator sourceFieldEnum = getSourceToTargetQueryKeyNames().keySet().iterator();
-        Iterator targetQueryKeyEnum = getSourceToTargetQueryKeyNames().values().iterator();
+    public List<Association> getSourceToTargetQueryKeyFieldAssociations() {
+        List<Association> associations = new ArrayList<>(getSourceToTargetQueryKeyNames().size());
+        Iterator<DatabaseField> sourceFieldEnum = getSourceToTargetQueryKeyNames().keySet().iterator();
+        Iterator<String> targetQueryKeyEnum = getSourceToTargetQueryKeyNames().values().iterator();
         while (sourceFieldEnum.hasNext()) {
-            Object fieldValue = ((DatabaseField)sourceFieldEnum.next()).getQualifiedName();
-            Object attributeValue = targetQueryKeyEnum.next();
-            associations.addElement(new Association(fieldValue, attributeValue));
+            String fieldValue = sourceFieldEnum.next().getQualifiedName();
+            String attributeValue = targetQueryKeyEnum.next();
+            associations.add(new Association(fieldValue, attributeValue));
         }
 
         return associations;
@@ -392,7 +392,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Returns the source keys to target keys fields association.
      */
-    public Map getSourceToTargetQueryKeyNames() {
+    public Map<DatabaseField, String> getSourceToTargetQueryKeyNames() {
         return sourceToTargetQueryKeyNames;
     }
 
@@ -515,11 +515,11 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * The foreign key names and their primary keys are converted to DatabaseField and stored.
      */
     protected void initializeForeignKeys(AbstractSession session) {
-        HashMap newSourceToTargetQueryKeyNames = new HashMap(getSourceToTargetQueryKeyNames().size());
-        Iterator iterator = getSourceToTargetQueryKeyNames().entrySet().iterator();
+        Map<DatabaseField, String> newSourceToTargetQueryKeyNames = new HashMap<>(getSourceToTargetQueryKeyNames().size());
+        Iterator<Map.Entry<DatabaseField, String>> iterator = getSourceToTargetQueryKeyNames().entrySet().iterator();
         while(iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            DatabaseField field = getDescriptor().buildField((DatabaseField)entry.getKey());
+            Map.Entry<DatabaseField, String> entry = iterator.next();
+            DatabaseField field = getDescriptor().buildField(entry.getKey());
             newSourceToTargetQueryKeyNames.put(field, entry.getValue());
         }
         this.sourceToTargetQueryKeyNames = newSourceToTargetQueryKeyNames;
@@ -536,11 +536,11 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
         ExpressionBuilder expBuilder = new ExpressionBuilder();
 
-        Iterator sourceKeysEnum = getSourceToTargetQueryKeyNames().keySet().iterator();
+        Iterator<DatabaseField> sourceKeysEnum = getSourceToTargetQueryKeyNames().keySet().iterator();
 
         while (sourceKeysEnum.hasNext()) {
-            DatabaseField sourceKey = (DatabaseField)sourceKeysEnum.next();
-            String target = (String)this.getSourceToTargetQueryKeyNames().get(sourceKey);
+            DatabaseField sourceKey = sourceKeysEnum.next();
+            String target = this.getSourceToTargetQueryKeyNames().get(sourceKey);
             expression = expBuilder.getParameter(sourceKey).equal(expBuilder.get(target));
 
             if (selectionCriteria == null) {
@@ -605,16 +605,16 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * PUBLIC:
      * Set the class indicator associations.
      */
-    public void setClassIndicatorAssociations(Vector classIndicatorAssociations) {
+    public void setClassIndicatorAssociations(List<Association> classIndicatorAssociations) {
         setTypeIndicatorNameTranslation(new HashMap(classIndicatorAssociations.size() + 1));
         setTypeIndicatorTranslation(new HashMap((classIndicatorAssociations.size() * 2) + 1));
-        for (Iterator iterator = classIndicatorAssociations.iterator();
+        for (Iterator<Association> iterator = classIndicatorAssociations.iterator();
              iterator.hasNext();) {
-            Association association = (Association) iterator.next();
+            Association association = iterator.next();
             Object classValue = association.getKey();
-            if (classValue instanceof Class) {
+            if (classValue instanceof Class<?> c) {
                 // 904 projects will be a class type.
-                addClassIndicator((Class)association.getKey(), association.getValue());
+                addClassIndicator(c, association.getValue());
             } else {
                 addClassNameIndicator((String)association.getKey(), association.getValue());
             }
@@ -626,10 +626,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Return the foreign key field names associated with the mapping.
      * These are only the source fields that are writable.
      */
-    public void setForeignKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
-            fields.addElement(new DatabaseField((String) iterator.next()));
+    public void setForeignKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setForeignKeyFields(fields);
@@ -651,12 +651,12 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * PUBLIC:
      * Set a collection of the source to target query key/field associations.
      */
-    public void setSourceToTargetQueryKeyFieldAssociations(Vector sourceToTargetQueryKeyFieldAssociations) {
-        setSourceToTargetQueryKeyFields(new HashMap(sourceToTargetQueryKeyFieldAssociations.size() + 1));
-        for (Iterator iterator = sourceToTargetQueryKeyFieldAssociations.iterator();
+    public void setSourceToTargetQueryKeyFieldAssociations(List<Association> sourceToTargetQueryKeyFieldAssociations) {
+        setSourceToTargetQueryKeyFields(new HashMap<>(sourceToTargetQueryKeyFieldAssociations.size() + 1));
+        for (Iterator<Association> iterator = sourceToTargetQueryKeyFieldAssociations.iterator();
              iterator.hasNext();) {
-            Association association = (Association) iterator.next();
-            Object sourceField = new DatabaseField((String)association.getKey());
+            Association association = iterator.next();
+            DatabaseField sourceField = new DatabaseField((String)association.getKey());
             String targetQueryKey = (String)association.getValue();
             getSourceToTargetQueryKeyNames().put(sourceField, targetQueryKey);
         }
@@ -666,7 +666,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Set the source keys to target keys fields association.
      */
-    protected void setSourceToTargetQueryKeyFields(Map sourceToTargetQueryKeyNames) {
+    protected void setSourceToTargetQueryKeyFields(Map<DatabaseField, String> sourceToTargetQueryKeyNames) {
         this.sourceToTargetQueryKeyNames = sourceToTargetQueryKeyNames;
     }
 
@@ -726,7 +726,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
         //2.5.1.6 PWK.  added to support batch reading on variable one to ones
         Object referenceObject = getRealAttributeValueFromObject(object, session);
-        String queryKeyName = (String)getSourceToTargetQueryKeyNames().get(field);
+        String queryKeyName = getSourceToTargetQueryKeyNames().get(field);
         ClassDescriptor objectDescriptor = session.getDescriptor(referenceObject.getClass());
         DatabaseField targetField = objectDescriptor.getObjectBuilder().getTargetFieldForQueryKeyName(queryKeyName);
 
@@ -856,7 +856,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                 ClassDescriptor descriptor = session.getDescriptor(referenceObject.getClass());
                 while (iterator.hasNext()) {
                     DatabaseField sourceKey = iterator.next();
-                    String targetQueryKey = (String)getSourceToTargetQueryKeyNames().get(sourceKey);
+                    String targetQueryKey = getSourceToTargetQueryKeyNames().get(sourceKey);
                     DatabaseField targetKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(targetQueryKey);
                     if (targetKeyField == null) {
                         throw DescriptorException.variableOneToOneMappingIsNotDefinedProperly(this, descriptor, targetQueryKey);
@@ -897,7 +897,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                 ClassDescriptor descriptor = session.getDescriptor(referenceObject.getClass());
                 while (iterator.hasNext()) {
                     DatabaseField sourceKey = iterator.next();
-                    String targetQueryKey = (String)getSourceToTargetQueryKeyNames().get(sourceKey);
+                    String targetQueryKey = getSourceToTargetQueryKeyNames().get(sourceKey);
                     DatabaseField targetKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(targetQueryKey);
                     if (targetKeyField == null) {
                         throw DescriptorException.variableOneToOneMappingIsNotDefinedProperly(this, descriptor, targetQueryKey);
@@ -975,7 +975,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                 ClassDescriptor descriptor = query.getSession().getDescriptor(referenceObject.getClass());
                 while (iterator.hasNext()) {
                     DatabaseField sourceKey = iterator.next();
-                    String targetQueryKey = (String)getSourceToTargetQueryKeyNames().get(sourceKey);
+                    String targetQueryKey = getSourceToTargetQueryKeyNames().get(sourceKey);
                     DatabaseField targetKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(targetQueryKey);
                     if (targetKeyField == null) {
                         throw DescriptorException.variableOneToOneMappingIsNotDefinedProperly(this, descriptor, targetQueryKey);

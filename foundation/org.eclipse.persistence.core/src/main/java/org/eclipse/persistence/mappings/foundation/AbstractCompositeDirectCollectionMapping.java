@@ -47,7 +47,9 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -257,9 +259,9 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Return the fields handled by the mapping.
      */
     @Override
-    protected Vector collectFields() {
-        Vector fields = new Vector(1);
-        fields.addElement(this.getField());
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> fields = new ArrayList<>(1);
+        fields.add(this.getField());
         return fields;
     }
 

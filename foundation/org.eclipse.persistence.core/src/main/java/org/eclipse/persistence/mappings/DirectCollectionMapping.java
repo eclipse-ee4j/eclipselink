@@ -61,7 +61,6 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -111,7 +110,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: This mapping is used to store a collection of simple types (String, Number, Date, etc.)
@@ -150,8 +148,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /** The direct field name is converted and stored */
     protected DatabaseField directField;
-    protected Vector<DatabaseField> sourceKeyFields;
-    protected Vector<DatabaseField> referenceKeyFields;
+    protected List<DatabaseField> sourceKeyFields;
+    protected List<DatabaseField> referenceKeyFields;
 
     /** Used for insertion for m-m and dc, not used in 1-m. */
     protected DataModifyQuery insertQuery;
@@ -185,8 +183,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     public DirectCollectionMapping() {
         this.insertQuery = new DataModifyQuery();
         this.orderByExpressions = new ArrayList<>();
-        this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.referenceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.sourceKeyFields = new ArrayList<>(1);
+        this.referenceKeyFields = new ArrayList<>(1);
         this.selectionQuery = new DirectReadQuery();
         this.hasCustomInsertQuery = false;
         this.isPrivateOwned = true;
@@ -262,8 +260,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Both the reference field and the source field that it references must be provided.
      */
     public void addReferenceKeyField(DatabaseField referenceForeignKeyField, DatabaseField sourcePrimaryKeyField) {
-        getSourceKeyFields().addElement(sourcePrimaryKeyField);
-        getReferenceKeyFields().addElement(referenceForeignKeyField);
+        getSourceKeyFields().add(sourcePrimaryKeyField);
+        getReferenceKeyFields().add(referenceForeignKeyField);
     }
 
     /**
@@ -718,18 +716,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
         int nOldSize = oldList == null ? 0 : oldList.size();
         int nNewSize = newList == null ? 0 : newList.size();
-        HashMap<Object, Set[]> changedIndexes = new HashMap<>(Math.max(nOldSize, nNewSize));
+        HashMap<Object, Set<Integer>[]> changedIndexes = new HashMap<>(Math.max(nOldSize, nNewSize));
 
         // for each object in oldList insert all its indexes in oldList into the old indexes set corresponding to each object.
         if (oldList != null) {
             for(int i=0; i < nOldSize; i++) {
                 Object obj = oldList.get(i);
-                Set[] indexes = changedIndexes.get(obj);
-                if (indexes == null) {
-                    // the first index found for the object.
-                    indexes = new Set[]{new HashSet(), null};
-                    changedIndexes.put(obj, indexes);
-                }
+                Set<Integer>[] indexes = changedIndexes.computeIfAbsent(obj, k -> new Set[]{new HashSet<>(), null});
+                // the first index found for the object.
                 indexes[0].add(i);
             }
         }
@@ -737,8 +731,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         // helper set to store objects for which entries into changedIndexes has been removed:
         // if an entry for the object is created again, it will have an empty old indexes set (rather than null)
         // to indicate that the object has been on the oldList, too.
-        HashSet removedFromChangedIndexes = new HashSet();
-        HashSet dummySet = new HashSet(0);
+        Set<Object> removedFromChangedIndexes = new HashSet<>();
+        Set<Integer> dummySet = new HashSet<>(0);
 
         // for each object in newList, for each its index in newList:
         //   if the object has the same index in oldList - remove the index from old indexes set;
@@ -746,15 +740,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (newList != null) {
             for(int i=0; i < nNewSize; i++) {
                 Object obj = newList.get(i);
-                Set[] indexes = changedIndexes.get(obj);
+                Set<Integer>[] indexes = changedIndexes.get(obj);
                 if (indexes == null) {
                     // the first index found for the object - or was found and removed before.
                     if(removedFromChangedIndexes.contains(obj)) {
                         // the object also exists in oldList
-                        indexes = new Set[]{dummySet, new HashSet()};
+                        indexes = (Set<Integer>[]) new Set[]{dummySet, new HashSet<>()};
                     } else {
                         // the object does not exist in oldList
-                        indexes = new Set[]{null, new HashSet()};
+                        indexes = (Set<Integer>[]) new Set[]{null, new HashSet<>()};
                     }
                     changedIndexes.put(obj, indexes);
                     // the object doesn't have this index in oldList - add the index to new indexes set.
@@ -763,7 +757,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     if(indexes[0] == null || !indexes[0].contains(i)) {
                         // the object doesn't have this index in oldList - add the index to new indexes set.
                         if(indexes[1] == null) {
-                            indexes[1] = new HashSet();
+                            indexes[1] = new HashSet<>();
                         }
                         indexes[1].add(i);
                     } else {
@@ -1095,11 +1089,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     if (this.valueConverter != null) {
                         referenceValue = this.valueConverter.convertDataValueToObjectValue(referenceValue, query.getSession());
                     }
-                    List[] valuesAndRows = referenceDataAndRowsByKey.get(eachReferenceKey);
-                    if (valuesAndRows == null) {
-                        valuesAndRows = new List[]{new ArrayList(), new ArrayList()};
-                        referenceDataAndRowsByKey.put(eachReferenceKey, valuesAndRows);
-                    }
+                    List[] valuesAndRows = referenceDataAndRowsByKey.computeIfAbsent(eachReferenceKey, k -> new List[]{new ArrayList(), new ArrayList()});
                     valuesAndRows[0].add(referenceValue);
                     valuesAndRows[1].add(referenceRow);
                 }
@@ -1211,8 +1201,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This is used by expressions to determine which fields to include in the select clause for non-object expressions.
      */
     @Override
-    public Vector getSelectFields() {
-        Vector<DatabaseField> fields = new NonSynchronizedVector<>(2);
+    public List<DatabaseField> getSelectFields() {
+        List<DatabaseField> fields = new ArrayList<>(2);
         fields.add(getDirectField());
         return fields;
     }
@@ -1223,8 +1213,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This is used by expressions to determine which tables to include in the from clause for non-object expressions.
      */
     @Override
-    public Vector getSelectTables() {
-        Vector<DatabaseTable> tables = new NonSynchronizedVector<>(0);
+    public List<DatabaseTable> getSelectTables() {
+        List<DatabaseTable> tables = new ArrayList<>(0);
         tables.add(getReferenceTable());
         return tables;
     }
@@ -1348,11 +1338,11 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Return the reference key field names associated with the mapping.
      * These are in-order with the sourceKeyFieldNames.
      */
-    public Vector getReferenceKeyFieldNames() {
-        Vector fieldNames = new Vector(getReferenceKeyFields().size());
+    public List<String> getReferenceKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getReferenceKeyFields().size());
         for (Iterator<DatabaseField> iterator = getReferenceKeyFields().iterator();
              iterator.hasNext();) {
-            fieldNames.addElement(iterator.next().getQualifiedName());
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -1362,7 +1352,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Return the reference key fields.
      */
-    public Vector<DatabaseField> getReferenceKeyFields() {
+    public List<DatabaseField> getReferenceKeyFields() {
         return referenceKeyFields;
     }
 
@@ -1415,11 +1405,11 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Return the source key field names associated with the mapping.
      * These are in-order with the referenceKeyFieldNames.
      */
-    public Vector getSourceKeyFieldNames() {
-        Vector fieldNames = new Vector(getSourceKeyFields().size());
+    public List<String> getSourceKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getSourceKeyFields().size());
         for (Iterator<DatabaseField> iterator = getSourceKeyFields().iterator();
              iterator.hasNext();) {
-            fieldNames.addElement(iterator.next().getQualifiedName());
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -1429,7 +1419,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Return the source key fields.
      */
-    public Vector<DatabaseField> getSourceKeyFields() {
+    public List<DatabaseField> getSourceKeyFields() {
         return sourceKeyFields;
     }
 
@@ -1572,8 +1562,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
         // Construct an expression to delete from the relation table.
         for (int index = 0; index < getReferenceKeyFields().size(); index++) {
-            DatabaseField referenceKey = getReferenceKeyFields().elementAt(index);
-            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
+            DatabaseField referenceKey = getReferenceKeyFields().get(index);
+            DatabaseField sourceKey = getSourceKeyFields().get(index);
 
             subExp1 = builder.getField(referenceKey);
             subExp2 = builder.getParameter(sourceKey);
@@ -1874,7 +1864,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             if (usesIndirection()) {
                 field.setKeepInRow(true);
             }
-            getSourceKeyFields().addElement(field);
+            getSourceKeyFields().add(field);
         }
     }
 
@@ -2090,8 +2080,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     ((List)delegateTarget).add(newTail[i]);
                 }
             } else if(delta < 0) {
-                for(int i=oldSize -1 ; i >= newSize; i--) {
-                    ((List)delegateTarget).remove(i);
+                if (oldSize > newSize) {
+                    ((List) delegateTarget).subList(newSize, oldSize).clear();
                 }
             }
         }
@@ -2341,7 +2331,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Return source key fields for translation by an AggregateObjectMapping
      */
     @Override
-    public Vector getFieldsForTranslationInAggregate() {
+    public List<DatabaseField> getFieldsForTranslationInAggregate() {
         return getSourceKeyFields();
     }
 
@@ -2891,7 +2881,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This method is used if the reference key consists of only a single field.
      */
     public void setReferenceKeyFieldName(String fieldName) {
-        getReferenceKeyFields().addElement(new DatabaseField(fieldName));
+        getReferenceKeyFields().add(new DatabaseField(fieldName));
     }
 
     /**
@@ -2899,10 +2889,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Set the reference key field names associated with the mapping.
      * These must be in-order with the sourceKeyFieldNames.
      */
-    public void setReferenceKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
-            fields.addElement(new DatabaseField((String) iterator.next()));
+    public void setReferenceKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setReferenceKeyFields(fields);
@@ -2912,8 +2902,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Set the reference fields.
      */
-    public void setReferenceKeyFields(Vector<DatabaseField> aVector) {
-        this.referenceKeyFields = aVector;
+    public void setReferenceKeyFields(List<DatabaseField> refKeyFields) {
+        this.referenceKeyFields = refKeyFields;
     }
 
     /**
@@ -2988,10 +2978,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Set the source key field names associated with the mapping.
      * These must be in-order with the referenceKeyFieldNames.
      */
-    public void setSourceKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
-            fields.addElement(new DatabaseField((String) iterator.next()));
+    public void setSourceKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setSourceKeyFields(fields);
@@ -3001,7 +2991,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Set the source fields.
      */
-    public void setSourceKeyFields(Vector<DatabaseField> sourceKeyFields) {
+    public void setSourceKeyFields(List<DatabaseField> sourceKeyFields) {
         this.sourceKeyFields = sourceKeyFields;
     }
 
@@ -3012,9 +3002,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public void collectQueryParameters(Set<DatabaseField> cacheFields){
-        for (DatabaseField field : getSourceKeyFields()) {
-            cacheFields.add(field);
-        }
+        cacheFields.addAll(getSourceKeyFields());
 
     }
 

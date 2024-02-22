@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.asm.internal.platform.eclipselink;
 
-import org.eclipse.persistence.asm.ASMFactory;
 import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;

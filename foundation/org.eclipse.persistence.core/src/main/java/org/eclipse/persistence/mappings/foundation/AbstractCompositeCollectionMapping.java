@@ -53,7 +53,9 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -283,9 +285,9 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Return the fields handled by the mapping.
      */
     @Override
-    protected Vector collectFields() {
-        Vector fields = new Vector(1);
-        fields.addElement(this.getField());
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> fields = new ArrayList<>(1);
+        fields.add(this.getField());
         return fields;
     }
 
@@ -327,14 +329,14 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     protected ChangeRecord convertToChangeRecord(Object cloneCollection, ObjectChangeSet owner, AbstractSession session) {
         ContainerPolicy cp = getContainerPolicy();
         Object cloneIter = cp.iteratorFor(cloneCollection);
-        Vector collectionChanges = new Vector(2);
+        List<ObjectChangeSet> collectionChanges = new ArrayList<>(2);
         while (cp.hasNext(cloneIter)) {
             Object aggregateObject = cp.next(cloneIter, session);
 
             // For CR#2258 quietly ignore nulls inserted into a collection.
             if (aggregateObject != null) {
                 ObjectChangeSet changes = getReferenceDescriptor(aggregateObject.getClass(), session).getObjectBuilder().compareForChange(aggregateObject, null, (UnitOfWorkChangeSet)owner.getUOWChangeSet(), session);
-                collectionChanges.addElement(changes);
+                collectionChanges.add(changes);
             }
         }
 
