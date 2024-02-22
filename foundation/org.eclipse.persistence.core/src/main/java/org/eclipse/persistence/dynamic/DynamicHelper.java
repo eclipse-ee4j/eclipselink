@@ -73,7 +73,7 @@ public class DynamicHelper {
     /**
      * Lookup the dynamic type for an alias. This is required to get the type
      * for factory creation but can also be used to provide the application with
-     * access to the meta model (type and properties) allowing for dynamic use
+     * access to the metamodel (type and properties) allowing for dynamic use
      * as well as optimized data value retrieval from an entity.
      */
     public DynamicType getType(String typeName) {

@@ -49,7 +49,7 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Map of {@link DynamicClassWriter} used to dynamically create a class in
      * the {@link #findClass(String)} call. The application must register
-     * classes using addClass or createDynameClass prior to the
+     * classes using addClass or createDynamicClass prior to the
      * {@link #findClass(String)} being invoked.
      * <p>
      * The map of writers is maintained for the life of this DynamicClassLoader
@@ -164,14 +164,11 @@ public class DynamicClassLoader extends ClassLoader {
      */
     public Class<?> createDynamicClass(String className, DynamicClassWriter writer) {
         addClass(className, writer);
-        Class<?> newDynamicClass = null;
         try {
-            newDynamicClass = loadClass(className);
+            return checkAssignable(loadClass(className));
+        } catch (ClassNotFoundException cnfe) {
+            throw new IllegalArgumentException("DynamicClassLoader: could not create class " + className);
         }
-        catch (ClassNotFoundException cnfe) {
-            throw new IllegalArgumentException("DyanmicClassLoader: could not create class " + className);
-        }
-        return checkAssignable(newDynamicClass);
     }
 
     protected Class<?> checkAssignable(Class<?> clz) {
@@ -256,8 +253,8 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     * Converts an array of bytes into an instance of class <code>Class</code>.
-     * Before the <code>Class</code> can be used it must be resolved.
+     * Converts an array of bytes into an instance of class {@code Class}.
+     * Before the {@code Class} can be used it must be resolved.
      *
      */
     protected Class<?> defineDynamicClass(String name, byte[] b)  {
@@ -279,8 +276,8 @@ public class DynamicClassLoader extends ClassLoader {
             cm = session.getPlatform().getConversionManager();
         }
 
-        if (cm.getLoader() instanceof DynamicClassLoader) {
-            return (DynamicClassLoader) cm.getLoader();
+        if (cm.getLoader() instanceof DynamicClassLoader cl) {
+            return cl;
         }
 
         DynamicClassLoader dcl = new DynamicClassLoader(cm.getLoader());

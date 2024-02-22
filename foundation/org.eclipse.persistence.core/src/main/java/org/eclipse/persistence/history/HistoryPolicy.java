@@ -50,7 +50,7 @@ import java.util.List;
 /**
  * <b>Purpose:</b>Expresses how historical data is saved on the data store.
  * <p>This information is used to both maintain a history of all objects
- * modified through TopLink and to enable point in time querying.
+ * modified through EclipseLink and to enable point in time querying.
  * <p>If Oracle 9R2 or later Flashback is used this policy is not required, as
  * the preservation of history is automatic.
  * <p>Descriptors, ManyToManyMappings, DirectCollectionMappings,
@@ -88,62 +88,57 @@ public class HistoryPolicy implements Cloneable, Serializable {
         //
         AsOfClause clause = base.getAsOfClause();
         Object value = clause.getValue();
-        Expression join = null;
-        Expression subJoin = null;
-        Expression start = null;
-        Expression end = null;
         if (value == null) {
             return null;
             // for now nothing as assume mirroring historical tables.
+        }
+        if (value instanceof Expression) {
+            // Sort of an implementation of native sql.
+            // Print AS OF TIMESTAMP (SYSDATE - 1000*60*10) not AS OF ('SYSDATE - 1000*60*10').
+            if ((value instanceof ConstantExpression ce) && (ce.getValue() instanceof String s)) {
+                value = s;
+            }
         } else {
-            if (value instanceof Expression) {
-                // Sort of an implementation of native sql.
-                // Print AS OF TIMESTAMP (SYSDATE - 1000*60*10) not AS OF ('SYSDATE - 1000*60*10').
-                if ((value instanceof ConstantExpression) && (((ConstantExpression)value).getValue() instanceof String)) {
-                    value = (((ConstantExpression)value).getValue());
-                }
-            } else {
-                ConversionManager converter = ConversionManager.getDefaultManager();
-                value = converter.convertObject(value, ClassConstants.TIMESTAMP);
+            ConversionManager converter = ConversionManager.getDefaultManager();
+            value = converter.convertObject(value, ClassConstants.TIMESTAMP);
+        }
+
+        if (getMapping() != null) {
+            if (tableIndex != null && tableIndex > 0) {
+                return null;
             }
+            DatabaseTable historicalTable = getHistoricalTables().get(0);
+            TableExpression tableExp = (TableExpression)((ObjectExpression)base).existingDerivedTable(historicalTable);
 
-            if (getMapping() != null) {
-                if (tableIndex != null && tableIndex > 0) {
-                    return null;
-                }
-                TableExpression tableExp = null;
-                DatabaseTable historicalTable = getHistoricalTables().get(0);
-                tableExp = (TableExpression)((ObjectExpression)base).existingDerivedTable(historicalTable);
+            Expression start = tableExp.getField(getStart());
+            Expression end = tableExp.getField(getEnd());
 
-                start = tableExp.getField(getStart());
-                end = tableExp.getField(getEnd());
+            Expression join = start.lessThanEqual(value).and(end.isNull().or(end.greaterThan(value)));
 
-                join = start.lessThanEqual(value).and(end.isNull().or(end.greaterThan(value)));
+            // We also need to do step two here in advance.
+            tableExp.setTable(historicalTable);
 
-                // We also need to do step two here in advance.
-                tableExp.setTable(historicalTable);
-
-                return join;
-            }
-            int iFirst, iLast;
-            if (tableIndex == null) {
-                // loop through all history tables
-                iFirst = 0;
-                iLast = getHistoricalTables().size() - 1;
-            } else {
-                // only return expression for the specified table
-                iFirst = tableIndex;
-                iLast = iFirst;
-            }
-            for (int i = iFirst; i <= iLast ; i++) {
-                start = base.getField(getStart(i));
-                end = base.getField(getEnd(i));
-
-                subJoin = start.lessThanEqual(value).and(end.isNull().or(end.greaterThan(value)));
-                join = ((join == null) ? subJoin : join.and(subJoin));
-            }
             return join;
         }
+        int iFirst, iLast;
+        if (tableIndex == null) {
+            // loop through all history tables
+            iFirst = 0;
+            iLast = getHistoricalTables().size() - 1;
+        } else {
+            // only return expression for the specified table
+            iFirst = tableIndex;
+            iLast = iFirst;
+        }
+        Expression join = null;
+        for (int i = iFirst; i <= iLast ; i++) {
+            Expression start = base.getField(getStart(i));
+            Expression end = base.getField(getEnd(i));
+
+            Expression subJoin = start.lessThanEqual(value).and(end.isNull().or(end.greaterThan(value)));
+            join = ((join == null) ? subJoin : join.and(subJoin));
+        }
+        return join;
     }
 
     /**
@@ -153,27 +148,27 @@ public class HistoryPolicy implements Cloneable, Serializable {
      */
     @Override
     public Object clone() {
-        HistoryPolicy clone = null;
         try {
-            clone = (HistoryPolicy)super.clone();
-        } catch (CloneNotSupportedException ignore) {
-        }
-        if (startFields != null) {
-            clone.setStartFields(new ArrayList(startFields.size()));
-            for (DatabaseField field : startFields) {
-                clone.getStartFields().add(field.clone());
+            HistoryPolicy clone = (HistoryPolicy) super.clone();
+            if (startFields != null) {
+                clone.setStartFields(new ArrayList<>(startFields.size()));
+                for (DatabaseField field : startFields) {
+                    clone.getStartFields().add(field.clone());
+                }
             }
-        }
-        if (endFields != null) {
-            clone.setEndFields(new ArrayList(endFields.size()));
-            for (DatabaseField field : endFields) {
-                clone.getEndFields().add(field.clone());
+            if (endFields != null) {
+                clone.setEndFields(new ArrayList<>(endFields.size()));
+                for (DatabaseField field : endFields) {
+                    clone.getEndFields().add(field.clone());
+                }
             }
+            if (historicalTables != null) {
+                clone.setHistoricalTables(new ArrayList<>(historicalTables));
+            }
+            return clone;
+        } catch (CloneNotSupportedException cnse) {
+            throw new InternalError(cnse);
         }
-        if (historicalTables != null) {
-            clone.setHistoricalTables(new ArrayList(historicalTables));
-        }
-        return clone;
     }
 
     /**
@@ -229,7 +224,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * PUBLIC:
      */
     public List<String> getHistoryTableNames() {
-        List<String> names = new ArrayList(getHistoricalTables().size());
+        List<String> names = new ArrayList<>(getHistoricalTables().size());
         for (DatabaseTable table : getHistoricalTables()) {
             names.add(table.getQualifiedName());
         }
@@ -384,29 +379,26 @@ public class HistoryPolicy implements Cloneable, Serializable {
             // The user did not specify history tables/fields in order, so
             // initialize will take a little longer.
             List<DatabaseTable> unsortedTables = getHistoricalTables();
-            List<DatabaseTable> sortedTables = new ArrayList(unsortedTables.size());
-            List<DatabaseField> sortedStartFields = new ArrayList(unsortedTables.size());
-            List<DatabaseField> sortedEndFields = new ArrayList(unsortedTables.size());
+            List<DatabaseTable> sortedTables = new ArrayList<>(unsortedTables.size());
+            List<DatabaseField> sortedStartFields = new ArrayList<>(unsortedTables.size());
+            List<DatabaseField> sortedEndFields = new ArrayList<>(unsortedTables.size());
             boolean universalStartField = ((getStartFields().size() == 1) && (!(getStartFields().get(0)).hasTableName()));
             boolean universalEndField = ((getEndFields().size() == 1) && (!(getEndFields().get(0)).hasTableName()));
-            DatabaseTable descriptorTable = null;
-            DatabaseTable historicalTable = null;
-            DatabaseField historyField = null;
 
             List<DatabaseTable> descriptorTables = getDescriptor().getTables();
             for (int i = offset; i < descriptorTables.size(); i++) {
-                descriptorTable = descriptorTables.get(i);
+                DatabaseTable descriptorTable = descriptorTables.get(i);
 
                 int index = unsortedTables.indexOf(descriptorTable);
                 if (index == -1) {
                     // this is a configuration error!
                 }
-                historicalTable = unsortedTables.get(index);
+                DatabaseTable historicalTable = unsortedTables.get(index);
                 historicalTable.setTableQualifier(descriptorTable.getTableQualifier());
                 sortedTables.add(historicalTable);
 
                 if (universalStartField) {
-                    historyField = getStart(0).clone();
+                    DatabaseField historyField = getStart(0).clone();
                     historyField.setTable(historicalTable);
                     sortedStartFields.add(historyField);
                 } else {
@@ -418,7 +410,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                     }
                 }
                 if (universalEndField) {
-                    historyField = getEnd(0).clone();
+                    DatabaseField historyField = getEnd(0).clone();
                     historyField.setTable(historicalTable);
                     sortedEndFields.add(historyField);
                 } else {
@@ -471,8 +463,8 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * PUBLIC:
      * Use to specify the names of the mirroring historical tables.
      * <p>
-     * Explicitly states that <code>sourceTableName</code> is mirrored by history table
-     * <code>historyTableName</code>.
+     * Explicitly states that {@code sourceTableName} is mirrored by history table
+     * {@code historyTableName}.
      * The order in which tables are added with descriptor.addTableName()
      * should still match the order in which mirroring historical tables are
      * added with descriptor.addMirroringHistoryTableName().
@@ -517,10 +509,10 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * PUBLIC:
      * Sets the name of the start field.
      * <p>
-     * By default all tables belonging to a descriptor have the same primary
+     * By default, all tables belonging to a descriptor have the same primary
      * key field names, and so the same start field names also.
      * <p>
-     * However, if <code>startFieldName</code> is qualified, i.e. of the form
+     * However, if {@code startFieldName} is qualified, i.e. of the form
      * "EMPLOYEE_HIST.EMP_START", then this call will only set the start field
      * name for a single historical table.
      */
@@ -574,7 +566,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         endField.setLength(6);
 
         if (endFields == null) {
-            endFields = new ArrayList();
+            endFields = new ArrayList<>();
             endFields.add(endField);
             return;
         }
@@ -599,7 +591,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     }
 
     /**
-     * Sets if TopLink is responsible for writing history.
+     * Sets if EclipseLink is responsible for writing history.
      * <p>
      * If history is maintained via low level database triggers or application
      * logic a policy is still needed for point in time querying.
@@ -617,10 +609,10 @@ public class HistoryPolicy implements Cloneable, Serializable {
     }
 
     /**
-     * Answers if TopLink is responsible for writing history.
+     * Answers if EclipseLink is responsible for writing history.
      * <p>
      * If history is maintained via low level database triggers or application
-     * logic a policy is still usefull for point in time querying.
+     * logic a policy is still useful for point in time querying.
      * <p>
      * If Oracle flashback is used no HistoryPolicy is needed.
      * @return true by default
@@ -631,7 +623,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     }
 
     /**
-     * Sets if the Timestamp used in maintainaing history should be the
+     * Sets if the Timestamp used in maintaining history should be the
      * current time according to the database.
      * @param value if false uses localTime (default) instead
      */
@@ -709,8 +701,8 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * are part of a minimal update.
      */
     protected boolean checkWastedVersioning(AbstractRecord modifyRow, DatabaseTable table) {
-        for (Enumeration fieldsEnum = modifyRow.keys(); fieldsEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
+        for (Enumeration<DatabaseField> fieldsEnum = modifyRow.keys(); fieldsEnum.hasMoreElements();) {
+            DatabaseField field = fieldsEnum.nextElement();
             if (field.getTable().equals(table) || (!field.hasTableName())) {
                 return true;
             }
