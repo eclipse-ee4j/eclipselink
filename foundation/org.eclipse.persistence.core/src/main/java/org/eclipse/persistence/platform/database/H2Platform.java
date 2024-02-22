@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class H2Platform extends DatabasePlatform {
+    @Serial
     private static final long serialVersionUID = -2935483687958482934L;
 
     public H2Platform() {

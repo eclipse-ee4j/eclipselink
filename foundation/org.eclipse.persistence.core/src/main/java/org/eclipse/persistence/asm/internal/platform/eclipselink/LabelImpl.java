@@ -38,6 +38,7 @@ public class LabelImpl implements org.eclipse.persistence.asm.Label {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.elLabel;
     }

@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
- * Copyright (c) 2011, 2023 Jenzabar, Inc. All rights reserved.
+ * Copyright (c) 2011, 2024 Jenzabar, Inc. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.io.Writer;
 import java.sql.ResultSet;
@@ -76,6 +77,7 @@ public class Informix11Platform extends InformixPlatform {
    *
    * @see Serializable
    */
+  @Serial
   private static final long serialVersionUID = 1L;
 
   /**

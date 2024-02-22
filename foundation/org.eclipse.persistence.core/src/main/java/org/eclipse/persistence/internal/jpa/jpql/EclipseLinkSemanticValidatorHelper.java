@@ -67,12 +67,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         if (ExpressionTools.stringIsNotEmpty(variableName)) {
 
             // Add the IdentificationVariable to the list
-            List<IdentificationVariable> variables = identificationVariables.get(variableName);
-
-            if (variables == null) {
-                variables = new ArrayList<>();
-                identificationVariables.put(variableName, variables);
-            }
+            List<IdentificationVariable> variables = identificationVariables.computeIfAbsent(variableName, k -> new ArrayList<>());
 
             variables.add(identificationVariable);
         }

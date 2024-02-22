@@ -52,6 +52,7 @@ public abstract class EclipseLinkAnnotationVisitor extends AnnotationVisitor {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         if (this.annotationVisitor instanceof org.eclipse.persistence.asm.internal.platform.ow2.AnnotationVisitorImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.AnnotationVisitorImpl)this.annotationVisitor).getInternal(this.customAnnotationVisitor);

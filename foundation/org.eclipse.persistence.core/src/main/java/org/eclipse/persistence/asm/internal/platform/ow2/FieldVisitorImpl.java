@@ -81,6 +81,7 @@ public class FieldVisitorImpl extends org.eclipse.persistence.asm.FieldVisitor {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.ow2FieldVisitor;
     }

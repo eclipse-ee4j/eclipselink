@@ -23,6 +23,7 @@
 //     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> implements MappedSuperclassType<X> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = 3770722221322920646L;
 
     /**

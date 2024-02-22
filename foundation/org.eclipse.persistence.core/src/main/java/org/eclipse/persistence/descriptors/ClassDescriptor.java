@@ -602,11 +602,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         setAdditionalTablePrimaryKeyFields(sourceForeignKeyField.getTable(), targetPrimaryKeyField, sourceForeignKeyField);
-        Set<DatabaseTable> sourceTables = getMultipleTableForeignKeys().get(targetPrimaryKeyField.getTable());
-        if(sourceTables == null) {
-            sourceTables = new HashSet<>(3);
-            getMultipleTableForeignKeys().put(targetPrimaryKeyField.getTable(), sourceTables);
-        }
+        Set<DatabaseTable> sourceTables = getMultipleTableForeignKeys().computeIfAbsent(targetPrimaryKeyField.getTable(), k -> new HashSet<>(3));
         sourceTables.add(sourceForeignKeyField.getTable());
     }
 
@@ -4294,12 +4290,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * descriptor.
      */
     protected void setAdditionalTablePrimaryKeyFields(DatabaseTable table, DatabaseField field1, DatabaseField field2) {
-        Map<DatabaseField, DatabaseField> tableAdditionalPKFields = getAdditionalTablePrimaryKeyFields().get(table);
-
-        if (tableAdditionalPKFields == null) {
-            tableAdditionalPKFields = new HashMap<>(2);
-            getAdditionalTablePrimaryKeyFields().put(table, tableAdditionalPKFields);
-        }
+        Map<DatabaseField, DatabaseField> tableAdditionalPKFields = getAdditionalTablePrimaryKeyFields().computeIfAbsent(table, k -> new HashMap<>(2));
 
         tableAdditionalPKFields.put(field1, field2);
     }

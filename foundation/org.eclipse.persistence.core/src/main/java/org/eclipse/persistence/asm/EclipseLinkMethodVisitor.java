@@ -231,7 +231,8 @@ public class EclipseLinkMethodVisitor extends MethodVisitor {
         return this.methodVisitor.visitAnnotationSuper(descriptor, visible);
     }
 
-        @Override
+    @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         if (this.methodVisitor instanceof org.eclipse.persistence.asm.internal.platform.ow2.MethodVisitorImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.MethodVisitorImpl)this.methodVisitor).getInternal(this.customMethodVisitor);

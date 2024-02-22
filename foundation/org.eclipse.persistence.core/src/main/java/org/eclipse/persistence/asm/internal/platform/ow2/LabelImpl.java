@@ -37,7 +37,8 @@ public class LabelImpl implements org.eclipse.persistence.asm.Label {
         this.ow2Label = label;
     }
 
-        @Override
+    @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.ow2Label;
     }

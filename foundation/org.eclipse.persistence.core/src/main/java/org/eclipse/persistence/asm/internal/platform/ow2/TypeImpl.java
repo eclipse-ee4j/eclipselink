@@ -65,7 +65,7 @@ public class TypeImpl extends org.eclipse.persistence.asm.Type {
 
     @Override
     public String getMethodDescriptorInternal(org.eclipse.persistence.asm.Type returnType, org.eclipse.persistence.asm.Type... argumentTypes) {
-        Type[] unwrappedArgumentTypes = Arrays.stream(argumentTypes).map(value -> value.unwrap()).toArray(size -> new org.objectweb.asm.Type[size]);
+        Type[] unwrappedArgumentTypes = Arrays.stream(argumentTypes).map(value -> value.unwrap()).toArray(org.objectweb.asm.Type[]::new);
         return this.type.getMethodDescriptor(returnType.unwrap(), unwrappedArgumentTypes);
     }
 
@@ -75,6 +75,7 @@ public class TypeImpl extends org.eclipse.persistence.asm.Type {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.type;
     }

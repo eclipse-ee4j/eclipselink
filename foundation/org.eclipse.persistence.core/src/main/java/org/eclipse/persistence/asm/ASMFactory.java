@@ -302,7 +302,7 @@ public class ASMFactory {
         final Map<String, Integer> versionMap = new LinkedHashMap<>();
         Pattern searchPattern = Pattern.compile("^V\\d((_\\d)?|\\d*)");
         try {
-            Class opcodesClazz = Opcodes.getOpcodesClass();
+            Class<?> opcodesClazz = Opcodes.getOpcodesClass();
             for (Field f : opcodesClazz.getDeclaredFields()) {
                 if (searchPattern.matcher(f.getName()).matches()) {
                     versionMap.put(f.getName().replace("V","").replace('_', '.'), f.getInt(opcodesClazz));

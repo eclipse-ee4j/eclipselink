@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 //
 package org.eclipse.persistence.jpa.jpql.tools.utility.iterator;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
@@ -183,7 +184,9 @@ public class CloneIterator<E>
             public void remove(Object element) {
                 throw new UnsupportedOperationException();
             }
+            @Serial
             private static final long serialVersionUID = 1L;
+            @Serial
             private Object readResolve() {
                 // replace this object with the singleton
                 return INSTANCE;

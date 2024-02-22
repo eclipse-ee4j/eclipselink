@@ -341,11 +341,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
             this.systemId = file.toURI().toURL().toExternalForm();
 
-            FileInputStream inputStream = new FileInputStream(file);
-            try {
+            try (FileInputStream inputStream = new FileInputStream(file)) {
                 return unmarshal(inputStream);
-            } finally {
-                inputStream.close();
             }
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
@@ -364,11 +361,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
             this.systemId = file.toURI().toURL().toExternalForm();
 
-            FileInputStream inputStream = new FileInputStream(file);
-            try {
+            try (FileInputStream inputStream = new FileInputStream(file)) {
                 return unmarshal(inputStream, clazz);
-            } finally {
-                inputStream.close();
             }
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);

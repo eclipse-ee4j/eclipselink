@@ -1590,17 +1590,12 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     private byte[] base64RemoveWhiteSpaces(String sourceObject) {
         StringTokenizer tokenizer = new StringTokenizer(sourceObject);
         ByteArrayOutputStream baos = new ByteArrayOutputStream(sourceObject.length());
-        try {
+        try (baos) {
             while (tokenizer.hasMoreTokens()) {
                 baos.write(tokenizer.nextToken().getBytes());
             }
         } catch (IOException e) {
             throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.APBYTE, e);
-        } finally {
-            try {
-                baos.close();
-            } catch (Exception e) {
-            }
         }
         return baos.toByteArray();
     }

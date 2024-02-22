@@ -21,13 +21,17 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.Map;
 
-public class Util {
+public final class Util {
 
     //java.lang.invoke.VarHandle >= JDK 9
 
+
+    private Util() {
+        // no instance
+    }
+
     public static Object getFieldValue(Map<String, String> targetNames, String name, Class<?> type) {
         String asmService = ASMFactory.getAsmService();
-        Object result = null;
         try {
             MethodHandles.Lookup lookup = MethodHandles.lookup();
             String className = targetNames.get(asmService);
@@ -36,11 +40,10 @@ public class Util {
             }
             Class<?> clazz = Class.forName(className);
             VarHandle field = lookup.findStaticVarHandle(clazz, name, type);
-            result = field.get();
+            return field.get();
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {
             throw ValidationException.notAvailableASMService();
         }
-        return result;
     }
 
 }

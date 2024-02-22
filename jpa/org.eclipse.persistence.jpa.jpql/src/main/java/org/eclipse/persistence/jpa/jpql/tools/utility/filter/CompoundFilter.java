@@ -15,6 +15,7 @@
 //
 package org.eclipse.persistence.jpa.jpql.tools.utility.filter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.eclipse.persistence.jpa.jpql.utility.filter.Filter;
 
@@ -44,6 +45,7 @@ public abstract class CompoundFilter<T> implements Filter<T>,
      * sender and receiver of a serialized object have loaded classes for that object that are
      * compatible with respect to serialization.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

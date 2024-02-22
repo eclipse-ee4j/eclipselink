@@ -89,6 +89,7 @@ public class EclipseLinkASMClassWriter extends ClassWriter {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         if (this.classWriter instanceof org.eclipse.persistence.asm.internal.platform.ow2.ClassWriterImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.ClassWriterImpl)this.classWriter).getInternal(this.customClassWriter);

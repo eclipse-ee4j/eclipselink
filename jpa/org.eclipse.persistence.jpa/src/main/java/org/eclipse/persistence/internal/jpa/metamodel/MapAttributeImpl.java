@@ -29,6 +29,7 @@
 //       collection javaType C in <X,C,V) of <X, Map<K,V>, V> instead off the elementType V
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serial;
 import java.util.Map;
 
 import jakarta.persistence.metamodel.MapAttribute;
@@ -62,6 +63,7 @@ import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>, V> implements MapAttribute<X, K, V> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = 5702748112869113135L;
 
     /** The key type that this Map type is based on **/

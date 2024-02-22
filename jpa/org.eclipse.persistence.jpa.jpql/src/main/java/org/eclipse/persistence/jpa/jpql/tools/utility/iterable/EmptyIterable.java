@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 //
 package org.eclipse.persistence.jpa.jpql.tools.utility.iterable;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Iterator;
 import org.eclipse.persistence.jpa.jpql.tools.utility.iterator.EmptyIterator;
@@ -43,6 +44,7 @@ public final class EmptyIterable<E> implements Iterable<E>, Serializable {
     /**
      * The serial version UID of this class.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -67,6 +69,7 @@ public final class EmptyIterable<E> implements Iterable<E>, Serializable {
         return EmptyIterator.instance();
     }
 
+    @Serial
     private Object readResolve() {
         // Replace this object with the singleton
         return INSTANCE;

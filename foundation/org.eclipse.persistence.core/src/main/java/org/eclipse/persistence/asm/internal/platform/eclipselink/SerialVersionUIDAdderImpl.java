@@ -33,7 +33,8 @@ public class SerialVersionUIDAdderImpl extends org.eclipse.persistence.asm.Seria
         this.elSerialVersionUIDAdder = new ElSerialVersionUIDAdder((classVisitor != null) ? classVisitor.unwrap() : null);
     }
 
-        @Override
+    @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.elSerialVersionUIDAdder;
     }

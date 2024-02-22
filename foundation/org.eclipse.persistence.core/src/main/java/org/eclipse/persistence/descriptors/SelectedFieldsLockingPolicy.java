@@ -150,11 +150,7 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
             DatabaseField field = lockFields.get(index);
             field = descriptor.buildField(field);
             lockFields.set(index, field);
-            List<DatabaseField> fieldsForTable = getLockFieldsByTable().get(field.getTable());
-            if (fieldsForTable == null) {
-                fieldsForTable = new ArrayList<>();
-                getLockFieldsByTable().put(field.getTable(), fieldsForTable);
-            }
+            List<DatabaseField> fieldsForTable = getLockFieldsByTable().computeIfAbsent(field.getTable(), k -> new ArrayList<>());
             fieldsForTable.add(field);
         }
     }

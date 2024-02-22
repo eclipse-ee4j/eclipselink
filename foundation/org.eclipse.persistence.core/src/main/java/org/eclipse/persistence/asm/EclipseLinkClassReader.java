@@ -71,7 +71,8 @@ public class EclipseLinkClassReader extends ClassReader {
         return classReader.getInterfaces();
     }
 
-        @Override
+    @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         if (this.classReader instanceof org.eclipse.persistence.asm.internal.platform.ow2.ClassReaderImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.ClassReaderImpl)this.classReader).getInternal();

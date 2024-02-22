@@ -99,7 +99,7 @@ public class Opcodes {
         return ((int) Util.getFieldValue(ASM_OPCCODES_MAP, fieldName, Integer.TYPE));
     }
 
-    public static Class getOpcodesClass() {
+    public static Class<?> getOpcodesClass() {
         String asmService = ASMFactory.getAsmService();
         Class<?> clazz;
         try {

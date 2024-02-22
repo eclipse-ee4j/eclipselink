@@ -62,7 +62,7 @@ public class Diner extends Person {
     }
 
     /**
-     * Return a platform independant definition of the database table.
+     * Return a platform independent definition of the database table.
      */
     public static org.eclipse.persistence.tools.schemaframework.TableDefinition relationTableDefinition() {
         org.eclipse.persistence.tools.schemaframework.TableDefinition definition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();

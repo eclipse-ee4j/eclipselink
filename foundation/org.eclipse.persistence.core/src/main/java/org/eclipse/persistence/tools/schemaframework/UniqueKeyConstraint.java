@@ -20,8 +20,10 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * <p>
@@ -29,32 +31,30 @@ import java.util.Vector;
  */
 public class UniqueKeyConstraint implements Serializable {
     protected String name;
-    protected Vector<String> sourceFields; // field names
+    protected List<String> sourceFields; // field names
 
     public UniqueKeyConstraint() {
         this.name = "";
-        this.sourceFields = new Vector<>();
+        this.sourceFields = new ArrayList<>();
     }
 
     public UniqueKeyConstraint(String name, String sourceField) {
         this();
         this.name = name;
-        sourceFields.addElement(sourceField);
+        sourceFields.add(sourceField);
     }
 
     public UniqueKeyConstraint(String name, String[] sourceFields) {
         this();
         this.name = name;
-        for(String sourceField : sourceFields) {
-            this.sourceFields.addElement(sourceField);
-        }
+        this.sourceFields.addAll(Arrays.asList(sourceFields));
     }
 
     /**
      * PUBLIC:
      */
     public void addSourceField(String sourceField) {
-        getSourceFields().addElement(sourceField);
+        getSourceFields().add(sourceField);
     }
 
     /**
@@ -87,7 +87,7 @@ public class UniqueKeyConstraint implements Serializable {
     /**
      * PUBLIC:
      */
-    public Vector<String> getSourceFields() {
+    public List<String> getSourceFields() {
         return sourceFields;
     }
 
@@ -101,7 +101,7 @@ public class UniqueKeyConstraint implements Serializable {
     /**
      * PUBLIC:
      */
-    public void setSourceFields(Vector<String> sourceFields) {
+    public void setSourceFields(List<String> sourceFields) {
         this.sourceFields = sourceFields;
     }
 }

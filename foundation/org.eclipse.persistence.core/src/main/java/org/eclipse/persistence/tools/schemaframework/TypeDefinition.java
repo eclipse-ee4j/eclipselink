@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * <p>
@@ -31,13 +31,13 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     protected List<FieldDefinition> fields;
 
     public TypeDefinition() {
-        this.fields = new Vector<>();
+        this.fields = new ArrayList<>();
     }
 
     /**
      * PUBLIC:
      * Add the field to the type, default sizes are used.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addField(String fieldName, Class<?> type) {
         this.addField(new FieldDefinition(fieldName, type));
@@ -46,7 +46,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     /**
      * PUBLIC:
      * Add the field to the type.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addField(String fieldName, Class<?> type, int fieldSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize));
@@ -55,7 +55,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     /**
      * PUBLIC:
      * Add the field to the type.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addField(String fieldName, Class<?> type, int fieldSize, int fieldSubSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize, fieldSubSize));

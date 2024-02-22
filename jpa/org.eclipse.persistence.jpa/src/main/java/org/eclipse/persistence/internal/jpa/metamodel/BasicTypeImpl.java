@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,8 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import jakarta.persistence.metamodel.BasicType;
 
+import java.io.Serial;
+
 /**
  * <p>
  * <b>Purpose</b>: Provides the implementation for the Basic interface
@@ -38,6 +40,7 @@ import jakarta.persistence.metamodel.BasicType;
 public class BasicTypeImpl<X> extends TypeImpl<X> implements BasicType<X> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = -4235705513407442769L;
 
     protected BasicTypeImpl(Class<X> javaClass) {

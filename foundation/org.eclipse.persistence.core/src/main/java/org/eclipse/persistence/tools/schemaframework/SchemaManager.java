@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 import java.util.function.Consumer;
 
 /**
@@ -93,7 +92,7 @@ public class SchemaManager {
      * to that writer.
      */
     public void appendToDDLWriter(String stringToWrite) {
-        // If this method is called, we know that it is the old case and
+        // If this method is called, we know that it is the old case, and
         // it would not matter which schemaWriter we use as both the
         // create and drop schemaWriters are essentially the same.
         // So just pick one.
@@ -250,7 +249,7 @@ public class SchemaManager {
     }
 
     /**
-     * Create all the receiver's sequences on the database for all of the loaded descriptors.
+     * Create all the receiver's sequences on the database for all the loaded descriptors.
      */
     public void createSequences() throws EclipseLinkException {
         createOrReplaceSequences(true);
@@ -269,7 +268,7 @@ public class SchemaManager {
     }
 
     /**
-     * Drop and recreate all the receiver's sequences on the database for all of the loaded descriptors.
+     * Drop and recreate all the receiver's sequences on the database for all the loaded descriptors.
      */
     public void replaceSequences() throws EclipseLinkException {
         createOrReplaceSequences(false);
@@ -487,7 +486,7 @@ public class SchemaManager {
         if (sequence.shouldAcquireValueAfterInsert()) {
             return null;
         }
-        Sequence defaultSequence = getDefaultSequnceOrNull(sequence);
+        Sequence defaultSequence = getDefaultSequenceOrNull(sequence);
         if (sequence.isTable() || (defaultSequence != null && defaultSequence.isTable())) {
             return new TableSequenceDefinition(sequence, createDatabaseSchemas);
         } else if (sequence.isUnaryTable() || (defaultSequence != null && defaultSequence.isUnaryTable())) {
@@ -598,7 +597,7 @@ public class SchemaManager {
     /**
      * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -609,7 +608,7 @@ public class SchemaManager {
     /**
      * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as s maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -620,7 +619,7 @@ public class SchemaManager {
     /**
      * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -636,7 +635,7 @@ public class SchemaManager {
     /**
      * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -708,9 +707,9 @@ public class SchemaManager {
      *  </OL>
      *
      * @param tableName a table name pattern
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllColumnNames(String tableName) throws DatabaseException {
+    public List<AbstractRecord> getAllColumnNames(String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, null, tableName, null, getSession());
     }
 
@@ -751,11 +750,11 @@ public class SchemaManager {
      *  </OL>
      *
      * @param creatorName a schema name pattern; "" retrieves those
-     * without a schema
-     * @param tableName a table name pattern
-     * @return a Vector of Records.
+     *                    without a schema
+     * @param tableName   a table name pattern
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
+    public List<AbstractRecord> getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, creatorName, tableName, null, getSession());
     }
 
@@ -776,9 +775,9 @@ public class SchemaManager {
      * <P><B>Note:</B> Some databases may not return information for
      * all tables.
      *
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllTableNames() throws DatabaseException {
+    public List<AbstractRecord> getAllTableNames() throws DatabaseException {
         return getAccessor().getTableInfo(null, null, null, null, getSession());
     }
 
@@ -819,10 +818,10 @@ public class SchemaManager {
      *  </OL>
      *
      * @param creatorName a schema name pattern; "" retrieves those
-     * without a schema
-     * @return a Vector of Records.
+     *                    without a schema
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllTableNames(String creatorName) throws DatabaseException {
+    public List<AbstractRecord> getAllTableNames(String creatorName) throws DatabaseException {
         return getAccessor().getTableInfo(null, creatorName, null, null, getSession());
     }
 
@@ -872,13 +871,13 @@ public class SchemaManager {
      * without a schema
      * @param tableName a table name pattern
      * @param columnName a column name pattern
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
+    public List<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
         return getAccessor().getColumnInfo(catalog, schema, tableName, columnName, getSession());
     }
 
-    public Vector<AbstractRecord> getColumnInfo(String tableName, String columnName) throws DatabaseException {
+    public List<AbstractRecord> getColumnInfo(String tableName, String columnName) throws DatabaseException {
         return getAccessor().getColumnInfo(tableName, columnName, getSession());
     }
 
@@ -913,9 +912,9 @@ public class SchemaManager {
      * without a schema
      * @param tableName a table name pattern
      * @param types a list of table types to include; null returns all types
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
+    public List<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
         return getAccessor().getTableInfo(catalog, schema, tableName, types, getSession());
     }
 
@@ -1235,7 +1234,7 @@ public class SchemaManager {
         }
     }
 
-    private Sequence getDefaultSequnceOrNull(Sequence s) {
+    private Sequence getDefaultSequenceOrNull(Sequence s) {
         return s instanceof DefaultSequence ? ((DefaultSequence)s).getDefaultSequence() : null;
     }
 }

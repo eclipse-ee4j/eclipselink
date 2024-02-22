@@ -34,6 +34,7 @@ import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -1340,6 +1341,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      *
      */
     static final class InArgComparer implements Comparator<PLSQLargument>, Serializable {
+        @Serial
         private static final long serialVersionUID = -4182293492217092689L;
         @Override
         public int compare(PLSQLargument arg0, PLSQLargument arg1) {
@@ -1354,6 +1356,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      *
      */
     static final class OutArgComparer implements Comparator<PLSQLargument>, Serializable {
+        @Serial
         private static final long serialVersionUID = -4182293492217092689L;
         @Override
         public int compare(PLSQLargument arg0, PLSQLargument arg1) {

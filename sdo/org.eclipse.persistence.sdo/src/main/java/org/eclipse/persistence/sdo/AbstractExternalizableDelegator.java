@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.ObjectStreamException;
+import java.io.Serial;
 
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 
@@ -47,6 +48,7 @@ public abstract class AbstractExternalizableDelegator implements Externalizable 
         delegate.readExternal(in);
     }
 
+    @Serial
     public Object readResolve() throws ObjectStreamException {
         return delegate.readResolve();
     }

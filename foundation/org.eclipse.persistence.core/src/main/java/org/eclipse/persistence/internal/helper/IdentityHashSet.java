@@ -19,6 +19,7 @@ package org.eclipse.persistence.internal.helper;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.Collection;
@@ -45,7 +46,8 @@ import java.util.Set;
  *
  */
 public class IdentityHashSet extends AbstractCollection implements Set, Cloneable, Serializable {
-    static final long serialVersionUID = 1619330892277906704L;
+    @Serial
+    private static final long serialVersionUID = 1619330892277906704L;
 
     // the default initial capacity
     static final int DEFAULT_INITIAL_CAPACITY = 32;
@@ -428,6 +430,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
      * <i>size</i> of the <code>IdentityHashSet</code>, followed by the
      * contents (in no particular order).
      */
+    @Serial
     private void writeObject(ObjectOutputStream s) throws IOException, ClassNotFoundException {
         // Write out the threshold, loadfactor (and any hidden 'magic' stuff).
         s.defaultWriteObject();
@@ -445,6 +448,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     /**
      * Deserialize the <code>IdentityHashSet</code> from a stream.
      */
+    @Serial
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         // Read in the threshold, loadfactor (and any hidden 'magic' stuff).
         s.defaultReadObject();

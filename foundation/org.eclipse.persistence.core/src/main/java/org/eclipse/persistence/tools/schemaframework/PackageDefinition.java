@@ -20,8 +20,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * <p>
@@ -33,8 +33,8 @@ public class PackageDefinition extends DatabaseObjectDefinition {
     protected List<StoredProcedureDefinition> procedures;
 
     public PackageDefinition() {
-        this.statements = new Vector<>();
-        this.procedures = new Vector<>();
+        this.statements = new ArrayList<>();
+        this.procedures = new ArrayList<>();
     }
 
     /**

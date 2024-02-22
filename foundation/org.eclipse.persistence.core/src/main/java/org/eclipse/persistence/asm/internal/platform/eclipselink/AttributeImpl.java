@@ -36,6 +36,7 @@ public class AttributeImpl implements org.eclipse.persistence.asm.Attribute {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.attribute;
     }

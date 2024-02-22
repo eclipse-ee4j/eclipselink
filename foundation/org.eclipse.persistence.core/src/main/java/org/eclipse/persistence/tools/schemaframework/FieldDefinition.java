@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -294,7 +294,7 @@ public class FieldDefinition implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Return the databasefield.
+     * Return the DatabaseField.
      */
     public DatabaseField getDatabaseField() {
         return field;
@@ -350,7 +350,7 @@ public class FieldDefinition implements Serializable, Cloneable {
      * PUBLIC:
      * Answer whether the receiver is an identity field.
      * Identity fields are Sybase specific,
-     * they insure that on insert a unique sequential value is stored in the row.
+     * they ensure that on insert a unique sequential value is stored in the row.
      */
     public boolean isIdentity() {
         return isIdentity;
@@ -398,7 +398,7 @@ public class FieldDefinition implements Serializable, Cloneable {
      * PUBLIC:
      * Set whether the receiver is an identity field.
      * Identity fields are Sybase specific,
-     * they insure that on insert a unique sequential value is stored in the row.
+     * they ensure that on insert a unique sequential value is stored in the row.
      */
     public void setIsIdentity(boolean value) {
         isIdentity = value;
@@ -430,7 +430,7 @@ public class FieldDefinition implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Set the DatabaseField that is associated to this FieldDefinition object.
-     * The databaesField is used when extending tables to see if this field already exists.
+     * The DatabaseField is used when extending tables to see if this field already exists.
      */
     public void setDatabaseField(DatabaseField field) {
         this.field = field;

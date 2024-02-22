@@ -28,7 +28,6 @@ import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -75,52 +74,34 @@ public final class JCEEncryptorCmd {
         }
     }
 
-    public String decryptPassword(String encryptedPswd) throws Exception {
+    public String decryptPassword(String encryptedPwd) throws Exception {
         String password = null;
         byte[] bytePassword = null;
         // try default AES/GCM algorithm first
         try {
-            password = jceEncryptor.decryptPassword(encryptedPswd);
+            password = jceEncryptor.decryptPassword(encryptedPwd);
         }  catch (Exception u) {
             try {
                 // try AES/CBC second
-                bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
+                bytePassword = Helper.buildBytesFromHexString(encryptedPwd);
                 password = new String(decryptCipherAES_CBC.doFinal(bytePassword), StandardCharsets.UTF_8);
             } catch (Exception w) {
-                ObjectInputStream oisAes = null;
-                try {
+                try (ObjectInputStream oisAes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherAES_ECB))) {
                     // try AES/ECB third
-                    oisAes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherAES_ECB));
                     password = (String) oisAes.readObject();
                 } catch (Exception x) {
-                    ObjectInputStream oisDes = null;
-                    try {
+                    try (ObjectInputStream oisDes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherDES_ECB))) {
                         // try DES/ECB fourth
-                        oisDes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherDES_ECB));
                         password = (String) oisDes.readObject();
                     } catch (ArrayIndexOutOfBoundsException y) {
                         // JCE 1.2.1 couldn't decrypt it, assume clear text
-                        password = encryptedPswd;
+                        password = encryptedPwd;
                     } catch (Exception z) {
                         if (z.getCause() instanceof IllegalBlockSizeException) {
                             // JCE couldn't decrypt it, assume clear text
-                            password = encryptedPswd;
+                            password = encryptedPwd;
                         } else {
                             throw ValidationException.errorDecryptingPassword(z);
-                        }
-                    } finally {
-                        if (oisDes != null) {
-                            try {
-                                oisDes.close();
-                            } catch (IOException e2) {
-                            }
-                        }
-                    }
-                } finally {
-                    if (oisAes != null) {
-                        try {
-                            oisAes.close();
-                        } catch (IOException e1) {
                         }
                     }
                 }

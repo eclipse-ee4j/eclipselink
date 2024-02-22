@@ -210,7 +210,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     /**
      * PUBLIC:
      * Set whether after each query execution the profile result should be logged.
-     * By default this is false.
+     * By default, this is false.
      */
     public void dontLogProfile() {
         setShouldLogProfile(false);
@@ -251,12 +251,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
             }
         }
 
-        Long totalTime = getOperationTimings().get(operationName);
-        if (totalTime == null) {
-            getOperationTimings().put(operationName, time);
-        } else {
-            getOperationTimings().put(operationName, totalTime + time);
-        }
+        getOperationTimings().merge(operationName, time, Long::sum);
     }
 
     /**
@@ -278,9 +273,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
     protected Map<String, Long> getOperationStartTimes() {
         Integer threadId = Thread.currentThread().hashCode();
-        if (getOperationStartTimesByThread().get(threadId) == null) {
-            getOperationStartTimesByThread().put(threadId, new Hashtable<>(10));
-        }
+        getOperationStartTimesByThread().computeIfAbsent(threadId, k -> new Hashtable<>(10));
         return getOperationStartTimesByThread().get(threadId);
     }
 
@@ -290,9 +283,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
     protected Map<String, Long> getOperationTimings() {
         Integer threadId = Thread.currentThread().hashCode();
-        if (getOperationTimingsByThread().get(threadId) == null) {
-            getOperationTimingsByThread().put(threadId, new Hashtable<>(10));
-        }
+        getOperationTimingsByThread().computeIfAbsent(threadId, k -> new Hashtable<>(10));
         return getOperationTimingsByThread().get(threadId);
     }
 
@@ -318,7 +309,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     /**
      * PUBLIC:
      * Set whether after each query execution the profile result should be logged.
-     * By default this is true.
+     * By default, this is true.
      */
     public void logProfile() {
         setShouldLogProfile(true);
@@ -377,7 +368,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * INTERNAL:
      * Finish a profile operation if profiling.
      * This assumes the start operation proceeds on the stack.
-     * The session must be passed to allow units of work etc. to share their parents profiler.
+     * The session must be passed to allow units of work etc. to share their parents' profiler.
      *
      * @return the execution result of the query.
      */
@@ -425,8 +416,8 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
                 profile.setTotalTime((endTime - startTime) - (getProfileTime() - nestedProfileStartTime));// Remove the profile time from the total time.;);
                 profile.setLocalTime(profile.getTotalTime() - (getNestTime() - startNestTime));
-                if (result instanceof Collection) {
-                    profile.setNumberOfInstancesEffected(((Collection)result).size());
+                if (result instanceof Collection<?> col) {
+                    profile.setNumberOfInstancesEffected(col.size());
                 } else {
                     profile.setNumberOfInstancesEffected(1);
                 }
@@ -513,7 +504,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     /**
      * PUBLIC:
      * Set whether after each query execution the profile result should be logged.
-     * By default this is true.
+     * By default, this is true.
      */
     public void setShouldLogProfile(boolean shouldLogProfile) {
         this.shouldLogProfile = shouldLogProfile;

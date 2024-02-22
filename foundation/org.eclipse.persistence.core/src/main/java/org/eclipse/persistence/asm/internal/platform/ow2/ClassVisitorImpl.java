@@ -152,6 +152,7 @@ public class ClassVisitorImpl extends org.eclipse.persistence.asm.ClassVisitor {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.ow2ClassVisitor;
     }

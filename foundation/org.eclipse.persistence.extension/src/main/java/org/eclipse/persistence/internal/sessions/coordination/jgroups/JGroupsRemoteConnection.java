@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,8 @@ import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.Receiver;
 
+import java.io.Serial;
+
 /**
  * <p>
  * <b>Purpose</b>: Define the implementation of the abstract RemoteConnection for JGroups.
@@ -35,6 +37,7 @@ import org.jgroups.Receiver;
  */
 public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
 
+    @Serial
     private static final long serialVersionUID = -2285543305296840902L;
 
     protected transient JChannel channel;

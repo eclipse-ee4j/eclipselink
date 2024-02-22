@@ -401,9 +401,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         if(!(this.fieldToClassNameMappings.containsKey(xmlField))) {
             this.fieldToClassNameMappings.put(xmlField, elementType.getName());
         }
-        if (classToFieldMappings.get(elementType) == null) {
-            classToFieldMappings.put(elementType, xmlField);
-        }
+        classToFieldMappings.putIfAbsent(elementType, xmlField);
         addChoiceElementMapping(xmlField, elementType);
     }
 
@@ -412,9 +410,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             getFieldToClassMappings().put(sourceField, elementType);
             this.fieldToClassNameMappings.put(sourceField, elementType.getName());
         }
-        if (getClassToSourceFieldsMappings().get(elementType) == null) {
-            getClassToSourceFieldsMappings().put(elementType, srcFields);
-        }
+        getClassToSourceFieldsMappings().putIfAbsent(elementType, srcFields);
         addChoiceElementMapping(srcFields, elementType, tgtFields);
     }
 
@@ -423,9 +419,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         for(XMLField sourceField:srcFields) {
             this.fieldToClassNameMappings.put(sourceField, elementTypeName);
         }
-        if (getClassNameToSourceFieldsMappings().get(elementTypeName) == null) {
-            getClassNameToSourceFieldsMappings().put(elementTypeName, srcFields);
-        }
+        getClassNameToSourceFieldsMappings().putIfAbsent(elementTypeName, srcFields);
         addChoiceElementMapping(srcFields, elementTypeName, tgtFields);
     }
 
@@ -440,18 +434,14 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         XMLField field = new XMLField(srcXpath);
         XMLField tgtField = new XMLField(tgtXpath);
         this.fieldToClassNameMappings.put(field, elementTypeName);
-        if(this.classNameToFieldMappings.get(elementTypeName) == null) {
-            this.classNameToFieldMappings.put(elementTypeName, field);
-        }
+        this.classNameToFieldMappings.putIfAbsent(elementTypeName, field);
         addChoiceElementMapping(field, elementTypeName, tgtField);
     }
 
     public void addChoiceElement(XMLField sourceField, Class<?> elementType, XMLField targetField) {
         getFieldToClassMappings().put(sourceField, elementType);
         this.fieldToClassNameMappings.put(sourceField, elementType.getName());
-        if (classToFieldMappings.get(elementType) == null) {
-            classToFieldMappings.put(elementType, sourceField);
-        }
+        classToFieldMappings.putIfAbsent(elementType, sourceField);
         addChoiceElementMapping(sourceField, elementType, targetField);
     }
 
@@ -500,9 +490,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     @Override
     public void addChoiceElement(XMLField field, String elementTypeName) {
         this.fieldToClassNameMappings.put(field, elementTypeName);
-        if (classNameToFieldMappings.get(elementTypeName) == null) {
-            classNameToFieldMappings.put(elementTypeName, field);
-        }
+        classNameToFieldMappings.putIfAbsent(elementTypeName, field);
         addChoiceElementMapping(field, elementTypeName);
     }
 
@@ -624,9 +612,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             XMLMapping mapping = this.choiceElementMappings.get(entry.getKey());
             mapping.convertClassNamesToClasses(classLoader);
 
-            if(fieldToClassMappings.get(entry.getKey()) == null) {
-                fieldToClassMappings.put(entry.getKey(), elementType);
-            }
+            fieldToClassMappings.putIfAbsent(entry.getKey(), elementType);
         }
         for(Entry<String, XMLField> next: this.classNameToFieldMappings.entrySet()) {
             String className = next.getKey();
@@ -686,9 +672,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 } catch (ClassNotFoundException exc) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
                 }
-                if(this.choiceElementMappingsByClass.get(elementType) == null) {
-                    this.choiceElementMappingsByClass.put(elementType, next.getValue());
-                }
+                this.choiceElementMappingsByClass.computeIfAbsent(elementType, k -> next.getValue());
                 next.getValue().convertClassNamesToClasses(classLoader);
             }
         }

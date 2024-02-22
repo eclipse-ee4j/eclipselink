@@ -49,7 +49,7 @@ public class ClassReaderImpl extends org.eclipse.persistence.asm.ClassReader {
 
     @Override
     public void accept(ClassVisitor classVisitor, Attribute[] attributePrototypes, int parsingOptions) {
-        org.objectweb.asm.Attribute[] attributePrototypesUnwrap = Arrays.stream(attributePrototypes).map(value -> value.unwrap()).toArray(size -> new org.objectweb.asm.Attribute[size]);
+        org.objectweb.asm.Attribute[] attributePrototypesUnwrap = Arrays.stream(attributePrototypes).map(value -> value.unwrap()).toArray(org.objectweb.asm.Attribute[]::new);
         ow2ClassReader.accept(classVisitor.unwrap(), attributePrototypesUnwrap, parsingOptions);
     }
 
@@ -69,6 +69,7 @@ public class ClassReaderImpl extends org.eclipse.persistence.asm.ClassReader {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.ow2ClassReader;
     }

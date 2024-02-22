@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
 
     /**
      * INTERNAL:
-     * Check if the sequence object already exists, in which case dont create it.
+     * Check if the sequence object already exists, in which case don't create it.
      */
     @Override
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {

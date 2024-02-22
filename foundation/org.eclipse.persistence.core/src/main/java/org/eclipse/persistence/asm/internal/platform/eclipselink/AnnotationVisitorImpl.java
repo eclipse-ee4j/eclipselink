@@ -124,6 +124,7 @@ public class AnnotationVisitorImpl extends org.eclipse.persistence.asm.Annotatio
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T) this.elAnnotationVisitor;
     }

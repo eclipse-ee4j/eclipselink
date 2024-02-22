@@ -25,9 +25,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -184,13 +184,13 @@ public final class FileUtil {
      * Return vector of all Files contained in a path.
      *
      * @filteredExtensions: filter files that end with specified strings i.e {".java", ".class", ".xml"}
-     *      If filteredExtensions == null or empty then then return all instances of File contained in the directory and its sub directories
+     *      If filteredExtensions == null or empty then return all instances of File contained in the directory and its subdirectories
      * @Path: a directory path or a file path.
      *      If it's file path then return a single instance of File
-     *      If it's directory path then return all instances of File contained in the directory and its sub directories
+     *      If it's directory path then return all instances of File contained in the directory and its subdirectories
      */
     public static List<File> findFiles(String path, String[] filteredExtensions) {
-        List<File> files = new Vector<>();
+        List<File> files = new ArrayList<>();
 
         findFilesHelper(new File(path), filteredExtensions, files);
         return files;

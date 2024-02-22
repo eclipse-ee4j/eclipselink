@@ -148,6 +148,7 @@ public class ClassWriterImpl extends org.eclipse.persistence.asm.ClassWriter {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.elClassWriter;
     }
