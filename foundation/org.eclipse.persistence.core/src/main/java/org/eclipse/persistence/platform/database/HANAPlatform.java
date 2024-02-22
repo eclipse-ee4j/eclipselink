@@ -37,6 +37,7 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -99,6 +100,7 @@ import java.util.List;
  */
 public final class HANAPlatform extends DatabasePlatform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private static final int MAX_VARTYPE_LENGTH = 2000;

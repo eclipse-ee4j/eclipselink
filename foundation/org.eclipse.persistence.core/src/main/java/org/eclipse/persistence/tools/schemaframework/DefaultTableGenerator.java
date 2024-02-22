@@ -217,7 +217,7 @@ public class DefaultTableGenerator {
         TableCreator tblCreator = generateDefaultTableCreator();
 
         try {
-            //table exisitence check.
+            //table existence check.
             java.sql.Connection conn = null;
             if (session.isServerSession()) {
                 //acquire a connection from the pool
@@ -273,14 +273,14 @@ public class DefaultTableGenerator {
      * collection/map mappings, which must be down in postInit method.
      */
     protected void initTableSchema(ClassDescriptor descriptor) {
-        TableDefinition tableDefintion = null;
+        TableDefinition tableDefinition = null;
         if (descriptor.hasTablePerClassPolicy() && descriptor.isAbstract()) {
             return;
         }
 
         //create a table definition for each mapped database table
         for (DatabaseTable table : descriptor.getTables()) {
-            tableDefintion = getTableDefFromDBTable(table);
+            tableDefinition = getTableDefFromDBTable(table);
         }
 
         //build each field definition and figure out which table it goes
@@ -298,7 +298,7 @@ public class DefaultTableGenerator {
                     isPKField = isPKField || secondaryKeyMap.containsValue(dbField);
                 }
 
-                // Now check if it is a tenant discriminat column primary key field.
+                // Now check if it is a tenant discriminator column primary key field.
                 isPKField = isPKField || dbField.isPrimaryKey();
 
                 //build or retrieve the field definition.
@@ -318,10 +318,10 @@ public class DefaultTableGenerator {
                 }
 
                 //find the table the field belongs to, and add it to the table, only if not already added.
-                tableDefintion = this.tableMap.get(dbField.getTableName());
+                tableDefinition = this.tableMap.get(dbField.getTableName());
 
-                if ((tableDefintion != null) && !tableDefintion.getFields().contains(fieldDef)) {
-                    tableDefintion.addField(fieldDef);
+                if ((tableDefinition != null) && !tableDefinition.getFields().contains(fieldDef)) {
+                    tableDefinition.addField(fieldDef);
                 }
             }
         }
@@ -540,11 +540,11 @@ public class DefaultTableGenerator {
     protected void resetFieldTypeForLOB(DirectToFieldMapping mapping) {
         if (mapping.getFieldClassification().getName().equals("java.sql.Blob")) {
             //allow the platform to figure out what database field type gonna be used.
-            //For example, Oracle9 will generate BLOB type, SQL Server generats IMAGE.
+            //For example, Oracle9 will generate BLOB type, SQL Server generates IMAGE.
             getFieldDefFromDBField(mapping.getField()).setType(Byte[].class);
         } else if (mapping.getFieldClassification().getName().equals("java.sql.Clob")) {
             //allow the platform to figure out what database field type gonna be used.
-            //For example, Oracle9 will generate CLOB type. SQL Server generats TEXT.
+            //For example, Oracle9 will generate CLOB type. SQL Server generates TEXT.
             getFieldDefFromDBField(mapping.getField()).setType(Character[].class);
         }
     }

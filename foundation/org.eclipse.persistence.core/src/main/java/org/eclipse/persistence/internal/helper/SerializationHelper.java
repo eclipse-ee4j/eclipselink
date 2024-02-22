@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,20 +56,10 @@ public class SerializationHelper {
         if (outputStream == null) {
             throw ValidationException.invalidNullMethodArguments();
         }
-        ObjectOutputStream outStream = null;
 
-        try {
+        try (ObjectOutputStream outStream = new ObjectOutputStream(outputStream)) {
             // stream closed in the finally
-            outStream = new ObjectOutputStream(outputStream);
             outStream.writeObject(obj);
-        } finally {
-            try {
-                if (outStream != null) {
-                    outStream.close();
-                }
-            } catch (IOException ex) {
-                // ignore;
-            }
         }
     }
 
@@ -95,20 +85,9 @@ public class SerializationHelper {
         if (inputStream == null) {
             throw new IllegalArgumentException("The inputStream argument cannot be null");
         }
-        ObjectInputStream inStream = null;
-        try {
+        try (ObjectInputStream inStream = new ObjectInputStream(inputStream)) {
             // stream closed in the finally
-            inStream = new ObjectInputStream(inputStream);
             return inStream.readObject();
-
-        } finally {
-            try {
-                if (inStream != null) {
-                    inStream.close();
-                }
-            } catch (IOException ex) {
-                // ignore
-            }
         }
     }
 

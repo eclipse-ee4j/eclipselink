@@ -38,6 +38,7 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -86,6 +87,7 @@ import org.eclipse.persistence.sessions.Project;
 public class MetamodelImpl implements Metamodel, Serializable {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = -7352420189248464690L;
 
     /** The EclipseLink Session associated with this Metamodel implementation that contains all our descriptors with mappings **/

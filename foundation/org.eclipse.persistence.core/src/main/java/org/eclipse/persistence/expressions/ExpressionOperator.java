@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +58,8 @@ import java.util.Vector;
 public class ExpressionOperator implements Serializable {
 
     /** Required for serialization compatibility. */
-    static final long serialVersionUID = -7066100204792043980L;
+    @Serial
+    private static final long serialVersionUID = -7066100204792043980L;
     protected int selector;
     protected String name;
 

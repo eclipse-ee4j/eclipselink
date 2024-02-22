@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2016, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,9 @@ package org.eclipse.persistence.tools.profiler;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,14 +36,14 @@ import java.util.Set;
  */
 public class FetchGroupMonitor {
 
-    public static Hashtable<Class<?>, Set<String>> fetchedAttributes = new Hashtable<>();
+    public static Map<Class<?>, Set<String>> fetchedAttributes = new HashMap<>();
     public static Boolean shouldMonitor;
 
     public static boolean shouldMonitor() {
         if (shouldMonitor == null) {
             shouldMonitor = Boolean.FALSE;
             String property = PrivilegedAccessHelper.getSystemProperty("org.eclipse.persistence.fetchgroupmonitor");
-            if ((property != null) && (property.toUpperCase().equals("TRUE"))) {
+            if ((property != null) && (property.equalsIgnoreCase("TRUE"))) {
                 shouldMonitor = Boolean.TRUE;
             }
         }
@@ -54,14 +55,8 @@ public class FetchGroupMonitor {
             return;
         }
         synchronized (fetchedAttributes) {
-            Set<String> classesFetchedAttributes = fetchedAttributes.get(domainClass);
-            if (classesFetchedAttributes == null) {
-                classesFetchedAttributes = new HashSet<>();
-                fetchedAttributes.put(domainClass, classesFetchedAttributes);
-            }
-            if (!classesFetchedAttributes.contains(attributeName)) {
-                classesFetchedAttributes.add(attributeName);
-            }
+            Set<String> classesFetchedAttributes = fetchedAttributes.computeIfAbsent(domainClass, k -> new HashSet<>());
+            classesFetchedAttributes.add(attributeName);
         }
     }
 }

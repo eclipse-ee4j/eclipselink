@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sdo;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -2574,6 +2575,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      *
      * @see org.eclipse.persistence.sdo.SDOResolvable
      */
+    @Serial
     public Object writeReplace() {
         // JIRA129: pass the helperContext to the constructor to enable non-static contexts
         return new SDOExternalizableDelegator(this, aHelperContext);

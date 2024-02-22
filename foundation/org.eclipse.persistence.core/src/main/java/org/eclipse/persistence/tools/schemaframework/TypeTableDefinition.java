@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * <p>
- * <b>Purpose</b>: Allow for tabels of Oracle 8 object-relational user defined type to be created.
+ * <b>Purpose</b>: Allow for tables of Oracle 8 object-relational user defined type to be created.
  * </p>
  */
 public class TypeTableDefinition extends TableDefinition {
@@ -69,7 +69,7 @@ public class TypeTableDefinition extends TableDefinition {
      * PUBLIC:
      * The name of the type that this table is of.
      */
-    public String getAdditonal() {
+    public String getAdditional() {
         return additional;
     }
 

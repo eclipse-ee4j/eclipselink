@@ -59,6 +59,7 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
@@ -86,6 +87,7 @@ import java.util.Vector;
  * @since TOPLink/Java 1.2
  */
 public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSession>, Cloneable, Serializable {
+    @Serial
     private static final long serialVersionUID = 6971791021041582975L;
 
     /**

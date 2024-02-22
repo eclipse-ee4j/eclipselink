@@ -40,6 +40,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1591,6 +1592,7 @@ public abstract class DatasourceCall implements Call {
      * This method is used to correct parameterTypes which are compared to static values using == equality, which changes
      * during serialization/deserialization.
      */
+    @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         if (parameterTypes !=null) {

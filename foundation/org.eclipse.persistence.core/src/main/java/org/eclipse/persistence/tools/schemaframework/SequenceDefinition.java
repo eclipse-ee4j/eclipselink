@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * INTERAL:
+     * INTERNAL:
      * Verify whether the sequence exists.
      */
     public abstract boolean checkIfExist(AbstractSession session) throws DatabaseException;
@@ -67,7 +67,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
 
     /**
      * INTERNAL:
-     * By default does nothing.
+     * By default, does nothing.
      */
     public void alterOnDatabase(AbstractSession session) throws EclipseLinkException {
     }
@@ -75,7 +75,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL:
      * Execute the SQL required to alter sequence.
-     * By default does nothing.
+     * By default, does nothing.
      */
     public void alter(AbstractSession session, Writer writer) throws ValidationException {
     }

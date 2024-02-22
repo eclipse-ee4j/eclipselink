@@ -46,7 +46,7 @@ public class PopulationManager {
     }
 
     /**
-     * Add all of the objects of the class and all of its subclasses.
+     * Add all the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
     public void addAllObjectsForAbstractClass(Class<?> objectsClass, AbstractSession session, Vector<Object> allObjects) {
@@ -58,7 +58,7 @@ public class PopulationManager {
     }
 
     /**
-     * Add all of the objects of the class and all of its subclasses.
+     * Add all the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
     public void addAllObjectsForAbstractClass(Class<?> objectsClass, org.eclipse.persistence.sessions.Session session, Vector<Object> allObjects) {
@@ -66,7 +66,7 @@ public class PopulationManager {
     }
 
     /**
-     * Add all of the objects of the class.
+     * Add all the objects of the class.
      */
     public void addAllObjectsForClass(Class<?> objectsClass, List<Object> allObjects) {
         if (!getRegisteredObjects().containsKey(objectsClass)) {
@@ -91,14 +91,14 @@ public class PopulationManager {
     }
 
     /**
-     * Return all of the objects registered.
+     * Return all the objects registered.
      */
     public List<Class<?>> getAllClasses() {
         return new Vector<>(getRegisteredObjects().keySet());
     }
 
     /**
-     * Return all of the objects registered.
+     * Return all the objects registered.
      */
     public Vector<Object> getAllObjects() {
         Vector<Object> allObjects = new Vector<> ();
@@ -110,7 +110,7 @@ public class PopulationManager {
     }
 
     /**
-     * Return all of the objects of the class and all of its subclasses.
+     * Return all the objects of the class and all of its subclasses.
      */
     public List<Object> getAllObjectsForAbstractClass(Class<?> objectsClass) {
         List<Object> allObjects = new Vector<>();
@@ -119,7 +119,7 @@ public class PopulationManager {
     }
 
     /**
-     * Return all of the objects of the class and all of its subclasses.
+     * Return all the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
     public List<Object> getAllObjectsForAbstractClass(Class<?> objectsClass, AbstractSession session) {
@@ -136,7 +136,7 @@ public class PopulationManager {
     }
 
     /**
-     * Return all of the objects of the class.
+     * Return all the objects of the class.
      */
     public Vector<Object> getAllObjectsForClass(Class<?> objectsClass) {
         Vector<Object> allObjects = new Vector<>();

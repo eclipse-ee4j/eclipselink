@@ -36,6 +36,7 @@ public class EclipseLinkFieldVisitor extends FieldVisitor {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         if (this.fieldVisitor instanceof org.eclipse.persistence.asm.internal.platform.ow2.FieldVisitorImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.FieldVisitorImpl)this.fieldVisitor).getInternal(this.customFieldVisitor);

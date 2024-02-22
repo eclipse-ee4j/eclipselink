@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,8 @@ package org.eclipse.persistence.jpa.jpql.tools.utility.filter;
 import org.eclipse.persistence.jpa.jpql.utility.filter.Filter;
 import org.eclipse.persistence.jpa.jpql.utility.filter.NullFilter;
 
+import java.io.Serial;
+
 /**
  * This filter will "accept" any object that is accept by both of the specified wrapped filters. The
  * first filter will always be evaluated, while the second will only be evaluated if necessary.
@@ -33,6 +35,7 @@ public class AndFilter<T> extends CompoundFilter<T> {
      * sender and receiver of a serialized object have loaded classes for that object that are
      * compatible with respect to serialization.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

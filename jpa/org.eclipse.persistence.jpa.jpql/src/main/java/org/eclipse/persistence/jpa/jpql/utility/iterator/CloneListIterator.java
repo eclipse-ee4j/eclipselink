@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 //
 package org.eclipse.persistence.jpa.jpql.utility.iterator;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ListIterator;
@@ -246,6 +247,7 @@ public class CloneListIterator<E>
         {
             @SuppressWarnings("rawtypes")
             public static final Mutator INSTANCE = new ReadOnly();
+            @Serial
             private static final long serialVersionUID = 1L;
             // ensure single instance
             private ReadOnly() {
@@ -260,6 +262,7 @@ public class CloneListIterator<E>
             public void add(int index, Object o) {
                 throw new UnsupportedOperationException();
             }
+            @Serial
             private Object readResolve() {
                 // replace this object with the singleton
                 return INSTANCE;

@@ -59,7 +59,7 @@ public class ClassReaderImpl extends org.eclipse.persistence.asm.ClassReader {
 
     @Override
     public void accept(ClassVisitor classVisitor, Attribute[] attributePrototypes, int parsingOptions) {
-        org.eclipse.persistence.internal.libraries.asm.Attribute[] attributePrototypesUnwrap = Arrays.stream(attributePrototypes).map(value -> value.unwrap()).toArray(size -> new org.eclipse.persistence.internal.libraries.asm.Attribute[size]);
+        org.eclipse.persistence.internal.libraries.asm.Attribute[] attributePrototypesUnwrap = Arrays.stream(attributePrototypes).map(value -> value.unwrap()).toArray(org.eclipse.persistence.internal.libraries.asm.Attribute[]::new);
         elClassReader.accept(classVisitor.unwrap(), attributePrototypesUnwrap, parsingOptions);
     }
 
@@ -79,6 +79,7 @@ public class ClassReaderImpl extends org.eclipse.persistence.asm.ClassReader {
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.elClassReader;
     }

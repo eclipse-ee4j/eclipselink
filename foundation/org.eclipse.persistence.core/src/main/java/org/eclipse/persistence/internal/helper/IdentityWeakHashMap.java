@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
@@ -53,7 +54,8 @@ import java.util.Set;
  *
  */
 public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, Cloneable, Serializable {
-    static final long serialVersionUID = -5176951017503351630L;
+    @Serial
+    private static final long serialVersionUID = -5176951017503351630L;
 
     // the default initial capacity
     static final int DEFAULT_INITIAL_CAPACITY = 32;
@@ -847,6 +849,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * <i>size</i> of the <code>IdentityWeakHashMap</code>, followed by the
      * key-value mappings (in no particular order).
      */
+    @Serial
     private void writeObject(ObjectOutputStream s) throws IOException {
         // Write out the threshold, loadfactor (and any hidden 'magic' stuff).
         s.defaultWriteObject();
@@ -869,6 +872,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     /**
      * Deserialize the <code>IdentityWeakHashMap</code> from a stream.
      */
+    @Serial
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         // Read in the threshold, loadfactor (and any hidden 'magic' stuff).
         s.defaultReadObject();

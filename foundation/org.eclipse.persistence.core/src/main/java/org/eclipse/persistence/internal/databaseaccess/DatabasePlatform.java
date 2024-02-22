@@ -446,11 +446,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public void beginTransaction(DatabaseAccessor accessor) throws SQLException {
         if (!supportsAutoCommit()) {
-            Statement statement = accessor.getConnection().createStatement();
-            try {
+            try (Statement statement = accessor.getConnection().createStatement()) {
                 statement.executeUpdate("BEGIN TRANSACTION");
-            } finally {
-                statement.close();
             }
         }
     }

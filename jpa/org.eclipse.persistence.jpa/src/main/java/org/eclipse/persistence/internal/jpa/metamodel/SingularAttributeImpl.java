@@ -21,6 +21,7 @@
 //       - 357474: Address primaryKey option from tenant discriminator column
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serial;
 import java.lang.reflect.Field;
 
 import jakarta.persistence.metamodel.Bindable;
@@ -56,6 +57,7 @@ import org.eclipse.persistence.mappings.structures.ReferenceMapping;
 public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements SingularAttribute<X, T> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = 3928292425281232234L;
 
     /** The Type representing this Entity or Basic type **/

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.ObjectStreamException;
+import java.io.Serial;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -102,6 +103,7 @@ import commonj.sdo.impl.ExternalizableDelegator;
 public class SDOResolvable implements ExternalizableDelegator.Resolvable {
 
     /** Unique hash ID of this Externalizable class. Use [serialver org.eclipse.persistence.sdo.SDOResolvable] */
+    @Serial
     private static final long serialVersionUID = 2807334877368539299L;
 
     /** Root element name for all DataObjects undergoing serialization = sdo:dataObject */
@@ -149,6 +151,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
      * recently deserialized object retrieved from the ObjectInputStream.
      * Here there is an opportunity to replace the object with a Singleton version
      */
+    @Serial
     @Override
     public Object readResolve() throws ObjectStreamException {
         // return object previously constructed in readExternal()

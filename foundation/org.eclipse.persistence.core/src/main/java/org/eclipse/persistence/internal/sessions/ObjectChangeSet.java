@@ -28,6 +28,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -49,6 +50,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /** Allow change sets to be compared by changes for batching. */
     public static class ObjectChangeSetComparator implements Comparator, Serializable {
 
+        @Serial
         private static final long serialVersionUID = -7902750710186726851L;
 
         /**
@@ -838,6 +840,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Override the default serialization.  Object Change Sets will be serialized differently
      * depending on the type of cache synchronization they use.
      */
+    @Serial
     private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
         int cacheSyncType = stream.read();
         this.cacheSynchronizationType = cacheSyncType;
@@ -1071,6 +1074,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Override the default serialization since different parts of an ObjectChangeSet will
      * be serialized depending on the type of CacheSynchronizationType
      */
+    @Serial
     private void writeObject(java.io.ObjectOutputStream stream) throws java.io.IOException {
         stream.write(this.cacheSynchronizationType);
         stream.writeBoolean(this.shouldBeDeleted);

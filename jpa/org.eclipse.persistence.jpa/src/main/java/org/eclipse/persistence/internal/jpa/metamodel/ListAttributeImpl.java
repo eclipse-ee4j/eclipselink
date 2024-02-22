@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@
 //       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serial;
 import java.util.List;
 
 import jakarta.persistence.metamodel.ListAttribute;
@@ -45,6 +46,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, List<V>, V> implements ListAttribute<X, V> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = 6941222731228388279L;
 
     /**

@@ -147,7 +147,8 @@ public class ClassWriterImpl extends org.eclipse.persistence.asm.ClassWriter {
         return ow2ClassWriter.toByteArraySuper();
     }
 
-        @Override
+    @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.ow2ClassWriter;
     }

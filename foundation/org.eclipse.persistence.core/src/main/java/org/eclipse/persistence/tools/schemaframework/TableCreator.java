@@ -515,7 +515,7 @@ public class TableCreator {
                                                                                        columnsInfo);
                     // Database table columns check
                     CheckDatabaseColumns check = new CheckDatabaseColumns(session, columns.size(), full);
-                    processColumnns(tableDefinition,
+                    processColumns(tableDefinition,
                                            columns,
                                            check::checkExisting,
                                            check::addMissing,
@@ -595,7 +595,7 @@ public class TableCreator {
                         // Table exists, parse read columns
                         final Map<DatabaseField, AbstractRecord> columns = parseColumnInfo(abstractSession, table, columnInfo);
                         // Add missing fields to the database
-                        processMissingColumnns(table, columns, (fieldDef, dbField) -> {
+                        processMissingColumns(table, columns, (fieldDef, dbField) -> {
                             try {
                                 table.addFieldOnDatabase(abstractSession, fieldDef);
                             } catch (final DatabaseException addFieldEx) {
@@ -712,19 +712,19 @@ public class TableCreator {
     }
 
     // Run provided action for each column missing in the database.
-    private static void processMissingColumnns(TableDefinition table,
-                                               Map<DatabaseField, AbstractRecord> columns,
-                                               CheckDatabaseColumns.MissingField missingAction) {
-        processColumnns(table, columns, null, missingAction, null);
+    private static void processMissingColumns(TableDefinition table,
+                                              Map<DatabaseField, AbstractRecord> columns,
+                                              CheckDatabaseColumns.MissingField missingAction) {
+        processColumns(table, columns, null, missingAction, null);
     }
 
     // Run provided action for each column missing in the database.
     // Optionally provide set of database columns not present in the TableDefinition.
-    private static void processColumnns(TableDefinition table,
-                                        Map<DatabaseField, AbstractRecord> columns,
-                                        CheckDatabaseColumns.ExistingField existingAction,
-                                        CheckDatabaseColumns.MissingField missingAction,
-                                        CheckDatabaseColumns.SurplusFields surplusAction) {
+    private static void processColumns(TableDefinition table,
+                                       Map<DatabaseField, AbstractRecord> columns,
+                                       CheckDatabaseColumns.ExistingField existingAction,
+                                       CheckDatabaseColumns.MissingField missingAction,
+                                       CheckDatabaseColumns.SurplusFields surplusAction) {
         // Surplus database fields if consumer was provided
         boolean isSurplusAction = surplusAction != null;
         Set<DatabaseField> surplusSet = isSurplusAction ? new HashSet<>(columns.keySet()) : null;
@@ -767,7 +767,7 @@ public class TableCreator {
         final List<String> missingColumns;
         // List of differences found in existing columns
         final List<TableValidationException.DifferentColumns.Difference> existingColumnsDiff;
-        // List of surplus columns, this set is built in processColumnns method
+        // List of surplus columns, this set is built in processColumns method
         Set<DatabaseField> surplusFields;
 
         private CheckDatabaseColumns(DatabaseSession session, int size, boolean full) {
@@ -810,7 +810,7 @@ public class TableCreator {
                             if (modelIsNullable) {
                                 existingColumnsDiff.add(
                                         new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
-                                                                                                         modelIsNullable,
+                                                                                                         true,
                                                                                                          false));
                             }
                             break;
@@ -818,7 +818,7 @@ public class TableCreator {
                             if (!modelIsNullable) {
                                 existingColumnsDiff.add(
                                         new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
-                                                                                                         modelIsNullable,
+                                                                                                         false,
                                                                                                          true));
                             }
                             break;

@@ -47,7 +47,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <p>
@@ -583,8 +582,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Build a foreign key constraint using FieldDefinition.getForeignKeyFieldName().
      */
     protected ForeignKeyConstraint buildForeignKeyConstraint(FieldDefinition field, DatabasePlatform platform) {
-        List<String> sourceFields = new Vector<>();
-        List<String> targetFields = new Vector<>();
+        List<String> sourceFields = new ArrayList<>();
+        List<String> targetFields = new ArrayList<>();
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         DatabaseField tempTargetField = new DatabaseField(field.getForeignKeyFieldName());
         DatabaseField tempSourceField = new DatabaseField(field.getName());
@@ -1007,6 +1006,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
                         if ((uniqueConstraint.getSourceFields().size() == foreignKey.getSourceFields().size())
                                 && uniqueConstraint.getSourceFields().containsAll(foreignKey.getSourceFields())) {
                             alreadyIndexed = true;
+                            break;
                         }
                     }
                     if (!alreadyIndexed) {
@@ -1221,6 +1221,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
                         if ((uniqueConstraint.getSourceFields().size() == foreignKey.getSourceFields().size())
                                 && uniqueConstraint.getSourceFields().containsAll(foreignKey.getSourceFields())) {
                             alreadyIndexed = true;
+                            break;
                         }
                     }
                     if (!alreadyIndexed) {

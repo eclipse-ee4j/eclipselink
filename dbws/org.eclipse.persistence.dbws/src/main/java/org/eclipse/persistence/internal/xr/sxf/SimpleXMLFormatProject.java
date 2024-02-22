@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,8 +33,11 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.sessions.Project;
 
+import java.io.Serial;
+
 public class SimpleXMLFormatProject extends Project {
 
+    @Serial
     private static final long serialVersionUID = 3830217546821842428L;
     private transient NamespaceResolver ns;
 

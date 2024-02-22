@@ -461,25 +461,25 @@ public class MethodVisitorImpl extends org.eclipse.persistence.asm.MethodVisitor
 
     @Override
     public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
-        org.objectweb.asm.Label[] labelsUnwrap = Arrays.stream(labels).map(value -> value.unwrap()).toArray(size -> new org.objectweb.asm.Label[size]);
+        org.objectweb.asm.Label[] labelsUnwrap = Arrays.stream(labels).map(value -> value.unwrap()).toArray(org.objectweb.asm.Label[]::new);
         this.ow2MethodVisitor.visitTableSwitchInsn(min, max, dflt.unwrap(), labelsUnwrap);
     }
 
     @Override
     public void visitTableSwitchInsnSuper(int min, int max, Label dflt, Label... labels) {
-        org.objectweb.asm.Label[] labelsUnwrap = Arrays.stream(labels).map(value -> value.unwrap()).toArray(size -> new org.objectweb.asm.Label[size]);
+        org.objectweb.asm.Label[] labelsUnwrap = Arrays.stream(labels).map(value -> value.unwrap()).toArray(org.objectweb.asm.Label[]::new);
         ((OW2MethodVisitor)this.ow2MethodVisitor).visitTableSwitchInsnSuper(min, max, dflt.unwrap(), labelsUnwrap);
     }
 
     @Override
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
-        org.objectweb.asm.Label[] labelsUnwrap = Arrays.stream(labels).map(value -> value.unwrap()).toArray(size -> new org.objectweb.asm.Label[size]);
+        org.objectweb.asm.Label[] labelsUnwrap = Arrays.stream(labels).map(value -> value.unwrap()).toArray(org.objectweb.asm.Label[]::new);
         this.ow2MethodVisitor.visitLookupSwitchInsn(dflt.unwrap() , keys, labelsUnwrap);
     }
 
     @Override
     public void visitLookupSwitchInsnSuper(Label dflt, int[] keys, Label[] labels) {
-        org.objectweb.asm.Label[] labelsUnwrap = Arrays.stream(labels).map(value -> value.unwrap()).toArray(size -> new org.objectweb.asm.Label[size]);
+        org.objectweb.asm.Label[] labelsUnwrap = Arrays.stream(labels).map(value -> value.unwrap()).toArray(org.objectweb.asm.Label[]::new);
         ((OW2MethodVisitor)this.ow2MethodVisitor).visitLookupSwitchInsnSuper(dflt.unwrap() , keys, labelsUnwrap);
     }
 
@@ -524,6 +524,7 @@ public class MethodVisitorImpl extends org.eclipse.persistence.asm.MethodVisitor
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T unwrap() {
         return (T)this.ow2MethodVisitor;
     }

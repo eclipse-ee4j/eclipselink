@@ -16,6 +16,8 @@ package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -835,6 +837,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      *
      * @see org.eclipse.persistence.sdo.SDOResolvable
      */
+    @Serial
     public Object writeReplace() {
         return currentElements;
     }

@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.helper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -547,11 +548,13 @@ public class NonSynchronizedVector<E> extends Vector<E> {
             es[i] = null;
     }
 
+    @Serial
     private void readObject(ObjectInputStream in)
             throws IOException, ClassNotFoundException {
         in.defaultReadObject();
     }
 
+    @Serial
     private void writeObject(java.io.ObjectOutputStream s)
             throws java.io.IOException {
         s.defaultWriteObject();

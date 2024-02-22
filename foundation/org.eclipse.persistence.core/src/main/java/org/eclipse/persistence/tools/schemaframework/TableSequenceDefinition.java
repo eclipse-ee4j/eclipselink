@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * <p>
@@ -101,7 +100,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
     }
 
     /**
-     * INTERAL:
+     * INTERNAL:
      * Execute the SQL required to insert the sequence row into the sequence table.
      * Assume that the sequence table exists.
      */
@@ -115,7 +114,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
         buffer.append(" = '");
         buffer.append(getName());
         buffer.append("'");
-        Vector results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall(buffer.toString()));
+        List<?> results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall(buffer.toString()));
         return !results.isEmpty();
     }
 

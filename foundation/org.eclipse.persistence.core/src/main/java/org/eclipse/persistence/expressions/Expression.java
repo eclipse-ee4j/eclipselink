@@ -50,6 +50,7 @@ import org.eclipse.persistence.queries.ReportQuery;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -82,7 +83,8 @@ import java.util.StringTokenizer;
 public abstract class Expression implements Serializable, Cloneable {
 
     /** Required for serialization compatibility. */
-    static final long serialVersionUID = -5979150600092006081L;
+    @Serial
+    private static final long serialVersionUID = -5979150600092006081L;
 
     /** Temporary values for table aliasing */
     protected transient DatabaseTable lastTable;
