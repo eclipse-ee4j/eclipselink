@@ -1179,7 +1179,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     private String printOmittingOrderByForUpdateUnion(SQLSelectStatement statement, ExpressionSQLPrinter printer, Vector fields) {
         boolean originalShouldPrintForUpdate = this.shouldPrintForUpdateClause;
         Writer originalWriter = printer.getWriter();
-        Vector selectFields = null;
+        List<DatabaseField> selectFields = null;
 
         this.shouldPrintForUpdateClause = false;
         printer.setWriter(new StringWriter());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -30,7 +31,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
  * XML files written out the same as they were read in wrt query order.
  */
 public class ProjectXMLQueryManagerQueryOrderTest extends AutoVerifyTestCase {
-    Vector original, current; //list of queries to compare
+    List<DatabaseQuery> original, current; //list of queries to compare
 
     public ProjectXMLQueryManagerQueryOrderTest() {
     }
@@ -57,20 +58,20 @@ public class ProjectXMLQueryManagerQueryOrderTest extends AutoVerifyTestCase {
             throw new TestErrorException("The number of queries read was not equal to the number originally.");
         }
 
-        Iterator orig = original.iterator();
-        Iterator curr = current.iterator();
+        Iterator<DatabaseQuery> orig = original.iterator();
+        Iterator<DatabaseQuery> curr = current.iterator();
         while (orig.hasNext()) {
-            DatabaseQuery origQuery = (DatabaseQuery)orig.next();
+            DatabaseQuery origQuery = orig.next();
             int argumentTypesSize = 0;
             if (origQuery.getArguments() != null) {
                 argumentTypesSize = origQuery.getArguments().size();
             }
-            Vector argumentTypes = new Vector();
+            List<String> argumentTypes = new ArrayList<>();
             for (int i = 0; i < argumentTypesSize; i++) {
-                argumentTypes.addElement(origQuery.getArgumentTypeNames().get(i));
+                argumentTypes.add(origQuery.getArgumentTypeNames().get(i));
             }
 
-            DatabaseQuery currentQuery = (DatabaseQuery)curr.next();
+            DatabaseQuery currentQuery = curr.next();
             if ((origQuery.getName() != currentQuery.getName()) &&
                 ((origQuery.getName() == null) || !origQuery.getName().equals(currentQuery.getName())))
                 if (!argumentTypes.equals(currentQuery.getArgumentTypeNames())) {

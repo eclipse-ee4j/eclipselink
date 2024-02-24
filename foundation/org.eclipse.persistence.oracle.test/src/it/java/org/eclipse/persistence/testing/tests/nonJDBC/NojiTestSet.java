@@ -16,8 +16,10 @@ package org.eclipse.persistence.testing.tests.nonJDBC;
 import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
+
 import org.w3c.dom.Document;
 
 // JUnit imports
@@ -30,7 +32,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -172,7 +173,7 @@ public class NojiTestSet {
         DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
         s.login();
-        Vector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add("testsdfsdfasdfsdfsdfsdfsdfsdfdfsdfsdffds");
         boolean worked = false;
         String msg = null;
@@ -186,7 +187,7 @@ public class NojiTestSet {
         }
         assertTrue("invocation noji failed: " + msg, worked);
         assertNotNull("result is supposed to be not-null", o);
-        Vector results = (Vector)o;
+        List<?> results = (List<?>) o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         BigDecimal x = (BigDecimal)record.get("X");
         assertEquals("wrong x value", 33, x.intValue());

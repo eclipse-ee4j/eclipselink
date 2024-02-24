@@ -619,13 +619,13 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
             return cp.containerInstance();
         }
 
-        Vector fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
+        List<Object> fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
         if (fieldValues == null) {
             return cp.containerInstance();
         }
 
         Object result = cp.containerInstance(fieldValues.size());
-        for (Iterator iterator = fieldValues.iterator(); iterator.hasNext();) {
+        for (Iterator<Object> iterator = fieldValues.iterator(); iterator.hasNext();) {
             Object element = iterator.next();
             if (this.getValueConverter() != null) {
                 element = getValueConverter().convertDataValueToObjectValue(element, executionSession);

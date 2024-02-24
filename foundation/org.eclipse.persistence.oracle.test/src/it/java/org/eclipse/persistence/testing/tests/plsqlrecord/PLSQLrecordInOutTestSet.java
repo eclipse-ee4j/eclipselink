@@ -19,6 +19,8 @@ import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import org.w3c.dom.Document;
 
@@ -33,7 +35,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // TopLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -284,7 +285,7 @@ public class PLSQLrecordInOutTestSet  {
         DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
         s.login();
-        NonSynchronizedVector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add(new BigDecimal(10));
         queryArgs.add("MikeNorman");
         queryArgs.add("Developer");

@@ -155,11 +155,11 @@ public class ReportQueryResult implements Serializable, Map {
             constructorArgs[argumentIndex] = ConversionManager.getDefaultManager().convertObject(result, constructorArgTypes[argumentIndex]);
         }
         try {
-            Constructor constructor = constructorItem.getConstructor();
+            Constructor<?> constructor = constructorItem.getConstructor();
             Object returnValue = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    returnValue = AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, constructorArgs));
+                    returnValue = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, constructorArgs));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.exceptionWhileUsingConstructorExpression(exception.getException(), query);
                 }
@@ -214,7 +214,7 @@ public class ReportQueryResult implements Serializable, Map {
             if (joinManager.isToManyJoin()) {
                 // PERF: Only reset data-result if unset, must only occur once per item, not per row (n vs n^2).
                 if (joinManager.getDataResults_() == null) {
-                    joinManager.setDataResults(new ArrayList(toManyData), query.getSession());
+                    joinManager.setDataResults(new ArrayList<>(toManyData), query.getSession());
                 }
             }
         }

@@ -63,7 +63,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
 
     protected XMLRecord() {
         super(null, null, 0);
-        abstractMarshalRecord = new AbstractMarshalRecordImpl(this);
+        abstractMarshalRecord = new AbstractMarshalRecordImpl<>(this);
         // Required for subclasses.
     }
 

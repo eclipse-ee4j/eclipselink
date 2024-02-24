@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,7 +46,6 @@ import static org.junit.Assert.fail;
 //EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
@@ -529,7 +530,7 @@ public class VeearrayTestSuite {
         newPhone2.areaCode = "613";
         newPhone2.phonenumber = "230-1579";
         newPhone2.type = "Home";
-        Vector newPhones = new NonSynchronizedVector();
+        List newPhones = new ArrayList();
         newPhones.add(newPhone1);
         newPhones.add(newPhone2);
         invocation.setParameter("Y", newPhones);
@@ -593,7 +594,7 @@ public class VeearrayTestSuite {
         newPhone2.areaCode = "613";
         newPhone2.phonenumber = "aaa-bbbb";
         newPhone2.type = "Home";
-        Vector newPhones = new NonSynchronizedVector();
+        List newPhones = new ArrayList();
         newPhones.add(newPhone1);
         newPhones.add(newPhone2);
         invocation.setParameter("Y", newPhones);

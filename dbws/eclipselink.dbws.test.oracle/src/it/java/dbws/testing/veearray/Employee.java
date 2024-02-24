@@ -16,10 +16,8 @@
 package dbws.testing.veearray;
 
 // javase imports
+import java.util.ArrayList;
 import java.util.Collection;
-
-// EclipseLin imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 
 public class Employee {
 
@@ -27,7 +25,7 @@ public class Employee {
     public String firstName;
     public String lastName;
     @SuppressWarnings({ "rawtypes" })
-    public Collection phones = new NonSynchronizedVector();
+    public Collection phones = new ArrayList();
 
     @Override
     public String toString() {

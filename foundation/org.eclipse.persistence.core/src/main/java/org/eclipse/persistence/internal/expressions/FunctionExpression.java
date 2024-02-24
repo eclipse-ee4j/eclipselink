@@ -26,7 +26,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -51,13 +50,13 @@ import java.util.Vector;
  * These include not, between and all functions.
  */
 public class FunctionExpression extends BaseExpression {
-    protected Vector<Expression> children;
+    protected List<Expression> children;
     protected ExpressionOperator operator;
     protected transient ExpressionOperator platformOperator;
     protected Class<?> resultType;
 
     public FunctionExpression() {
-        this.children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        this.children = new ArrayList<>(2);
         this.resultType = null;
     }
 
@@ -113,7 +112,7 @@ public class FunctionExpression extends BaseExpression {
     }
 
     public void addChild(Expression child) {
-        getChildren().addElement(child);
+        getChildren().add(child);
     }
 
     /**
@@ -299,7 +298,7 @@ public class FunctionExpression extends BaseExpression {
         throw QueryException.cannotConformExpression();
     }
 
-    public Vector<Expression> getChildren() {
+    public List<Expression> getChildren() {
         return this.children;
     }
 
@@ -546,10 +545,10 @@ public class FunctionExpression extends BaseExpression {
     @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        Vector<Expression> oldChildren = this.children;
-        this.children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<Expression> oldChildren = this.children;
+        this.children = new ArrayList<>();
         for (int i = 0; i < oldChildren.size(); i++) {
-            addChild((oldChildren.elementAt(i).copiedVersionFrom(alreadyDone)));
+            addChild((oldChildren.get(i).copiedVersionFrom(alreadyDone)));
         }
     }
 
@@ -598,9 +597,9 @@ public class FunctionExpression extends BaseExpression {
     @Override
     public Expression rebuildOn(Expression newBase) {
         Expression newLocalBase = getBaseExpression().rebuildOn(newBase);
-        Vector newChildren = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
+        List<Expression> newChildren = new ArrayList<>(this.children.size());
         for (int i = 1; i < this.children.size(); i++) {// Skip the first one, since it's also the base
-            newChildren.addElement(this.children.elementAt(i).rebuildOn(newBase));
+            newChildren.add(this.children.get(i).rebuildOn(newBase));
         }
         newLocalBase.setSelectIfOrderedBy(getBaseExpression().selectIfOrderedBy());
         FunctionExpression rebuilt = (FunctionExpression) newLocalBase.performOperator(this.operator, newChildren);
@@ -618,7 +617,7 @@ public class FunctionExpression extends BaseExpression {
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         getBaseExpression().resetPlaceHolderBuilder(queryBuilder);
         for (int i = this.children.size()-1; i > 0; i--) {// Skip the first one, since it's also the base
-            this.children.elementAt(i).resetPlaceHolderBuilder(queryBuilder);
+            this.children.get(i).resetPlaceHolderBuilder(queryBuilder);
         }
     }
     // Set the local base expression, ie the one on the other side of the operator
@@ -648,15 +647,15 @@ public class FunctionExpression extends BaseExpression {
         if (this.children.isEmpty()) {
             return (Expression)clone();
         }
-        Vector newChildren = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
+        List<Expression> newChildren = new ArrayList<>(this.children.size());
 
         // For functions the base is the first child, we only want the arguments so start at the second.
         for (int index = 1; index < this.children.size(); index++) {
-            newChildren.addElement(this.children.elementAt(index).twistedForBaseAndContext(newBase, context, oldBase));
+            newChildren.add(this.children.get(index).twistedForBaseAndContext(newBase, context, oldBase));
         }
 
         // Aply the function to the twisted old base.
-        Expression oldBaseExp = this.children.elementAt(0);
+        Expression oldBaseExp = this.children.get(0);
         return oldBaseExp.twistedForBaseAndContext(newBase, context, oldBase).performOperator(this.operator, newChildren);
     }
 
@@ -668,12 +667,12 @@ public class FunctionExpression extends BaseExpression {
     @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         Object baseValue = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
-        Vector arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
+        List<Object> arguments = new ArrayList<>(this.children.size());
         for (int index = 1; index < this.children.size(); index++) {
-            if (this.children.elementAt(index) instanceof Expression) {
-                arguments.addElement(this.children.elementAt(index).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered));
+            if (this.children.get(index) instanceof Expression) {
+                arguments.add(this.children.get(index).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered));
             } else {
-                arguments.addElement(this.children.elementAt(index));
+                arguments.add(this.children.get(index));
             }
         }
         if (baseValue instanceof Vector) {// baseValue might be a vector, so the individual values must be extracted before applying the function call to them
@@ -853,8 +852,8 @@ public class FunctionExpression extends BaseExpression {
 
                     ExpressionOperator anOperator = new ExpressionOperator();
                     anOperator.setType(ExpressionOperator.FunctionOperator);
-                    Vector v = NonSynchronizedVector.newInstance(args.size());
-                    v.addElement("DISTINCT ");
+                    List<String> v = new ArrayList<>(args.size());
+                    v.add("DISTINCT ");
                     for (int index = 0; index < args.size(); index++) {
                         v.add(", ");
                     }

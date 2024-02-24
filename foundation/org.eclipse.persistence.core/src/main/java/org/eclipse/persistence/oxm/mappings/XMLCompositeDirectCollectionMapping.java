@@ -46,6 +46,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.Session;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -332,7 +333,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
             }
         }
 
-        Vector fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
+        List<Object> fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
         if (fieldValues == null) {
             if (reuseContainer) {
                 Object currentObject = ((XMLRecord) row).getCurrentObject();
@@ -352,7 +353,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
             result = cp.containerInstance(fieldValues.size());
         }
 
-        for (Iterator iterator = fieldValues.iterator(); iterator.hasNext();) {
+        for (Iterator<Object> iterator = fieldValues.iterator(); iterator.hasNext();) {
             Object element = iterator.next();
             element = convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
             if (element != null && element.getClass() == ClassConstants.STRING) {

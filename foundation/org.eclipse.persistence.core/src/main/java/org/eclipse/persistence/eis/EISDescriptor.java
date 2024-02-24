@@ -256,8 +256,8 @@ public class EISDescriptor extends ClassDescriptor {
      */
     @Override
     public AbstractRecord buildNestedRowFromFieldValue(Object fieldValue) {
-        if (fieldValue instanceof AbstractRecord) {
-            return (AbstractRecord)fieldValue;
+        if (fieldValue instanceof AbstractRecord rec) {
+            return rec;
         }
 
         // BUG#2667762 if the tag was empty this could be a string of whitespace.
@@ -280,35 +280,35 @@ public class EISDescriptor extends ClassDescriptor {
      * Build the nested rows.
      */
     @Override
-    public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
+    public List<AbstractRecord> buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
         if (!isXMLFormat()) {
             if (!(fieldValue instanceof List)) {
                 return new Vector<>();
             }
-            return new Vector<>((List<?>)fieldValue);
+            return new Vector<>((List<AbstractRecord>) fieldValue);
         }
 
         // BUG#2667762 if the tag was empty this could be a string of whitespace.
         if (!(fieldValue instanceof Vector)) {
             return new Vector<>(0);
         }
-        return (Vector)fieldValue;
+        return (Vector<AbstractRecord>) fieldValue;
     }
 
     /**
      * INTERNAL:
      * Extract the direct values from the specified field value.
-     * Return them in a vector.
+     * Return them in a list.
      * The field value could be a vector or could be a text value if only a single value.
      */
     @Override
-    public Vector buildDirectValuesFromFieldValue(Object fieldValue) {
+    public List<Object> buildDirectValuesFromFieldValue(Object fieldValue) {
         if (!(fieldValue instanceof Vector)) {
-            Vector<Object> fieldValues = new Vector<>(1);
+            List<Object> fieldValues = new Vector<>(1);
             fieldValues.add(fieldValue);
             return fieldValues;
         }
-        return (Vector)fieldValue;
+        return (List<Object>) fieldValue;
     }
 
     /**

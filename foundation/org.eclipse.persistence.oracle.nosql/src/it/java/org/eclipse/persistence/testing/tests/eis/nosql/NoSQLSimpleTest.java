@@ -71,7 +71,9 @@ public class NoSQLSimpleTest {
      */
     @After
     public void tearDown() {
-        session.logout();
+        if (session != null) {
+            session.logout();
+        }
         session = null;
     }
 

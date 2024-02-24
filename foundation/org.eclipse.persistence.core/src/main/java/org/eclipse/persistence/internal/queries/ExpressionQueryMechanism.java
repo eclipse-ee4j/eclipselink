@@ -131,25 +131,25 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Alias the supplied fields with respect to the expression node. Return copies of the fields
      */
-    protected Vector aliasFields(ObjectExpression node, Vector fields) {
+    protected Vector aliasFields(ObjectExpression node, List fields) {
         Vector result = new Vector(fields.size());
 
         for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
             DatabaseField eachField = ((DatabaseField) iterator.next()).clone();
             eachField.setTable(node.aliasForTable(eachField.getTable()));
-            result.addElement(eachField);
+            result.add(eachField);
         }
 
         return result;
     }
 
     /**
-     * If the fields in the statement have breen pre-set, e.g. for a subset of the fields
+     * If the fields in the statement have been pre-set, e.g. for a subset of the fields
      * in a partial attribute read, report query, or just a query for the class indicator,
      * then try to alias those. Right now this just guesses that they're all from the base.
      */
-    public Vector aliasPresetFields(SQLSelectStatement statement) {
-        Vector fields = statement.getFields();
+    public List aliasPresetFields(SQLSelectStatement statement) {
+        List fields = statement.getFields();
         Expression exp = statement.getWhereClause();
 
         if (exp == null) {
@@ -1740,7 +1740,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         } else {
             for (DatabaseTable table : descriptor.getMultipleTableInsertOrder()) {
                 SQLInsertStatement insertStatement = buildInsertStatement(table);
-                getSQLStatements().addElement(insertStatement);
+                getSQLStatements().add(insertStatement);
             }
         }
 
@@ -1844,20 +1844,20 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         boolean useCache = (row == null || !(getQuery().shouldValidateUpdateCallCacheUse() && row.hasNullValueInFields()));
 
         // PERF: Check the descriptor update SQL call cache for a matching update with the same fields.
-        Vector updateCalls = getDescriptor().getQueryManager().getCachedUpdateCalls(getModifyRow().getFields());
+        List<DatasourceCall> updateCalls = getDescriptor().getQueryManager().getCachedUpdateCalls(getModifyRow().getFields());
         // If the calls were cached then don't need to prepare.
         if (updateCalls != null && useCache == true) {
             int updateCallsSize = updateCalls.size();
             if (updateCallsSize == 1) {
                 // clone call, to be able to set query on clone
-                DatasourceCall existingCall = (DatasourceCall)updateCalls.get(0);
-                DatasourceCall clonedCall = (DatasourceCall)existingCall.clone();
+                DatasourceCall existingCall = updateCalls.get(0);
+                DatasourceCall clonedCall = existingCall.clone();
                 setCall(clonedCall);
             } else {
                 // clone calls
-                Vector clonedCalls = new Vector(updateCallsSize);
+                List<DatasourceCall> clonedCalls = new ArrayList<>(updateCallsSize);
                 for (int i = 0; i < updateCallsSize; i++) {
-                    DatasourceCall existingCall = (DatasourceCall)updateCalls.get(i);
+                    DatasourceCall existingCall = updateCalls.get(i);
                     clonedCalls.add(existingCall.clone());
                 }
                 setCalls(clonedCalls);
@@ -1871,7 +1871,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             DatabaseTable table = getDescriptor().getTables().get(index);
             SQLUpdateStatement updateStatement = buildUpdateStatement(table);
             if (tablesSize > 1) {
-                getSQLStatements().addElement(updateStatement);
+                getSQLStatements().add(updateStatement);
             } else {
                 setSQLStatement(updateStatement);
             }
@@ -1884,7 +1884,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             if (hasMultipleCalls()) {
                 updateCalls = getCalls();
             } else {
-                updateCalls = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+                updateCalls = new ArrayList<>(1);
                 if (getCall() != null) {
                     updateCalls.add(getCall());
                 }
@@ -2374,7 +2374,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 DatabaseTable table = orderedTables.get(i);
                 Map<DatabaseField, Expression> databaseFieldsToValues = tables_databaseFieldsToValues.get(table);
                 Collection<DatabaseField> primaryKeyFields = tablesToPrimaryKeyFields.get(table);
-                getSQLStatements().addElement(buildUpdateAllStatement(table, databaseFieldsToValues, selectCallForExist, selectStatementForExist, primaryKeyFields));
+                getSQLStatements().add(buildUpdateAllStatement(table, databaseFieldsToValues, selectCallForExist, selectStatementForExist, primaryKeyFields));
             }
         }
 

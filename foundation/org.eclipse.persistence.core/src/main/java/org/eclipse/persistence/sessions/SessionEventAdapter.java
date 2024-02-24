@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,8 +17,8 @@ package org.eclipse.persistence.sessions;
 
 
 /**
- * <p><b>Purpose</b>: To provide a trivial implemetation of SessionEventListener.
- * You may subclass this class rather than implement the entire SessonEventListener
+ * <p><b>Purpose</b>: To provide a trivial implementation of SessionEventListener.
+ * You may subclass this class rather than implement the entire SessionEventListener
  * interface in cases where only a small subset of the interface methods are needed.
  *
  * @see SessionEventManager#addListener(SessionEventListener)

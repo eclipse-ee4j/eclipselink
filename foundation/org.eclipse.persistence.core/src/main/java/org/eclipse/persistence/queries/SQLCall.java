@@ -27,6 +27,7 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -147,9 +148,9 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
             List<ParameterType> updatedParameterTypes = null;
             if (!getParameters().isEmpty()) {
                 updatedParameters = getParameters();
-                setParameters(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance());
+                setParameters(new ArrayList<>());
                 updatedParameterTypes = getParameterTypes();
-                setParameterTypes(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance());
+                setParameterTypes(new ArrayList<>());
             }
 
             translateCustomQuery();

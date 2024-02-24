@@ -695,7 +695,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             return cp.containerInstance();
         }
 
-        Vector nestedRows = this.getReferenceDescriptor().buildNestedRowsFromFieldValue(fieldValue, executionSession);
+        List<AbstractRecord> nestedRows = this.getReferenceDescriptor().buildNestedRowsFromFieldValue(fieldValue, executionSession);
         if (nestedRows == null) {
             return cp.containerInstance();
         }

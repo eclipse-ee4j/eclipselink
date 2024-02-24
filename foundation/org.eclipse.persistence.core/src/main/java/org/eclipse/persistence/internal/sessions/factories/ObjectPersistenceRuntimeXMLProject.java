@@ -80,7 +80,6 @@ import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.HistoricalDatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.FullIdentityMap;
@@ -1270,7 +1269,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.addMapping(operatorMapping);
 
         XMLCompositeCollectionMapping childrenMapping = new XMLCompositeCollectionMapping();
-        childrenMapping.useCollectionClass(NonSynchronizedVector.class);
+        childrenMapping.useCollectionClass(ArrayList.class);
         childrenMapping.setAttributeName("children");
         childrenMapping.setReferenceClass(Expression.class);
         childrenMapping.setXPath(getPrimaryNamespaceXPath() + "arguments/" + getPrimaryNamespaceXPath() + "argument");

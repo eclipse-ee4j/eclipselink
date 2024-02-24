@@ -2127,7 +2127,7 @@ public class Helper implements Serializable {
     public static <T> Vector<T> vectorFromArray(T[] array) {
         Vector<T> result = new Vector<>(array.length);
         for (int i = 0; i < array.length; i++) {
-            result.addElement(array[i]);
+            result.add(array[i]);
         }
         return result;
     }

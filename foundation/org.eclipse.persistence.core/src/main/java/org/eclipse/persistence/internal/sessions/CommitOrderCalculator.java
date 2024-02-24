@@ -17,7 +17,9 @@ package org.eclipse.persistence.internal.sessions;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DescriptorCompare;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -143,11 +145,11 @@ public class CommitOrderCalculator {
     /**
      * Return the constraint ordered classes.
      */
-    public Vector getOrderedClasses() {
-        Vector orderedClasses = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getOrderedDescriptors().size());
+    public List<Class<?>> getOrderedClasses() {
+        List<Class<?>> orderedClasses = new ArrayList<>(getOrderedDescriptors().size());
         for (Iterator iterator = getOrderedDescriptors().iterator();
              iterator.hasNext();) {
-            orderedClasses.addElement(((ClassDescriptor) iterator.next()).getJavaClass());
+            orderedClasses.add(((ClassDescriptor) iterator.next()).getJavaClass());
         }
 
         return orderedClasses;

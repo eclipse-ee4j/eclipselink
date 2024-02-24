@@ -107,7 +107,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Map<String, SQLResultSetMapping> sqlResultSetMappings;
 
     /** PERF: Provide an JPQL parse cache to optimize dynamic JPQL. */
-    protected transient ConcurrentFixedCache jpqlParseCache;
+    protected transient ConcurrentFixedCache<String, DatabaseQuery> jpqlParseCache;
 
     /** Define the default setting for configuring if dates and calendars are mutable. */
     protected boolean defaultTemporalMutable = false;
@@ -215,7 +215,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         this.hasIsolatedClasses = false;
         this.hasGenericHistorySupport = false;
         this.hasProxyIndirection = false;
-        this.jpqlParseCache = new ConcurrentFixedCache(200);
+        this.jpqlParseCache = new ConcurrentFixedCache<>(200);
         this.queries = new ArrayList<>();
         this.mappedSuperclassDescriptors = new HashMap<>(2);
         this.metamodelIdClassMap = new HashMap<>();
@@ -327,9 +327,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Return the JPQL parse cache.
      * This is used to optimize dynamic JPQL.
      */
-    public ConcurrentFixedCache getJPQLParseCache() {
+    public ConcurrentFixedCache<String, DatabaseQuery> getJPQLParseCache() {
         if (jpqlParseCache==null) {
-            jpqlParseCache = new ConcurrentFixedCache(200);
+            jpqlParseCache = new ConcurrentFixedCache<>(200);
         }
         return jpqlParseCache;
     }
@@ -340,7 +340,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * This is used to optimize dynamic JPQL.
      */
     public void setJPQLParseCacheMaxSize(int maxSize) {
-        setJPQLParseCache(new ConcurrentFixedCache(maxSize));
+        setJPQLParseCache(new ConcurrentFixedCache<>(maxSize));
     }
 
     /**
@@ -357,7 +357,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Set the JPQL parse cache.
      * This is used to optimize dynamic JPQL.
      */
-    protected void setJPQLParseCache(ConcurrentFixedCache jpqlParseCache) {
+    protected void setJPQLParseCache(ConcurrentFixedCache<String, DatabaseQuery> jpqlParseCache) {
         this.jpqlParseCache = jpqlParseCache;
     }
 

@@ -838,7 +838,7 @@ public class ExpressionOperator implements Serializable {
         operator.databaseStrings = databaseStrings == null ? null : Helper.copyStringArray(databaseStrings);
         operator.argumentIndices = argumentIndices == null ? null : Helper.copyIntArray(argumentIndices);
         operator.javaStrings = javaStrings == null ? null : Helper.copyStringArray(javaStrings);
-        operator.isBindingSupported = isBindingSupported == null ? null : new Boolean(isBindingSupported);
+        operator.isBindingSupported = isBindingSupported == null ? null : isBindingSupported;
     }
 
     /**

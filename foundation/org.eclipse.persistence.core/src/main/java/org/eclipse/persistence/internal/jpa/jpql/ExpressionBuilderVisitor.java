@@ -593,7 +593,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
                 //Bug 537795
                 //After we build the caseStatement, we need to retroactively fix the THEN/ELSE children's base
                 if(queryExpression.isFunctionExpression()) {
-                    Vector<Expression> children = ((org.eclipse.persistence.internal.expressions.FunctionExpression)queryExpression).getChildren();
+                    List<Expression> children = ((org.eclipse.persistence.internal.expressions.FunctionExpression)queryExpression).getChildren();
                     int index = 1;
                     while(index <  children.size()) {
                         Expression when_else = children.get(index);

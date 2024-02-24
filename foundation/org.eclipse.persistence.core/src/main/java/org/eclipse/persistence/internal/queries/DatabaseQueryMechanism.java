@@ -822,15 +822,15 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         // Nothing by default.
     }
 
-    protected void updateObjectAndRowWithReturnRow(Collection returnFields, boolean isFirstCallForInsert) {
+    protected void updateObjectAndRowWithReturnRow(Collection<DatabaseField> returnFields, boolean isFirstCallForInsert) {
         WriteObjectQuery writeQuery = getWriteObjectQuery();
         AbstractRecord outputRow = (AbstractRecord)writeQuery.getProperties().get("output");
         if ((outputRow == null) || outputRow.isEmpty()) {
             return;
         }
         AbstractRecord row = new DatabaseRecord();
-        for (Iterator iterator = returnFields.iterator(); iterator.hasNext();) {
-            DatabaseField field = (DatabaseField)iterator.next();
+        for (Iterator<DatabaseField> iterator = returnFields.iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
             if (outputRow.containsKey(field)) {
                 row.put(field, outputRow.get(field));
             }
@@ -913,10 +913,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             throw DatabaseException.sqlException(exception, call, dbAccessor, session, false);
         } catch (RuntimeException exception) {
             exceptionOccured = true;
-            if (exception instanceof DatabaseException) {
-                ((DatabaseException)exception).setCall(call);
-                if(((DatabaseException)exception).getAccessor() == null) {
-                    ((DatabaseException)exception).setAccessor(dbAccessor);
+            if (exception instanceof DatabaseException dbx) {
+                dbx.setCall(call);
+                if(dbx.getAccessor() == null) {
+                    dbx.setAccessor(dbAccessor);
                 }
             }
             throw exception;
@@ -1005,9 +1005,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 if (!getModifyRow().isEmpty() || shouldModifyVersionField) {
                     // Update the row with newer lock value.
                     policy.updateRowAndObjectForUpdate(writeQuery, object);
-                } else if (!shouldModifyVersionField && (policy instanceof VersionLockingPolicy)) {
+                } else if (!shouldModifyVersionField && (policy instanceof VersionLockingPolicy versionLockingPolicy)) {
                     // Add the existing write lock value to the for a "read" lock (requires something to update).
-                    ((VersionLockingPolicy)policy).writeLockValueIntoRow(writeQuery, object);
+                    versionLockingPolicy.writeLockValueIntoRow(writeQuery, object);
                 }
             }
             if (descriptor.hasSerializedObjectPolicy()) {
@@ -1137,9 +1137,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                     if ((shouldModifyVersionField != null && shouldModifyVersionField) || !getModifyRow().isEmpty()) {
                         // Update the row with newer lock value.
                         lockingPolicy.updateRowAndObjectForUpdate(writeQuery, object);
-                    } else if (!shouldModifyVersionField && (lockingPolicy instanceof VersionLockingPolicy)) {
+                    } else if (!shouldModifyVersionField && (lockingPolicy instanceof VersionLockingPolicy policy)) {
                         // Add the existing write lock value to the for a "read" lock (requires something to update).
-                        ((VersionLockingPolicy)lockingPolicy).writeLockValueIntoRow(writeQuery, object);
+                        policy.writeLockValueIntoRow(writeQuery, object);
                     }
                 }
             }

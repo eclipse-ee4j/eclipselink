@@ -1968,17 +1968,17 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 field = iterator.next();
                 if(field != null && field.equals(column)){
                     valueFound = true;
-                    sortedFields.addElement(field);
+                    sortedFields.add(field);
                     break;
                 }
             }
 
             if (valueFound) {
                 // The eligible fields must be maintained as two field can have the same name, but different tables.
-                eligableFields.removeElement(field);
+                eligableFields.remove(field);
             } else {
                 // Need to add a place holder in case the column is not in the fields vector
-                sortedFields.addElement(new DatabaseField());
+                sortedFields.add(new DatabaseField());
             }
         }
         return sortedFields;

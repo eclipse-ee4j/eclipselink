@@ -96,11 +96,10 @@ public class NoRowsUpdatedTest extends AutoVerifyTestCase {
             this.eventAdaptor = new VPDIsolatedSessionEventAdaptor();
             this.server.getEventManager().addListener(this.eventAdaptor);
         } catch (RuntimeException ex) {
-            getSession().logMessage("This test requires that the connected user has privleges to \"Creat any context\", \"Drop any context\" and \"execute Sys.DBMS_RLS package\".");
+            getSession().logMessage("This test requires that the connected user has privileges to \"Creat any context\", \"Drop any context\" and \"execute Sys.DBMS_RLS package\".");
             throw ex;
         } catch (java.sql.SQLException se) {
-            se.printStackTrace();
-            throw new TestErrorException("There is SQLException");
+            throw new TestErrorException("There is SQLException", se);
         }
     }
 

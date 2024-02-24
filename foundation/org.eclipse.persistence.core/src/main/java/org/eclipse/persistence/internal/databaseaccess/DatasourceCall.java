@@ -126,9 +126,9 @@ public abstract class DatasourceCall implements Call {
      * The parameters are the values in order of occurrence in the SQL statement.
      * This is lazy initialized to conserve space on calls that have no parameters.
      */
-    public List getParameters() {
+    public List<Object> getParameters() {
         if (parameters == null) {
-            parameters = new ArrayList();
+            parameters = new ArrayList<>();
         }
         return parameters;
     }
@@ -302,9 +302,10 @@ public abstract class DatasourceCall implements Call {
     }
 
     @Override
-    public Object clone() {
+    @SuppressWarnings({"unchecked"})
+    public DatasourceCall clone() {
         try {
-            return super.clone();
+            return (DatasourceCall) super.clone();
         } catch (CloneNotSupportedException exception) {
             //Do nothing
         }

@@ -547,7 +547,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         } else if (!getQueryMechanism().isStatementQueryMechanism()) {
             setQueryMechanism(new StatementQueryMechanism(this));
         }
-        ((StatementQueryMechanism) getQueryMechanism()).getSQLStatements().addElement(statement);
+        ((StatementQueryMechanism) getQueryMechanism()).getSQLStatements().add(statement);
         // Must un-prepare is prepare as the SQL may change.
         setIsPrepared(false);
     }
@@ -1014,7 +1014,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List<String> getArgumentTypeNames() {
         if (argumentTypeNames == null) {
-            argumentTypeNames = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            argumentTypeNames = new ArrayList<>();
         }
         return argumentTypeNames;
     }
@@ -1104,7 +1104,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             call = mechanism.getCall();
             // If has multiple calls return the first one.
             if ((call == null) && mechanism.hasMultipleCalls()) {
-                call = (Call) mechanism.getCalls().get(0);
+                call = mechanism.getCalls().get(0);
             }
         }
         if ((call == null) && (this.queryMechanism != null) && this.queryMechanism.isJPQLCallQueryMechanism()) {
