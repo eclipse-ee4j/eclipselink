@@ -58,6 +58,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.namespace.QName;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -487,7 +488,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             }
         }
 
-        Vector nestedRows = this.getDescriptor().buildNestedRowsFromFieldValue(fieldValue, executionSession);
+        List<AbstractRecord> nestedRows = this.getDescriptor().buildNestedRowsFromFieldValue(fieldValue, executionSession);
         if (nestedRows == null) {
             if (reuseContainer) {
                 Object currentObject = ((XMLRecord) row).getCurrentObject();

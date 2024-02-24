@@ -609,12 +609,11 @@ public class XRServiceFactory  {
      * would be:  'findAll_employeeType' and 'findByPrimaryKey_employeeType'.
      *
      */
-    @SuppressWarnings("rawtypes")
     protected static void updateFindQueryNames(Project orProject) {
         for (ClassDescriptor orDesc : orProject.getDescriptors().values()) {
-            Vector queries = orDesc.getQueryManager().getAllQueries();
+            List<DatabaseQuery> queries = orDesc.getQueryManager().getAllQueries();
             for (int i=0; i<queries.size(); i++) {
-                DatabaseQuery query = (DatabaseQuery) queries.get(i);
+                DatabaseQuery query = queries.get(i);
                 String qName = query.getName();
                 String END_PART = UNDERSCORE_STR + query.getDescriptor().getAlias() + TYPE_STR;
                 if ((PK_QUERYNAME.equals(qName) || ALL_QUERYNAME.equals(qName)) && !qName.endsWith(END_PART)) {

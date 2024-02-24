@@ -508,8 +508,9 @@ public class OracleNoSQLPlatform extends EISPlatform {
             StringBuilder sqlVariables = null;
             StringBuilder parameterNames = null;
             sqlString = sqlString.replaceAll("/text\\(\\)", "");
-            List<ParameterExpression> parameters = sqlCall.getParameters();
-            for (ParameterExpression parameter: parameters) {
+            List<Object> parameters = sqlCall.getParameters();
+            for (Object p: parameters) {
+                ParameterExpression parameter = (ParameterExpression) p;
                 if (sqlVariables == null && parameterNames == null) {
                     sqlVariables = new StringBuilder("DECLARE");
                     parameterNames = new StringBuilder();

@@ -15,8 +15,10 @@ package org.eclipse.persistence.testing.tests.nonJDBC;
 // javase imports
 import java.io.FileInputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
+
 import org.w3c.dom.Document;
 
 // JUnit imports
@@ -26,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -155,7 +156,7 @@ public class Ni7TestSet {
         DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
         s.login();
-        Vector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add(7);
         boolean worked = false;
         String msg = null;

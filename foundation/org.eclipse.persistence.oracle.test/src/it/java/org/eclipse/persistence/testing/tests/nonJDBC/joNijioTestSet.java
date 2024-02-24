@@ -16,8 +16,9 @@ package org.eclipse.persistence.testing.tests.nonJDBC;
 import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 import org.w3c.dom.Document;
 
 // JUnit imports
@@ -29,7 +30,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -185,7 +185,7 @@ public class joNijioTestSet {
         s.dontLogMessages();
         s.login();
         Object o = null;
-        Vector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add(1);
         queryArgs.add("test");
         boolean worked = false;
@@ -198,7 +198,7 @@ public class joNijioTestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation joNijio failed: " + msg, worked);
-        Vector results = (Vector)o;
+        List<?> results = (List<?>) o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         BigDecimal x = (BigDecimal)record.get("X");
         assertEquals("wrong x value", 51, x.intValue());

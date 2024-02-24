@@ -875,9 +875,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * INTERNAL:
      * Extract the direct values from the specified field value.
-     * Return them in a vector.
+     * Return them in a list.
      */
-    public Vector buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
+    public List<Object> buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
         throw DescriptorException.normalDescriptorsDoNotSupportNonRelationalExtensions(this);
     }
 
@@ -983,7 +983,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * Build and return the nested rows from the specified field value.
      */
-    public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) throws DatabaseException {
+    public List<AbstractRecord> buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) throws DatabaseException {
         throw DescriptorException.normalDescriptorsDoNotSupportNonRelationalExtensions(this);
     }
 

@@ -88,7 +88,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * The field value better be an Array.
      */
     @Override
-    public Vector buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
+    public List<Object> buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
 
         if(fieldValue == null) {
             return null;
@@ -274,7 +274,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * The field value better be an ARRAY.
      */
     @Override
-    public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) throws DatabaseException {
+    public List<AbstractRecord> buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) throws DatabaseException {
 
         if(fieldValue==null){
             return null;
@@ -282,13 +282,13 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
 
         Object[] structs = (Object[])fieldValue;
 
-        Vector nestedRows = new Vector(structs.length);
+        List<AbstractRecord> nestedRows = new Vector<>(structs.length);
         for (int i = 0; i < structs.length; i++) {
             Object[] struct = (Object[])structs[i];
             if (struct == null) {
                 return null;
             }
-            nestedRows.addElement(this.buildNestedRowFromFieldValue(struct));
+            nestedRows.add(this.buildNestedRowFromFieldValue(struct));
         }
         return nestedRows;
     }
@@ -448,7 +448,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     public Ref getRef(Object object, AbstractSession session) {
         SQLSelectStatement statement = new SQLSelectStatement();
         statement.addTable(getTables().get(0));// Assumed only one for obj-rel descriptors.
-        statement.getFields().addElement(new org.eclipse.persistence.expressions.ExpressionBuilder().ref());
+        statement.getFields().add(new org.eclipse.persistence.expressions.ExpressionBuilder().ref());
         statement.setWhereClause(getObjectBuilder().buildPrimaryKeyExpressionFromObject(object, session));
         statement.setRequiresAliases(true);
         statement.normalize(session, this);

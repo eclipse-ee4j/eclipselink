@@ -21,6 +21,8 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Struct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import org.w3c.dom.Document;
 
@@ -35,7 +37,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -283,7 +284,7 @@ public class PLSQLrecordWithCompatibleTypeInOutTestSet  {
         catch (SQLException e1) {
             e1.printStackTrace();
         }
-        NonSynchronizedVector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add(struct);
         boolean worked = false;
         String msg = null;

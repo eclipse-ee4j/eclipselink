@@ -1692,16 +1692,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Return the fields required in the select clause, for patial attribute reading.
+     * Return the fields required in the select clause, for partial attribute reading.
      */
     public Vector getPartialAttributeSelectionFields(boolean isCustomSQL) {
-        Vector localFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getPartialAttributeExpressions().size());
+        List<DatabaseField> localFields = new ArrayList<>(getPartialAttributeExpressions().size());
         Vector foreignFields = null;
 
         //Add primary key and indicator fields.
         localFields.addAll(getDescriptor().getPrimaryKeyFields());
         if (getDescriptor().hasInheritance() && (getDescriptor().getInheritancePolicy().getClassIndicatorField() != null)) {
-            localFields.addElement(getDescriptor().getInheritancePolicy().getClassIndicatorField());
+            localFields.add(getDescriptor().getInheritancePolicy().getClassIndicatorField());
         }
 
         //Add attribute fields

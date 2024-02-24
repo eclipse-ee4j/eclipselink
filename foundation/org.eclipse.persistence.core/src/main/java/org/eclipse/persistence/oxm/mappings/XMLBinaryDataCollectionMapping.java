@@ -45,6 +45,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -395,7 +396,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             }
         }
 
-        Vector fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
+        List<Object> fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
         if (fieldValues == null) {
             if (reuseContainer) {
                 Object currentObject = ((XMLRecord) row).getCurrentObject();
@@ -415,7 +416,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             result = cp.containerInstance(fieldValues.size());
         }
 
-        for (Iterator iterator = fieldValues.iterator(); iterator.hasNext();) {
+        for (Iterator<Object> iterator = fieldValues.iterator(); iterator.hasNext();) {
             Object element = iterator.next();
 
             // PERF: Direct variable access.

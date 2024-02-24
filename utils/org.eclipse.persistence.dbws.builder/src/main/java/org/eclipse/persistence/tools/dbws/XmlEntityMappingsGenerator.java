@@ -251,10 +251,10 @@ public class XmlEntityMappingsGenerator {
 
                     DatabaseField arg;
                     StoredProcedureParameterMetadata param;
-                    List<DatabaseField> paramFields = call.getParameters();
+                    List<Object> paramFields = call.getParameters();
                     List<ParameterType> types = call.getParameterTypes();
                     for (int i=0; i < paramFields.size(); i++) {
-                        arg = paramFields.get(i);
+                        arg = (DatabaseField) paramFields.get(i);
                         param = new StoredProcedureParameterMetadata();
                         param.setTypeName(arg.getTypeName());
 

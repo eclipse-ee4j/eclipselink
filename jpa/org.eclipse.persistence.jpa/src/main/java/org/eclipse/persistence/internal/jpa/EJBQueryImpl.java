@@ -137,7 +137,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         boolean isCacheable = (queryName == null) && (hints == null);
         DatabaseQuery databaseQuery = null;
         if (isCacheable) {
-            databaseQuery = (DatabaseQuery) session.getProject().getJPQLParseCache().get(jpqlQuery);
+            databaseQuery = session.getProject().getJPQLParseCache().get(jpqlQuery);
         }
         if ((databaseQuery == null) || (!databaseQuery.isPrepared())) {
             JPAQueryBuilder queryBuilder = session.getQueryBuilder();

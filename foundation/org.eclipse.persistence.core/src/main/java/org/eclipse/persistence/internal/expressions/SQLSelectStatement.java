@@ -34,7 +34,6 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.FunctionField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
 import org.eclipse.persistence.internal.history.UniversalAsOfClause;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -90,7 +89,7 @@ public class SQLSelectStatement extends SQLStatement {
     protected int fieldCounter=0;
 
     /** Fields being selected (can include expressions). */
-    protected Vector fields;
+    protected List fields;
 
     /** Fields not being selected (can include expressions). */
     protected List<Object> nonSelectFields;
@@ -146,7 +145,7 @@ public class SQLSelectStatement extends SQLStatement {
     protected boolean shouldCacheFieldAliases;
 
     public SQLSelectStatement() {
-        this.fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        this.fields = new ArrayList(2);
         this.tables = new ArrayList<>(4);
         this.requiresAliases = false;
         this.useUniqueFieldAliases=false;
@@ -156,7 +155,7 @@ public class SQLSelectStatement extends SQLStatement {
     }
 
     public void addField(DatabaseField field) {
-        getFields().addElement(field);
+        getFields().add(field);
     }
 
     /**
@@ -625,7 +624,7 @@ public class SQLSelectStatement extends SQLStatement {
 
         printer.getWriter().write(" GROUP BY ");
 
-        Vector<DatabaseField> newFields = new Vector<>();
+        List<DatabaseField> newFields = new ArrayList<>();
         // to avoid printing a comma before the first field
         printer.setIsFirstElementPrinted(false);
         for (Expression expression : getGroupByExpressions()) {
@@ -1093,7 +1092,7 @@ public class SQLSelectStatement extends SQLStatement {
      * INTERNAL:
      * Return all the fields
      */
-    public Vector getFields() {
+    public List getFields() {
         return fields;
     }
 
@@ -1745,10 +1744,9 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Print the SQL representation of the statement on a stream.
      */
-    public Vector<DatabaseField> printSQL(ExpressionSQLPrinter printer) {
+    public List<DatabaseField> printSQL(ExpressionSQLPrinter printer) {
         try {
-            Vector<DatabaseField> selectFields = null;
-            selectFields = printSQLSelect(printer);
+            List<DatabaseField> selectFields = printSQLSelect(printer);
             printSQLWhereKeyWord(printer);
             printSQLWhereClause(printer);
             printSQLHierarchicalQueryClause(printer);
@@ -1763,8 +1761,7 @@ public class SQLSelectStatement extends SQLStatement {
         }
     }
 
-    public Vector<DatabaseField> printSQLSelect(ExpressionSQLPrinter printer) throws IOException {
-        Vector<DatabaseField> selectFields = null;
+    public List<DatabaseField> printSQLSelect(ExpressionSQLPrinter printer) throws IOException {
         printer.setRequiresDistinct(shouldDistinctBeUsed());
 
         if (hasUnionExpressions()) {
@@ -1785,7 +1782,7 @@ public class SQLSelectStatement extends SQLStatement {
             printer.printString("DISTINCT ");
         }
 
-        selectFields = writeFieldsIn(printer);
+        List<DatabaseField> selectFields = writeFieldsIn(printer);
         //fix bug:6070214: turn off unique field aliases after fields are written
         setUseUniqueFieldAliases(false);
 
@@ -2188,17 +2185,17 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * INTERNAL:
      */
-    protected void writeFieldsFromExpression(ExpressionSQLPrinter printer, Expression expression, Vector<DatabaseField> newFields) {
+    protected void writeFieldsFromExpression(ExpressionSQLPrinter printer, Expression expression, List<DatabaseField> newFields) {
         expression.writeFields(printer, newFields, this);
     }
 
     /**
      * INTERNAL:
      */
-    protected Vector<DatabaseField> writeFieldsIn(ExpressionSQLPrinter printer) {
+    protected List<DatabaseField> writeFieldsIn(ExpressionSQLPrinter printer) {
         this.lastTable = null;
 
-        Vector<DatabaseField> newFields = NonSynchronizedVector.newInstance();
+        List<DatabaseField> newFields = new ArrayList<>();
 
         for (Object next : getFields()) {
             // Fields can be null placeholders for fetch groups.

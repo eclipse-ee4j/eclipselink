@@ -805,6 +805,12 @@ public abstract class DatabaseCall extends DatasourceCall {
         return returnMultipleResultSetCollections;
     }
 
+    public void setFields(List<DatabaseField> fields) {
+        //XXX - allow transition from vector to list in the api,
+        //once completed, remove the method taking vector argument
+        setFields(new Vector<>(fields));
+    }
+
     /**
      * The fields expected by the calls result set.
      */

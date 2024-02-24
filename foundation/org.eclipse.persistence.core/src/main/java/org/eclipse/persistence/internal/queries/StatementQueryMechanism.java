@@ -27,8 +27,10 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
+
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for all  statement objects.
@@ -42,7 +44,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     protected SQLStatement sqlStatement;
 
     /** Normally only a single statement is used, however multiple table may require multiple statements on write. */
-    protected Vector sqlStatements;
+    protected List<SQLStatement> sqlStatements;
 
     public StatementQueryMechanism() {
     }
@@ -80,14 +82,14 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     public DatabaseQueryMechanism clone(DatabaseQuery queryClone) {
         StatementQueryMechanism clone = (StatementQueryMechanism)super.clone(queryClone);
         if ((!hasMultipleStatements()) && (getSQLStatement() != null)) {
-            clone.setSQLStatement((SQLStatement)sqlStatement.clone());
+            clone.setSQLStatement(sqlStatement.clone());
         } else {
-            Vector currentStatements = getSQLStatements();
+            List<SQLStatement> currentStatements = getSQLStatements();
             if (currentStatements != null) {
-                Vector statementClone = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(currentStatements.size());
-                Iterator iterator = currentStatements.iterator();
+                List<SQLStatement> statementClone = new ArrayList<>(currentStatements.size());
+                Iterator<SQLStatement> iterator = currentStatements.iterator();
                 while (iterator.hasNext()) {
-                    statementClone.addElement(((SQLStatement) iterator.next()).clone());
+                    statementClone.add(iterator.next().clone());
                 }
                 clone.setSQLStatements(statementClone);
             }
@@ -161,11 +163,11 @@ public class StatementQueryMechanism extends CallQueryMechanism {
 
     /**
      * Normally only a single statement is used, however multiple table may require multiple statements on write.
-     * This is lazy initialied to conserv space.
+     * This is lazy initialized to conserv space.
      */
-    public Vector getSQLStatements() {
+    public List<SQLStatement> getSQLStatements() {
         if (sqlStatements == null) {
-            sqlStatements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+            sqlStatements = new ArrayList<>(3);
         }
         return sqlStatements;
     }
@@ -332,7 +334,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         }
 
         if (hasMultipleStatements()) {
-            for (Iterator iterator = getSQLStatements().iterator();
+            for (Iterator<SQLStatement> iterator = getSQLStatements().iterator();
                  iterator.hasNext();) {
                 ((SQLModifyStatement) iterator.next()).setModifyRow(getModifyRow());
             }
@@ -381,7 +383,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         }
 
         if (hasMultipleStatements()) {
-            for (Iterator iterator = getSQLStatements().iterator();
+            for (Iterator<SQLStatement> iterator = getSQLStatements().iterator();
                  iterator.hasNext();) {
                 ((SQLModifyStatement) iterator.next()).setModifyRow(getModifyRow());
             }
@@ -413,12 +415,12 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         getSession().startOperationProfile(SessionProfiler.SqlGeneration, getQuery(), SessionProfiler.ALL);
         try {
             if (hasMultipleStatements()) {
-                for (Iterator iterator = getSQLStatements().iterator(); iterator.hasNext();) {
+                for (Iterator<SQLStatement> iterator = getSQLStatements().iterator(); iterator.hasNext();) {
                     DatasourceCall call = null;
                     if (getDescriptor() != null) {
-                        call = getDescriptor().buildCallFromStatement((SQLStatement) iterator.next(), getQuery(), getExecutionSession());
+                        call = getDescriptor().buildCallFromStatement(iterator.next(), getQuery(), getExecutionSession());
                     } else {
-                        call = ((SQLStatement) iterator.next()).buildCall(getExecutionSession());
+                        call = iterator.next().buildCall(getExecutionSession());
                     }
 
                     // In case of update call may be null if no update required.
@@ -456,7 +458,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      * Normally only a single statement is used, however multiple table may require multiple statements on write.
      * This is lazy initialized to conserve space.
      */
-    protected void setSQLStatements(Vector sqlStatements) {
+    protected void setSQLStatements(List<SQLStatement> sqlStatements) {
         this.sqlStatements = sqlStatements;
     }
 

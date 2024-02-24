@@ -56,7 +56,7 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
         } else {
             super.addChild(argument);
         }
-        setBaseExpression(getChildren().firstElement());
+        setBaseExpression(getChildren().get(0));
     }
 
     /**

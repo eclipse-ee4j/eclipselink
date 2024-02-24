@@ -41,7 +41,9 @@ import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -92,7 +94,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     public void unprepare() {
         DatabaseQuery query = this.query;
         if (hasMultipleCalls()) {
-            this.calls = ((Vector)this.calls.clone());
+            this.calls = (List<DatasourceCall>) ((ArrayList<?>)this.calls).clone();
             int size = this.calls.size();
             for (int index = 0; index < size; index++) {
                 DatabaseCall call = (DatabaseCall)this.calls.get(index);
@@ -107,7 +109,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
         } else if (this.call != null) {
             if (this.call.isPrepared() && this.call.isStoredProcedureCall()
                     && ((StoredProcedureCall)this.call).hasOptionalArguments()) {
-                this.call = (DatabaseCall)this.call.clone();
+                this.call = this.call.clone();
                 this.call.setIsPrepared(false);
                 this.call.setQuery(query);
             }
@@ -127,14 +129,14 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
         AbstractSession executionSession = query.getExecutionSession();
         if (hasMultipleCalls()) {
             if (query.shouldCloneCall()) {
-                this.calls = ((Vector)this.calls.clone());
+                this.calls = (List<DatasourceCall>) ((ArrayList<?>) this.calls).clone();
             }
             int size = this.calls.size();
             for (int index = 0; index < size; index++) {
-                DatasourceCall call = (DatasourceCall)this.calls.get(index);
+                DatasourceCall call = this.calls.get(index);
                 if (query.shouldCloneCall()) {
                     // Need to clone the call if setting query specific properties on it as the call may be shared.
-                    call = (DatabaseCall)call.clone();
+                    call = call.clone();
                     call.setQuery(query);
                     this.calls.set(index, call);
                 }
@@ -146,12 +148,12 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
         } else if (this.call != null) {
             if (query.shouldCloneCall()) {
                 // Need to clone the call if setting query specific properties on it as the call may be shared.
-                this.call = (DatasourceCall)this.call.clone();
+                this.call = this.call.clone();
                 this.call.setQuery(query);
             }
             DatasourceCall call = this.call;
-            if (call instanceof DatabaseCall) {
-                configureDatabaseCall((DatabaseCall)call);
+            if (call instanceof DatabaseCall c) {
+                configureDatabaseCall(c);
             }
             this.call.prepare(executionSession);
         }
@@ -231,8 +233,8 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     @Override
     public void prepareDeleteAll() {
         if (hasMultipleCalls()) {
-            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
-                DatabaseCall call = (DatabaseCall) iterator.next();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall call = iterator.next();
                 call.returnNothing();
             }
         } else {
@@ -249,7 +251,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     public void prepareDeleteObject() {
         boolean usesOptimisticLocking = ((DeleteObjectQuery)getQuery()).usesOptimisticLocking();
         if (hasMultipleCalls()) {
-            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
                 DatabaseCall call = (DatabaseCall) iterator.next();
                 call.returnNothing();
                 if (usesOptimisticLocking) {
@@ -272,7 +274,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     public void prepareDoesExist(DatabaseField field) {
         getCall().returnOneRow();
         Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        fields.addElement(field);
+        fields.add(field);
         getDatabaseCall().setFields(fields);
         prepareCall();
     }
@@ -294,7 +296,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     @Override
     public void prepareExecuteSelect() {
         if (hasMultipleCalls()) {
-            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
                 DatabaseCall databseCall = (DatabaseCall) iterator.next();
                 databseCall.returnManyRows();
                 databseCall.setIsFieldMatchingRequired(isCallQueryMechanism());
@@ -313,7 +315,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     @Override
     public void prepareSelectAllRows() {
         if (hasMultipleCalls()) {
-            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
                 DatabaseCall call = (DatabaseCall) iterator.next();
                 call.returnManyRows();
                 if (isCallQueryMechanism()) {
@@ -353,7 +355,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     @Override
     public void prepareSelectOneRow() {
         if (hasMultipleCalls()) {
-            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
                 DatabaseCall call = (DatabaseCall) iterator.next();
                 call.returnOneRow();
                 if (isCallQueryMechanism()) {
@@ -411,7 +413,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
      */
     public void setCallHasCustomSQLArguments() {
         if (hasMultipleCalls()) {
-            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
                 DatabaseCall databaseCall = (DatabaseCall) iterator.next();
                 if (databaseCall.isSQLCall()) {
                     ((SQLCall)databaseCall).setHasCustomSQLArguments(true);

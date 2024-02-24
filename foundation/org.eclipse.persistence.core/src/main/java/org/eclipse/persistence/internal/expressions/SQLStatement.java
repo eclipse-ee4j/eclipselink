@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,9 +54,9 @@ public abstract class SQLStatement implements Serializable, Cloneable {
      * Clone the Statement
      */
     @Override
-    public Object clone() {
+    public SQLStatement clone() {
         try {
-            return super.clone();
+            return (SQLStatement) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new InternalError();
         }

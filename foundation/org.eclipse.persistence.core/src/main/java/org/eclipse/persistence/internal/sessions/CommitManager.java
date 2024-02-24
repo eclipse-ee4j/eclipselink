@@ -632,7 +632,7 @@ public class CommitManager {
      * The commit order is a vector of vectors,
      * where the first vector is all root level classes, the second is classes owned by roots and so on.
      */
-    public void setCommitOrder(List commitOrder) {
+    public void setCommitOrder(List<Class<?>> commitOrder) {
         this.commitOrder = commitOrder;
     }
 

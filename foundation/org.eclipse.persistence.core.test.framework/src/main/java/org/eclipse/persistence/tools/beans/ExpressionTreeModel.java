@@ -46,7 +46,7 @@ public class ExpressionTreeModel implements TreeModel {
                 return new ExpressionNode(expression.getSecondChild());
             }
         } else if (parent instanceof FunctionExpression expression) {
-            return new ExpressionNode(expression.getChildren().elementAt(index));
+            return new ExpressionNode(expression.getChildren().get(index));
         }
 
         return null;

@@ -20,6 +20,7 @@ import static org.eclipse.persistence.internal.xr.Util.TYPE_STR;
 import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
 
 //javase imports
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -28,7 +29,6 @@ import java.util.Vector;
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DBWSException;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -128,7 +128,7 @@ public class DeleteOperation extends Operation {
             // whereas named queries (SQL strings) do not...
             List<String> queryArguments = query.getArguments();
             int queryArgumentsSize = queryArguments.size();
-            Vector<Object> executeArguments = new NonSynchronizedVector<>();
+            List<Object> executeArguments = new ArrayList<>();
             for (int i = 0; i < queryArgumentsSize; i++) {
                 String argName = queryArguments.get(i);
                 executeArguments.add(invocation.getParameter(argName));

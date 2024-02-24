@@ -354,12 +354,12 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * The field value should be a Vector, an XMLRecord, or an XMLElement
     */
     @Override
-    public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
+    public List<AbstractRecord> buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
         // BUG#2667762 - If the tag was empty this could be a string of whitespace.
         if (!(fieldValue instanceof Vector)) {
-            return new Vector(0);
+            return new Vector<>(0);
         }
-        return (Vector) fieldValue;
+        return (Vector<AbstractRecord>) fieldValue;
     }
 
     /**
@@ -479,13 +479,13 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * The field value could be a vector or could be a text value if only a single value.
      */
     @Override
-    public Vector buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
+    public List<Object> buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
         if (!(fieldValue instanceof Vector)) {
-            Vector fieldValues = new Vector(1);
+            List<Object> fieldValues = new Vector(1);
             fieldValues.add(fieldValue);
             return fieldValues;
         }
-        return (Vector) fieldValue;
+        return (List<Object>) fieldValue;
     }
 
     /**

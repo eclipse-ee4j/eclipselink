@@ -22,14 +22,13 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.history.AsOfClause;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Vector;
 
 /**
  * Abstract class for expression that have exactly two children, such as and/or and relations.
@@ -333,13 +332,13 @@ public abstract class CompoundExpression extends Expression {
      */
     @Override
     public Expression rebuildOn(Expression newBase) {
-        Vector arguments;
+        List<Expression> arguments;
 
         Expression first = this.firstChild.rebuildOn(newBase);
         if (this.secondChild == null) {
-            arguments = NonSynchronizedVector.newInstance(0);
+            arguments = new ArrayList<>(0);
         } else {
-            arguments = NonSynchronizedVector.newInstance(1);
+            arguments = new ArrayList<>(1);
             arguments.add(this.secondChild.rebuildOn(newBase));
         }
         return first.performOperator(this.operator, arguments);
@@ -380,13 +379,13 @@ public abstract class CompoundExpression extends Expression {
      */
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
-        Vector arguments;
+        List<Expression> arguments;
 
         if (this.secondChild == null) {
-            arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
+            arguments = new ArrayList<>(0);
         } else {
-            arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-            arguments.addElement(this.secondChild.twistedForBaseAndContext(newBase, context, oldBase));
+            arguments = new ArrayList<>(1);
+            arguments.add(this.secondChild.twistedForBaseAndContext(newBase, context, oldBase));
         }
 
         Expression first = this.firstChild.twistedForBaseAndContext(newBase, context, oldBase);
