@@ -403,7 +403,7 @@ public class QueryOperation extends Operation {
         if (value != null) {
             // a recent change in core results in an empty vector being returned in cases
             // where before we'd expect an int value (typically 1) - need to handle this
-            if (result != null && (result.getType() == INT_QNAME || result.getType().equals(SXF_QNAME))) {
+            if (result != null && (INT_QNAME.equals(result.getType()) || SXF_QNAME.equals(result.getType()))) {
                 if (value instanceof ArrayList && ((ArrayList<?>) value).isEmpty()) {
                     ((ArrayList<Integer>) value).add(1);
                 } else  if (value instanceof Vector && ((Vector<?>) value).isEmpty()) {
