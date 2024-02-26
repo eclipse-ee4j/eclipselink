@@ -58,6 +58,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -837,9 +838,9 @@ public class SQLSelectStatement extends SQLStatement {
                 getBuilder().assignTableAliasesStartingAt(currentAliasNumber);
             }
         } else {
-            for (Iterator iterator1 = allExpressions.iterator();
+            for (Iterator<Expression> iterator1 = allExpressions.iterator();
                  iterator1.hasNext();) {
-                Expression expression = (Expression) iterator1.next();
+                Expression expression = iterator1.next();
                 iterator.iterateOn(expression);
             }
         }
@@ -952,8 +953,8 @@ public class SQLSelectStatement extends SQLStatement {
             }
         };
 
-        //we want consistent order in the from and Hashtable nor HashMap guarantee ordering
-        iterator.setResult(new LinkedHashMap<>(5));
+        //changing the collection type changes the ordering of aliases
+        iterator.setResult(new Hashtable<>(5));
 
         if (getWhereClause() != null) {
             iterator.iterateOn(getWhereClause());
@@ -996,8 +997,8 @@ public class SQLSelectStatement extends SQLStatement {
      * no ambiguity
      */
     public void computeTablesFromTables() {
-        //we want consistent order in the from and Hashtable nor HashMap guarantee ordering
-        Map<DatabaseTable, DatabaseTable> allTables = new LinkedHashMap<>();
+        //changing the collection type changes the ordering of aliases
+        Map<DatabaseTable, DatabaseTable> allTables = new Hashtable<>();
         AsOfClause asOfClause = null;
 
         if (getBuilder().hasAsOfClause() && !getBuilder().getSession().getProject().hasGenericHistorySupport()) {

@@ -92,7 +92,7 @@ public class TestCollectionTableEmbeddable {
             queryEmbed.setParameter(1, "95054");
             queryEmbed.getResultList();
             Assert.assertEquals(1, _sql.size());
-            Assert.assertEquals("SELECT t0.CITY FROM SPECEMPLOYEE t1, PREV_ADDRESSES t0 WHERE ((t1.ZIPCODE = ?) AND (t0.SpecEmployee_ID = t1.ID))", _sql.remove(0));
+            Assert.assertEquals("SELECT t0.CITY FROM PREV_ADDRESSES t0, SPECEMPLOYEE t1 WHERE ((t1.ZIPCODE = ?) AND (t0.SpecEmployee_ID = t1.ID))", _sql.remove(0));
         } finally {
             if (em.isOpen()) {
                 em.close();
