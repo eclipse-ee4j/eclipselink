@@ -138,7 +138,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
 
     public void addAlpineBeerToConsume(Alpine alpine, int index) {
         alpine.setBeerConsumer(this);
-        ((Vector<Alpine>) alpineBeersToConsume).insertElementAt(alpine, index);
+        alpineBeersToConsume.add(index, alpine);
     }
 
     public void addBecksBeerToConsume(Becks becks, BecksTag becksTag) {
@@ -217,7 +217,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     }
 
     public Alpine getAlpineBeerToConsume(int index) {
-        return ((Vector<Alpine>) alpineBeersToConsume).elementAt(index);
+        return alpineBeersToConsume.get(index);
     }
 
     @OneToMany(targetEntity=Becks.class, mappedBy="beerConsumer", cascade=ALL, orphanRemoval=true)
@@ -315,7 +315,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     }
 
     public boolean hasTelephoneNumber(TelephoneNumber telephoneNumber) {
-        Iterator<TelephoneNumberPK> iterator = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keySet().iterator();
+        Iterator<TelephoneNumberPK> iterator = telephoneNumbers.keySet().iterator();
         while (iterator.hasNext()) {
             Object key = iterator.next();
 
@@ -328,8 +328,8 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     }
 
     public Alpine moveAlpineBeerToConsume(int fromIndex, int toIndex) {
-        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).elementAt(fromIndex);
-        ((Vector<?>) alpineBeersToConsume).removeElementAt(fromIndex);
+        Alpine alpine = alpineBeersToConsume.get(fromIndex);
+        ((Vector<?>) alpineBeersToConsume).remove(fromIndex);
         alpineBeersToConsume.add(toIndex, alpine);
         return alpine;
     }
@@ -370,9 +370,9 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     }
 
     public Alpine removeAlpineBeerToConsume(int index) {
-        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).elementAt(index);
+        Alpine alpine = alpineBeersToConsume.get(index);
         alpine.setBeerConsumer(null);
-        ((Vector<?>) alpineBeersToConsume).removeElementAt(index);
+        ((Vector<?>) alpineBeersToConsume).remove(index);
         return alpine;
     }
 
@@ -381,7 +381,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     }
 
     public void removePhoneNumber(TelephoneNumber telephoneNumber) {
-        Iterator<TelephoneNumberPK> iterator = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keySet().iterator();
+        Iterator<TelephoneNumberPK> iterator = telephoneNumbers.keySet().iterator();
         while (iterator.hasNext()) {
             Object key = iterator.next();
             TelephoneNumber potentialTelephoneNumber = telephoneNumbers.get(key);

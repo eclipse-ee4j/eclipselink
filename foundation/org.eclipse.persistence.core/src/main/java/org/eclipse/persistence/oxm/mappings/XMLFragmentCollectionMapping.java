@@ -181,7 +181,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
             Object element = cp.next(iter, session);
             if (element != null) {
-                elements.addElement(element);
+                elements.add(element);
             }
         }
 

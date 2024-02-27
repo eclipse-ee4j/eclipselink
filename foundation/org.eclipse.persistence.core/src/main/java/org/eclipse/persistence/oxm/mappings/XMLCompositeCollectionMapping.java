@@ -459,7 +459,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                         nestedRows.add(nestedRow);
                     }
                 } else {
-                    nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
+                    nestedRows.add(buildCompositeRow(element, session, row, writeType));
                 }
             }
         }

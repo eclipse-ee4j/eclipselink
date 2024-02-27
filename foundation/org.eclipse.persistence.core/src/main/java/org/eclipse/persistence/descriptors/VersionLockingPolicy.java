@@ -38,8 +38,9 @@ import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 
 /**
@@ -294,10 +295,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * cache, a vector with one value is returned.  In the case
      * of being stored in the object, an empty vector is returned.
      */
-    protected Vector<DatabaseField> getUnmappedFields() {
-        Vector<DatabaseField> fields = new Vector<>(1);
+    protected List<DatabaseField> getUnmappedFields() {
+        List<DatabaseField> fields = new ArrayList<>(1);
         if (isStoredInCache()) {
-            fields.addElement(getWriteLockField());
+            fields.add(getWriteLockField());
         }
         return fields;
     }

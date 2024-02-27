@@ -313,7 +313,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      */
     @Override
     public junit.framework.Test testAt(int index) {
-        return getTests().elementAt(index);
+        return getTests().get(index);
     }
 
     @Override
@@ -446,7 +446,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Remove the test colleciton.
      */
     protected void removeTest(TestEntity test) {
-        getTests().removeElement(test);
+        getTests().remove(test);
     }
 
     @Override

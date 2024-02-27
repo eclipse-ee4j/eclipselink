@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.framework.LoadBuildSummary.class);
         Vector<String> vector = new Vector<>();
-        vector.addElement("LOADBUILD");
+        vector.add("LOADBUILD");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("LOADBUILD.id");
         //descriptor.addPrimaryKeyFieldName("LOADBUILD.lbtimestamp");
@@ -164,7 +164,7 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.framework.TestResult.class);
         Vector<String> vector = new Vector<>();
-        vector.addElement("RESULT");
+        vector.add("RESULT");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("RESULT.id");
 
@@ -249,7 +249,7 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.framework.TestResultsSummary.class);
         Vector<String> vector = new Vector<>();
-        vector.addElement("SUMMARY");
+        vector.add("SUMMARY");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("SUMMARY.id");
 

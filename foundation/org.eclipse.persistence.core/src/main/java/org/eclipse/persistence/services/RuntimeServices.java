@@ -768,7 +768,7 @@ public abstract class RuntimeServices {
              }
              if (alreadyAdded.get(mappedClassName) == null) {
                  alreadyAdded.put(mappedClassName, Boolean.TRUE);
-                 mappedClassNames.addElement(mappedClassName);
+                 mappedClassNames.add(mappedClassName);
              }
              mappedClassName = null;
          }
@@ -1041,7 +1041,7 @@ public abstract class RuntimeServices {
          }
 
          for (index = 0; index < classes.size(); index++) {
-             getSession().getSessionLog().log(SessionLog.FINEST, (String)classes.elementAt(index));
+             getSession().getSessionLog().log(SessionLog.FINEST, (String)classes.get(index));
          }
      }
 
@@ -1093,7 +1093,7 @@ public abstract class RuntimeServices {
 
          //get each identity map, and log the type
          for (int index = 0; index < classesRegistered.size(); index++) {
-             registeredClassName = (String)classesRegistered.elementAt(index);
+             registeredClassName = (String)classesRegistered.get(index);
              registeredClass = getSession().getDatasourcePlatform().getConversionManager().convertObject(registeredClassName, ClassConstants.CLASS);
              IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(registeredClass);
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_class",
@@ -1116,7 +1116,7 @@ public abstract class RuntimeServices {
 
          //get each identity map, and log the type
          for (int index = 0; index < classesRegistered.size(); index++) {
-             registeredClassName = (String)classesRegistered.elementAt(index);
+             registeredClassName = (String)classesRegistered.get(index);
              try {
                  this.printObjectsInIdentityMap(registeredClassName);
              } catch (ClassNotFoundException classNotFound) {
@@ -1143,7 +1143,7 @@ public abstract class RuntimeServices {
 
          //get each identity map, and log the size
          for (int index = 0; index < classesRegistered.size(); index++) {
-             registeredClassName = (String)classesRegistered.elementAt(index);
+             registeredClassName = (String)classesRegistered.get(index);
              try {
                  sum += this.getNumberOfObjectsInIdentityMap(registeredClassName);
              } catch (ClassNotFoundException classNotFound) {
@@ -1275,7 +1275,7 @@ public abstract class RuntimeServices {
 
          //get each identity map, and invalidate
          for (int index = 0; index < classesRegistered.size(); index++) {
-             registeredClassName = (String)classesRegistered.elementAt(index);
+             registeredClassName = (String)classesRegistered.get(index);
              registeredClass = getSession().getDatasourcePlatform().getConversionManager()
                  .convertObject(registeredClassName, ClassConstants.CLASS);
              getSession().getIdentityMapAccessor().invalidateClass(registeredClass);
@@ -1402,7 +1402,7 @@ public abstract class RuntimeServices {
              CompositeType type = buildCompositeTypeForClassSummaryDetails();
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.get(index);
                  Map<String, String> data = buildLowlevelDetailsFor(mappedClassName);
                  final CompositeDataSupport support = new CompositeDataSupport(type, buildLowlevelDetailsFor(mappedClassName));
                  classSummaryDetails.add(ClassSummaryDetailBase.from(support));
@@ -1541,7 +1541,7 @@ public abstract class RuntimeServices {
 
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.get(index);
                  String[] key = new String[] { mappedClassName };
                  rowData.put(key, buildDetailsFor(mappedClassName, rowData.getTabularType().getRowType()));
              }
@@ -1579,7 +1579,7 @@ public abstract class RuntimeServices {
 
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.get(index);
                  String[] key = new String[] { mappedClassName };
                  rowData.put(key, buildDetailsFor(mappedClassName, rowData.getTabularType().getRowType()));
              }

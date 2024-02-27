@@ -126,7 +126,7 @@ public class NamespaceResolverStorage extends LinkedHashMap<String, String> {
         Vector<Namespace> names = new Vector<>(size());
         for (Map.Entry<String, String> entry : entrySet()) {
             Namespace namespace = new Namespace(entry.getKey(), entry.getValue());
-            names.addElement(namespace);
+            names.add(namespace);
         }
         return unmodifiableVector(names);
     }

@@ -85,7 +85,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
         while(itDatabaseFieldsToValues.hasNext()) {
             Iterator itDatabaseFields = ((HashMap)itDatabaseFieldsToValues.next()).keySet().iterator();
             while(itDatabaseFields.hasNext()) {
-                allFields.addElement(itDatabaseFields.next());
+                allFields.add(itDatabaseFields.next());
             }
         }
 
@@ -94,7 +94,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             writer.write("DECLARE\n");
 
             for(int i=0; i < allFields.size(); i++) {
-                writeDeclareTypeAndVar(writer, (DatabaseField)allFields.elementAt(i), session.getPlatform());
+                writeDeclareTypeAndVar(writer, (DatabaseField)allFields.get(i), session.getPlatform());
             }
 
             //BEGIN
@@ -111,7 +111,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             writer.write(" BULK COLLECT INTO ");
 
             for(int i=0; i < allFields.size(); i++) {
-                writeVar(writer, (DatabaseField)allFields.elementAt(i), session.getPlatform());
+                writeVar(writer, (DatabaseField)allFields.get(i), session.getPlatform());
                 if(i < allFields.size() - 1) {
                     writer.write(", ");
                 }
@@ -123,7 +123,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             call.getParameterTypes().addAll(selectCall.getParameterTypes());
             call.getParameterBindings().addAll(selectCall.getParameterBindings());
 
-            DatabaseField firstMainPrimaryKey = (DatabaseField)mainPrimaryKeys.firstElement();
+            DatabaseField firstMainPrimaryKey = (DatabaseField) mainPrimaryKeys.get(0);
             writer.write(tab);
             writer.write("IF ");
             writeVar(writer, firstMainPrimaryKey, session.getPlatform());
@@ -158,10 +158,10 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
                 Vector tablePrimaryKeys = new Vector();
                 tablePrimaryKeys.addAll(tablesToPrimaryKeyFields.get(t));
                 for(int i=0; i < mainPrimaryKeys.size(); i++) {
-                    DatabaseField tableField = (DatabaseField)tablePrimaryKeys.elementAt(i);
+                    DatabaseField tableField = (DatabaseField)tablePrimaryKeys.get(i);
                     writer.write(tableField.getNameDelimited(session.getPlatform()));
                     writer.write(" = ");
-                    DatabaseField mainField = (DatabaseField )mainPrimaryKeys.elementAt(i);
+                    DatabaseField mainField = (DatabaseField )mainPrimaryKeys.get(i);
                     writeVar(writer, mainField, session.getPlatform());
                     writer.write("(i)");
                     if(i < mainPrimaryKeys.size()-1) {

@@ -307,7 +307,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             //Get the nested row represented by this field to build the Object from
             Object nested = record.get(getField());
             if (nested instanceof Vector) {
-                nested = ((Vector) nested).firstElement();
+                nested = ((Vector) nested).get(0);
             }
             if (!(nested instanceof XMLRecord)) {
                 return null;

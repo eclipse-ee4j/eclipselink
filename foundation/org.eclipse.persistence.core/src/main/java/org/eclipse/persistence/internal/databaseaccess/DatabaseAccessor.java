@@ -1058,7 +1058,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         DatabasePlatform platform = getPlatform();
         boolean optimizeData = platform.shouldOptimizeDataConversion();
         for (int index = 0; index < size; index++) {
-            DatabaseField field = fields.elementAt(index);
+            DatabaseField field = fields.get(index);
             // Field can be null for fetch groups.
             if (field != null) {
                 values.add(getObject(resultSet, field, metaData, index + 1, platform, optimizeData, session));
@@ -1193,7 +1193,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
-                result.addElement(fetchRow(fields, resultSet, metaData, session));
+                result.add(fetchRow(fields, resultSet, metaData, session));
             }
             resultSet.close();
         } catch (SQLException sqlException) {
@@ -1229,7 +1229,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
-                result.addElement(fetchRow(fields, resultSet, metaData, session));
+                result.add(fetchRow(fields, resultSet, metaData, session));
             }
             resultSet.close();
         } catch (SQLException sqlException) {
@@ -1292,7 +1292,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (getPlatform().shouldForceFieldNamesToUpperCase()) {
                 column.useUpperCaseForComparisons(true);
             }
-            columnNames.addElement(column);
+            columnNames.add(column);
         }
         return columnNames;
     }
@@ -1614,7 +1614,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
-                result.addElement(fetchRow(fields, resultSet, metaData, session));
+                result.add(fetchRow(fields, resultSet, metaData, session));
             }
             resultSet.close();
         } catch (SQLException sqlException) {
@@ -1650,7 +1650,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
-                result.addElement(fetchRow(fields, resultSet, metaData, session));
+                result.add(fetchRow(fields, resultSet, metaData, session));
             }
             resultSet.close();
         } catch (SQLException sqlException) {

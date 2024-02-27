@@ -64,8 +64,8 @@ public class SQLUpdateStatement extends SQLModifyStatement {
                 DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
                 Object value = iterator.next();
                 if (field.getTable().equals(getTable()) || (!field.hasTableName())) {
-                    fieldsForTable.addElement(field);
-                    values.addElement(value);
+                    fieldsForTable.add(field);
+                    values.add(value);
                 }
             }
 
@@ -74,10 +74,10 @@ public class SQLUpdateStatement extends SQLModifyStatement {
             }
 
             for (int i = 0; i < fieldsForTable.size(); i++) {
-                DatabaseField field = (DatabaseField)fieldsForTable.elementAt(i);
+                DatabaseField field = (DatabaseField)fieldsForTable.get(i);
                 writer.write(field.getNameDelimited(session.getPlatform()));
                 writer.write(" = ");
-                if(values.elementAt(i) instanceof Expression exp) {
+                if(values.get(i) instanceof Expression exp) {
                     // the value in the modify row is an expression - assign it.
                     if(printer == null) {
                         printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false, getBuilder());

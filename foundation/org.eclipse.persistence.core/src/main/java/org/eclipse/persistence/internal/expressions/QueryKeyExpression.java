@@ -1098,7 +1098,7 @@ public class QueryKeyExpression extends ObjectExpression {
                      iterator1.hasNext();) {
                     Object vectorObject = iterator1.next();
                     if (vectorObject == null) {
-                        comparisonVector.addElement(null);
+                        comparisonVector.add(null);
                     } else {
                         Object valueOrValues = valuesFromCollection(vectorObject, session, valueHolderPolicy, isObjectUnregistered);
 
@@ -1106,10 +1106,10 @@ public class QueryKeyExpression extends ObjectExpression {
                         if (valueOrValues instanceof Vector) {
                             for (Iterator iterator = ((Vector) valueOrValues).iterator();
                                  iterator.hasNext();) {
-                                comparisonVector.addElement(iterator.next());
+                                comparisonVector.add(iterator.next());
                             }
                         } else {
-                            comparisonVector.addElement(valueOrValues);
+                            comparisonVector.add(valueOrValues);
                         }
                     }
                 }
@@ -1185,10 +1185,10 @@ public class QueryKeyExpression extends ObjectExpression {
                 if (isObjectUnregistered && (uow.getCloneMapping().get(object) == null)) {
                     Vector objectValues = (Vector)valueToIterate;
                     for (int i = 0; i < objectValues.size(); i++) {
-                        Object original = objectValues.elementAt(i);
+                        Object original = objectValues.get(i);
                         Object clone = uow.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(original);
                         if (clone != null) {
-                            objectValues.setElementAt(clone, i);
+                            objectValues.set(i, clone);
                         }
                     }
                 }

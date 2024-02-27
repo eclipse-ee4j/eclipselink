@@ -430,12 +430,12 @@ public class QueryOperation extends Operation {
             if (isSimpleXMLFormat()) {
                 value = createSimpleXMLFormat(xrService, value);
             } else {
-                if (!isCollection() && value instanceof Vector) {
+                if (!isCollection() && value instanceof Vector<?> v) {
                     // JPAQuery will return a single result in a Vector
-                    if (((Vector<?>) value).isEmpty()) {
+                    if (v.isEmpty()) {
                         return null;
                     }
-                    value = ((Vector<?>) value).firstElement();
+                    value = v.get(0);
                 }
 
                 QName resultType = getResultType();
@@ -538,7 +538,7 @@ public class QueryOperation extends Operation {
         if (xmlTag != null && !EMPTY_STR.equals(xmlTag)) {
             tempXMLTag = xmlTag;
         }
-        Vector<DatabaseRecord> records = null;
+        List<DatabaseRecord> records = null;
         if (value instanceof ArrayList) {
             // JPA query results in a list of raw values
             // Here we have raw values returned as opposed to DatabaseRecords - this means
@@ -569,20 +569,20 @@ public class QueryOperation extends Operation {
             } else {
                 dr.add(new DatabaseField(RESULT_STR), ((ArrayList<?>) value).get(0));
             }
-            records = new Vector<>();
+            records = new ArrayList<>();
             records.add(dr);
         } else if (value instanceof Vector) {
-            Class<?> vectorContent = ((Vector<?>)value).firstElement().getClass();
+            Class<?> vectorContent = ((Vector<?>)value).get(0).getClass();
             if (DatabaseRecord.class.isAssignableFrom(vectorContent)) {
                 records = (Vector<DatabaseRecord>)value;
             } else {
-                records = new Vector<>();
+                records = new ArrayList<>();
                 DatabaseRecord dr = new DatabaseRecord();
-                dr.add(new DatabaseField(RESULT_STR), ((Vector<?>)value).firstElement());
+                dr.add(new DatabaseField(RESULT_STR), ((Vector<?>)value).get(0));
                 records.add(dr);
             }
         } else {
-            records = new Vector<>();
+            records = new ArrayList<>();
             DatabaseRecord dr = new DatabaseRecord();
             dr.add(new DatabaseField(RESULT_STR), value);
             records.add(dr);

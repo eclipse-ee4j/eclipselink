@@ -1603,7 +1603,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public Object executeQuery(String queryName, Class<?> domainClass, Object arg1) throws DatabaseException {
         Vector<Object> argumentValues = new Vector<>();
-        argumentValues.addElement(arg1);
+        argumentValues.add(arg1);
         return executeQuery(queryName, domainClass, argumentValues);
     }
 
@@ -1618,8 +1618,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public Object executeQuery(String queryName, Class<?> domainClass, Object arg1, Object arg2) throws DatabaseException {
         Vector<Object> argumentValues = new Vector<>();
-        argumentValues.addElement(arg1);
-        argumentValues.addElement(arg2);
+        argumentValues.add(arg1);
+        argumentValues.add(arg2);
         return executeQuery(queryName, domainClass, argumentValues);
     }
 
@@ -1634,9 +1634,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public Object executeQuery(String queryName, Class<?> domainClass, Object arg1, Object arg2, Object arg3) throws DatabaseException {
         Vector<Object> argumentValues = new Vector<>();
-        argumentValues.addElement(arg1);
-        argumentValues.addElement(arg2);
-        argumentValues.addElement(arg3);
+        argumentValues.add(arg1);
+        argumentValues.add(arg2);
+        argumentValues.add(arg3);
         return executeQuery(queryName, domainClass, argumentValues);
     }
 
@@ -1691,7 +1691,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public Object executeQuery(String queryName, Object arg1) throws DatabaseException {
         Vector<Object> argumentValues = new Vector<>();
-        argumentValues.addElement(arg1);
+        argumentValues.add(arg1);
         return executeQuery(queryName, argumentValues);
     }
 
@@ -1705,8 +1705,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public Object executeQuery(String queryName, Object arg1, Object arg2) throws DatabaseException {
         Vector<Object> argumentValues = new Vector<>();
-        argumentValues.addElement(arg1);
-        argumentValues.addElement(arg2);
+        argumentValues.add(arg1);
+        argumentValues.add(arg2);
         return executeQuery(queryName, argumentValues);
     }
 
@@ -1720,9 +1720,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public Object executeQuery(String queryName, Object arg1, Object arg2, Object arg3) throws DatabaseException {
         Vector<Object> argumentValues = new Vector<>();
-        argumentValues.addElement(arg1);
-        argumentValues.addElement(arg2);
-        argumentValues.addElement(arg3);
+        argumentValues.add(arg1);
+        argumentValues.add(arg2);
+        argumentValues.add(arg3);
         return executeQuery(queryName, argumentValues);
     }
 
@@ -3071,7 +3071,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             }
             Vector argumentTypes = new Vector(argumentTypesSize);
             for (int i = 0; i < argumentTypesSize; i++) {
-                argumentTypes.addElement(arguments.elementAt(i).getClass());
+                argumentTypes.add(arguments.get(i).getClass());
             }
             for (DatabaseQuery query: queries) {
                 if (Helper.areTypesAssignable(argumentTypes, query.getArgumentTypes())) {

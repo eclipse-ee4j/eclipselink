@@ -342,7 +342,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
             //Get the nested row represented by this field to build the collection from
             Object nested = record.get(getField());
             if (nested instanceof Vector) {
-                nested = ((Vector) nested).firstElement();
+                nested = ((Vector) nested).get(0);
             }
             if (!(nested instanceof XMLRecord)) {
                 return null;

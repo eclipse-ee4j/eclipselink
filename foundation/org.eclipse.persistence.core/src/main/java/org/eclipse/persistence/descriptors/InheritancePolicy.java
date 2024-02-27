@@ -670,7 +670,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                 className = ((Class<?>)className).getName();
             }
             Object value = valuesEnum.next();
-            associations.addElement(new TypedAssociation(className, value));
+            associations.add(new TypedAssociation(className, value));
         }
 
         return associations;

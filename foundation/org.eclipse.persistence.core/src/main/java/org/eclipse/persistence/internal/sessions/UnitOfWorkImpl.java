@@ -2018,9 +2018,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // bug 327900
             if ((object.getClass() == theClass) || (readSubclassesOrNoInheritance && (theClass.isInstance(object)))) {
                 if (selectionCriteria == null) {
-                    objects.addElement(object);
+                    objects.add(object);
                 } else if (selectionCriteria.doesConform(object, this, translationRow, valueHolderPolicy)) {
-                    objects.addElement(object);
+                    objects.add(object);
                 }
             }
         }
@@ -3984,7 +3984,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public Vector registerAllObjects(Collection domainObjects) {
         Vector clones = new Vector(domainObjects.size());
         for (Iterator objectsEnum = domainObjects.iterator(); objectsEnum.hasNext();) {
-            clones.addElement(registerObject(objectsEnum.next()));
+            clones.add(registerObject(objectsEnum.next()));
         }
         return clones;
     }
@@ -4003,7 +4003,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public Vector registerAllObjects(Vector domainObjects) throws DatabaseException, OptimisticLockException {
         Vector clones = new Vector(domainObjects.size());
         for (Iterator iterator = domainObjects.iterator(); iterator.hasNext();) {
-            clones.addElement(registerObject(iterator.next()));
+            clones.add(registerObject(iterator.next()));
         }
         return clones;
     }

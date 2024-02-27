@@ -73,7 +73,7 @@ public class BeerConsumer {
 
     public void addAlpineBeerToConsume(Alpine alpine, int index) {
         alpine.setBeerConsumer(this);
-        ((Vector<Alpine>) alpineBeersToConsume).insertElementAt(alpine, index);
+        ((Vector<Alpine>) alpineBeersToConsume).add(index, alpine);
     }
 
     /**
@@ -92,7 +92,7 @@ public class BeerConsumer {
     }
 
     public Alpine getAlpineBeerToConsume(int index) {
-        return ((Vector<Alpine>) alpineBeersToConsume).elementAt(index);
+        return ((Vector<Alpine>) alpineBeersToConsume).get(index);
     }
 
     public Map<Integer, Canadian> getCanadianBeersToConsume() {
@@ -121,7 +121,7 @@ public class BeerConsumer {
     }
 
     public boolean hasTelephoneNumber(TelephoneNumber telephoneNumber) {
-        Iterator<TelephoneNumberPK> iterator = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keySet().iterator();
+        Iterator<TelephoneNumberPK> iterator = telephoneNumbers.keySet().iterator();
         while (iterator.hasNext()) {
             TelephoneNumberPK key = iterator.next();
 
@@ -134,8 +134,8 @@ public class BeerConsumer {
     }
 
     public Alpine moveAlpineBeerToConsume(int fromIndex, int toIndex) {
-        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).elementAt(fromIndex);
-        ((Vector<Alpine>) alpineBeersToConsume).removeElementAt(fromIndex);
+        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).get(fromIndex);
+        ((Vector<Alpine>) alpineBeersToConsume).remove(fromIndex);
         ((Vector<Alpine>) alpineBeersToConsume).add(toIndex, alpine);
         return alpine;
     }
@@ -176,14 +176,14 @@ public class BeerConsumer {
     }
 
     public Alpine removeAlpineBeerToConsume(int index) {
-        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).elementAt(index);
+        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).get(index);
         alpine.setBeerConsumer(null);
-        ((Vector<Alpine>) alpineBeersToConsume).removeElementAt(index);
+        ((Vector<Alpine>) alpineBeersToConsume).remove(index);
         return alpine;
     }
 
     public void removePhoneNumber(TelephoneNumber telephoneNumber) {
-        Iterator<TelephoneNumberPK> iterator = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keySet().iterator();
+        Iterator<TelephoneNumberPK> iterator = telephoneNumbers.keySet().iterator();
         while (iterator.hasNext()) {
             TelephoneNumberPK key = iterator.next();
             TelephoneNumber potentialTelephoneNumber = telephoneNumbers.get(key);

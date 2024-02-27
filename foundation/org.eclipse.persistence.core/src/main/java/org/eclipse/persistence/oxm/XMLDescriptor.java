@@ -341,10 +341,10 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             return getObjectBuilder().createRecord(null);
         } else {
             // BUG#2667762 - If the tag was empty this could be a string of whitespace.
-            if (!(nestedRows.firstElement() instanceof AbstractRecord)) {
+            if (!(nestedRows.get(0) instanceof AbstractRecord)) {
                 return getObjectBuilder().createRecord(null);
             }
-            return (XMLRecord) nestedRows.firstElement();
+            return (XMLRecord) nestedRows.get(0);
         }
     }
 

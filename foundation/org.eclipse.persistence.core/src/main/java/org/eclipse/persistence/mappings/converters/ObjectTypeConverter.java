@@ -315,7 +315,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
             if (attributeValue == Helper.NULL_VALUE) {
                 attributeValue = null;
             }
-            associations.addElement(new TypeMapping(fieldValue, attributeValue));
+            associations.add(new TypeMapping(fieldValue, attributeValue));
         }
 
         return associations;

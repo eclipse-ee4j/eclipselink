@@ -71,7 +71,7 @@ public class CopyBookParser {
 
             //calculate the field offsets from the records
             for (int i = 0; i < records.size(); i++) {
-                setOffsetsForComposite(records.elementAt(i), 0);
+                setOffsetsForComposite(records.get(i), 0);
             }
         } catch (IOException exception) {
             throw CopyBookParseException.ioException(exception);
@@ -109,8 +109,8 @@ public class CopyBookParser {
                         currentLineNumber++;
                     }
                     currentLine = currentLine.substring(0, currentLine.lastIndexOf('.'));
-                    recordLines.addElement(currentLine);
-                    lineNums.addElement(currentLineNumber);
+                    recordLines.add(currentLine);
+                    lineNums.add(currentLineNumber);
                 }
             }
         }
@@ -137,7 +137,7 @@ public class CopyBookParser {
                     parentsToLevels = new Hashtable<>();
                     component = buildRecord(lineTokens);
                     record = (RecordMetaData)component;
-                    records.addElement(record);
+                    records.add(record);
                 }
                 //process subordinate field
                 else if (levelNumber >= nestingLevel) {

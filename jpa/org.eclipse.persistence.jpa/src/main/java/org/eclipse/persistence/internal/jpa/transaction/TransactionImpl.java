@@ -127,7 +127,7 @@ public class TransactionImpl implements Transaction {
         int j;
         for (i = 0, j = listeners.size(); i < j; i++) {
             try {
-                ((Synchronization)listeners.elementAt(i)).afterCompletion(status);
+                ((Synchronization)listeners.get(i)).afterCompletion(status);
             } catch (Throwable t) {
                 if (DUMP_AFTER_COMPLETION_ERRORS) {
                     t.printStackTrace(System.out);
@@ -205,7 +205,7 @@ public class TransactionImpl implements Transaction {
                 int i;
                 int j;
                 for (i = 0, j = listeners.size(); i < j; i++) {
-                    ((Synchronization)listeners.elementAt(i)).beforeCompletion();
+                    ((Synchronization)listeners.get(i)).beforeCompletion();
                 }
             } catch (Exception ex) {
                 error = ex;

@@ -58,7 +58,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.Vector;
 
 /**
  * <p>
@@ -448,10 +447,10 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     protected ExpressionOperator operatorLocate() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Locate);
-        Vector<String> v = new Vector<>(3);
-        v.addElement("STRPOS(");
-        v.addElement(", ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(3);
+        v.add("STRPOS(");
+        v.add(", ");
+        v.add(")");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(RelationExpression.class);

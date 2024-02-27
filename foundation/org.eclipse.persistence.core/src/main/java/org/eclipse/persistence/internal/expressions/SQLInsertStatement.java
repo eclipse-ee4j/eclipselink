@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,7 @@ public class SQLInsertStatement extends SQLModifyStatement {
             for (Enumeration fieldsEnum = getModifyRow().keys(); fieldsEnum.hasMoreElements();) {
                 DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
                 if (field.getTable().equals(getTable()) || (!field.hasTableName())) {
-                    fieldsForTable.addElement(field);
+                    fieldsForTable.add(field);
                 }
             }
 
@@ -68,7 +68,7 @@ public class SQLInsertStatement extends SQLModifyStatement {
             }
 
             for (int i = 0; i < fieldsForTable.size(); i++) {
-                writer.write(((DatabaseField)fieldsForTable.elementAt(i)).getNameDelimited(session.getPlatform()));
+                writer.write(((DatabaseField)fieldsForTable.get(i)).getNameDelimited(session.getPlatform()));
                 if ((i + 1) < fieldsForTable.size()) {
                     writer.write(", ");
                 }
@@ -76,7 +76,7 @@ public class SQLInsertStatement extends SQLModifyStatement {
             writer.write(") VALUES (");
 
             for (int i = 0; i < fieldsForTable.size(); i++) {
-                DatabaseField field = (DatabaseField)fieldsForTable.elementAt(i);
+                DatabaseField field = (DatabaseField)fieldsForTable.get(i);
                 call.appendModify(writer, field);
                 if ((i + 1) < fieldsForTable.size()) {
                     writer.write(", ");

@@ -141,7 +141,7 @@ public class DeleteOperation extends Operation {
             if (((Vector) toBeDeleted).isEmpty()) {
                 toBeDeleted = null;
             } else {
-                toBeDeleted = ((Vector)toBeDeleted).firstElement();
+                toBeDeleted = ((Vector)toBeDeleted).get(0);
             }
         }
         if (toBeDeleted != null) {

@@ -56,10 +56,10 @@ public class BatchTestRunner {
         log("*** Beginning of running " + batchName + ", model by model. ***");
         PromptTestRunner ptr = new PromptTestRunner();
         for (int index = 0; index < testList.size(); ++index) {
-            String arg1 = "testmodel=" + testList.elementAt(index);
+            String arg1 = "testmodel=" + testList.get(index);
             String arg2 = "pfile=" + pFileName;
             String[] a = { arg1, arg2 };
-            log("*** Running " + testList.elementAt(index));
+            log("*** Running " + testList.get(index));
             ptr.run(a);
         }
         long endTime = System.currentTimeMillis();

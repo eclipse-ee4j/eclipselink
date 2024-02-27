@@ -168,13 +168,13 @@ public class ArrayCollectionMappingHelper {
         EISOrderedCollectionChangeRecord changeRecord = new EISOrderedCollectionChangeRecord(owner, getAttributeName(), this.getDatabaseMapping());
 
         for (int i = 0; i < cloneVector.size(); i++) {
-            Object cloneElement = cloneVector.elementAt(i);
+            Object cloneElement = cloneVector.get(i);
             boolean found = false;
             for (int j = 0; j < backupVector.size(); j++) {
-                if (this.compareElementsForChange(cloneElement, backupVector.elementAt(j), session)) {
+                if (this.compareElementsForChange(cloneElement, backupVector.get(j), session)) {
                     // the clone element was found in the backup collection
                     found = true;
-                    backupVector.setElementAt(XXX, j);// clear out the matching backup element
+                    backupVector.set(j, XXX);// clear out the matching backup element
 
                     changeRecord.addMovedChangeSet(this.buildChangeSet(cloneElement, owner, session), j, i);
                     break;// matching backup element found - skip the rest of them
@@ -187,7 +187,7 @@ public class ArrayCollectionMappingHelper {
         }
 
         for (int i = 0; i < backupVector.size(); i++) {
-            Object backupElement = backupVector.elementAt(i);
+            Object backupElement = backupVector.get(i);
             if (backupElement != XXX) {
                 // the backup element was not in the clone collection, so it must have been removed
                 changeRecord.addRemovedChangeSet(this.buildChangeSet(backupElement, owner, session), i);
@@ -217,10 +217,10 @@ public class ArrayCollectionMappingHelper {
 
             boolean found = false;
             for (int i = 0; i < backupVector.size(); i++) {
-                if (this.compareElementsForChange(cloneElement, backupVector.elementAt(i), session)) {
+                if (this.compareElementsForChange(cloneElement, backupVector.get(i), session)) {
                     // the clone element was found in the backup collection
                     found = true;
-                    backupVector.setElementAt(XXX, i);// clear out the matching backup element
+                    backupVector.set(i, XXX);// clear out the matching backup element
                     if (this.mapKeyHasChanged(cloneElement, session)) {
                         changeRecord.addChangedMapKeyChangeSet(this.buildChangeSet(cloneElement, owner, session));
                     }
@@ -234,7 +234,7 @@ public class ArrayCollectionMappingHelper {
         }
 
         for (int i = 0; i < backupVector.size(); i++) {
-            Object backupElement = backupVector.elementAt(i);
+            Object backupElement = backupVector.get(i);
             if (backupElement != XXX) {
                 // the backup element was not in the clone collection, so it must have been removed
                 changeRecord.addRemovedChangeSet(this.buildChangeSet(backupElement, owner, session));
@@ -311,9 +311,9 @@ public class ArrayCollectionMappingHelper {
 
             boolean found = false;
             for (int i = 0; i < vector2.size(); i++) {
-                if (this.compareElements(element1, vector2.elementAt(i), session)) {
+                if (this.compareElements(element1, vector2.get(i), session)) {
                     found = true;
-                    vector2.setElementAt(XXX, i);// clear out the matching element
+                    vector2.set(i, XXX);// clear out the matching element
                     break;// matching element found - skip the rest of them
                 }
             }

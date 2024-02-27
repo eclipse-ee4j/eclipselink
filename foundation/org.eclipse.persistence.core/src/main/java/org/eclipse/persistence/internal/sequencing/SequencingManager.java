@@ -357,7 +357,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
     protected void logDebugLocalPreallocation(AbstractSession writeSession, String seqName, Vector<?> sequences, Accessor accessor) {
         if (writeSession.shouldLog(SessionLog.FINEST, SessionLog.SEQUENCING)) {
-            Object[] args = { seqName, sequences.size(), sequences.firstElement(), sequences.lastElement() };
+            Object[] args = { seqName, sequences.size(), sequences.get(0), sequences.lastElement() };
             writeSession.log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_localPreallocation", args, accessor);
         }
     }
@@ -572,7 +572,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 writeSession.beginTransaction();
                 try {
                     // preallocation size is 1 - just return the first (and only) element of the allocated vector.
-                    Object sequenceValue = sequence.getGeneratedVector(null, writeSession).firstElement();
+                    Object sequenceValue = sequence.getGeneratedVector(null, writeSession).get(0);
                     writeSession.commitTransaction();
                     return sequenceValue;
                 } catch (RuntimeException ex) {
@@ -652,7 +652,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                     accessor.beginTransaction(writeSession);
                     try {
                         // preallocation size is 1 - just return the first (and only) element of the allocated vector.
-                        Object sequenceValue = sequence.getGeneratedVector(accessor, writeSession).firstElement();
+                        Object sequenceValue = sequence.getGeneratedVector(accessor, writeSession).get(0);
                         accessor.commitTransaction(writeSession);
                         return sequenceValue;
                     } catch (RuntimeException ex) {
@@ -708,7 +708,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 return sequenceValue;
             } else {
                 // preallocation size is 1 - just return the first (and only) element of the allocated vector.
-                return sequence.getGeneratedVector(null, writeSession).firstElement();
+                return sequence.getGeneratedVector(null, writeSession).get(0);
             }
         }
     }
@@ -999,7 +999,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                     shouldAcquireValueAfterInsert |= getDefaultSequence().shouldAcquireValueAfterInsert();
                 }
                 sequence.onConnect(getOwnerSession().getDatasourcePlatform());
-                connectedSequences.addElement(sequence);
+                connectedSequences.add(sequence);
                 shouldUseTransaction |= sequence.shouldUseTransaction();
                 shouldUsePreallocation |= sequence.shouldUsePreallocation();
                 shouldAcquireValueAfterInsert |= sequence.shouldAcquireValueAfterInsert();
@@ -1007,7 +1007,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 // defaultSequence has to disconnect the last
                 for (int i = connectedSequences.size() - 1; i >= nAlreadyConnectedSequences; i--) {
                     try {
-                        Sequence sequenceToDisconnect = connectedSequences.elementAt(i);
+                        Sequence sequenceToDisconnect = connectedSequences.get(i);
                         sequenceToDisconnect.onDisconnect(getOwnerSession().getDatasourcePlatform());
                     } catch (RuntimeException ex2) {
                         //ignore
@@ -1051,7 +1051,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         // defaultSequence has to disconnect the last
         for (int i = connectedSequences.size() - 1; i >= nAlreadyConnectedSequences; i--) {
             try {
-                Sequence sequenceToDisconnect = connectedSequences.elementAt(i);
+                Sequence sequenceToDisconnect = connectedSequences.get(i);
                 sequenceToDisconnect.onDisconnect(getOwnerSession().getDatasourcePlatform());
             } catch (RuntimeException ex) {
                 if (exception == null) {
@@ -1154,14 +1154,14 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 v = new Vector<>();
                 sequenceVectors[stateId] = v;
             }
-            v.addElement(sequence);
+            v.add(sequence);
         }
         for (int i = 0; i < NUMBER_OF_STATES; i++) {
             Vector<Sequence> v = sequenceVectors[i];
             if (v != null) {
                 getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_connected", states[i]);
                 for (int j = 0; j < v.size(); j++) {
-                    Sequence sequence = v.elementAt(j);
+                    Sequence sequence = v.get(j);
                     Object[] args = { sequence.getName(), Integer.toString(sequence.getPreallocationSize()),
                             Integer.toString(sequence.getInitialValue())};
                     getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequence_without_state", args);

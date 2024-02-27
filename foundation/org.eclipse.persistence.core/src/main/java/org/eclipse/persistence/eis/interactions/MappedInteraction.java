@@ -66,8 +66,8 @@ public class MappedInteraction extends EISInteraction {
      * If these names are the same (as they normally are) this method can be called with a single argument.
      */
     public void addArgument(String parameterName, String argumentFieldName) {
-        getArgumentNames().addElement(parameterName);
-        getArguments().addElement(new DatabaseField(argumentFieldName));
+        getArgumentNames().add(parameterName);
+        getArguments().add(new DatabaseField(argumentFieldName));
     }
 
     /**
@@ -78,8 +78,8 @@ public class MappedInteraction extends EISInteraction {
      * The argumentValue is the value of the input record argument.
      */
     public void addArgumentValue(String parameterName, Object argumentValue) {
-        getArgumentNames().addElement(parameterName);
-        getArguments().addElement(argumentValue);
+        getArgumentNames().add(parameterName);
+        getArguments().add(argumentValue);
     }
 
     /**

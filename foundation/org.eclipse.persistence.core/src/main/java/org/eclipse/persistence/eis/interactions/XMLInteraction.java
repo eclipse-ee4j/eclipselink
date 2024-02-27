@@ -151,7 +151,7 @@ public class XMLInteraction extends MappedInteraction {
                 } else {
                     XMLRecord parameterRow = createXMLRecord(getInputRootElementName());
                     for (int index = 0; index < getInputRow().size(); index++) {
-                        parameterRow.put(getInputRow().getFields().elementAt(index), getInputRow().getValues().elementAt(index));
+                        parameterRow.put(getInputRow().getFields().get(index), getInputRow().getValues().get(index));
                     }
                     dom = (Element)parameterRow.getDOM();
                 }

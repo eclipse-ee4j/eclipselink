@@ -485,12 +485,12 @@ public class CommitManager {
         descriptors = Helper.addAllUniqueToVector(new Vector<>(descriptors.size()), descriptors);
         ClassDescriptor[] descriptorsArray = new ClassDescriptor[descriptors.size()];
         for (int index = 0; index < descriptors.size(); index++) {
-            descriptorsArray[index] = descriptors.elementAt(index);
+            descriptorsArray[index] = descriptors.get(index);
         }
         Arrays.sort(descriptorsArray, new DescriptorCompare());
         descriptors = new Vector<>(descriptors.size());
         for (int index = 0; index < descriptorsArray.length; index++) {
-            descriptors.addElement(descriptorsArray[index]);
+            descriptors.add(descriptorsArray[index]);
         }
 
         CommitOrderCalculator calculator = new CommitOrderCalculator(getSession());

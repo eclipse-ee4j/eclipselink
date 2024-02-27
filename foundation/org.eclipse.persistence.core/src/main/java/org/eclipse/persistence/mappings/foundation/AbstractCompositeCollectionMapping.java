@@ -764,7 +764,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             if (hasConverter()) {
                 element = getConverter().convertObjectValueToDataValue(element, session);
             }
-            nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
+            nestedRows.add(buildCompositeRow(element, session, row, writeType));
         }
 
         Object fieldValue = null;

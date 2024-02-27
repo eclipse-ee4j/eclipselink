@@ -369,13 +369,13 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
         // Optimize check.
         int index = key.index;
         if ((index >= 0) && (index < getFields().size())) {
-            DatabaseField field = getFields().elementAt(index);
+            DatabaseField field = getFields().get(index);
             if ((field == key) || field.equals(key)) {
                 return field;
             }
         }
         for (index = 0; index < getFields().size(); index++) {
-            DatabaseField field = getFields().elementAt(index);
+            DatabaseField field = getFields().get(index);
             if ((field == key) || field.equals(key)) {
                 return field;
             }
@@ -743,9 +743,9 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
     public Object remove(DatabaseField key) {
         int index = getFields().indexOf(key);
         if (index >= 0) {
-            getFields().removeElementAt(index);
-            Object value = getValues().elementAt(index);
-            getValues().removeElementAt(index);
+            getFields().remove(index);
+            Object value = getValues().get(index);
+            getValues().remove(index);
             resetSize();
             return value;
         }
@@ -821,9 +821,9 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
         for (int index = 0; index < getFields().size(); index++) {
             writer.write(System.lineSeparator());
             writer.write("\t");
-            writer.write(String.valueOf((getFields().elementAt(index))));
+            writer.write(String.valueOf((getFields().get(index))));
             writer.write(" => ");
-            writer.write(String.valueOf((getValues().elementAt(index))));
+            writer.write(String.valueOf((getValues().get(index))));
         }
         if (this.sopObject != null) {
             writer.write(System.lineSeparator());

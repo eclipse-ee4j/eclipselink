@@ -1362,7 +1362,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         AbstractRecord aggregateRow = new DatabaseRecord();
         List<DatabaseField> keys = getTargetForeignKeyFields();
         for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
-            aggregateRow.put(keys.get(keyIndex), referenceObjectKeys.elementAt(keyIndex));
+            aggregateRow.put(keys.get(keyIndex), referenceObjectKeys.get(keyIndex));
         }
         getReferenceDescriptor(object.getClass(), query.getSession()).getObjectBuilder().buildRow(aggregateRow, object, query.getSession(), WriteType.UNDEFINED);
 
@@ -1456,7 +1456,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             } else {
                 referenceKey = getDescriptor().getObjectBuilder().extractValueFromObjectForField(query.getObject(), sourceKey, query.getSession());
             }
-            referenceObjectKeys.addElement(referenceKey);
+            referenceObjectKeys.add(referenceKey);
         }
 
         return referenceObjectKeys;
@@ -2560,7 +2560,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         AbstractRecord targetForeignKeyRow = new DatabaseRecord();
         Vector referenceObjectKeys = getReferenceObjectKeys(originalQuery);
         for (int keyIndex = 0; keyIndex < getTargetForeignKeyFields().size(); keyIndex++) {
-            targetForeignKeyRow.put(getTargetForeignKeyFields().get(keyIndex), referenceObjectKeys.elementAt(keyIndex));
+            targetForeignKeyRow.put(getTargetForeignKeyFields().get(keyIndex), referenceObjectKeys.get(keyIndex));
         }
 
         insertQuery.setModifyRow(targetForeignKeyRow);

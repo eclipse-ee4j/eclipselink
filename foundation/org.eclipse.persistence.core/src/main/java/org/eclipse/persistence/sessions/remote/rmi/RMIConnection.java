@@ -202,7 +202,7 @@ public class RMIConnection extends RemoteConnection {
             for (Iterator iterator = serverNextPageObjects.iterator(); iterator.hasNext();) {
                 // 2612538 - the default size of Map (32) is appropriate
                 Object clientObject = session.getObjectCorrespondingTo(iterator.next(), transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
-                clientNextPageObjects.addElement(clientObject);
+                clientNextPageObjects.add(clientObject);
             }
         }
 

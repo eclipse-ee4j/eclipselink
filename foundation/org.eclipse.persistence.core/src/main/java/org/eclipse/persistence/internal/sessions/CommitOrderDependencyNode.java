@@ -209,7 +209,7 @@ public class CommitOrderDependencyNode {
     // Return an enumeration of all mappings for my descriptor, including those inherited
     public Vector withAllSubclasses(CommitOrderDependencyNode node) {
         Vector results = new Vector();
-        results.addElement(node);
+        results.add(node);
 
         if (node.getDescriptor().hasInheritance()) {
             InheritancePolicy policy = node.getDescriptor().getInheritancePolicy();
