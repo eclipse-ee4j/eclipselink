@@ -565,11 +565,13 @@ public class DatabasePlatform extends DatasourcePlatform {
         fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.lang.Number.class, new FieldTypeDefinition("NUMBER", 10));
 
+        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
         fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.time.Year.class, new FieldTypeDefinition("NUMBER", 10));
         // Mapping for JSON type.
         getJsonPlatform().updateFieldTypes(fieldTypeMapping);
 
@@ -1127,6 +1129,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             return Types.TIMESTAMP;
         } else if (javaType == ClassConstants.UTILDATE ) {//bug 5237080, return TIMESTAMP for java.util.Date as well
             return Types.TIMESTAMP;
+        } else if (javaType == ClassConstants.TIME_INSTANT ) {
+            return Types.TIMESTAMP;
         } else if (javaType == ClassConstants.TIME ||
             javaType == ClassConstants.TIME_LTIME) { //bug 546312
             return Types.TIME;
@@ -1140,6 +1144,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             return Types.TIME_WITH_TIMEZONE;
         } else if(javaType == ClassConstants.TIME_ODATETIME) { //bug 546312
             return Types.TIMESTAMP_WITH_TIMEZONE;
+        } else if (javaType == ClassConstants.TIME_YEAR ) {
+            return Types.INTEGER;
         }else if (javaType == ClassConstants.ABYTE) {
             return Types.LONGVARBINARY;
         } else if (javaType == ClassConstants.APBYTE) {
@@ -2417,10 +2423,14 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setDate(index, java.sql.Date.valueOf((java.time.LocalDate) parameter));
         } else if (parameter instanceof java.sql.Timestamp){
             statement.setTimestamp(index,(java.sql.Timestamp)parameter);
+        } else if (parameter instanceof java.time.Instant){
+            statement.setTimestamp(index, java.sql.Timestamp.from((java.time.Instant)parameter));
         } else if (parameter instanceof java.time.LocalDateTime){
             statement.setTimestamp(index, java.sql.Timestamp.valueOf((java.time.LocalDateTime) parameter));
         } else if (parameter instanceof java.time.OffsetDateTime) {
             statement.setTimestamp(index, java.sql.Timestamp.from(((java.time.OffsetDateTime) parameter).toInstant()));
+        } else if (parameter instanceof java.time.Year) {
+            statement.setInt(index, ((java.time.Year)parameter).getValue());
         } else if (parameter instanceof java.sql.Time){
             statement.setTime(index,(java.sql.Time)parameter);
         } else if (parameter instanceof java.time.LocalTime lt){
@@ -2521,6 +2531,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setDate(name,(java.sql.Date)parameter);
         }  else if (parameter instanceof java.time.LocalDate){
             statement.setDate(name, java.sql.Date.valueOf((java.time.LocalDate) parameter));
+        } else if (parameter instanceof java.time.Instant){
+            statement.setTimestamp(name, java.sql.Timestamp.from((java.time.Instant)parameter));
         } else if (parameter instanceof java.sql.Timestamp){
             statement.setTimestamp(name,(java.sql.Timestamp)parameter);
         } else if (parameter instanceof java.time.LocalDateTime){
@@ -2535,6 +2547,8 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (parameter instanceof java.time.OffsetTime ot) {
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             statement.setTimestamp(name, ts);
+        } else if (parameter instanceof java.time.Year) {
+            statement.setInt(name, ((java.time.Year)parameter).getValue());
         } else if (parameter instanceof Boolean) {
             statement.setBoolean(name, (Boolean) parameter);
         } else if (parameter == null) {
@@ -2655,6 +2669,8 @@ public class DatabasePlatform extends DatasourcePlatform {
                 appendTime((java.sql.Time)dbValue, writer);
             } else if (dbValue instanceof java.sql.Timestamp) {
                 appendTimestamp((java.sql.Timestamp)dbValue, writer);
+            } else if (dbValue instanceof java.time.Instant){
+                appendTimestamp(java.sql.Timestamp.from((java.time.Instant) dbValue), writer);
             } else if (dbValue instanceof java.time.LocalDate){
                 appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
             } else if (dbValue instanceof java.time.LocalDateTime){
@@ -2667,6 +2683,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             } else if (dbValue instanceof java.time.OffsetTime ot) {
                 java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
                 appendTimestamp(ts, writer);
+            } else if (dbValue instanceof java.time.Year){
+                appendNumber((Number)dbValue, writer);
             } else if (dbValue instanceof java.sql.Date) {
                 appendDate((java.sql.Date)dbValue, writer);
             } else if (dbValue == null) {

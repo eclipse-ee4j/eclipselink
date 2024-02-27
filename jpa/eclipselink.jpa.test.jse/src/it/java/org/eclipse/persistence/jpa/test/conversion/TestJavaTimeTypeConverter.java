@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,17 +20,21 @@ package org.eclipse.persistence.jpa.test.conversion;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -487,5 +491,152 @@ public class TestJavaTimeTypeConverter {
             // Expected
         }
     }
-    
+
+    @Test
+    public void timeConvertStringToInstant() {
+        String dateTime = "2024-02-27T10:15:30.00Z";
+
+        Instant instant = cm.convertObject(dateTime, ClassConstants.TIME_INSTANT);
+
+        Assert.assertNotNull(instant);
+        Assert.assertEquals(1709028930, instant.getEpochSecond());
+    }
+
+    @Test
+    public void timeConvertSqlDateToInstant() {
+        java.sql.Date sqlDate = java.sql.Date.valueOf("2024-02-27");
+
+        Instant instant = cm.convertObject(sqlDate, ClassConstants.TIME_INSTANT);
+
+        Assert.assertNotNull(instant);
+        Assert.assertEquals(1708988400, instant.getEpochSecond());
+    }
+
+    @Test
+    public void timeConvertSqlTimestampToInstant() {
+        java.sql.Timestamp sqlTimestamp = java.sql.Timestamp.from(Instant.ofEpochSecond(1709028930));
+
+        Instant instant = cm.convertObject(sqlTimestamp, ClassConstants.TIME_INSTANT);
+
+        Assert.assertNotNull(instant);
+        Assert.assertEquals(1709028930, instant.getEpochSecond());
+    }
+
+    @Test
+    public void timeConvertUtilDateToInstant() {
+        java.util.Date utilDate = java.util.Date.from(Instant.ofEpochSecond(1709028930));
+
+        Instant instant = cm.convertObject(utilDate, ClassConstants.TIME_INSTANT);
+
+        Assert.assertNotNull(instant);
+        Assert.assertEquals(1709028930, instant.getEpochSecond());
+    }
+
+    @Test
+    public void timeConvertUtilCalendarToInstant() {
+        TimeZone tz = TimeZone.getTimeZone("Europe/London");
+        java.util.Calendar utilCalendar = java.util.Calendar.getInstance(tz);
+        utilCalendar.setTimeInMillis(1709028930000L);
+
+        Instant instant = cm.convertObject(utilCalendar, ClassConstants.TIME_INSTANT);
+
+        Assert.assertNotNull(instant);
+        Assert.assertEquals(1709028930, instant.getEpochSecond());
+    }
+
+    @Test
+    public void timeConvertLocalDateTimeToInstant() {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(1709028930), ZoneId.of("UTC"));
+
+        Instant instant = cm.convertObject(localDateTime, ClassConstants.TIME_INSTANT);
+
+        Assert.assertNotNull(instant);
+        Assert.assertEquals(1709028930, instant.getEpochSecond());
+    }
+
+    @Test
+    public void timeConvertLongToInstant() {
+        Long longValue = 1709028930L;
+
+        Instant instant = cm.convertObject(longValue, ClassConstants.TIME_INSTANT);
+
+        Assert.assertNotNull(instant);
+        Assert.assertEquals(1709028930, instant.getEpochSecond());
+    }
+
+    @Test
+    public void timeConvertInstantToException() {
+        String date = "Bogus";
+
+        try {
+            Instant instant = cm.convertObject(date, ClassConstants.TIME_INSTANT);
+            Assert.fail("Expected Exception was not thrown.");
+        } catch (ConversionException ce) {
+            // Expected
+        }
+    }
+
+    @Test
+    public void timeConvertStringToYear() {
+        String inputYear = "2024";
+
+        Year year = cm.convertObject(inputYear, ClassConstants.TIME_YEAR);
+
+        Assert.assertNotNull(year);
+        Assert.assertEquals(2024, year.get(ChronoField.YEAR));
+    }
+
+    @Test
+    public void timeConvertUtilDateToYear() {
+        java.util.Date utilDate = java.util.Date.from(Instant.ofEpochSecond(1709028930));
+
+        Year year = cm.convertObject(utilDate, ClassConstants.TIME_YEAR);
+
+        Assert.assertNotNull(year);
+        Assert.assertEquals(2024, year.get(ChronoField.YEAR));
+    }
+
+    @Test
+    public void timeConvertUtilCalendarToYear() {
+        TimeZone tz = TimeZone.getTimeZone("Europe/London");
+        java.util.Calendar utilCalendar = java.util.Calendar.getInstance(tz);
+        utilCalendar.setTimeInMillis(1709028930000L);
+
+        Year year = cm.convertObject(utilCalendar, ClassConstants.TIME_YEAR);
+
+        Assert.assertNotNull(year);
+        Assert.assertEquals(2024, year.get(ChronoField.YEAR));
+    }
+
+    @Test
+    public void timeConvertIntegerToYear() {
+        Integer intValue = 2024;
+
+        Year year = cm.convertObject(intValue, ClassConstants.TIME_YEAR);
+
+        Assert.assertNotNull(year);
+        Assert.assertEquals(2024, year.get(ChronoField.YEAR));
+    }
+
+    @Test
+    public void timeConvertLongToYear() {
+        Long longValue = 2024L;
+
+        Year year = cm.convertObject(longValue, ClassConstants.TIME_YEAR);
+
+        Assert.assertNotNull(year);
+        Assert.assertEquals(2024, year.get(ChronoField.YEAR));
+    }
+
+    @Test
+    public void timeConvertYearToException() {
+        String date = "Bogus";
+
+        try {
+            Year year = cm.convertObject(date, ClassConstants.TIME_YEAR);
+            Assert.fail("Expected Exception was not thrown.");
+        } catch (ConversionException ce) {
+            // Expected
+        }
+    }
 }

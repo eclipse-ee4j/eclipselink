@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -31,12 +31,14 @@ import jakarta.persistence.TemporalType;
 import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
+import java.time.Year;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,11 +52,13 @@ public class DateTime implements Serializable {
 
     private Integer id;
     private java.sql.Date date;
+    private Instant instant;
     private LocalDate localDate;
     private LocalTime localTime;
     private LocalDateTime localDateTime;
     private OffsetTime offsetTime;
     private OffsetDateTime offsetDateTime;
+    private Year year;
     private Time time;
     private Timestamp timestamp;
     private Date utilDate;
@@ -67,11 +71,13 @@ public class DateTime implements Serializable {
         LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
         this.date = new java.sql.Date(0);
+        this.instant = Instant.ofEpochSecond(0);
         this.localDate = LocalDate.ofEpochDay(0);
         this.localTime = localTime;
         this.localDateTime = localDateTime;
         this.offsetTime = OffsetTime.of(localTime, ZoneOffset.UTC);
         this.offsetDateTime = OffsetDateTime.of(localDateTime, ZoneOffset.UTC);
+        this.year = Year.of(0);
         this.time = new Time(0);
         this.timestamp = new Timestamp(0);
         this.utilDate = new Date(0);
@@ -100,6 +106,15 @@ public class DateTime implements Serializable {
 
     public void setDate(java.sql.Date date) {
         this.date = date;
+    }
+
+    @Column(name = "TIME_INSTANT")
+    public Instant getInstant() {
+        return instant;
+    }
+
+    public void setInstant(Instant instant) {
+        this.instant = instant;
     }
 
     @Column(name = "LOCAL_DATE")
@@ -145,6 +160,15 @@ public class DateTime implements Serializable {
 
     public void setLocalDateTime(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
+    }
+
+    @Column(name = "TIME_YEAR")
+    public Year getYear() {
+        return year;
+    }
+
+    public void setYear(Year year) {
+        this.year = year;
     }
 
     @Column(name = "SQL_TIME")

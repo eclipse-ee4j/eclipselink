@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,11 +61,13 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -145,11 +147,13 @@ public final class ClassConstants extends CoreClassConstants {
     // Moved from ConversionManager
     public static final Class<?> AOBJECT = Object[].class;
     public static final Class<?> ACHAR = Character[].class;
+    public static final Class<Instant> TIME_INSTANT = Instant.class;
     public static final Class<LocalDate> TIME_LDATE = LocalDate.class;
     public static final Class<LocalTime> TIME_LTIME = LocalTime.class;
     public static final Class<LocalDateTime> TIME_LDATETIME = LocalDateTime.class;
     public static final Class<OffsetDateTime> TIME_ODATETIME = OffsetDateTime.class;
     public static final Class<OffsetTime> TIME_OTIME = OffsetTime.class;
+    public static final Class<Year> TIME_YEAR = Year.class;
 
     //LOB support types
     public static final Class<Blob> BLOB = Blob.class;

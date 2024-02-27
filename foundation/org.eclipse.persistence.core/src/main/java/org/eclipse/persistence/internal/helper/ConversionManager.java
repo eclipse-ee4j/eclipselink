@@ -41,7 +41,9 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Calendar;
@@ -190,6 +192,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return (T) convertObjectToTime(sourceObject);
             } else if (javaClass == ClassConstants.TIMESTAMP) {
                 return (T) convertObjectToTimestamp(sourceObject);
+            } else if (javaClass == ClassConstants.TIME_INSTANT) {
+                return (T) convertObjectToInstant(sourceObject);
             } else if (javaClass == ClassConstants.TIME_LDATE) {
                 return (T) convertObjectToLocalDate(sourceObject);
             } else if (javaClass == ClassConstants.TIME_LDATETIME) {
@@ -200,6 +204,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return (T) convertObjectToOffsetDateTime(sourceObject);
             } else if (javaClass == ClassConstants.TIME_OTIME) {
                 return (T) convertObjectToOffsetTime(sourceObject);
+            } else if (javaClass == ClassConstants.TIME_YEAR) {
+                return (T) convertObjectToYear(sourceObject);
             } else if ((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR)) {
                 return (T) convertObjectToCalendar(sourceObject);
             } else if ((javaClass == ClassConstants.CHAR) || (javaClass == ClassConstants.PCHAR && !(sourceObject instanceof Character))) {
@@ -839,6 +845,42 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     }
 
     /**
+     * INTERNAL: Build a valid instance of java.time.Instant from the given
+     * source object.
+     *
+     * @param sourceObject
+     *            Valid object of class java.sql.Timestamp, String,
+     *            java.util.Date, or Long
+     */
+    protected java.time.Instant convertObjectToInstant(Object sourceObject) throws ConversionException {
+        java.time.Instant instant = null;
+
+        if (sourceObject instanceof java.time.Instant) {
+            return (java.time.Instant) sourceObject;
+        }
+
+        if (sourceObject instanceof String) {
+            instant = java.time.Instant.parse((String) sourceObject);
+        } else if (sourceObject instanceof java.sql.Date) {
+            instant = Instant.ofEpochMilli(((java.sql.Date) sourceObject).getTime());
+        } else if (sourceObject instanceof java.sql.Timestamp) {
+            instant = ((java.sql.Timestamp) sourceObject).toInstant();
+        } else if (sourceObject instanceof java.util.Date) {
+            // handles sql.Time too
+            instant = ((java.util.Date) sourceObject).toInstant();
+        } else if (sourceObject instanceof Calendar cal) {
+            instant = cal.toInstant();
+        } else if (sourceObject instanceof java.time.LocalDateTime) {
+            instant = ((LocalDateTime) sourceObject).toInstant(ZoneOffset.UTC);
+        } else if (sourceObject instanceof Long) {
+            instant = java.time.Instant.ofEpochSecond((Long) sourceObject);
+        } else {
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_LDATE);
+        }
+        return instant;
+    }
+
+    /**
      * INTERNAL: Build a valid instance of java.time.LocalDate from the given
      * source object.
      *
@@ -1038,6 +1080,48 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         }
 
         return offsetTime;
+    }
+
+    /**
+     * INTERNAL: Build a valid instance of java.time.Year from the given
+     * source object.
+     *
+     * @param sourceObject
+     *            Valid object of class java.sql.Timestamp, String,
+     *            java.util.Date or Int
+     */
+    protected java.time.Year convertObjectToYear(Object sourceObject) throws ConversionException {
+        java.time.Year year = null;
+
+        if (sourceObject instanceof java.time.Year) {
+            return (java.time.Year) sourceObject;
+        }
+
+        if (sourceObject instanceof String) {
+            try {
+                year = java.time.Year.of(Integer.valueOf((String) sourceObject));
+            } catch (Exception e) {
+                year = java.time.Year.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
+                java.time.LocalTime localTime = java.time.LocalTime.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
+            }
+        } else if (sourceObject instanceof java.util.Date) {
+            // handles sql.Time, sql.Date, sql.Timestamp
+            Calendar cal = Helper.allocateCalendar();
+            cal.setTime((java.util.Date) sourceObject);
+            year = Year.of(cal.get(Calendar.YEAR));
+            Helper.releaseCalendar(cal);
+        } else if (sourceObject instanceof Calendar cal) {
+            year = Year.of(cal.get(Calendar.YEAR));
+        } else if (sourceObject instanceof Integer) {
+            year = Year.of((Integer)sourceObject);
+        } else if (sourceObject instanceof Long) {
+            //Not 100% safe, but JDBC should return Long, but java.time.Year keeps value internally in int variable.
+            year = Year.of(((Long)sourceObject).intValue());
+        } else {
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_OTIME);
+        }
+
+        return year;
     }
 
     /**
