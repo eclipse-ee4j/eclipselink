@@ -141,7 +141,7 @@ public class UpdateAllQueryTestHelper {
         try {
             for (int i = 0; i < result.size(); i++) {
                 // read through uow the object(clone) to be updated
-                ReportQueryResult reportResult = result.elementAt(i);
+                ReportQueryResult reportResult = result.get(i);
                 // hammer into the object the updated values
                 Object obj = reportResult.readObject(rq.getReferenceClass(), uow);
                 DatabaseRecord row = new DatabaseRecord();
@@ -153,7 +153,7 @@ public class UpdateAllQueryTestHelper {
                 }
                 // some db platforms don't allow nulls in select clause - so add the fields with null values to the query result
                 for (int j = 0; j < fieldsWithNullValues.size(); j++) {
-                    String name = fieldsWithNullValues.elementAt(j);
+                    String name = fieldsWithNullValues.get(j);
                     DatabaseField field = new DatabaseField(name);
                     row.add(field, null);
                 }
@@ -165,7 +165,7 @@ public class UpdateAllQueryTestHelper {
             // Because the transaction will be rolled back (to return to the original state to execute UpdateAllQuery)
             // objects are copied into another vector - later it will be compared with UpdateAllQuery result.
             for(int i=0; i < objects.size(); i++) {
-                Object original = objects.elementAt(i);
+                Object original = objects.get(i);
                 Object copy = buildCopy(descriptor, original, uow);
                 objectsAfterOneByOneUpdate.add(copy);
             }
@@ -189,7 +189,7 @@ public class UpdateAllQueryTestHelper {
             // Because the transaction will be rolled back (to return to the original state)
             // objects are copied into another vector - it will be compared with update one-by-one result.
             for(int i=0; i < objects.size(); i++) {
-                Object original = objects.elementAt(i);
+                Object original = objects.get(i);
                 Object copy = buildCopy(descriptor, original, uow);
                 objectsAfterUpdateAll.add(copy);
             }
@@ -202,9 +202,9 @@ public class UpdateAllQueryTestHelper {
         // verify
         StringBuilder classErrorMsg = new StringBuilder();
         for(int i=0; i < objects.size(); i++) {
-            Object obj = objects.elementAt(i);
-            Object obj1 = objectsAfterOneByOneUpdate.elementAt(i);
-            Object obj2 = objectsAfterUpdateAll.elementAt(i);
+            Object obj = objects.get(i);
+            Object obj1 = objectsAfterOneByOneUpdate.get(i);
+            Object obj2 = objectsAfterUpdateAll.get(i);
             boolean equal = rq.getDescriptor().getObjectBuilder().compareObjects(obj, obj2, session);
             if(!equal) {
                 classErrorMsg.append("Difference: original = ").append(obj.toString()).append("; afterOneByOneUpdate = ").append(obj1.toString()).append("; afterUpdateAll = ").append(obj2.toString()).append(";");

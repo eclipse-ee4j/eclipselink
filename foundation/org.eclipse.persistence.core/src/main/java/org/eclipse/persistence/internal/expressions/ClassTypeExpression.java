@@ -131,7 +131,7 @@ public class ClassTypeExpression extends DataExpression {
                      iterator1.hasNext();) {
                     Object vectorObject = iterator1.next();
                     if (vectorObject == null) {
-                        comparisonVector.addElement(null);
+                        comparisonVector.add(null);
                     } else {
                         Object valueOrValues = typeValueFromObject(vectorObject, session);
 
@@ -139,10 +139,10 @@ public class ClassTypeExpression extends DataExpression {
                         if (valueOrValues instanceof Vector) {
                             for (Iterator iterator = ((Vector) valueOrValues).iterator();
                                  iterator.hasNext();) {
-                                comparisonVector.addElement(iterator.next());
+                                comparisonVector.add(iterator.next());
                             }
                         } else {
-                            comparisonVector.addElement(valueOrValues);
+                            comparisonVector.add(valueOrValues);
                         }
                     }
                 }
@@ -320,7 +320,7 @@ public class ClassTypeExpression extends DataExpression {
         Vector result = new Vector(1);
         DatabaseField field = getField();
         if (field != null) {
-            result.addElement(field);
+            result.add(field);
         }
         return result;
     }

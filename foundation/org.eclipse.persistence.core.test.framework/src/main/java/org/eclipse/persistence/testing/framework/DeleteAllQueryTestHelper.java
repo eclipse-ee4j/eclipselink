@@ -122,14 +122,14 @@ public class DeleteAllQueryTestHelper {
         // deleted objects should've disappeared, others remain
         String classErrorMsg = "";
         for(int i=0; i < objectsToDelete.size(); i++) {
-            Object deletedObject = session.readObject(objectsToDelete.elementAt(i));
+            Object deletedObject = session.readObject(objectsToDelete.get(i));
             if(deletedObject != null) {
                 classErrorMsg = classErrorMsg + "Deleted object "+ deletedObject +" is stil in cache; ";
                 break;
             }
         }
         for(int i=0; i < objectsLeftAfterOriginalDeletion.size(); i++) {
-            Object remainingObject = objectsLeftAfterOriginalDeletion.elementAt(i);
+            Object remainingObject = objectsLeftAfterOriginalDeletion.get(i);
             Object remainingObjectRead = session.readObject(remainingObject);
             if(remainingObjectRead == null) {
                 classErrorMsg = classErrorMsg + "Remaining object " + remainingObject +" is not in cache; ";
@@ -141,14 +141,14 @@ public class DeleteAllQueryTestHelper {
         clearCache(mainSession);
         // deleted objects should've disappeared, others remain
         for(int i=0; i < objectsToDelete.size(); i++) {
-            Object deletedObject = session.readObject(objectsToDelete.elementAt(i));
+            Object deletedObject = session.readObject(objectsToDelete.get(i));
             if(deletedObject != null) {
                 classErrorMsg = classErrorMsg + "Deleted object "+ deletedObject + " is stil in db; ";
                 break;
             }
         }
         for(int i=0; i < objectsLeftAfterOriginalDeletion.size(); i++) {
-            Object remainingObject = objectsLeftAfterOriginalDeletion.elementAt(i);
+            Object remainingObject = objectsLeftAfterOriginalDeletion.get(i);
             Object remainingObjectRead = session.readObject(remainingObject);
             if(remainingObjectRead == null) {
                 classErrorMsg = classErrorMsg + "Remaining object " + remainingObject +" is not in db; ";

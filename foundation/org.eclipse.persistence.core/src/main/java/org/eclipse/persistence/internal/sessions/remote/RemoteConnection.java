@@ -292,7 +292,7 @@ public abstract class RemoteConnection implements java.io.Serializable {
             // find next power-of-2 size
             Map recursiveSet = new IdentityHashMap(remoteObjectCollection.size() + 1);
             for (Object serverSideDomainObject : remoteObjectCollection) {
-                clientObjectCollection.addElement(session.getObjectCorrespondingTo(serverSideDomainObject, remoteCursoredStream.getObjectDescriptors(), recursiveSet, query));
+                clientObjectCollection.add(session.getObjectCorrespondingTo(serverSideDomainObject, remoteCursoredStream.getObjectDescriptors(), recursiveSet, query));
             }
             stream.setObjectCollection(clientObjectCollection);
         }

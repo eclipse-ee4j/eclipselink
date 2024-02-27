@@ -95,7 +95,7 @@ public class LoadBuildSummary {
         } else if (results.getValue() == null) {
             results.setValue(new Vector<>());
         }
-        getResults().addElement(result);
+        getResults().add(result);
     }
 
     /**
@@ -114,7 +114,7 @@ public class LoadBuildSummary {
                 iterator.remove();
             }
         }
-        getSummaries().addElement(summary);
+        getSummaries().add(summary);
     }
 
     public void computeNumberOfTestsAndErrors() {
@@ -125,7 +125,7 @@ public class LoadBuildSummary {
         for (Iterator<TestResultsSummary> iterator = getSummaries().iterator(); iterator.hasNext();) {
             TestResultsSummary summary = iterator.next();
             if (summary.getParent() == null) {
-                rootSummaries.addElement(summary);
+                rootSummaries.add(summary);
             }
         }
         for (Iterator<TestResultsSummary> iterator = rootSummaries.iterator(); iterator.hasNext();) {
@@ -196,8 +196,8 @@ public class LoadBuildSummary {
 
         // remove test result that belongs to a testSummary
         for (int i = 0; i < getResults().size(); i++) {
-            if ((getResults().elementAt(i)).getSummary() != null) {
-                getResults().removeElementAt(i);
+            if ((getResults().get(i)).getSummary() != null) {
+                getResults().remove(i);
                 i--;
             }
         }
@@ -231,8 +231,8 @@ public class LoadBuildSummary {
 
         // remove test result that belongs to a testSummary
         for (int i = 0; i < getResults().size(); i++) {
-            if ((getResults().elementAt(i)).getSummary() != null) {
-                getResults().removeElementAt(i);
+            if ((getResults().get(i)).getSummary() != null) {
+                getResults().remove(i);
                 i--;
             }
         }

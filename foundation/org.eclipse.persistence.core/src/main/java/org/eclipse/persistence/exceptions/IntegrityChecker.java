@@ -154,7 +154,7 @@ public class IntegrityChecker implements Serializable {
         if (!shouldCatchExceptions()) {
             throw runtimeException;
         }
-        getCaughtExceptions().addElement(runtimeException);
+        getCaughtExceptions().add(runtimeException);
     }
 
     /**

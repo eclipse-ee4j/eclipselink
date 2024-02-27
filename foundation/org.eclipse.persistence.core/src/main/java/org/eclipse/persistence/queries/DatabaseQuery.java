@@ -1488,7 +1488,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             if (!(call instanceof SQLCall)) {
                 return null;
             }
-            returnSQL.addElement(((SQLCall) call).getSQLString());
+            returnSQL.add(((SQLCall) call).getSQLString());
         }
         return returnSQL;
     }

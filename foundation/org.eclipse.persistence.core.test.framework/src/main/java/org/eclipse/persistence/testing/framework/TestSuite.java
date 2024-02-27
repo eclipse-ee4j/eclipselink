@@ -87,7 +87,7 @@ public class TestSuite extends TestCollection {
                 break;
             }
             executor.execute(test);
-            getFinishedTests().addElement(test);
+            getFinishedTests().add(test);
         }
         long endTime = System.nanoTime();
         getSummary().setTotalTime(endTime - startTime);

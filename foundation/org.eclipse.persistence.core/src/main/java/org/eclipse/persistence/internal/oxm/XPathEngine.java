@@ -1043,7 +1043,7 @@ public class XPathEngine <
                     if (newChild != oldChild) {
                         parentNode.replaceChild(newChild, oldChild);
                     }
-                    newNodes.addElement(newChild);
+                    newNodes.add(newChild);
                     performedReplace = true;
                 } else {
                     performedReplace = false;

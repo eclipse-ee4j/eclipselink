@@ -80,7 +80,7 @@ public class RecordMetaData implements CompositeObject {
     /** adds the field to the collection */
     @Override
     public void addField(FieldMetaData newField) {
-        myFields.addElement(newField);
+        myFields.add(newField);
     }
 
     /** since a record is by defintion is composite, this always returns true */

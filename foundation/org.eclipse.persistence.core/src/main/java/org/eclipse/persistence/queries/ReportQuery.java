@@ -992,12 +992,12 @@ public class ReportQuery extends ReadAllQuery {
             Expression one = new ConstantExpression(1, new ExpressionBuilder());
             this.addItem("one", one);
             this.dontUseDistinct();
-            fieldExpressions.addElement(one);
+            fieldExpressions.add(one);
         } else
         // For bug 3115576 and an EXISTS subquery only need to return a single field.
         if (shouldRetrieveFirstPrimaryKey()) {
             if (!getDescriptor().getPrimaryKeyFields().isEmpty()) {
-                fieldExpressions.addElement(getDescriptor().getPrimaryKeyFields().get(0));
+                fieldExpressions.add(getDescriptor().getPrimaryKeyFields().get(0));
             }
         }
         if (shouldRetrievePrimaryKeys()) {

@@ -49,7 +49,7 @@ public class IndexedInteraction extends EISInteraction {
      * The argumentFieldName is the field or argument name in the descriptor that maps to the indexed value.
      */
     public void addArgument(String argumentFieldName) {
-        getArguments().addElement(new DatabaseField(argumentFieldName));
+        getArguments().add(new DatabaseField(argumentFieldName));
     }
 
     /**
@@ -59,7 +59,7 @@ public class IndexedInteraction extends EISInteraction {
      * The argumentValue is the value of the argument to be used to pass to the interaction.
      */
     public void addArgumentValue(Object argumentValue) {
-        getArguments().addElement(argumentValue);
+        getArguments().add(argumentValue);
     }
 
     /**
@@ -70,7 +70,7 @@ public class IndexedInteraction extends EISInteraction {
      */
     @Override
     public void addOutputArgument(String argumentFieldName) {
-        getOutputArguments().addElement(new DatabaseField(argumentFieldName));
+        getOutputArguments().add(new DatabaseField(argumentFieldName));
     }
 
     /**

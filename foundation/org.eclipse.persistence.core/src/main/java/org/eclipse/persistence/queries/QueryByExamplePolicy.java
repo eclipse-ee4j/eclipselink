@@ -199,7 +199,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
         if (included == null) {
             included = new Vector(3);
         }
-        included.addElement(attributeName);
+        included.add(attributeName);
 
         getAttributesToAlwaysInclude().put(exampleClass, included);
     }

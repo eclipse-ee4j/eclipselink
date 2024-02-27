@@ -109,8 +109,8 @@ public abstract class EISInteraction extends DatasourceCall {
      * If these names are the same (as they normally are) this method can be called with a single argument.
      */
     public void addOutputArgument(String parameterName, String argumentFieldName) {
-        getOutputArgumentNames().addElement(parameterName);
-        getOutputArguments().addElement(new DatabaseField(argumentFieldName));
+        getOutputArgumentNames().add(parameterName);
+        getOutputArguments().add(new DatabaseField(argumentFieldName));
     }
 
     /**
@@ -337,7 +337,7 @@ public abstract class EISInteraction extends DatasourceCall {
         if (hasArguments()) {
             List<Object> parametersValues = new ArrayList<>(getArguments().size());
             for (int index = 0; index < getArguments().size(); index++) {
-                Object argument = getArguments().elementAt(index);
+                Object argument = getArguments().get(index);
 
                 // The argument is either a value or a databasefield that needs to be translated.
                 if (argument instanceof DatabaseField field) {
@@ -380,7 +380,7 @@ public abstract class EISInteraction extends DatasourceCall {
             for (int index = 0; index < indexedRecord.size(); index++) {
                 Object element = indexedRecord.get(index);
                 if (element instanceof jakarta.resource.cci.Record) {
-                    rows.addElement(buildRow((jakarta.resource.cci.Record)element, accessor));
+                    rows.add(buildRow((jakarta.resource.cci.Record)element, accessor));
                 } else {
                     // It is a single row record.
                     rows.add(buildRow(record, accessor));
@@ -403,7 +403,7 @@ public abstract class EISInteraction extends DatasourceCall {
                     for (int index = 0; index < elements.size(); index++) {
                         Object elementValue = elements.get(index);
                         if (elementValue instanceof jakarta.resource.cci.Record) {
-                            rows.addElement(buildRow((jakarta.resource.cci.Record)elementValue, accessor));
+                            rows.add(buildRow((jakarta.resource.cci.Record)elementValue, accessor));
                         } else {
                             rows.add((AbstractRecord) elementValue);
                         }

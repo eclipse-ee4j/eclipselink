@@ -379,9 +379,9 @@ public class QuerySequence extends StandardSequence {
         int nArgs = query.getArguments().size();
         if (nArgs > 0) {
             Vector<Object> args = new Vector<>(nArgs);
-            args.addElement(seqName);
+            args.add(seqName);
             if (nArgs > 1) {
-                args.addElement(sizeOrNewValue);
+                args.add(sizeOrNewValue);
             }
             return args;
         } else {

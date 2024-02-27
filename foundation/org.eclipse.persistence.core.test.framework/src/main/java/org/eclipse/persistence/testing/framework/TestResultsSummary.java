@@ -109,7 +109,7 @@ public class TestResultsSummary implements ResultInterface, Comparable<TestResul
             }
             default -> throw new Error("Wrong test result");
         }
-        getResults().addElement(testCase.getTestResult());
+        getResults().add(testCase.getTestResult());
         testCase.getTestResult().setSummary(this);
         LoadBuildSystem.loadBuild.addSummary(this);
     }

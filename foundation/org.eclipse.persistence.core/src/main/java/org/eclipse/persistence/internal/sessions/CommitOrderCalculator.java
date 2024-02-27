@@ -49,7 +49,7 @@ public class CommitOrderCalculator {
     }
 
     protected void addNode(ClassDescriptor d) {
-        nodes.addElement(new CommitOrderDependencyNode(this, d, session));
+        nodes.add(new CommitOrderDependencyNode(this, d, session));
     }
 
     public void addNodes(Vector descriptors) {
@@ -199,7 +199,7 @@ public class CommitOrderCalculator {
         Vector result = new Vector(nodes.size());
         for (int i = 0; i < nodes.size(); i++) {
             CommitOrderDependencyNode node = nodeArray[i];
-            result.addElement(node.getDescriptor());
+            result.add(node.getDescriptor());
         }
         this.orderedDescriptors = result;
     }

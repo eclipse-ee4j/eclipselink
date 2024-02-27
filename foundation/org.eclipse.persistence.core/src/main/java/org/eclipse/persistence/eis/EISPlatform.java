@@ -323,7 +323,7 @@ public class EISPlatform extends DatasourcePlatform {
 
             // May be a collection of record.
             for (int index = 0; index < records.size(); index++) {
-                appendParameter(call, writer, (records).elementAt(index));
+                appendParameter(call, writer, (records).get(index));
             }
         } else if (parameter instanceof org.eclipse.persistence.oxm.record.DOMRecord) {
             String xml = ((org.eclipse.persistence.oxm.record.DOMRecord)parameter).transformToXML();

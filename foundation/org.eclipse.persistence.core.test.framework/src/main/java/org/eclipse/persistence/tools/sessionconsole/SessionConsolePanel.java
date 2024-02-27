@@ -3111,7 +3111,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         if (index < 0) {
             return;
         }
-        Object result = getCacheResults().elementAt(index);
+        Object result = getCacheResults().get(index);
         if (result == null) {
             return;
         }
@@ -3124,7 +3124,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         if (index < 0) {
             return;
         }
-        Object result = getResults().elementAt(index);
+        Object result = getResults().get(index);
         if (result == null) {
             return;
         }
@@ -3437,7 +3437,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         for (Enumeration<CacheKey> cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
             CacheKey key = cacheEnum.nextElement();
             if (info.descriptor.getJavaClass().isInstance(key.getObject())) {
-                cacheResults.addElement(key);
+                cacheResults.add(key);
             }
         }
 
@@ -3562,11 +3562,10 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             getResultsTable().repaint();
             return;
         }
-        DatabaseRecord firstRow = resultRows.firstElement();
+        DatabaseRecord firstRow = resultRows.get(0);
         String[] columns = new String[firstRow.getFields().size()];
         for (int index = 0; index < firstRow.getFields().size(); index++) {
-            columns[index] = firstRow.getFields().elementAt(
-                    index).getName();
+            columns[index] = firstRow.getFields().get(index).getName();
         }
         model.setColumnIdentifiers(columns);
         for (Iterator<DatabaseRecord> iterator = resultRows.iterator(); iterator.hasNext();) {
@@ -3574,7 +3573,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             String[] values = new String[row.getValues().size()];
             for (int index = 0; index < row.getValues().size(); index++) {
                 values[index] = String
-                        .valueOf(row.getValues().elementAt(index));
+                        .valueOf(row.getValues().get(index));
             }
             model.addRow(values);
         }

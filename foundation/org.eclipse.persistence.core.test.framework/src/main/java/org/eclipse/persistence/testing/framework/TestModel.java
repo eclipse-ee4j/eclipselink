@@ -106,7 +106,7 @@ public class TestModel extends TestCollection {
      * Basically this means that required system will recreate new database.
      */
     public final void addForcedRequiredSystem(TestSystem requiredSystem) {
-        getForcedRequiredSystems().addElement(requiredSystem);
+        getForcedRequiredSystems().add(requiredSystem);
     }
 
     /**
@@ -123,7 +123,7 @@ public class TestModel extends TestCollection {
      * Basically this means that required system will recreate new database.
      */
     public final void addRequiredSystem(TestSystem requiredSystem) {
-        getRequiredSystems().addElement(requiredSystem);
+        getRequiredSystems().add(requiredSystem);
     }
 
     /**
@@ -218,7 +218,7 @@ public class TestModel extends TestCollection {
                             break;
                     }
                     executor.execute(test);
-                    getFinishedTests().addElement(test);
+                    getFinishedTests().add(test);
                 }
             } catch (Throwable exception) {
                 try {
@@ -493,6 +493,6 @@ public class TestModel extends TestCollection {
         if (isSetup() || (!getTests().isEmpty())) {
             return super.testAt(index);
         }
-        return getFinishedTests().elementAt(index);
+        return getFinishedTests().get(index);
     }
 }

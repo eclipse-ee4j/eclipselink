@@ -225,7 +225,7 @@ public class Helper implements Serializable {
 
     public static <E> void addAllToVector(Vector<E> theVector, Vector<? extends E> elementsToAdd) {
         for (Iterator<? extends E> iterator = elementsToAdd.iterator(); iterator.hasNext();) {
-            theVector.addElement(iterator.next());
+            theVector.add(iterator.next());
         }
     }
 
@@ -263,7 +263,7 @@ public class Helper implements Serializable {
     public static Object[] arrayFromVector(Vector<?> vector) {
         Object[] result = new Object[vector.size()];
         for (int i = 0; i < vector.size(); i++) {
-            result[i] = vector.elementAt(i);
+            result[i] = vector.get(i);
         }
         return result;
     }
@@ -344,7 +344,7 @@ public class Helper implements Serializable {
         Iterator<T> iterator = map.values().iterator();
 
         while (iterator.hasNext()) {
-            vector.addElement(iterator.next());
+            vector.add(iterator.next());
         }
 
         return vector;
@@ -700,13 +700,13 @@ public class Helper implements Serializable {
         concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (Iterator<? extends E> iterator = first.iterator(); iterator.hasNext();) {
-            concatenation.addElement(iterator.next());
+            concatenation.add(iterator.next());
         }
 
         for (Iterator<? extends E> iterator = second.iterator(); iterator.hasNext();) {
             element = iterator.next();
             if (!concatenation.contains(element)) {
-                concatenation.addElement(element);
+                concatenation.add(element);
             }
         }
 
@@ -737,11 +737,11 @@ public class Helper implements Serializable {
         concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (Iterator<? extends E> iterator = first.iterator(); iterator.hasNext();) {
-            concatenation.addElement(iterator.next());
+            concatenation.add(iterator.next());
         }
 
         for (Iterator<? extends E> iterator = second.iterator(); iterator.hasNext();) {
-            concatenation.addElement(iterator.next());
+            concatenation.add(iterator.next());
         }
 
         return concatenation;
@@ -1067,7 +1067,7 @@ public class Helper implements Serializable {
     public static int indexOfNullElement(Vector<?> v, int index) {
         int size = v.size();
         for (int i = index; i < size; i++) {
-            if (v.elementAt(i) == null) {
+            if (v.get(i) == null) {
                 return i;
             }
         }
@@ -1132,7 +1132,7 @@ public class Helper implements Serializable {
         }
 
         Vector<Object> returnVector = new Vector<>();
-        returnVector.addElement(theObject);
+        returnVector.add(theObject);
         return (Vector<T>) returnVector;
     }
 
@@ -1367,8 +1367,8 @@ public class Helper implements Serializable {
         T currentElement;
 
         for (int i = theVector.size() - 1; i > -1; i--) {
-            currentElement = theVector.elementAt(i);
-            tempVector.addElement(currentElement);
+            currentElement = theVector.get(i);
+            tempVector.add(currentElement);
         }
 
         return tempVector;

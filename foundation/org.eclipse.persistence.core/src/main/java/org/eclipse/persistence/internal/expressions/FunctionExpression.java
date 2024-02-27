@@ -681,9 +681,9 @@ public class FunctionExpression extends BaseExpression {
                  iterator.hasNext();) {
                 Object baseObject = iterator.next();
                 if (baseObject == null) {
-                    baseVector.addElement(null);
+                    baseVector.add(null);
                 } else {
-                    baseVector.addElement(this.operator.applyFunction(baseObject, arguments));
+                    baseVector.add(this.operator.applyFunction(baseObject, arguments));
                 }
             }
             return baseVector;

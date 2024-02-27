@@ -175,7 +175,7 @@ public class TestExecutor {
      */
     public void addConfigureSystem(TestSystem system) {
         if (!configuredSystemsContainsInstanceOf(system)) {
-            getConfiguredSystems().addElement(system);
+            getConfiguredSystems().add(system);
         }
     }
 
@@ -197,7 +197,7 @@ public class TestExecutor {
         if (!configuredSystemsContainsInstanceOf(system)) {
             system.run(getSession());
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-            getConfiguredSystems().addElement(system);
+            getConfiguredSystems().add(system);
         }
     }
 
@@ -648,14 +648,14 @@ public class TestExecutor {
              iterator.hasNext();) {
             TestSystem aSystem = iterator.next();
             if (aSystem.getClass().equals(system.getClass())) {
-                systemsToRemove.addElement(aSystem);
+                systemsToRemove.add(aSystem);
             }
         }
 
         // Do the removing
         for (Iterator<TestSystem> iterator = systemsToRemove.iterator();
              iterator.hasNext();) {
-            getConfiguredSystems().removeElement(iterator.next());
+            getConfiguredSystems().remove(iterator.next());
         }
     }
 

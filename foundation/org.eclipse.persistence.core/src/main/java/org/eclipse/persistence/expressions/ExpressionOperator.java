@@ -759,8 +759,8 @@ public class ExpressionOperator implements Serializable {
      * Compare between in memory.
      */
     public boolean conformBetween(Object left, Object right) {
-        Object start = ((Vector)right).elementAt(0);
-        Object end = ((Vector)right).elementAt(1);
+        Object start = ((Vector)right).get(0);
+        Object end = ((Vector)right).get(1);
         if ((left == null) || (start == null) || (end == null)) {
             return false;
         }

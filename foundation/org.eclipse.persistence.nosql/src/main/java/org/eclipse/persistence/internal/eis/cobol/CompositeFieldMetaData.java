@@ -182,7 +182,7 @@ public class CompositeFieldMetaData extends ElementaryFieldMetaData implements C
     */
     @Override
     public void addField(FieldMetaData newField) {
-        myCompositeFields.addElement(newField);
+        myCompositeFields.add(newField);
     }
 
     /**

@@ -661,7 +661,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
                 element = getValueConverter().convertObjectValueToDataValue(element, session);
             }
             if (element != null) {
-                elements.addElement(element);
+                elements.add(element);
             }
         }
 

@@ -1673,7 +1673,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         Vector result = new Vector(sizeFor(container));
 
         for (Object iter = iteratorFor(container); hasNext(iter);) {
-            result.addElement(next(iter, session));
+            result.add(next(iter, session));
         }
         return result;
     }

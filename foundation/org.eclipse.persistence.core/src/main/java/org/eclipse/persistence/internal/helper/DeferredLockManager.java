@@ -53,14 +53,14 @@ public class DeferredLockManager {
      * add a concurrency manager as active locks to the DLM
      */
     public void addActiveLock(Object manager) {
-        getActiveLocks().addElement((ConcurrencyManager) manager);
+        getActiveLocks().add((ConcurrencyManager) manager);
     }
 
     /**
      * add a concurrency manager as deferred locks to the DLM
      */
     public void addDeferredLock(Object manager) {
-        getDeferredLocks().addElement((ConcurrencyManager) manager);
+        getDeferredLocks().add((ConcurrencyManager) manager);
     }
 
     /**

@@ -51,7 +51,7 @@ public class BeerConsumer extends Consumer {
 
     public void addAlpineBeerToConsume(Alpine alpine, int index) {
         alpine.setBeerConsumer(this);
-        ((Vector<Alpine>) alpineBeersToConsume).insertElementAt(alpine, index);
+        ((Vector<Alpine>) alpineBeersToConsume).add(index, alpine);
     }
 
     public void addBecksBeerToConsume(Becks becks, BecksTag becksTag) {
@@ -89,7 +89,7 @@ public class BeerConsumer extends Consumer {
     }
 
     public Alpine getAlpineBeerToConsume(int index) {
-        return ((Vector<Alpine>) alpineBeersToConsume).elementAt(index);
+        return ((Vector<Alpine>) alpineBeersToConsume).get(index);
     }
 
     public Map<BecksTag, Becks> getBecksBeersToConsume() {
@@ -136,7 +136,7 @@ public class BeerConsumer extends Consumer {
     }
 
     public boolean hasTelephoneNumber(TelephoneNumber telephoneNumber) {
-        Iterator<TelephoneNumberPK> iterator = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keySet().iterator();
+        Iterator<TelephoneNumberPK> iterator = telephoneNumbers.keySet().iterator();
         while (iterator.hasNext()) {
             TelephoneNumberPK key = iterator.next();
 
@@ -149,14 +149,14 @@ public class BeerConsumer extends Consumer {
     }
 
     public void removeAlpineBeerToConsume(int index) {
-        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).elementAt(index);
+        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).get(index);
         alpine.setBeerConsumer(null);
-        ((Vector<Alpine>) alpineBeersToConsume).removeElementAt(index);
+        ((Vector<Alpine>) alpineBeersToConsume).remove(index);
 
     }
 
     public void removePhoneNumber(TelephoneNumber telephoneNumber) {
-        Iterator<TelephoneNumberPK> iterator = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keySet().iterator();
+        Iterator<TelephoneNumberPK> iterator = telephoneNumbers.keySet().iterator();
         while (iterator.hasNext()) {
             TelephoneNumberPK key = iterator.next();
             TelephoneNumber potentialTelephoneNumber = telephoneNumbers.get(key);

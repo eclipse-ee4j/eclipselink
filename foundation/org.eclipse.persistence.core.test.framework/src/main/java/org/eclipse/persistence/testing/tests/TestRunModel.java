@@ -156,9 +156,9 @@ public class TestRunModel extends TestModel {
 
         for (int index = 0; index < tests.size(); ++index) {
             try {
-                addTest((TestModel)Class.forName(tests.elementAt(index)).getConstructor().newInstance());
+                addTest((TestModel)Class.forName(tests.get(index)).getConstructor().newInstance());
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.elementAt(index) + " \n" + exception);
+                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
                 //exception.printStackTrace();
             }
         }
@@ -198,9 +198,9 @@ public class TestRunModel extends TestModel {
         manual.setName("Manual Tests");
         for (int index = 0; index < manualTest.size(); ++index) {
             try {
-                manual.addTest((TestModel)Class.forName(manualTest.elementAt(index)).getConstructor().newInstance());
+                manual.addTest((TestModel)Class.forName(manualTest.get(index)).getConstructor().newInstance());
             } catch (Exception exception) {
-                System.out.println("Failed to set up " + manualTest.elementAt(index) + " \n" + exception);
+                System.out.println("Failed to set up " + manualTest.get(index) + " \n" + exception);
             }
         }
         models.add(manual);
@@ -402,9 +402,9 @@ public class TestRunModel extends TestModel {
         performanceModel.setName("Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
-                performanceModel.addTest((TestModel)Class.forName(performanceTests.elementAt(index)).getConstructor().newInstance());
+                performanceModel.addTest((TestModel)Class.forName(performanceTests.get(index)).getConstructor().newInstance());
             } catch (Exception exception) {
-                System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
+                System.out.println("Failed to set up " + performanceTests.get(index) + " \n" + exception);
             }
         }
         return performanceModel;
@@ -422,9 +422,9 @@ public class TestRunModel extends TestModel {
         performanceModel.setName("Jakarta Persistence Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
-                performanceModel.addTest((TestModel)Class.forName(performanceTests.elementAt(index)).getConstructor().newInstance());
+                performanceModel.addTest((TestModel)Class.forName(performanceTests.get(index)).getConstructor().newInstance());
             } catch (Exception exception) {
-                System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
+                System.out.println("Failed to set up " + performanceTests.get(index) + " \n" + exception);
             }
         }
         return performanceModel;

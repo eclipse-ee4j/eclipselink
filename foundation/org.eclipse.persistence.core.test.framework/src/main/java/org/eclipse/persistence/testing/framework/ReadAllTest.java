@@ -112,7 +112,7 @@ public class ReadAllTest extends AutoVerifyTestCase {
                 stream = (CursoredStream)getSession().executeQuery(getQuery());
             }
             while (!stream.atEnd()) {
-                ((Vector)this.objectsFromDatabase).addElement(stream.read());
+                ((Vector)this.objectsFromDatabase).add(stream.read());
             }
         } else {
             if (hasArguments()) {

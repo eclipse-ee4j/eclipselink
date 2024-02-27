@@ -656,7 +656,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         Vector fields = getFields();
         Vector values = getValues();
         for (int i = 0; i < size; i++) {
-            tempMap.put(fields.elementAt(i), values.elementAt(i));
+            tempMap.put(fields.get(i), values.get(i));
         }
         return tempMap.entrySet();
     }

@@ -393,18 +393,18 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
                 element = convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
 
                 if (element != null) {
-                    elements.addElement(element);
+                    elements.add(element);
                 } else if(!usesSingleNode()){
                     AbstractNullPolicy nullPolicy = getNullPolicy();
                     if (nullPolicy == null) {
-                        elements.addElement(null);
+                        elements.add(null);
                     } else {
                         if (nullPolicy.getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
-                            elements.addElement(XMLRecord.NIL);
+                            elements.add(XMLRecord.NIL);
                         } else if (nullPolicy.getMarshalNullRepresentation() == XMLNullRepresentationType.ABSENT_NODE) {
                             // Do nothing
                         } else {
-                            elements.addElement(XMLConstants.EMPTY_STRING);
+                            elements.add(XMLConstants.EMPTY_STRING);
                         }
                     }
                 }
