@@ -116,7 +116,7 @@ public class TableExpression extends DataExpression {
      */
     @Override
     public List<DatabaseTable> getOwnedTables() {
-        List<DatabaseTable> result = new ArrayList(1);
+        List<DatabaseTable> result = new ArrayList<>(1);
         result.add(getTable());
         return result;
     }

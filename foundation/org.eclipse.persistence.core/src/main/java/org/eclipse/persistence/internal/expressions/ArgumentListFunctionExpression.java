@@ -103,7 +103,7 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
 
 
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         Boolean hasLastChildCopy = hasLastChild;
         hasLastChild = null;
         super.postCopyIn(alreadyDone);

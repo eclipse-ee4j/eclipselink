@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
@@ -48,7 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 /**
  * <p>
@@ -415,7 +413,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      */
     private static void addOperator(Map<Integer, ExpressionOperator> map, ExpressionOperator exOperator) {
-        map.put(Integer.valueOf(exOperator.getSelector()), exOperator);
+        map.put(exOperator.getSelector(), exOperator);
     }
 
     /**
@@ -440,71 +438,71 @@ public class ExpressionOperator implements Serializable {
      * Apply this to an object in memory.
      * Throw an error if the function is not supported.
      */
-    public Object applyFunction(Object source, List arguments) {
-        if (source instanceof String) {
+    public Object applyFunction(Object source, List<?> arguments) {
+        if (source instanceof String sourceString) {
             if (this.selector == ToUpperCase) {
-                return ((String)source).toUpperCase();
+                return sourceString.toUpperCase();
             } else if (this.selector == ToLowerCase) {
-                return ((String)source).toLowerCase();
-            } else if ((this.selector == Concat) && (arguments.size() == 1) && (arguments.get(0) instanceof String)) {
-                return ((String)source).concat((String)arguments.get(0));
-            } else if ((this.selector == Substring) && (arguments.size() == 2) && (arguments.get(0) instanceof Number) && (arguments.get(1) instanceof Number)) {
+                return sourceString.toLowerCase();
+            } else if ((this.selector == Concat) && (arguments.size() == 1) && (arguments.get(0) instanceof String argString)) {
+                return sourceString.concat(argString);
+            } else if ((this.selector == Substring) && (arguments.size() == 2) && (arguments.get(0) instanceof Number argNum1) && (arguments.get(1) instanceof Number argNum2)) {
                 // assume the first parameter to be 1-based first index of the substring, the second - substring length.
-                int beginIndexInclusive = ((Number)arguments.get(0)).intValue() - 1;
-                int endIndexExclusive = beginIndexInclusive +  ((Number)arguments.get(1)).intValue();
-                return ((String)source).substring(beginIndexInclusive, endIndexExclusive);
-            } else if ((this.selector == SubstringSingleArg) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                int beginIndexInclusive = ((Number)arguments.get(0)).intValue() - 1;
-                int endIndexExclusive = ((String)source).length();
-                return ((String)source).substring(beginIndexInclusive, endIndexExclusive);
+                int beginIndexInclusive = argNum1.intValue() - 1;
+                int endIndexExclusive = beginIndexInclusive + argNum2.intValue();
+                return sourceString.substring(beginIndexInclusive, endIndexExclusive);
+            } else if ((this.selector == SubstringSingleArg) && (arguments.size() == 1) && (arguments.get(0) instanceof Number argNum)) {
+                int beginIndexInclusive = argNum.intValue() - 1;
+                int endIndexExclusive = sourceString.length();
+                return sourceString.substring(beginIndexInclusive, endIndexExclusive);
             } else if (this.selector == ToNumber) {
-                return new java.math.BigDecimal((String)source);
+                return new java.math.BigDecimal(sourceString);
             } else if (this.selector == Trim) {
-                return ((String)source).trim();
+                return sourceString.trim();
             } else if (this.selector == Length) {
-                return ((String) source).length();
+                return sourceString.length();
             }
-        } else if (source instanceof Number) {
+        } else if (source instanceof Number sourceNumber) {
             if (this.selector == Ceil) {
-                return Math.ceil(((Number) source).doubleValue());
+                return Math.ceil(sourceNumber.doubleValue());
             } else if (this.selector == Cos) {
-                return Math.cos(((Number) source).doubleValue());
+                return Math.cos(sourceNumber.doubleValue());
             } else if (this.selector == Abs) {
-                return Math.abs(((Number) source).doubleValue());
+                return Math.abs(sourceNumber.doubleValue());
             } else if (this.selector == Acos) {
-                return Math.acos(((Number) source).doubleValue());
+                return Math.acos(sourceNumber.doubleValue());
             } else if (this.selector == Asin) {
-                return Math.asin(((Number) source).doubleValue());
+                return Math.asin(sourceNumber.doubleValue());
             } else if (this.selector == Atan) {
-                return Math.atan(((Number) source).doubleValue());
+                return Math.atan(sourceNumber.doubleValue());
             } else if (this.selector == Exp) {
-                return Math.exp(((Number) source).doubleValue());
+                return Math.exp(sourceNumber.doubleValue());
             } else if (this.selector == Sqrt) {
-                return Math.sqrt(((Number) source).doubleValue());
+                return Math.sqrt(sourceNumber.doubleValue());
             } else if (this.selector == Floor) {
-                return Math.floor(((Number) source).doubleValue());
+                return Math.floor(sourceNumber.doubleValue());
             } else if (this.selector == Log) {
-                return Math.log(((Number) source).doubleValue());
-            } else if ((this.selector == Power) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Math.pow(((Number) source).doubleValue(), (((Number) arguments.get(0)).doubleValue()));
+                return Math.log(sourceNumber.doubleValue());
+            } else if ((this.selector == Power) && (arguments.size() == 1) && (arguments.get(0) instanceof Number argNum1)) {
+                return Math.pow(sourceNumber.doubleValue(), argNum1.doubleValue());
             } else if (this.selector == Round) {
-                return (double) Math.round(((Number) source).doubleValue());
+                return (double) Math.round(sourceNumber.doubleValue());
             } else if (this.selector == Sin) {
-                return Math.sin(((Number) source).doubleValue());
+                return Math.sin(sourceNumber.doubleValue());
             } else if (this.selector == Tan) {
-                return Math.tan(((Number) source).doubleValue());
-            } else if ((this.selector == Greatest) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Math.max(((Number) source).doubleValue(), (((Number) arguments.get(0)).doubleValue()));
-            } else if ((this.selector == Least) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Math.min(((Number) source).doubleValue(), (((Number) arguments.get(0)).doubleValue()));
-            } else if ((this.selector == Add) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return ((Number) source).doubleValue() + (((Number) arguments.get(0)).doubleValue());
-            } else if ((this.selector == Subtract) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return ((Number) source).doubleValue() - (((Number) arguments.get(0)).doubleValue());
-            } else if ((this.selector == Divide) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return ((Number) source).doubleValue() / (((Number) arguments.get(0)).doubleValue());
-            } else if ((this.selector == Multiply) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return ((Number) source).doubleValue() * (((Number) arguments.get(0)).doubleValue());
+                return Math.tan(sourceNumber.doubleValue());
+            } else if ((this.selector == Greatest) && (arguments.size() == 1) && (arguments.get(0) instanceof Number argNum1)) {
+                return Math.max(sourceNumber.doubleValue(), argNum1.doubleValue());
+            } else if ((this.selector == Least) && (arguments.size() == 1) && (arguments.get(0) instanceof Number argNum1)) {
+                return Math.min(sourceNumber.doubleValue(), argNum1.doubleValue());
+            } else if ((this.selector == Add) && (arguments.size() == 1) && (arguments.get(0) instanceof Number argNum1)) {
+                return sourceNumber.doubleValue() + argNum1.doubleValue();
+            } else if ((this.selector == Subtract) && (arguments.size() == 1) && (arguments.get(0) instanceof Number argNum1)) {
+                return sourceNumber.doubleValue() - argNum1.doubleValue();
+            } else if ((this.selector == Divide) && (arguments.size() == 1) && (arguments.get(0) instanceof Number argNum1)) {
+                return sourceNumber.doubleValue() / argNum1.doubleValue();
+            } else if ((this.selector == Multiply) && (arguments.size() == 1) && (arguments.get(0) instanceof Number argNum1)) {
+                return sourceNumber.doubleValue() * argNum1.doubleValue();
             }
         }
 
@@ -638,7 +636,7 @@ public class ExpressionOperator implements Serializable {
         v.add("(");
         v.add(" NOT BETWEEN ");
         v.add(" AND ");
-        v.add(")");;
+        v.add(")");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -759,19 +757,19 @@ public class ExpressionOperator implements Serializable {
      * Compare between in memory.
      */
     public boolean conformBetween(Object left, Object right) {
-        Object start = ((Vector)right).get(0);
-        Object end = ((Vector)right).get(1);
+        Object start = ((List<?>) right).get(0);
+        Object end = ((List<?>) right).get(1);
         if ((left == null) || (start == null) || (end == null)) {
             return false;
         }
-        if ((left instanceof Number) && (start instanceof Number) && (end instanceof Number)) {
-            return ((((Number)left).doubleValue()) >= (((Number)start).doubleValue())) && ((((Number)left).doubleValue()) <= (((Number)end).doubleValue()));
-        } else if ((left instanceof String) && (start instanceof String) && (end instanceof String)) {
-            return ((((String)left).compareTo(((String)start)) > 0) || (((String)left).compareTo(((String)start)) == 0)) && ((((String)left).compareTo(((String)end)) < 0) || (((String)left).compareTo(((String)end)) == 0));
-        } else if ((left instanceof java.util.Date) && (start instanceof java.util.Date) && (end instanceof java.util.Date)) {
-            return (((java.util.Date)left).after(((java.util.Date)start)) || left.equals((start))) && (((java.util.Date)left).before(((java.util.Date)end)) || left.equals((end)));
-        } else if ((left instanceof java.util.Calendar) && (start instanceof java.util.Calendar) && (end instanceof java.util.Calendar)) {
-            return (((java.util.Calendar)left).after(start) || left.equals((start))) && (((java.util.Calendar)left).before(end) || left.equals((end)));
+        if ((left instanceof Number leftNumber) && (start instanceof Number startNumber) && (end instanceof Number endNumber)) {
+            return (leftNumber.doubleValue() >= startNumber.doubleValue()) && (leftNumber.doubleValue() <= endNumber.doubleValue());
+        } else if ((left instanceof String leftString) && (start instanceof String startString) && (end instanceof String endString)) {
+            return (leftString.compareTo(startString) >= 0) && (leftString.compareTo(endString) <= 0);
+        } else if ((left instanceof java.util.Date leftDate) && (start instanceof java.util.Date startDate) && (end instanceof java.util.Date endDate)) {
+            return (leftDate.after(startDate) || left.equals(start)) && (leftDate.before(endDate) || left.equals(end));
+        } else if ((left instanceof java.util.Calendar leftCal) && (start instanceof java.util.Calendar) && (end instanceof java.util.Calendar)) {
+            return (leftCal.after(start) || left.equals(start)) && (leftCal.before(end) || left.equals(end));
         }
 
         throw QueryException.cannotConformExpression();
@@ -835,9 +833,9 @@ public class ExpressionOperator implements Serializable {
         operator.isRepeating = isRepeating;
         operator.nodeClass = nodeClass;
         operator.type = type;
-        operator.databaseStrings = databaseStrings == null ? null : Helper.copyStringArray(databaseStrings);
-        operator.argumentIndices = argumentIndices == null ? null : Helper.copyIntArray(argumentIndices);
-        operator.javaStrings = javaStrings == null ? null : Helper.copyStringArray(javaStrings);
+        operator.databaseStrings = databaseStrings == null ? null : Arrays.copyOf(databaseStrings, databaseStrings.length);
+        operator.argumentIndices = argumentIndices == null ? null : Arrays.copyOf(argumentIndices, argumentIndices.length);
+        operator.javaStrings = javaStrings == null ? null : Arrays.copyOf(javaStrings, javaStrings.length);
         operator.isBindingSupported = isBindingSupported == null ? null : isBindingSupported;
     }
 
@@ -996,13 +994,16 @@ public class ExpressionOperator implements Serializable {
             } else if ((left == null) || (right == null)) {
                 return this.selector == NotEqual;
             }
-            if (left instanceof Number && left instanceof Comparable && right instanceof Comparable
-                && left.getClass().equals (right.getClass())) {
-                return (((Comparable) left).compareTo( right) == 0) == (this.selector == Equal);
+            if (left instanceof Number
+                    && left instanceof @SuppressWarnings({"rawtypes"}) Comparable c1 && right instanceof @SuppressWarnings({"rawtypes"}) Comparable c2
+                    && left.getClass().equals(right.getClass())) {
+                @SuppressWarnings({"unchecked"})
+                int diff = c1.compareTo(c2);
+                return (diff == 0) == (this.selector == Equal);
             }
-            if (((left instanceof Number) && (right instanceof Number)) && (left.getClass() != right.getClass())) {
-                double leftDouble = ((Number)left).doubleValue();
-                double rightDouble = ((Number)right).doubleValue();
+            if ((left instanceof Number leftNumber && right instanceof Number rightNumber) && (left.getClass() != right.getClass())) {
+                double leftDouble = leftNumber.doubleValue();
+                double rightDouble = rightNumber.doubleValue();
                 if (Double.isNaN(leftDouble) && Double.isNaN(rightDouble)){
                     return this.selector == Equal;
                 }
@@ -1010,24 +1011,24 @@ public class ExpressionOperator implements Serializable {
             }
             return left.equals( right) == (this.selector == Equal);
         } else if (this.selector == IsNull) {
-            return (left == null);
+            return left == null;
         }
         if (this.selector == NotNull) {
-            return (left != null);
+            return left != null;
         }
         // Less thans, greater thans
         else if (this.selector == LessThan) {// You have got to love polymorphism in Java, NOT!!!
             if ((left == null) || (right == null)) {
                 return false;
             }
-            if ((left instanceof Number) && (right instanceof Number)) {
-                return (((Number)left).doubleValue()) < (((Number)right).doubleValue());
-            } else if ((left instanceof String) && (right instanceof String)) {
-                return ((String)left).compareTo(((String)right)) < 0;
-            } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return ((java.util.Date)left).before(((java.util.Date)right));
-            } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
-                return ((java.util.Calendar)left).before(right);
+            if (left instanceof Number leftNumber && right instanceof Number rightNumber) {
+                return leftNumber.doubleValue() < rightNumber.doubleValue();
+            } else if (left instanceof String leftString && right instanceof String rightString) {
+                return leftString.compareTo(rightString) < 0;
+            } else if (left instanceof java.util.Date leftDate && right instanceof java.util.Date rightDate) {
+                return leftDate.before(rightDate);
+            } else if (left instanceof java.util.Calendar leftCal && right instanceof java.util.Calendar) {
+                return leftCal.before(right);
             }
         } else if (this.selector == LessThanEqual) {
             if ((left == null) && (right == null)) {
@@ -1035,29 +1036,27 @@ public class ExpressionOperator implements Serializable {
             } else if ((left == null) || (right == null)) {
                 return false;
             }
-            if ((left instanceof Number) && (right instanceof Number)) {
-                return (((Number)left).doubleValue()) <= (((Number)right).doubleValue());
-            } else if ((left instanceof String) && (right instanceof String)) {
-                int compareValue = ((String)left).compareTo(((String)right));
-                return (compareValue < 0) || (compareValue == 0);
-            } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return left.equals((right)) || ((java.util.Date)left).before(((java.util.Date)right));
-            } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
-                return left.equals((right)) || ((java.util.Calendar)left).before(right);
+            if ((left instanceof Number leftNumber) && (right instanceof Number rightNumber)) {
+                return leftNumber.doubleValue() <= rightNumber.doubleValue();
+            } else if ((left instanceof String leftString) && (right instanceof String rightString)) {
+                return leftString.compareTo(rightString) <= 0;
+            } else if ((left instanceof java.util.Date leftDate) && (right instanceof java.util.Date rightDate)) {
+                return left.equals(right) || leftDate.before(rightDate);
+            } else if ((left instanceof java.util.Calendar leftCal) && (right instanceof java.util.Calendar)) {
+                return left.equals(right) || leftCal.before(right);
             }
         } else if (this.selector == GreaterThan) {
             if ((left == null) || (right == null)) {
                 return false;
             }
-            if ((left instanceof Number) && (right instanceof Number)) {
-                return (((Number)left).doubleValue()) > (((Number)right).doubleValue());
-            } else if ((left instanceof String) && (right instanceof String)) {
-                int compareValue = ((String)left).compareTo(((String)right));
-                return (compareValue > 0);
-            } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return ((java.util.Date)left).after(((java.util.Date)right));
-            } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
-                return ((java.util.Calendar)left).after(right);
+            if ((left instanceof Number leftNumber) && (right instanceof Number rightNumber)) {
+                return leftNumber.doubleValue() > rightNumber.doubleValue();
+            } else if ((left instanceof String leftString) && (right instanceof String rightString)) {
+                return leftString.compareTo(rightString) > 0;
+            } else if ((left instanceof java.util.Date leftDate) && (right instanceof java.util.Date rightDate)) {
+                return leftDate.after(rightDate);
+            } else if ((left instanceof java.util.Calendar leftCal) && (right instanceof java.util.Calendar)) {
+                return leftCal.after(right);
             }
         } else if (this.selector == GreaterThanEqual) {
             if ((left == null) && (right == null)) {
@@ -1065,33 +1064,32 @@ public class ExpressionOperator implements Serializable {
             } else if ((left == null) || (right == null)) {
                 return false;
             }
-            if ((left instanceof Number) && (right instanceof Number)) {
-                return (((Number)left).doubleValue()) >= (((Number)right).doubleValue());
-            } else if ((left instanceof String) && (right instanceof String)) {
-                int compareValue = ((String)left).compareTo(((String)right));
-                return (compareValue > 0) || (compareValue == 0);
-            } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return left.equals((right)) || ((java.util.Date)left).after(((java.util.Date)right));
-            } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
-                return left.equals((right)) || ((java.util.Calendar)left).after(right);
+            if ((left instanceof Number leftNumber) && (right instanceof Number rightNumber)) {
+                return leftNumber.doubleValue() >= rightNumber.doubleValue();
+            } else if ((left instanceof String leftString) && (right instanceof String rightString)) {
+                return leftString.compareTo(rightString) >= 0;
+            } else if ((left instanceof java.util.Date leftDate) && (right instanceof java.util.Date rightDate)) {
+                return left.equals((right)) || leftDate.after(rightDate);
+            } else if ((left instanceof java.util.Calendar leftCal) && (right instanceof java.util.Calendar)) {
+                return left.equals(right) || leftCal.after(right);
             }
         }
         // Between
-        else if ((this.selector == Between) && (right instanceof Vector) && (((Vector)right).size() == 2)) {
+        else if ((this.selector == Between) && (right instanceof @SuppressWarnings({"rawtypes"}) List v) && (v.size() == 2)) {
             return conformBetween(left, right);
-        } else if ((this.selector == NotBetween) && (right instanceof Vector) && (((Vector)right).size() == 2)) {
+        } else if ((this.selector == NotBetween) && (right instanceof @SuppressWarnings({"rawtypes"}) List v) && (v.size() == 2)) {
             return !conformBetween(left, right);
         }
         // In
-        else if ((this.selector == In) && (right instanceof Collection)) {
-            return ((Collection)right).contains(left);
-        } else if ((this.selector == NotIn) && (right instanceof Collection)) {
-            return !((Collection)right).contains(left);
+        else if ((this.selector == In) && (right instanceof @SuppressWarnings({"rawtypes"}) Collection col)) {
+            return col.contains(left);
+        } else if ((this.selector == NotIn) && (right instanceof @SuppressWarnings({"rawtypes"}) Collection col)) {
+            return !col.contains(left);
         }
         // Like
         //conformLike(left, right);
-        else if (((this.selector == Like) || (this.selector == NotLike)) && (right instanceof Vector) && (((Vector)right).size() == 1)) {
-            Boolean doesLikeConform = JavaPlatform.conformLike(left, ((Vector)right).get(0));
+        else if (((this.selector == Like) || (this.selector == NotLike)) && (right instanceof @SuppressWarnings({"rawtypes"}) List v) && (v.size() == 1)) {
+            Boolean doesLikeConform = JavaPlatform.conformLike(left, v.get(0));
             if (doesLikeConform != null) {
                 if (doesLikeConform) {
                     return this.selector == Like;// Negate for NotLike
@@ -1101,8 +1099,8 @@ public class ExpressionOperator implements Serializable {
             }
         }
         // Regexp
-        else if ((this.selector == Regexp) && (right instanceof Vector) && (((Vector)right).size() == 1)) {
-            Boolean doesConform = JavaPlatform.conformRegexp(left, ((Vector)right).get(0));
+        else if ((this.selector == Regexp) && (right instanceof @SuppressWarnings({"rawtypes"}) List v) && (v.size() == 1)) {
+            Boolean doesConform = JavaPlatform.conformRegexp(left, v.get(0));
             if (doesConform != null) {
                 return doesConform;
             }
@@ -1181,7 +1179,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Create an expression for this operator, using the given base and arguments.
      */
-    public Expression expressionForArguments(Expression base, List arguments) {
+    public Expression expressionForArguments(Expression base, List<?> arguments) {
         return newExpressionForArguments(base, arguments);
     }
 
@@ -1671,7 +1669,6 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(Cast, "Cast");
         platformOperatorNames.put(NewTime, "NewTime");
         platformOperatorNames.put(Nvl, "Nvl");
-        platformOperatorNames.put(NewTime, "NewTime");
         platformOperatorNames.put(Ceil, "Ceil");
         platformOperatorNames.put(Cos, "Cos");
         platformOperatorNames.put(Cosh, "Cosh");
@@ -1772,7 +1769,6 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put("TruncateDate", TruncateDate);
         platformOperatorNames.put("NewTime", NewTime);
         platformOperatorNames.put("Nvl", Nvl);
-        platformOperatorNames.put("NewTime", NewTime);
         platformOperatorNames.put("Ceil", Ceil);
         platformOperatorNames.put("Cos", Cos);
         platformOperatorNames.put("Cosh", Cosh);
@@ -1938,8 +1934,7 @@ public class ExpressionOperator implements Serializable {
      * Build leftTrim operator that takes one parameter.
      */
     public static ExpressionOperator leftTrim2() {
-        ExpressionOperator operator = simpleTwoArgumentFunction(LeftTrim2, "LTRIM");
-        return operator;
+        return simpleTwoArgumentFunction(LeftTrim2, "LTRIM");
     }
 
     /**
@@ -2203,7 +2198,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * The general case.
      */
-    public Expression newExpressionForArguments(Expression base, List arguments) {
+    public Expression newExpressionForArguments(Expression base, List<?> arguments) {
         if ((arguments.size() == 1) && (arguments.get(0) == null)) {
             if (this.selector == Equal) {
                 return base.isNull();
@@ -2593,8 +2588,7 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator rightTrim2() {
         // bug 2916893 rightTrim(substring) broken
-        ExpressionOperator operator = simpleTwoArgumentFunction(RightTrim2, "RTRIM");
-        return operator;
+        return simpleTwoArgumentFunction(RightTrim2, "RTRIM");
     }
 
     /**

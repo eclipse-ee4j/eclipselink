@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,18 +19,18 @@ import java.io.StringWriter;
 /**
  * PUBLIC:
  * A utility class used to set parameters on spatial operators within TopLink's
- * expression framework. This class allows the aptial operator parameters to be
- * passed in directly as a string or to be programatically configured using the
+ * expression framework. This class allows the spatial operator parameters to be
+ * passed in directly as a string or to be programmatically configured using the
  * attributes defined and the enum types. Each spatial operator offers different
  * parameter arguments and values. This class does not enforce these rules but
  * instead leaves it to the caller to decide what values they want included.
  * <p>
  * When providing the parameter string through setParams or the constructor none
- * of the other values will be used. Instead the string as provided will be used.
+ * of the other values will be used. Instead, the string as provided will be used.
  * <p>
  * Creating an instance of SpatialParameters without configuring it and passing
  * it into the SpatialExpressionFactory call is equivalent to passing in null.
- * The resulting SQL will have NULL writen out for the parameters argument to the
+ * The resulting SQL will have NULL written out for the parameters argument to the
  * spatial operator.
  *
  * @since Oracle TopLink 11.1.1.0.0
@@ -44,12 +44,12 @@ public class SpatialParameters {
     private QueryType queryType = null;
     private Mask[] masks = null;
 
-    private static String UNIT_PARAM = "UNIT=";
-    private static String MAX_RES_PARAM = "MAX_RESOLUTION=";
-    private static String MIN_RES_PARAM = "MIN_RESOLUTION=";
-    private static String DISTANCE_PARAM = "DISTANCE=";
-    private static String QUERYTYPE_PARAM = "QUERYTYPE=";
-    private static String MASK_PARAM = "MASK=";
+    private static final String UNIT_PARAM = "UNIT=";
+    private static final String MAX_RES_PARAM = "MAX_RESOLUTION=";
+    private static final String MIN_RES_PARAM = "MIN_RESOLUTION=";
+    private static final String DISTANCE_PARAM = "DISTANCE=";
+    private static final String QUERYTYPE_PARAM = "QUERYTYPE=";
+    private static final String MASK_PARAM = "MASK=";
 
     public SpatialParameters() {
     }
@@ -148,7 +148,7 @@ public class SpatialParameters {
     /**
      * PUBLIC:
      * Set the MASK parameter
-     * @param masks an array of values from the SpatialParmeters.Mask enum
+     * @param masks an array of values from the SpatialParameters.Mask enum
      * @return this instance of SpatialParameters
      */
     public SpatialParameters setMasks(Mask[] masks) {
@@ -159,7 +159,7 @@ public class SpatialParameters {
     /**
      * PUBLIC:
      * Set the MASK parameter
-     * @param mask a value from the SpatialParmeters.Mask enum
+     * @param mask a value from the SpatialParameters.Mask enum
      * @return this instance of SpatialParameters
      */
     public SpatialParameters setMask(Mask mask) {
@@ -236,15 +236,13 @@ public class SpatialParameters {
         MILE, // Mile
         NAUT_MILE, // Nautical Mile
         FOOT, // Foot
-        INCH,
-        ; // Inch
+        INCH // Inch
     }
 
     public enum QueryType {
         WINDOW,
         JOIN,
-        FILTER,
-        ;
+        FILTER
     }
 
     public enum Mask {
@@ -257,7 +255,6 @@ public class SpatialParameters {
         CONTAINS,
         COVERS,
         ANYINTERACT,
-        ON,
-        ;
+        ON
     }
 }

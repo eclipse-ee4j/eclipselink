@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -359,7 +359,7 @@ public class ParameterExpression extends BaseExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (getLocalBase() != null) {
             setLocalBase(getLocalBase().copiedVersionFrom(alreadyDone));
@@ -374,8 +374,8 @@ public class ParameterExpression extends BaseExpression {
     public void printSQL(ExpressionSQLPrinter printer) {
         if (printer.shouldPrintParameterValues()) {
             Object value = getValue(printer.getTranslationRow(), printer.getSession());
-            if (value instanceof Collection) {
-                printer.printValuelist((Collection<Object>)value, this.canBind);
+            if (value instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
+                printer.printValuelist(collection, this.canBind);
             } else {
                 if(getField() == null) {
                     printer.printPrimitive(value, this.canBind);
@@ -491,7 +491,7 @@ public class ParameterExpression extends BaseExpression {
                     // this is a map key expression, operate on the key
                     ContainerPolicy cp = mapping.getContainerPolicy();
                     Object keyType = cp.getKeyType();
-                    Class<?> keyTypeClass = keyType instanceof Class<?> ? (Class)keyType: ((ClassDescriptor)keyType).getJavaClass();
+                    Class<?> keyTypeClass = keyType instanceof @SuppressWarnings({"rawtypes"}) Class c ? c: ((ClassDescriptor)keyType).getJavaClass();
                     if (!keyTypeClass.isInstance(value)){
                         throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
                     }

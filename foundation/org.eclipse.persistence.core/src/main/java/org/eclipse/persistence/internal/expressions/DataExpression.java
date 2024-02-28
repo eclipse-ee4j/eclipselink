@@ -67,14 +67,14 @@ public abstract class DataExpression extends BaseExpression {
 
     public void addDerivedField(Expression addThis) {
         if (derivedFields == null) {
-            derivedFields = new ArrayList();
+            derivedFields = new ArrayList<>();
         }
         derivedFields.add(addThis);
     }
 
     public void addDerivedTable(Expression addThis) {
         if (derivedTables == null) {
-            derivedTables = new ArrayList();
+            derivedTables = new ArrayList<>();
         }
         derivedTables.add(addThis);
     }
@@ -132,11 +132,11 @@ public abstract class DataExpression extends BaseExpression {
         tableAliases = null;
     }
 
-    public List<Expression> copyCollection(List<Expression> in, Map alreadyDone) {
+    public List<Expression> copyCollection(List<Expression> in, Map<Expression, Expression> alreadyDone) {
         if (in == null) {
             return null;
         }
-        List<Expression> result = new ArrayList(in.size());
+        List<Expression> result = new ArrayList<>(in.size());
         for (Expression exp : in) {
             result.add(exp.copiedVersionFrom(alreadyDone));
         }
@@ -382,7 +382,7 @@ public abstract class DataExpression extends BaseExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         clearAliases();
         this.derivedFields = copyCollection(this.derivedFields, alreadyDone);

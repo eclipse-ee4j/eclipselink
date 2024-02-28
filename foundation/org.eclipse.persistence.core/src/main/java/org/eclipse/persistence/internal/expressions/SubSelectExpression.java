@@ -172,7 +172,7 @@ public class SubSelectExpression extends BaseExpression {
      * Normalize this expression now that the parent statement has been normalized.
      * For CR#4223
      */
-    public Expression normalizeSubSelect(ExpressionNormalizer normalizer, Map clonedExpressions) {
+    public Expression normalizeSubSelect(ExpressionNormalizer normalizer, Map<Expression, Expression> clonedExpressions) {
         if (this.hasBeenNormalized) {
             return this;
         }
@@ -221,7 +221,7 @@ public class SubSelectExpression extends BaseExpression {
      * The query must be cloned, and the sub-expression must be cloned using the same outer expression identity.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         initializeCountSubQuery();
         super.postCopyIn(alreadyDone);
         ReportQuery clonedQuery = (ReportQuery)getSubQuery().clone();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -155,16 +155,16 @@ public class ConstantExpression extends Expression {
         if (this.value == null)
             return this;
 
-        if (this.value instanceof Collection) {
-            normalizeValueList(normalizer, (Collection)this.value);
+        if (this.value instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
+            normalizeValueList(normalizer, collection);
         }
         return this;
     }
 
-    private void normalizeValueList(ExpressionNormalizer normalizer, Collection valueCollection) {
+    private void normalizeValueList(ExpressionNormalizer normalizer, Collection<?> valueCollection) {
         for (Object obj : valueCollection) {
-            if (obj instanceof Collection) {
-                normalizeValueList(normalizer, (Collection)obj);
+            if (obj instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
+                normalizeValueList(normalizer, collection);
             } else if (obj instanceof Expression) {
                 ((Expression)obj).normalize(normalizer);
             }
@@ -176,7 +176,7 @@ public class ConstantExpression extends Expression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         if(this.localBase != null) {
             this.localBase = this.localBase.copiedVersionFrom(alreadyDone);

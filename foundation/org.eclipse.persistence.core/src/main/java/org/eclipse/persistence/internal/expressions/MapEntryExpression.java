@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class MapEntryExpression extends QueryKeyExpression {
 
@@ -176,8 +175,7 @@ public class MapEntryExpression extends QueryKeyExpression {
         if (!isAttribute()) {
             return null;
         }
-        DatabaseField field = getInterfaceContainerPolicy().getDirectKeyField(getMapping());
-        return field;
+        return getInterfaceContainerPolicy().getDirectKeyField(getMapping());
     }
 
     /**
@@ -185,8 +183,8 @@ public class MapEntryExpression extends QueryKeyExpression {
      * Return all the fields
      */
     @Override
-    public Vector getFields() {
-        Vector result = new Vector();
+    public List<DatabaseField> getFields() {
+        List<DatabaseField> result = new ArrayList<>();
         InterfaceContainerPolicy icp = getInterfaceContainerPolicy();
         // if this is a map entry get all the fields for both the key and the value
         if (returnMapEntry || !icp.isMappedKeyMapPolicy()){

@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * Used for expressions that have 0 to n children.
@@ -241,7 +240,7 @@ public class FunctionExpression extends BaseExpression {
 
             // Extract the value from the arguments, skip the first child which is the base.
             int size = this.children.size();
-            Vector rightValue = new Vector(size);
+            List<Object> rightValue = new ArrayList<>(size);
             for (int index = 1; index < size; index++) {
                 Object valueFromRight;
                 Expression child = this.children.get(index);
@@ -252,8 +251,10 @@ public class FunctionExpression extends BaseExpression {
                 }
                 //If valueFromRight is a Vector, then there is only one child other than the base, e.g. valueFromRight is a collection of constants.
                 //Then it should be the vector to be compared with.  Don't add it to another collection.
-                if (valueFromRight instanceof Vector) {
-                    rightValue = (Vector)valueFromRight;
+                if (valueFromRight instanceof @SuppressWarnings({"rawtypes"}) List rightVector) {
+                    @SuppressWarnings({"unchecked"})
+                    List<Object> rv = rightVector;
+                    rightValue = rv;
                 //Single values should be added to the rightValue, which will be compared with leftValue.
                 } else {
                     rightValue.add(valueFromRight);
@@ -262,8 +263,8 @@ public class FunctionExpression extends BaseExpression {
 
             // If left is anyof collection of values, check each one.
             // If the right had an anyof not supported will be thrown from the operator.
-            if (leftValue instanceof Vector) {
-                for (Object tempLeft : (Vector)leftValue) {
+            if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
+                for (Object tempLeft : leftVector) {
                     if (this.operator.doesRelationConform(tempLeft, rightValue)) {
                         return true;
                     }
@@ -279,8 +280,8 @@ public class FunctionExpression extends BaseExpression {
             Object leftValue = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
             // If left is anyof collection of values, check each one.
-            if (leftValue instanceof Vector) {
-                for (Object tempLeft : (Vector)leftValue) {
+            if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
+                for (Object tempLeft : leftVector) {
                     if (this.operator.doesRelationConform(tempLeft, null)) {
                         return true;
                     }
@@ -464,8 +465,8 @@ public class FunctionExpression extends BaseExpression {
                     && (!((OneToOneMapping)mapping).hasCustomSelectionQuery())) {
                 base = (ObjectExpression)base.getBaseExpression();
                 Map<DatabaseField, DatabaseField> targetToSourceKeyFields = ((OneToOneMapping)mapping).getTargetToSourceKeyFields();
-                sourceFields = new ArrayList(targetToSourceKeyFields.size());
-                targetFields = new ArrayList(targetToSourceKeyFields.size());
+                sourceFields = new ArrayList<>(targetToSourceKeyFields.size());
+                targetFields = new ArrayList<>(targetToSourceKeyFields.size());
                 for (Map.Entry<DatabaseField, DatabaseField> entry : targetToSourceKeyFields.entrySet()) {
                     sourceFields.add(entry.getValue());
                     targetFields.add(entry.getKey());
@@ -543,7 +544,7 @@ public class FunctionExpression extends BaseExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         List<Expression> oldChildren = this.children;
         this.children = new ArrayList<>();
@@ -675,10 +676,9 @@ public class FunctionExpression extends BaseExpression {
                 arguments.add(this.children.get(index));
             }
         }
-        if (baseValue instanceof Vector) {// baseValue might be a vector, so the individual values must be extracted before applying the function call to them
-            Vector baseVector = new Vector();
-            for (Iterator iterator = ((Vector) baseValue).iterator();
-                 iterator.hasNext();) {
+        if (baseValue instanceof @SuppressWarnings({"rawtypes"}) List base) {// baseValue might be a vector, so the individual values must be extracted before applying the function call to them
+            List<Object> baseVector = new ArrayList<>();
+            for (Iterator<?> iterator = base.iterator(); iterator.hasNext();) {
                 Object baseObject = iterator.next();
                 if (baseObject == null) {
                     baseVector.add(null);
@@ -775,7 +775,7 @@ public class FunctionExpression extends BaseExpression {
      * If the descriptor has a single pk, it is used, otherwise any pk is used if distinct, otherwise a subselect is used.
      * If the object was obtained through an outer join, then the subselect also will not work, so an error is thrown.
      */
-    public void prepareObjectAttributeCount(ExpressionNormalizer normalizer, ReportItem item, ReportQuery query, Map clonedExpressions) {
+    public void prepareObjectAttributeCount(ExpressionNormalizer normalizer, ReportItem item, ReportQuery query, Map<Expression, Expression> clonedExpressions) {
         // ** Note that any of the arguments may be null depending on the caller.
         if (getOperator().getSelector() == ExpressionOperator.Count) {
             Expression baseExp = getBaseExpression();
@@ -840,7 +840,7 @@ public class FunctionExpression extends BaseExpression {
                 } else if (((DatabasePlatform)session.getPlatform(newDescriptor.getJavaClass())).supportsCountDistinctWithMultipleFields()) {
                     // case 3, is database allows multiple fields, then just print them
                     // treat COUNT(distinct entity) as COUNT(distinct entity.pk1, entity.pk2)
-                    List args = new ArrayList(newDescriptor.getPrimaryKeyFields().size());
+                    List<Object> args = new ArrayList<>(newDescriptor.getPrimaryKeyFields().size());
                     Expression firstField = null;
                     for (DatabaseField field : newDescriptor.getPrimaryKeyFields()) {
                         if (firstField == null) {

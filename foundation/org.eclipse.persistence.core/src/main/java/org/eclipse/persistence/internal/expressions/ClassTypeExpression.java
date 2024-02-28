@@ -27,9 +27,10 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * @author cdelahun
@@ -125,22 +126,17 @@ public class ClassTypeExpression extends DataExpression {
 
             // If from an anyof the object will be a collection of values,
             // A new vector must union the object values and the values extracted from it.
-            if (object instanceof Vector) {
-                Vector comparisonVector = new Vector(((Vector)object).size() + 2);
-                for (Iterator iterator1 = ((Vector) object).iterator();
-                     iterator1.hasNext();) {
-                    Object vectorObject = iterator1.next();
+            if (object instanceof @SuppressWarnings({"rawtypes"}) List v) {
+                List<Object> comparisonVector = new ArrayList<>(v.size() + 2);
+                for (Object vectorObject : v) {
                     if (vectorObject == null) {
                         comparisonVector.add(null);
                     } else {
                         Object valueOrValues = typeValueFromObject(vectorObject, session);
 
                         // If a collection of values were extracted union them.
-                        if (valueOrValues instanceof Vector) {
-                            for (Iterator iterator = ((Vector) valueOrValues).iterator();
-                                 iterator.hasNext();) {
-                                comparisonVector.add(iterator.next());
-                            }
+                        if (valueOrValues instanceof @SuppressWarnings({"rawtypes"}) List vv) {
+                            comparisonVector.addAll(vv);
                         } else {
                             comparisonVector.add(valueOrValues);
                         }
@@ -190,31 +186,31 @@ public class ClassTypeExpression extends DataExpression {
             return null;
         }
 
-        if (objectValue instanceof Collection values) {
-                // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
-            Vector fieldValues = new Vector(values.size());
-                for (Iterator iterator = values.iterator(); iterator.hasNext();) {
-                    Object value = iterator.next();
-                    if (!(value instanceof Expression)){
-                        value = getFieldValue(value, session);
-                    }
-                    fieldValues.add(value);
+        if (objectValue instanceof @SuppressWarnings({"rawtypes"}) Collection values) {
+            // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
+            List<Object> fieldValues = new ArrayList<>(values.size());
+            for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
+                Object value = iterator.next();
+                if (!(value instanceof Expression)){
+                    value = getFieldValue(value, session);
                 }
-                return fieldValues;
+                fieldValues.add(value);
+            }
+            return fieldValues;
         } else {
-            if (! (objectValue instanceof Class) ){
+            if (! (objectValue instanceof @SuppressWarnings({"rawtypes"}) Class cls) ){
                 throw QueryException.invalidTypeExpression(objectValue.getClass().toString());
             }
 
-            ClassDescriptor descriptor = session.getDescriptor((Class)objectValue);
+            ClassDescriptor descriptor = session.getDescriptor(cls);
             if (descriptor == null){
                 throw QueryException.invalidTypeExpression(objectValue.getClass().toString());
             }
 
             if (descriptor.hasInheritance() && !descriptor.getInheritancePolicy().shouldUseClassNameAsIndicator()){
-                return descriptor.getInheritancePolicy().getClassIndicatorMapping().get(objectValue);
+                return descriptor.getInheritancePolicy().getClassIndicatorMapping().get(cls);
             } else {
-                return ((Class)objectValue).getName();
+                return cls.getName();
             }
         }
     }
@@ -265,7 +261,7 @@ public class ClassTypeExpression extends DataExpression {
      * additional expressions to normalizer both times, and the foreign key join
      * replaces the equal expression.
      */
-    public Expression normalize(ExpressionNormalizer normalizer, Vector foreignKeyJoinPointer) {
+    public Expression normalize(ExpressionNormalizer normalizer, List<?> foreignKeyJoinPointer) {
         if (hasBeenNormalized()) {
             return this;
         }
@@ -316,8 +312,8 @@ public class ClassTypeExpression extends DataExpression {
      * Return all the fields
      */
     @Override
-    public Vector getFields() {
-        Vector result = new Vector(1);
+    public List<DatabaseField> getFields() {
+        List<DatabaseField> result = new ArrayList<>(1);
         DatabaseField field = getField();
         if (field != null) {
             result.add(field);

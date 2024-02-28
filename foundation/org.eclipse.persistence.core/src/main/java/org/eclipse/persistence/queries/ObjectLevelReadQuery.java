@@ -3436,7 +3436,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             DatabaseMapping mapping = baseExpression.getMapping();
             if ((mapping != null) && mapping.isAggregateObjectMapping()) {
                 // Also prepare the nested aggregate queries, as aggregates do not have their own query.
-                baseExpression = objectExpression.getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(2));
+                baseExpression = objectExpression.getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList<>(2));
                 mapping = baseExpression.getMapping();
             }
             if ((mapping != null) && mapping.isForeignReferenceMapping()) {

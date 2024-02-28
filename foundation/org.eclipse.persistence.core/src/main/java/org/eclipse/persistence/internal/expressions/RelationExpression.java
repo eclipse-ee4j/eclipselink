@@ -35,7 +35,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:Used for all relation operators except for between.
@@ -101,7 +100,7 @@ public class RelationExpression extends CompoundExpression {
             this.firstChild.valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
         // The right value may be a Collection of values from an anyof, or an in.
-        if (rightValue instanceof Collection) {
+        if (rightValue instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
             // Vector may mean anyOf, or an IN.
             // CR#3240862, code for IN was incorrect, and was check for between which is a function not a relation.
             // Must check for IN and NOTIN, currently object comparison is not supported.
@@ -113,8 +112,8 @@ public class RelationExpression extends CompoundExpression {
                     throw QueryException.cannotConformExpression();
                 } else {
                     // Left may be single value or anyof vector.
-                    if (leftValue instanceof Vector) {
-                        return doesAnyOfLeftValuesConform((Vector)leftValue, rightValue, session);
+                    if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
+                        return doesAnyOfLeftValuesConform(leftVector, rightValue, session);
                     } else {
                         return this.operator.doesRelationConform(leftValue, rightValue);
                     }
@@ -122,13 +121,13 @@ public class RelationExpression extends CompoundExpression {
             }
 
             // Otherwise right vector means an anyof on right, so must check each value.
-            for (Iterator iterator = ((Vector) rightValue).iterator(); iterator.hasNext(); ) {
+            for (Iterator<?> iterator = collection.iterator(); iterator.hasNext(); ) {
                 Object tempRight = iterator.next();
 
                 // Left may also be an anyof some must check each left with each right.
-                if (leftValue instanceof Vector) {
+                if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
                     // If anyof the left match return true, otherwise keep checking.
-                    if (doesAnyOfLeftValuesConform((Vector)leftValue, tempRight, session)) {
+                    if (doesAnyOfLeftValuesConform(leftVector, tempRight, session)) {
                         return true;
                     }
                 }
@@ -142,8 +141,8 @@ public class RelationExpression extends CompoundExpression {
         }
 
         // Otherwise the left may also be a vector of values from an anyof.
-        if (leftValue instanceof Vector) {
-            return doesAnyOfLeftValuesConform((Vector)leftValue, rightValue, session);
+        if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
+            return doesAnyOfLeftValuesConform(leftVector, rightValue, session);
         }
 
         // Otherwise it is a simple value to value comparison, or simple object to object comparison.
@@ -154,7 +153,7 @@ public class RelationExpression extends CompoundExpression {
      * Conform in-memory the collection of left values with the right value for this expression.
      * This is used for anyOf support when the left side is a collection of values.
      */
-    protected boolean doesAnyOfLeftValuesConform(Vector leftValues, Object rightValue, AbstractSession session) {
+    protected boolean doesAnyOfLeftValuesConform(List<?> leftValues, Object rightValue, AbstractSession session) {
         // Check each left value with the right value.
         for (int index = 0; index < leftValues.size(); index++) {
             Object leftValue = leftValues.get(index);
@@ -656,7 +655,7 @@ public class RelationExpression extends CompoundExpression {
             if (right.isConstantExpression()) {
                 // Check for a constant with a List of objects, need to collect the ids (also allow a list of ids).
                 ConstantExpression constant = (ConstantExpression)right;
-                if (constant.getValue() instanceof Collection objects) {
+                if (constant.getValue() instanceof @SuppressWarnings({"rawtypes"}) Collection objects) {
                     List<Object> newObjects = new ArrayList<>(objects.size());
                     for (Object object : objects) {
                         if (object instanceof Expression) {

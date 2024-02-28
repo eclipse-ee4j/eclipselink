@@ -35,12 +35,12 @@ import java.util.Map;
  * @since TOPLink/Java 1.0
  */
 public class SQLUpdateAllStatement extends SQLModifyStatement {
-    protected Map m_updateClauses;
+    protected Map<DatabaseField, Object> m_updateClauses;
     protected Map<DatabaseField, String> databaseFieldsToTableAliases;
 
     protected SQLCall selectCallForExist;
     protected String tableAliasInSelectCallForExist;
-    protected Collection primaryKeyFields;
+    protected Collection<DatabaseField> primaryKeyFields;
     protected boolean shouldExtractWhereClauseFromSelectCallForExist;
 
     public void setSelectCallForExist(SQLCall selectCallForExist) {
@@ -55,16 +55,16 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
     public String getTableAliasInSelectCallForExist() {
         return tableAliasInSelectCallForExist;
     }
-    public void setPrimaryKeyFieldsForAutoJoin(Collection primaryKeyFields) {
+    public void setPrimaryKeyFieldsForAutoJoin(Collection<DatabaseField> primaryKeyFields) {
         this.primaryKeyFields = primaryKeyFields;
     }
-    public Collection getPrimaryKeyFieldsForAutoJoin() {
+    public Collection<DatabaseField> getPrimaryKeyFieldsForAutoJoin() {
         return primaryKeyFields;
     }
-    public void setUpdateClauses(Map updateClauses) {
+    public void setUpdateClauses(Map<DatabaseField, Object> updateClauses) {
         m_updateClauses = updateClauses;
     }
-    public Map getUpdateClauses() {
+    public Map<DatabaseField, Object> getUpdateClauses() {
         return m_updateClauses;
     }
     public void setDatabaseFieldsToTableAliases(Map<DatabaseField, String> databaseFieldsToTableAliases) {
@@ -151,7 +151,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
             // SET CLAUSE //
             writer.write(" SET ");
 
-            Iterator i = m_updateClauses.keySet().iterator();
+            Iterator<DatabaseField> i = m_updateClauses.keySet().iterator();
             boolean commaNeeded = false;
 
             while (i.hasNext()) {
@@ -159,13 +159,13 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                     writer.write(", ");
                 }
 
-                DatabaseField field = (DatabaseField)i.next();
+                DatabaseField field = i.next();
                 Object value = m_updateClauses.get(field);
 
                 writer.write(field.getNameDelimited(session.getPlatform()));
                 writer.write(" = ");
-                if(value instanceof Expression) {
-                    printer.printExpression((Expression)value);
+                if(value instanceof Expression expression) {
+                    printer.printExpression(expression);
                 } else {
                     // must be SQLCall
                     SQLCall selCall = (SQLCall)value;
@@ -200,7 +200,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
 
         // Auto join
         // Example: AND t0.EMP_ID = EMP_ID
-        Iterator it = getPrimaryKeyFieldsForAutoJoin().iterator();
+        Iterator<DatabaseField> it = getPrimaryKeyFieldsForAutoJoin().iterator();
         while(it.hasNext()) {
             if(!hasWhereClause) {
             // there is no where clause - should print WHERE
@@ -209,7 +209,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
             } else {
                 writer.write(" AND ");
             }
-            String fieldName = ((DatabaseField)it.next()).getNameDelimited(platform);
+            String fieldName = it.next().getNameDelimited(platform);
             if(tableAliasInSelectCall != null) {
                 writer.write(tableAliasInSelectCall);
                 writer.write('.');

@@ -1254,7 +1254,7 @@ public class ReportQuery extends ReadAllQuery {
      * Prepare a report query with a count defined on an object attribute.
      * Added to fix bug 3268040, addCount(objectAttribute) not supported.
      */
-    protected void prepareObjectAttributeCount(Map clonedExpressions) {
+    protected void prepareObjectAttributeCount(Map<Expression, Expression> clonedExpressions) {
         prepareObjectAttributeCount(getItems(), clonedExpressions);
     }
 
@@ -1264,7 +1264,7 @@ public class ReportQuery extends ReadAllQuery {
      * If the descriptor has a single pk, it is used, otherwise any pk is used if distinct, otherwise a subselect is used.
      * If the object was obtained through an outer join, then the subselect also will not work, so an error is thrown.
      */
-    private void prepareObjectAttributeCount(List<ReportItem> items, Map clonedExpressions) {
+    private void prepareObjectAttributeCount(List<ReportItem> items, Map<Expression, Expression> clonedExpressions) {
         int numOfReportItems = items.size();
         //gf675: need to loop through all items to fix all count(..) instances
         for (int i =0;i<numOfReportItems; i++){
@@ -1296,7 +1296,7 @@ public class ReportQuery extends ReadAllQuery {
      * Prepare the receiver for being printed inside a subselect.
      * This prepares the statement but not the call.
      */
-    public synchronized void prepareSubSelect(AbstractSession session, AbstractRecord translationRow, Map clonedExpressions) throws QueryException {
+    public synchronized void prepareSubSelect(AbstractSession session, AbstractRecord translationRow, Map<Expression, Expression> clonedExpressions) throws QueryException {
         if (isPrepared()) {
             return;
         }

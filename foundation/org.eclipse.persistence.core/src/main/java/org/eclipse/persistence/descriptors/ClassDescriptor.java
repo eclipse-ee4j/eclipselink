@@ -3405,7 +3405,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             getQueryManager().setInternalMultipleTableJoinExpression(joinExpression);
         }
         if (getQueryManager().hasCustomMultipleTableJoinExpression()) {
-            Map tablesJoinExpressions = SQLSelectStatement.mapTableToExpression(joinExpression, getTables());
+            Map<DatabaseTable, Expression> tablesJoinExpressions = SQLSelectStatement.mapTableToExpression(joinExpression, getTables());
             getQueryManager().getTablesJoinExpressions().putAll(tablesJoinExpressions);
         }
         if (isChild && (additionalTablesSize > 0)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,7 +75,7 @@ public class ExpressionNormalizer {
      */
     public void addSubSelectExpression(SubSelectExpression subSelectExpression) {
         if (this.subSelectExpressions == null) {
-            this.subSelectExpressions = new ArrayList(4);
+            this.subSelectExpressions = new ArrayList<>(4);
         }
         if (!this.subSelectExpressions.contains(subSelectExpression)) {
             this.subSelectExpressions.add(subSelectExpression);
@@ -114,7 +114,7 @@ public class ExpressionNormalizer {
      * Assumes encounteredSubSelectExpressions() true.
      * For CR#4223.
      */
-    public void normalizeSubSelects(Map clonedExpressions) {
+    public void normalizeSubSelects(Map<Expression, Expression> clonedExpressions) {
         for (SubSelectExpression next : this.subSelectExpressions) {
             next.normalizeSubSelect(this, clonedExpressions);
         }

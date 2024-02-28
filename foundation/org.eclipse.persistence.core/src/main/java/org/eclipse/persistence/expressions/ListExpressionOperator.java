@@ -15,7 +15,7 @@
 //     tware - initial API and implementation from for JPA 2.0 criteria API
 package org.eclipse.persistence.expressions;
 
-import org.eclipse.persistence.internal.helper.Helper;
+import java.util.Arrays;
 
 /**
  * INTERNAL:
@@ -57,10 +57,10 @@ public class ListExpressionOperator extends ExpressionOperator {
         if(operator == null)
             return;
 
-        if (operator instanceof ListExpressionOperator){
-            ((ListExpressionOperator)operator).startStrings = Helper.copyStringArray(startStrings);
-            ((ListExpressionOperator)operator).separators = Helper.copyStringArray(separators);
-            ((ListExpressionOperator)operator).terminationStrings = Helper.copyStringArray(terminationStrings);
+        if (operator instanceof ListExpressionOperator listExpressionOperator){
+            listExpressionOperator.startStrings = startStrings == null ? null : Arrays.copyOf(startStrings, startStrings.length);
+            listExpressionOperator.separators = separators == null ? null : Arrays.copyOf(separators, separators.length);
+            listExpressionOperator.terminationStrings = terminationStrings == null ? null : Arrays.copyOf(terminationStrings, terminationStrings.length);
         }
     }
 

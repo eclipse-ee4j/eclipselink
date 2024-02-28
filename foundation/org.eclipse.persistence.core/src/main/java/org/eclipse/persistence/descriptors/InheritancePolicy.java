@@ -289,7 +289,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         selectStatement.addTable(classIndicatorField.getTable());
         selectStatement.addField(getClassIndicatorField());
         // 2612538 - the default size of Map (32) is appropriate
-        Map clonedExpressions = new IdentityHashMap();
+        Map<Expression, Expression> clonedExpressions = new IdentityHashMap<>();
         selectStatement.setWhereClause(((ExpressionQueryMechanism)query.getQueryMechanism()).buildBaseSelectionCriteria(false, clonedExpressions));
         appendWithAllSubclassesExpression(selectStatement);
         selectStatement.setTranslationRow(query.getTranslationRow());
