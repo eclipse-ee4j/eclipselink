@@ -347,7 +347,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             // Only store the index if this is the local expression to avoid it being added multiple times.
             // This means the base local expression must be first on the list, followed by nested expressions.
             final ObjectExpression localExpression = objectExpression
-                    .getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(1));
+                    .getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList<>(1));
             if ((localExpression == objectExpression) && (mapping != null) && mapping.isForeignReferenceMapping()) {
                 getJoinedMappingIndexes_().put(mapping, currentIndex);
             }
@@ -627,7 +627,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     protected boolean isMappingInJoinedExpressionList(DatabaseMapping attributeMapping, List joinedExpressionList) {
         for (Iterator joinEnum = joinedExpressionList.iterator(); joinEnum.hasNext();) {
-            List aggregateMappings = new ArrayList();
+            List<DatabaseMapping> aggregateMappings = new ArrayList<>();
             ObjectExpression expression = ((ObjectExpression)joinEnum.next()).getFirstNonAggregateExpressionAfterExpressionBuilder(aggregateMappings);
             if (attributeMapping.isAggregateObjectMapping() && aggregateMappings.contains(attributeMapping)) {
                 return true;

@@ -52,7 +52,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * Represents expression on query keys or mappings.
@@ -181,12 +180,12 @@ public class QueryKeyExpression extends ObjectExpression {
      * Each of the additional tables mapped to expressions that joins it.
      */
     @Override
-    public Map additionalExpressionCriteriaMap() {
+    public Map<DatabaseTable, Expression> additionalExpressionCriteriaMap() {
         if (getDescriptor() == null) {
             return null;
         }
 
-        HashMap tablesJoinExpressions = new HashMap();
+        Map<DatabaseTable, Expression> tablesJoinExpressions = new HashMap<>();
         List<DatabaseTable> tables = getDescriptor().getTables();
         // skip the main table - start with i=1
         int tablesSize = tables.size();
@@ -279,7 +278,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (this.index != null) {
             this.index = (IndexExpression)this.index.copiedVersionFrom(alreadyDone);
@@ -424,10 +423,10 @@ public class QueryKeyExpression extends ObjectExpression {
         if (mapping != null) {
             if (mapping.isAbstractDirectMapping() || mapping.isDirectCollectionMapping()) {
                 // CR#3623207, check for IN Collection here not in mapping.
-                if (objectValue instanceof Collection values) {
+                if (objectValue instanceof @SuppressWarnings({"rawtypes"}) Collection values) {
                     // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
-                    Vector fieldValues = new Vector(values.size());
-                    for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+                    List<Object> fieldValues = new ArrayList<>(values.size());
+                    for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                         Object value = iterator.next();
                         if (!(value instanceof Expression)){
                             value = getFieldValue(value, session);
@@ -442,14 +441,14 @@ public class QueryKeyExpression extends ObjectExpression {
                         fieldValue = ((DirectCollectionMapping)mapping).getFieldValue(objectValue, session);
                     }
                 }
-            } else if ((objectValue instanceof Collection) && (mapping.isForeignReferenceMapping())) {
+            } else if ((objectValue instanceof @SuppressWarnings({"rawtypes"}) Collection values) && (mapping.isForeignReferenceMapping())) {
                 // Was an IN with a collection of objects, extract their ids.
-                List ids = new ArrayList();
-                for (Object object : ((Collection)objectValue)) {
+                List<Object> ids = new ArrayList<>();
+                for (Object object : values) {
                     if ((mapping.getReferenceDescriptor() != null) && (mapping.getReferenceDescriptor().getJavaClass().isInstance(object))) {
                         Object id = mapping.getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, session);
-                        if (id instanceof CacheId) {
-                            id = Arrays.asList(((CacheId)id).getPrimaryKey());
+                        if (id instanceof CacheId cId) {
+                            id = Arrays.asList((cId).getPrimaryKey());
                         }
                         ids.add(id);
                     } else {
@@ -527,9 +526,9 @@ public class QueryKeyExpression extends ObjectExpression {
         if ((getMapping() != null) && getMapping().isNestedTableMapping()) {
             List<DatabaseTable> nestedTable = null;
             if (shouldQueryToManyRelationship()) {
-                nestedTable = new ArrayList(super.getOwnedTables());
+                nestedTable = new ArrayList<>(super.getOwnedTables());
             } else {
-                nestedTable = new ArrayList(1);
+                nestedTable = new ArrayList<>(1);
             }
 
             nestedTable.add(new NestedTable(this));
@@ -1092,10 +1091,9 @@ public class QueryKeyExpression extends ObjectExpression {
 
             // If from an anyof the object will be a collection of values,
             // A new vector must union the object values and the values extracted from it.
-            if (object instanceof Vector) {
-                Vector comparisonVector = new Vector(((Vector)object).size() + 2);
-                for (Iterator iterator1 = ((Vector) object).iterator();
-                     iterator1.hasNext();) {
+            if (object instanceof @SuppressWarnings({"rawtypes"}) List v) {
+                List<Object> comparisonVector = new ArrayList<>(v.size() + 2);
+                for (Iterator<?> iterator1 = v.iterator(); iterator1.hasNext();) {
                     Object vectorObject = iterator1.next();
                     if (vectorObject == null) {
                         comparisonVector.add(null);
@@ -1103,11 +1101,8 @@ public class QueryKeyExpression extends ObjectExpression {
                         Object valueOrValues = valuesFromCollection(vectorObject, session, valueHolderPolicy, isObjectUnregistered);
 
                         // If a collection of values were extracted union them.
-                        if (valueOrValues instanceof Vector) {
-                            for (Iterator iterator = ((Vector) valueOrValues).iterator();
-                                 iterator.hasNext();) {
-                                comparisonVector.add(iterator.next());
-                            }
+                        if (valueOrValues instanceof @SuppressWarnings({"rawtypes"}) List vv) {
+                            comparisonVector.addAll(vv);
                         } else {
                             comparisonVector.add(valueOrValues);
                         }
@@ -1183,7 +1178,8 @@ public class QueryKeyExpression extends ObjectExpression {
                 // For CR 2612601, try to partially replace the result with already
                 // registered objects.
                 if (isObjectUnregistered && (uow.getCloneMapping().get(object) == null)) {
-                    Vector objectValues = (Vector)valueToIterate;
+                    @SuppressWarnings({"unchecked"})
+                    List<Object> objectValues = (List<Object>) valueToIterate;
                     for (int i = 0; i < objectValues.size(); i++) {
                         Object original = objectValues.get(i);
                         Object clone = uow.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(original);

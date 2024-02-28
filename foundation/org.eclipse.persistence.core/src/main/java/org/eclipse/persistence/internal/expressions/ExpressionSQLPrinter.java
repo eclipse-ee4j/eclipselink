@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -190,8 +190,8 @@ public class ExpressionSQLPrinter {
     }
 
     public void printPrimitive(Object value, Boolean canBind) {
-        if (value instanceof Collection) {
-            printValuelist((Collection)value, canBind);
+        if (value instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
+            printValuelist(collection, canBind);
             return;
         }
 
@@ -220,20 +220,20 @@ public class ExpressionSQLPrinter {
         }
     }
 
-    public void printValuelist(Collection<Object> values, Boolean canBind) {
+    public void printValuelist(Collection<?> values, Boolean canBind) {
         try {
             getWriter().write("(");
             if (values == null || values.isEmpty()) {
                 getWriter().write(NULL_STRING);
             } else {
-                Iterator<Object> valuesEnum = values.iterator();
+                Iterator<?> valuesEnum = values.iterator();
                 while (valuesEnum.hasNext()) {
                     Object value = valuesEnum.next();
                     // Support nested arrays for IN.
-                    if (value instanceof Collection) {
-                        printValuelist((Collection) value, canBind);
-                    } else if (value instanceof Expression) {
-                        ((Expression) value).printSQL(this);
+                    if (value instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
+                        printValuelist(collection, canBind);
+                    } else if (value instanceof Expression expression) {
+                        expression.printSQL(this);
                     } else {
                         session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value, canBind);
                     }
@@ -251,17 +251,17 @@ public class ExpressionSQLPrinter {
     /*
      * Same as printValuelist, but allows for collections containing expressions recursively
      */
-    public void printList(Collection<Object> values, Boolean canBind) {
+    public void printList(Collection<?> values, Boolean canBind) {
         try {
             getWriter().write("(");
             if (values == null || values.isEmpty()) {
                 getWriter().write(NULL_STRING);
             } else {
-                Iterator<Object> valuesEnum = values.iterator();
+                Iterator<?> valuesEnum = values.iterator();
                 while (valuesEnum.hasNext()) {
                     Object value = valuesEnum.next();
-                    if (value instanceof Expression) {
-                        ((Expression) value).printSQL(this);
+                    if (value instanceof Expression expression) {
+                        expression.printSQL(this);
                     } else {
                         session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value, canBind);
                     }

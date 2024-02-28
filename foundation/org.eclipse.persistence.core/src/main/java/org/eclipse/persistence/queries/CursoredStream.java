@@ -160,7 +160,7 @@ public class CursoredStream extends Cursor {
             SQLSelectStatement selectStatement = new SQLSelectStatement();
 
             // 2612538 - the default size of Map (32) is appropriate
-            Map clonedExpressions = new IdentityHashMap();
+            Map<Expression, Expression> clonedExpressions = new IdentityHashMap<>();
             selectStatement.setWhereClause(((ExpressionQueryMechanism)this.query.getQueryMechanism()).buildBaseSelectionCriteria(false, clonedExpressions));
 
             ClassDescriptor descriptor = this.query.getDescriptor();

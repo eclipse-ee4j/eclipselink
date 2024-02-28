@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import java.util.Map;
  * Holder class storing a QueryKeyExpression representing an outer join
  * plus some data calculated by method appendFromClauseForOuterJoin.
  */
-public class OuterJoinExpressionHolder implements Comparable, Serializable
+public class OuterJoinExpressionHolder implements Comparable<OuterJoinExpressionHolder>, Serializable
 {
     final ObjectExpression joinExpression;
     DatabaseTable targetTable;
@@ -155,10 +155,10 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
                         table = getTableAliases().get(alias);
                     }
                     if (this.additionalTargetAliases == null) {
-                        this.additionalTargetAliases = new ArrayList();
-                        this.additionalTargetTables = new ArrayList();
-                        this.additionalJoinOnExpression = new ArrayList();
-                        this.additionalTargetIsDescriptorTable = new ArrayList();
+                        this.additionalTargetAliases = new ArrayList<>();
+                        this.additionalTargetTables = new ArrayList<>();
+                        this.additionalJoinOnExpression = new ArrayList<>();
+                        this.additionalTargetIsDescriptorTable = new ArrayList<>();
                     }
                     this.additionalTargetAliases.add(alias);
                     this.additionalTargetTables.add(table);
@@ -184,7 +184,7 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
             return;
         }
 
-        this.indexList = new ArrayList();
+        this.indexList = new ArrayList<>();
         OuterJoinExpressionHolder baseHolder = targetAliasToHolders.get(this.sourceAlias);
         if(baseHolder != null) {
             baseHolder.createIndexList(targetAliasToHolders, aliasToIndexes);
@@ -205,11 +205,11 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
      * {2, 1} < {2, 2}; {2, 1} < {3}; {2, 1} > {2}
      */
     @Override
-    public int compareTo(Object other) {
+    public int compareTo(OuterJoinExpressionHolder other) {
         if(other == this) {
             return 0;
         }
-        List<Integer> otherIndexList = ((OuterJoinExpressionHolder)other).indexList;
+        List<Integer> otherIndexList = other.indexList;
         int nMinSize = this.indexList.size();
         int nCompare = -1;
         int nOtherSize = otherIndexList.size();
@@ -231,7 +231,7 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
         return nCompare;
     }
 
-    void printAdditionalJoins(ExpressionSQLPrinter printer, List<DatabaseTable> outerJoinedAliases, Collection aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables)  throws IOException {
+    void printAdditionalJoins(ExpressionSQLPrinter printer, List<DatabaseTable> outerJoinedAliases, Collection<DatabaseTable> aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables)  throws IOException {
         Writer writer = printer.getWriter();
         AbstractSession session = printer.getSession();
 

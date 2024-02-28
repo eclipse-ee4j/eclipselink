@@ -20,10 +20,11 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * Used for wrapping collection of values or expressions.
@@ -41,7 +42,7 @@ public class CollectionExpression extends ConstantExpression {
         if(this.localBase != null) {
             value = this.localBase.getFieldValue(value, getSession());
         }
-        printer.printList((Collection)value, this.canBind);
+        printer.printList((Collection<?>) value, this.canBind);
     }
 
     /**
@@ -51,12 +52,12 @@ public class CollectionExpression extends ConstantExpression {
      */
     @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
-        if (this.value instanceof Collection values) {
-            Vector fieldValues = new Vector(values.size());
-            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+        if (this.value instanceof @SuppressWarnings({"rawtypes"}) Collection values) {
+            List<Object> fieldValues = new ArrayList<>(values.size());
+            for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                 Object value = iterator.next();
-                if (value instanceof Expression){
-                    value = ((Expression)value).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
+                if (value instanceof Expression expression){
+                    value = expression.valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
                 } else if(this.localBase != null) {
                     value = this.localBase.getFieldValue(value, session);
                 }
@@ -74,11 +75,11 @@ public class CollectionExpression extends ConstantExpression {
     @Override
     public void setLocalBase(Expression e) {
         super.setLocalBase(e);
-        if (this.value instanceof Collection values) {
-            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+        if (this.value instanceof @SuppressWarnings({"rawtypes"}) Collection values) {
+            for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();
-                if (val instanceof Expression){
-                    ((Expression)val).setLocalBase(e);
+                if (val instanceof Expression expression){
+                    expression.setLocalBase(e);
                 }
             }
         }
@@ -89,14 +90,14 @@ public class CollectionExpression extends ConstantExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
-        if (this.value instanceof Collection values) {
-            Vector newValues = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(values.size());
-            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+        if (this.value instanceof @SuppressWarnings({"rawtypes"}) Collection values) {
+            List<Object> newValues = new ArrayList<>(values.size());
+            for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();
-                if (val instanceof Expression){
-                    newValues.add(((Expression)val).copiedVersionFrom(alreadyDone));
+                if (val instanceof Expression expression){
+                    newValues.add((expression).copiedVersionFrom(alreadyDone));
                 } else {
                     newValues.add(val);
                 }

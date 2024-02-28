@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * @author Andrei Ilitchev
@@ -38,18 +37,18 @@ public abstract class SQLModifyAllStatementForTempTable extends SQLModifyStateme
     public static final int UPDATE_ORIGINAL_TABLE = 2;
     public static final int CLEANUP_TEMP_TABLE = 3;
 
-    protected Collection allFields;
+    protected Collection<DatabaseField> allFields;
     protected List<DatabaseField> primaryKeyFields;
     protected SQLCall selectCall;
     protected int mode;
 
-    abstract protected Collection getUsedFields();
+    abstract protected Collection<DatabaseField> getUsedFields();
     abstract protected void writeUpdateOriginalTable(AbstractSession session, Writer writer) throws IOException;
 
-    public void setAllFields(Collection allFields) {
+    public void setAllFields(Collection<DatabaseField> allFields) {
         this.allFields = allFields;
     }
-    public Collection getAllFields() {
+    public Collection<DatabaseField> getAllFields() {
         return allFields;
     }
     public void setSelectCall(SQLCall selectCall) {
@@ -84,9 +83,9 @@ public abstract class SQLModifyAllStatementForTempTable extends SQLModifyStateme
         try {
             if(mode == CREATE_TEMP_TABLE) {
                 session.getPlatform().writeCreateTempTableSql(writer, table, session,
-                                                new Vector(getPrimaryKeyFields()),
+                                                getPrimaryKeyFields(),
                                                 getUsedFields(),
-                                                new Vector(getAllFields()));
+                                                getAllFields());
             } else if(mode == INSERT_INTO_TEMP_TABLE) {
                 session.getPlatform().writeInsertIntoTableSql(writer, table, getUsedFields());
 

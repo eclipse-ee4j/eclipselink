@@ -23,8 +23,9 @@ import org.eclipse.persistence.queries.SQLCall;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Print INSERT statement.
@@ -55,9 +56,9 @@ public class SQLInsertStatement extends SQLModifyStatement {
             writer.write(getTable().getQualifiedNameDelimited(session.getPlatform()));
             writer.write(" (");
 
-            Vector fieldsForTable = new Vector();
-            for (Enumeration fieldsEnum = getModifyRow().keys(); fieldsEnum.hasMoreElements();) {
-                DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
+            List<DatabaseField> fieldsForTable = new ArrayList<>();
+            for (Enumeration<DatabaseField> fieldsEnum = getModifyRow().keys(); fieldsEnum.hasMoreElements();) {
+                DatabaseField field = fieldsEnum.nextElement();
                 if (field.getTable().equals(getTable()) || (!field.hasTableName())) {
                     fieldsForTable.add(field);
                 }
@@ -68,7 +69,7 @@ public class SQLInsertStatement extends SQLModifyStatement {
             }
 
             for (int i = 0; i < fieldsForTable.size(); i++) {
-                writer.write(((DatabaseField)fieldsForTable.get(i)).getNameDelimited(session.getPlatform()));
+                writer.write(fieldsForTable.get(i).getNameDelimited(session.getPlatform()));
                 if ((i + 1) < fieldsForTable.size()) {
                     writer.write(", ");
                 }
@@ -76,7 +77,7 @@ public class SQLInsertStatement extends SQLModifyStatement {
             writer.write(") VALUES (");
 
             for (int i = 0; i < fieldsForTable.size(); i++) {
-                DatabaseField field = (DatabaseField)fieldsForTable.get(i);
+                DatabaseField field = fieldsForTable.get(i);
                 call.appendModify(writer, field);
                 if ((i + 1) < fieldsForTable.size()) {
                     writer.write(", ");

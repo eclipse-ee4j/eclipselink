@@ -23,8 +23,10 @@ import org.eclipse.persistence.queries.SQLCall;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -57,7 +59,7 @@ public class SQLUpdateStatement extends SQLModifyStatement {
 
             ExpressionSQLPrinter printer = null;
 
-            Vector fieldsForTable = new Vector();
+            List<DatabaseField> fieldsForTable = new ArrayList<>();
             Iterator iterator = getModifyRow().getValues().iterator();
             Vector values = new Vector();
             for (Enumeration fieldsEnum = getModifyRow().keys(); fieldsEnum.hasMoreElements();) {
@@ -74,7 +76,7 @@ public class SQLUpdateStatement extends SQLModifyStatement {
             }
 
             for (int i = 0; i < fieldsForTable.size(); i++) {
-                DatabaseField field = (DatabaseField)fieldsForTable.get(i);
+                DatabaseField field = fieldsForTable.get(i);
                 writer.write(field.getNameDelimited(session.getPlatform()));
                 writer.write(" = ");
                 if(values.get(i) instanceof Expression exp) {
@@ -95,7 +97,7 @@ public class SQLUpdateStatement extends SQLModifyStatement {
                 }
             }
 
-            if (!(getWhereClause() == null)) {
+            if (getWhereClause() != null) {
                 writer.write(" WHERE ");
                 if(printer == null) {
                     printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false, getBuilder());

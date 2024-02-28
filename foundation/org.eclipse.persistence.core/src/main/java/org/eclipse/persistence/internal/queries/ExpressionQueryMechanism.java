@@ -293,7 +293,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      */
     protected SQLSelectStatement buildConcreteSelectStatement() {
         // 2612538 - the default size of Map (32) is appropriate
-        Map clonedExpressions = new IdentityHashMap();
+        Map<Expression, Expression> clonedExpressions = new IdentityHashMap<>();
         SQLSelectStatement selectStatement = buildBaseSelectStatement(false, clonedExpressions);
 
         ClassDescriptor descriptor = getDescriptor();
@@ -592,7 +592,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // From bug 2612185 Remember the identity hashtable used in cloning the selection criteria even in the normal case
         // for performance, in case subqueries need it, or for order by expressions.
         // 2612538 - the default size of Map (32) is appropriate
-        Map clonedExpressions = new IdentityHashMap();
+        Map<Expression, Expression> clonedExpressions = new IdentityHashMap<>();
         SQLSelectStatement selectStatement = buildBaseSelectStatement(false, clonedExpressions);
 
         ObjectLevelReadQuery query = ((ObjectLevelReadQuery)getQuery());
@@ -655,7 +655,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         ReportQuery reportQuery = (ReportQuery)getQuery();
         // For bug 2612185: Need to know which original bases were mapped to which cloned bases.
         // For sub-seclets the expressions have already been clones, and identity must be maintained with the outer expression.
-        Map clonedExpressions = isSubSelect ? null : new IdentityHashMap();
+        Map<Expression, Expression> clonedExpressions = isSubSelect ? null : new IdentityHashMap<>();
         SQLSelectStatement selectStatement = buildBaseSelectStatement(isSubSelect, clonedExpressions, shouldUseAdditionalJoinExpression);
         if (reportQuery.hasGroupByExpressions()) {
             selectStatement.setGroupByExpressions(cloneExpressions(reportQuery.getGroupByExpressions(), clonedExpressions));
@@ -782,7 +782,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     protected SQLUpdateAllStatement buildUpdateAllStatement(DatabaseTable table,
                 Map<DatabaseField, Expression> databaseFieldsToValues,
                 SQLCall selectCallForExist, SQLSelectStatement selectStatementForExist,
-                Collection primaryKeyFields)
+                Collection<DatabaseField> primaryKeyFields)
     {
         SQLUpdateAllStatement updateAllStatement = new SQLUpdateAllStatement();
         updateAllStatement.setTable(table);

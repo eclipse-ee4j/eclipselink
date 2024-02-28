@@ -26,9 +26,9 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Field expressions represent a field of a table.
@@ -159,8 +159,8 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * If there are any fields associated with this expression, return them
      */
-    public Vector getClonedFields() {
-        Vector result = new Vector(1);
+    public List<DatabaseField> getClonedFields() {
+        List<DatabaseField> result = new ArrayList<>(1);
         result.add(getField().clone());
         return result;
     }
@@ -178,8 +178,8 @@ public class FieldExpression extends DataExpression {
      * Return all the fields
      */
     @Override
-    public Vector getFields() {
-        Vector result = new Vector(1);
+    public List<DatabaseField> getFields() {
+        List<DatabaseField> result = new ArrayList<>(1);
         result.add(getField());
         return result;
     }

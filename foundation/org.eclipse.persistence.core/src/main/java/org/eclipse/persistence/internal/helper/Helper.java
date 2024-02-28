@@ -777,48 +777,6 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Copy an array of strings to a new array
-     */
-    public static String[] copyStringArray(String[] original){
-        if (original == null){
-            return null;
-        }
-        int length = original.length;
-        String[] copy = new String[length];
-        System.arraycopy(original, 0, copy, 0, length);
-        return copy;
-    }
-
-
-    /**
-     * Copy an array of int to a new array
-     */
-    public static int[] copyIntArray(int[] original){
-        if (original == null){
-            return null;
-        }
-        int length = original.length;
-        int[] copy = new int[length];
-        System.arraycopy(original, 0, copy, 0, length);
-        return copy;
-    }
-
-    /**
-     * Copy an array of boolean to a new array
-     * @param original
-     * @return
-     */
-    public static boolean[] copyBooleanArray(boolean[] original){
-        if (original == null){
-            return null;
-        }
-        int length = original.length;
-        boolean[] copy = new boolean[length];
-        System.arraycopy(original, 0, copy, 0, length);
-        return copy;
-    }
-
-    /**
      * Return the name of the "current working directory".
      */
     public static String currentWorkingDirectory() {

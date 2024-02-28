@@ -18,8 +18,8 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_FILTER;
 import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_NN;
@@ -134,7 +134,7 @@ public final class SpatialExpressionFactory {
      * @param operator the ordinal of the operator
      */
     public static Expression getSpatialExpression(int operator, Expression geom1, Object geom2, String params) {
-        List<Object> vParameters = new Vector<>(2);
+        List<Object> vParameters = new ArrayList<>(2);
         vParameters.add(geom2);
         //Bug 5885276, the empty string either like " " or "" needs to be substituted
         //by null prior to passing to Geometry call.

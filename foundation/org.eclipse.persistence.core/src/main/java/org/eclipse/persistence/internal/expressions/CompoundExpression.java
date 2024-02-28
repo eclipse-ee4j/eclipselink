@@ -293,7 +293,7 @@ public abstract class CompoundExpression extends Expression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (this.firstChild != null) {
             setFirstChild(this.firstChild.copiedVersionFrom(alreadyDone));

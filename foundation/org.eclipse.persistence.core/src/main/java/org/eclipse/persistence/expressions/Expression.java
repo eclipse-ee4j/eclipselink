@@ -1113,7 +1113,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Expression copiedVersionFrom(Map alreadyDone) {
+    public Expression copiedVersionFrom(Map<Expression, Expression> alreadyDone) {
         if (alreadyDone == null) {
             // For sub-selects no cloning is done.
             return this;
@@ -3899,7 +3899,7 @@ public abstract class Expression implements Serializable, Cloneable {
         return anOperator.expressionForArguments(this, args);
     }
 
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
     }
 
     /**
@@ -3981,7 +3981,7 @@ public abstract class Expression implements Serializable, Cloneable {
         return getFunction(ExpressionOperator.Ref);
     }
 
-    protected Expression registerIn(Map alreadyDone) {
+    protected Expression registerIn(Map<Expression, Expression> alreadyDone) {
         Expression copy = shallowClone();
         alreadyDone.put(this, copy);
         copy.postCopyIn(alreadyDone);
@@ -3995,7 +3995,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression replace(Object stringToReplace, Object stringToReplaceWith) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Replace);
-        List args = new ArrayList(2);
+        List<Object> args = new ArrayList<>(2);
         args.add(stringToReplace);
         args.add(stringToReplaceWith);
         return anOperator.expressionForArguments(this, args);
