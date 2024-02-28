@@ -1370,11 +1370,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
     }
 
     protected boolean isTimeClass(MetadataClass cls) {
-        return cls.extendsClass(java.time.LocalDateTime.class) ||
+        return cls.extendsClass(java.time.Instant.class) ||
+            cls.extendsClass(java.time.LocalDateTime.class) ||
             cls.extendsClass(java.time.LocalDate.class) ||
             cls.extendsClass(java.time.LocalTime.class) ||
             cls.extendsClass(java.time.OffsetDateTime.class) ||
-            cls.extendsClass(java.time.OffsetTime.class);
+            cls.extendsClass(java.time.OffsetTime.class) ||
+            cls.extendsClass(java.time.Year.class);
     }
 
     /**

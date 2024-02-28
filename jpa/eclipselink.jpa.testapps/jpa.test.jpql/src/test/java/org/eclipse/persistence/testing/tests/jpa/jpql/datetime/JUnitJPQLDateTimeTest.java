@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,8 @@ import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimePopulator;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
 
+import java.time.Instant;
+import java.time.Year;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -58,6 +60,8 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLDateTimeTest("testTimeWithCal"));
         suite.addTest(new JUnitJPQLDateTimeTest("testTimestampWithCal"));
         suite.addTest(new JUnitJPQLDateTimeTest("testCalendar"));
+        suite.addTest(new JUnitJPQLDateTimeTest("testInstant"));
+        suite.addTest(new JUnitJPQLDateTimeTest("testYear"));
         suite.addTest(new JUnitJPQLDateTimeTest("testTimestampGreaterThan"));
         suite.addTest(new JUnitJPQLDateTimeTest("testTimestampLessThan"));
         suite.addTest(new JUnitJPQLDateTimeTest("testTimestampIn"));
@@ -240,6 +244,29 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.calendar = :calendar").
             setParameter("calendar", cal, TemporalType.TIMESTAMP).
             getResultList();
+
+        assertEquals("There should be one result", 1, result.size());
+    }
+
+    public void testInstant() {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(1901, 11, 31, 23, 59, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        Instant instant = cal.toInstant();
+
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.instant = :instant").
+                setParameter("instant", instant).
+                getResultList();
+
+        assertEquals("There should be one result", 1, result.size());
+    }
+
+    public void testYear() {
+        Year year = Year.of(1901);
+
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.year = :year").
+                setParameter("year", year).
+                getResultList();
 
         assertEquals("There should be one result", 1, result.size());
     }
