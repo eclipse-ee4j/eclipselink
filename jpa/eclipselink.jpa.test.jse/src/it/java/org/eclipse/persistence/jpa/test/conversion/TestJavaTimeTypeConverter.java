@@ -504,7 +504,7 @@ public class TestJavaTimeTypeConverter {
 
     @Test
     public void timeConvertSqlDateToInstant() {
-        java.sql.Date sqlDate = java.sql.Date.valueOf("2024-02-27");
+        java.sql.Date sqlDate = new java.sql.Date(1708988400000L);
 
         Instant instant = cm.convertObject(sqlDate, ClassConstants.TIME_INSTANT);
 
