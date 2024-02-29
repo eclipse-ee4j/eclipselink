@@ -696,6 +696,10 @@ public class XRServiceFactory  {
         @Override
         public String getPersistenceProviderClassName() { return null; }
         @Override
+        public String getScopeAnnotationName() { return null; }
+        @Override
+        public List<String> getQualifierAnnotationNames() { return null; }
+        @Override
         public DataSource getNonJtaDataSource() { return null; }
         @Override
         public ClassLoader getNewTempClassLoader() { return xrdecl; }
