@@ -1230,7 +1230,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 targetQuery.setIsExecutionClone(true);
             }
             if (targetQuery.getSelectionCriteria() == getSelectionQuery().getSelectionCriteria()) {
-                targetQuery.setSelectionCriteria((Expression)targetQuery.getSelectionCriteria().clone());
+                targetQuery.setSelectionCriteria(targetQuery.getSelectionCriteria().clone());
             }
             if (sourceQuery.getSession().getAsOfClause() != null) {
                 ((ObjectLevelReadQuery)targetQuery).setAsOfClause(sourceQuery.getSession().getAsOfClause());

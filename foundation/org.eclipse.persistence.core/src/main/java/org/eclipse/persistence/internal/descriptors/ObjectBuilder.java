@@ -4611,7 +4611,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 SQLSelectStatement sqlStatement = new SQLSelectStatement();
                 sqlStatement.addTable(table);
                 if (table == this.descriptor.getTables().get(0)) {
-                    sqlStatement.setWhereClause((Expression)getPrimaryKeyExpression().clone());
+                    sqlStatement.setWhereClause(getPrimaryKeyExpression().clone());
                 } else {
                     sqlStatement.setWhereClause(buildPrimaryKeyExpression(table));
                 }

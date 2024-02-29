@@ -42,6 +42,9 @@ public abstract class SQLModifyAllStatementForTempTable extends SQLModifyStateme
     protected SQLCall selectCall;
     protected int mode;
 
+    public SQLModifyAllStatementForTempTable() {
+    }
+
     abstract protected Collection<DatabaseField> getUsedFields();
     abstract protected void writeUpdateOriginalTable(AbstractSession session, Writer writer) throws IOException;
 

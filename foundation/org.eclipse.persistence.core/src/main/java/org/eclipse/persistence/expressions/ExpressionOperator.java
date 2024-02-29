@@ -995,10 +995,10 @@ public class ExpressionOperator implements Serializable {
                 return this.selector == NotEqual;
             }
             if (left instanceof Number
-                    && left instanceof @SuppressWarnings({"rawtypes"}) Comparable c1 && right instanceof @SuppressWarnings({"rawtypes"}) Comparable c2
+                    && left instanceof Comparable<?> c1 && right instanceof Comparable<?> c2
                     && left.getClass().equals(right.getClass())) {
-                @SuppressWarnings({"unchecked"})
-                int diff = c1.compareTo(c2);
+                @SuppressWarnings({"unchecked", "rawtypes"})
+                int diff = ((Comparable) c1).compareTo(c2);
                 return (diff == 0) == (this.selector == Equal);
             }
             if ((left instanceof Number leftNumber && right instanceof Number rightNumber) && (left.getClass() != right.getClass())) {
@@ -1075,20 +1075,20 @@ public class ExpressionOperator implements Serializable {
             }
         }
         // Between
-        else if ((this.selector == Between) && (right instanceof @SuppressWarnings({"rawtypes"}) List v) && (v.size() == 2)) {
+        else if ((this.selector == Between) && (right instanceof List<?> v && v.size() == 2)) {
             return conformBetween(left, right);
-        } else if ((this.selector == NotBetween) && (right instanceof @SuppressWarnings({"rawtypes"}) List v) && (v.size() == 2)) {
+        } else if ((this.selector == NotBetween) && (right instanceof List<?> v && v.size() == 2)) {
             return !conformBetween(left, right);
         }
         // In
-        else if ((this.selector == In) && (right instanceof @SuppressWarnings({"rawtypes"}) Collection col)) {
+        else if ((this.selector == In) && (right instanceof Collection<?> col)) {
             return col.contains(left);
-        } else if ((this.selector == NotIn) && (right instanceof @SuppressWarnings({"rawtypes"}) Collection col)) {
+        } else if ((this.selector == NotIn) && (right instanceof Collection<?> col)) {
             return !col.contains(left);
         }
         // Like
         //conformLike(left, right);
-        else if (((this.selector == Like) || (this.selector == NotLike)) && (right instanceof @SuppressWarnings({"rawtypes"}) List v) && (v.size() == 1)) {
+        else if (((this.selector == Like) || (this.selector == NotLike)) && (right instanceof List<?> v && v.size() == 1)) {
             Boolean doesLikeConform = JavaPlatform.conformLike(left, v.get(0));
             if (doesLikeConform != null) {
                 if (doesLikeConform) {
@@ -1099,7 +1099,7 @@ public class ExpressionOperator implements Serializable {
             }
         }
         // Regexp
-        else if ((this.selector == Regexp) && (right instanceof @SuppressWarnings({"rawtypes"}) List v) && (v.size() == 1)) {
+        else if ((this.selector == Regexp) && (right instanceof List<?> v && v.size() == 1)) {
             Boolean doesConform = JavaPlatform.conformRegexp(left, v.get(0));
             if (doesConform != null) {
                 return doesConform;

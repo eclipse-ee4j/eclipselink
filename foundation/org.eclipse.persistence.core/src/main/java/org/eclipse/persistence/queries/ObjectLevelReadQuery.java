@@ -220,7 +220,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * 1..N: use this value to set the WAIT clause.
      */
     protected Integer waitTimeout;
-    
+
   //wait timeout unit
     protected TimeUnit waitTimeoutUnit;
 
@@ -532,11 +532,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrepared(false);
         setWasDefaultLockMode(false);
     }
-    
+
     public void setWaitTimeoutUnit(TimeUnit waitTimeoutUnit) {
         this.waitTimeoutUnit = waitTimeoutUnit;
     }
-    
+
     /**
      * INTERNAL:
      * Check and return custom query flag. Custom query flag value is initialized when stored value is {@code null}.
@@ -624,7 +624,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Object deepClone() {
         ObjectLevelReadQuery clone = (ObjectLevelReadQuery)clone();
         if (getSelectionCriteria() != null) {
-            clone.setSelectionCriteria((Expression)getSelectionCriteria().clone());
+            clone.setSelectionCriteria(getSelectionCriteria().clone());
         }
         if (defaultBuilder != null) {
             clone.defaultBuilder = (ExpressionBuilder)defaultBuilder.clone();
@@ -1893,11 +1893,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Integer getWaitTimeout() {
         return waitTimeout;
     }
-    
+
     public TimeUnit getWaitTimeoutUnit() {
         return waitTimeoutUnit;
     }
-    
+
     /**
      * Initialize the expression builder which should be used for this query. If
      * there is a where clause, use its expression builder, otherwise

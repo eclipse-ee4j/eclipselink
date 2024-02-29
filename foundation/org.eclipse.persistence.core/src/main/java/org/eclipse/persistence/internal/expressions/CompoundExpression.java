@@ -137,7 +137,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      */
     @Override
-    public Expression create(Expression base, List arguments, ExpressionOperator operator) {
+    public Expression create(Expression base, List<?> arguments, ExpressionOperator operator) {
         setFirstChild(base);
         if (!arguments.isEmpty()) {
             setSecondChild((Expression)arguments.get(0));
@@ -217,7 +217,7 @@ public abstract class CompoundExpression extends Expression {
      * For iterating using an inner class
      */
     @Override
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         super.iterateOn(iterator);
         if (this.firstChild != null) {
             this.firstChild.iterateOn(iterator);

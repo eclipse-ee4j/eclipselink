@@ -109,7 +109,7 @@ public class UpdateAllQueryTestHelper {
                 }
                 DatabaseField targetField = ((OneToOneMapping) mapping).getSourceToTargetKeyFields().get(new DatabaseField(keyString));
                 if (value instanceof Expression) {
-                    valueExpression = ((Expression) (((Expression) value).clone())).getField(targetField);
+                    valueExpression = ((Expression) value).clone().getField(targetField);
                 } else {
                     ClassDescriptor targetDescriptor = mapping.getReferenceDescriptor();
                     Object fieldValue = targetDescriptor.getObjectBuilder().extractValueFromObjectForField(value, targetField, (AbstractSession) mainSession);

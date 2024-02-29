@@ -190,7 +190,7 @@ public class ExpressionSQLPrinter {
     }
 
     public void printPrimitive(Object value, Boolean canBind) {
-        if (value instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
+        if (value instanceof Collection<?> collection) {
             printValuelist(collection, canBind);
             return;
         }
@@ -230,7 +230,7 @@ public class ExpressionSQLPrinter {
                 while (valuesEnum.hasNext()) {
                     Object value = valuesEnum.next();
                     // Support nested arrays for IN.
-                    if (value instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
+                    if (value instanceof Collection<?> collection) {
                         printValuelist(collection, canBind);
                     } else if (value instanceof Expression expression) {
                         expression.printSQL(this);

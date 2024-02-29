@@ -374,7 +374,7 @@ public class ParameterExpression extends BaseExpression {
     public void printSQL(ExpressionSQLPrinter printer) {
         if (printer.shouldPrintParameterValues()) {
             Object value = getValue(printer.getTranslationRow(), printer.getSession());
-            if (value instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
+            if (value instanceof Collection<?> collection) {
                 printer.printValuelist(collection, this.canBind);
             } else {
                 if(getField() == null) {
@@ -491,7 +491,7 @@ public class ParameterExpression extends BaseExpression {
                     // this is a map key expression, operate on the key
                     ContainerPolicy cp = mapping.getContainerPolicy();
                     Object keyType = cp.getKeyType();
-                    Class<?> keyTypeClass = keyType instanceof @SuppressWarnings({"rawtypes"}) Class c ? c: ((ClassDescriptor)keyType).getJavaClass();
+                    Class<?> keyTypeClass = keyType instanceof Class<?> c ? c: ((ClassDescriptor)keyType).getJavaClass();
                     if (!keyTypeClass.isInstance(value)){
                         throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
                     }
@@ -541,7 +541,7 @@ public class ParameterExpression extends BaseExpression {
     public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
         /*
          * If the platform doesn't support binding for functions, then disable binding for the whole query
-         * 
+         *
          * DatabasePlatform classes should instead override DatasourcePlatform.initializePlatformOperators()
          *      @see ExpressionOperator.setIsBindingSupported(boolean isBindingSupported)
          * In this way, platforms can define their own supported binding behaviors for individual functions
@@ -551,8 +551,8 @@ public class ParameterExpression extends BaseExpression {
         }
 
         /*
-         *  Allow the platform to indicate if they support parameter expressions in the SELECT clause 
-         *  as a whole, regardless if individual functions allow binding. We make that decision here 
+         *  Allow the platform to indicate if they support parameter expressions in the SELECT clause
+         *  as a whole, regardless if individual functions allow binding. We make that decision here
          *  before we continue parsing into generic API calls
          */
         if (!printer.getPlatform().allowBindingForSelectClause()) {

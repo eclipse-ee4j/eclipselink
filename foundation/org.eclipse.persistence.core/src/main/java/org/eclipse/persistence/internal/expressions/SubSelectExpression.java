@@ -131,7 +131,7 @@ public class SubSelectExpression extends BaseExpression {
      * For iterating using an inner class
      */
     @Override
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         super.iterateOn(iterator);
         if (baseExpression != null) {
             baseExpression.iterateOn(iterator);

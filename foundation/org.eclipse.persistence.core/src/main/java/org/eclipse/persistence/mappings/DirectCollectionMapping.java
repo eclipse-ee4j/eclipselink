@@ -3212,7 +3212,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             if (isDirectMapMapping()) {
                 statement.addField(((DirectMapMapping)this).getDirectKeyField().clone());
             }
-            statement.setWhereClause((Expression)getSelectionCriteria().clone());
+            statement.setWhereClause(getSelectionCriteria().clone());
             if (sourceQuery.isObjectLevelReadQuery()) {
                 statement.getBuilder().asOf(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
             }

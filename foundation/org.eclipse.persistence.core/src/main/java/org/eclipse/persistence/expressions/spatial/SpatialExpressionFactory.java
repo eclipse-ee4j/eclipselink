@@ -146,7 +146,6 @@ public final class SpatialExpressionFactory {
         ExpressionOperator anOperator = geom1.getOperator(operator);
         FunctionExpression expression = new FunctionExpression();
         expression.create(geom1, vParameters, anOperator);
-        Expression finalExpression = expression.equal("TRUE");
-        return finalExpression;
+        return expression.equal("TRUE");
     }
 }

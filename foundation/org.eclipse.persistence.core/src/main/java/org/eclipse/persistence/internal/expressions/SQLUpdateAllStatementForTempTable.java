@@ -29,6 +29,10 @@ import java.util.List;
  */
 public class SQLUpdateAllStatementForTempTable extends SQLModifyAllStatementForTempTable {
     protected Collection<DatabaseField> assignedFields;
+
+    public SQLUpdateAllStatementForTempTable() {
+    }
+
     public void setAssignedFields(Collection<DatabaseField> assignedFields) {
         this.assignedFields = assignedFields;
     }

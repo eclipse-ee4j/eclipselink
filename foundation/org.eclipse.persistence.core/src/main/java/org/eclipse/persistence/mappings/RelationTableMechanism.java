@@ -249,7 +249,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         SQLSelectStatement statement = new SQLSelectStatement();
         statement.addTable(this.relationTable);
         statement.addField(this.sourceRelationKeyFields.get(0).clone());
-        statement.setWhereClause((Expression)lockRelationTableQuery.getSelectionCriteria().clone());
+        statement.setWhereClause(lockRelationTableQuery.getSelectionCriteria().clone());
         statement.setLockingClause(new ForUpdateClause(lockMode));
         statement.normalize(session, null);
         lockRelationTableQueryClone.setSQLStatement(statement);
@@ -607,7 +607,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         if(mapping.extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
             Expression startCriteria = mapping.getSelectionQuery().getSelectionCriteria();
             if(startCriteria != null) {
-                startCriteria = (Expression)startCriteria.clone();
+                startCriteria = startCriteria.clone();
             }
             initializeLockRelationTableQuery(session, mapping, startCriteria);
         }

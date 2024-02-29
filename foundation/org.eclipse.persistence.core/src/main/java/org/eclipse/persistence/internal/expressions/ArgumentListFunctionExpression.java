@@ -43,6 +43,9 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
 
     protected Boolean hasLastChild = Boolean.FALSE;
 
+    public ArgumentListFunctionExpression() {
+    }
+
     /**
      * INTERNAL:
      * Add a new Expression to the list of arguments.

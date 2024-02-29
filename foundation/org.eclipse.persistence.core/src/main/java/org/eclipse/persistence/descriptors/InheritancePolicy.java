@@ -312,7 +312,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         if (getWithAllSubclassesExpression() != null) {
             // For Flashback: Must always rebuild with simple expression on right.
             if (selectStatement.getWhereClause() == null) {
-                selectStatement.setWhereClause((Expression)getWithAllSubclassesExpression().clone());
+                selectStatement.setWhereClause(getWithAllSubclassesExpression().clone());
             } else {
                 selectStatement.setWhereClause(selectStatement.getWhereClause().and(getWithAllSubclassesExpression()));
             }
@@ -336,7 +336,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
         // Case, normal read for branch inheritance class that reads subclasses all in its own table(s).
         if (getWithAllSubclassesExpression() != null) {
-            Expression branchIndicator = (Expression)getWithAllSubclassesExpression().clone();
+            Expression branchIndicator = getWithAllSubclassesExpression().clone();
             if (branchIndicator != null) {
                 selectStatement.setWhereClause(branchIndicator.and(selectStatement.getWhereClause()));
             }
