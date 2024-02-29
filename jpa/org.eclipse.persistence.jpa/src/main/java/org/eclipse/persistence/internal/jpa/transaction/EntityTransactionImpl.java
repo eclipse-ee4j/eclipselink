@@ -247,6 +247,17 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
         return this.active;
     }
 
+    @Override
+    public void setTimeout(Integer integer) {
+        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
+    }
+
+    @Override
+    public Integer getTimeout() {
+        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
+        return null;
+    }
+
     class TransactionFinalizer {
 
         /**

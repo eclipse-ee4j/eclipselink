@@ -171,6 +171,18 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         return persistenceProviderClassName;
     }
 
+    @Override
+    public String getScopeAnnotationName() {
+        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
+        return null;
+    }
+
+    @Override
+    public List<String> getQualifierAnnotationNames() {
+        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
+        return null;
+    }
+
     public void setPersistenceProviderClassName(String persistenceProviderClassName){
         this.persistenceProviderClassName = persistenceProviderClassName;
     }
