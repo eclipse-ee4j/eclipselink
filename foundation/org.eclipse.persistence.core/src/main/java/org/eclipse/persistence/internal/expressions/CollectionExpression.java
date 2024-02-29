@@ -52,7 +52,7 @@ public class CollectionExpression extends ConstantExpression {
      */
     @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
-        if (this.value instanceof @SuppressWarnings({"rawtypes"}) Collection values) {
+        if (this.value instanceof Collection<?> values) {
             List<Object> fieldValues = new ArrayList<>(values.size());
             for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                 Object value = iterator.next();
@@ -75,7 +75,7 @@ public class CollectionExpression extends ConstantExpression {
     @Override
     public void setLocalBase(Expression e) {
         super.setLocalBase(e);
-        if (this.value instanceof @SuppressWarnings({"rawtypes"}) Collection values) {
+        if (this.value instanceof Collection<?> values) {
             for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();
                 if (val instanceof Expression expression){
@@ -92,12 +92,12 @@ public class CollectionExpression extends ConstantExpression {
     @Override
     protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
-        if (this.value instanceof @SuppressWarnings({"rawtypes"}) Collection values) {
+        if (this.value instanceof Collection<?> values) {
             List<Object> newValues = new ArrayList<>(values.size());
             for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();
                 if (val instanceof Expression expression){
-                    newValues.add((expression).copiedVersionFrom(alreadyDone));
+                    newValues.add(expression.copiedVersionFrom(alreadyDone));
                 } else {
                     newValues.add(val);
                 }

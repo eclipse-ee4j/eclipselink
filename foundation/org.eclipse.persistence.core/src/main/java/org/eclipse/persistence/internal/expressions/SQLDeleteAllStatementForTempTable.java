@@ -31,6 +31,9 @@ public class SQLDeleteAllStatementForTempTable extends SQLModifyAllStatementForT
     protected DatabaseTable targetTable;
     protected List<DatabaseField> targetPrimaryKeyFields;
 
+    public SQLDeleteAllStatementForTempTable() {
+    }
+
     public void setTargetTable(DatabaseTable targetTable) {
         this.targetTable = targetTable;
     }

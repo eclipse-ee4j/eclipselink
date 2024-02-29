@@ -103,7 +103,7 @@ public class FromSubSelectExpression extends TableExpression {
      * Also iterate over the sub-select if present.
      */
     @Override
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         super.iterateOn(iterator);
         if (this.subSelect != null) {
             this.subSelect.iterateOn(iterator);

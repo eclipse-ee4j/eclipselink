@@ -840,7 +840,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
             Expression whereClause = null;
             if (writeQuery.isDeleteAllQuery()) {
                 if (writeQuery.getSelectionCriteria() != null) {
-                    whereClause = (Expression)writeQuery.getSelectionCriteria().clone();
+                    whereClause = writeQuery.getSelectionCriteria().clone();
                 }
             } else {
                 whereClause = descriptor.getObjectBuilder().buildPrimaryKeyExpression(table);
@@ -886,7 +886,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         DatabaseTable histTable = getHistoricalTables().get(0);
 
         historyStatement.setTable(histTable);
-        Expression whereClause = (Expression)originalStatement.getWhereClause().clone();
+        Expression whereClause = originalStatement.getWhereClause().clone();
         DatabaseField endField = getEnd();
         whereClause = whereClause.getBuilder().getField(endField).isNull().and(whereClause);
         historyStatement.setWhereClause(whereClause);

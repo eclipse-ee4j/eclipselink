@@ -113,17 +113,17 @@ public class CursoredStream extends Cursor {
      * This require a manually defined operator.
      * added for CR 2900
      */
-    public Expression buildCountDistinctExpression(List includeFields, ExpressionBuilder builder) {
+    public Expression buildCountDistinctExpression(List<DatabaseField> includeFields, ExpressionBuilder builder) {
         ExpressionOperator countOperator = new ExpressionOperator();
         countOperator.setType(ExpressionOperator.AggregateOperator);
-        Vector databaseStrings = new Vector();
+        List<String> databaseStrings = new ArrayList<>();
         databaseStrings.add("COUNT(DISTINCT ");
         databaseStrings.add(")");
         countOperator.printsAs(databaseStrings);
         countOperator.bePrefix();
         countOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        Expression firstFieldExpression = builder.getField(((DatabaseField)includeFields.get(0)).getQualifiedName());
-        return countOperator.expressionForArguments(firstFieldExpression, new ArrayList(0));
+        Expression firstFieldExpression = builder.getField(includeFields.get(0).getQualifiedName());
+        return countOperator.expressionForArguments(firstFieldExpression, new ArrayList<>(0));
 
     }
 
@@ -170,7 +170,7 @@ public class CursoredStream extends Cursor {
                 if ((branchIndicator != null) && (selectStatement.getWhereClause() != null)) {
                     selectStatement.setWhereClause(selectStatement.getWhereClause().and(branchIndicator));
                 } else if (branchIndicator != null) {
-                    selectStatement.setWhereClause((Expression)branchIndicator.clone());
+                    selectStatement.setWhereClause(branchIndicator.clone());
                 }
             }
 

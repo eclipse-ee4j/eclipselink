@@ -762,8 +762,8 @@ public class SQLSelectStatement extends SQLStatement {
             Expression expression = expressionsEnum.next();
 
             /*
-             *  Allow the platform to indicate if they support parameter expressions in the ORDER BY clause 
-             *  as a whole, regardless if individual functions allow binding. We make that decision here 
+             *  Allow the platform to indicate if they support parameter expressions in the ORDER BY clause
+             *  as a whole, regardless if individual functions allow binding. We make that decision here
              *  before we continue parsing into generic API calls
              */
             if(!printer.getPlatform().supportsOrderByParameters()) {
@@ -774,7 +774,7 @@ public class SQLSelectStatement extends SQLStatement {
                         ((ConstantExpression) expression).setCanBind(false);
                     }
                 } else if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
-                    if(expression.isParameterExpression() 
+                    if(expression.isParameterExpression()
                             || (expression.isConstantExpression() && printer.getPlatform().shouldBindLiterals())) {
                         printer.getCall().setUsesBinding(false);
                     }
@@ -1844,7 +1844,7 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Rebuild the expressions with the correct expression builder if using a different one.
      */
-    public void rebuildAndAddExpressions(List expressions, List allExpressions, ExpressionBuilder primaryBuilder, Map<Expression, Expression> clonedExpressions) {
+    public void rebuildAndAddExpressions(List expressions, List<Expression> allExpressions, ExpressionBuilder primaryBuilder, Map<Expression, Expression> clonedExpressions) {
         for (int index = 0; index < expressions.size(); index++) {
             Object fieldOrExpression = expressions.get(index);
             // Allow for special fields that contain a functional transformation.
@@ -1887,7 +1887,7 @@ public class SQLSelectStatement extends SQLStatement {
      * Exact copy of the another rebuildAndAddExpressions adopted to a Map with Expression values
      * as the first parameter (instead of Vector in the original method)
      */
-    public void rebuildAndAddExpressions(Map expressions, List allExpressions, ExpressionBuilder primaryBuilder, Map<Expression, Expression> clonedExpressions) {
+    public void rebuildAndAddExpressions(Map expressions, List<Expression> allExpressions, ExpressionBuilder primaryBuilder, Map<Expression, Expression> clonedExpressions) {
         Iterator it = expressions.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry)it.next();
@@ -2008,8 +2008,8 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public void setFields(Vector fields) {
         for (Object fieldOrExpression : fields) {
-            if (fieldOrExpression instanceof FunctionExpression) {
-                if (((FunctionExpression)fieldOrExpression).getOperator().isAggregateOperator()) {
+            if (fieldOrExpression instanceof FunctionExpression functionExpression) {
+                if (functionExpression.getOperator().isAggregateOperator()) {
                     setIsAggregateSelect(true);
                     break;
                 }

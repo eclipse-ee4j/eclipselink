@@ -215,7 +215,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // If there's an expression, then we know we'll have to rebuild anyway, so don't clone.
             if (expression == null) {
                 // Should never happen...
-                expression = (Expression)additionalJoin.clone();
+                expression = additionalJoin.clone();
             } else {
                 if (query.isObjectLevelReadQuery()){
                     ExpressionBuilder builder = ((ObjectLevelReadQuery)query).getExpressionBuilder();
@@ -311,7 +311,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             if ((indicatorExpression != null) && (selectStatement.getWhereClause() != null)) {
                 selectStatement.setWhereClause(selectStatement.getWhereClause().and(indicatorExpression));
             } else if (indicatorExpression != null) {
-                selectStatement.setWhereClause((Expression)indicatorExpression.clone());
+                selectStatement.setWhereClause(indicatorExpression.clone());
             }
         }
 
@@ -364,7 +364,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         } else {
             // inheritanceExpression is irrelevant in case selectCallForExist != null
             if(inheritanceExpression != null) {
-                deleteAllStatement.setInheritanceExpression((Expression)inheritanceExpression.clone());
+                deleteAllStatement.setInheritanceExpression(inheritanceExpression.clone());
             }
         }
 
@@ -539,7 +539,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         SQLDeleteStatement deleteStatement = new SQLDeleteStatement();
 
         if(inheritanceExpression != null) {
-            deleteStatement.setWhereClause((Expression)inheritanceExpression.clone());
+            deleteStatement.setWhereClause(inheritanceExpression.clone());
         }
         deleteStatement.setTable(table);
         deleteStatement.setTranslationRow(getTranslationRow());
@@ -667,7 +667,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             if (useCustomaryInheritanceExpression) {
                 if (inheritanceExpression != null) {
                     if (selectStatement.getWhereClause() == null) {
-                        selectStatement.setWhereClause((Expression)inheritanceExpression.clone());
+                        selectStatement.setWhereClause(inheritanceExpression.clone());
                     } else {
                         selectStatement.setWhereClause(selectStatement.getWhereClause().and(inheritanceExpression));
                     }
@@ -771,7 +771,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         SQLSelectStatement selectStatement;
         selectStatement = new SQLSelectStatement();
         selectStatement.addField(field);
-        selectStatement.setWhereClause(((Expression)getDescriptor().getObjectBuilder().getPrimaryKeyExpression().clone()).and(getDescriptor().getQueryManager().getAdditionalJoinExpression()));
+        selectStatement.setWhereClause(getDescriptor().getObjectBuilder().getPrimaryKeyExpression().clone().and(getDescriptor().getQueryManager().getAdditionalJoinExpression()));
         selectStatement.setTranslationRow(getTranslationRow());
 
         selectStatement.normalize(getSession(), getQuery().getDescriptor());
@@ -1632,7 +1632,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     {
         ExpressionBuilder builder;
         if(whereClause != null) {
-            whereClause = (Expression)whereClause.clone();
+            whereClause = whereClause.clone();
             builder = whereClause.getBuilder();
         } else {
             builder = new ExpressionBuilder();
@@ -1914,7 +1914,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         return false;
     }
-    
+
     /**
      * Pre-build the SQL statement from the expressions.
      */
@@ -2019,7 +2019,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     } else {
                         DatabaseField targetField = ((OneToOneMapping)mapping).getSourceToTargetKeyFields().get(fields.get(i));
                         if(valueObject instanceof Expression) {
-                            Expression exp = ((Expression)((Expression)valueObject).clone()).getField(targetField);
+                            Expression exp = ((Expression)valueObject).clone().getField(targetField);
                             if(exp.isParameterExpression()) {
                                 ((ParameterExpression)exp).setType(targetField.getType());
                             }
@@ -2154,7 +2154,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 // initialize result with the table
                 expRequiresSelectIterator.setResult(table);
                 // To find fields have to have session and ref class
-                Expression valueClone = (Expression)value.clone();
+                Expression valueClone = value.clone();
                 valueClone.getBuilder().setSession(getSession());
                 valueClone.getBuilder().setQueryClass(getQuery().getReferenceClass());
                 expRequiresSelectIterator.iterateOn(valueClone);

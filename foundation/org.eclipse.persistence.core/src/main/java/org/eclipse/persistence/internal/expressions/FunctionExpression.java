@@ -188,7 +188,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      */
     @Override
-    public Expression create(Expression base, List arguments, ExpressionOperator anOperator) {
+    public Expression create(Expression base, List<?> arguments, ExpressionOperator anOperator) {
         this.baseExpression = base;
         setOperator(anOperator);
         addChild(base);
@@ -251,9 +251,9 @@ public class FunctionExpression extends BaseExpression {
                 }
                 //If valueFromRight is a Vector, then there is only one child other than the base, e.g. valueFromRight is a collection of constants.
                 //Then it should be the vector to be compared with.  Don't add it to another collection.
-                if (valueFromRight instanceof @SuppressWarnings({"rawtypes"}) List rightVector) {
+                if (valueFromRight instanceof List<?> rightVector) {
                     @SuppressWarnings({"unchecked"})
-                    List<Object> rv = rightVector;
+                    List<Object> rv = (List<Object>) rightVector;
                     rightValue = rv;
                 //Single values should be added to the rightValue, which will be compared with leftValue.
                 } else {
@@ -263,7 +263,7 @@ public class FunctionExpression extends BaseExpression {
 
             // If left is anyof collection of values, check each one.
             // If the right had an anyof not supported will be thrown from the operator.
-            if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
+            if (leftValue instanceof List<?> leftVector) {
                 for (Object tempLeft : leftVector) {
                     if (this.operator.doesRelationConform(tempLeft, rightValue)) {
                         return true;
@@ -280,7 +280,7 @@ public class FunctionExpression extends BaseExpression {
             Object leftValue = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
             // If left is anyof collection of values, check each one.
-            if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
+            if (leftValue instanceof List<?> leftVector) {
                 for (Object tempLeft : leftVector) {
                     if (this.operator.doesRelationConform(tempLeft, null)) {
                         return true;
@@ -387,7 +387,7 @@ public class FunctionExpression extends BaseExpression {
      * For iterating using an inner class
      */
     @Override
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         super.iterateOn(iterator);
         for (Iterator<Expression> iterator1 = this.children.iterator(); iterator1.hasNext();) {
             Expression child = iterator1.next();
@@ -646,7 +646,7 @@ public class FunctionExpression extends BaseExpression {
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         if (this.children.isEmpty()) {
-            return (Expression)clone();
+            return clone();
         }
         List<Expression> newChildren = new ArrayList<>(this.children.size());
 
@@ -676,7 +676,7 @@ public class FunctionExpression extends BaseExpression {
                 arguments.add(this.children.get(index));
             }
         }
-        if (baseValue instanceof @SuppressWarnings({"rawtypes"}) List base) {// baseValue might be a vector, so the individual values must be extracted before applying the function call to them
+        if (baseValue instanceof List<?> base) {// baseValue might be a vector, so the individual values must be extracted before applying the function call to them
             List<Object> baseVector = new ArrayList<>();
             for (Iterator<?> iterator = base.iterator(); iterator.hasNext();) {
                 Object baseObject = iterator.next();

@@ -100,7 +100,7 @@ public class RelationExpression extends CompoundExpression {
             this.firstChild.valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
         // The right value may be a Collection of values from an anyof, or an in.
-        if (rightValue instanceof @SuppressWarnings({"rawtypes"}) Collection collection) {
+        if (rightValue instanceof Collection<?> collection) {
             // Vector may mean anyOf, or an IN.
             // CR#3240862, code for IN was incorrect, and was check for between which is a function not a relation.
             // Must check for IN and NOTIN, currently object comparison is not supported.
@@ -112,7 +112,7 @@ public class RelationExpression extends CompoundExpression {
                     throw QueryException.cannotConformExpression();
                 } else {
                     // Left may be single value or anyof vector.
-                    if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
+                    if (leftValue instanceof List<?> leftVector) {
                         return doesAnyOfLeftValuesConform(leftVector, rightValue, session);
                     } else {
                         return this.operator.doesRelationConform(leftValue, rightValue);
@@ -125,7 +125,7 @@ public class RelationExpression extends CompoundExpression {
                 Object tempRight = iterator.next();
 
                 // Left may also be an anyof some must check each left with each right.
-                if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
+                if (leftValue instanceof List<?> leftVector) {
                     // If anyof the left match return true, otherwise keep checking.
                     if (doesAnyOfLeftValuesConform(leftVector, tempRight, session)) {
                         return true;
@@ -141,7 +141,7 @@ public class RelationExpression extends CompoundExpression {
         }
 
         // Otherwise the left may also be a vector of values from an anyof.
-        if (leftValue instanceof @SuppressWarnings({"rawtypes"}) List leftVector) {
+        if (leftValue instanceof List<?> leftVector) {
             return doesAnyOfLeftValuesConform(leftVector, rightValue, session);
         }
 
@@ -655,19 +655,19 @@ public class RelationExpression extends CompoundExpression {
             if (right.isConstantExpression()) {
                 // Check for a constant with a List of objects, need to collect the ids (also allow a list of ids).
                 ConstantExpression constant = (ConstantExpression)right;
-                if (constant.getValue() instanceof @SuppressWarnings({"rawtypes"}) Collection objects) {
+                if (constant.getValue() instanceof Collection<?> objects) {
                     List<Object> newObjects = new ArrayList<>(objects.size());
                     for (Object object : objects) {
-                        if (object instanceof Expression) {
+                        if (object instanceof Expression expression) {
                             if (composite) {
                                 // For composite ids an array comparison is used, this only works on some databases.
                                 List<Expression> values = new ArrayList<>();
                                 for (DatabaseField field : targetFields) {
-                                    values.add(((Expression)object).getField(field));
+                                    values.add(expression.getField(field));
                                 }
                                 object = getBuilder().value(values);
                             } else {
-                                object = ((Expression)object).getField(targetField);
+                                object = expression.getField(targetField);
                             }
                         } else if (descriptor.getJavaClass().isInstance(object)) {
                             if (composite) {
@@ -901,9 +901,9 @@ public class RelationExpression extends CompoundExpression {
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         /*
-         * If the platform doesn't support binding for functions and both sides are parameters/constants, 
+         * If the platform doesn't support binding for functions and both sides are parameters/constants,
          * then disable binding for the whole query
-         * 
+         *
          * DatabasePlatform classes should instead override DatasourcePlatform.initializePlatformOperators()
          *      @see ExpressionOperator.setIsBindingSupported(boolean isBindingSupported)
          * In this way, platforms can define their own supported binding behaviors for individual functions

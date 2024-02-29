@@ -66,6 +66,9 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
         return tables_databaseFieldsToValues;
     }
 
+    public SQLUpdateAllStatementForOracleAnonymousBlock() {
+    }
+
     /**
      * Append the string containing the SQL insert string for the given table.
      */

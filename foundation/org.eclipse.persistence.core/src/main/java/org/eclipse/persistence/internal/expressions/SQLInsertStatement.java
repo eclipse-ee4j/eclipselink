@@ -37,6 +37,9 @@ import java.util.List;
  */
 public class SQLInsertStatement extends SQLModifyStatement {
 
+    public SQLInsertStatement() {
+    }
+
     /**
      * Append the string containing the SQL insert string for the given table.
      */

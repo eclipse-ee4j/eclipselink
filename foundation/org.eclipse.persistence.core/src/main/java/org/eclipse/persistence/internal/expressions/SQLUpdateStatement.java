@@ -39,6 +39,9 @@ import java.util.Vector;
  */
 public class SQLUpdateStatement extends SQLModifyStatement {
 
+    public SQLUpdateStatement() {
+    }
+
     /**
      * Append the string containing the SQL insert string for the given table.
      */

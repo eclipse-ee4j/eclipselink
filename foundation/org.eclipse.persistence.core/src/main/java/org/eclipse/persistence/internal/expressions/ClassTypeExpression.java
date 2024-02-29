@@ -126,7 +126,7 @@ public class ClassTypeExpression extends DataExpression {
 
             // If from an anyof the object will be a collection of values,
             // A new vector must union the object values and the values extracted from it.
-            if (object instanceof @SuppressWarnings({"rawtypes"}) List v) {
+            if (object instanceof List<?> v) {
                 List<Object> comparisonVector = new ArrayList<>(v.size() + 2);
                 for (Object vectorObject : v) {
                     if (vectorObject == null) {
@@ -135,7 +135,7 @@ public class ClassTypeExpression extends DataExpression {
                         Object valueOrValues = typeValueFromObject(vectorObject, session);
 
                         // If a collection of values were extracted union them.
-                        if (valueOrValues instanceof @SuppressWarnings({"rawtypes"}) List vv) {
+                        if (valueOrValues instanceof List<?> vv) {
                             comparisonVector.addAll(vv);
                         } else {
                             comparisonVector.add(valueOrValues);
@@ -186,7 +186,7 @@ public class ClassTypeExpression extends DataExpression {
             return null;
         }
 
-        if (objectValue instanceof @SuppressWarnings({"rawtypes"}) Collection values) {
+        if (objectValue instanceof Collection<?> values) {
             // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
             List<Object> fieldValues = new ArrayList<>(values.size());
             for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
@@ -198,7 +198,7 @@ public class ClassTypeExpression extends DataExpression {
             }
             return fieldValues;
         } else {
-            if (! (objectValue instanceof @SuppressWarnings({"rawtypes"}) Class cls) ){
+            if (! (objectValue instanceof Class<?> cls) ){
                 throw QueryException.invalidTypeExpression(objectValue.getClass().toString());
             }
 

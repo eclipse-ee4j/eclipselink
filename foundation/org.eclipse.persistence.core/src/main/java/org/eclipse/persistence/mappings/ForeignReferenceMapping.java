@@ -1296,7 +1296,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        //474752 : InitializeReferenceDescriptor before 
+        //474752 : InitializeReferenceDescriptor before
         //addMappingsPostCalculateChanges
         initializeReferenceDescriptor(session);
         if (this.isPrivateOwned && (this.descriptor != null)) {
@@ -2315,7 +2315,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
                 // For flashback: Read attributes as of the same time if required.
                 if (sourceQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) {
-                    targetQuery.setSelectionCriteria((Expression)targetQuery.getSelectionCriteria().clone());
+                    targetQuery.setSelectionCriteria(targetQuery.getSelectionCriteria().clone());
                     ((ObjectLevelReadQuery)targetQuery).setAsOfClause(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
                 }
             }

@@ -43,7 +43,11 @@ public @interface XmlVariableNode {
      * Used in {@linkplain XmlVariableNode#type()} to signal
      * that the type be inferred from the signature of the property.
      */
-    final class DEFAULT {}
+    final class DEFAULT {
+        private DEFAULT() {
+            //no instance
+        }
+    }
 
     boolean attribute() default false;
 

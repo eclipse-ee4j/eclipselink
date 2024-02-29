@@ -136,7 +136,7 @@ public class LiteralExpression extends Expression {
      */
     @Override
     public Expression rebuildOn(Expression newBase) {
-        Expression result = (LiteralExpression)clone();
+        Expression result = clone();
         result.setLocalBase(getLocalBase().rebuildOn(newBase));
         return result;
     }
@@ -167,7 +167,7 @@ public class LiteralExpression extends Expression {
      */
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
-        return (Expression)this.clone();
+        return this.clone();
     }
 
     /**

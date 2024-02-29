@@ -43,6 +43,9 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
     protected Collection<DatabaseField> primaryKeyFields;
     protected boolean shouldExtractWhereClauseFromSelectCallForExist;
 
+    public SQLUpdateAllStatement() {
+    }
+
     public void setSelectCallForExist(SQLCall selectCallForExist) {
         this.selectCallForExist = selectCallForExist;
     }

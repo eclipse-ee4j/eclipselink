@@ -54,6 +54,9 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
 
     protected boolean shouldExtractWhereClauseFromSelectCallForExist;
 
+    public SQLDeleteAllStatement() {
+    }
+
     public void setSelectCallForExist(SQLCall selectCallForExist) {
         this.selectCallForExist = selectCallForExist;
     }
@@ -79,7 +82,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
         return tableAliasInSelectCallForNotExist;
     }
     @SuppressWarnings({"unchecked"})
-    public void setPrimaryKeyFieldsForAutoJoin(Collection primaryKeyFields) {
+    public void setPrimaryKeyFieldsForAutoJoin(Collection<DatabaseField> primaryKeyFields) {
         if(primaryKeyFields != null) {
             if(primaryKeyFields instanceof ArrayList<?>) {
                 setOriginalFieldsForJoin((ArrayList<DatabaseField>)primaryKeyFields);

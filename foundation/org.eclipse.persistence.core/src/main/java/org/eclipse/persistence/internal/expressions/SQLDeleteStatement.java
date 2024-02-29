@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,9 @@ import java.io.Writer;
  * @since TOPLink/Java 1.0
  */
 public class SQLDeleteStatement extends SQLModifyStatement {
+
+    public SQLDeleteStatement() {
+    }
 
     /**
      * Append the string containing the SQL insert string for the given table.

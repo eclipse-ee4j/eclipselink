@@ -37,6 +37,9 @@ public abstract class SQLModifyStatement extends SQLStatement {
     protected AbstractRecord modifyRow;
     protected List<DatabaseField> returnFields;
 
+    public SQLModifyStatement() {
+    }
+
     public AbstractRecord getModifyRow() {
         return modifyRow;
     }
