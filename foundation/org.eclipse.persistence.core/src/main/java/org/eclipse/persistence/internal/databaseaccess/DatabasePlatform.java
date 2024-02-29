@@ -101,6 +101,7 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Types;
+import java.time.Year;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -2684,7 +2685,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                 java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
                 appendTimestamp(ts, writer);
             } else if (dbValue instanceof java.time.Year){
-                appendNumber((Number)dbValue, writer);
+                appendNumber(((java.time.Year) dbValue).getValue(), writer);
             } else if (dbValue instanceof java.sql.Date) {
                 appendDate((java.sql.Date)dbValue, writer);
             } else if (dbValue == null) {

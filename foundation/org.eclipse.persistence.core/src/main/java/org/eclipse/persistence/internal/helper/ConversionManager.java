@@ -1101,8 +1101,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             try {
                 year = java.time.Year.of(Integer.valueOf((String) sourceObject));
             } catch (Exception e) {
-                year = java.time.Year.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
-                java.time.LocalTime localTime = java.time.LocalTime.parse(((String) sourceObject).replace(' ', 'T'), Helper.getDefaultDateTimeFormatter());
+                throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_YEAR);
             }
         } else if (sourceObject instanceof java.util.Date) {
             // handles sql.Time, sql.Date, sql.Timestamp

@@ -629,11 +629,23 @@ public class TestJavaTimeTypeConverter {
     }
 
     @Test
-    public void timeConvertYearToException() {
+    public void timeConvertYearToExceptionWrongInputString() {
         String date = "Bogus";
 
         try {
             Year year = cm.convertObject(date, ClassConstants.TIME_YEAR);
+            Assert.fail("Expected Exception was not thrown.");
+        } catch (ConversionException ce) {
+            // Expected
+        }
+    }
+
+    @Test
+    public void timeConvertYearToExceptionWrongInputType() {
+        Boolean inputValue = true;
+
+        try {
+            Year year = cm.convertObject(inputValue, ClassConstants.TIME_YEAR);
             Assert.fail("Expected Exception was not thrown.");
         } catch (ConversionException ce) {
             // Expected
