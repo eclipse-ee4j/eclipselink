@@ -199,8 +199,8 @@
         <glassfish.version>8.0.0-M2</glassfish.version>
         <jaxwsrt.version>4.0.2</jaxwsrt.version>
         <jaxb.version>4.0.4</jaxb.version>
-        <jaxb.api.version>4.0.2</jaxb.api.version>
-        <soap.api.version>3.0.2</soap.api.version>
+        <jaxb.api.version>4.0.1</jaxb.api.version>
+        <soap.api.version>3.0.1</soap.api.version>
         <jersey.version>4.0-M1-GF1</jersey.version>
         <jms.version>3.1.0</jms.version>
         <json.version>2.1.3</json.version>
@@ -214,7 +214,7 @@
         <servlet.version>6.1.0-M2</servlet.version>
         <transaction.version>2.0.1</transaction.version>
         <validation.version>3.1.0-M1</validation.version>
-        <ws-api.version>4.0.2</ws-api.version>
+        <ws-api.version>4.0.1</ws-api.version>
         <ws-rs.version>3.1.0</ws-rs.version>
 
         <!--Third-Party Dependencies version-->
