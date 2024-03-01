@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.7</version>
+        <version>1.0.9</version>
         <relativePath/>
     </parent>
 
@@ -112,7 +112,7 @@
         <spotbugs.exclude/>
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.threshold>Normal</spotbugs.threshold>
-        <spotbugs.version>4.8.0</spotbugs.version>
+        <spotbugs.version>4.8.3</spotbugs.version>
         <findsecbugs.version>1.11.0</findsecbugs.version>
         <dependency-check.failonerror>false</dependency-check.failonerror>
 
@@ -189,31 +189,31 @@
         <!--Eclipse Dependencies version-->
         <eclipselink.asm.version>9.6.0</eclipselink.asm.version>
         <asm.version>9.6</asm.version>
-        <activation-api.version>2.1.2</activation-api.version>
-        <angus-activation.version>2.0.1</angus-activation.version>
-        <annotation.version>2.1.1</annotation.version>
-        <cdi.version>4.0.1</cdi.version>
+        <activation-api.version>2.1.3</activation-api.version>
+        <angus-activation.version>2.0.2</angus-activation.version>
+        <annotation.version>3.0.0</annotation.version>
+        <cdi.version>4.1.0</cdi.version>
         <ejb.version>4.0.1</ejb.version>
         <el-api.version>5.0.1</el-api.version>
         <el.version>5.0.0-M1</el.version>
-        <glassfish.version>7.0.9</glassfish.version>
+        <glassfish.version>8.0.0-M2</glassfish.version>
         <jaxwsrt.version>4.0.2</jaxwsrt.version>
         <jaxb.version>4.0.4</jaxb.version>
         <jaxb.api.version>4.0.1</jaxb.api.version>
         <soap.api.version>3.0.1</soap.api.version>
-        <jersey.version>3.1.3</jersey.version>
+        <jersey.version>4.0-M1-GF1</jersey.version>
         <jms.version>3.1.0</jms.version>
         <json.version>2.1.3</json.version>
         <jpa.api.version>3.2.0-M2</jpa.api.version>
-        <mail-api.version>2.1.2</mail-api.version>
-        <angus-mail.version>2.0.2</angus-mail.version>
+        <mail-api.version>2.1.3</mail-api.version>
+        <angus-mail.version>2.0.3</angus-mail.version>
         <oracle.ddlparser.version>3.0.1</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.5</org.glassfish.corba.version>
-        <parsson.version>1.1.5</parsson.version>
+        <parsson.version>1.1.6</parsson.version>
         <resource.version>2.1.0</resource.version>
-        <servlet.version>6.0.0</servlet.version>
+        <servlet.version>6.1.0-M2</servlet.version>
         <transaction.version>2.0.1</transaction.version>
-        <validation.version>3.0.2</validation.version>
+        <validation.version>3.1.0-M1</validation.version>
         <ws-api.version>4.0.1</ws-api.version>
         <ws-rs.version>3.1.0</ws-rs.version>
 
@@ -222,54 +222,54 @@
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
         <!-- CQ #21133 -->
         <ant.version>1.10.14</ant.version>
-        <aspectj.version>1.9.20.1</aspectj.version>
+        <aspectj.version> 1.9.21.1</aspectj.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.17.1.0</derby.version>
-        <db2.version>11.5.8.0</db2.version>
+        <db2.version>11.5.9.0</db2.version>
         <h2.version>2.2.224</h2.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
         <exam.version>4.13.4</exam.version>
         <hamcrest.version>1.3</hamcrest.version>
         <!-- CQ #23048 -->
         <hibernate.version>8.0.1.Final</hibernate.version>
-        <checkstyle.version>10.12.4</checkstyle.version>
+        <checkstyle.version>10.14.0</checkstyle.version>
         <!-- CQ #23049 -->
-        <jgroups.version>5.3.0.Final</jgroups.version>
+        <jgroups.version>5.3.4.Final</jgroups.version>
         <jmh.version>1.37</jmh.version>
         <junit.version>4.13.2</junit.version>
         <!-- CQ #24079 -->
-        <mongodb.version>4.11.0</mongodb.version>
-        <mysql.version>8.1.0</mysql.version>
-        <mariadb.version>3.2.0</mariadb.version>
-        <mssql.version>12.4.1.jre11</mssql.version>
+        <mongodb.version>5.0.0</mongodb.version>
+        <mysql.version>8.3.0</mysql.version>
+        <mariadb.version>3.3.3</mariadb.version>
+        <mssql.version>12.6.1.jre11</mssql.version>
         <pgsql.version>42.7.2</pgsql.version>
         <!-- CQ #21139, 21140 -->
-        <logback.version>1.4.12</logback.version>
+        <logback.version>1.5.1</logback.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
         <!-- CQ #2437 -->
-        <oracle.aqapi.version>23.2.1.0</oracle.aqapi.version>
+        <oracle.aqapi.version>23.3.1.0</oracle.aqapi.version>
         <oracle.fmw.version>12.2.1-2-0</oracle.fmw.version>
         <!-- CQ #21141 -->
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
         <!-- CQ #24195 -->
-        <oracle.nosql.sdk.version>5.4.13</oracle.nosql.sdk.version>
+        <oracle.nosql.sdk.version>5.4.14</oracle.nosql.sdk.version>
         <!-- CQ #21142 -->
         <osgi.version>6.0.0</osgi.version>
         <!-- CQ #21143 -->
-        <slf4j.version>2.0.9</slf4j.version>
+        <slf4j.version>2.0.12</slf4j.version>
         <!-- CQ #23051, 23052, 23053, 53054, 53055 -->
-        <springframework.version>6.0.13</springframework.version>
+        <springframework.version>6.1.4</springframework.version>
         <!-- CQ #23233 -->
-        <weld-se.version>5.1.2.Final</weld-se.version>
+        <weld-se.version>6.0.0.Beta1</weld-se.version>
         <weblogic.version>12.2.1-3</weblogic.version>
         <wildfly.version>27.0.0.Final</wildfly.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
 
         <!--Documentation Dependencies version-->
-        <asciidoctorj.version>2.5.8</asciidoctorj.version>
-        <asciidoctorj.pdf.version>2.3.7</asciidoctorj.pdf.version>
-        <asciidoctorj.epub.version>1.5.1</asciidoctorj.epub.version>
-        <jruby.version>9.3.10.0</jruby.version>
+        <asciidoctorj.version>3.0.0-alpha.2</asciidoctorj.version>
+        <asciidoctorj.pdf.version>2.3.13</asciidoctorj.pdf.version>
+        <asciidoctorj.epub.version>2.0.1</asciidoctorj.epub.version>
+        <jruby.version>9.4.6.0</jruby.version>
     </properties>
 
     <!-- Default modules set and added to by all profiles -->
@@ -1078,7 +1078,7 @@
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
-                    <version>1.7.1</version>
+                    <version>1.8.1</version>
                 </plugin>
                 <plugin>
                     <groupId>com.sun.wts.tools.ant</groupId>
@@ -1108,17 +1108,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.3.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>3.12.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1133,7 +1133,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.5</version>
                     <configuration>
                         <useModulePath>false</useModulePath>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
@@ -1152,7 +1152,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1167,7 +1167,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>4.0.0-M11</version>
+                    <version>4.0.0-M13</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1177,7 +1177,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.5</version>
                     <configuration>
                         <useModulePath>false</useModulePath>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
@@ -1186,7 +1186,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-report-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1196,7 +1196,7 @@
                 <plugin>
                     <groupId>org.codehaus.cargo</groupId>
                     <artifactId>cargo-maven3-plugin</artifactId>
-                    <version>1.10.10</version>
+                    <version>1.10.12</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.gmaven</groupId>
@@ -1206,7 +1206,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>aspectj-maven-plugin</artifactId>
-                    <version>1.14.0</version>
+                    <version>1.15.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.aspectj</groupId>
@@ -1228,7 +1228,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -1238,7 +1238,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -1302,7 +1302,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
@@ -1323,7 +1323,7 @@
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.7.3.6</version>
+                    <version>4.8.3.1</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.github.spotbugs</groupId>
@@ -1347,7 +1347,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>8.4.0</version>
+                    <version>9.0.9</version>
                     <configuration>
 <!--                        <failBuildOnCVSS>7</failBuildOnCVSS>-->
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
@@ -1361,7 +1361,7 @@
                 <plugin>
                     <groupId>org.asciidoctor</groupId>
                     <artifactId>asciidoctor-maven-plugin</artifactId>
-                    <version>2.2.4</version>
+                    <version>3.0.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.jruby</groupId>
@@ -1388,7 +1388,7 @@
                 <plugin>
                     <groupId>org.wildfly.plugins</groupId>
                     <artifactId>wildfly-maven-plugin</artifactId>
-                    <version>4.2.0.Final</version>
+                    <version>5.0.0.Beta3</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -1659,7 +1659,7 @@
                                     <version>[17,)</version>
                                 </requireJavaVersion>
                                 <requireMavenVersion>
-                                    <version>[3.6.3,)</version>
+                                    <version>[3.8.5,)</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
