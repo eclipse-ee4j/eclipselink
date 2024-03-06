@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,8 @@ import static org.junit.Assert.assertTrue;
 @Ignore
 public abstract class TestUuidCommon {
 
-    private static final String NAME_UUID = "Persist UUID UUID 1";
+    private static final String NAME_UUID1 = "Persist UUID UUID 1";
+    private static final String NAME_UUID2 = "Merge UUID UUID 2";
 
     abstract EntityManagerFactory getEmf();
 
@@ -41,10 +42,11 @@ public abstract class TestUuidCommon {
      */
     @Test
     public void testUuid() {
-        UUID uuid = persistUUIDUUIDEntity();
+        UUID uuid1 = persistUUIDUUIDEntity();
+        mergeUUIDUUIDEntity();
         queryAllUUIDUUIDEntity();
-        queryWithParameterUUIDUUIDEntity(uuid);
-        findUUIDUUIDEntityTest(uuid);
+        queryWithParameterUUIDUUIDEntity(uuid1);
+        findUUIDUUIDEntityTest(uuid1);
     }
 
     private UUID persistUUIDUUIDEntity() {
@@ -53,8 +55,32 @@ public abstract class TestUuidCommon {
         try {
             em.getTransaction().begin();
             UUIDUUIDEntity entity = new UUIDUUIDEntity();
-            entity.setName(NAME_UUID);
+            entity.setName(NAME_UUID1);
             em.persist(entity);
+            uuidResult = entity.getId();
+            assertNotNull(uuidResult);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+        finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+        return uuidResult;
+    }
+
+    private UUID mergeUUIDUUIDEntity() {
+        EntityManager em = getEmf().createEntityManager();
+        UUID uuidResult = null;
+        try {
+            em.getTransaction().begin();
+            UUIDUUIDEntity entity = new UUIDUUIDEntity();
+            entity.setName(NAME_UUID2);
+            entity = em.merge(entity);
             uuidResult = entity.getId();
             assertNotNull(uuidResult);
             em.getTransaction().commit();
@@ -102,7 +128,7 @@ public abstract class TestUuidCommon {
                 assertNotNull(entity);
                 assertNotNull(entity.getId());
                 assertEquals(id, entity.getId());
-                assertEquals(NAME_UUID, entity.getName());
+                assertEquals(NAME_UUID1, entity.getName());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,7 +148,7 @@ public abstract class TestUuidCommon {
             UUIDUUIDEntity entity = em.find(UUIDUUIDEntity.class, id);
             assertNotNull(entity);
             assertEquals(id, entity.getId());
-            assertEquals(NAME_UUID, entity.getName());
+            assertEquals(NAME_UUID1, entity.getName());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
