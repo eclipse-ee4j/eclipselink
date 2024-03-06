@@ -25,7 +25,11 @@ package org.eclipse.persistence.config;
  *
  * @see PersistenceUnitProperties#TUNING
  */
-public class TunerType {
+public final class TunerType {
     public static final String Safe = "Safe";
     public static final String Standard = "Standard";
+
+    private TunerType() {
+        // no instance please
+    }
 }

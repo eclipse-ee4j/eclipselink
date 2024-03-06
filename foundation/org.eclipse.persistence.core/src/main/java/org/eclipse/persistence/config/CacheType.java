@@ -41,7 +41,7 @@ package org.eclipse.persistence.config;
  * @see PersistenceUnitProperties#CACHE_SHARED_
  * @see PersistenceUnitProperties#CACHE_TYPE_
  */
-public class CacheType {
+public final class CacheType {
     /**
      * A Weak cache holds all objects in use by the application,
      * but allows any un-referenced objects to be free to garbage collection.
@@ -97,4 +97,8 @@ public class CacheType {
      * The default cache type is SoftWeak.
      */
     public static final String DEFAULT = SoftWeak;
+
+    private CacheType() {
+        // no instance please
+    }
 }

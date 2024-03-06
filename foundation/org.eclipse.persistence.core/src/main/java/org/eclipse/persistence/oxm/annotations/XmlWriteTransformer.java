@@ -14,8 +14,6 @@
 //     Oracle = 2.2 - Initial contribution
 package org.eclipse.persistence.oxm.annotations;
 
-import org.eclipse.persistence.mappings.transformers.FieldTransformer;
-
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -52,7 +50,7 @@ public @interface XmlWriteTransformer {
      * <p>
      * Either transformerClass or {@linkplain #method()}  must be specified, but not both.
      */
-    Class<? extends FieldTransformer> transformerClass() default FieldTransformer.class;
+    Class<?> transformerClass() default void.class;
 
     /**
      * The mapped class must have a method with this name which returns a value

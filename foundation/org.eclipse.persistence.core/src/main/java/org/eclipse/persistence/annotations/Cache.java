@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.annotations;
 
-import org.eclipse.persistence.config.CacheIsolationType;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -66,7 +64,7 @@ public @interface Cache {
      * <p>
      * The default is {@linkplain CacheIsolationType#SHARED} which has EclipseLink
      * Caching all Entities in the Shared Cache.
-     * @see org.eclipse.persistence.config.CacheIsolationType
+     * @see CacheIsolationType
      */
     CacheIsolationType isolation() default CacheIsolationType.SHARED;
 

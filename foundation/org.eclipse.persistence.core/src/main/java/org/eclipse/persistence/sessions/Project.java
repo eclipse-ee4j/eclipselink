@@ -41,7 +41,7 @@
 package org.eclipse.persistence.sessions;
 
 import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;

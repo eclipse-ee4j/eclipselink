@@ -15,8 +15,6 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.annotations;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -52,7 +50,7 @@ public @interface TenantTableDiscriminator {
      * <p>
      * Default is "{@code eclipselink-tenant.id}".
      */
-    String contextProperty() default PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
+    String contextProperty() default "eclipselink.tenant-id";
 
     /**
      * The type of tenant table discriminator to use with the tables

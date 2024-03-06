@@ -34,7 +34,7 @@
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.PropertiesUtils;
+import org.eclipse.persistence.internal.helper.PropertiesUtils;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -268,12 +268,12 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             if (platformName != null && platformName.contains("Oracle")) {
                 try {
                     // If we are running against Oracle, it is possible that we are
-                    // running in an environment where the extension OracleXPlatform classes can 
+                    // running in an environment where the extension OracleXPlatform classes can
                     // not be loaded. Try using the core OracleXPlatform classes
                     platformName = DBPlatformHelper.getDBPlatform("core."+ vendorName, minorVersion, majorVersion, getSessionLog());
                     getLogin().setPlatformClassName(platformName);
                 } catch (EclipseLinkException oracleClassNotFound) {
-                    // If we still cannot classload a matching OracleXPlatform class, 
+                    // If we still cannot classload a matching OracleXPlatform class,
                     // fallback on the base OraclePlatform class
                     getLogin().setPlatformClassName(OraclePlatform.class.getName());
                 }

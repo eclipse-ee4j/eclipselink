@@ -37,10 +37,14 @@ package org.eclipse.persistence.config;
  * @see jakarta.persistence.EntityManager
  * @see jakarta.persistence.Query
  */
-public class PessimisticLock {
+public final class PessimisticLock {
     public static final String  NoLock = "NoLock";
     public static final String  Lock = "Lock";
     public static final String  LockNoWait = "LockNoWait";
 
     public static final String DEFAULT = NoLock;
+
+    private PessimisticLock() {
+        // no instance please
+    }
 }

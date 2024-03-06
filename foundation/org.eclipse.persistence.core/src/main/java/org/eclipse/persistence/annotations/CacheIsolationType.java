@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Gordon Yorke - initial API and implementation
-package org.eclipse.persistence.config;
+package org.eclipse.persistence.annotations;
 
 /**
  * Options for how Entity instances should be shared within an EclipseLink Persistence Unit / ServerSession

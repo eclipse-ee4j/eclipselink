@@ -19,6 +19,7 @@
 package org.eclipse.persistence.config;
 
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.helper.PropertiesUtils;
 import org.eclipse.persistence.platform.database.DB2Platform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.junit.Assert;

@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @author tware
  *
  */
-public class SystemProperties {
+public final class SystemProperties {
 
     /**
      * Configures the factory class we use to produce instances of org.eclispe.persistence.jpa.Archive
@@ -84,15 +84,15 @@ public class SystemProperties {
      * LocalDateTime, OffsetDateTime, and OffsetTime types.
      */
     public static final String CONVERSION_USE_TIMEZONE = "org.eclipse.persistence.conversion.useTimeZone";
-    
+
     /**
-     * This system property can be set to restore ConversionManager behavior with converting 
+     * This system property can be set to restore ConversionManager behavior with converting
      * LocalDateTime, OffsetDateTime, and OffsetTime types back to using the JVM's default time zone instead
      * of UTC.  This restores behavior prior to fixing Bug 538296.  This property is ignored if the
      * System Property CONVERSION_USE_TIMEZONE has been set.
      */
     public static final String CONVERSION_USE_DEFAULT_TIMEZONE = "org.eclipse.persistence.conversion.useDefaultTimeZoneForJavaTime";
-    
+
     /**
      * This property can be set to {@code false} to enable UPDATE call to set
      * foreign key value in the target row in unidirectional 1-Many mapping
@@ -271,4 +271,7 @@ public class SystemProperties {
      */
     public static final String ASM_SERVICE = "eclipselink.asm.service";
 
+    private SystemProperties() {
+        // no instance please
+    }
 }

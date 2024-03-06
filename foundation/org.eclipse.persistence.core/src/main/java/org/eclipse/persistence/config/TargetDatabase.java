@@ -24,7 +24,7 @@ package org.eclipse.persistence.config;
  *
  * <p>Property values are case-insensitive
  */
-public class TargetDatabase {
+public final class TargetDatabase {
     public static final String  Auto = "Auto";
     public static final String  Oracle = "Oracle";
     public static final String  Oracle11 = "Oracle11";
@@ -56,4 +56,8 @@ public class TargetDatabase {
     public static final String  TimesTen = "TimesTen";
 
     public static final String DEFAULT = Auto;
+
+    private TargetDatabase() {
+        // no instance please
+    }
 }

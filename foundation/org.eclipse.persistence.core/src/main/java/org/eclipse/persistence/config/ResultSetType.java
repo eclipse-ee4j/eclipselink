@@ -36,7 +36,7 @@ package org.eclipse.persistence.config;
  *
  * @author James Sutherland
  */
-public class ResultSetType {
+public final class ResultSetType {
     /** The rows in a result set will be processed in a forward direction; first-to-last. */
     public static final String  Forward = "Forward";
 

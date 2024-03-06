@@ -36,7 +36,7 @@ package org.eclipse.persistence.config;
  *
  * @author James Sutherland
  */
-public class ResultSetConcurrency {
+public final class ResultSetConcurrency {
     /** The concurrency mode for a ResultSet object that may be updated. */
     public static final String  Updatable = "Updatable";
 
@@ -47,4 +47,8 @@ public class ResultSetConcurrency {
      * The default type is Updatable.
      */
     public static final String DEFAULT = Updatable;
+
+    private ResultSetConcurrency() {
+        // no instance please
+    }
 }

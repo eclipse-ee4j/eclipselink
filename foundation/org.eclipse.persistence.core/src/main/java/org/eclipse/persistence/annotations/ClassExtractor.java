@@ -63,6 +63,6 @@ public @interface ClassExtractor {
      * Defines the name of the class extractor that should be
      * applied to this entity's descriptor.
      */
-    Class<? extends org.eclipse.persistence.descriptors.ClassExtractor> value();
+    Class<?> value();
 }
 

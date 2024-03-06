@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import org.eclipse.persistence.config.CacheIsolationType;
-import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.annotations.CacheIsolationType;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;

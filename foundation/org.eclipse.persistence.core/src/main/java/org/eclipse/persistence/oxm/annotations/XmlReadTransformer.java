@@ -14,8 +14,6 @@
 //     Oracle = 2.2 - Initial contribution
 package org.eclipse.persistence.oxm.annotations;
 
-import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -101,7 +99,7 @@ public @interface XmlReadTransformer {
      * <p>
      * Either transformerClass or {@linkplain #method()} must be specified, but not both.
      */
-    Class<? extends AttributeTransformer> transformerClass() default AttributeTransformer.class;
+    Class<?> transformerClass() default void.class;
 
     /**
      * The mapped class must have a method with this name which returns a value

@@ -14,8 +14,6 @@
 //     dmccann - August 6/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.oxm.annotations;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -24,7 +22,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * The XmlCustomizer annotation is used to specify a class that implements the
- * {@linkplain org.eclipse.persistence.config.DescriptorCustomizer}
+ * {@linkplain org.eclipse.persistence.descriptors.DescriptorCustomizer}
  * interface and is to run against a class descriptor after all metadata
  * processing has been completed.
  */
@@ -35,6 +33,6 @@ public @interface XmlCustomizer {
      * Defines the name of the descriptor customizer that should be
      * applied to this class' descriptor.
      */
-     Class<? extends DescriptorCustomizer> value();
+     Class<?> value();
 
 }

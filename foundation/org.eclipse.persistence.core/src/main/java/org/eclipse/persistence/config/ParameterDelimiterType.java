@@ -36,7 +36,11 @@ package org.eclipse.persistence.config;
  *
  * @see QueryHints#PARAMETER_DELIMITER
  */
-public class ParameterDelimiterType {
+public final class ParameterDelimiterType {
     public static final String  Hash = "#";
     public static final String DEFAULT = Hash;
+
+    private ParameterDelimiterType() {
+        // no instance please
+    }
 }

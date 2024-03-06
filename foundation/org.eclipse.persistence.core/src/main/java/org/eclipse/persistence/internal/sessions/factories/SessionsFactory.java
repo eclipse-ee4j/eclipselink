@@ -15,7 +15,7 @@
 //     cdelahun - Bug 214534: changes for JMSPublishingTransportManager configuration via session.xml
 package org.eclipse.persistence.internal.sessions.factories;
 
-import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.eis.EISConnectionSpec;
 import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.exceptions.ExceptionHandler;

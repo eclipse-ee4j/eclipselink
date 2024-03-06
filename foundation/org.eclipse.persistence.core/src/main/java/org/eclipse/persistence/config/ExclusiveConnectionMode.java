@@ -38,7 +38,7 @@ package org.eclipse.persistence.config;
  *
  * @see PersistenceUnitProperties
  */
-public class ExclusiveConnectionMode {
+public final class ExclusiveConnectionMode {
     /**
      * The value causes creation of
      * IsolatedClientSession in isolated case
@@ -114,4 +114,8 @@ public class ExclusiveConnectionMode {
     public static final String  Always = "Always";
 
     public static final String DEFAULT = Transactional;
+
+    private ExclusiveConnectionMode() {
+        // no instance please
+    }
 }

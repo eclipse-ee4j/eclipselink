@@ -32,8 +32,12 @@ package org.eclipse.persistence.config;
  *
  * @see QueryHints
  */
-public class HintValues {
+public final class HintValues {
     public static final String TRUE = "True";
     public static final String FALSE = "False";
     public static final String PERSISTENCE_UNIT_DEFAULT = "PersistenceUnitDefault";
+
+    private HintValues() {
+        // no instance please
+    }
 }

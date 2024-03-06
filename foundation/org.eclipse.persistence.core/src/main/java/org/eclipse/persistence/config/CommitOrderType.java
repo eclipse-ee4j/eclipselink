@@ -13,7 +13,7 @@
 // Contributors:
 //     Oracle - initial API and implementation
 
- package org.eclipse.persistence.config;
+package org.eclipse.persistence.config;
 
 
 /**
@@ -30,11 +30,11 @@
  * <p>
  * By default, the commit of a set of the same entity type is not ordered.
  * <p>
- * Entity type commit order can be modified using a {@linkplain DescriptorCustomizer} and
+ * Entity type commit order can be modified using a {@linkplain org.eclipse.persistence.descriptors.DescriptorCustomizer} and
  * the {@linkplain org.eclipse.persistence.descriptors.ClassDescriptor#addConstraintDependency(Class)} API.
  * Commit order can also be controlled using the EntityManager.flush() API.
  */
-public class CommitOrderType {
+public final class CommitOrderType {
     /** Updates and deletes are ordered by the object's id.  This can help avoid deadlocks on highly concurrent systems. */
     public static final String Id = "Id";
     /** Updates are ordered by the object's changes, then by id.  This can improve batch writing efficiency. */
@@ -43,5 +43,9 @@ public class CommitOrderType {
     public static final String None = "None";
 
     public static final String DEFAULT = Id;
+
+    private CommitOrderType() {
+        // no instance please
+    }
 }
 

@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.config;
+package org.eclipse.persistence.descriptors;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 

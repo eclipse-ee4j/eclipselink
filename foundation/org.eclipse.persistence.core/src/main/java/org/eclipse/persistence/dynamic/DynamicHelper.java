@@ -236,7 +236,7 @@ public class DynamicHelper {
      * A SessionCustomizer which configures all descriptors as dynamic entity
      * types.
      */
-    public static class SessionCustomizer implements org.eclipse.persistence.config.SessionCustomizer {
+    public static class SessionCustomizer implements org.eclipse.persistence.sessions.SessionCustomizer {
 
         /**
          * Default constructor.

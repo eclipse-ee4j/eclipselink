@@ -120,7 +120,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.persistence.annotations.ExistenceType;
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
@@ -467,8 +467,8 @@ public class MetadataDescriptor {
      * applicable). Validation should therefore always be done against boxed
      * types.
      *
-     * @see #validateDerivedPKClassId(String, String, String) 
-     * @see #validatePKClassId(String, String) 
+     * @see #validateDerivedPKClassId(String, String, String)
+     * @see #validatePKClassId(String, String)
      */
     public void addPKClassId(String attributeName, String type) {
         m_pkClassIDs.put(attributeName, type);

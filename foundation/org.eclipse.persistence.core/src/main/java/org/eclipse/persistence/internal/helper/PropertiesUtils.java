@@ -18,7 +18,7 @@
 //       - 461607: PropertiesUtils does not process methods with String parameters correctly.
 //     05/06/2015-2.7.0 Rick Curtis
 //       - 466626: Fix bug in getMethods() when Java 2 security is enabled.
-package org.eclipse.persistence.config;
+package org.eclipse.persistence.internal.helper;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;

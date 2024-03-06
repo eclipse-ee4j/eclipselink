@@ -14,8 +14,6 @@
 //     Denise Smith - EclipseLink 2.3 - Initial Implementation
 package org.eclipse.persistence.oxm.annotations;
 
-import org.eclipse.persistence.oxm.XMLNameTransformer;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,5 +37,5 @@ public @interface XmlNameTransformer {
     /**
      * Defines the name of the XML name transformer that should be applied to names.
      */
-    Class<? extends XMLNameTransformer> value();
+    Class<?> value();
 }

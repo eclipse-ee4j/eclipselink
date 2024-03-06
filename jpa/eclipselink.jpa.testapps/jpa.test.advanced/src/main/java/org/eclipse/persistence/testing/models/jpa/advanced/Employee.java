@@ -68,7 +68,7 @@ import org.eclipse.persistence.annotations.StoredProcedureParameter;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 import org.eclipse.persistence.sessions.DataRecord;
