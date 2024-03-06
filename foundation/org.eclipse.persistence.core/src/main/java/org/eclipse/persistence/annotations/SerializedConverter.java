@@ -16,9 +16,6 @@
 //       - 518155: [jpa22] add support for repeatable annotations
 package org.eclipse.persistence.annotations;
 
-import org.eclipse.persistence.sessions.serializers.JavaSerializer;
-import org.eclipse.persistence.sessions.serializers.Serializer;
-
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -65,5 +62,5 @@ public @interface SerializedConverter {
      * The serializer class to be used. This class must implement the
      * {@linkplain org.eclipse.persistence.sessions.serializers.Serializer} interface.
      */
-    Class<? extends Serializer> serializerClass() default JavaSerializer.class;
+    Class<?> serializerClass() default void.class;
 }

@@ -35,7 +35,7 @@ package org.eclipse.persistence.config;
  * @see QueryHints#QUERY_TYPE
  * @see org.eclipse.persistence.queries.DatabaseQuery
  */
-public class QueryType {
+public final class QueryType {
     public static final String  Auto = "Auto";
     public static final String  ReadObject = "ReadObject";
     public static final String  ReadAll = "ReadAll";
@@ -51,4 +51,8 @@ public class QueryType {
     public static final String  DirectRead = "DirectRead";
 
     public static final String DEFAULT = Auto;
+
+    private QueryType() {
+        // no instance please
+    }
 }

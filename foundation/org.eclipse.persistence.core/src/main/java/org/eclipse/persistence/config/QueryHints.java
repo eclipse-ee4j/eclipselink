@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  * @see PessimisticLock
  * @see QueryType
  */
-public class QueryHints {
+public final class QueryHints {
     /**
      * "eclipselink.jdbc.bind-parameters"
      * <p>Configures parameter binding to be disabled or enabled just for this query (overrides persistent unit setting, which default to true).

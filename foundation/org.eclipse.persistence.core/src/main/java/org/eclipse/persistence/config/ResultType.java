@@ -45,7 +45,7 @@ package org.eclipse.persistence.config;
  *
  * @author James Sutherland
  */
-public class ResultType {
+public final class ResultType {
     /**
      * An Object array of values is returned {@literal (List<Object[]> or Object[])}.
      */
@@ -73,4 +73,8 @@ public class ResultType {
      * The default type is Array.
      */
     public static final String DEFAULT = Array;
+
+    private ResultType() {
+        // no instance please
+    }
 }

@@ -36,11 +36,15 @@ package org.eclipse.persistence.config;
  * </ul>
  * @see org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism
  */
-public class BatchWriting {
+public final class BatchWriting {
     public static final String  None = "None";
     public static final String  JDBC = "JDBC";
     public static final String  Buffered = "Buffered";
     public static final String  OracleJDBC = "Oracle-JDBC";
 
     public static final String DEFAULT = None;
+
+    private BatchWriting() {
+        // no instance please
+    }
 }

@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
-import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SerializedObjectPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;

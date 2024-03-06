@@ -32,7 +32,7 @@ package org.eclipse.persistence.config;
  *
  * <p>Property values are case-insensitive
  */
-public class TargetServer {
+public final class TargetServer {
     public static final String  None = "None";
     public static final String  Glassfish = "Glassfish";
     public static final String  WebSphere = "WebSphere";
@@ -49,4 +49,8 @@ public class TargetServer {
     public static final String  WildFly = "WildFly";
 
     public static final String DEFAULT = None;
+
+    private TargetServer() {
+        // no instance please
+    }
 }

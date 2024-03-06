@@ -30,7 +30,7 @@ package org.eclipse.persistence.config;
  * <p>Values are case-insensitive.
  * "" could be used instead of default value FlushClearCache.DEFAULT.
  */
-public class FlushClearCache {
+public final class FlushClearCache {
     /** Call to clear method causes to drop from EntityManager cache only the objects that haven't been flushed.
      * This is the most accurate mode: shared cache is perfect after commit;
      * but the least memory effective: smbd repeatedly using flush followed by clear
@@ -54,4 +54,8 @@ public class FlushClearCache {
     public static final String  DropInvalidate = "DropInvalidate";
 
     public static final String DEFAULT = DropInvalidate;
+
+    private FlushClearCache() {
+        // no instance please
+    }
 }

@@ -38,7 +38,7 @@ package org.eclipse.persistence.config;
  *
  * @author James Sutherland
  */
-public class CacheUsageIndirectionPolicy {
+public final class CacheUsageIndirectionPolicy {
     /** If conforming encounters an uninstantiated indirection/lazy object an exception is thrown. */
     public static final String  Exception = "Exception";
 
@@ -55,4 +55,8 @@ public class CacheUsageIndirectionPolicy {
      * The default type is Exception.
      */
     public static final String DEFAULT = Exception;
+
+    private CacheUsageIndirectionPolicy() {
+        // no instance please
+    }
 }

@@ -28,7 +28,7 @@
  * @see org.eclipse.persistence.tools.profiler.QueryMonitor
  * @see org.eclipse.persistence.tools.profiler.PerformanceProfiler
  */
-public class ProfilerType {
+public final class ProfilerType {
     //A tool used to provide high level performance profiling information
     public static final String PerformanceProfiler = "PerformanceProfiler";
     public static final String QueryMonitor = "QueryMonitor";
@@ -39,5 +39,9 @@ public class ProfilerType {
     public static final String DEFAULT = NoProfiler;
 
     public static final String DMSProfilerClassName = "org.eclipse.persistence.tools.profiler.oracle.DMSPerformanceProfiler";
+
+    private ProfilerType() {
+        // no instance please
+    }
 }
 

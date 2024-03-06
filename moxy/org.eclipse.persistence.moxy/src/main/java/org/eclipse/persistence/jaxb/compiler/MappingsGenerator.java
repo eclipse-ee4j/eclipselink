@@ -48,7 +48,7 @@ import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
 import org.eclipse.persistence.asm.MethodVisitor;
 import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.asm.Type;
-import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.core.mappings.converters.CoreConverter;

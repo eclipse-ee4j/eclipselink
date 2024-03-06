@@ -14,8 +14,6 @@
 //     James Sutherland - initial API and implementation
 package org.eclipse.persistence.annotations;
 
-import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -53,5 +51,5 @@ public @interface Partitioning {
     /**
      * A subclass of {@linkplain org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy}.
      */
-    Class<? extends PartitioningPolicy> partitioningClass();
+    Class<?> partitioningClass();
 }

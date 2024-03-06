@@ -25,7 +25,7 @@ package org.eclipse.persistence.config;
  *
  * @see org.eclipse.persistence.queries.JPAQueryBuilder
  */
-public class ParserType {
+public final class ParserType {
     public static final String Hermes = "Hermes";
 
     public static final String DEFAULT = Hermes;

@@ -33,7 +33,7 @@ package org.eclipse.persistence.config;
  *
  * @see QueryHints
  */
-public class CascadePolicy {
+public final class CascadePolicy {
     public static final String NoCascading = "NoCascading";
     public static final String CascadePrivateParts = "CascadePrivateParts";
     public static final String CascadeAllParts = "CascadeAllParts";
@@ -41,4 +41,7 @@ public class CascadePolicy {
 
     public static final String DEFAULT = CascadeByMapping;
 
+    private CascadePolicy() {
+        // no instance please
+    }
 }

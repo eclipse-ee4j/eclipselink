@@ -25,10 +25,13 @@ package org.eclipse.persistence.config;
  *
  * @see PersistenceUnitProperties#COORDINATION_PROTOCOL
  */
-public class CacheCoordinationProtocol {
+public final class CacheCoordinationProtocol {
     public static final String RMI = "rmi";
     public static final String RMIIIOP = "rmi-iiop";
     public static final String JMS = "jms";
     public static final String JMSPublishing = "jms-publishing";
     public static final String JGROUPS = "jgroups";
+
+    private CacheCoordinationProtocol() {
+    }
 }

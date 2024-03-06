@@ -29,7 +29,7 @@ package org.eclipse.persistence.config;
  *
  * @see org.eclipse.persistence.queries.JPAQueryBuilder JPAQueryBuilder
  */
-public class ParserValidationType {
+public final class ParserValidationType {
     public static final String EclipseLink = "EclipseLink";
     public static final String JPA10 = "JPA 1.0";
     public static final String JPA20 = "JPA 2.0";
@@ -41,4 +41,8 @@ public class ParserValidationType {
     public static final String None = "None";
 
     public static final String DEFAULT = EclipseLink;
+
+    private ParserValidationType() {
+        // no instance please
+    }
 }

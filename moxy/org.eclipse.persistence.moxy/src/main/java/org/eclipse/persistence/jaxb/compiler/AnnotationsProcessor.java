@@ -815,7 +815,8 @@ public final class AnnotationsProcessor {
                     info.setXmlNameTransformer(nsInfoXmlNameTransformer);
                 } else if (helper.isAnnotationPresent(javaClass, XmlNameTransformer.class)) {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass, XmlNameTransformer.class);
-                    Class<? extends XMLNameTransformer> nameTransformerClass = xmlNameTransformer.value();
+                    @SuppressWarnings({"unchecked"})
+                    Class<? extends XMLNameTransformer> nameTransformerClass = (Class<? extends XMLNameTransformer>) xmlNameTransformer.value();
                     try {
                         info.setXmlNameTransformer(nameTransformerClass.getConstructor().newInstance());
                     } catch (ReflectiveOperationException ex) {
@@ -823,7 +824,8 @@ public final class AnnotationsProcessor {
                     }
                 } else if (helper.isAnnotationPresent(javaClass.getPackage(), XmlNameTransformer.class)) {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass.getPackage(), XmlNameTransformer.class);
-                    Class<? extends XMLNameTransformer> nameTransformerClass = xmlNameTransformer.value();
+                    @SuppressWarnings({"unchecked"})
+                    Class<? extends XMLNameTransformer> nameTransformerClass = (Class<? extends XMLNameTransformer>) xmlNameTransformer.value();
                     try {
                         info.setXmlNameTransformer(nameTransformerClass.getConstructor().newInstance());
                     } catch (ReflectiveOperationException ex) {
@@ -2259,7 +2261,7 @@ public final class AnnotationsProcessor {
         org.eclipse.persistence.oxm.annotations.XmlReadTransformer readTransformer = (org.eclipse.persistence.oxm.annotations.XmlReadTransformer) helper.getAnnotation(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlReadTransformer.class);
         if (readTransformer != null) {
             org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer xmlReadTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer();
-            if (!(readTransformer.transformerClass() == AttributeTransformer.class)) {
+            if (!(readTransformer.transformerClass() == void.class)) {
                 xmlReadTransformer.setTransformerClass(readTransformer.transformerClass().getName());
             } else if (!(readTransformer.method().equals(EMPTY_STRING))) {
                 xmlReadTransformer.setMethod(readTransformer.method());
@@ -2280,7 +2282,7 @@ public final class AnnotationsProcessor {
         if (transformers != null) {
             for (org.eclipse.persistence.oxm.annotations.XmlWriteTransformer next : transformers) {
                 org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer xmlWriteTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer();
-                if (!(next.transformerClass() == FieldTransformer.class)) {
+                if (!(next.transformerClass() == void.class)) {
                     xmlWriteTransformer.setTransformerClass(next.transformerClass().getName());
                 } else if (!(next.method().equals(EMPTY_STRING))) {
                     xmlWriteTransformer.setMethod(next.method());

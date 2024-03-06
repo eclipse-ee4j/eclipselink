@@ -83,7 +83,7 @@ public enum CacheType {
      * objects. This cache type is not recommend and should normally not be used.
      * This cache type should not be used to disable caching, to properly disable
      * caching set the {@linkplain Cache#isolation()} attribute to
-     * {@linkplain org.eclipse.persistence.config.CacheIsolationType#ISOLATED}.
+     * {@linkplain CacheIsolationType#ISOLATED}.
      */
     NONE
 }

@@ -14,8 +14,6 @@
 //     Oracle = 2.2 - Initial contribution
 package org.eclipse.persistence.oxm.annotations;
 
-import org.eclipse.persistence.descriptors.ClassExtractor;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -45,6 +43,6 @@ public @interface XmlClassExtractor {
      * Defines the name of the class extractor that should be
      * applied to this entity's descriptor.
      */
-    Class<? extends ClassExtractor> value();
+    Class<?> value();
 
 }

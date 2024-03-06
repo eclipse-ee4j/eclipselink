@@ -62,7 +62,7 @@ import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
-import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -4421,7 +4421,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.clear();
         assertNull("Uncommitted Data loaded into cache", em.find(Employee.class, emp.getId()));
     }
-    
+
     public void testReadOnlyCachedLazyAssociation() {
         EntityManager em = createEntityManager();
         Integer empId = null;
@@ -5539,7 +5539,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } else {
             factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory("default");
         }
-        
+
         try {
             if (getDatabaseSession() != factory.getServerSession()) {
                 fail("Application managed persistence unit is not the same as the container managed session.  Deployment is broken."
@@ -13112,7 +13112,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 		em.persist(matEreignis1);
 		em.flush();
 		em.detach(matEreignis1);
-		
+
 		List<PlanArbeitsgangHist> pagList = getInstancesFromPC(PlanArbeitsgangHist.class, uow);
 		assertTrue(pagList.isEmpty());
 		for (PlanArbeitsgangHist pag : pagList) {
@@ -13184,7 +13184,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 			em.createNativeQuery("INSERT INTO MATERIALEREIGNIS (ID, VERSION, AFTERCHANGE_ID, BEFORECHANGE_ID, CHANGEDOBJECT_ID) VALUES (1, 1, 2, 1, 1)").executeUpdate();
         } catch (Exception e) {
             fail("Error creating test data: " + e.getMessage());
-        } 
+        }
     }
 
     private void InitTestDetachChildObjects2(EntityManager em) {

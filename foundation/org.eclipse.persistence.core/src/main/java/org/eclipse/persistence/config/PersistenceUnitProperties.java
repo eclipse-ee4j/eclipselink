@@ -82,7 +82,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @see jakarta.persistence.Persistence#createEntityManagerFactory(String, Map)
  */
-public class PersistenceUnitProperties {
+public final class PersistenceUnitProperties {
 
     /**
      * The {@code jakarta.persistence.transactionType} property specifies the
@@ -990,11 +990,11 @@ public class PersistenceUnitProperties {
     public static final String PARTITIONING_CALLBACK = "eclipselink.partitioning.callback";
 
     /**
-     * Property {@code eclipselink.jdbc.bind-parameters} configures whether parameter binding 
+     * Property {@code eclipselink.jdbc.bind-parameters} configures whether parameter binding
      * should be used in the creation of JDBC prepared statements.
      * <p>
-     * Usage of parameter binding is generally a performance optimization; 
-     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
+     * Usage of parameter binding is generally a performance optimization;
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
@@ -1005,7 +1005,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
 
     /**
-     * Property {@code eclipselink.jdbc.allow-partial-bind-parameters} configures whether 
+     * Property {@code eclipselink.jdbc.allow-partial-bind-parameters} configures whether
      * partial parameter binding should be allowed in the creation of JDBC prepared statements.
      * <p>
      * EclipseLink determines binding behavior based on the database platform's support for binding.
@@ -1013,8 +1013,8 @@ public class PersistenceUnitProperties {
      * all binding for the whole query. Setting this property to 'true' will allow EclipseLink to bind
      * per expression, instead of per query.
      * <p>
-     * Usage of parameter binding is generally a performance optimization; 
-     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
+     * Usage of parameter binding is generally a performance optimization;
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
@@ -2444,17 +2444,17 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code eclipselink.session.customizer} property configures a
-     * {@link SessionCustomizer} used to alter the runtime configuration through
+     * {@link org.eclipse.persistence.sessions.SessionCustomizer} used to alter the runtime configuration through
      * API.
      * <p>
      * Session customizer is called after all other properties have been processed.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>the fully qualified name for a class that implements {@link SessionCustomizer} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.sessions.SessionCustomizer} interface
      * </ul>
      *
-     * @see SessionCustomizer
+     * @see org.eclipse.persistence.sessions.SessionCustomizer
      */
     public static final String SESSION_CUSTOMIZER = "eclipselink.session.customizer";
 
@@ -2463,7 +2463,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The {@code eclipselink.descriptor.customizer.} is a prefix for a
-     * property used to configure a {@link DescriptorCustomizer}. Customization
+     * property used to configure a {@link org.eclipse.persistence.descriptors.DescriptorCustomizer}. Customization
      * Prefix Property names formed out of this prefix by appending either
      * entity name, or class name (indicating that the property values applies
      * only to a particular entity) Allows descriptor customization.
@@ -2472,10 +2472,10 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>the fully qualified name for a class that implements {@link DescriptorCustomizer} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.descriptors.DescriptorCustomizer} interface
      * </ul>
      *
-     * @see DescriptorCustomizer
+     * @see org.eclipse.persistence.descriptors.DescriptorCustomizer
      */
     public static final String DESCRIPTOR_CUSTOMIZER_ = "eclipselink.descriptor.customizer.";
 
@@ -3169,7 +3169,7 @@ public class PersistenceUnitProperties {
      * <p>
      * By default, the commit of a set of the same entity type is ordered by its Id.
      * <p>
-     * Entity type commit order can be modified using a {@link DescriptorCustomizer}
+     * Entity type commit order can be modified using a {@link org.eclipse.persistence.descriptors.DescriptorCustomizer}
      * and the {@link org.eclipse.persistence.descriptors.ClassDescriptor#addConstraintDependency(Class)} API.
      * Commit order can also be controlled using the {@code EntityManager#flush()} API.
      * <p>
@@ -3615,7 +3615,7 @@ public class PersistenceUnitProperties {
      * Sets the URL of the host server.<br>
      * This is the URL that other cluster member should use to connect to this host.
      * This may not be required in a clustered environment where JNDI is replicated.<br>
-     * This can also be set as a System property or using a {@link SessionCustomizer} to avoid
+     * This can also be set as a System property or using a {@link org.eclipse.persistence.sessions.SessionCustomizer} to avoid
      * a separate persistence.xml per server.
      *
      * @see #COORDINATION_PROTOCOL
@@ -4212,7 +4212,7 @@ public class PersistenceUnitProperties {
      * The {@code eclipselink.login.encryptor} property configures a custom implementation of
      * {@link org.eclipse.persistence.security.Securable} class used to encrypt and decrypt database password
      * loaded from {@code jakarta.persistence.jdbc.password} property.
-     * Usage of this property avoids limitation of {@link SessionCustomizer} which is called when all other
+     * Usage of this property avoids limitation of {@link org.eclipse.persistence.sessions.SessionCustomizer} which is called when all other
      * properties have been processed (too late when database login needs to be configured).
      * If this property is not specified {@link org.eclipse.persistence.internal.security.JCEEncryptor} as a default encryptor is used.
      * <p>
@@ -4233,7 +4233,7 @@ public class PersistenceUnitProperties {
      */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = Map.of(
             JDBC_PASSWORD, "xxxxxx"
-    ); 
+    );
 
     /**
      * INTERNAL: Return the overridden log string.
@@ -4266,4 +4266,7 @@ public class PersistenceUnitProperties {
         return supportedNonServerSessionProperties;
     }
 
+    private PersistenceUnitProperties() {
+        // no instance please
+    }
 }

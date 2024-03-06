@@ -41,7 +41,7 @@ package org.eclipse.persistence.config;
  *
  * @see QueryHints
  */
-public class CacheUsage {
+public final class CacheUsage {
     /**
      * By default, the descriptor default is used, which is to not check the cache first.
      */
@@ -87,4 +87,8 @@ public class CacheUsage {
     public static final String  Invalidate = "Invalidate";
 
     public static final String DEFAULT = UseEntityDefault;
+
+    private CacheUsage() {
+        // no instance please
+    }
 }

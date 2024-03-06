@@ -56,7 +56,7 @@ classes:
 ----
 @XmlAccessorType(XmlAccessType.FIELD)
 package com.example.model;
- 
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 ----
@@ -263,9 +263,9 @@ entity's join table by inserting the following code:
 [source,oac_no_warn]
 ----
     @ManyToMany
-    @JoinTable(name="DEPT_EMP", joinColumns = 
-        @JoinColumn(name="D_ID", referencedColumnName = "D_ID"), 
-            inverseJoinColumns = @JoinColumn(name="E_ID", 
+    @JoinTable(name="DEPT_EMP", joinColumns =
+        @JoinColumn(name="D_ID", referencedColumnName = "D_ID"),
+            inverseJoinColumns = @JoinColumn(name="E_ID",
                 referencedColumnName = "E_ID"))
 ----
 +
@@ -294,7 +294,7 @@ annotation) by inserting the following code:
     @Column(name="E_ID")
     @XmlID
     private BigDecimal eId;
- 
+
 ----
 . Still within the `Employee` entity, complete the return mapping by
 inserting the following code:
@@ -331,22 +331,22 @@ use standard JPA annotations.
 ----
 @Entity
 public class Employee {
- 
+
     @Id
     @Column(name="E_ID")
     private BigDecimal eId;
- 
+
     private String name;
- 
+
     @OneToOne(mappedBy="resident")
     private Address residence;
- 
+
     @OneToMany(mappedBy="contact")
     private List<PhoneNumber> contactNumber;
- 
+
     @ManyToMany(mappedBy="member")
     private List<Department> team;
- 
+
 }
 ----
 
@@ -358,19 +358,19 @@ public class Employee {
 ----
 @Entity
 public class Address {
- 
+
     @Id
     @Column(name="E_ID", insertable=false, updatable=false)
     private BigDecimal eId;
- 
+
     private String city;
- 
+
     private String street;
- 
+
     @OneToOne
     @JoinColumn(name="E_ID")
     private Employee resident;
- 
+
 }
 ----
 
@@ -383,17 +383,17 @@ public class Address {
 @Entity
 @Table(name="PHONE_NUMBER")
 public class PhoneNumber {
- 
+
     @Id
     @Column(name="P_ID")
     private BigDecimal pId;
- 
+
     @ManyToOne
     @JoinColumn(name="E_ID", referencedColumnName = "E_ID")
     private Employee contact;
- 
+
     private String num;
- 
+
 }
 ----
 
@@ -405,20 +405,20 @@ public class PhoneNumber {
 ----
 @Entity
 public class Department {
- 
+
     @Id
     @Column(name="D_ID")
     private BigDecimal dId;
- 
+
     private String name;
- 
+
     @ManyToMany
-    @JoinTable(name="DEPT_EMP", joinColumns = 
-        @JoinColumn(name="D_ID", referencedColumnName = "D_ID"), 
-            inverseJoinColumns = @JoinColumn(name="E_ID", 
+    @JoinTable(name="DEPT_EMP", joinColumns =
+        @JoinColumn(name="D_ID", referencedColumnName = "D_ID"),
+            inverseJoinColumns = @JoinColumn(name="E_ID",
                 referencedColumnName = "E_ID"))
     private List<Employee> member;
- 
+
 }
 ----
 
@@ -495,37 +495,37 @@ The Employee entity should look like link:#BEIDFDDJ[Example 15-5]
 @Entity
 @IdClass(EmployeeId.class)
 public class Employee {
- 
+
     @Id
     @Column(name="E_ID")
     @XmlID
     private BigDecimal eId;
- 
+
     @Id
     @XmlKey
     private String country;
- 
+
     @OneToMany(mappedBy="contact")
     @XmlInverseReference(mappedBy="contact")
     private List<PhoneNumber> contactNumber;
- 
+
 }
 
 public class EmployeeId {
     public BigDecimal eId;
     public String country;
- 
+
     public EmployeeId(BigDecimal eId, String country) {
         this.id = id;
         this.country = country;;
     }
- 
+
     public boolean equals(Object other) {
         if (other instanceof EmployeeId) {
             final EmployeeId otherEmployeeId = (EmployeeId) other;
             return (otherEmployeeId.eId.equals(eId) && otherEmployeeId.country.equals(country));
         }
- 
+
     return false;
     }
 }
@@ -571,7 +571,7 @@ annotation
 [source,oac_no_warn]
 ----
 private Employee contact;
- 
+
 }
 ----
 
@@ -585,7 +585,7 @@ The target object should look like link:#BEIFBGAG[Example 15-6].
 ----
 @Entity
 public class PhoneNumber {
- 
+
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name="E_ID", referencedColumnName = "E_ID"),
@@ -596,7 +596,7 @@ public class PhoneNumber {
         @XmlJoinNode(xmlPath="contact/country/text()", referencedXmlPath="country/text()")
     })
     private Employee contact;
- 
+
 }
 ----
 
@@ -675,14 +675,14 @@ The completed target object should look like link:#BEIDAGDJ[Example
 @IdClass(EmployeeId.class)
 @XmlCustomizer(EmployeeCustomizer.class)
 public class Employee {
- 
+
     @EmbeddedId
     private EmployeeId id;
- 
+
     @OneToMany(mappedBy="contact")
     @XmlInverseReference(mappedBy="contact")
     private List<PhoneNumber> contactNumber;
- 
+
 }
 ----
 
@@ -733,7 +733,7 @@ link:#BEIGJACE[Example 15-8].
 ----
 @Entity
 public class PhoneNumber {
- 
+
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name="E_ID", referencedColumnName = "E_ID"),
@@ -744,7 +744,7 @@ public class PhoneNumber {
         @XmlJoinNode(xmlPath="contact/country/text()", referencedXmlPath="country/text()")
     })
     private Employee contact;
- 
+
 }
 ----
 
@@ -762,7 +762,7 @@ to import
 [source,oac_no_warn]
 ----
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
- 
+
 public class PhoneNumberCustomizer implements DescriptorCustomizer {
 ----
 . In the `customize` method, update the following mappings:
@@ -780,12 +780,12 @@ public class PhoneNumberCustomizer implements DescriptorCustomizer {
 
 [source,oac_no_warn]
 ----
-import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
- 
+
 public class PhoneNumberCustomizer implements DescriptorCustomizer {
- 
+
     public void customize(ClassDescriptor descriptor) throws Exception {
         XMLObjectReferenceMapping contactMapping = new XMLObjectReferenceMapping();
         contactMapping.setAttributeName("contact");
@@ -794,7 +794,7 @@ public class PhoneNumberCustomizer implements DescriptorCustomizer {
         contactMapping.addSourceToTargetKeyFieldAssociation("contact/@country", "country/text()");
         descriptor.addMapping(contactMapping);
     }
- 
+
 }
 ----
 

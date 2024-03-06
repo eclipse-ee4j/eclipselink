@@ -17,7 +17,7 @@ package org.eclipse.persistence.internal.sessions.factories;
 
 // javase imports
 
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;

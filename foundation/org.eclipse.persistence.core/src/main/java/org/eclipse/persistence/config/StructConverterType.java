@@ -23,9 +23,8 @@ package org.eclipse.persistence.config;
  * }
  *
  * @author tware
- *
  */
-public class StructConverterType {
+public final class StructConverterType {
 
     public static final String JGeometry = "JGEOMETRY";
 

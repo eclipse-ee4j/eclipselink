@@ -199,7 +199,7 @@ must match the order of `?` markers in the SQL string:
     <property name="projectName">sql_binding_test</property>
     ... database properties ...
   </properties>
-  <sql name="findEmpByName" isCollection="true" isSimpleXMLFormat="true">  
+  <sql name="findEmpByName" isCollection="true" isSimpleXMLFormat="true">
     <text>
       <![CDATA[select * from EMP where EMPNO = ? and LAST_NAME = ?]]>
     </text>
@@ -298,15 +298,15 @@ attribute, as shown in link:#CJAHDIFC[Example 1-9].
 [source,oac_no_warn]
 ----
 public interface NamingConventionTransformer {
- 
+
     public enum ElementStyle {
         ELEMENT, ATTRIBUTE, NONE
     };
- 
+
     public String generateSchemaName(String tableName);
- 
+
     public String generateElementAlias(String originalElementName);
- 
+
     public ElementStyle styleForElement(String originalElementName);
 }
 ----
@@ -330,22 +330,22 @@ The following example shows how to implement a
 [source,oac_no_warn]
 ----
 package some.java.package;
- 
-import org.eclipse.persistence.config.SessionCustomizer;
+
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.DatabaseLogin;
- 
+
 public class MySessionCustomizer implements SessionCustomizer {
- 
+
   public MySessionCustomizer() {
   }
- 
+
   public void customize(Sesssion session) {
     DatabaseLogin login = (DatabaseLogin)session.getDatasourceLogin();
     login.setTransactionIsolation(DatabaseLogin.TRANSACTION_READ_UNCOMMITTED);
   }
 }
- 
+
 ----
 
 In the `DBWSBuilder` builder XML file, specify if the customization
@@ -406,7 +406,7 @@ It is normally invoked from the command-line via its main method:
 [source,oac_no_warn]
 ----
 prompt > dbwsbuilder.cmd -builderFile {path_to_builder.xml} -stageDir {path_to_stageDir} -packageAs {packager}
- 
+
 ----
 
 The given builder XML file (link:#BABBAHFB[Example 1-10]) is parsed by
@@ -438,7 +438,7 @@ populated programmatically through property setters (i.e. `setDriver()`,
       tableNamePattern="EMP"
     />
 </dbws-builder>
- 
+
 ----
 
 The packager specified on the command-line is represented by a class
@@ -465,31 +465,31 @@ The primary responsibility of a `DBWSPackager` is to provide
 // call-backs for stream management
 public OutputStream getSchemaStream() throws FileNotFoundException;
 public void closeSchemaStream(OutputStream schemaStream);
- 
+
 public OutputStream getSessionsStream(String sessionsFileName) throws FileNotFoundException;
 public void closeSessionsStream(OutputStream sessionsStream);
- 
+
 public OutputStream getServiceStream() throws FileNotFoundException;
 public void closeServiceStream(OutputStream serviceStream);
- 
+
 public OutputStream getOrStream() throws FileNotFoundException;
 public void closeOrStream(OutputStream orStream);
- 
+
 public OutputStream getOxStream() throws FileNotFoundException;
 public void closeOxStream(OutputStream oxStream);
- 
+
 public OutputStream getWSDLStream() throws FileNotFoundException;
 public void closeWSDLStream(OutputStream wsdlStream);
- 
+
 public OutputStream getSWARefStream() throws FileNotFoundException;
 public void closeSWARefStream(OutputStream swarefStream);
- 
+
 public OutputStream getWebXmlStream() throws FileNotFoundException;
 public void closeWebXmlStream(OutputStream webXmlStream);
- 
+
 public OutputStream getProviderClassStream() throws FileNotFoundException;
 public void closeProviderClassStream(OutputStream codeGenProviderStream);
- 
+
 public OutputStream getProviderSourceStream() throws FileNotFoundException;
 public void closeProviderSourceStream(OutputStream sourceProviderStream);
 ----
@@ -503,7 +503,7 @@ packager:
 [source,oac_no_warn]
 ----
 public void start() ...
- 
+
 public void build(OutputStream dbwsSchemaStream, OutputStream dbwsSessionsStream,
         OutputStream dbwsServiceStream, OutputStream dbwsOrStream, OutputStream dbwsOxStream,
         OutputStream swarefStream, OutputStream webXmlStream, OutputStream wsdlStream,

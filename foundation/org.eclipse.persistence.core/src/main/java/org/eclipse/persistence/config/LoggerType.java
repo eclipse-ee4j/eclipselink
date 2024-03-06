@@ -25,10 +25,14 @@ package org.eclipse.persistence.config;
  *
  * @author Wonseok Kim
  */
-public class LoggerType {
+public final class LoggerType {
     public static final String DefaultLogger = "DefaultLogger";
     public static final String JavaLogger = "JavaLogger";
     public static final String ServerLogger = "ServerLogger";
 
     public static final String DEFAULT = DefaultLogger;
+
+    private LoggerType() {
+        // no instance please
+    }
 }

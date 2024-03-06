@@ -1681,7 +1681,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Tests equal between two object expressions.  An optimization could mean this expression using a single table.");
         addTest(test);
 
-        Expression notExpression = ((Expression)expression.clone()).not();
+        Expression notExpression = expression.clone().not();
         test = new ReadAllExpressionTest(Employee.class, 8);
         test.setExpression(notExpression);
         test.setName("NotSelfManagedEmployeeTest");

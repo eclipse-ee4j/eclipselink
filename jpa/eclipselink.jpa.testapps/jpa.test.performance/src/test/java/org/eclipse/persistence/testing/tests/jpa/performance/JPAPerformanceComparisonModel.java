@@ -16,7 +16,7 @@
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.spi.PersistenceProvider;
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
