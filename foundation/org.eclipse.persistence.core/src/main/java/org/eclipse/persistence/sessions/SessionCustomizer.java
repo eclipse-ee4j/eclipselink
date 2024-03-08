@@ -12,17 +12,14 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.config;
+package org.eclipse.persistence.sessions;
+
+import org.eclipse.persistence.sessions.*;
 
 /**
  * PUBLIC:
  * This interface is to allow extra customization on an EclipseLink Session
- * @deprecated Use {@link org.eclipse.persistence.sessions.SessionCustomizer}
  */
-    /**
-     * @deprecated This constructor will be marked private and the class final. It is not designed for extensibility.
-     */
-    @Deprecated(since = "4.0.3", forRemoval = true)
-
-public interface SessionCustomizer extends org.eclipse.persistence.sessions.SessionCustomizer {
+public interface SessionCustomizer {
+    void customize(Session session) throws Exception;
 }

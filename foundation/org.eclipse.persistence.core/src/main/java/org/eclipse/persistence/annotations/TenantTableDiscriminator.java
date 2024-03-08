@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public @interface TenantTableDiscriminator {
      * (Optional) The name of the context property to apply to as
      * tenant table discriminator. Default is "eclipselink-tenant.id"
      */
-    String contextProperty() default PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
+    String contextProperty() default "eclipselink.tenant-id";
 
     /**
      * (Optional) The type of tenant table discriminator to use with the tables

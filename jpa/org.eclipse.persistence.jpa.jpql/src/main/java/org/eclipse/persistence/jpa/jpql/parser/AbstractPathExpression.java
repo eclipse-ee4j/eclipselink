@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,6 +71,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
      * @param identificationVariable The identification variable that was already parsed, which means
      * the beginning of the parsing should start with a dot
      */
+    @SuppressWarnings("this-escape")
     protected AbstractPathExpression(AbstractExpression parent, AbstractExpression identificationVariable) {
         super(parent);
         this.pathSize = -1;
@@ -86,6 +87,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
      * the beginning of the parsing should start with a dot
      * @param paths The path expression that is following the identification variable
      */
+    @SuppressWarnings("this-escape")
     public AbstractPathExpression(AbstractExpression parent,
                                   AbstractExpression identificationVariable,
                                   String paths) {

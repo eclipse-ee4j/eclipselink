@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,15 @@ package org.eclipse.persistence.config;
  * {@literal @StructConverter(name="JGeom", converter="JGEOMETRY")}
  *
  * @author tware
- *
  */
 public class StructConverterType {
 
     public static final String JGeometry = "JGEOMETRY";
 
-    private StructConverterType() {
+    /**
+     * @deprecated This constructor will be marked private and the class final. It is not designed for extensibility.
+     */
+    @Deprecated(since = "4.0.3", forRemoval = true)
+    public StructConverterType() {
     }
 }

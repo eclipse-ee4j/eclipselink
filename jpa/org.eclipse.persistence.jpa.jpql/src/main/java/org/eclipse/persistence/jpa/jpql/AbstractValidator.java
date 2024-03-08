@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,6 +135,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
     /**
      * Creates a new <code>AbstractValidator</code>.
      */
+    @SuppressWarnings("this-escape")
     protected AbstractValidator() {
         super();
         initialize();
@@ -594,7 +595,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * will be bypassed.
      *
      * @param expression The {@link Expression} to validate based on the query BNF
-     * @param queryBNF The unique identifier of the {@link JPQLQueryBNF} that looks up 
+     * @param queryBNF The unique identifier of the {@link JPQLQueryBNF} that looks up
      * the {@link JPQLQueryBNFValidator}
      * @return <code>true</code> if the {@link Expression} part is a child of the given query BNF;
      * <code>false</code> otherwise
@@ -907,7 +908,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 
         /**
          * Sets bypassCompound
-         * 
+         *
          * @param bypassCompound Indicates whether a {@link JPQLQueryBNF} representing a compound
          * expression should be considered when doing the validation
          */

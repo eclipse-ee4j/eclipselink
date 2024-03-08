@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,15 +84,15 @@ public class SystemProperties {
      * LocalDateTime, OffsetDateTime, and OffsetTime types.
      */
     public static final String CONVERSION_USE_TIMEZONE = "org.eclipse.persistence.conversion.useTimeZone";
-    
+
     /**
-     * This system property can be set to restore ConversionManager behavior with converting 
+     * This system property can be set to restore ConversionManager behavior with converting
      * LocalDateTime, OffsetDateTime, and OffsetTime types back to using the JVM's default time zone instead
      * of UTC.  This restores behavior prior to fixing Bug 538296.  This property is ignored if the
      * System Property CONVERSION_USE_TIMEZONE has been set.
      */
     public static final String CONVERSION_USE_DEFAULT_TIMEZONE = "org.eclipse.persistence.conversion.useDefaultTimeZoneForJavaTime";
-    
+
     /**
      * This property can be set to <code>false</code> to enable UPDATE call to set
      * foreign key value in the target row in unidirectional 1-Many mapping
@@ -271,4 +271,11 @@ public class SystemProperties {
      */
     public static final String ASM_SERVICE = "eclipselink.asm.service";
 
+    /**
+     * @deprecated This constructor will be marked private and the class final. It is not designed for extensibility.
+     */
+    @Deprecated(since = "4.0.3", forRemoval = true)
+    public SystemProperties() {
+        // no instance please
+    }
 }
