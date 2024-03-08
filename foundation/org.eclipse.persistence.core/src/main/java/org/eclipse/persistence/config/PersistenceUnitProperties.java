@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1016,11 +1016,11 @@ public class PersistenceUnitProperties {
     public static final String PARTITIONING_CALLBACK = "eclipselink.partitioning.callback";
 
     /**
-     * Property "<code>eclipselink.jdbc.bind-parameters</code>" configures whether parameter binding 
+     * Property "<code>eclipselink.jdbc.bind-parameters</code>" configures whether parameter binding
      * should be used in the creation of JDBC prepared statements.
      * <p>
-     * Usage of parameter binding is generally a performance optimization; 
-     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
+     * Usage of parameter binding is generally a performance optimization;
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
@@ -1031,7 +1031,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
 
     /**
-     * Property "<code>eclipselink.jdbc.allow-partial-bind-parameters</code>" configures whether 
+     * Property "<code>eclipselink.jdbc.allow-partial-bind-parameters</code>" configures whether
      * partial parameter binding should be allowed in the creation of JDBC prepared statements.
      * <p>
      * EclipseLink determines binding behavior based on the database platform's support for binding.
@@ -1039,8 +1039,8 @@ public class PersistenceUnitProperties {
      * all binding for the whole query. Setting this property to 'true' will allow EclipseLink to bind
      * per expression, instead of per query.
      * <p>
-     * Usage of parameter binding is generally a performance optimization; 
-     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
+     * Usage of parameter binding is generally a performance optimization;
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
@@ -1893,7 +1893,7 @@ public class PersistenceUnitProperties {
      * <b> Example 2 : </b> To change the value of
      * DatabasePlatform.supportsReturnGeneratedKeys via configuration, provide the
      * following :<br><br>
-     * 
+     *
      * {@code
      *  <property name="eclipselink.target-database-properties" value="supportsReturnGeneratedKeys=true"/>}
      * @see TargetDatabase
@@ -2431,17 +2431,17 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.session.customizer</code>" property configures a
-     * {@link SessionCustomizer} used to alter the runtime configuration through
+     * {@link org.eclipse.persistence.sessions.SessionCustomizer} used to alter the runtime configuration through
      * API.
      * <p>
      * Session customizer is called after all other properties have been processed.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>the fully qualified name for a class that implements {@link SessionCustomizer} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.sessions.SessionCustomizer} interface
      * </ul>
      *
-     * @see SessionCustomizer
+     * @see org.eclipse.persistence.sessions.SessionCustomizer
      */
     public static final String SESSION_CUSTOMIZER = "eclipselink.session.customizer";
 
@@ -2450,7 +2450,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.descriptor.customizer.</code>" is a prefix for a
-     * property used to configure a {@link DescriptorCustomizer}. Customization
+     * property used to configure a {@link org.eclipse.persistence.descriptors.DescriptorCustomizer}. Customization
      * Prefix Property names formed out of this prefix by appending either
      * entity name, or class name (indicating that the property values applies
      * only to a particular entity) Allows descriptor customization.
@@ -2459,10 +2459,10 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>the fully qualified name for a class that implements {@link DescriptorCustomizer} interface
+     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.descriptors.DescriptorCustomizer} interface
      * </ul>
      *
-     * @see DescriptorCustomizer
+     * @see org.eclipse.persistence.descriptors.DescriptorCustomizer
      */
     public static final String DESCRIPTOR_CUSTOMIZER_ = "eclipselink.descriptor.customizer.";
 
@@ -3124,7 +3124,7 @@ public class PersistenceUnitProperties {
      * <p>
      * By default the commit of a set of the same entity type is ordered by its Id.
      * <p>
-     * Entity type commit order can be modified using a {@link DescriptorCustomizer}
+     * Entity type commit order can be modified using a {@link org.eclipse.persistence.descriptors.DescriptorCustomizer}
      * and the {@link ClassDescriptor#addConstraintDependency(Class)} API.
      * Commit order can also be controlled using the {@link EntityManager#flush()} API.
      * <p>
@@ -3570,7 +3570,7 @@ public class PersistenceUnitProperties {
      * Sets the URL of the host server.<br>
      * This is the URL that other cluster member should use to connect to this host.
      * This may not be required in a clustered environment where JNDI is replicated.<br>
-     * This can also be set as a System property or using a {@link SessionCustomizer} to avoid
+     * This can also be set as a System property or using a {@link org.eclipse.persistence.sessions.SessionCustomizer} to avoid
      * a separate persistence.xml per server.
      *
      * @see #COORDINATION_PROTOCOL

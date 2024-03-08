@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,4 +37,12 @@ public class ParserValidationType {
     public static final String None = "None";
 
     public static final String DEFAULT = EclipseLink;
+
+    /**
+     * @deprecated This constructor will be marked private and the class final. It is not designed for extensibility.
+     */
+    @Deprecated(since = "4.0.3", forRemoval = true)
+    public ParserValidationType() {
+        // no instance please
+    }
 }

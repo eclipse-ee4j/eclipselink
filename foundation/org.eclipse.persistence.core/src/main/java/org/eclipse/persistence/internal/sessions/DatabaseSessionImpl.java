@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.PropertiesUtils;
+import org.eclipse.persistence.internal.helper.PropertiesUtils;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -269,12 +269,12 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             if (platformName != null && platformName.indexOf("Oracle") != -1) {
                 try {
                     // If we are running against Oracle, it is possible that we are
-                    // running in an environment where the extension OracleXPlatform classes can 
+                    // running in an environment where the extension OracleXPlatform classes can
                     // not be loaded. Try using the core OracleXPlatform classes
                     platformName = DBPlatformHelper.getDBPlatform("core."+ vendorName, minorVersion, majorVersion, getSessionLog());
                     getLogin().setPlatformClassName(platformName);
                 } catch (EclipseLinkException oracleClassNotFound) {
-                    // If we still cannot classload a matching OracleXPlatform class, 
+                    // If we still cannot classload a matching OracleXPlatform class,
                     // fallback on the base OraclePlatform class
                     getLogin().setPlatformClassName(OraclePlatform.class.getName());
                 }

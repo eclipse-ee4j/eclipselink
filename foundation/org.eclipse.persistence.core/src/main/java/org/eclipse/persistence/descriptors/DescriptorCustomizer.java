@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.config;
+package org.eclipse.persistence.descriptors;
 
 import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -26,12 +26,13 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  *
  * @see Customizer @Customizer to configure using annotations on an entity class
  * @see ClassDescriptor for available customization API
- * @deprecated Use {@link org.eclipse.persistence.descriptors.DescriptorCustomizer}.
  */
-    /**
-     * @deprecated This constructor will be marked private and the class final. It is not designed for extensibility.
-     */
-    @Deprecated(since = "4.0.3", forRemoval = true)
+public interface DescriptorCustomizer {
 
-public interface DescriptorCustomizer extends org.eclipse.persistence.descriptors.DescriptorCustomizer {
+    /**
+     * Customize the provided descriptor. This method is called after the
+     * descriptor is populated from annotations/XML/defaults but before it is
+     * initialized.
+     */
+    void customize(ClassDescriptor descriptor) throws Exception;
 }

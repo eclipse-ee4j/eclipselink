@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@
  * <p>
  * By default the commit of a set of the same entity type is not ordered.
  * <p>
- * Entity type commit order can be modified using a DescriptorCustomizer and the ClassDescriptor.addConstraintDependency() API.
+ * Entity type commit order can be modified using a org.eclipse.persistence.descriptors.DescriptorCustomizer and the ClassDescriptor.addConstraintDependency() API.
  * Commit order can also be controlled using the EntityManager.flush() API.
  */
 public class CommitOrderType {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,12 +28,16 @@ import org.eclipse.persistence.queries.JPAQueryBuilder;
  */
 public class ParserType {
     public static final String Hermes = "Hermes";
-    @Deprecated
+    @Deprecated(since = "3.0.0", forRemoval = true)
     public static final String ANTLR = "ANTLR";
 
     public static final String DEFAULT = Hermes;
 
-    private ParserType() {
+    /**
+     * @deprecated This constructor will be marked private and the class final. It is not designed for extensibility.
+     */
+    @Deprecated(since = "4.0.3", forRemoval = true)
+    public ParserType() {
         //no instance please
     }
 }

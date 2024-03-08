@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
@@ -59,7 +60,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  * users named groups can be defined in code and added to the
  * {@link FetchGroupManager#addFetchGroup(FetchGroup)}. Adding named groups in
  * code is typically done in a {@link
- * org.eclipse.persistence.config.DescriptorCustomizer}and should be done
+ * DescriptorCustomizer}and should be done
  * before the session is initialized at login. To use a named FetchGroup on a
  * query the native {@link ObjectLevelReadQuery#setFetchGroupName(String)} can
  * be used of for JPA users the {@link

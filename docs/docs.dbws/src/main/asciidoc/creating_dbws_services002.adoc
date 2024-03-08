@@ -35,23 +35,23 @@ This example illustrates how to implement an EclipseLink
 [source,oac_no_warn]
 ----
 package some.java.package;
- 
-import org.eclipse.persistence.config.SessionCustomizer; 
-import org.eclipse.persistence.sessions.Session; 
-import org.eclipse.persistence.sessions.DatabaseLogin; 
- 
+
+import org.eclipse.persistence.sessions.SessionCustomizer;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+
 public class MySessionCustomizer implements SessionCustomizer {
- 
+
   public MySessionCustomizer() {
   }
- 
-  public void customize(Sesssion session) { 
+
+  public void customize(Sesssion session) {
     DatabaseLogin login = (DatabaseLogin)session.getDatasourceLogin();
     // enable 'dirty' reads
-    login.setTransactionIsolation(DatabaseLogin.TRANSACTION_READ_UNCOMMITTED); 
-  } 
+    login.setTransactionIsolation(DatabaseLogin.TRANSACTION_READ_UNCOMMITTED);
+  }
 }
- 
+
 ----
 
 In the `DBWSBuilder` configuration file, you must use the
@@ -65,13 +65,13 @@ specify if the customization applies to the ORM or ORX project
 
 [source,oac_no_warn]
 ----
-<?xml version="1.0" encoding="UTF-8"?> 
-<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   <properties>
     <property name="projectName">customize_test</property>
      ...
     <property name="orSessionCustomizerClassName">some.java.package.MyORSessionCustomizer</property>
- 
+
 ----
 
 [[sthref39]]
@@ -80,13 +80,13 @@ specify if the customization applies to the ORM or ORX project
 
 [source,oac_no_warn]
 ----
-<?xml version="1.0" encoding="UTF-8"?> 
-<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   <properties>
     <property name="projectName">customize_test</property>
      ...
     <property name="oxSessionCustomizerClassName">some.java.package.MyOXSessionCustomizer</property>
- 
+
 ----
 
 ==== Advanced Customization
@@ -123,7 +123,7 @@ existing EclipseLink project maps with identical case-sensitive aliases
          <class>some.package.SomeClass</class>
          <alias>SomeAlias</alias>
 ...
- 
+
 
 <?xml version="1.0" encoding="UTF-8"?>
 <object-persistence version="Eclipse Persistence Services - some version (some build date)" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">
@@ -132,5 +132,5 @@ existing EclipseLink project maps with identical case-sensitive aliases
       <class>some.package.SomeClass</class>
       <alias>SomeAlias</alias>
 ...
- 
+
 ----
