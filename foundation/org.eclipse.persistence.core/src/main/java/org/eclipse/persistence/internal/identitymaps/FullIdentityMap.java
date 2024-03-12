@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,13 +24,11 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * <p><b>Purpose</b>: A FullIdentityMap holds all objects stored within it for the life of the application.
@@ -53,7 +51,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
 
     public FullIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
         super(size, descriptor, session, isolated);
-        this.cacheKeys = new ConcurrentHashMap(size);
+        this.cacheKeys = new ConcurrentHashMap<>(size);
     }
 
     /**
@@ -61,9 +59,9 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Clones itself.
      */
     @Override
-    public Object clone() {
+    public IdentityMap clone() {
         FullIdentityMap clone = (FullIdentityMap)super.clone();
-        clone.setCacheKeys(new ConcurrentHashMap(this.cacheKeys.size()));
+        clone.setCacheKeys(new ConcurrentHashMap<>(this.cacheKeys.size()));
 
         for (Iterator<CacheKey> cacheKeysIterator = this.cacheKeys.values().iterator(); cacheKeysIterator.hasNext();) {
             CacheKey key = (CacheKey) cacheKeysIterator.next().clone();
@@ -78,17 +76,13 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Used to print all the Locks in every identity map in this session.
      */
     @Override
-    public void collectLocks(HashMap threadList) {
+    public void collectLocks(Map<Thread, Set<CacheKey>> threadList) {
         Iterator<CacheKey> cacheKeyIterator = this.cacheKeys.values().iterator();
         while (cacheKeyIterator.hasNext()) {
             CacheKey cacheKey = cacheKeyIterator.next();
             if (cacheKey.isAcquired()) {
                 Thread activeThread = cacheKey.getActiveThread();
-                Set set = (Set)threadList.get(activeThread);
-                if (set == null) {
-                    set = new HashSet();
-                    threadList.put(activeThread, set);
-                }
+                Set<CacheKey> set = threadList.computeIfAbsent(activeThread, k -> new HashSet<>());
                 set.add(cacheKey);
             }
         }
@@ -100,7 +94,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * @return {@link Enumeration} of {@link CacheKey#getObject()} instances.
      */
     @Override
-    public Enumeration elements() {
+    public Enumeration<Object> elements() {
         return new IdentityMapEnumeration(this.getCacheKeys().values());
     }
 
@@ -121,7 +115,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
     @Override
     protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
         searchKey.setOwningMap(this);
-        return (CacheKey)((ConcurrentMap)this.cacheKeys).putIfAbsent(searchKey.getKey(), searchKey);
+        return this.cacheKeys.putIfAbsent(searchKey.getKey(), searchKey);
     }
 
     /**
@@ -196,7 +190,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      */
     @Override
     public Enumeration<CacheKey> cloneKeys() {
-        return new IdentityMapKeyEnumeration(new ArrayList(this.getCacheKeys().values()), true);
+        return new IdentityMapKeyEnumeration(new ArrayList<>(this.getCacheKeys().values()), true);
     }
 
     /**
@@ -204,7 +198,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * and the cache may need to be updated
      */
     @Override
-    public void lazyRelationshipLoaded(Object object, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping){
+    public void lazyRelationshipLoaded(Object object, ValueHolderInterface<?> valueHolder, ForeignReferenceMapping mapping){
         //NO-OP
     }
 

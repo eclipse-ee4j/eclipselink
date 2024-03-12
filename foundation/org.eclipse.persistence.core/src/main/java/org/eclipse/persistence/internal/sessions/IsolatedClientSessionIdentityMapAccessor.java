@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -177,8 +177,8 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * This method is used to get a list of those classes with IdentityMaps in the Session.
      */
     @Override
-    public Vector getClassesRegistered() {
-        Vector results = getIdentityMapManager().getClassesRegistered();
+    public List<String> getClassesRegistered() {
+        List<String> results = getIdentityMapManager().getClassesRegistered();
         results.addAll(((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getClassesRegistered());
         return results;
     }

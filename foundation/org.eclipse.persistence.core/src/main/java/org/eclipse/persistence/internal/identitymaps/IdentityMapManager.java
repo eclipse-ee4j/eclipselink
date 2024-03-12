@@ -54,6 +54,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -85,7 +86,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     protected Map<Object, IdentityMap> queryResults;
 
     /** A map of class to list of queries that need to be invalidated when that class changes. */
-    protected Map<Class<?>, Set> queryResultsInvalidationsByClass;
+    protected Map<Class<?>, Set<Object>> queryResultsInvalidationsByClass;
 
     /** A map of indexes on the cache. */
     protected Map<CacheIndex, IdentityMap> cacheIndexes;
@@ -113,17 +114,17 @@ public class IdentityMapManager implements Serializable, Cloneable {
         this.cacheMutex = new ConcurrencyManager();
         // PERF: Avoid query cache for uow as never used.
         if (session.isUnitOfWork()) {
-            this.identityMaps = new HashMap();
+            this.identityMaps = new HashMap<>();
         } else if (session.isIsolatedClientSession()) {
-            this.identityMaps = new HashMap();
-            this.queryResults = new HashMap();
-            this.queryResultsInvalidationsByClass = new HashMap();
-            this.cacheIndexes = new HashMap();
+            this.identityMaps = new HashMap<>();
+            this.queryResults = new HashMap<>();
+            this.queryResultsInvalidationsByClass = new HashMap<>();
+            this.cacheIndexes = new HashMap<>();
         } else {
-            this.identityMaps = new ConcurrentHashMap();
-            this.queryResults = new ConcurrentHashMap();
-            this.queryResultsInvalidationsByClass = new ConcurrentHashMap();
-            this.cacheIndexes = new ConcurrentHashMap();
+            this.identityMaps = new ConcurrentHashMap<>();
+            this.queryResults = new ConcurrentHashMap<>();
+            this.queryResultsInvalidationsByClass = new ConcurrentHashMap<>();
+            this.cacheIndexes = new ConcurrentHashMap<>();
         }
         checkIsCacheAccessPreCheckRequired();
     }
@@ -251,12 +252,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Avoid the readLock and profile checks if not required.
      */
     public void checkIsCacheAccessPreCheckRequired() {
-        if ((this.session.getProfiler() != null)
-                || ((this.session.getDatasourceLogin() != null) && this.session.getDatasourceLogin().shouldSynchronizedReadOnWrite())) {
-            this.isCacheAccessPreCheckRequired = true;
-        } else {
-            this.isCacheAccessPreCheckRequired = false;
-        }
+        this.isCacheAccessPreCheckRequired = (this.session.getProfiler() != null)
+                || ((this.session.getDatasourceLogin() != null) && this.session.getDatasourceLogin().shouldSynchronizedReadOnWrite());
     }
 
     /**
@@ -394,8 +391,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
         final Object[] values = new Object[]{size, descriptor, this.session, isIsolated};
         IdentityMap map = PrivilegedAccessHelper.callDoPrivilegedWithException(
                 () -> {
-                    final Constructor<T> constructor = PrivilegedAccessHelper.<T>getConstructorFor(identityMapClass, parameters, false);
-                    return PrivilegedAccessHelper.<T>invokeConstructor(constructor, values);
+                    final Constructor<T> constructor = PrivilegedAccessHelper.getConstructorFor(identityMapClass, parameters, false);
+                    return PrivilegedAccessHelper.invokeConstructor(constructor, values);
                 },
                 (ex) -> DescriptorException.invalidIdentityMap(descriptor, ex)
         );
@@ -426,34 +423,33 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Clones itself, used for uow commit and resume on failure.
      */
     @Override
-    public Object clone() {
-        IdentityMapManager manager = null;
+    public IdentityMapManager clone() {
         try {
-            manager = (IdentityMapManager)super.clone();
-            manager.setIdentityMaps(new ConcurrentHashMap());
+            IdentityMapManager manager = (IdentityMapManager) super.clone();
+            manager.setIdentityMaps(new ConcurrentHashMap<>());
             for (Iterator<Map.Entry<Class<?>, IdentityMap>> iterator = this.identityMaps.entrySet().iterator(); iterator.hasNext();) {
                 Map.Entry<Class<?>, IdentityMap> entry = iterator.next();
-                manager.identityMaps.put(entry.getKey(), (IdentityMap) entry.getValue().clone());
+                manager.identityMaps.put(entry.getKey(), entry.getValue().clone());
             }
+            return manager;
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.toString());
         }
-        return manager;
     }
 
     /**
      * Clear all the query caches.
      */
     public void clearQueryCache() {
-        this.queryResults = new ConcurrentHashMap();
-        this.queryResultsInvalidationsByClass = new ConcurrentHashMap();
+        this.queryResults = new ConcurrentHashMap<>();
+        this.queryResultsInvalidationsByClass = new ConcurrentHashMap<>();
     }
 
     /**
      * Clear all index caches.
      */
     public void clearCacheIndexes() {
-        this.cacheIndexes = new ConcurrentHashMap();
+        this.cacheIndexes = new ConcurrentHashMap<>();
     }
 
     /**
@@ -480,7 +476,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         if (this.queryResultsInvalidationsByClass == null) {
             return;
         }
-        Set invalidations = this.queryResultsInvalidationsByClass.get(classThatChanged);
+        Set<Object> invalidations = this.queryResultsInvalidationsByClass.get(classThatChanged);
         if (invalidations != null) {
             for (Object queryKey : invalidations) {
                 this.queryResults.remove(queryKey);
@@ -525,7 +521,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     public Vector getAllFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         this.session.startOperationProfile(SessionProfiler.Caching);
-        Vector objects = null;
+        Vector<Object> objects = null;
         try {
             if (selectionCriteria != null) {
                 // PERF: Avoid clone of expression.
@@ -535,7 +531,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     builder.setQueryClass(theClass);
                 }
             }
-            objects = new Vector();
+            objects = new Vector<>();
             IdentityMap map = getIdentityMap(descriptor, false);
 
             // Bug #522635 - if policy is set to trigger indirection, then iterate over a copy of the cache keys collection
@@ -769,9 +765,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * This method is used to get a list of those classes with IdentityMaps in the Session.
      */
-    public Vector getClassesRegistered() {
+    public List<String> getClassesRegistered() {
         Iterator<Class<?>> classes = getIdentityMaps().keySet().iterator();
-        Vector results = new Vector(getIdentityMaps().size());
+        List<String> results = new ArrayList<>(getIdentityMaps().size());
         while (classes.hasNext()) {
             results.add(classes.next().getName());
         }
@@ -996,7 +992,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 identityMap = this.identityMaps.put(descriptorClass, newIdentityMap);
             } else {
                 newIdentityMap = buildNewIdentityMap(descriptor);
-                identityMap = (IdentityMap)((ConcurrentMap)this.identityMaps).putIfAbsent(descriptorClass, newIdentityMap);
+                identityMap = this.identityMaps.putIfAbsent(descriptorClass, newIdentityMap);
             }
             if (identityMap == null) {
                 identityMap = newIdentityMap;
@@ -1014,7 +1010,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Return an iterator of the classes in the identity map.
      */
-    public Iterator getIdentityMapClasses() {
+    public Iterator<Class<?>> getIdentityMapClasses() {
         return getIdentityMaps().keySet().iterator();
     }
 
@@ -1189,7 +1185,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
 
     public void initializeIdentityMaps() {
         clearLastAccessedIdentityMap();
-        setIdentityMaps(new ConcurrentHashMap());
+        setIdentityMaps(new ConcurrentHashMap<>());
         clearQueryCache();
         clearCacheIndexes();
     }
@@ -1277,7 +1273,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public void printLocks() {
         StringWriter writer = new StringWriter();
-        HashMap threadCollection = new HashMap();
+        Map<Thread, Set<CacheKey>> threadCollection = new HashMap<>();
         writer.write(TraceLocalization.buildMessage("lock_writer_header", null) + System.lineSeparator());
         Iterator<IdentityMap> idenityMapsIterator = this.session.getIdentityMapAccessorInstance().getIdentityMapManager().getIdentityMaps().values().iterator();
         while (idenityMapsIterator.hasNext()) {
@@ -1285,13 +1281,13 @@ public class IdentityMapManager implements Serializable, Cloneable {
             idenityMap.collectLocks(threadCollection);
         }
         Object[] parameters = new Object[1];
-        for (Iterator threads = threadCollection.keySet().iterator(); threads.hasNext();) {
-            Thread activeThread = (Thread)threads.next();
+        for (Iterator<Thread> threads = threadCollection.keySet().iterator(); threads.hasNext();) {
+            Thread activeThread = threads.next();
             parameters[0] = activeThread.getName();
             writer.write(TraceLocalization.buildMessage("active_thread", parameters) + System.lineSeparator());
-            for (Iterator cacheKeys = ((HashSet)threadCollection.get(activeThread)).iterator();
+            for (Iterator<CacheKey> cacheKeys = threadCollection.get(activeThread).iterator();
                      cacheKeys.hasNext();) {
-                CacheKey cacheKey = (CacheKey)cacheKeys.next();
+                CacheKey cacheKey = cacheKeys.next();
                 if (cacheKey.isAcquired() && cacheKey.getActiveThread() == activeThread){
                     parameters[0] = cacheKey.getObject();
                     writer.write(TraceLocalization.buildMessage("locked_object", parameters) + System.lineSeparator());
@@ -1309,9 +1305,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
             DeferredLockManager deferredLockManager = ConcurrencyManager.getDeferredLockManager(activeThread);
             if (deferredLockManager != null) {
-                for (Iterator deferredLocks = deferredLockManager.getDeferredLocks().iterator();
+                for (Iterator<ConcurrencyManager> deferredLocks = deferredLockManager.getDeferredLocks().iterator();
                          deferredLocks.hasNext();) {
-                    ConcurrencyManager lock = (ConcurrencyManager)deferredLocks.next();
+                    ConcurrencyManager lock = deferredLocks.next();
                     if (lock instanceof CacheKey){
                         parameters[0] = ((CacheKey)lock).getObject();
                         writer.write(TraceLocalization.buildMessage("deferred_locks", parameters) + System.lineSeparator());
@@ -1330,19 +1326,19 @@ public class IdentityMapManager implements Serializable, Cloneable {
     public void printLocks(Class<?> theClass) {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         StringWriter writer = new StringWriter();
-        HashMap threadCollection = new HashMap();
+        Map<Thread, Set<CacheKey>> threadCollection = new HashMap<>();
         writer.write(TraceLocalization.buildMessage("lock_writer_header", null) + System.lineSeparator());
         IdentityMap identityMap = getIdentityMap(descriptor, false);
         identityMap.collectLocks(threadCollection);
 
         Object[] parameters = new Object[1];
-        for (Iterator threads = threadCollection.keySet().iterator(); threads.hasNext();) {
-            Thread activeThread = (Thread)threads.next();
+        for (Iterator<Thread> threads = threadCollection.keySet().iterator(); threads.hasNext();) {
+            Thread activeThread = threads.next();
             parameters[0] = activeThread.getName();
             writer.write(TraceLocalization.buildMessage("active_thread", parameters) + System.lineSeparator());
-            for (Iterator cacheKeys = ((HashSet)threadCollection.get(activeThread)).iterator();
+            for (Iterator<CacheKey> cacheKeys = threadCollection.get(activeThread).iterator();
                      cacheKeys.hasNext();) {
-                CacheKey cacheKey = (CacheKey)cacheKeys.next();
+                CacheKey cacheKey = cacheKeys.next();
                 parameters[0] = cacheKey.getObject();
                 writer.write(TraceLocalization.buildMessage("locked_object", parameters) + System.lineSeparator());
                 parameters[0] = cacheKey.getDepth();
@@ -1350,9 +1346,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
             DeferredLockManager deferredLockManager = ConcurrencyManager.getDeferredLockManager(activeThread);
             if (deferredLockManager != null) {
-                for (Iterator deferredLocks = deferredLockManager.getDeferredLocks().iterator();
+                for (Iterator<ConcurrencyManager> deferredLocks = deferredLockManager.getDeferredLocks().iterator();
                          deferredLocks.hasNext();) {
-                    ConcurrencyManager lock = (ConcurrencyManager)deferredLocks.next();
+                    ConcurrencyManager lock = deferredLocks.next();
                     if (lock instanceof CacheKey){
                         parameters[0] = ((CacheKey)lock).getObject();
                         writer.write(TraceLocalization.buildMessage("deferred_locks", parameters) + System.lineSeparator());
@@ -1426,11 +1422,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     // Mark the query to be invalidated for the query classes.
                     if (query.getQueryResultsCachePolicy().getInvalidateOnChange()) {
                         for (Class<?> queryClass : query.getQueryResultsCachePolicy().getInvalidationClasses()) {
-                            Set invalidations = this.queryResultsInvalidationsByClass.get(queryClass);
-                            if (invalidations == null) {
-                                invalidations = new HashSet();
-                                this.queryResultsInvalidationsByClass.put(queryClass, invalidations);
-                            }
+                            Set<Object> invalidations = this.queryResultsInvalidationsByClass.computeIfAbsent(queryClass, k -> new HashSet<>());
                             invalidations.add(queryKey);
                         }
                     }
@@ -1515,7 +1507,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         this.cacheMutex = cacheMutex;
     }
 
-    public void setIdentityMaps(ConcurrentMap identityMaps) {
+    public void setIdentityMaps(ConcurrentMap<Class<?>, IdentityMap> identityMaps) {
         clearLastAccessedIdentityMap();
         this.identityMaps = identityMaps;
     }

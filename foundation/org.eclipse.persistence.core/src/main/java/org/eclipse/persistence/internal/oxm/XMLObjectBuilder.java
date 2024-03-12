@@ -483,7 +483,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         NamespaceResolver namespaceResolver = null;
         if (isXmlDescriptor()) {
             namespaceResolver = ((XMLDescriptor)getDescriptor()).getNamespaceResolver();
-        } else if (getDescriptor() instanceof org.eclipse.persistence.eis.EISDescriptor) {
+        } else if (getDescriptor().isEISDescriptor()) {
             namespaceResolver = ((org.eclipse.persistence.eis.EISDescriptor)getDescriptor()).getNamespaceResolver();
         }
         return namespaceResolver;

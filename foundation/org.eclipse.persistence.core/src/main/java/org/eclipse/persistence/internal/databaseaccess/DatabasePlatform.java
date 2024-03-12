@@ -950,7 +950,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Some platforms have an option list
      * Only to be used for stored procedure creation.
-     * 
+     *
      * @see org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition
      */
     public String getProcedureOptionList() {
@@ -1359,7 +1359,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Platforms that support the WAIT option should override this method.
      * By default the wait timeout is ignored.
-     * 
+     *
      *  @see DatabasePlatform#supportsWaitForUpdate()
      */
     public String getSelectForUpdateWaitString(Integer waitTimeout) {
@@ -1482,14 +1482,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Returns the attribute containing the results from the batch execution 
+     * Returns the attribute containing the results from the batch execution
      */
     public int[] getExecuteBatchRowCounts() {
         return executeBatchRowCounts;
     }
 
     /**
-     * Sets the attribute containing the results from the batch execution 
+     * Sets the attribute containing the results from the batch execution
      */
     public void setExecuteBatchRowCounts(int[] rowCounts) {
         executeBatchRowCounts = rowCounts;
@@ -1602,7 +1602,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * This method is used to register output parameter on CallableStatements for Stored Procedures
      * as each database seems to have a different method.
-     * 
+     *
      * @see java.sql.CallableStatement#registerOutParameter(int parameterIndex, int sqlType)
      */
     public void registerOutputParameter(CallableStatement statement, int parameterIndex, int sqlType) throws SQLException {
@@ -1612,7 +1612,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * This method is used to register output parameter on CallableStatements for Stored Procedures
      * as each database seems to have a different method.
-     * 
+     *
      * @see java.sql.CallableStatement#registerOutParameter(int parameterIndex, int sqlType, String typeName)
      */
     public void registerOutputParameter(CallableStatement statement, int parameterIndex, int sqlType, String typeName) throws SQLException {
@@ -1622,7 +1622,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * This method is used to register output parameter on CallableStatements for Stored Procedures
      * as each database seems to have a different method.
-     * 
+     *
      * @see java.sql.CallableStatement#registerOutParameter(String parameterName, int sqlType)
      */
     public void registerOutputParameter(CallableStatement statement, String parameterName, int sqlType) throws SQLException {
@@ -1632,7 +1632,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * This method is used to register output parameter on CallableStatements for Stored Procedures
      * as each database seems to have a different method.
-     * 
+     *
      * @see java.sql.CallableStatement#registerOutParameter(String parameterName, int sqlType, String typeName)
      */
     public void registerOutputParameter(CallableStatement statement, String parameterName, int sqlType, String typeName) throws SQLException {
@@ -2247,7 +2247,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      *  INTERNAL:
      *  Indicates whether the platform supports timeouts on For Update
-     *  
+     *
      *  @see DatabasePlatform#getSelectForUpdateWaitString(Integer waitTimeout)
      */
     public boolean supportsWaitForUpdate() {
@@ -2383,6 +2383,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setParameterValueInDatabaseCall(Object parameter,
                 PreparedStatement statement, int index, AbstractSession session)
                 throws SQLException {
+
         // Process common types first.
         if (parameter instanceof String) {
             // Check for stream binding of large strings.
@@ -3539,7 +3540,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Some databases have issues with using parameters on certain functions and relations.
      * This allows statements to disable binding only in these cases.
      * <p>
-     * Alternatively, DatabasePlatforms can override specific ExpressionOperators and add them 
+     * Alternatively, DatabasePlatforms can override specific ExpressionOperators and add them
      * to the platform specific operators. See {@link DatasourcePlatform#initializePlatformOperators()}
      */
     public boolean isDynamicSQLRequiredForFunctions() {

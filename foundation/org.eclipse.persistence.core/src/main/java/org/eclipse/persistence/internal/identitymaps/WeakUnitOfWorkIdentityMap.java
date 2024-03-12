@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.identitymaps;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
+import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 
 public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
@@ -41,11 +42,11 @@ public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
      * the total time still constant.
      */
     protected void cleanupDeadCacheKeys() {
-        QueueableWeakCacheKey.CacheKeyReference reference = (QueueableWeakCacheKey.CacheKeyReference)referenceQueue.poll();
+        Reference reference = referenceQueue.poll();
         while ( reference != null) {
-            CacheKey key = reference.getOwner();
+            CacheKey key = ((QueueableWeakCacheKey.CacheKeyReference) reference.get()).getOwner();
             remove(key);
-            reference = (QueueableWeakCacheKey.CacheKeyReference)referenceQueue.poll();
+            reference = referenceQueue.poll();
         }
     }
 

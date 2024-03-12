@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p><b>Purpose</b>: Caches objects, and allows their retrieval  by their primary key.
@@ -222,16 +223,16 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Used to print all the locks in the identity map.
      */
     @Override
-    public abstract void collectLocks(HashMap threadList);
+    public abstract void collectLocks(Map<Thread, Set<CacheKey>> threadList);
 
     /**
      * Clone the map and all of the CacheKeys.
      * This is used by UnitOfWork commitAndResumeOnFailure to avoid corrupting the cache during a failed commit.
      */
     @Override
-    public Object clone() {
+    public IdentityMap clone() {
         try {
-            return super.clone();
+            return (IdentityMap) super.clone();
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.toString());
         }
@@ -258,7 +259,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Allow for the cache to be iterated on.
      */
     @Override
-    public abstract Enumeration elements();
+    public abstract Enumeration<Object> elements();
 
     /**
      * Return the object cached in the identity map or null if it could not be found.
@@ -413,7 +414,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Allow for the CacheKeys to be iterated on.
      */
     @Override
-    public abstract Enumeration keys();
+    public abstract Enumeration<CacheKey> keys();
 
     /**
      * Store the object in the cache at its primary key.
