@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
         super();
         this.maxSize = size;
         // PERF: Use a HashMap as more efficient than a ConcurrentMap and single threaded.
-        this.cacheKeys = new HashMap(size);
+        this.cacheKeys = new HashMap<>(size);
         this.descriptor = descriptor;
         this.session = session;
         this.isIsolated = isolated;

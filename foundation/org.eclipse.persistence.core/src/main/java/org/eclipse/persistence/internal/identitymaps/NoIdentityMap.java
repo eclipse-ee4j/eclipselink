@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,8 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -43,7 +44,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * NoIdentityMap has no locks.
      */
     @Override
-    public void collectLocks(HashMap threadList) {
+    public void collectLocks(Map<Thread, Set<CacheKey>> threadList) {
         return;
     }
 
@@ -51,8 +52,8 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Return an empty enumerator.
      */
     @Override
-    public Enumeration elements() {
-        return Collections.<Object>emptyEnumeration();
+    public Enumeration<Object> elements() {
+        return Collections.emptyEnumeration();
     }
 
     /**
@@ -108,7 +109,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      */
     @Override
     public Enumeration<CacheKey> keys() {
-        return Collections.<CacheKey>emptyEnumeration();
+        return Collections.emptyEnumeration();
     }
 
     /**
@@ -116,7 +117,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      */
     @Override
     public Enumeration<CacheKey> cloneKeys() {
-        return Collections.<CacheKey>emptyEnumeration();
+        return Collections.emptyEnumeration();
     }
 
     /**
@@ -124,7 +125,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      */
     @Override
     public Enumeration<CacheKey> keys(boolean checkReadLocks) {
-        return Collections.<CacheKey>emptyEnumeration();
+        return Collections.emptyEnumeration();
     }
 
     /**
@@ -132,7 +133,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * and the cache may need to be updated
      */
     @Override
-    public void lazyRelationshipLoaded(Object object, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping){
+    public void lazyRelationshipLoaded(Object object, ValueHolderInterface<?> valueHolder, ForeignReferenceMapping mapping){
         //NO-OP
     }
 

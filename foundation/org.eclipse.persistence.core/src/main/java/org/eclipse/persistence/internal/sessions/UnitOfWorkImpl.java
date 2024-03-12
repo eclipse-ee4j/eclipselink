@@ -1312,7 +1312,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     @Override
     public void commitAndResumeOnFailure() throws DatabaseException, OptimisticLockException {
         // First clone the identity map, on failure replace the clone back as the cache.
-        IdentityMapManager failureManager = (IdentityMapManager)getIdentityMapAccessorInstance().getIdentityMapManager().clone();
+        IdentityMapManager failureManager = getIdentityMapAccessorInstance().getIdentityMapManager().clone();
         try {
             // Call commitAndResume.
             // Oct 13, 2000 - JED PRS #13551

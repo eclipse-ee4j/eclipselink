@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p><b>Purpose</b>: Provides the interface for IdentityMap interaction.
@@ -82,13 +82,13 @@ public interface IdentityMap extends Cloneable{
      * Clone the map and all of the CacheKeys.
      * This is used by UnitOfWork commitAndResumeOnFailure to avoid corrupting the cache during a failed commit.
      */
-    Object clone();
+    IdentityMap clone();
 
         /**
      * Add all locked CacheKeys to the map grouped by thread.
      * Used to print all the locks in the identity map.
      */
-    void collectLocks(HashMap threadList);
+    void collectLocks(Map<Thread, Set<CacheKey>> threadList);
 
 
     /**
@@ -101,7 +101,7 @@ public interface IdentityMap extends Cloneable{
     /**
      * Allow for the cache to be iterated on.
      */
-    Enumeration elements();
+    Enumeration<Object> elements();
 
     /**
      * Return the object cached in the identity map or null if it could not be found.
@@ -202,7 +202,7 @@ public interface IdentityMap extends Cloneable{
      * Notify the cache that a lazy relationship has been triggered in the object
      * and the cache may need to be updated
      */
-    void lazyRelationshipLoaded(Object rootEntity, ValueHolderInterface valueHolder,  ForeignReferenceMapping mapping);
+    void lazyRelationshipLoaded(Object rootEntity, ValueHolderInterface<?> valueHolder,  ForeignReferenceMapping mapping);
 
     /**
      * Store the object in the cache at its primary key.

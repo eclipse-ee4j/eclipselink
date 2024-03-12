@@ -19,7 +19,6 @@ package org.eclipse.persistence.services.mbean;
 import org.eclipse.persistence.services.ClassSummaryDetailBase;
 
 import java.util.List;
-import java.util.Vector;
 
 /**
  * <p>
@@ -95,12 +94,12 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *     This method will return the available Connection pools within this Server Session
      */
-    List getAvailableConnectionPools();
+    List<String> getAvailableConnectionPools();
 
     /**
      *     This method will retrieve the size of a particular connection pool
      */
-    List getSizeForPool(String poolName);
+    List<Integer> getSizeForPool(String poolName);
 
 
     /**
@@ -120,13 +119,13 @@ public interface MBeanRuntimeServicesMBean {
      * Please note that SubClasses and aggregates will be missing from this list as they do not have
      * separate identity maps.
      */
-    List getClassesInSession();
+    List<String> getClassesInSession();
 
     /**
-     *        This method will return a collection of the objects in the Identity Map.
+     * This method will return a collection of the objects in the Identity Map.
      * There is no particular order to these objects.
      */
-    List getObjectsInIdentityMap(String className) throws ClassNotFoundException;
+    List<Object> getObjectsInIdentityMap(String className) throws ClassNotFoundException;
 
     /**
      *        This method is used to return the number of objects in a particular Identity Map
@@ -261,7 +260,7 @@ public interface MBeanRuntimeServicesMBean {
     *   @param filter A comma separated list of strings to match against.
     *   @return A Vector of class names that match the filter.
     */
-    Vector getMappedClassNamesUsingFilter(String filter);
+    List<String> getMappedClassNamesUsingFilter(String filter);
 
     /**
      * getModuleName(): Answer the name of the context-root of the application that this session is associated with.
