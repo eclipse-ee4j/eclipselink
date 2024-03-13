@@ -91,7 +91,9 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
 
     @Override
     public int hashCode() {
-        return (m_resultSetMapping != null ? m_resultSetMapping.hashCode() : 0);
+        int result = super.hashCode();
+        result = 31 * result + (m_resultSetMapping != null ? m_resultSetMapping.hashCode() : 0);
+        return result;
     }
 
     /**

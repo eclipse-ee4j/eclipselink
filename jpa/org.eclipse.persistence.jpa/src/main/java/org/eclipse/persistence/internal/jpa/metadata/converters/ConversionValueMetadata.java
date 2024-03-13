@@ -78,7 +78,8 @@ public class ConversionValueMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_dataValue != null ? m_dataValue.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_dataValue != null ? m_dataValue.hashCode() : 0);
         result = 31 * result + (m_objectValue != null ? m_objectValue.hashCode() : 0);
         return result;
     }

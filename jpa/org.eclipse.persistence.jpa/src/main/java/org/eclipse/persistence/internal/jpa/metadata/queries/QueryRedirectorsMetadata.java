@@ -126,7 +126,8 @@ public class QueryRedirectorsMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = defaultQueryRedirectorName != null ? defaultQueryRedirectorName.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + defaultQueryRedirectorName != null ? defaultQueryRedirectorName.hashCode() : 0;
         result = 31 * result + (defaultReadAllQueryRedirectorName != null ? defaultReadAllQueryRedirectorName.hashCode() : 0);
         result = 31 * result + (defaultReadObjectQueryRedirectorName != null ? defaultReadObjectQueryRedirectorName.hashCode() : 0);
         result = 31 * result + (defaultReportQueryRedirectorName != null ? defaultReportQueryRedirectorName.hashCode() : 0);

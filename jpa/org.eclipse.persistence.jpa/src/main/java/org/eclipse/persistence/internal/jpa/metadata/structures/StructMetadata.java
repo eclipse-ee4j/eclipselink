@@ -87,7 +87,8 @@ public class StructMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + name != null ? name.hashCode() : 0;
         result = 31 * result + (fields != null ? fields.hashCode() : 0);
         return result;
     }

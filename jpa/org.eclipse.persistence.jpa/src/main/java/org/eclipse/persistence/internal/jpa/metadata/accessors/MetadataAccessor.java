@@ -238,7 +238,8 @@ public abstract class MetadataAccessor extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_accessMethods != null ? m_accessMethods.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_accessMethods != null ? m_accessMethods.hashCode() : 0);
         result = 31 * result + (m_converters != null ? m_converters.hashCode() : 0);
         result = 31 * result + (m_objectTypeConverters != null ? m_objectTypeConverters.hashCode() : 0);
         result = 31 * result + (m_structConverters != null ? m_structConverters.hashCode() : 0);

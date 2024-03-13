@@ -105,7 +105,8 @@ public class RelationalTableMetadata extends TableMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_foreignKey != null ? m_foreignKey.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_foreignKey != null ? m_foreignKey.hashCode() : 0);
         result = 31 * result + (m_joinColumns != null ? m_joinColumns.hashCode() : 0);
         return result;
     }

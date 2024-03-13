@@ -94,7 +94,8 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_type != null ? m_type.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
         result = 31 * result + (m_contextProperty != null ? m_contextProperty.hashCode() : 0);
         return result;
     }

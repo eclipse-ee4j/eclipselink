@@ -118,7 +118,8 @@ public class JoinTableMetadata extends RelationalTableMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_inverseForeignKey != null ? m_inverseForeignKey.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_inverseForeignKey != null ? m_inverseForeignKey.hashCode() : 0);
         result = 31 * result + (m_inverseJoinColumns != null ? m_inverseJoinColumns.hashCode() : 0);
         return result;
     }

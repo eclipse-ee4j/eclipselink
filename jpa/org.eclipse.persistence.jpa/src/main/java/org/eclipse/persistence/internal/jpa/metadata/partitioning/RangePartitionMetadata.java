@@ -79,7 +79,8 @@ public class RangePartitionMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = connectionPool != null ? connectionPool.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + connectionPool != null ? connectionPool.hashCode() : 0;
         result = 31 * result + (startValue != null ? startValue.hashCode() : 0);
         result = 31 * result + (endValue != null ? endValue.hashCode() : 0);
         return result;

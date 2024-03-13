@@ -160,7 +160,8 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_optional != null ? m_optional.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_optional != null ? m_optional.hashCode() : 0);
         result = 31 * result + (m_jdbcType != null ? m_jdbcType.hashCode() : 0);
         result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
         result = 31 * result + (m_direction != null ? m_direction.hashCode() : 0);

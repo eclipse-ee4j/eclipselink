@@ -76,7 +76,8 @@ public class BatchFetchMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_size != null ? m_size.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_size != null ? m_size.hashCode() : 0);
         result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
         return result;
     }

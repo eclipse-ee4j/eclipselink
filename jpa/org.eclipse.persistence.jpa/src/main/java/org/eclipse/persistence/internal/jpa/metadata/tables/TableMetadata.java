@@ -138,7 +138,8 @@ public class TableMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_indexes != null ? m_indexes.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_indexes != null ? m_indexes.hashCode() : 0);
         result = 31 * result + (m_uniqueConstraints != null ? m_uniqueConstraints.hashCode() : 0);
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_schema != null ? m_schema.hashCode() : 0);

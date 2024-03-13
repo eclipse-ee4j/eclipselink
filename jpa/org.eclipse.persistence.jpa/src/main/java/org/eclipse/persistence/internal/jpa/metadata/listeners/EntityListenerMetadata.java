@@ -169,7 +169,8 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
 
     @Override
     public int hashCode() {
-        int result = m_className != null ? m_className.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_className != null ? m_className.hashCode() : 0);
         result = 31 * result + (m_postLoad != null ? m_postLoad.hashCode() : 0);
         result = 31 * result + (m_postPersist != null ? m_postPersist.hashCode() : 0);
         result = 31 * result + (m_postRemove != null ? m_postRemove.hashCode() : 0);
