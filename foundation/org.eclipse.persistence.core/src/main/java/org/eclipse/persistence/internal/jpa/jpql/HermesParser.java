@@ -41,6 +41,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_1;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_2;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLStatementBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -260,7 +261,9 @@ public final class HermesParser implements JPAQueryBuilder {
             JPQLExpression jpqlExpression = new JPQLExpression(
                 jpqlQuery,
                 DefaultEclipseLinkJPQLGrammar.instance(),
-                isTolerant()
+                JPQLStatementBNF.ID,
+                isTolerant(),
+                this.validationLevel
             );
 
             // Create a context that caches the information contained in the JPQL query

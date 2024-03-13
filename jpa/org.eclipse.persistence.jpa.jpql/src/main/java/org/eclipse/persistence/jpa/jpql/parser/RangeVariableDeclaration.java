@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -280,6 +280,9 @@ public final class RangeVariableDeclaration extends AbstractExpression {
         if (!wordParser.startsWithIdentifier(SET)) {
             if (tolerant) {
                 identificationVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
+                if (identificationVariable == null && JPQLExpression.None.equals(this.getRoot().getValidationLevel())) {
+                    addMissingAlias(this.getRoot().getFoundAlias());
+                }
             }
             else {
                 identificationVariable = new IdentificationVariable(this, wordParser.word());
@@ -353,6 +356,19 @@ public final class RangeVariableDeclaration extends AbstractExpression {
         // Identification variable
         if ((identificationVariable != null) && !virtualIdentificationVariable) {
             identificationVariable.toParsedText(writer, actual);
+        }
+    }
+
+    /**
+     * Add missing Entity alias into current {@link FromClause}. Limited on SELECT queries.
+     *
+     * @param aliasName Entity alias.
+     */
+    private void addMissingAlias(String aliasName) {
+        if (this.getParent() instanceof IdentificationVariableDeclaration identificationVariableDeclaration &&
+                identificationVariableDeclaration.getParent() instanceof FromClause &&
+                this.getIdentificationVariable() instanceof NullExpression) {
+            this.setVirtualIdentificationVariable(aliasName);
         }
     }
 }

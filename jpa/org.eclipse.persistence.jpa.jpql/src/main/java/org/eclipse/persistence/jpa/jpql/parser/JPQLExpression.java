@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.WordParser;
+import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
 
 /**
  * A <code>JPQLExpression</code> is the root of the parsed tree representation of a JPQL query. The
@@ -42,6 +43,12 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 @SuppressWarnings("nls")
 public final class JPQLExpression extends AbstractExpression {
+
+    /**
+     * Parser type constant which allows to generate missing Entity alias for SELECT queries like "SELECT e FROM Entity".
+     * It matches org.eclipse.persistence.config.ParserValidationType#None.
+     */
+    static final String None = "None";
 
     /**
      * The JPQL grammar that defines how to parse a JPQL query.
@@ -70,6 +77,13 @@ public final class JPQLExpression extends AbstractExpression {
      * this will contain it.
      */
     private AbstractExpression unknownEndingStatement;
+
+    private String validationLevel;
+
+    /**
+     * Evaluated alias from SELECT part for SELECT queries like "SELECT e FROM Entity".
+     */
+    private String foundAlias;
 
     /**
      * Creates a new <code>JPQLExpression</code>, which is the root of the JPQL parsed tree.
@@ -112,7 +126,34 @@ public final class JPQLExpression extends AbstractExpression {
                           String queryBNFId,
                           boolean tolerant) {
 
-        this(jpqlGrammar, queryBNFId, tolerant);
+        this(jpqlGrammar, queryBNFId, tolerant, null);
+        parse(new WordParser(jpqlFragment), tolerant);
+    }
+
+    /**
+     * Creates a new <code>JPQLExpression</code> that will parse the given fragment of a JPQL query.
+     * This means {@link #getQueryStatement()} will not return a query statement (select, delete or
+     * update) but only the parsed tree representation of the fragment if the query BNF can pare it.
+     * If the fragment of the JPQL query could not be parsed using the given {@link JPQLQueryBNF},
+     * then {@link #getUnknownEndingStatement()} will contain the non-parsable fragment.
+     *
+     * @param jpqlFragment A fragment of a JPQL query, which is a portion of a complete JPQL query
+     * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
+     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
+     * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+     * to parse invalid or incomplete queries
+     * @param validationLevel It matches some of the constants from org.eclipse.persistence.config.ParserValidationType. Should be null.
+     * Used to control to generate missing Entity alias for SELECT queries like "SELECT e FROM Entity",
+     * in case of org.eclipse.persistence.config.ParserValidationType#None.
+     * @since 2.4
+     */
+    public JPQLExpression(CharSequence jpqlFragment,
+                          JPQLGrammar jpqlGrammar,
+                          String queryBNFId,
+                          boolean tolerant,
+                          String validationLevel) {
+
+        this(jpqlGrammar, queryBNFId, tolerant, validationLevel);
         parse(new WordParser(jpqlFragment), tolerant);
     }
 
@@ -121,13 +162,15 @@ public final class JPQLExpression extends AbstractExpression {
      *
      * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+     * @param validationLevel It matches some of the constants from org.eclipse.persistence.config.ParserValidationType. Should be null.
      * to parse invalid or incomplete queries
      */
-    private JPQLExpression(JPQLGrammar jpqlGrammar, String queryBNFId, boolean tolerant) {
+    private JPQLExpression(JPQLGrammar jpqlGrammar, String queryBNFId, boolean tolerant, String validationLevel) {
         super(null);
         this.queryBNFId  = queryBNFId;
         this.tolerant    = tolerant;
         this.jpqlGrammar = jpqlGrammar;
+        this.validationLevel = validationLevel;
     }
 
     @Override
@@ -205,6 +248,18 @@ public final class JPQLExpression extends AbstractExpression {
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(queryBNFId);
+    }
+
+    public String getValidationLevel() {
+        return validationLevel;
+    }
+
+    public String getFoundAlias() {
+        return foundAlias;
+    }
+
+    public void setFoundAlias(String foundAlias) {
+        this.foundAlias = foundAlias;
     }
 
     /**
@@ -325,5 +380,69 @@ public final class JPQLExpression extends AbstractExpression {
         if (unknownEndingStatement != null) {
             unknownEndingStatement.toParsedText(writer, actual);
         }
+    }
+
+
+
+    /**
+     * Check for missing Entity alias in JPQL SELECT query.
+     *
+     * @param jpqlExpression Parsed JPQL query in form of {@link Expression}
+     * @return boolean true for JPQL like <code>SELECT e FROM Employee</code>.
+     *  <p>Returns false for <code>SELECT e FROM Employee e</code>
+     */
+    private boolean isMissingSelectFromAlias(JPQLExpression jpqlExpression) {
+        return jpqlExpression.getQueryStatement() instanceof SelectStatement selectStatement &&
+                selectStatement.getFromClause() instanceof FromClause fromClause &&
+                fromClause.getDeclaration() instanceof IdentificationVariableDeclaration identificationVariableDeclaration &&
+                identificationVariableDeclaration.getRangeVariableDeclaration() instanceof RangeVariableDeclaration rangeVariableDeclaration &&
+                !rangeVariableDeclaration.hasIdentificationVariable();
+    }
+
+    /**
+     * Evaluate Entity alias from provided {@link Expression}. It returns first available alias.
+     *
+     * @param jpqlExpression Start {@link Expression} which will searched. Whole parsed JPQL. E.g. <code>SELECT OBJECT (e) FROM Employee e</code>.
+     * @return Found Entity alias.
+     */
+    private String getMissingAliasFromSelectPart(JPQLExpression jpqlExpression) {
+        SelectStatement selectStatement = (SelectStatement) jpqlExpression.getQueryStatement();
+        SelectClause selectClause = (SelectClause) selectStatement.getSelectClause();
+        if (selectClause.getSelectExpression() instanceof IdentificationVariable identificationVariable) {
+            return identificationVariable.getText();
+        }
+        return findMissingAliasFromSelectPart(selectClause.getSelectExpression());
+    }
+
+    /**
+     * Evaluate Entity alias from provided {@link Expression}. It returns first available alias. Searches recursively nested expressions/functions.
+     *
+     * @param parentExpression Start {@link Expression} which will searched. E.g. <code>SELECT OBJECT (e)</code> {@link SelectClause} part from e.g. <code>SELECT OBJECT (e) FROM Employee e</code>.
+     * @return Found Entity alias.
+     */
+    private String findMissingAliasFromSelectPart(Expression parentExpression) {
+        ListIterable<Expression> list = parentExpression.children();
+        for (Expression expression : list) {
+            if (expression instanceof IdentificationVariable identificationVariable) {
+                return ((IdentificationVariable) expression).getText();
+            } else {
+                return findMissingAliasFromSelectPart(expression);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add missing Entity alias into provided {@link Expression}. It's designed for a SELECT expressions.
+     *
+     * @param jpqlExpression Parsed JPQL query in form of {@link Expression} which will be updated.
+     * @param aliasName Entity alias.
+     */
+    private void fixMissingAlias(JPQLExpression jpqlExpression, String aliasName) {
+        SelectStatement selectStatement = (SelectStatement) jpqlExpression.getQueryStatement();
+        FromClause fromClause = (FromClause) selectStatement.getFromClause();
+        IdentificationVariableDeclaration identificationVariableDeclaration = (IdentificationVariableDeclaration) fromClause.getDeclaration();
+        RangeVariableDeclaration rangeVariableDeclaration = (RangeVariableDeclaration) identificationVariableDeclaration.getRangeVariableDeclaration();
+        rangeVariableDeclaration.setVirtualIdentificationVariable(aliasName);
     }
 }

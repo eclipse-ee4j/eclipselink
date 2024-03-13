@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,6 +94,7 @@ public final class IdentificationVariable extends AbstractExpression {
      */
     public IdentificationVariable(AbstractExpression parent, String identificationVariable) {
         super(parent, identificationVariable);
+        setFirstFoundAlias(identificationVariable);
     }
 
     /**
@@ -106,7 +107,18 @@ public final class IdentificationVariable extends AbstractExpression {
      */
     public IdentificationVariable(AbstractExpression parent, String identificationVariable, boolean virtual) {
         super(parent, identificationVariable);
+        setFirstFoundAlias(identificationVariable);
         this.virtual = virtual;
+    }
+
+    private void setFirstFoundAlias(String identificationVariable) {
+        try {
+            if (this.getRoot().getFoundAlias() == null && JPQLExpression.None.equals(this.getRoot().getValidationLevel())) {
+                this.getRoot().setFoundAlias(identificationVariable);
+            }
+        } catch (ClassCastException e) {
+            //Do nothing, root is not JPQLExpression. It should happen in case of org.eclipse.persistence.annotations.AdditionalCriteria
+        }
     }
 
     @Override
