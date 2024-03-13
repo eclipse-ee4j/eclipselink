@@ -109,7 +109,8 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
 
     @Override
     public int hashCode() {
-        int result = m_length != null ? m_length.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_length != null ? m_length.hashCode() : 0);
         result = 31 * result + (m_discriminatorType != null ? m_discriminatorType.hashCode() : 0);
         return result;
     }

@@ -112,7 +112,8 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_unique != null ? m_unique.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_unique != null ? m_unique.hashCode() : 0);
         result = 31 * result + (m_nullable != null ? m_nullable.hashCode() : 0);
         result = 31 * result + (m_updatable != null ? m_updatable.hashCode() : 0);
         result = 31 * result + (m_insertable != null ? m_insertable.hashCode() : 0);

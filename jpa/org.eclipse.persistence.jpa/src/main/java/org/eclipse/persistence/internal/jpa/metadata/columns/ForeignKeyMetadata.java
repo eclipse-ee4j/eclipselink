@@ -111,7 +111,8 @@ public class ForeignKeyMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_name != null ? m_name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_constraintMode != null ? m_constraintMode.hashCode() : 0);
         result = 31 * result + (m_foreignKeyDefinition != null ? m_foreignKeyDefinition.hashCode() : 0);
         return result;
@@ -169,7 +170,7 @@ public class ForeignKeyMetadata extends ORMetadata {
     public void process(DatabaseTable table) {
         process(table, null, null, null);
     }
- 
+
     /**
      * INTERNAL:
      * Process this JPA metadata into an EclipseLink ForeignKeyConstraint.
@@ -181,8 +182,8 @@ public class ForeignKeyMetadata extends ORMetadata {
             foreignKeyConstraint.setForeignKeyDefinition(getForeignKeyDefinition());
             foreignKeyConstraint.setDisableForeignKey(isNoConstraintMode());
             // Bug 441546 - Foreign Key attribute when used in JoinColumn generates wrong DDL statement
-            // If foreignKeyDefinition element is not specified, the provider will generate foreign 
-            // key constraints whose update and delete actions it determines most appropriate for 
+            // If foreignKeyDefinition element is not specified, the provider will generate foreign
+            // key constraints whose update and delete actions it determines most appropriate for
             // the join column(s) to which the foreign key annotation is applied.
             if (getForeignKeyDefinition() == null) {
                 if (sourceFields != null) {

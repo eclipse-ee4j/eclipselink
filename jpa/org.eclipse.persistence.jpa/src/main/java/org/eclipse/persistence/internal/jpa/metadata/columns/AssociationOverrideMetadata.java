@@ -107,7 +107,8 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_foreignKey != null ? m_foreignKey.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_foreignKey != null ? m_foreignKey.hashCode() : 0);
         result = 31 * result + (m_joinTable != null ? m_joinTable.hashCode() : 0);
         result = 31 * result + (m_joinColumns != null ? m_joinColumns.hashCode() : 0);
         return result;

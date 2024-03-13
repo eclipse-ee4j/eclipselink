@@ -122,7 +122,8 @@ public class TableGeneratorMetadata extends TableMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_allocationSize != null ? m_allocationSize.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_allocationSize != null ? m_allocationSize.hashCode() : 0);
         result = 31 * result + (m_initialValue != null ? m_initialValue.hashCode() : 0);
         result = 31 * result + (m_generatorName != null ? m_generatorName.hashCode() : 0);
         result = 31 * result + (m_pkColumnValue != null ? m_pkColumnValue.hashCode() : 0);

@@ -76,7 +76,8 @@ public class ValuePartitionMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = connectionPool != null ? connectionPool.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + connectionPool != null ? connectionPool.hashCode() : 0;
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }

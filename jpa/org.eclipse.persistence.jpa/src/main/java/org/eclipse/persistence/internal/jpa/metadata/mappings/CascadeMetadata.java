@@ -126,7 +126,8 @@ public class CascadeMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_cascadeAll != null ? m_cascadeAll.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_cascadeAll != null ? m_cascadeAll.hashCode() : 0);
         result = 31 * result + (m_cascadePersist != null ? m_cascadePersist.hashCode() : 0);
         result = 31 * result + (m_cascadeMerge != null ? m_cascadeMerge.hashCode() : 0);
         result = 31 * result + (m_cascadeRemove != null ? m_cascadeRemove.hashCode() : 0);

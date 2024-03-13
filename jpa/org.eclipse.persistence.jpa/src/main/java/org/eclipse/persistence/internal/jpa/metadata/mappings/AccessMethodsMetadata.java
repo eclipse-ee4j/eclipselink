@@ -107,7 +107,8 @@ public class AccessMethodsMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = getMethodName != null ? getMethodName.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + getMethodName != null ? getMethodName.hashCode() : 0;
         result = 31 * result + (setMethodName != null ? setMethodName.hashCode() : 0);
         return result;
     }

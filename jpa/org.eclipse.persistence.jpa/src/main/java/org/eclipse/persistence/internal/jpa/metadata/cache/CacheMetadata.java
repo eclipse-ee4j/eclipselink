@@ -147,7 +147,8 @@ public class CacheMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_alwaysRefresh != null ? m_alwaysRefresh.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_alwaysRefresh != null ? m_alwaysRefresh.hashCode() : 0);
         result = 31 * result + (m_disableHits != null ? m_disableHits.hashCode() : 0);
         result = 31 * result + (m_isolation != null ? m_isolation.hashCode() : 0);
         result = 31 * result + (m_refreshOnlyIfNewer != null ? m_refreshOnlyIfNewer.hashCode() : 0);

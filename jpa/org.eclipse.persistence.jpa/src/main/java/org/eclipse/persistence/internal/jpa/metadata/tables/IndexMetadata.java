@@ -128,7 +128,8 @@ public class IndexMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_unique != null ? m_unique.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_unique != null ? m_unique.hashCode() : 0);
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_schema != null ? m_schema.hashCode() : 0);
         result = 31 * result + (m_catalog != null ? m_catalog.hashCode() : 0);

@@ -95,7 +95,8 @@ public class GeneratedValueMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_strategy != null ? m_strategy.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_strategy != null ? m_strategy.hashCode() : 0);
         result = 31 * result + (m_generator != null ? m_generator.hashCode() : 0);
         return result;
     }

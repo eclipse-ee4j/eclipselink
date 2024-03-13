@@ -172,7 +172,8 @@ public class XMLAttributes extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_embeddedId != null ? m_embeddedId.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_embeddedId != null ? m_embeddedId.hashCode() : 0);
         result = 31 * result + (m_basics != null ? m_basics.hashCode() : 0);
         result = 31 * result + (m_basicCollections != null ? m_basicCollections.hashCode() : 0);
         result = 31 * result + (m_basicMaps != null ? m_basicMaps.hashCode() : 0);

@@ -93,7 +93,8 @@ public class DiscriminatorClassMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_value != null ? m_value.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_value != null ? m_value.hashCode() : 0);
         result = 31 * result + (m_discriminator != null ? m_discriminator.hashCode() : 0);
         return result;
     }

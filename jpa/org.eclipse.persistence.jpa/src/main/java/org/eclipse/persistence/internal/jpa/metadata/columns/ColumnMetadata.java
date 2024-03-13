@@ -119,7 +119,8 @@ public class ColumnMetadata extends DirectColumnMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_unique != null ? m_unique.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_unique != null ? m_unique.hashCode() : 0);
         result = 31 * result + (m_scale != null ? m_scale.hashCode() : 0);
         result = 31 * result + (m_length != null ? m_length.hashCode() : 0);
         result = 31 * result + (m_precision != null ? m_precision.hashCode() : 0);

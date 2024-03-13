@@ -98,7 +98,8 @@ public class NoSqlMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = dataType != null ? dataType.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + dataType != null ? dataType.hashCode() : 0;
         result = 31 * result + (dataFormat != null ? dataFormat.hashCode() : 0);
         return result;
     }

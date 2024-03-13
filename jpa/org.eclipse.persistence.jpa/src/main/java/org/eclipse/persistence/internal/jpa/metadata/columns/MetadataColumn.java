@@ -92,7 +92,8 @@ public abstract class MetadataColumn extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_name != null ? m_name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_columnDefinition != null ? m_columnDefinition.hashCode() : 0);
         return result;
     }
