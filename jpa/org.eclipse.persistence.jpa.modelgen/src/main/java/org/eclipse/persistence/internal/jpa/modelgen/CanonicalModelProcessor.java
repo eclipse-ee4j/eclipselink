@@ -31,12 +31,16 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -55,10 +59,14 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappedKeyMapAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.graphs.NamedEntityGraphMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnitReader;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.TypeVisitor;
@@ -84,6 +92,15 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     private boolean generateComments;
     private boolean generateTimestamp;
     private boolean generateGenerated;
+
+    private static final String TYPE_TEMPLATE = "    public static volatile %s<%s> class_;%n";
+    private static final String ATTRIBUTE_NAME_TEMPLATE = "    public static final String %s_ = \"%s\";%n";
+    private static final String NAMED_NAME_TEMPLATE = "    public static final String %s_%s = \"%s\";%n";
+    private static final String ATTRIBUTE_TYPE_TEMPLATE = "    public static volatile %s<%s> %s;%n";
+    private static final String REFERENCE_TEMPLATE = "    public static volatile TypedQueryReference<%s> _%s_;%n";
+    private static final String GRAPH_TEMPLATE = "    public static volatile EntityGraph<%s> _%s;%n";
+
+    private record Attributes(Collection<String> attributes, Map<String, String> imports) {}
 
     private static final Set<String> SUPPORTED_ANNOTATIONS = Collections.unmodifiableSet(new HashSet<>() {{
         if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_8) > 0) {
@@ -250,113 +267,85 @@ public class CanonicalModelProcessor extends AbstractProcessor {
      * INTERNAL:
      */
     protected void generateCanonicalModelClass(MetadataClass metadataClass, Element element, PersistenceUnit persistenceUnit) throws IOException {
-        Writer writer = null;
+        ClassAccessor accessor = persistenceUnit.getClassAccessor(metadataClass);
+        String qualifiedName = accessor.getAccessibleObjectName();
+        String className = getName(qualifiedName);
+        String classPackage = getPackage(qualifiedName);
 
-        try {
-            ClassAccessor accessor = persistenceUnit.getClassAccessor(metadataClass);
-            String qualifiedName = accessor.getAccessibleObjectName();
-            String className = getName(qualifiedName);
-            String classPackage = getPackage(qualifiedName);
+        String qualifiedCanonicalName = persistenceUnit.getQualifiedCanonicalName(qualifiedName);
+        String canonicalName = getName(qualifiedCanonicalName);
+        String canonicalpackage = getPackage(qualifiedCanonicalName);
 
-            String qualifiedCanonicalName = persistenceUnit.getQualifiedCanonicalName(qualifiedName);
-            String canonicalName = getName(qualifiedCanonicalName);
-            String canonicalpackage = getPackage(qualifiedCanonicalName);
+        boolean isNewJava = SourceVersion.RELEASE_8.compareTo(processingEnv.getSourceVersion()) < 0;
 
-            boolean isNewJava = SourceVersion.RELEASE_8.compareTo(processingEnv.getSourceVersion()) < 0;
-            JavaFileObject file = processingEnv.getFiler().createSourceFile(qualifiedCanonicalName, element);
-            writer = file.openWriter();
+        // Go through the accessor list, ignoring any transient accessors
+        // to build our attributes and import list.
+        List<String> attributes = new ArrayList<>();
+        Map<String, String> imports = new HashMap<>();
+
+        if (generateGenerated) {
+            if (isNewJava) {
+                imports.put("Generated", "javax.annotation.processing.Generated");
+            } else {
+                imports.put("Generated", "jakarta.annotation.Generated");
+            }
+        }
+
+        // Import the model class if the canonical class is generated elsewhere.
+        if (!classPackage.equals(canonicalpackage)) {
+            imports.put(className, qualifiedName);
+        }
+
+        // process accessor to find all necessary imports
+        MetadataProject project = accessor.getProject();
+
+        Attributes processedAttributes = processAccessorType(accessor);
+        imports.putAll(processedAttributes.imports());
+        if (attributes.addAll(processedAttributes.attributes())) {
+            attributes.add(System.lineSeparator());
+        }
+
+        processedAttributes = processNamedQueries(project, accessor);
+        imports.putAll(processedAttributes.imports());
+        if (attributes.addAll(processedAttributes.attributes())) {
+            attributes.add(System.lineSeparator());
+        }
+
+        processedAttributes = processNamedGraphs(project, accessor);
+        imports.putAll(processedAttributes.imports());
+        if (attributes.addAll(processedAttributes.attributes())) {
+            attributes.add(System.lineSeparator());
+        }
+
+        processedAttributes = processNamedSqlResultSets(project, accessor);
+        imports.putAll(processedAttributes.imports());
+        if (attributes.addAll(processedAttributes.attributes())) {
+            attributes.add(System.lineSeparator());
+        }
+
+        processedAttributes = processMappings(accessor);
+        imports.putAll(processedAttributes.imports());
+        if (attributes.addAll(processedAttributes.attributes())) {
+            attributes.add(System.lineSeparator());
+        }
+
+        JavaFileObject file = processingEnv.getFiler().createSourceFile(qualifiedCanonicalName, element);
+        try (Writer writer = file.openWriter()) {
 
             // Print the package if we have one.
             if (!canonicalpackage.isEmpty()) {
-                writer.append("package ").append(canonicalpackage).append(";\n\n");
+                writer.append("package ").append(canonicalpackage).append(";")
+                        .append(System.lineSeparator())
+                        .append(System.lineSeparator());
             }
 
-            // Go through the accessor list, ignoring any transient accessors
-            // to build our attributes and import list.
-            ArrayList<String> attributes = new ArrayList<>();
-            HashMap<String, String> imports = new HashMap<>();
-
-            if (generateGenerated) {
-                if (isNewJava) {
-                    imports.put("Generated", "javax.annotation.processing.Generated");
-                } else {
-                    imports.put("Generated", "jakarta.annotation.Generated");
-                }
-            }
-
-            // Import the model class if the canonical class is generated elsewhere.
-            if (! classPackage.equals(canonicalpackage)) {
-                imports.put(className, qualifiedName);
-            }
-
-            for (MappingAccessor mappingAccessor : accessor.getDescriptor().getMappingAccessors()) {
-                if (! mappingAccessor.isTransient()) {
-                    MetadataAnnotatedElement annotatedElement = mappingAccessor.getAnnotatedElement();
-                    // Must go through the mapping accessor for the raw class
-                    // since it may be a virtual mapping accessor with an
-                    // attribute type.
-                    MetadataClass rawClass = mappingAccessor.getRawClass();
-
-                    // NOTE: order of checking is important.
-                    String attributeType;
-                    String types = className;
-
-                    if (mappingAccessor.isBasic()) {
-                        types = types + ", " + getUnqualifiedType(getBoxedType(annotatedElement, rawClass), imports);
-                        attributeType = AttributeType.SingularAttribute.name();
-                        imports.put(attributeType, "jakarta.persistence.metamodel.SingularAttribute");
-                    } else {
-                        if (rawClass.isList()) {
-                            attributeType = AttributeType.ListAttribute.name();
-                            imports.put(attributeType, "jakarta.persistence.metamodel.ListAttribute");
-                        } else if (rawClass.isSet()) {
-                            attributeType = AttributeType.SetAttribute.name();
-                            imports.put(attributeType, "jakarta.persistence.metamodel.SetAttribute");
-                        } else if (rawClass.isMap()) {
-                            attributeType = AttributeType.MapAttribute.name();
-                            imports.put(attributeType, "jakarta.persistence.metamodel.MapAttribute");
-                        } else if (rawClass.isCollection()) {
-                            attributeType = AttributeType.CollectionAttribute.name();
-                            imports.put(attributeType, "jakarta.persistence.metamodel.CollectionAttribute");
-                        } else {
-                            attributeType = AttributeType.SingularAttribute.name();
-                            imports.put(attributeType, "jakarta.persistence.metamodel.SingularAttribute");
-                        }
-
-                        if (mappingAccessor.isMapAccessor()) {
-                            if (mappingAccessor.isMappedKeyMapAccessor()) {
-                                MetadataClass mapKeyClass = ((MappedKeyMapAccessor) mappingAccessor).getMapKeyClass();
-                                types = types + ", " + getUnqualifiedType(mapKeyClass.getName(), imports) + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), imports);
-                            } else {
-                                String mapKeyType;
-                                if (annotatedElement.isGenericCollectionType()) {
-                                    // Grab the map key class from the generic.
-                                    mapKeyType = annotatedElement.getGenericType().get(1);
-                                } else {
-                                    if (mappingAccessor.getReferenceDescriptor().hasIdAccessor()) {
-                                        // Grab the id type from the reference descriptor, now there's a handle!
-                                        MappingAccessor idAccessor = mappingAccessor.getReferenceDescriptor().getIdAccessors().values().iterator().next();
-                                        mapKeyType = idAccessor.getReferenceClassName();
-                                    } else {
-                                        // We don't know at this point so just use the catch all default.
-                                        mapKeyType = TypeVisitor.GENERIC_TYPE;
-                                    }
-                                }
-
-                                types = types + ", " + getUnqualifiedType(mapKeyType, imports) + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), imports);
-                            }
-                        } else {
-                            types = types + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), imports);
-                        }
-                    }
-
-                    // Add the mapping attribute to the list of attributes for this class.
-                    attributes.add("    public static volatile " + attributeType + "<" + types + "> " + annotatedElement.getAttributeName() + ";\n");
-                }
-            }
+            // avoid same package imports
+            Map<String, String> filteredImports = imports.entrySet().stream()
+                    .filter(entry -> !canonicalpackage.equals(getPackage(entry.getValue())))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
             // Will import the parent as well if needed.
-            String parent = writeImportStatements(imports, accessor, writer, persistenceUnit, canonicalpackage);
+            String parent = writeImportStatements(filteredImports, accessor, writer, persistenceUnit, canonicalpackage);
 
             if (generateGenerated) {
                 // Write out the generation annotations.
@@ -378,32 +367,27 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                     writer.append(elVersion);
                     writer.append("\"");
                 }
-                writer.append(")\n");
+                writer.append(")");
+                writer.append(System.lineSeparator());
             }
-            writer.append("@StaticMetamodel(").append(className).append(".class)\n");
-            writer.append("@SuppressWarnings({\"rawtypes\", \"deprecation\"})\n");
+            writer.append("@StaticMetamodel(").append(className).append(".class)").append(System.lineSeparator());
+            writer.append("@SuppressWarnings({\"rawtypes\", \"deprecation\"})").append(System.lineSeparator());
 
             int modifier = accessor.getAccessibleObject().getModifiers();
             writer.append(java.lang.reflect.Modifier.toString(modifier)).append(" class ").append(canonicalName);
 
-            if (parent == null) {
-                writer.append(" { \n\n");
-            } else {
-                writer.append(" extends ").append(parent).append(" {\n\n");
+            if (parent != null) {
+                writer.append(" extends ").append(parent);
             }
+            writer.append(" {").append(System.lineSeparator()).append(System.lineSeparator());
 
             // Go through the attributes and write them out.
             for (String str : attributes) {
                 writer.append(str);
             }
 
-            writer.append("\n}");
-        } finally {
-            if (writer != null) {
-                writer.flush();
-                writer.close();
-                writer = null;
-            }
+            writer.append("}");
+            writer.flush();
         }
     }
 
@@ -413,8 +397,9 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     protected void generateCanonicalModelClasses(MetadataMirrorFactory factory, PersistenceUnit persistenceUnit) throws IOException {
         Map<Element, MetadataClass> roundElements = factory.getRoundElements();
 
-        for (Element roundElement : roundElements.keySet()) {
-            MetadataClass roundClass = roundElements.get(roundElement);
+        for (Map.Entry<Element, MetadataClass> entry : roundElements.entrySet()) {
+            Element roundElement = entry.getKey();
+            MetadataClass roundClass = entry.getValue();
 
             if (persistenceUnit.containsClass(roundClass) && !factory.isProcessed(roundElement)) {
                 log(SessionLog.FINEST, "Generating class: {0}", roundClass.getName());
@@ -459,13 +444,54 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         return "";
     }
 
+    private String toJavaIdentifier(String s) {
+        StringBuilder sb = new StringBuilder();
+        if (Character.isJavaIdentifierStart(s.charAt(0))) {
+            sb.append(s.charAt(0));
+        } else {
+            sb.append('_');
+        }
+        for (int i = 1; i < s.length(); i++) {
+            if (Character.isJavaIdentifierPart(s.charAt(i))) {
+                sb.append(s.charAt(i));
+            } else {
+                sb.append('_');
+            }
+        }
+        return sb.toString();
+    }
+
+    private String toUpperCase(String s) {
+        StringBuilder sb = new StringBuilder();
+        if (Character.isJavaIdentifierStart(s.charAt(0))) {
+            sb.append(Character.toUpperCase(s.charAt(0)));
+            if (s.length() > 1 && Character.isUpperCase(s.charAt(1))) {
+                sb.append('_');
+            }
+        } else {
+            sb.append('_');
+        }
+        for (int i = 1; i < s.length() - 1; i++) {
+            if (Character.isJavaIdentifierPart(s.charAt(i))) {
+                sb.append(Character.toUpperCase(s.charAt(i)));
+                if (Character.isUpperCase(s.charAt(i + 1))) {
+                    sb.append('_');
+                }
+            } else {
+                sb.append('_');
+            }
+        }
+        sb.append(Character.toUpperCase(s.charAt(s.length() - 1)));
+        return sb.toString();
+    }
+
     /**
      * INTERNAL: This method will hack off any package qualification. It will
      * add that type to the import list unless it is a known JDK type that does
      * not need to be imported (java.lang). This method also trims the type
      * from leading and trailing white spaces.
      */
-    protected String getUnqualifiedType(String type, HashMap<String, String> imports) {
+    protected String getUnqualifiedType(String type, Map<String, String> imports) {
         // Remove any leading and trailing white spaces.
         type = type.trim();
 
@@ -522,14 +548,153 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         }
     }
 
+    private Attributes processAccessorType(ClassAccessor accessor) {
+        Set<String> attributes = new TreeSet<>();
+        Map<String, String> imports = new HashMap<>();
+        String type = null;
+        if (accessor.isEntityAccessor()) {
+            type = "EntityType";
+        } else if (accessor.isEmbeddableAccessor()) {
+            type = "EmbeddableType";
+        } else if (accessor.isMappedSuperclass()) {
+            type = "MappedSuperclassType";
+        }
+        if (type != null) {
+            attributes.add(TYPE_TEMPLATE.formatted(type, getUnqualifiedType(accessor.getAccessibleObjectName(), imports)));
+            imports.put(type, "jakarta.persistence.metamodel." + type);
+        }
+        return new Attributes(attributes, imports);
+    }
+
+    private Attributes processMappings(ClassAccessor accessor) {
+        Set<String> attributes = new TreeSet<>();
+        Map<String, String> imports = new HashMap<>();
+        String className = getName(accessor.getAccessibleObjectName());
+
+        for (MappingAccessor mappingAccessor : accessor.getDescriptor().getMappingAccessors()) {
+            if (!mappingAccessor.isTransient()) {
+                MetadataAnnotatedElement annotatedElement = mappingAccessor.getAnnotatedElement();
+                // Must go through the mapping accessor for the raw class
+                // since it may be a virtual mapping accessor with an
+                // attribute type.
+                MetadataClass rawClass = mappingAccessor.getRawClass();
+
+                // NOTE: order of checking is important.
+                String attributeType;
+                String types = className;
+
+                if (mappingAccessor.isBasic()) {
+                    types = types + ", " + getUnqualifiedType(getBoxedType(annotatedElement, rawClass), imports);
+                    attributeType = AttributeType.SingularAttribute.name();
+                } else {
+                    if (rawClass.isList()) {
+                        attributeType = AttributeType.ListAttribute.name();
+                    } else if (rawClass.isSet()) {
+                        attributeType = AttributeType.SetAttribute.name();
+                    } else if (rawClass.isMap()) {
+                        attributeType = AttributeType.MapAttribute.name();
+                    } else if (rawClass.isCollection()) {
+                        attributeType = AttributeType.CollectionAttribute.name();
+                    } else {
+                        attributeType = AttributeType.SingularAttribute.name();
+                    }
+
+                    if (mappingAccessor.isMapAccessor()) {
+                        if (mappingAccessor.isMappedKeyMapAccessor()) {
+                            MetadataClass mapKeyClass = ((MappedKeyMapAccessor) mappingAccessor).getMapKeyClass();
+                            types = types + ", " + getUnqualifiedType(mapKeyClass.getName(), imports) + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), imports);
+                        } else {
+                            String mapKeyType;
+                            if (annotatedElement.isGenericCollectionType()) {
+                                // Grab the map key class from the generic.
+                                mapKeyType = annotatedElement.getGenericType().get(1);
+                            } else {
+                                if (mappingAccessor.getReferenceDescriptor().hasIdAccessor()) {
+                                    // Grab the id type from the reference descriptor, now there's a handle!
+                                    MappingAccessor idAccessor = mappingAccessor.getReferenceDescriptor().getIdAccessors().values().iterator().next();
+                                    mapKeyType = idAccessor.getReferenceClassName();
+                                } else {
+                                    // We don't know at this point so just use the catch all default.
+                                    mapKeyType = TypeVisitor.GENERIC_TYPE;
+                                }
+                            }
+
+                            types = types + ", " + getUnqualifiedType(mapKeyType, imports) + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), imports);
+                        }
+                    } else {
+                        types = types + ", " + getUnqualifiedType(mappingAccessor.getReferenceClassName(), imports);
+                    }
+                }
+
+                imports.put(attributeType, "jakarta.persistence.metamodel." + attributeType);
+                // Add the mapping attribute to the list of attributes for this class.
+                attributes.add(ATTRIBUTE_NAME_TEMPLATE.formatted(toUpperCase(annotatedElement.getAttributeName()), annotatedElement.getAttributeName()));
+                attributes.add(ATTRIBUTE_TYPE_TEMPLATE.formatted(attributeType, types, annotatedElement.getAttributeName()));
+            }
+        }
+
+        return new Attributes(attributes, imports);
+    }
+
+    private Attributes processNamedGraphs(MetadataProject project, ClassAccessor accessor) {
+        Set<String> attributes = new TreeSet<>();
+        for (NamedEntityGraphMetadata namedEntityGraph : project.getNamedEntityGraphs(accessor)) {
+            String name = namedEntityGraph.getName();
+            // if name is not present, default to the entity name
+            if (name == null) {
+                if (accessor.isEntityAccessor()) {
+                    name = ((EntityAccessor) accessor).getEntityName();
+                } else {
+                    name = getName(accessor.getAccessibleObjectName());
+                }
+            }
+            attributes.add(NAMED_NAME_TEMPLATE.formatted("GRAPH",
+                    toUpperCase(name), name));
+            attributes.add(GRAPH_TEMPLATE.formatted(getName(accessor.getAccessibleObjectName()), toJavaIdentifier(name)));
+        }
+        return new Attributes(attributes,
+                attributes.isEmpty()
+                        ? Collections.emptyMap()
+                        : Map.of("EntityGraph", "jakarta.persistence.EntityGraph"));
+    }
+
+    private Attributes processNamedQueries(MetadataProject project, ClassAccessor accessor) {
+        Set<String> attributes = new TreeSet<>();
+        Set<String> refAttributes = new HashSet<>();
+        Map<String, String> imports = new HashMap<>();
+        for (NamedQueryMetadata namedQueryMetadata : project.getNamedQueries(accessor)) {
+            attributes.add(NAMED_NAME_TEMPLATE.formatted("QUERY",
+                    toUpperCase(namedQueryMetadata.getName()), namedQueryMetadata.getName()));
+
+            if (!namedQueryMetadata.getResultClass().isVoid()) {
+                MetadataClass resultClass = namedQueryMetadata.getResultClass();
+                refAttributes.add(REFERENCE_TEMPLATE.formatted(getUnqualifiedType(resultClass.getName(), imports), toJavaIdentifier(namedQueryMetadata.getName())));
+            }
+        }
+        if (!refAttributes.isEmpty()) {
+            imports.put("TypedQueryReference", "jakarta.persistence.TypedQueryReference");
+        }
+        attributes.addAll(refAttributes);
+        return new Attributes(attributes, imports);
+    }
+
+    private Attributes processNamedSqlResultSets(MetadataProject project, ClassAccessor accessor) {
+        Set<String> attributes = new TreeSet<>();
+        for (SQLResultSetMappingMetadata sqlResultSetMapping : project.getNamedSQLResultSetMappings(accessor)) {
+            attributes.add(NAMED_NAME_TEMPLATE.formatted("MAPPING",
+                    toUpperCase(sqlResultSetMapping.getName()), sqlResultSetMapping.getName()));
+        }
+        return new Attributes(attributes, Collections.emptyMap());
+    }
+
     /**
      * INTERNAL:
      */
-    protected String writeImportStatements(HashMap<String, String> typeImports, ClassAccessor accessor, Writer writer, PersistenceUnit persistenceUnit, String childCanonicalpackage) throws IOException {
+    protected String writeImportStatements(Map<String, String> typeImports, ClassAccessor accessor, Writer writer, PersistenceUnit persistenceUnit, String childCanonicalpackage) throws IOException {
         String parentCanonicalName = null;
 
-        // Get the import list ready to be sorted.
-        ArrayList<String> imps = new ArrayList<>(typeImports.values());
+        // Get the sorted import list ready.
+        Set<String> imps = new TreeSet<>(typeImports.values());
 
         // Add the standard canonical model generator imports.
         imps.add("jakarta.persistence.metamodel.StaticMetamodel");
@@ -548,15 +713,12 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             }
         }
 
-        // Sort the list of imports before writing them.
-        Collections.sort(imps);
-
         // Write out the imports.
         for (String typeImport : imps) {
-            writer.append("import ").append(typeImport).append(";\n");
+            writer.append("import ").append(typeImport).append(";").append(System.lineSeparator());
         }
 
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         return parentCanonicalName;
     }
 

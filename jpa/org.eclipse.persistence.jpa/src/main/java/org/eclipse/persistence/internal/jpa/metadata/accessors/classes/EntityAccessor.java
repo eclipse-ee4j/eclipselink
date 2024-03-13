@@ -652,8 +652,13 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             }
         }
 
+        processEntity();
+
         // Process our parents metadata after processing our own.
         super.preProcessForCanonicalModel();
+
+        // Process the entity graph metadata.
+        processEntityGraphs();
     }
 
     /**

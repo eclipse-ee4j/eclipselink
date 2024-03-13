@@ -746,6 +746,33 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         super.preProcess();
     }
 
+    @Override
+    public void preProcessForCanonicalModel() {
+
+        // Process the named query metadata.
+        processNamedQueries();
+
+        // Process the named native query metadata.
+        processNamedNativeQueries();
+
+        // Process the named stored procedure query metadata
+        processNamedStoredProcedureQueries();
+
+        // Process the named stored function query metadata
+        processNamedStoredFunctionQueries();
+
+        // Process the named PLSQL stored procedure query metadata
+        processNamedPLSQLStoredProcedureQueries();
+
+        // Process the named PLSQL stored function query metadata
+        processNamedPLSQLStoredFunctionQueries();
+
+        // Process the sql result set mapping metadata
+        processSqlResultSetMappings();
+
+        super.preProcessForCanonicalModel();
+    }
+
     /**
      * INTERNAL:
      * Process the items of interest on a mapped superclass.

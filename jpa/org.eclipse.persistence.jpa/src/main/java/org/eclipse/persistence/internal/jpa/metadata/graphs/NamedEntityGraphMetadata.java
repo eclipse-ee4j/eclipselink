@@ -244,6 +244,7 @@ public class NamedEntityGraphMetadata extends ORMetadata {
 
             // Finally, add the entity graph to the project.
             getProject().addEntityGraph(entityGraph);
+            getProject().addNamedEntityGraph(entityGraphName, this);
         }
     }
 
