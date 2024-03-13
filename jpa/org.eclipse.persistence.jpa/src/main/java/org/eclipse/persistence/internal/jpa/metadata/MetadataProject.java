@@ -124,6 +124,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.spi.PersistenceUnitInfo;
@@ -135,6 +136,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ConverterAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
@@ -148,6 +150,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.graphs.NamedEntityGraphMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.AbstractPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.ComplexTypeMetadata;
@@ -284,6 +287,9 @@ public class MetadataProject {
     // Query metadata.
     private Map<String, NamedQueryMetadata> m_queries;
 
+    // Entity Graph metadata.
+    private Map<String, NamedEntityGraphMetadata> m_entityGraphs;
+
     // SQL result set mapping
     private Map<String, SQLResultSetMappingMetadata> m_sqlResultSetMappings;
 
@@ -352,6 +358,7 @@ public class MetadataProject {
         m_defaultListeners = new LinkedHashSet<>();
 
         m_queries = new HashMap<>();
+        m_entityGraphs = new HashMap<>();
         m_sqlResultSetMappings = new HashMap<>();
         m_allAccessors = new HashMap<>();
         m_entityAccessors = new HashMap<>();
@@ -655,6 +662,13 @@ public class MetadataProject {
              */
             m_session.getProject().addMappedSuperclass(accessor.getJavaClassName(), metadataDescriptor.getClassDescriptor(), true);
         }
+    }
+
+    /**
+     * INTERNAL: Add the Entity Graph by name.
+     */
+    public void addNamedEntityGraph(String name, NamedEntityGraphMetadata entityGraphMetadata) {
+        m_entityGraphs.put(name, entityGraphMetadata);
     }
 
     /**
@@ -1012,13 +1026,13 @@ public class MetadataProject {
                 ca = m_autoApplyConvertAccessors.get(wrapperType);
             }
         }
-        
+
         return ca;
     }
-    
+
     private String resolvePrimitiveWrapper(MetadataClass cls) {
         String wrapperType = null;
-        
+
         if (cls.isPrimitive() && !cls.isArray() && !m_autoApplyConvertAccessors.isEmpty()) {
             // Look for Converters for the Wrapper equivalent of the primitive
             switch (cls.getTypeName()) {
@@ -1228,6 +1242,36 @@ public class MetadataProject {
     }
 
     /**
+     * INTERNAL: Return Collection of {@code NamedEntityGraph}s defined in given {@code accessor}.
+     */
+    public Set<NamedEntityGraphMetadata> getNamedEntityGraphs(MetadataAccessor accessor) {
+        return m_entityGraphs.values()
+                .stream()
+                .filter(v -> v.getAccessibleObject() == accessor.getAccessibleObject())
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * INTERNAL: Return Collection of {@code NamedQueries} (all variants) defined in given {@code accessor}.
+     */
+    public Set<NamedQueryMetadata> getNamedQueries(MetadataAccessor accessor) {
+        return m_queries.values()
+                .stream()
+                .filter(v -> v.getAccessibleObject() == accessor.getAccessibleObject())
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * INTERNAL: Return Collection of {@code SQLResultSetMapping}s defined in given {@code accessor}.
+     */
+    public Set<SQLResultSetMappingMetadata> getNamedSQLResultSetMappings(MetadataAccessor accessor) {
+        return m_sqlResultSetMappings.values()
+                .stream()
+                .filter(v -> v.getAccessibleObject() == accessor.getAccessibleObject())
+                .collect(Collectors.toSet());
+    }
+
+    /**
      * INTERNAL:
      * Return the named partitioning policy.
      */
@@ -1341,7 +1385,7 @@ public class MetadataProject {
 
     /**
      * INTERNAL:
-     * Sets the SharedCacheMode value. 
+     * Sets the SharedCacheMode value.
      */
     public void setSharedCacheMode(SharedCacheMode m_sharedCacheMode) {
         this.m_sharedCacheMode = m_sharedCacheMode;
@@ -1393,7 +1437,7 @@ public class MetadataProject {
                 hasCA = m_autoApplyConvertAccessors.containsKey(wrapperType);
             }
         }
-        
+
         return hasCA;
     }
 
@@ -2105,6 +2149,6 @@ public class MetadataProject {
         }
         return false;
     }
- }
+}
 
 

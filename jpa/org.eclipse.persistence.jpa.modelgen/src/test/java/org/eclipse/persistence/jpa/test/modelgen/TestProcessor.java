@@ -15,6 +15,23 @@
 //       - 531305: Canonical model generator fails to run on JDK9
 package org.eclipse.persistence.jpa.test.modelgen;
 
+import jakarta.annotation.Generated;
+import jakarta.persistence.Entity;
+import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor;
+import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaCompiler.CompilationTask;
+import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -32,24 +49,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.annotation.Generated;
-import jakarta.persistence.Entity;
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaCompiler.CompilationTask;
-import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.StandardLocation;
-import javax.tools.ToolProvider;
-
-import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor;
-import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 public class TestProcessor {
 
     public TestProcessor() {}
@@ -58,8 +57,11 @@ public class TestProcessor {
     public static void prepare() throws IOException {
         File testRoot = new File(System.getProperty("run.dir"));
         if (testRoot.exists() && testRoot.isDirectory()) {
-            for (File testDir: testRoot.listFiles()) {
-                delete(testDir);
+            File[] files = testRoot.listFiles();
+            if (files != null) {
+                for (File testDir : files) {
+                    delete(testDir);
+                }
             }
         }
     }
@@ -86,6 +88,24 @@ public class TestProcessor {
     public void testTypeUse() throws Exception {
         testTypeUse("testTypeUse3030", PXML30, OXML30);
         testTypeUse("testTypeUse3031", PXML30, OXML31);
+    }
+
+    @Test
+    public void testAnnotationProcessing() throws Exception {
+        String output = testEntity("org.foo.MyEnt", ENTITY, PXML32, OXML32);
+        Assert.assertFalse(output.contains("import org.foo"));
+        Assert.assertTrue(output.contains("public static volatile EntityType<MyEnt> class_;"));
+
+        Assert.assertTrue(output.contains("public static final String QUERY_FIND_ALL = \"findAll\";"));
+        Assert.assertTrue(output.contains("public static final String QUERY_NATIVE_DELETE_ALL = \"native.deleteAll\";"));
+        Assert.assertTrue(output.contains("public static final String GRAPH_MY_ENT = \"MyEnt\";"));
+        Assert.assertTrue(output.contains("public static final String MAPPING_M_CUSTOM_RESULT = \"m.customResult\";"));
+
+        Assert.assertTrue(output.contains("public static volatile TypedQueryReference<ResultClassType> _findById_;"));
+
+        Assert.assertTrue(output.contains("public static volatile EntityGraph<MyEnt> _MyEnt;"));
+
+        Assert.assertTrue(output.contains("public static final String CUSTOM_ATTRIBUTE_ = \"customAttribute\";"));
     }
 
     @Test
@@ -195,6 +215,22 @@ public class TestProcessor {
         Assert.assertTrue("Model file not generated", outputFile.exists());
         Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("Generated")));
         Assert.assertTrue("Compilation failed", result.success);
+    }
+
+    private String testEntity(String name, String template, String pxml, String oxml) throws Exception {
+        TestFO entity = new TestFO(name,
+                template.replace("$PKG", name.substring(0, name.lastIndexOf('.')))
+                        .replace("$NAME", name.substring(name.lastIndexOf('.') + 1)));
+        Result result = runProject(name.replace('.', '_'),
+                getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED + "=false",
+                        "-Aeclipselink.logging.level.processor=OFF"),
+                Arrays.asList(entity), pxml, oxml);
+
+        File outputFile = new File(result.srcOut, name.replace('.', '/') + "_.java");
+        Assert.assertTrue("Model file not generated", outputFile.exists());
+        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("Generated")));
+        Assert.assertTrue("Compilation failed", result.success);
+        return Files.readString(outputFile.toPath());
     }
 
     public void testTypeUse(String name, String pxml, String oxml) throws Exception {
@@ -354,6 +390,20 @@ public class TestProcessor {
                  </persistence-unit>
             </persistence>""";
 
+    private static final String PXML32 = """
+            <persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+                https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
+              version="3.2">
+                 <persistence-unit name="sample-pu" transaction-type="RESOURCE_LOCAL">
+                      <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+                      <exclude-unlisted-classes>false</exclude-unlisted-classes>
+                      <properties>
+                      </properties>
+                 </persistence-unit>
+            </persistence>""";
+
     private static final String OXML30 = """
             <entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -365,6 +415,12 @@ public class TestProcessor {
                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                          xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd"
                          version="3.1"></entity-mappings>""";
+
+    private static final String OXML32 = """
+            <entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_2.xsd"
+                         version="3.2"></entity-mappings>""";
 
     private static final String PXML_LOG_BEG =
             """
@@ -388,6 +444,34 @@ public class TestProcessor {
                               </properties>
                          </persistence-unit>
                     </persistence>""";
+
+    private static final String ENTITY =
+            """
+                package $PKG;
+                import jakarta.persistence.Entity;
+                import jakarta.persistence.Id;
+                import jakarta.persistence.NamedEntityGraph;
+                import jakarta.persistence.NamedNativeQuery;
+                import jakarta.persistence.NamedQuery;
+                import jakarta.persistence.SqlResultSetMapping;
+                @Entity
+                @NamedQuery(name = "findAll", query="select xy from $NAME xy")
+                @NamedQuery(name = "findById", query="select xy from $NAME xy WHERE xy.id = :id", resultClass = ResultClassType.class)
+                @NamedNativeQuery(name = "native.deleteAll", query = "DELETE FROM $NAME")
+                @NamedNativeQuery(name = "native.deleteById", query = "DELETE FROM $NAME WHERE id = ?1", resultClass = ResultClassType.class)
+                @NamedEntityGraph
+                @SqlResultSetMapping(name = "m.customResult")
+                public class $NAME {
+                    @Id
+                    public int id;
+                    public int customAttribute;
+                    public $NAME() {}
+                    public int getCustomAttribute() { return customAttribute; }
+                    public int setCustomAttribute(int customAttribute) { this.customAttribute = customAttribute; }
+                    interface A {}
+                };
+                class ResultClassType {}
+                """;
 
     /**
      * Simple property holding class.
@@ -428,7 +512,7 @@ public class TestProcessor {
     }
 
     private static void delete(File dir) throws IOException {
-        Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 Files.delete(file);
