@@ -28,7 +28,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import jakarta.persistence.PersistenceConfiguration;
-import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
@@ -44,6 +43,7 @@ import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
  */
 public class SEPersistenceUnitInfo implements jakarta.persistence.spi.PersistenceUnitInfo {
 
+    private String schemaVersion;
     // What about 2.0 in 1.0 container here ...
     protected SharedCacheMode cacheMode;
     protected ValidationMode validationMode;
@@ -53,6 +53,8 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     protected DataSource nonJtaDataSource;
     protected PersistenceUnitTransactionType persistenceUnitTransactionType;
     protected List<String> mappingFiles;
+    private List<String> qualifierAnnNames;
+    private String scopeAnnName;
 
     // names of jars specified in persistence.xml. they are later on used
     // to build jar-file URL.
@@ -81,6 +83,12 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         managedClassNames = new ArrayList<>();
         properties = new Properties();
         persistenceUnitTransactionType = PersistenceUnitTransactionType.RESOURCE_LOCAL;
+        // DISABLE_SELECTIVE is our default (same as if UNSPECIFIED),
+        // see also MetadataProject.isSharedCacheModeDisableSelective()
+        cacheMode = SharedCacheMode.DISABLE_SELECTIVE;
+        // Default per spec
+        validationMode = ValidationMode.AUTO;
+        qualifierAnnNames = new ArrayList<>();
         // don't initialize jarFileUrls as it is lazily initialized
     }
 
@@ -171,16 +179,22 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         return persistenceProviderClassName;
     }
 
+    public void setScopeAnnotationName(String scopeAnnName) {
+        this.scopeAnnName = scopeAnnName;
+    }
+
     @Override
     public String getScopeAnnotationName() {
-        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
-        return null;
+        return scopeAnnName;
+    }
+
+    public void setQualifierAnnotationNames(List<String> qualifierAnnNames) {
+        this.qualifierAnnNames = qualifierAnnNames;
     }
 
     @Override
     public List<String> getQualifierAnnotationNames() {
-        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
-        return null;
+        return qualifierAnnNames;
     }
 
     public void setPersistenceProviderClassName(String persistenceProviderClassName){
@@ -462,8 +476,11 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
      */
     @Override
     public String getPersistenceXMLSchemaVersion() {
-        // TODO
-        throw new PersistenceException("Not Yet Implemented");
+        return schemaVersion;
+    }
+
+    public void setPersistenceXMLSchemaVersion(String schemaVersion) {
+        this.schemaVersion = schemaVersion;
     }
 
     /**

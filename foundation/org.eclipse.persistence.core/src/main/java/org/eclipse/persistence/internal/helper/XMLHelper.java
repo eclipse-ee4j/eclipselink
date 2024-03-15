@@ -15,13 +15,13 @@
 package org.eclipse.persistence.internal.helper;
 
 import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
-import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -58,7 +58,7 @@ public class XMLHelper {
     }
 
     /**
-     * Returns properly configured (e.g. security features) schema factory 
+     * Returns properly configured (e.g. security features) schema factory
      * - namespaceAware == true
      * - securityProcessing == is set based on security processing property, default is true
      */
@@ -66,7 +66,7 @@ public class XMLHelper {
         SessionLog logger = AbstractSessionLog.getLog();
         try {
             SchemaFactory factory = SchemaFactory.newInstance(language);
-            
+
             if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
                 logger.log(SessionLog.FINE, SessionLog.MOXY, "schema_factory", new Object[] {factory});
             }
@@ -79,7 +79,7 @@ public class XMLHelper {
     }
 
     /**
-     * Returns properly configured (e.g. security features) parser factory 
+     * Returns properly configured (e.g. security features) parser factory
      * - namespaceAware == true
      * - securityProcessing == is set based on security processing property, default is true
      */
@@ -100,7 +100,7 @@ public class XMLHelper {
     }
 
     /**
-     * Returns properly configured (e.g. security features) factory 
+     * Returns properly configured (e.g. security features) factory
      * - securityProcessing == is set based on security processing property, default is true
      */
     public static XPathFactory createXPathFactory(boolean disableSecureProcessing) throws IllegalStateException {
@@ -119,7 +119,7 @@ public class XMLHelper {
     }
 
     /**
-     * Returns properly configured (e.g. security features) factory 
+     * Returns properly configured (e.g. security features) factory
      * - securityProcessing == is set based on security processing property, default is true
      */
     public static TransformerFactory createTransformerFactory(boolean disableSecureProcessing) throws IllegalStateException {
@@ -138,7 +138,7 @@ public class XMLHelper {
     }
 
     /**
-     * Returns properly configured (e.g. security features) factory 
+     * Returns properly configured (e.g. security features) factory
      * - namespaceAware == true
      * - securityProcessing == is set based on security processing property, default is true
      */

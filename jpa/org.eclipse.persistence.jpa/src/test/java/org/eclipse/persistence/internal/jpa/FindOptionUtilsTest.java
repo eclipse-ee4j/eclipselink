@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,24 +19,26 @@ import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.PessimisticLockScope;
-import junit.framework.TestCase;
 import org.eclipse.persistence.config.QueryHints;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-public class FindOptionUtilsTest extends TestCase {
+class FindOptionUtilsTest {
 
-    public void testParseAllOptions() {
+    @Test
+    void testParseAllOptions() {
         FindOptionUtils.Options parsed = FindOptionUtils.parse(
                 LockModeType.OPTIMISTIC,
                 CacheRetrieveMode.USE,
                 CacheStoreMode.REFRESH,
                 PessimisticLockScope.EXTENDED);
-        assertEquals(parsed.lockModeType(), LockModeType.OPTIMISTIC);
-        assertEquals(parsed.properties().get(QueryHints.CACHE_RETRIEVE_MODE), CacheRetrieveMode.USE);
-        assertEquals(parsed.properties().get(QueryHints.CACHE_STORE_MODE), CacheStoreMode.REFRESH);
-        assertEquals(parsed.properties().get(QueryHints.PESSIMISTIC_LOCK_SCOPE), PessimisticLockScope.EXTENDED);
+        Assertions.assertEquals(LockModeType.OPTIMISTIC, parsed.lockModeType());
+        Assertions.assertEquals(CacheRetrieveMode.USE, parsed.properties().get(QueryHints.CACHE_RETRIEVE_MODE));
+        Assertions.assertEquals(CacheStoreMode.REFRESH, parsed.properties().get(QueryHints.CACHE_STORE_MODE));
+        Assertions.assertEquals(PessimisticLockScope.EXTENDED, parsed.properties().get(QueryHints.PESSIMISTIC_LOCK_SCOPE));
     }
 
     /* TODO-API-3.2: Add Timeout tests when API is fixed

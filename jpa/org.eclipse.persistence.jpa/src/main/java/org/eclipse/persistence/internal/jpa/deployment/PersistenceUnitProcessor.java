@@ -52,6 +52,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import jakarta.persistence.spi.PersistenceUnitInfo;
+
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -75,6 +77,8 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.ArchiveFactory;
 import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -655,15 +659,24 @@ public class PersistenceUnitProcessor {
      */
     private static List<SEPersistenceUnitInfo> processPersistenceXML(URL baseURL, InputStream input, ClassLoader loader){
         SAXParserFactory spf = XMLHelper.createParserFactory(false);
+        spf.setValidating(true);
 
         XMLReader xmlReader = null;
         SAXParser sp = null;
         XMLExceptionHandler xmlErrorHandler = new XMLExceptionHandler();
-        // 247735 - remove the validation of XML.
 
         // create a SAX parser
         try {
             sp = spf.newSAXParser();
+
+            try {
+                sp.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            } catch (SAXException x) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.JPA, "jaxp_sec_prop_not_supported", new Object[] {"http://java.sun.com/xml/jaxp/properties/schemaLanguage"});
+                spf.setValidating(false);
+                sp = spf.newSAXParser();
+            }
+
         } catch (ParserConfigurationException | SAXException exc){
             throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
         }
@@ -679,6 +692,17 @@ public class PersistenceUnitProcessor {
         PersistenceContentHandler myContentHandler = new PersistenceContentHandler();
         xmlReader.setContentHandler(myContentHandler);
 
+        EntityResolver resolver = new EntityResolver() {
+            @Override
+            public InputSource resolveEntity(String publicId, String systemId) {
+                int idx = systemId.lastIndexOf('/');
+                String name = idx < 0 ? systemId : systemId.substring(idx + 1);
+                InputStream resource = PersistenceUnitProcessor.class.getResourceAsStream("/org/eclipse/persistence/jpa/" + name);
+                return resource == null ? null : new InputSource(resource);
+            }
+        };
+
+        xmlReader.setEntityResolver(resolver);
         InputSource inputSource = new InputSource(input);
         try{
             xmlReader.parse(inputSource);
