@@ -237,6 +237,7 @@
         <jgroups.version>5.3.4.Final</jgroups.version>
         <jmh.version>1.37</jmh.version>
         <junit.version>4.13.2</junit.version>
+        <junit5.version>5.10.2</junit5.version>
         <!-- CQ #24079 -->
         <mongodb.version>5.0.0</mongodb.version>
         <mysql.version>8.3.0</mysql.version>
@@ -897,6 +898,13 @@
             </dependency>
             <!--Test dependencies-->
             <!--Test framework-->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit5.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
