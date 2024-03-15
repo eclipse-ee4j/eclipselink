@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 //     01/23/2013-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
-package org.eclipse.persistence.testing.tests.jpa21.advanced.xml.ddl;
+package org.eclipse.persistence.testing.tests.advanced2.xml.ddl;
 
 import jakarta.persistence.EntityManager;
 import junit.framework.Test;

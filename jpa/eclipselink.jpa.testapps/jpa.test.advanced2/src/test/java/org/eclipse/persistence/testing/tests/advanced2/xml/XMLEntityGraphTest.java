@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,7 +13,7 @@
 // Contributors:
 //     02/13/2013-2.5 Guy Pelletier
 //       - 397772: JPA 2.1 Entity Graph Support (XML support)
-package org.eclipse.persistence.testing.tests.jpa21.advanced.xml;
+package org.eclipse.persistence.testing.tests.advanced2.xml;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceUnitUtil;
@@ -54,7 +54,7 @@ public class XMLEntityGraphTest extends JUnitTestCase {
 
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
-        org.eclipse.persistence.testing.tests.jpa21.advanced.xml.EmployeePopulator employeePopulator = new EmployeePopulator();
+        EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
         employeePopulator.persistExample(getPersistenceUnitServerSession());
         clearCache();

@@ -671,12 +671,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
                     if (results.size() > 1) {
                         throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));
-                    } else if (failOnEmpty && results.isEmpty()) {
-                        throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
-                    } else if (!failOnEmpty && results.isEmpty()) {
-                        return null;
+                    } else if (results.isEmpty()) {
+                        if (failOnEmpty) {
+                            throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
+                        } else {
+                            return null;
+                        }
                     }
-
                     // If hasMoreResults is true, we should throw an exception here.
                     if (results.size() > 1 || hasMoreResults) {
                         throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));

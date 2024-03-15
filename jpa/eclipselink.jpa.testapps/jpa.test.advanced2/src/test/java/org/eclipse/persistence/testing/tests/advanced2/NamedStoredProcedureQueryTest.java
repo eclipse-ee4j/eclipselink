@@ -27,7 +27,7 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 //     01/23/2013-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
-package org.eclipse.persistence.testing.tests.jpa21.advanced;
+package org.eclipse.persistence.testing.tests.advanced2;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.StoredProcedureQuery;

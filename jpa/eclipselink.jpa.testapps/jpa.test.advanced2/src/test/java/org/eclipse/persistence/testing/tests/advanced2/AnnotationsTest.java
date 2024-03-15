@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-package org.eclipse.persistence.testing.tests.jpa21.advanced;
+package org.eclipse.persistence.testing.tests.advanced2;
 
 import jakarta.persistence.AssociationOverride;
 import jakarta.persistence.AssociationOverrides;
@@ -57,8 +57,8 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.Runner;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 
-import static org.eclipse.persistence.testing.tests.jpa21.advanced.AnnotationsTest.Access.FIELD;
-import static org.eclipse.persistence.testing.tests.jpa21.advanced.AnnotationsTest.Access.PROPERTY;
+import static org.eclipse.persistence.testing.tests.advanced2.AnnotationsTest.Access.FIELD;
+import static org.eclipse.persistence.testing.tests.advanced2.AnnotationsTest.Access.PROPERTY;
 
 @PersistenceContext(name = "advanced2x", unitName = "advanced2x")
 @PersistenceContext(name = "advanced2x-ddl", unitName = "advanced2x-ddl")

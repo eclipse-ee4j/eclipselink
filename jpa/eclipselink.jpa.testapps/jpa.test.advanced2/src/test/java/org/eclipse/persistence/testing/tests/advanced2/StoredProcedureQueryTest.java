@@ -13,7 +13,7 @@
 // Contributors:
 //     01/23/2013-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
-package org.eclipse.persistence.testing.tests.jpa21.advanced;
+package org.eclipse.persistence.testing.tests.advanced2;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Parameter;
@@ -72,6 +72,8 @@ public class StoredProcedureQueryTest extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTest("testQueryGetResultList"));
         suite.addTest(new StoredProcedureQueryTest("testQueryWithMultipleResultsFromCode"));
         suite.addTest(new StoredProcedureQueryTest("testQueryWithNamedFieldResult"));
+        suite.addTest(new StoredProcedureQueryTest("testQueryWithNamedFieldResultGetSingleResultOrNullWithValue"));
+        suite.addTest(new StoredProcedureQueryTest("testQueryWithNamedFieldResultGetSingleResultOrNullWithNull"));
         suite.addTest(new StoredProcedureQueryTest("testQueryWithNamedFieldResultTranslationIntoNumbered"));
         suite.addTest(new StoredProcedureQueryTest("testQueryWithNumberedFieldResult"));
         suite.addTest(new StoredProcedureQueryTest("testQueryWithResultClass"));
@@ -815,6 +817,76 @@ public class StoredProcedureQueryTest extends JUnitTestCase {
                 assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));
                 assertNotNull("No results returned from store procedure call", values[1]);
                 assertEquals("Address not found using stored procedure", address.getStreet(), values[1]);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
+        }
+    }
+
+    /**
+     * Tests a StoredProcedureQuery using a result-set mapping though EM API with getSingleResultOrNull() with some value as a result
+     */
+    public void testQueryWithNamedFieldResultGetSingleResultOrNullWithValue() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+
+            try {
+                beginTransaction(em);
+
+                Address address = new Address();
+                address.setCity("Winnipeg");
+                address.setPostalCode("R3B 1B9");
+                address.setProvince("MB");
+                address.setStreet("510 Main Street");
+                address.setCountry("Canada");
+                em.persist(address);
+                em.flush();
+
+                // Clear the cache
+                em.clear();
+                clearCache();
+
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Address_Mapped_Named", "address-column-result-map");
+                query.registerStoredProcedureParameter("address_id_v", Integer.class, ParameterMode.IN);
+
+                Object[] values = (Object[]) query.setParameter("address_id_v", address.getId()).getSingleResultOrNull();
+                assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));
+                assertNotNull("No results returned from store procedure call", values[1]);
+                assertEquals("Address not found using stored procedure", address.getStreet(), values[1]);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
+        }
+    }
+
+    /**
+     * Tests a StoredProcedureQuery using a result-set mapping though EM API with getSingleResultOrNull() with null as a result
+     */
+    public void testQueryWithNamedFieldResultGetSingleResultOrNullWithNull() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+
+            try {
+                beginTransaction(em);
+
+                Address address = new Address();
+                address.setCity("Winnipeg");
+                address.setPostalCode("R3B 1B9");
+                address.setProvince("MB");
+                address.setStreet("510 Main Street");
+                address.setCountry("Canada");
+                em.persist(address);
+                em.flush();
+
+                // Clear the cache
+                em.clear();
+                clearCache();
+
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Address_Mapped_Named", "address-column-result-map");
+                query.registerStoredProcedureParameter("address_id_v", Integer.class, ParameterMode.IN);
+
+                Object result = query.setParameter("address_id_v", 0).getSingleResultOrNull();
+                assertNull("Null is expected as a result", result);
             } finally {
                 closeEntityManagerAndTransaction(em);
             }

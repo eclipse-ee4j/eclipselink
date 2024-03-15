@@ -32,7 +32,7 @@
 //       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
 //     11/06/2014-2.6 Tomas Kraus
 //       - 449818: Test to verify Convert annotation on ElementCollection of Embeddable class.
-package org.eclipse.persistence.testing.tests.jpa21.advanced;
+package org.eclipse.persistence.testing.tests.advanced2;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
