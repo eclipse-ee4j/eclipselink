@@ -94,7 +94,7 @@ public final class IdentificationVariable extends AbstractExpression {
      */
     public IdentificationVariable(AbstractExpression parent, String identificationVariable) {
         super(parent, identificationVariable);
-        if (getRoot().isGenerateThisPrefix() && !Expression.THIS.equalsIgnoreCase(identificationVariable)) {
+        if (!Expression.THIS.equalsIgnoreCase(identificationVariable) && getRoot().isGenerateThisPrefix()) {
             this.setVirtualIdentificationVariable(Expression.THIS);
         }
     }
