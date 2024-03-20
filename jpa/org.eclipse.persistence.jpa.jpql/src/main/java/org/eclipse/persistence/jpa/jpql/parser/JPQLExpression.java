@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,13 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 public final class JPQLExpression extends AbstractExpression {
 
     /**
+     * Parser type constant which allows to generate missing Entity alias for SELECT queries like "SELECT this FROM Entity".
+     * And missing "SELECT this" for queries like "FROM Entity this"
+     * It matches org.eclipse.persistence.config.ParserValidationType#None.
+     */
+    static final String None = "None";
+
+    /**
      * The JPQL grammar that defines how to parse a JPQL query.
      */
     private JPQLGrammar jpqlGrammar;
@@ -70,6 +77,16 @@ public final class JPQLExpression extends AbstractExpression {
      * this will contain it.
      */
     private AbstractExpression unknownEndingStatement;
+
+    /**
+     * JPQL validation specified by "eclipselink.jpql.validation" property.
+     */
+    private String validationLevel;
+
+    /**
+     * Automatically add missing "this" prefixes into where field variables if it doesn't exist.
+     */
+    private boolean generateThisPrefix = false;
 
     /**
      * Creates a new <code>JPQLExpression</code>, which is the root of the JPQL parsed tree.
@@ -112,7 +129,37 @@ public final class JPQLExpression extends AbstractExpression {
                           String queryBNFId,
                           boolean tolerant) {
 
-        this(jpqlGrammar, queryBNFId, tolerant);
+        this(jpqlGrammar, queryBNFId, tolerant, null);
+        parse(new WordParser(jpqlFragment), tolerant);
+    }
+
+    /**
+     * Creates a new <code>JPQLExpression</code> that will parse the given fragment of a JPQL query.
+     * This means {@link #getQueryStatement()} will not return a query statement (select, delete or
+     * update) but only the parsed tree representation of the fragment if the query BNF can pare it.
+     * If the fragment of the JPQL query could not be parsed using the given {@link JPQLQueryBNF},
+     * then {@link #getUnknownEndingStatement()} will contain the non-parsable fragment.
+     *
+     * @param jpqlFragment A fragment of a JPQL query, which is a portion of a complete JPQL query
+     * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
+     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
+     * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+     * to parse invalid or incomplete queries
+     * @param validationLevel It matches some of the constants from org.eclipse.persistence.config.ParserValidationType. Should be null.
+     * Used to control to generate missing Entity alias for SELECT queries like "SELECT e FROM Entity",
+     * in case of org.eclipse.persistence.config.ParserValidationType#None.
+     * @since 5.0
+     */
+    public JPQLExpression(CharSequence jpqlFragment,
+                          JPQLGrammar jpqlGrammar,
+                          String queryBNFId,
+                          boolean tolerant,
+                          String validationLevel) {
+
+        this(jpqlGrammar, queryBNFId, tolerant, validationLevel);
+        if (validationLevel != null && JPQLExpression.None.equals(validationLevel)) {
+            jpqlFragment = preParse(jpqlFragment);
+        }
         parse(new WordParser(jpqlFragment), tolerant);
     }
 
@@ -121,13 +168,15 @@ public final class JPQLExpression extends AbstractExpression {
      *
      * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+     * @param validationLevel It matches some of the constants from org.eclipse.persistence.config.ParserValidationType. Should be null.
      * to parse invalid or incomplete queries
      */
-    private JPQLExpression(JPQLGrammar jpqlGrammar, String queryBNFId, boolean tolerant) {
+    private JPQLExpression(JPQLGrammar jpqlGrammar, String queryBNFId, boolean tolerant, String validationLevel) {
         super(null);
         this.queryBNFId  = queryBNFId;
         this.tolerant    = tolerant;
         this.jpqlGrammar = jpqlGrammar;
+        this.validationLevel = validationLevel;
     }
 
     @Override
@@ -205,6 +254,18 @@ public final class JPQLExpression extends AbstractExpression {
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(queryBNFId);
+    }
+
+    public String getValidationLevel() {
+        return validationLevel;
+    }
+
+    public boolean isGenerateThisPrefix() {
+        return generateThisPrefix;
+    }
+
+    public void setGenerateThisPrefix(boolean generateThisPrefix) {
+        this.generateThisPrefix = generateThisPrefix;
     }
 
     /**
@@ -325,5 +386,14 @@ public final class JPQLExpression extends AbstractExpression {
         if (unknownEndingStatement != null) {
             unknownEndingStatement.toParsedText(writer, actual);
         }
+    }
+
+    private CharSequence preParse(CharSequence jpqlFragment) {
+        WordParser wordParser = new WordParser(jpqlFragment);
+        wordParser.skipLeadingWhitespace();
+        if (Expression.FROM.equalsIgnoreCase(wordParser.word())) {
+            return Expression.SELECT + " " + Expression.THIS + " " + jpqlFragment;
+        }
+        return jpqlFragment;
     }
 }
