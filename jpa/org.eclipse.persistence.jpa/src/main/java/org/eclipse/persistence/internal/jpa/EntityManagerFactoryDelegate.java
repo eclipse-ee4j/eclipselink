@@ -769,7 +769,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     @Override
     public String getName() {
-        return setupImpl.getPersistenceUnitUniqueName();
+        return setupImpl.getPersistenceUnitInfo().getPersistenceUnitName();
     }
 
     @Override
