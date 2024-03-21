@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,8 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
                 new EntityManagerFactoryTest("testGetNamedPokemonQueries"),
                 new EntityManagerFactoryTest("testGetNamedAllQueries"),
                 new EntityManagerFactoryTest("testGetNamedPokemonEntityGraphs"),
-                new EntityManagerFactoryTest("testGetNamedAllEntityGraphs")
+                new EntityManagerFactoryTest("testGetNamedAllEntityGraphs"),
+                new EntityManagerFactoryTest("testGetName")
         );
     }
 
@@ -441,6 +442,10 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
                 fail(String.format("Unknown EntityGraph %s found", entityGraph.getName()));
             }
         }
+    }
+
+    public void testGetName() {
+        assertEquals(this.getPersistenceUnitName(), emf.getName());
     }
 
     private static PersistenceConfiguration createPersistenceConfiguration(JpaEntityManagerFactory emf, String puName) {
