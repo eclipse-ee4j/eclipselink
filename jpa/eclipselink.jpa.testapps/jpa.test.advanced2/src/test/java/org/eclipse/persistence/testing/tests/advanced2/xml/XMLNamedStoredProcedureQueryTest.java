@@ -13,7 +13,7 @@
 // Contributors:
 //     01/23/2013-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
-package org.eclipse.persistence.testing.tests.jpa21.advanced.xml;
+package org.eclipse.persistence.testing.tests.advanced2.xml;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.StoredProcedureQuery;
@@ -69,7 +69,7 @@ public class XMLNamedStoredProcedureQueryTest extends JUnitTestCase {
      */
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
-        org.eclipse.persistence.testing.tests.jpa21.advanced.xml.EmployeePopulator employeePopulator = new EmployeePopulator();
+        EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
         employeePopulator.persistExample(getPersistenceUnitServerSession());
         clearCache();

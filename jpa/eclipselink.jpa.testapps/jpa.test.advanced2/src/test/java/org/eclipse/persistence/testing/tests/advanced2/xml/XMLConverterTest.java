@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@
 //       - 374688: JPA 2.1 Converter support
 //     01/23/2013-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
-package org.eclipse.persistence.testing.tests.jpa21.advanced.xml;
+package org.eclipse.persistence.testing.tests.advanced2.xml;
 
 import jakarta.persistence.EntityManager;
 import junit.framework.Test;
@@ -70,7 +70,7 @@ public class XMLConverterTest extends JUnitTestCase {
      */
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
-        org.eclipse.persistence.testing.tests.jpa21.advanced.xml.EmployeePopulator employeePopulator = new EmployeePopulator();
+        EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
         employeePopulator.persistExample(getPersistenceUnitServerSession());
         clearCache();

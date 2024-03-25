@@ -16,7 +16,7 @@
 //       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
 //     03/01/2013-2.5 Chris Delahunt
 //       - 402147: JPA query methods need to throw IllegalStateException if EM was closed
-package org.eclipse.persistence.testing.tests.jpa21.advanced;
+package org.eclipse.persistence.testing.tests.advanced2;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;

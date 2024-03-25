@@ -30,7 +30,7 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 //     02/02/2015-2.6.0 Dalia Abo Sheasha
 //       - 458462: generateSchema throws a ClassCastException within a container
-package org.eclipse.persistence.testing.tests.jpa21.advanced.ddl;
+package org.eclipse.persistence.testing.tests.advanced2.ddl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
