@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.tests.jpa.persistence32;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.EntityTransaction;
@@ -46,7 +48,9 @@ public class EntityManagerTest extends AbstractPokemon {
                 new EntityManagerTest("testGetReferenceForExistingEntity"),
                 new EntityManagerTest("testGetReferenceForNotExistingEntity"),
                 new EntityManagerTest("testLockOptionUtilsUnknownClass"),
-                new EntityManagerTest("testLockPessimisticWriteWithTimeout")
+                new EntityManagerTest("testLockPessimisticWriteWithTimeout"),
+                new EntityManagerTest("testSetCacheRetrieveMode"),
+                new EntityManagerTest("testSetCacheStoreMode")
         );
     }
 
@@ -169,4 +173,21 @@ public class EntityManagerTest extends AbstractPokemon {
         }
     }
 
+    public void testSetCacheRetrieveMode() {
+        try (EntityManager em = emf.createEntityManager();) {
+            em.setCacheRetrieveMode(CacheRetrieveMode.BYPASS);
+            assertEquals(CacheRetrieveMode.BYPASS, em.getCacheRetrieveMode());
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public void testSetCacheStoreMode() {
+        try (EntityManager em = emf.createEntityManager();) {
+            em.setCacheStoreMode(CacheStoreMode.USE);
+            assertEquals(CacheStoreMode.USE, em.getCacheStoreMode());
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 }
