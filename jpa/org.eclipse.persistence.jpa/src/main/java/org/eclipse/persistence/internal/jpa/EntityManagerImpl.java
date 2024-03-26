@@ -2970,6 +2970,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
     @Override
     public void setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+        if (this.properties == null) {
+            this.properties = new HashMap<>();
+        }
         FindOptionUtils.setCacheRetrieveMode(properties, cacheRetrieveMode);
     }
 
@@ -2980,6 +2983,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
     @Override
     public void setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+        if (this.properties == null) {
+            this.properties = new HashMap<>();
+        }
         FindOptionUtils.setCacheStoreMode(properties, cacheStoreMode);
     }
 
