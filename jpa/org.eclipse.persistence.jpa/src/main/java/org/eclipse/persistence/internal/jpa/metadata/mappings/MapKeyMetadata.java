@@ -103,7 +103,7 @@ public class MapKeyMetadata extends ORMetadata {
     /**
      * INTERNAL:
      * Process a map key for a 1-M or M-M mapping. Will return the map key
-     * method name that should be use, null otherwise.
+     * method name that should be used, null otherwise.
      */
     public String process(ContainerMapping mapping, MappingAccessor mappingAccessor) {
         MetadataDescriptor referenceDescriptor = mappingAccessor.getReferenceDescriptor();

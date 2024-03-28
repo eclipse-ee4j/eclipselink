@@ -28,7 +28,12 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -49,6 +54,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     private String m_resultSetMapping;
+    private List<EntityResultMetadata> m_entityResults = new ArrayList<>();
+    private List<ConstructorResultMetadata> m_constructorResults = new ArrayList<>();
+    private List<ColumnResultMetadata> m_columnResults = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -66,6 +74,19 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
         super(namedNativeQuery, accessor);
 
         m_resultSetMapping = namedNativeQuery.getAttributeString("resultSetMapping");
+
+        for (Object entityResult : namedNativeQuery.getAttributeArray("entities")) {
+            m_entityResults.add(new EntityResultMetadata((MetadataAnnotation) entityResult, accessor));
+        }
+
+        for (Object constructorResult : namedNativeQuery.getAttributeArray("classes")) {
+            m_constructorResults.add(new ConstructorResultMetadata((MetadataAnnotation) constructorResult, accessor));
+        }
+
+        for (Object columnResult : namedNativeQuery.getAttributeArray("columns")) {
+            m_columnResults.add(new ColumnResultMetadata((MetadataAnnotation) columnResult, accessor));
+        }
+
     }
 
     /**
@@ -83,6 +104,18 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof NamedNativeQueryMetadata query) {
 
+            if (! valuesMatch(m_entityResults, query.getEntityResults())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_columnResults, query.getColumnResults())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_constructorResults, query.getConstructorResults())) {
+                return false;
+            }
+
             return valuesMatch(m_resultSetMapping, query.getResultSetMapping());
         }
 
@@ -93,7 +126,34 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + (m_resultSetMapping != null ? m_resultSetMapping.hashCode() : 0);
+        result = 31 * result + (m_entityResults != null ? m_entityResults.hashCode() : 0);
+        result = 31 * result + (m_columnResults != null ? m_columnResults.hashCode() : 0);
+        result = 31 * result + (m_constructorResults != null ? m_constructorResults.hashCode() : 0);
         return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ColumnResultMetadata> getColumnResults() {
+        return m_columnResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ConstructorResultMetadata> getConstructorResults() {
+        return m_constructorResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<EntityResultMetadata> getEntityResults() {
+        return m_entityResults;
     }
 
     /**
@@ -140,6 +200,30 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
         }
 
         addJPAQuery(query, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setColumnResults(List<ColumnResultMetadata> columnResults) {
+        m_columnResults = columnResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setConstructorResults(List<ConstructorResultMetadata> constructorResults) {
+        m_constructorResults = constructorResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setEntityResults(List<EntityResultMetadata> entityResults) {
+        m_entityResults = entityResults;
     }
 
     /**

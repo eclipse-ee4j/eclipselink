@@ -29,6 +29,7 @@ package org.eclipse.persistence.internal.jpa.metadata.tables;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CheckConstraint;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -59,11 +60,14 @@ public class TableMetadata extends ORMetadata {
 
     private List<IndexMetadata> m_indexes = new ArrayList<>();
     private List<UniqueConstraintMetadata> m_uniqueConstraints = new ArrayList<>();
+    private List<CheckConstraintMetadata> m_checkConstraints = new ArrayList<>();
 
     private String m_name;
     private String m_schema;
     private String m_catalog;
     private String m_creationSuffix;
+    private String m_comment;
+    private String m_options;
 
     /**
      * INTERNAL:
@@ -84,6 +88,8 @@ public class TableMetadata extends ORMetadata {
             m_name = table.getAttributeString("name");
             m_schema = table.getAttributeString("schema");
             m_catalog = table.getAttributeString("catalog");
+            m_comment = table.getAttributeString("comment");
+            m_options = table.getAttributeString("options");
 
             for (Object uniqueConstraint : table.getAttributeArray("uniqueConstraints")) {
                 m_uniqueConstraints.add(new UniqueConstraintMetadata((MetadataAnnotation) uniqueConstraint, accessor));
@@ -91,6 +97,10 @@ public class TableMetadata extends ORMetadata {
 
             for (Object index : table.getAttributeArray("indexes")) {
                 m_indexes.add(new IndexMetadata((MetadataAnnotation) index, accessor));
+            }
+
+            for (Object checkConstraint : table.getAttributeArray("check")) {
+                m_checkConstraints.add(new CheckConstraintMetadata((MetadataAnnotation) checkConstraint, accessor));
             }
         }
     }
@@ -130,6 +140,18 @@ public class TableMetadata extends ORMetadata {
                 return false;
             }
 
+            if (! valuesMatch(m_comment, table.getComment())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_options, table.getOptions())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_checkConstraints, table.getCheckConstraints())) {
+                return false;
+            }
+
             return valuesMatch(m_uniqueConstraints, table.getUniqueConstraints());
         }
 
@@ -141,7 +163,10 @@ public class TableMetadata extends ORMetadata {
         int result = super.hashCode();
         result = 31 * result + (m_indexes != null ? m_indexes.hashCode() : 0);
         result = 31 * result + (m_uniqueConstraints != null ? m_uniqueConstraints.hashCode() : 0);
+        result = 31 * result + (m_checkConstraints != null ? m_checkConstraints.hashCode() : 0);
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + (m_comment != null ? m_comment.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         result = 31 * result + (m_schema != null ? m_schema.hashCode() : 0);
         result = 31 * result + (m_catalog != null ? m_catalog.hashCode() : 0);
         result = 31 * result + (m_creationSuffix != null ? m_creationSuffix.hashCode() : 0);
@@ -169,6 +194,22 @@ public class TableMetadata extends ORMetadata {
      */
     public String getCreationSuffix() {
         return m_creationSuffix;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<CheckConstraintMetadata> getCheckConstraints() {
+        return m_checkConstraints;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getComment() {
+        return m_comment;
     }
 
     /**
@@ -205,6 +246,14 @@ public class TableMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public String getOptions() {
+        return m_options;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getSchema() {
         return m_schema;
     }
@@ -234,6 +283,21 @@ public class TableMetadata extends ORMetadata {
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_indexes, accessibleObject);
         initXMLObjects(m_uniqueConstraints, accessibleObject);
+        initXMLObjects(m_checkConstraints, accessibleObject);
+    }
+
+    public void processCheckConstraints() {
+        for (CheckConstraintMetadata checkConstraint : m_checkConstraints) {
+            checkConstraint.process(m_databaseTable);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Process the comment.
+     */
+    public void processComment() {
+        m_databaseTable.setComment(m_comment);
     }
 
     /**
@@ -241,6 +305,7 @@ public class TableMetadata extends ORMetadata {
      * Process the creation suffix.
      */
     public void processCreationSuffix() {
+        //TODO: deprecate me in favour of options
         m_databaseTable.setCreationSuffix(m_creationSuffix);
     }
 
@@ -260,6 +325,16 @@ public class TableMetadata extends ORMetadata {
      */
     public void processForeignKey() {
         // Does nothing at this level. Subclasses must override as needed.
+    }
+
+    /**
+     * INTERNAL:
+     * Process options.
+     */
+    public void processOptions() {
+        if (m_creationSuffix == null || m_creationSuffix.isEmpty()) {
+            m_databaseTable.setCreationSuffix(m_options);
+        }
     }
 
     /**
@@ -301,6 +376,22 @@ public class TableMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCheckConstraints(List<CheckConstraintMetadata> checkConstraints) {
+        this.m_checkConstraints = checkConstraints;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setComment(String comment) {
+        this.m_comment = comment;
+    }
+
+    /**
+     * INTERNAL:
      */
     public void setDatabaseTable(DatabaseTable databaseTable) {
         m_databaseTable = databaseTable;
@@ -320,6 +411,14 @@ public class TableMetadata extends ORMetadata {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        this.m_options = options;
     }
 
     /**

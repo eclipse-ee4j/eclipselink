@@ -116,19 +116,65 @@
         </testResources>
 
         <plugins>
-            <!--Required for EL Weaving (-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar})-->
+            <!--Static Weaving-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <groupId>de.empulse.eclipselink</groupId>
+                <artifactId>staticweave-maven-plugin</artifactId>
                 <executions>
-                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
                     <execution>
-                        <id>get-test-classpath-to-properties</id>
+                        <phase>process-test-classes</phase>
                         <goals>
-                            <goal>properties</goal>
+                            <goal>weave</goal>
                         </goals>
+                        <configuration>
+                            <source>${project.build.testOutputDirectory}</source>
+                            <target>${project.build.testOutputDirectory}</target>
+                            <logLevel>FINE</logLevel>
+                        </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpars.server</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.json</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                        <version>${junit.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.asm</artifactId>
+                        <version>${eclipselink.asm.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm</artifactId>
+                        <version>${asm.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm-commons</artifactId>
+                        <version>${asm.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm-tree</artifactId>
+                        <version>${asm.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -142,9 +188,6 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <workingDirectory>${project.build.directory}/test-run</workingDirectory>
-                    <!--EclipseLink Weaving is enabled.
-                        When it will be disabled by -Dignore or without arg switch it leads into test errors-->
-                    <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}</argLine>
                     <!--Set system properties required for tests-->
                     <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
                 </configuration>

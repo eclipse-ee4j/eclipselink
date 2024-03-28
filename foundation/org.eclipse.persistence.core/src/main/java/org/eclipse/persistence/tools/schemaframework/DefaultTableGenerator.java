@@ -737,6 +737,10 @@ public class DefaultTableGenerator {
                 tableDefinition.setCreationSuffix(databaseTable.getCreationSuffix());
             }
 
+            if (databaseTable.getComment() !=null){
+                tableDefinition.setComment(databaseTable.getComment());
+            }
+
             // Add the foreign key constraints that were set on the table.
             if (databaseTable.hasForeignKeyConstraints()) {
                 tableDefinition.setUserDefinedForeignKeyConstraints(databaseTable.getForeignKeyConstraints());
@@ -842,6 +846,12 @@ public class DefaultTableGenerator {
 
                 fieldDef.setShouldAllowNull(dbField.isNullable());
                 fieldDef.setUnique(dbField.isUnique());
+                if (dbField.getOptionalSuffix() != null) {
+                    fieldDef.setAdditional(dbField.getOptionalSuffix());
+                }
+            }
+            if (dbField.getComment() != null) {
+                fieldDef.setComment(dbField.getComment());
             }
             this.fieldMap.put(dbField, fieldDef);
             this.databaseFields.put(dbField, dbField);

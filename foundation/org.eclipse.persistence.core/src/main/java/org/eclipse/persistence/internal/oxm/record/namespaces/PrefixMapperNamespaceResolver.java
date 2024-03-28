@@ -45,8 +45,7 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
         }
         String defaultUri= null;
         if(nestedResolver != null){
-            for(Object next:nestedResolver.getNamespaces()) {
-                Namespace ns = (Namespace)next;
+            for (Namespace ns: nestedResolver.getNamespaces()) {
                 String uri = ns.getNamespaceURI();
                 String existingPrefix = null;
                 if(contextualNamespaces != null) {

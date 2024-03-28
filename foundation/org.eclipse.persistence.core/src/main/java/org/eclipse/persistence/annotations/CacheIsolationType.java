@@ -17,11 +17,10 @@ package org.eclipse.persistence.annotations;
 /**
  * Options for how Entity instances should be shared within an EclipseLink Persistence Unit / ServerSession
  * @see org.eclipse.persistence.descriptors.ClassDescriptor#setCacheIsolation(CacheIsolationType)
- * @see org.eclipse.persistence.annotations.Cache
+ * @see Cache
  * @author Gordon Yorke
  * @since EclipseLink 2.2
  */
-
 public enum CacheIsolationType {
     // These enums are ordered with ascending protective requirements
     // This is intentional and any additions/alterations should take that into account

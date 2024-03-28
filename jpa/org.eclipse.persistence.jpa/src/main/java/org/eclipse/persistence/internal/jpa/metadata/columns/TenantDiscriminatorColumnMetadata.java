@@ -135,7 +135,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
         }
 
         // Set the primary key setting
-        field.setPrimaryKey(m_primaryKey == null ? false : m_primaryKey);
+        field.setPrimaryKey(m_primaryKey != null && m_primaryKey);
 
         return field;
     }

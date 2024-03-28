@@ -47,6 +47,7 @@ public class TableGeneratorMetadata extends TableMetadata {
     private Integer m_initialValue;
 
     private String m_generatorName;
+    private String m_options;
     private String m_pkColumnValue;
     private String m_pkColumnName;
     private String m_valueColumnName;
@@ -74,6 +75,7 @@ public class TableGeneratorMetadata extends TableMetadata {
         m_pkColumnName = tableGenerator.getAttributeString("pkColumnName");
         m_pkColumnValue = tableGenerator.getAttributeString("pkColumnValue");
         m_valueColumnName = tableGenerator.getAttributeString("valueColumnName");
+        m_options = tableGenerator.getAttributeString("options");
 
         setName(tableGenerator.getAttributeString("table"));
     }
@@ -106,6 +108,10 @@ public class TableGeneratorMetadata extends TableMetadata {
                 return false;
             }
 
+            if (! valuesMatch(m_options, generator.getOptions())) {
+                return false;
+            }
+
             if (! valuesMatch(m_pkColumnValue, generator.getPkColumnValue())) {
                 return false;
             }
@@ -126,6 +132,7 @@ public class TableGeneratorMetadata extends TableMetadata {
         result = 31 * result + (m_allocationSize != null ? m_allocationSize.hashCode() : 0);
         result = 31 * result + (m_initialValue != null ? m_initialValue.hashCode() : 0);
         result = 31 * result + (m_generatorName != null ? m_generatorName.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         result = 31 * result + (m_pkColumnValue != null ? m_pkColumnValue.hashCode() : 0);
         result = 31 * result + (m_pkColumnName != null ? m_pkColumnName.hashCode() : 0);
         result = 31 * result + (m_valueColumnName != null ? m_valueColumnName.hashCode() : 0);
@@ -179,6 +186,14 @@ public class TableGeneratorMetadata extends TableMetadata {
     @Override
     public String getNameContext() {
         return MetadataLogger.TABLE_GENERATOR_NAME;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getOptions() {
+        return m_options;
     }
 
     /**
@@ -274,6 +289,14 @@ public class TableGeneratorMetadata extends TableMetadata {
      */
     public void setInitialValue(Integer initialValue) {
         m_initialValue = initialValue;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 
     /**

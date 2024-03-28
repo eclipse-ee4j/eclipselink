@@ -45,6 +45,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 public class UniqueConstraintMetadata extends ORMetadata {
     private String m_name;
     private List<String> m_columnNames;
+    private String m_options;
 
     /**
      * INTERNAL:
@@ -62,6 +63,7 @@ public class UniqueConstraintMetadata extends ORMetadata {
         super(uniqueConstraint, accessor);
 
         m_name = uniqueConstraint.getAttributeString("name");
+        m_options = uniqueConstraint.getAttributeString("options");
 
         m_columnNames = new ArrayList<>();
 
@@ -81,7 +83,11 @@ public class UniqueConstraintMetadata extends ORMetadata {
                 return false;
             }
 
-            return valuesMatch(m_columnNames, uniqueConstraint.getColumnNames());
+            if (! valuesMatch(m_columnNames, uniqueConstraint.getColumnNames())) {
+                return false;
+            }
+
+            return valuesMatch(m_options, uniqueConstraint.getOptions());
         }
 
         return false;
@@ -92,6 +98,7 @@ public class UniqueConstraintMetadata extends ORMetadata {
         int result = super.hashCode();
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_columnNames != null ? m_columnNames.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         return result;
     }
 
@@ -109,6 +116,14 @@ public class UniqueConstraintMetadata extends ORMetadata {
      */
     public String getName() {
         return m_name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getOptions() {
+        return m_options;
     }
 
     /**
@@ -133,6 +148,14 @@ public class UniqueConstraintMetadata extends ORMetadata {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 }
 

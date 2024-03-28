@@ -44,6 +44,7 @@ public class ColumnMetadata extends DirectColumnMetadata {
     private Integer m_length;
     private Integer m_precision;
     private String m_table;
+    private Integer m_secondPrecision;
 
     /**
      * INTERNAL:
@@ -83,6 +84,7 @@ public class ColumnMetadata extends DirectColumnMetadata {
             setScale(column.getAttributeInteger("scale"));
             setLength(column.getAttributeInteger("length"));
             setPrecision(column.getAttributeInteger("precision"));
+            setSecondPrecision(column.getAttributeInteger("secondPrecision"));
 
             setTable(column.getAttributeString("table"));
         }
@@ -111,6 +113,10 @@ public class ColumnMetadata extends DirectColumnMetadata {
                 return false;
             }
 
+            if (!valuesMatch(m_secondPrecision, column.getSecondPrecision())) {
+                return false;
+            }
+
             return valuesMatch(m_table, column.getTable());
         }
 
@@ -124,6 +130,7 @@ public class ColumnMetadata extends DirectColumnMetadata {
         result = 31 * result + (m_scale != null ? m_scale.hashCode() : 0);
         result = 31 * result + (m_length != null ? m_length.hashCode() : 0);
         result = 31 * result + (m_precision != null ? m_precision.hashCode() : 0);
+        result = 31 * result + (m_secondPrecision != null ? m_secondPrecision.hashCode() : 0);
         result = 31 * result + (m_table != null ? m_table.hashCode() : 0);
         return result;
     }
@@ -134,10 +141,11 @@ public class ColumnMetadata extends DirectColumnMetadata {
     @Override
     public DatabaseField getDatabaseField() {
         DatabaseField field = super.getDatabaseField();
-        field.setUnique(m_unique == null ? false : m_unique);
+        field.setUnique(m_unique != null && m_unique);
         field.setScale(m_scale == null ? 0 : m_scale);
         field.setLength(m_length == null ? 0 : m_length);
         field.setPrecision(m_precision == null ? 0 : m_precision);
+        field.setSecondPrecision(m_secondPrecision == null ? -1 : m_secondPrecision);
         field.setTableName(m_table == null ? "" : m_table);
         return field;
     }
@@ -161,6 +169,13 @@ public class ColumnMetadata extends DirectColumnMetadata {
      */
     public Integer getScale() {
         return m_scale;
+    }
+
+    /**
+     * INTERNAL: Used for OX mapping.
+     */
+    public Integer getSecondPrecision() {
+        return m_secondPrecision;
     }
 
     /**
@@ -196,6 +211,13 @@ public class ColumnMetadata extends DirectColumnMetadata {
      */
     public void setScale(Integer scale) {
         m_scale = scale;
+    }
+
+    /**
+     * INTERNAL: Used for OX mapping.
+     */
+    public void setSecondPrecision(Integer secondPrecision) {
+        m_secondPrecision = secondPrecision;
     }
 
     /**

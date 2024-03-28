@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.core.helper.CoreTable;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.tools.schemaframework.CheckConstraint;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 
@@ -63,6 +64,8 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
      */
     protected Map<String, List<List<String>>> uniqueConstraints;
 
+    protected Map<String, CheckConstraint> checkConstraints;
+
     /**
      * Store the set of indexes defined through meta-data for the table.
      */
@@ -71,6 +74,8 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     protected boolean useDelimiters = false;
 
     protected String creationSuffix;
+
+    protected String comment;
 
     /**
      * Initialize the newly allocated instance of this class.
@@ -97,6 +102,13 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         setName(tableName, startDelimiter, endDelimiter);
         this.tableQualifier = qualifier;
         this.useDelimiters = useDelimiters;
+    }
+
+    public void addCheckConstraint(CheckConstraint checkConstraint) {
+        if (checkConstraints == null) {
+            checkConstraints = new HashMap<>();
+        }
+        checkConstraints.put(checkConstraint.getName(), checkConstraint);
     }
 
     public void addForeignKeyConstraint(ForeignKeyConstraint foreignKeyConstraint) {
@@ -181,6 +193,14 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         }
 
         return false;
+    }
+
+    public CheckConstraint getCheckConstraint(String name) {
+        return checkConstraints.get(name);
+    }
+
+    public Map<String, CheckConstraint> getCheckConstraints() {
+        return checkConstraints;
     }
 
     /**
@@ -379,7 +399,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
             setName(possiblyQualifiedName, startDelimiter, endDelimiter);
             this.tableQualifier = "";
         } else {
-            setName(possiblyQualifiedName.substring(index + 1, possiblyQualifiedName.length()), startDelimiter, endDelimiter);
+            setName(possiblyQualifiedName.substring(index + 1), startDelimiter, endDelimiter);
             setTableQualifier(possiblyQualifiedName.substring(0, index), startDelimiter, endDelimiter);
 
             if((startDelimiter != null) && possiblyQualifiedName.startsWith(startDelimiter) && (endDelimiter != null) && possiblyQualifiedName.endsWith(endDelimiter)) {
@@ -419,4 +439,13 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     public boolean shouldUseDelimiters() {
         return useDelimiters;
     }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
 }

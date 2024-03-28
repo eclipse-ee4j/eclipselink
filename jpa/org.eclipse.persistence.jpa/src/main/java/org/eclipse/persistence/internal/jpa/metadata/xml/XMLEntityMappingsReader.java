@@ -40,7 +40,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -56,6 +55,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -81,7 +81,9 @@ public class XMLEntityMappingsReader {
     public static final String ORM_3_0_NAMESPACE = "https://jakarta.ee/xml/ns/persistence/orm";
     public static final String ORM_3_1_XSD = "org/eclipse/persistence/jpa/orm_3_1.xsd";
     public static final String ORM_3_1_NAMESPACE = "https://jakarta.ee/xml/ns/persistence/orm";
-    public static final String ECLIPSELINK_ORM_XSD = "org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd";
+    public static final String ORM_3_2_XSD = "org/eclipse/persistence/jpa/orm_3_2.xsd";
+    public static final String ORM_3_2_NAMESPACE = "https://jakarta.ee/xml/ns/persistence/orm";
+    public static final String ECLIPSELINK_ORM_XSD = "org/eclipse/persistence/jpa/eclipselink_orm_5_0.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
 
     private static XMLContext m_orm1_0Project;
@@ -90,6 +92,7 @@ public class XMLEntityMappingsReader {
     private static XMLContext m_orm2_2Project;
     private static XMLContext m_orm3_0Project;
     private static XMLContext m_orm3_1Project;
+    private static XMLContext m_orm3_2Project;
     private static XMLContext m_eclipseLinkOrmProject;
 
     private static Schema m_orm1_0Schema;
@@ -98,6 +101,7 @@ public class XMLEntityMappingsReader {
     private static Schema m_orm2_2Schema;
     private static Schema m_orm3_0Schema;
     private static Schema m_orm3_1Schema;
+    private static Schema m_orm3_2Schema;
     private static Schema m_eclipseLinkOrmSchema;
 
     private XMLEntityMappingsReader() {
@@ -159,10 +163,15 @@ public class XMLEntityMappingsReader {
                 if (validateSchema) {
                     context[1] = getOrm3_0Schema();
                 }
-            } else {
+            } else if (contentHandler.getVersion().contains("3.1")) {
                 context[0] = getOrm3_1Project();
                 if (validateSchema) {
                     context[1] = getOrm3_1Schema();
+                }
+            } else {
+                context[0] = getOrm3_2Project();
+                if (validateSchema) {
+                    context[1] = getOrm3_2Schema();
                 }
             }
         }
@@ -267,7 +276,7 @@ public class XMLEntityMappingsReader {
 
         return m_orm2_1Schema;
     }
-    
+
     /**
      * @return the JPA 2.2 orm project.
      */
@@ -335,6 +344,28 @@ public class XMLEntityMappingsReader {
     }
 
     /**
+     * @return the JPA 3.1 orm project.
+     */
+    public static XMLContext getOrm3_2Project() {
+        if (m_orm3_2Project == null) {
+            m_orm3_2Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_3_2_NAMESPACE, ORM_3_2_XSD));
+        }
+
+        return m_orm3_2Project;
+    }
+
+    /**
+     * @return the JPA 3.1 orm schema.
+     */
+    public static Schema getOrm3_2Schema() throws IOException, SAXException {
+        if (m_orm3_2Schema == null) {
+            m_orm3_2Schema = loadLocalSchema(ORM_3_2_XSD);
+        }
+
+        return m_orm3_2Schema;
+    }
+
+    /**
      * Free the project and schema objects to avoid holding onto the memory.
      * This can be done post-deployment to conserve memory.
      */
@@ -345,6 +376,7 @@ public class XMLEntityMappingsReader {
         m_orm2_2Project = null;
         m_orm3_0Project = null;
         m_orm3_1Project = null;
+        m_orm3_2Project = null;
         m_eclipseLinkOrmProject = null;
 
         m_orm1_0Schema = null;
@@ -353,6 +385,7 @@ public class XMLEntityMappingsReader {
         m_orm2_2Schema = null;
         m_orm3_0Schema = null;
         m_orm3_1Schema = null;
+        m_orm3_2Schema = null;
         m_eclipseLinkOrmSchema = null;
     }
 
@@ -363,7 +396,7 @@ public class XMLEntityMappingsReader {
      * The default value is false.
      * @param properties - PersistenceUnitInfo properties on the project
      */
-    private static boolean isORMSchemaValidationPerformed(Map properties) {
+    private static boolean isORMSchemaValidationPerformed(Map<?, ?> properties) {
         // Get property from persistence.xml (we are not yet parsing sessions.xml)
         String value = EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, properties, "false");
         // A true validation property value will override the default of false or NONVALIDATING
@@ -374,7 +407,7 @@ public class XMLEntityMappingsReader {
      * Load the XML schema from the jar resource.
      */
     protected static Schema loadLocalSchema(String schemaName) throws IOException, SAXException {
-        URL url = XMLEntityMappingsReader.class.getClassLoader().getResource(schemaName);
+        URL url = XMLEntityMappingsReader.class.getResource("/" + schemaName);
 
         try (InputStream schemaStream = url.openStream()) {
             StreamSource source = new StreamSource(schemaStream);
@@ -387,14 +420,14 @@ public class XMLEntityMappingsReader {
     /**
      * INTERNAL:
      */
-    public static XMLEntityMappings read(String sourceName, Reader reader, ClassLoader classLoader, Map properties){
+    public static XMLEntityMappings read(String sourceName, Reader reader, ClassLoader classLoader, Map<?, ?> properties){
         return read(sourceName, null, reader, classLoader, properties);
     }
 
     /**
      * INTERNAL:
      */
-    protected static XMLEntityMappings read(String mappingFile, Reader reader1, Reader reader2, ClassLoader classLoader, Map properties) {
+    protected static XMLEntityMappings read(String mappingFile, Reader reader1, Reader reader2, ClassLoader classLoader, Map<?, ?> properties) {
         // Get the schema validation flag if present in the persistence unit properties
         boolean validateORMSchema = isORMSchemaValidationPerformed(properties);
 
@@ -406,6 +439,20 @@ public class XMLEntityMappingsReader {
             Object[] context = determineXMLContextAndSchema(mappingFile, reader1, validateORMSchema);
             XMLUnmarshaller unmarshaller = ((XMLContext)context[0]).createUnmarshaller();
 
+            EntityResolver resolver = new EntityResolver() {
+                @Override
+                public InputSource resolveEntity(String publicId, String systemId) {
+                    System.out.println("pId: " + publicId);
+                    System.out.println("sId: " + systemId);
+                    String name =  systemId.contains("eclipselink_") ? ECLIPSELINK_ORM_XSD : systemId;
+                    int idx = systemId.lastIndexOf('/');
+                    name = idx < 0 ? name : name.substring(idx + 1);
+                    InputStream resource = XMLEntityMappingsReader.class.getResourceAsStream("/org/eclipse/persistence/jpa/" + name);
+                    return resource == null ? null : new InputSource(resource);
+                }
+            };
+
+            unmarshaller.setEntityResolver(resolver);
             if (validateORMSchema) {
                 useLocalSchemaForUnmarshaller(unmarshaller, ((Schema)context[1]));
             }
@@ -426,31 +473,15 @@ public class XMLEntityMappingsReader {
      * INTERNAL:
      * @param properties - PersistenceUnitInfo properties on the project
      */
-    public static XMLEntityMappings read(URL url, ClassLoader classLoader, Properties properties) throws IOException {
-        InputStreamReader reader1 = null;
-        InputStreamReader reader2 = null;
-
-        try {
-            try {
-                //Get separate readers as the read method below is coded to seek through both of them
-                reader1 = getInputStreamReader(url);
-                reader2 = getInputStreamReader(url);
-                return read(url.toString(), reader1, reader2, classLoader, properties);
-            } catch (UnsupportedEncodingException exception) {
-                throw ValidationException.fatalErrorOccurred(exception);
-            }
-        } finally {
-            try {
-                if (reader1 != null) {
-                    reader1.close();
-                }
-
-                if (reader2 != null) {
-                    reader2.close();
-                }
-            } catch (IOException exception) {
-                throw ValidationException.fileError(exception);
-            }
+    public static XMLEntityMappings read(URL url, ClassLoader classLoader, Map<?, ?> properties) throws IOException {
+        //Get separate readers as the read method below is coded to seek through both of them
+        try (InputStreamReader reader1 = getInputStreamReader(url);
+             InputStreamReader reader2 = getInputStreamReader(url)) {
+            return read(url.toString(), reader1, reader2, classLoader, properties);
+        } catch (UnsupportedEncodingException exception) {
+            throw ValidationException.fatalErrorOccurred(exception);
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
         }
     }
 

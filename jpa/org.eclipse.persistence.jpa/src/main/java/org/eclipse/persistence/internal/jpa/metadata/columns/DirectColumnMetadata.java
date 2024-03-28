@@ -82,7 +82,11 @@ public class DirectColumnMetadata extends MetadataColumn {
                 return false;
             }
 
-            return valuesMatch(m_insertable, directColumn.getInsertable());
+            if (! valuesMatch(m_insertable, directColumn.getInsertable())) {
+                return false;
+            }
+
+            return true;
         }
 
         return false;
@@ -104,9 +108,9 @@ public class DirectColumnMetadata extends MetadataColumn {
     public DatabaseField getDatabaseField() {
         DatabaseField databaseField = super.getDatabaseField();
 
-        databaseField.setNullable(m_nullable == null ? true : m_nullable);
-        databaseField.setUpdatable(m_updatable == null ? true : m_updatable);
-        databaseField.setInsertable(m_insertable == null ? true : m_insertable);
+        databaseField.setNullable(m_nullable == null || m_nullable);
+        databaseField.setUpdatable(m_updatable == null || m_updatable);
+        databaseField.setInsertable(m_insertable == null || m_insertable);
 
         return databaseField;
     }

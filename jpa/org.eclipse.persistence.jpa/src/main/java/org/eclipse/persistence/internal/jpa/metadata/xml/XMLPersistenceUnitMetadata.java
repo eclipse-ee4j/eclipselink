@@ -147,7 +147,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * INTERNAL:
      */
     public boolean isDelimitedIdentifiers() {
-        return (m_persistenceUnitDefaults == null) ? false : m_persistenceUnitDefaults.isDelimitedIdentifiers();
+        return m_persistenceUnitDefaults != null && m_persistenceUnitDefaults.isDelimitedIdentifiers();
     }
 
     /**
