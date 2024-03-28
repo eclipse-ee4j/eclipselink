@@ -94,7 +94,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     private boolean generateGenerated;
 
     private static final String TYPE_TEMPLATE = "    public static volatile %s<%s> class_;%n";
-    private static final String ATTRIBUTE_NAME_TEMPLATE = "    public static final String %s_ = \"%s\";%n";
+    private static final String ATTRIBUTE_NAME_TEMPLATE = "    public static final String %s = \"%s\";%n";
     private static final String NAMED_NAME_TEMPLATE = "    public static final String %s_%s = \"%s\";%n";
     private static final String ATTRIBUTE_TYPE_TEMPLATE = "    public static volatile %s<%s> %s;%n";
     private static final String REFERENCE_TEMPLATE = "    public static volatile TypedQueryReference<%s> _%s_;%n";
