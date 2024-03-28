@@ -105,7 +105,7 @@ public class TestProcessor {
 
         Assert.assertTrue(output.contains("public static volatile EntityGraph<MyEnt> _MyEnt;"));
 
-        Assert.assertTrue(output.contains("public static final String CUSTOM_ATTRIBUTE_ = \"customAttribute\";"));
+        Assert.assertTrue(output.contains("public static final String CUSTOM_ATTRIBUTE = \"customAttribute\";"));
     }
 
     @Test
