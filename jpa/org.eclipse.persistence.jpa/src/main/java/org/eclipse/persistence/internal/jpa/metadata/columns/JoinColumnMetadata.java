@@ -130,10 +130,10 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
         DatabaseField fkField = super.getForeignKeyField();
 
         fkField.setTableName(m_table == null ? "" : m_table);
-        fkField.setUnique(m_unique == null ? false : m_unique);
-        fkField.setNullable(m_nullable == null ? true : m_nullable);
-        fkField.setUpdatable(m_updatable == null ? true : m_updatable);
-        fkField.setInsertable(m_insertable == null ? true : m_insertable);
+        fkField.setUnique(m_unique != null && m_unique);
+        fkField.setNullable(m_nullable == null || m_nullable);
+        fkField.setUpdatable(m_updatable == null || m_updatable);
+        fkField.setInsertable(m_insertable == null || m_insertable);
 
         return fkField;
     }

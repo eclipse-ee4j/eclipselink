@@ -86,7 +86,13 @@ Contributors:
 
   <xsd:simpleType name="supported-versions-type">
     <xsd:restriction base="orm:versionType">
+      <xsd:enumeration value="2.2"/>
+      <xsd:enumeration value="2.3"/>
+      <xsd:enumeration value="2.4"/>
+      <xsd:enumeration value="2.5"/>
       <xsd:enumeration value="3.0"/>
+      <xsd:enumeration value="3.1"/>
+      <xsd:enumeration value="3.2"/>
       <xsd:enumeration value="5.0"/>
     </xsd:restriction>
   </xsd:simpleType>
@@ -140,7 +146,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface AdditionalCriteria {
             /**
-             * (Required) The JPQL fragment to use as the additional criteria.
+             * The JPQL fragment to use as the additional criteria.
              */
             String value();
         }
@@ -176,45 +182,45 @@ Contributors:
           @Retention(RUNTIME)
           public @interface Cache {
           /**
-          * (Optional) The type of cache to use.
+          * The type of cache to use.
           */
           CacheType type() default SOFT_WEAK;
 
           /**
-          * (Optional) The size of cache to use.
+          * The size of cache to use.
           */
           int size() default 100;
 
           /**
-          * (Optional) Controls the level of caching this Entity will use.
+          * Controls the level of caching this Entity will use.
           * The default is CacheIsolationType.SHARED which has EclipseLink
           * Caching all Entities in the Shared Cache.
-          * @see org.eclipse.persistence.annotations.CacheIsolationType
+          * @see CacheIsolationType
           */
-          CacheIsolationType isolation() default SHARED;
+          CacheIsolationType isolation() default CacheIsolationType.SHARED;
 
           /**
-          * (Optional) Expire cached instance after a fix period of time (ms).
+          * Expire cached instance after a fix period of time (ms).
           * Queries executed against the cache after this will be forced back
           * to the database for a refreshed copy
           */
           int expiry() default -1; // minus one is no expiry.
 
           /**
-          * (Optional) Expire cached instance a specific time of day. Queries
+          * Expire cached instance a specific time of day. Queries
           * executed against the cache after this will be forced back to the
           * database for a refreshed copy
           */
           TimeOfDay expiryTimeOfDay() default @TimeOfDay(specified=false);
 
           /**
-          * (Optional) Force all queries that go to the database to always
+          * Force all queries that go to the database to always
           * refresh the cache.
           */
           boolean alwaysRefresh() default false;
 
           /**
-          * (Optional) For all queries that go to the database, refresh the
+          * For all queries that go to the database, refresh the
           * cache only if the data received from the database by a query is
           * newer than the data in the cache (as determined by the optimistic
           * locking field)
@@ -222,19 +228,19 @@ Contributors:
           boolean refreshOnlyIfNewer() default false;
 
           /**
-          * (Optional) Setting to true will force all queries to bypass the
+          * Setting to true will force all queries to bypass the
           * cache for hits but still resolve against the cache for identity.
           * This forces all queries to hit the database.
           */
           boolean disableHits() default false;
 
           /**
-          * (Optional) The cache coordination mode.
+          * The cache coordination mode.
           */
           CacheCoordinationType coordinationType() default SEND_OBJECT_CHANGES;
 
           /**
-          * (Optional) The database change notification mode.
+          * The database change notification mode.
           * Note that database event listener must also be configured for the persistence unit/session.
           */
           DatabaseChangeNotificationType databaseChangeNotificationType() default DatabaseChangeNotificationType.INVALIDATE;
@@ -363,11 +369,14 @@ Contributors:
       <xsd:documentation>
         /**
          * Options for how Entity instances should be shared within an EclipseLink Persistence Unit / ServerSession
-         * @see ClassDescriptor#setCacheIsolationType(CacheIsolationType)
+         * @see org.eclipse.persistence.descriptors.ClassDescriptor#setCacheIsolation(CacheIsolationType)
+         * @see Cache
          * @author Gordon Yorke
          * @since EclipseLink 2.2
          */
         public enum CacheIsolationType {
+          // These enums are ordered with ascending protective requirements
+          // This is intentional and any additions/alterations should take that into account
 
          /**
           * Entity instances will be cached within the EntityManagerFactory/ServerSession level.
@@ -388,14 +397,13 @@ Contributors:
          PROTECTED,
 
          /**
-          * The Entity and its data is not stored in the shared cache but is
+          * The Entity and its data are not stored in the shared cache but is
           * <i>isolated</i> to the Persistence Context/UnitOfWork or
           * IsolatedClientSession. This setting effectively disables second level
           * caching for this entity and should be used when users do not want caching for
           * a particular Entity.
           */
-         ISOLATED;
-
+          ISOLATED
         }
       </xsd:documentation>
     </xsd:annotation>
@@ -513,7 +521,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface ChangeTracking {
           /**
-           * (Optional) The type of change tracking to use.
+           * The type of change tracking to use.
            */
           ChangeTrackingType value() default AUTO;
         }
@@ -593,7 +601,7 @@ Contributors:
           @Retention(RUNTIME)
           public @interface Customizer {
           /**
-          * (Required) Defines the name of the descriptor customizer class that
+          * Defines the name of the descriptor customizer class that
           * should be applied for the related entity or embeddable class.
           */
           Class value();
@@ -653,7 +661,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum ParameterMode { IN, INOUT, OUT, REF_CURSOR };
+        public enum ParameterMode { IN, INOUT, OUT, REF_CURSOR }
 
       </xsd:documentation>
     </xsd:annotation>
@@ -741,7 +749,7 @@ Contributors:
             <xsd:element name="embeddable" type="orm:embeddable"/>
       </xsd:choice>
       </xsd:sequence>
-      <xsd:attribute name="version" type="orm:supported-versions-type" default="3.2" use="optional"/>
+      <xsd:attribute name="version" type="orm:supported-versions-type" default="5.0" use="optional"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -760,7 +768,7 @@ Contributors:
         public @interface ExistenceChecking {
 
           /**
-           * (Optional) Set the existence check for determining
+           * Set the existence check for determining
            * if an insert or update should occur for an object.
            */
           ExistenceType value() default CHECK_CACHE;
@@ -1025,11 +1033,13 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(AssociationOverrides.class)
         @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
         public @interface AssociationOverride {
-            String name();
-            JoinColumn[] joinColumns() default{};
-            JoinTable joinTable() default @JoinTable;
+          String name();
+          JoinColumn[] joinColumns() default{};
+          ForeignKey foreignKey() default @ForeignKey(PROVIDER_DEFAULT);
+          JoinTable joinTable() default @JoinTable;
         }
 
       </xsd:documentation>
@@ -1053,6 +1063,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(AttributeOverrides.class)
         @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
         public @interface AttributeOverride {
           String name();
@@ -1091,7 +1102,7 @@ Contributors:
       <xsd:element name="basic" type="orm:basic" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="basic-collection" type="orm:basic-collection" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="basic-map" type="orm:basic-map" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="version" type="orm:version" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="version" type="orm:version" minOccurs="0"/>
       <xsd:element name="many-to-one" type="orm:many-to-one" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="one-to-many" type="orm:one-to-many" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
@@ -1114,7 +1125,7 @@ Contributors:
 
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface Basic {
-          FetchType fetch() default EAGER;
+          FetchType fetch() default FetchType.EAGER;
           boolean optional() default true;
         }
 
@@ -1167,7 +1178,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface BasicCollection {
           /**
-           * (Optional) Defines whether the value of the field or property
+           * Defines whether the value of the field or property
            * should be lazily loaded or must be eagerly fetched. The EAGER
            * strategy is a requirement on the persistence provider runtime that
            * the value must be eagerly fetched. The LAZY strategy is a hint to
@@ -1177,7 +1188,7 @@ Contributors:
           FetchType fetch() default LAZY;
 
           /**
-           * (Optional) The name of the value column that holds the direct
+           * The name of the value column that holds the direct
            * collection data. Defaults to the property or field name.
            */
           Column valueColumn() default @Column;
@@ -1217,7 +1228,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface BasicMap {
           /**
-           * (Optional) Defines whether the value of the field or property
+           * Defines whether the value of the field or property
            * should be lazily loaded or must be eagerly fetched. The EAGER
            * strategy is a requirement on the persistence provider runtime that
            * the value must be eagerly fetched. The LAZY strategy is a hint to
@@ -1227,27 +1238,27 @@ Contributors:
           FetchType fetch() default LAZY;
 
           /**
-           * (Optional) The name of the data column that holds the direct map
+           * The name of the data column that holds the direct map
            * key. If the name on te key column is "", the name will default to:
            * the name of the property or field; "_KEY".
            */
           Column keyColumn() default @Column;
 
           /**
-           * (Optional) Specify the key converter. Default is equivalent to
+           * Specify the key converter. Default is equivalent to
            * specifying @Convert("none"), meaning no converter will be added to
            * the direct map key.
            */
           Convert keyConverter() default @Convert;
 
           /**
-           * (Optional) The name of the data column that holds the direct
+           * The name of the data column that holds the direct
            * collection data. Defaults to the property or field name.
            */
           Column valueColumn() default @Column;
 
           /**
-           * (Optional) Specify the value converter. Default is equivalent to
+           * Specify the value converter. Default is equivalent to
            * specifying @Convert("none"), meaning no converter will be added to
            * the value column mapping.
            */
@@ -1286,7 +1297,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum CascadeType { ALL, PERSIST, MERGE, REMOVE, REFRESH, DETACH};
+          public enum CascadeType { ALL, PERSIST, MERGE, REMOVE, REFRESH, DETACH }
 
       </xsd:documentation>
     </xsd:annotation>
@@ -1348,7 +1359,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface ClassExtractor {
             /**
-             * (Required) Defines the name of the class extractor that should be
+             * Defines the name of the class extractor that should be
              * applied to this entity's descriptor.
              */
             Class value();
@@ -1418,6 +1429,26 @@ Contributors:
     <xsd:attribute name="working-copy-method" type="xsd:string"/>
   </xsd:complexType>
 
+    <!-- **************************************************** -->
+
+    <xsd:complexType name="check-constraint">
+        <xsd:annotation>
+            <xsd:documentation>
+
+                @Target({}) @Retention(RUNTIME)
+                public @interface CheckConstraint {
+                String name() default "";
+                String constraint();
+                String options() default "";
+                }
+
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="constraint" type="xsd:string" use="required"/>
+        <xsd:attribute name="options" type="xsd:string"/>
+    </xsd:complexType>
+
   <!-- **************************************************** -->
 
   <xsd:complexType name="collection-table">
@@ -1426,12 +1457,14 @@ Contributors:
 
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface CollectionTable {
-            String name() default "";
-            String catalog() default "";
-            String schema() default "";
-            JoinColumn[] joinColumns() default {};
-            UniqueConstraint[] uniqueConstraints() default {};
-            Index[] indexes() default {};
+          String name() default "";
+          String catalog() default "";
+          String schema() default "";
+          JoinColumn[] joinColumns() default {};
+          ForeignKey foreignKey() default @ForeignKey(ConstraintMode.PROVIDER_DEFAULT);
+          UniqueConstraint[] uniqueConstraints() default {};
+          Index[] indexes() default {};
+          String options() default "";
         }
 
       </xsd:documentation>
@@ -1448,7 +1481,8 @@ Contributors:
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
     <xsd:attribute name="creation-suffix" type="xsd:string" />
-    </xsd:complexType>
+    <xsd:attribute name="options" type="xsd:string"/>
+  </xsd:complexType>
 
   <!-- **************************************************** -->
 
@@ -1460,7 +1494,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface CollectionTable {
           /**
-           * (Optional) The name of the collection table. If it is not
+           * The name of the collection table. If it is not
            * specified, it is defaulted to the concatenation of the following:
            * the name of the source entity; "_" ; the name of the relationship
            * property or field of the source entity.
@@ -1468,19 +1502,19 @@ Contributors:
           String name() default "";
 
           /**
-           * (Optional) The catalog of the table. It defaults to the persistence
+           * The catalog of the table. It defaults to the persistence
            * unit default catalog.
            */
           String catalog() default "";
 
           /**
-           * (Optional) The schema of the table. It defaults to the persistence
+           * The schema of the table. It defaults to the persistence
            * unit default schema.
            */
           String schema() default "";
 
           /**
-           * (Optional) Used to specify a primary key column that is used as a
+           * Used to specify a primary key column that is used as a
            * foreign key to join to another table. If the source entity uses a
            * composite primary key, a primary key join column must be specified
            * for each field of the composite primary key. In a single primary
@@ -1493,7 +1527,7 @@ Contributors:
           PrimaryKeyJoinColumn[] primaryKeyJoinColumns() default {};
 
           /**
-           * (Optional) Unique constraints that are to be placed on the table.
+           * Unique constraints that are to be placed on the table.
            * These are only used if table generation is in effect.
            */
           UniqueConstraint[] uniqueConstraints() default {};
@@ -1526,24 +1560,35 @@ Contributors:
           boolean insertable() default true;
           boolean updatable() default true;
           String columnDefinition() default "";
+          String options() default "";
           String table() default "";
           int length() default 255;
           int precision() default 0; // decimal precision
           int scale() default 0; // decimal scale
+          int secondPrecision() default -1; //fractional second precision
+          CheckConstraint[] check() default {};
+          String comment() default "";
         }
 
       </xsd:documentation>
     </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="comment" type="xsd:string" minOccurs="0" />
+        <xsd:element name="check-constraint" type="orm:check-constraint"
+                     minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="unique" type="xsd:boolean"/>
     <xsd:attribute name="nullable" type="xsd:boolean"/>
     <xsd:attribute name="insertable" type="xsd:boolean"/>
     <xsd:attribute name="updatable" type="xsd:boolean"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="options" type="xsd:string"/>
     <xsd:attribute name="table" type="xsd:string"/>
     <xsd:attribute name="length" type="xsd:int"/>
     <xsd:attribute name="precision" type="xsd:int"/>
     <xsd:attribute name="scale" type="xsd:int"/>
+    <xsd:attribute name="second-precision" type="xsd:int"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -1556,12 +1601,12 @@ Contributors:
         @Retention(RUNTIME)
         public @interface ConversionValue {
           /**
-           * (Required) Specify the database value.
+           * Specify the database value.
            */
           String dataValue();
 
           /**
-           * (Required) Specify the object value.
+           * Specify the object value.
            */
           String objectValue();
         }
@@ -1583,17 +1628,18 @@ Contributors:
         as a named eclipselink converter. Otherwise it is treated as a JPA
         converter class.
 
+        @Repeatable(Converters.class)
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface Converter {
           /**
-           * (Required) Name this converter. The name should be unique across
+           * Name this converter. The name should be unique across
            * the whole persistence unit.
            */
           String name();
 
           /**
-           * (Required) The converter class to be used. This class must implement
+           * The converter class to be used. This class must implement
            * the org.eclipse.persistence.mappings.converters.Converter interface.
            */
           Class converterClass();
@@ -1624,13 +1670,13 @@ Contributors:
         @Retention(RUNTIME)
         public @interface Converter {
           /**
-           * (Required) Name this converter. The name should be unique across
+           * Name this converter. The name should be unique across
            * the whole persistence unit.
            */
           String name();
 
           /**
-           * (Required) The converter class to be used. This class must implement
+           * The converter class to be used. This class must implement
            * the org.eclipse.persistence.mappings.converters.Converter interface.
            */
           Class converterClass();
@@ -1671,7 +1717,7 @@ Contributors:
                 String name();
 
                 /**
-                 * (Required) Full package.class name of a subclass of PartitioningPolicy.
+                 * Full package.class name of a subclass of PartitioningPolicy.
                  */
                 Class partitioningClass();
             }
@@ -1778,7 +1824,7 @@ Contributors:
             Column partitionColumn();
 
             /**
-             * (Required) List of connection pool names to load balance across.
+             * List of connection pool names to load balance across.
              */
             RangePartition[] partitions();
 
@@ -1955,7 +2001,7 @@ Contributors:
                 String name();
 
                 /**
-                 * (Required) List of connection pool names to load balance across.
+                 * List of connection pool names to load balance across.
                  */
                 String[] connectionPools();
 
@@ -1998,7 +2044,7 @@ Contributors:
                 String name();
 
                 /**
-                 * (Required) List of connection pool names to load balance across.
+                 * List of connection pool names to load balance across.
                  */
                 String[] connectionPools();
             }
@@ -2034,7 +2080,7 @@ Contributors:
                 String name();
 
                 /**
-                 * (Required) List of connection pool names to load balance across.
+                 * List of connection pool names to load balance across.
                  */
                 String[] connectionPools();
 
@@ -2091,15 +2137,15 @@ Contributors:
 
   <xsd:complexType name="column-result">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[]
 
         @Target({}) @Retention(RUNTIME)
         public @interface ColumnResult {
           String name();
-          Class type() default void.class;
+          Class<?> type() default void.class;
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="class" type="xsd:string"/>
@@ -2111,7 +2157,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-       public enum ConstraintMode {CONSTRAINT, NO_CONSTRAINT, PROVIDER_DEFAULT};
+          public enum ConstraintMode { CONSTRAINT, NO_CONSTRAINT, PROVIDER_DEFAULT }
 
       </xsd:documentation>
     </xsd:annotation>
@@ -2126,15 +2172,15 @@ Contributors:
 
   <xsd:complexType name="constructor-result">
     <xsd:annotation>
-      <xsd:documentation>
+        <xsd:documentation><![CDATA[
 
         @Target({}) @Retention(RUNTIME)
         public @interface ConstructorResult {
-          Class targetClass();
-          ColumnResult[] columns() default {};
+          Class<?> targetClass();
+          ColumnResult[] columns();
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
         <xsd:element name="column" type="orm:column-result" minOccurs="0" maxOccurs="unbounded"/>
@@ -2146,16 +2192,17 @@ Contributors:
 
   <xsd:complexType name="convert" mixed="true">
     <xsd:annotation>
-      <xsd:documentation>
+        <xsd:documentation><![CDATA[
 
+        @Repeatable(Converts.class)
         @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
         public @interface Convert {
-          Class converter() default void.class;
+          Class<? extends AttributeConverter> converter() default AttributeConverter.class;
           String attributeName() default "";
           boolean disableConversion() default false;
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
@@ -2210,6 +2257,7 @@ Contributors:
           String name() default "DTYPE";
           DiscriminatorType discriminatorType() default STRING;
           String columnDefinition() default "";
+          String options() default "";
           int length() default 31;
         }
 
@@ -2218,7 +2266,8 @@ Contributors:
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="discriminator-type" type="orm:discriminator-type"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
-    <xsd:attribute name="length" type="xsd:int"/>
+    <xsd:attribute name="options" type="xsd:string"/>
+      <xsd:attribute name="length" type="xsd:int"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -2234,12 +2283,12 @@ Contributors:
         @Retention(RUNTIME)
         public @interface DiscriminatorClass {
           /**
-           * (Required) The discriminator to be stored on the database.
+           * The discriminator to be stored on the database.
            */
           String discriminator();
 
           /**
-           * (Required) The class to the instantiated with the given
+           * The class to the instantiated with the given
            * discriminator.
            */
           Class value();
@@ -2257,7 +2306,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum DiscriminatorType { STRING, CHAR, INTEGER };
+        public enum DiscriminatorType { STRING, CHAR, INTEGER }
 
       </xsd:documentation>
     </xsd:annotation>
@@ -2288,15 +2337,15 @@ Contributors:
 
   <xsd:complexType name="element-collection">
     <xsd:annotation>
-      <xsd:documentation>
+        <xsd:documentation><![CDATA[
 
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface ElementCollection {
-          Class targetClass() default void.class;
-          FetchType fetch() default LAZY;
+          Class<?> targetClass() default void.class;
+          FetchType fetch() default FetchType.LAZY;
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
@@ -2393,7 +2442,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface Array {
             /**
-             * (Optional) The basic or embeddable class that is the element
+             * The basic or embeddable class that is the element
              * type of the collection.  This element is optional only if the
              * collection field or property is defined using Java generics,
              * and must be specified otherwise.  It defaults to the
@@ -2403,7 +2452,7 @@ Contributors:
             Class targetClass() default void.class;
 
             /**
-             * (Required) The database name of the database array structure type.
+             * The database name of the database array structure type.
              */
             String databaseType();
         }
@@ -2559,14 +2608,14 @@ Contributors:
 
   <xsd:complexType name="entity-listeners">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[
 
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface EntityListeners {
-          Class[] value();
+          Class<?>[] value();
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="entity-listener" type="orm:entity-listener"
@@ -2578,18 +2627,20 @@ Contributors:
 
   <xsd:complexType name="entity-result">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[
 
         @Target({}) @Retention(RUNTIME)
         public @interface EntityResult {
-          Class entityClass();
+          Class<?> entityClass();
+          LockModeType lockMode() default LockModeType.OPTIMISTIC;
           FieldResult[] fields() default {};
           String discriminatorColumn() default "";
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
+      <xsd:element name="lock-mode" type="orm:lock-mode-type" minOccurs="0"/>
       <xsd:element name="field-result" type="orm:field-result"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
@@ -2642,7 +2693,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface FetchAttribute {
           /**
-           * (Required) The fetch attribute name.
+           * The fetch attribute name.
            */
           String name();
         }
@@ -2658,22 +2709,23 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(FetchGroups.class)
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface FetchGroup {
           /**
-           * (Required) The fetch group name.
+           * The fetch group name.
            */
           String name();
 
           /**
-           * (Optional) Indicates whether all relationship attributes
+           * Indicates whether all relationship attributes
            * specified in the fetch group should be loaded.
            */
           boolean load() default true;
 
           /**
-           * (Required) The list of attributes to fetch.
+           * The list of attributes to fetch.
            */
           FetchAttribute[] attributes();
         }
@@ -2693,7 +2745,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum FetchType { LAZY, EAGER };
+        public enum FetchType { LAZY, EAGER }
 
       </xsd:documentation>
     </xsd:annotation>
@@ -2732,6 +2784,7 @@ Contributors:
           String name() default "";
           ConstraintMode value() default CONSTRAINT;
           String foreign-key-definition() default "";
+          String options() default "";
 
           // Note that the elements that embed the use of the annotation
           // default this use as @ForeignKey(PROVIDER_DEFAULT).
@@ -2746,6 +2799,7 @@ Contributors:
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="constraint-mode" type="orm:constraint-mode"/>
     <xsd:attribute name="foreign-key-definition" type="xsd:string"/>
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -2772,7 +2826,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum GenerationType { TABLE, SEQUENCE, IDENTITY, UUID, AUTO };
+        public enum GenerationType { TABLE, SEQUENCE, IDENTITY, UUID, AUTO }
 
       </xsd:documentation>
     </xsd:annotation>
@@ -2835,14 +2889,14 @@ Contributors:
 
   <xsd:complexType name="id-class">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[
 
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface IdClass {
-          Class value();
+          Class<?> value();
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
   </xsd:complexType>
@@ -2944,7 +2998,7 @@ Contributors:
 
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface Inheritance {
-          InheritanceType strategy() default SINGLE_TABLE;
+          InheritanceType strategy() default InheritanceType.SINGLE_TABLE;
         }
 
       </xsd:documentation>
@@ -2958,8 +3012,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum InheritanceType
-          { SINGLE_TABLE, JOINED, TABLE_PER_CLASS};
+        public enum InheritanceType { SINGLE_TABLE, TABLE_PER_CLASS, JOINED }
 
       </xsd:documentation>
     </xsd:annotation>
@@ -3001,6 +3054,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(JoinColumns.class)
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface JoinColumn {
           String name() default "";
@@ -3010,12 +3064,22 @@ Contributors:
           boolean insertable() default true;
           boolean updatable() default true;
           String columnDefinition() default "";
+          String options() default "";
           String table() default "";
           ForeignKey foreignKey() default @ForeignKey();
+          CheckConstraint[] check() default {};
+          String comment() default "";
         }
 
       </xsd:documentation>
     </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="comment" type="xsd:string" minOccurs="0" />
+        <xsd:element name="foreign-key" type="orm:foreign-key"
+                     minOccurs="0"/>
+        <xsd:element name="check-constraint" type="orm:check-constraint"
+                     minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="referenced-column-name" type="xsd:string"/>
     <xsd:attribute name="unique" type="xsd:boolean"/>
@@ -3023,6 +3087,7 @@ Contributors:
     <xsd:attribute name="insertable" type="xsd:boolean"/>
     <xsd:attribute name="updatable" type="xsd:boolean"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="options" type="xsd:string"/>
     <xsd:attribute name="table" type="xsd:string"/>
   </xsd:complexType>
 
@@ -3104,13 +3169,19 @@ Contributors:
           String schema() default "";
           JoinColumn[] joinColumns() default {};
           JoinColumn[] inverseJoinColumns() default {};
+          ForeignKey foreignKey() default @ForeignKey(ConstraintMode.PROVIDER_DEFAULT);
+          ForeignKey inverseForeignKey() default @ForeignKey(ConstraintMode.PROVIDER_DEFAULT);
           UniqueConstraint[] uniqueConstraints() default {};
           Index[] indexes() default {};
+          CheckConstraint[] check() default {};
+          String comment() default "";
+          String options() default "";
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
+      <xsd:element name="comment" type="xsd:string" minOccurs="0" />
       <xsd:sequence>
         <xsd:element name="join-column" type="orm:join-column" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
@@ -3121,11 +3192,13 @@ Contributors:
       </xsd:sequence>
       <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="check-constraint" type="orm:check-constraint" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
     <xsd:attribute name="creation-suffix" type="xsd:string" />
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -3147,7 +3220,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        public enum LockModeType { READ, WRITE, OPTIMISTIC, OPTIMISTIC_FORCE_INCREMENT, PESSIMISTIC_READ, PESSIMISTIC_WRITE, PESSIMISTIC_FORCE_INCREMENT, NONE};
+        public enum LockModeType implements FindOption, RefreshOption { READ, WRITE, OPTIMISTIC, OPTIMISTIC_FORCE_INCREMENT, PESSIMISTIC_READ, PESSIMISTIC_WRITE, PESSIMISTIC_FORCE_INCREMENT, NONE}
 
       </xsd:documentation>
     </xsd:annotation>
@@ -3168,17 +3241,17 @@ Contributors:
 
   <xsd:complexType name="many-to-many">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[
 
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface ManyToMany {
-          Class targetEntity() default void.class;
+          Class<?> targetEntity() default void.class;
           CascadeType[] cascade() default {};
-          FetchType fetch() default LAZY;
+          FetchType fetch() default FetchType.LAZY;
           String mappedBy() default "";
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
@@ -3239,17 +3312,17 @@ Contributors:
 
   <xsd:complexType name="many-to-one">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[
 
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface ManyToOne {
-          Class targetEntity() default void.class;
+          Class<?> targetEntity() default void.class;
           CascadeType[] cascade() default {};
-          FetchType fetch() default EAGER;
+          FetchType fetch() default FetchType.EAGER;
           boolean optional() default true;
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
@@ -3301,14 +3374,14 @@ Contributors:
 
   <xsd:complexType name="map-key-class">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[
 
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface MapKeyClass {
-          Class value();
+          Class<?> value();
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
   </xsd:complexType>
@@ -3327,6 +3400,7 @@ Contributors:
           boolean insertable() default true;
           boolean updatable() default true;
           String columnDefinition() default "";
+          String options() default "";
           String table() default "";
           int length() default 255;
           int precision() default 0; // decimal precision
@@ -3341,6 +3415,7 @@ Contributors:
     <xsd:attribute name="insertable" type="xsd:boolean"/>
     <xsd:attribute name="updatable" type="xsd:boolean"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="options" type="xsd:string"/>
     <xsd:attribute name="table" type="xsd:string"/>
     <xsd:attribute name="length" type="xsd:int"/>
     <xsd:attribute name="precision" type="xsd:int"/>
@@ -3353,6 +3428,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(MapKeyJoinColumns.class)
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface MapKeyJoinColumn {
           String name() default "";
@@ -3362,11 +3438,16 @@ Contributors:
           boolean insertable() default true;
           boolean updatable() default true;
           String columnDefinition() default "";
+          String options() default "";
           String table() default "";
+          ForeignKey foreignKey() default @ForeignKey(ConstraintMode.PROVIDER_DEFAULT);
         }
 
       </xsd:documentation>
     </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="referenced-column-name" type="xsd:string"/>
     <xsd:attribute name="unique" type="xsd:boolean"/>
@@ -3374,6 +3455,7 @@ Contributors:
     <xsd:attribute name="insertable" type="xsd:boolean"/>
     <xsd:attribute name="updatable" type="xsd:boolean"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="options" type="xsd:string"/>
     <xsd:attribute name="table" type="xsd:string"/>
   </xsd:complexType>
 
@@ -3483,7 +3565,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface Multitenant {
             /**
-             * (Optional) Specify the multi-tenant strategy to use.
+             * Specify the multi-tenant strategy to use.
              */
             MultitenantType value() default MultitenantType.SINGLE_TABLE;
         }
@@ -3568,6 +3650,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(NamedEntityGraphs.class)
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface NamedEntityGraph {
           String name() default "";
@@ -3601,23 +3684,33 @@ Contributors:
 
   <xsd:complexType name="named-native-query">
     <xsd:annotation>
-      <xsd:documentation>
+        <xsd:documentation><![CDATA[
 
+        @Repeatable(NamedNativeQueries.class)
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface NamedNativeQuery {
           String name();
           String query();
           QueryHint[] hints() default {};
-          Class resultClass() default void.class;
+          Class<?> resultClass() default void.class;
           String resultSetMapping() default ""; //named SqlResultSetMapping
+          EntityResult[] entities() default {};
+          ConstructorResult[] classes() default {};
+          ColumnResult[] columns() default {};
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="query" type="xsd:string"/>
       <xsd:element name="hint" type="orm:query-hint"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="entity-result" type="orm:entity-result"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="constructor-result" type="orm:constructor-result"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="column-result" type="orm:column-result"
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -3631,11 +3724,12 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(NamedQueries.class)
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface NamedQuery {
           String name();
           String query();
-          LockModeType lockMode() default NONE;
+          LockModeType lockMode() default LockModeType.NONE;
           QueryHint[] hints() default {};
         }
 
@@ -3663,64 +3757,65 @@ Contributors:
          * A NamedStoredProcedureQuery annotation may be defined on an Entity or
          * MappedSuperclass.
          */
+        @Repeatable(NamedStoredProcedureQueries.class)
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface NamedStoredProcedureQuery {
           /**
-           * (Required) Unique name that references this stored procedure query.
+           * Unique name that references this stored procedure query.
            */
           String name();
 
           /**
-           * (Optional) Query hints.
+           * Query hints.
            */
           QueryHint[] hints() default {};
 
           /**
-           * (Optional) Refers to the class of the result.
+           * Refers to the class of the result.
            * @deprecated
            * @see resultClasses
            */
           Class resultClass() default void.class;
 
           /**
-           * (Optional) Refers to the classes of the result.
+           * Refers to the classes of the result.
            */
           Class[] resultClasses() default {};
 
           /**
-           * (Optional) The name of the SQLResultMapping.
+           * The name of the SQLResultMapping.
            * @deprecated
            * @see resultSetMappings
            */
           String resultSetMapping() default "";
 
           /**
-           * (Optional) The names of the SQLResultMappings.
+           * The names of the SQLResultMappings.
            */
           String[] resultSetMappings() default {};
 
           /**
-           * (Required) The name of the stored procedure.
+           * The name of the stored procedure.
            */
           String procedureName();
 
           /**
-           * (Optional) Defines if stored procedure returns a result set.
+           * Defines if stored procedure returns a result set.
            * This is only relevant on databases that support returning result sets
            * from stored procedures.
            */
           boolean returnsResultSet() default false;
 
           /**
-           * (Optional) Defines if the stored procedure returns multiple result sets.
+           * Defines if the stored procedure returns multiple result sets.
            * This is only relevant on databases that support multiple result sets from
            * stored procedures.
            */
           boolean multipleResultSets() default false;
 
           /**
-           * (Optional) Defines if the stored procedure should be called by index or
+           * Defines if the stored procedure should be called by index or
            * by name. By index requires that the StoredProcedureParameter are defined
            * in the same order as the procedure on the database. By name requires the
            * database platform support naming procedure parameters.
@@ -3728,7 +3823,7 @@ Contributors:
           boolean callByIndex() default false;
 
           /**
-           * (Optional) Defines arguments to the stored procedure.
+           * Defines arguments to the stored procedure.
            */
           StoredProcedureParameter[] parameters() default {};
         }
@@ -3757,16 +3852,16 @@ Contributors:
 
   <xsd:complexType name="named-subgraph">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[
 
         @Target({}) @Retention(RUNTIME)
         public @interface NamedSubgraph {
           String name();
-          Class type() default void.class;
+          Class<?> type() default void.class;
           NamedAttributeNode[] attributeNodes();
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="named-attribute-node"
@@ -3790,43 +3885,44 @@ Contributors:
          * A NamedStoredFunctionQuery annotation may be defined on an Entity or
          * MappedSuperclass.
          */
+        @Repeatable(NamedStoredFunctionQueries.class)
         @Target({TYPE})
         @Retention(RUNTIME)
         public @interface NamedStoredFunctionQuery {
           /**
-           * (Required) Unique name that references this stored procedure query.
+           * Unique name that references this stored procedure query.
            */
           String name();
 
           /**
-           * (Optional) Query hints.
+           * Query hints.
            */
           QueryHint[] hints() default {};
 
           /**
-           * (Optional) The name of the SQLResultMapping.
+           * The name of the SQLResultMapping.
            */
           String resultSetMapping() default "";
 
           /**
-           * (Required) The name of the stored procedure.
+           * The name of the stored procedure.
            */
           String functionName();
 
           /**
-           * (Optional) Defines if the stored procedure should be called by index or by name.
+           * Defines if the stored procedure should be called by index or by name.
            * By index requires that the StoredProcedureParameter are defined in the same order as the procedure on the database.
            * By name requires the database platform support naming procedure parameters.
            */
           boolean callByIndex() default false;
 
           /**
-           * (Optional) Defines arguments to the stored procedure.
+           * Defines arguments to the stored procedure.
            */
           StoredProcedureParameter[] parameters() default {};
 
           /**
-           * (Required) Defines return of the stored function.
+           * Defines return of the stored function.
            */
           StoredProcedureParameter[] returnParameter();
         }
@@ -3866,32 +3962,32 @@ Contributors:
             @Retention(RUNTIME)
             public @interface NamedPLSQLStoredFunctionQuery {
                 /**
-                 * (Required) Unique name that references this stored procedure query.
+                 * Unique name that references this stored procedure query.
                  */
                 String name();
 
                 /**
-                 * (Optional) Query hints.
+                 * Query hints.
                  */
                 QueryHint[] hints() default {};
 
                 /**
-                 * (Optional) The name of the SQLResultMapping.
+                 * The name of the SQLResultMapping.
                  */
                 String resultSetMapping() default "";
 
                 /**
-                 * (Required) The name of the stored procedure.
+                 * The name of the stored procedure.
                  */
                 String functionName();
 
                 /**
-                 * (Optional) Defines the parameters to the stored procedure.
+                 * Defines the parameters to the stored procedure.
                  */
                 PLSQLParameter[] parameters() default {};
 
                 /**
-                 * (Required) Defines the return value of the stored function.
+                 * Defines the return value of the stored function.
                  */
                 PLSQLParameter returnParameter();
             }
@@ -3930,32 +4026,32 @@ Contributors:
             @Retention(RUNTIME)
             public @interface NamedPLSQLStoredProcedureQuery {
                 /**
-                 * (Required) Unique name that references this stored procedure query.
+                 * Unique name that references this stored procedure query.
                  */
                 String name();
 
                 /**
-                 * (Optional) Query hints.
+                 * Query hints.
                  */
                 QueryHint[] hints() default {};
 
                 /**
-                 * (Optional) Refers to the class of the result.
+                 * Refers to the class of the result.
                  */
                 Class resultClass() default void.class;
 
                 /**
-                 * (Optional) The name of the SQLResultMapping.
+                 * The name of the SQLResultMapping.
                  */
                 String resultSetMapping() default "";
 
                 /**
-                 * (Required) The name of the stored procedure.
+                 * The name of the stored procedure.
                  */
                 String procedureName();
 
                 /**
-                 * (Optional) Defines the parameters to the stored procedure.
+                 * Defines the parameters to the stored procedure.
                  */
                 PLSQLParameter[] parameters() default {};
             }
@@ -3990,18 +4086,18 @@ Contributors:
         public @interface OracleObject {
 
             /**
-             * (Required) The name of the OBJECT type in the database.
+             * The name of the OBJECT type in the database.
              */
             String name();
 
             /**
-             * (Optional) The Java class to map the OBJECT type to.
+             * The Java class to map the OBJECT type to.
              * This class must be mapped using a @Struct annotation.
              */
             Class javaType() default void.class;
 
             /**
-             * (Required) Defines the fields in the record type.
+             * Defines the fields in the record type.
              */
             PLSQLParameter[] fields();
         }
@@ -4032,17 +4128,17 @@ Contributors:
         @Retention(RUNTIME)
         public @interface OracleArray {
             /**
-             * (Required) The name of the VARRAY type in the database.
+             * The name of the VARRAY type in the database.
              */
             String name();
 
             /**
-             * (Optional) The name of the database type this VARRAY holds onto.
+             * The name of the database type this VARRAY holds onto.
              */
             String nestedType() default "VARCHAR_TYPE";
 
             /**
-             * (Optional) The Java Collection class to map the VARRAY to.
+             * The Java Collection class to map the VARRAY to.
              * This can be any valid Collection implementation.
              */
             Class javaType() default ArrayList.class;
@@ -4072,24 +4168,24 @@ Contributors:
         public @interface PLSQLRecord {
 
             /**
-             * (Required) The name of the record type in the database.
+             * The name of the record type in the database.
              */
             String name();
 
             /**
-             * (Required) The name of the database OBJECT TYPE that mirrors the record's structure.
+             * The name of the database OBJECT TYPE that mirrors the record's structure.
              * The record will be converted to/from this type so it can be passed through JDBC.
              */
             String compatibleType();
 
             /**
-             * (Optional) The Java class to map the object-type to.
+             * The Java class to map the object-type to.
              * This class must be mapped using a @Struct annotation.
              */
             Class javaType() default void.class;
 
             /**
-             * (Required) Defines the fields in the record type.
+             * Defines the fields in the record type.
              */
             PLSQLParameter[] fields();
         }
@@ -4123,30 +4219,30 @@ Contributors:
         public @interface PLSQLTable {
 
             /**
-             * (Required) The name of the record type in the database.
+             * The name of the record type in the database.
              */
             String name();
 
             /**
-             * (Required) The name of the database VARRAY type that mirrors the table's structure.
+             * The name of the database VARRAY type that mirrors the table's structure.
              * The table will be converted to/from this type so it can be passed through JDBC.
              */
             String compatibleType();
 
             /**
-             * (Required) The name of the database OBJECT TYPE or VARRAY type that mirrors the record's structure.
+             * The name of the database OBJECT TYPE or VARRAY type that mirrors the record's structure.
              * The record will be converted to/from this type so it can be passed through JDBC.
              */
             String nestedType() default "VARCHAR_TYPE";
 
             /**
-             * (Optional) The Java Collection class to map the varray to.
+             * The Java Collection class to map the varray to.
              * This can be any valid Collection implementation.
              */
             Class javaType() default ArrayList.class;
 
             /**
-             * (Optional) Indicates a non-associative (nested) table.
+             * Indicates a non-associative (nested) table.
              * This method would typically be used when generating a constructor for the
              * collection in PL/SQL (as the constructors for associative arrays (Varray)
              * and a non-associative (nested) tables differ).
@@ -4169,37 +4265,38 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(ObjectTypeConverters.class)
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface ObjectTypeConverter {
           /**
-           * (Required) Name this converter. The name should be unique
+           * Name this converter. The name should be unique
            * across the whole persistence unit.
            */
           String name();
 
           /**
-           * (Optional) Specify the type stored on the database. The
+           * Specify the type stored on the database. The
            * default is inferred from the type of the persistence
            * field or property.
            */
           Class dataType() default void.class;
 
           /**
-           * (Optional) Specify the type stored on the entity. The
+           * Specify the type stored on the entity. The
            * default is inferred from the type of the persistent
            * field or property.
            */
           Class objectType() default void.class;
 
           /**
-           * (Required) Specify the conversion values to be used
+           * Specify the conversion values to be used
            * with the object converter.
            */
           ConversionValue[] conversionValues();
 
            /**
-            * (Optional) Specify a default object value. Used for
+            * Specify a default object value. Used for
             * legacy data if the data value is missing.
             */
            String defaultObjectValue() default "";
@@ -4220,17 +4317,18 @@ Contributors:
 
   <xsd:complexType name="one-to-many">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[
 
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface OneToMany {
-          Class targetEntity() default void.class;
+          Class<?> targetEntity() default void.class;
           CascadeType[] cascade() default {};
-          FetchType fetch() default LAZY;
+          FetchType fetch() default FetchType.LAZY;
           String mappedBy() default "";
+          boolean orphanRemoval() default false;
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
@@ -4298,19 +4396,19 @@ Contributors:
 
   <xsd:complexType name="one-to-one">
     <xsd:annotation>
-      <xsd:documentation>
+      <xsd:documentation><![CDATA[
 
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface OneToOne {
-          Class targetEntity() default void.class;
+          Class<?> targetEntity() default void.class;
           CascadeType[] cascade() default {};
-          FetchType fetch() default EAGER;
+          FetchType fetch() default FetchType.EAGER;
           boolean optional() default true;
           String mappedBy() default "";
           boolean orphanRemoval() default false;
         }
 
-      </xsd:documentation>
+      ]]></xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
@@ -4364,19 +4462,19 @@ Contributors:
         @Retention(RUNTIME)
         public @interface OptimisticLocking {
           /**
-           * (Optional) The type of optimistic locking policy to use.
+           * The type of optimistic locking policy to use.
            */
           OptimisticLockingType type() default VERSION_COLUMN;
 
           /**
-           * (Optional) For an optimistic locking policy of type
+           * For an optimistic locking policy of type
            * SELECTED_COLUMNS, this annotation member becomes a (Required)
            * field.
            */
           Column[] selectedColumns() default {};
 
           /**
-           * (Optional) Specify where the optimistic locking policy should
+           * Specify where the optimistic locking policy should
            * cascade lock. Currently only supported with VERSION_COLUMN locking.
            */
           boolean cascade() default false;
@@ -4474,6 +4572,7 @@ Contributors:
           boolean insertable() default true;
           boolean updatable() default true;
           String columnDefinition() default "";
+          String options() default "";
          }
 
       </xsd:documentation>
@@ -4484,6 +4583,7 @@ Contributors:
     <xsd:attribute name="updatable" type="xsd:boolean"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
     <xsd:attribute name="correction-type" type="orm:order-column-correction-type"/>
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -4644,19 +4744,19 @@ Contributors:
         @Retention(RUNTIME)
         public @interface PrimaryKey {
           /**
-           * (Optional) Configures what id validation is done.
+           * Configures what id validation is done.
            * By default 0 is not a valid id value, this can be used to allow 0 id values.
            */
           IdValidation validation() default IdValidation.ZERO;
 
           /**
-           * (Optional) Configures what cache key type is used to store the object in the cache.
+           * Configures what cache key type is used to store the object in the cache.
            * By default the type is determined by what type is optimal for the class.
            */
           CacheKeyType cacheKeyType() default CacheKeyType.AUTO;
 
           /**
-           * (Optional) Used to specify the primary key columns directly.
+           * Used to specify the primary key columns directly.
            * This can be used instead of @Id if the primary key includes a non basic field,
            * such as a foreign key, or a inheritance discriminator, embedded, or transformation mapped field.
            */
@@ -4678,18 +4778,25 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(PrimaryKeyJoinColumns.class)
         @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
         public @interface PrimaryKeyJoinColumn {
           String name() default "";
           String referencedColumnName() default "";
           String columnDefinition() default "";
+          String options() default "";
+          ForeignKey foreignKey() default @ForeignKey(PROVIDER_DEFAULT);
         }
 
       </xsd:documentation>
     </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="referenced-column-name" type="xsd:string"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -4699,6 +4806,7 @@ Contributors:
       <xsd:documentation>
 
         A user defined mapping's property.
+        @Repeatable(Properties.class)
         @Target({METHOD, FIELD, TYPE})
         @Retention(RUNTIME)
         public @interface Property {
@@ -4910,30 +5018,39 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(SecondaryTables.class)
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface SecondaryTable {
           String name();
           String catalog() default "";
           String schema() default "";
           PrimaryKeyJoinColumn[] pkJoinColumns() default {};
+          ForeignKey foreignKey() default @ForeignKey(ConstraintMode.PROVIDER_DEFAULT);
           UniqueConstraint[] uniqueConstraints() default {};
           Index[] indexes() default {};
-         }
+          CheckConstraint[] check() default {};
+          String comment() default "";
+          String options() default "";
+        }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
         <xsd:sequence>
+            <xsd:element name="comment" type="xsd:string" minOccurs="0" />
             <xsd:element name="primary-key-join-column" type="orm:primary-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="primary-key-foreign-key" type="orm:foreign-key" minOccurs="0"/>
         </xsd:sequence>
         <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
+        <xsd:element name="check-constraint" type="orm:check-constraint" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
     <xsd:attribute name="creation-suffix" type="xsd:string" />
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -4942,14 +5059,16 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+        @Repeatable(SequenceGenerators.class)
+        @Target({TYPE, METHOD, FIELD, PACKAGE}) @Retention(RUNTIME)
         public @interface SequenceGenerator {
-          String name();
+          String name() default "";
           String sequenceName() default "";
           String catalog() default "";
           String schema() default "";
           int initialValue() default 1;
           int allocationSize() default 50;
+          String options() default "";
         }
 
       </xsd:documentation>
@@ -4957,12 +5076,13 @@ Contributors:
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
     </xsd:sequence>
-    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="sequence-name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
     <xsd:attribute name="initial-value" type="xsd:int"/>
     <xsd:attribute name="allocation-size" type="xsd:int"/>
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -4981,7 +5101,7 @@ Contributors:
             Class value();
 
             /**
-             * (Optional) The column that holds the serialized object. By default it's a BLOB column named "SOP" in entity's main table.
+             * The column that holds the serialized object. By default it's a BLOB column named "SOP" in entity's main table.
              */
             Column column() default @Column(name="SOP");
         }
@@ -5000,6 +5120,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(SqlResultSetMappings.class)
         @Target({TYPE}) @Retention(RUNTIME)
         public @interface SqlResultSetMapping {
           String name();
@@ -5036,46 +5157,46 @@ Contributors:
         @Retention(RUNTIME)
         public @interface StoredProcedureParameter {
           /**
-           * (Optional) The direction of the stored procedure parameter.
+           * The direction of the stored procedure parameter.
            * @deprecated
            * @see mode()
            */
           Direction direction() default IN;
 
           /**
-           * (Optional) The direction of the stored procedure parameter.
+           * The direction of the stored procedure parameter.
            */
           ParameterMode mode() default ParameterMode.IN;
 
           /**
-           * (Optional) Stored procedure parameter name.
+           * Stored procedure parameter name.
            */
           String name() default "";
 
           /**
-           * (Required) The query parameter name.
+           * The query parameter name.
            */
           String queryParameter();
 
           /**
-           * (Optional) Define if the parameter is required, or optional and defaulted by the procedure.
+           * Define if the parameter is required, or optional and defaulted by the procedure.
            */
           boolean optional() default false;
 
           /**
-           * (Optional) The type of Java class desired back from the procedure,
+           * The type of Java class desired back from the procedure,
            * this is dependent on the type returned from the procedure.
            */
           Class type() default void.class;
 
           /**
-           * (Optional) The JDBC type code, this dependent on the type returned
+           * The JDBC type code, this dependent on the type returned
            * from the procedure.
            */
           int jdbcType() default -1;
 
           /**
-           * (Optional) The JDBC type name, this may be required for ARRAY or
+           * The JDBC type name, this may be required for ARRAY or
            * STRUCT types.
            */
           String jdbcTypeName() default "";
@@ -5116,27 +5237,27 @@ Contributors:
             @Retention(RUNTIME)
             public @interface PLSQLParameter {
                 /**
-                 * (Optional) The direction of the stored procedure parameter.
+                 * The direction of the stored procedure parameter.
                  */
                 Direction direction() default IN;
 
                 /**
-                 * (Required) Stored procedure parameter name.
+                 * Stored procedure parameter name.
                  */
                 String name() default "";
 
                 /**
-                 * (Optional) The query parameter name.
+                 * The query parameter name.
                  */
                 String queryParameter();
 
                 /**
-                 * (Optional) Define if the parameter is required, or optional and defaulted by the procedure.
+                 * Define if the parameter is required, or optional and defaulted by the procedure.
                  */
                 boolean optional() default false;
 
                 /**
-                 * (Optional) The database data-type for the paramter.
+                 * The database data-type for the paramter.
                  * This either one of the type constants defined in OraclePLSQLTypes, or JDBCTypes,
                  * or a custom record or table type name.
                  * @see PLSQLRecord
@@ -5146,17 +5267,17 @@ Contributors:
                 String databaseType() default "VARCHAR";
 
                 /**
-                 * (Optional) The max length of the field value.
+                 * The max length of the field value.
                  */
                 int length() default 255;
 
                 /**
-                 * (Optional) If a numeric, the max scale value.
+                 * If a numeric, the max scale value.
                  */
                 int scale() default 0;
 
                 /**
-                 * (Optional) If a numeric, the max precision value.
+                 * If a numeric, the max precision value.
                  */
                 int precision() default 0;
             }
@@ -5179,17 +5300,18 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(StructConverters.class)
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface StructConverter {
           /**
-           * (Required) Name this converter. The name should be unique across
+           * Name this converter. The name should be unique across
            * the whole persistence unit.
            */
           String name();
 
           /**
-           * (Required) The converter class to be used. This class must
+           * The converter class to be used. This class must
            * implement the EclipseLink interface
            * org.eclipse.persistence.mappings.converters.Converter
            */
@@ -5225,12 +5347,12 @@ Contributors:
         @Retention(RUNTIME)
         public @interface Struct {
             /**
-             * (Required) The database name of the database structure type.
+             * The database name of the database structure type.
              */
             String name();
 
             /**
-             * (Optional) Defines the order of the fields contained in the database structure type.
+             * Defines the order of the fields contained in the database structure type.
              */
             String[] fields() default {};
         }
@@ -5292,18 +5414,24 @@ Contributors:
           String schema() default "";
           UniqueConstraint[] uniqueConstraints() default {};
           Index[] indexes() default {};
+          CheckConstraint[] check() default {};
+          String comment() default "";
+          String options() default "";
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
+      <xsd:element name="comment" type="xsd:string" minOccurs="0" />
       <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="check-constraint" type="orm:check-constraint" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
     <xsd:attribute name="creation-suffix" type="xsd:string" />
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -5317,6 +5445,7 @@ Contributors:
           String name() default "";
           String columnList();
           boolean unique() default false;
+          String options() default "";
         }
 
       </xsd:documentation>
@@ -5327,6 +5456,7 @@ Contributors:
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="column-list" type="xsd:string" use="required"/>
     <xsd:attribute name="unique" type="xsd:boolean"/>
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
 
@@ -5344,6 +5474,7 @@ Contributors:
          * @author James Sutherland
          * @since EclipseLink 2.2
          */
+        @Repeatable(Indexes.class)
         @Target({METHOD, FIELD, TYPE})
         @Retention(RUNTIME)
         public @interface Index {
@@ -5399,6 +5530,7 @@ Contributors:
          * @author James Sutherland
          * @since EclipseLink 2.4
          */
+        @Repeatable(CacheIndexes.class)
         @Target({METHOD, FIELD, TYPE})
         @Retention(RUNTIME)
         public @interface CacheIndex {
@@ -5430,9 +5562,10 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
-        @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+        @Repeatable(TableGenerators.class)
+        @Target({TYPE, METHOD, FIELD, PACKAGE}) @Retention(RUNTIME)
         public @interface TableGenerator {
-          String name();
+          String name() default "";
           String table() default "";
           String catalog() default "";
           String schema() default "";
@@ -5443,6 +5576,7 @@ Contributors:
           int allocationSize() default 50;
           UniqueConstraint[] uniqueConstraints() default {};
           Indexes[] indexes() default {};
+          String options() default "";
         }
 
       </xsd:documentation>
@@ -5451,8 +5585,9 @@ Contributors:
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="check-constraint" type="orm:check-constraint" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="table" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
@@ -5462,6 +5597,7 @@ Contributors:
     <xsd:attribute name="pk-column-value" type="xsd:string"/>
     <xsd:attribute name="initial-value" type="xsd:int"/>
     <xsd:attribute name="allocation-size" type="xsd:int"/>
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -5470,6 +5606,7 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(UuidGenerators.class)
         @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
         public @interface UuidGenerator {
           String name();
@@ -5522,28 +5659,29 @@ Contributors:
   <xsd:complexType name="tenant-discriminator-column">
     <xsd:annotation>
       <xsd:documentation>
-        @Target({})
+        @Repeatable(TenantDiscriminatorColumns.class)
+        @Target({TYPE})
         @Retention(RUNTIME)
         public @interface TenantDiscriminatorColumn {
             /**
-             * (Optional) The name of column to be used for the tenant discriminator.
+             * The name of column to be used for the tenant discriminator.
              */
             String name() default "TENANT_ID";
 
             /**
-             * (Optional) The name of the context property to apply to the
+             * The name of the context property to apply to the
              * tenant discriminator column.
              */
             String contextProperty() default "eclipselink.tenant-id";
 
             /**
-             * (Optional) The type of object/column to use as a class discriminator.
+             * The type of object/column to use as a class discriminator.
              * Defaults to {@link DiscriminatorType#STRING DiscriminatorType.STRING}.
              */
             DiscriminatorType discriminatorType() default DiscriminatorType.STRING;
 
             /**
-             * (Optional) The SQL fragment that is used when generating the DDL
+             * The SQL fragment that is used when generating the DDL
              * for the discriminator column.
              * Defaults to the provider-generated SQL to create a column
              * of the specified discriminator type.
@@ -5551,13 +5689,13 @@ Contributors:
             String columnDefinition() default "";
 
             /**
-             * (Optional) The column length for String-based discriminator types.
+             * The column length for String-based discriminator types.
              * Ignored for other discriminator types.
              */
             int length() default 31;
 
             /**
-             * (Optional) The name of the table that contains the column.
+             * The name of the table that contains the column.
              * If absent the column is assumed to be in the primary table.
              */
             String table() default "";
@@ -5589,13 +5727,13 @@ Contributors:
         @Retention(RUNTIME)
         public @interface TenantDiscriminatorColumn {
             /**
-             * (Optional) The name of the context property to apply to as
+             * The name of the context property to apply to as
              * tenant table discriminator. Default is "eclipselink-tenant.id"
              */
             String contextProperty() default PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
 
             /**
-             * (Optional) The type of tenant table discriminator to use with the tables
+             * The type of tenant table discriminator to use with the tables
              * of the persistence unit.
              * Defaults to {@link TenantTableDiscriminatorType#SUFFIX TenantTableDiscriminatorType.SUFFIX}.
              */
@@ -5635,22 +5773,22 @@ Contributors:
         @Retention(RUNTIME)
         public @interface TimeOfDay {
           /**
-           * (Optional) Hour of the day.
+           * Hour of the day.
            */
           int hour() default 0;
 
           /**
-           * (Optional) Minute of the day.
+           * Minute of the day.
            */
           int minute() default 0;
 
           /**
-           * (Optional) Second of the day.
+           * Second of the day.
            */
           int second() default 0;
 
           /**
-           * (Optional) Millisecond of the day.
+           * Millisecond of the day.
            */
           int millisecond() default 0;
 
@@ -5694,7 +5832,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface Transformation {
             /**
-             * (Optional) Defines whether the value of the field or property
+             * Defines whether the value of the field or property
              * should be lazily loaded or must be eagerly fetched. The EAGER
              * strategy is a requirement on the persistence provider runtime
              * that the value must be eagerly fetched. The LAZY strategy is a
@@ -5704,7 +5842,7 @@ Contributors:
             FetchType fetch() default EAGER;
 
             /**
-             * (Optional) The optional element is a hint as to whether the value
+             * The optional element is a hint as to whether the value
              *  of the field or property may be null. It is disregarded
              *  for primitive types, which are considered non-optional.
              */
@@ -5747,24 +5885,25 @@ Contributors:
     <xsd:annotation>
       <xsd:documentation>
 
+        @Repeatable(TypeConverters.class)
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface TypeConverter {
           /**
-           * (Required) Name this converter. The name should be unique
+           * Name this converter. The name should be unique
            * across the whole persistence unit.
            */
            String name();
 
           /**
-           * (Optional) Specify the type stored on the database. The
+           * Specify the type stored on the database. The
            * default is inferred from the type of the persistence field
            * or property.
            */
           Class dataType() default void.class;
 
           /**
-           * (Optional) Specify the type stored on the entity. The
+           * Specify the type stored on the entity. The
            * default is inferred from the type of the persistent field
            * or property.
            */
@@ -5800,11 +5939,12 @@ Contributors:
          * @author James Sutherland
          * @since EclipseLink 2.6
          */
+        @Repeatable(SerializedConverters.class)
         @Target({TYPE, METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface SerializedConverter {
             /**
-             * (Required) Name this converter. The name should be unique across the
+             * Name this converter. The name should be unique across the
              * whole persistence unit.
              */
             String name();
@@ -5840,6 +5980,7 @@ Contributors:
         public @interface UniqueConstraint {
           String name() default "";
           String[] columnNames();
+          String options() default "";
         }
 
       </xsd:documentation>
@@ -5849,6 +5990,7 @@ Contributors:
                    maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="options" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -5871,20 +6013,20 @@ Contributors:
         @Retention(RUNTIME)
         public @interface VariableOneToOne {
           /**
-           * (Optional) The interface class that is the target of the
+           * The interface class that is the target of the
            * association. If not specified it will be inferred from the type
            * of the object being referenced.
            */
           Class targetInterface() default void.class;
 
           /**
-           * (Optional) The operations that must be cascaded to the target of
+           * The operations that must be cascaded to the target of
            * the association.
            */
           CascadeType[] cascade() default {};
 
           /**
-           * (Optional) Defines whether the value of the field or property
+           * Defines whether the value of the field or property
            * should be lazily loaded or must be eagerly fetched. The EAGER
            * strategy is a requirement on the persistence provider runtime
            * that the value must be eagerly fetched. The LAZY strategy is a
@@ -5894,13 +6036,13 @@ Contributors:
           FetchType fetch() default EAGER;
 
           /**
-           * (Optional) Whether the association is optional. If set to false
+           * Whether the association is optional. If set to false
            * then a non-null relationship must always exist.
            */
           boolean optional() default true;
 
           /**
-           * (Optional) The discriminator column will hold the type
+           * The discriminator column will hold the type
            * indicators. If the DiscriminatorColumn is not specified, the name
            * of the discriminator column defaults to "DTYPE" and the
            * discriminator type to STRING.
@@ -5908,7 +6050,7 @@ Contributors:
           DiscriminatorColumn discriminatorColumn() default @DiscriminatorColumn;
 
           /**
-           * (Optional) The list of discriminator types that can be used with
+           * The list of discriminator types that can be used with
            * this VariableOneToOne. If none are specified then those entities
            * within the persistence unit that implement the target interface
            * will be added to the list of types. The discriminator type will
@@ -5996,6 +6138,7 @@ Contributors:
          * should have a ReadTransformer, it defines transformation of database
          * column(s) value(s)into attribute value.
          */
+        @Repeatable(WriteTransformers.class)
         @Target({METHOD, FIELD})
         @Retention(RUNTIME)
         public @interface WriteTransformer {
@@ -6063,7 +6206,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface BatchFetch {
             /**
-             * (Optional) The type of batch-fetch to use.
+             * The type of batch-fetch to use.
              * Either JOIN, EXISTS or IN.
              * JOIN is the default.
              */
@@ -6119,12 +6262,12 @@ Contributors:
         @Retention(RUNTIME)
         public @interface NoSql {
             /**
-             * (Required) The database name of the database structure type.
+             * The database name of the database structure type.
              */
             String dataType() default "";
 
             /**
-             * (Optional) Defines the order of the fields contained in the database structure type.
+             * Defines the order of the fields contained in the database structure type.
              */
             DataFormatType dataFormat() default DataFormatType.XML;
         }
@@ -6195,7 +6338,7 @@ Contributors:
         @Retention(RUNTIME)
         public @interface Field {
             /**
-             * (Optional) The data type's name of the field.
+             * The data type's name of the field.
              */
             String name() default "";
         }
@@ -6224,12 +6367,12 @@ Contributors:
         @Retention(RUNTIME)
         public @interface JoinField {
             /**
-             * (Optional) The name of the foreign key/id reference field in the source record.
+             * The name of the foreign key/id reference field in the source record.
              */
             String name() default "";
 
             /**
-             * (Optional) The name of the id field in the target record.
+             * The name of the id field in the target record.
              */
             String referencedFieldName() default "";
         }

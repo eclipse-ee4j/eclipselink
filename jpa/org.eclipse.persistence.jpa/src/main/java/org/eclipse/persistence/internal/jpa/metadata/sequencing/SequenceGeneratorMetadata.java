@@ -52,6 +52,7 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     private String m_schema;
     private String m_catalog;
     private String m_sequenceName;
+    private String m_options;
 
     /**
      * INTERNAL:
@@ -74,6 +75,7 @@ public class SequenceGeneratorMetadata extends ORMetadata {
         m_schema = sequenceGenerator.getAttributeString("schema");
         m_catalog = sequenceGenerator.getAttributeString("catalog");
         m_sequenceName = sequenceGenerator.getAttributeString("sequenceName");
+        m_options = sequenceGenerator.getAttributeString("options");
     }
 
     /**
@@ -129,6 +131,10 @@ public class SequenceGeneratorMetadata extends ORMetadata {
                 return false;
             }
 
+            if (! valuesMatch(m_options, generator.getOptions())) {
+                return false;
+            }
+
             return valuesMatch(m_sequenceName, generator.getSequenceName());
         }
 
@@ -141,6 +147,7 @@ public class SequenceGeneratorMetadata extends ORMetadata {
         result = 31 * result + (m_allocationSize != null ? m_allocationSize.hashCode() : 0);
         result = 31 * result + (m_initialValue != null ? m_initialValue.hashCode() : 0);
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         result = 31 * result + (m_schema != null ? m_schema.hashCode() : 0);
         result = 31 * result + (m_catalog != null ? m_catalog.hashCode() : 0);
         result = 31 * result + (m_sequenceName != null ? m_sequenceName.hashCode() : 0);
@@ -193,6 +200,14 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      */
     public String getName() {
         return m_name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getOptions() {
+        return m_options;
     }
 
     /**
@@ -300,6 +315,14 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 
     /**

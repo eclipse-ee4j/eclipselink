@@ -57,9 +57,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
     protected List<FieldDefinition> fields; //FieldDefinitions
     protected Map<String, ForeignKeyConstraint> foreignKeyMap; //key is the name of ForeignKeyConstraint
     protected List<UniqueKeyConstraint> uniqueKeys;
+    protected List<CheckConstraint> checkConstraints;
     protected List<IndexDefinition> indexes;
     protected String creationPrefix;
     protected String creationSuffix;
+    protected String comment;
     private boolean createSQLFiles;
     private boolean createVPDCalls;
     private String tenantFieldName;
@@ -74,8 +76,10 @@ public class TableDefinition extends DatabaseObjectDefinition {
         this.indexes = new ArrayList<>();
         this.foreignKeyMap = new HashMap<>();
         this.uniqueKeys = new ArrayList<>();
+        this.checkConstraints = new ArrayList<>();
         this.creationPrefix = "CREATE TABLE ";
         this.creationSuffix = "";
+        this.comment = "";
     }
 
     /**
@@ -224,6 +228,14 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public void addUniqueKeyConstraint(UniqueKeyConstraint uniqueKey) {
         getUniqueKeys().add(uniqueKey);
+    }
+
+    public void addCheckConstraint(CheckConstraint checkConstraint) {
+        getCheckConstraints().add(checkConstraint);
+    }
+
+    public List<CheckConstraint> getCheckConstraints() {
+        return checkConstraints;
     }
 
     /**
@@ -440,6 +452,9 @@ public class TableDefinition extends DatabaseObjectDefinition {
     @Override
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
+            if (comment != null && !comment.isEmpty()) {
+                writer.write(" /* "+ comment + " */ ");
+            }
             writer.write(getCreationPrefix() + getFullName() + " (");
             for (Iterator<FieldDefinition> itetrator = getFields().iterator(); itetrator.hasNext();) {
                 FieldDefinition field = itetrator.next();
@@ -468,6 +483,10 @@ public class TableDefinition extends DatabaseObjectDefinition {
                     writer.write(", ");
                     constraint.appendDBString(writer, session);
                 }
+            }
+            for (CheckConstraint constraint : getCheckConstraints()) {
+                writer.write(", ");
+                constraint.appendDBString(writer, session);
             }
             writer.write(")");
             //let the platform write out the CreationSuffix and the platform's default tableCreationSuffix
@@ -1435,5 +1454,9 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     public void setTable(DatabaseTable table) {
         this.table = table;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

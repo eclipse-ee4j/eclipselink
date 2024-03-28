@@ -57,7 +57,7 @@ public class JoinTableMetadata extends RelationalTableMetadata {
     // XML element, rather it is mapped as a separate element in a sequence with
     // it. Therefore, this element is only populated through annotation
     // processing right now, BUT this should be made available from our
-    // eclipselink-orm.xml and therefore maintaining a better annoation/xml
+    // eclipselink-orm.xml and therefore maintaining a better annotation/xml
     // mirror which was unfortunately not followed with JPA 2.1.
     private ForeignKeyMetadata m_inverseForeignKey;
 

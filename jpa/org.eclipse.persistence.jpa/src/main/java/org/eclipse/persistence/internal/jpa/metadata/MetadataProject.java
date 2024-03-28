@@ -2026,6 +2026,9 @@ public class MetadataProject {
         // Process the unique constraints.
         table.processUniqueConstraints();
 
+        // Process the check constraints.
+        table.processCheckConstraints();
+
         // Process the index metadata.
         table.processIndexes();
 
@@ -2034,6 +2037,12 @@ public class MetadataProject {
 
         // Process the creation suffix.
         table.processCreationSuffix();
+
+        // Process options.
+        table.processOptions();
+
+        // Process the comment.
+        table.processComment();
     }
 
     /**

@@ -139,6 +139,7 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
             fkField.setLength(primaryKeyField.getLength());
             fkField.setPrecision(primaryKeyField.getPrecision());
             fkField.setScale(primaryKeyField.getScale());
+            fkField.setSecondPrecision(primaryKeyField.getSecondPrecision());
         }
 
         return fkField;

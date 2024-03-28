@@ -468,7 +468,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
 
         // Build a new aggregate if the target object does not reference an existing aggregate.
-        // EL Bug 474956 - build a new aggregate if the the target object references an existing aggregate, and 
+        // EL Bug 474956 - build a new aggregate if the the target object references an existing aggregate, and
         // the passed cacheKey is null from the invalidation of the target object in the IdentityMap.
         if (aggregate == null || (aggregate != null && cacheKey == null)) {
             aggregate = descriptor.getObjectBuilder().buildNewInstance();
@@ -1926,7 +1926,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
-     * Set the hashtable that stores a field in the source table 
+     * Set the hashtable that stores a field in the source table
      * to a field name in a nested aggregate descriptor.
      */
     public void setNestedFieldTranslations(Map<String, Object[]> fieldTranslations) {
@@ -1978,7 +1978,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             mappingField.setScale(sourceField.getScale());
             mappingField.setLength(sourceField.getLength());
             mappingField.setPrecision(sourceField.getPrecision());
+            mappingField.setSecondPrecision(sourceField.getSecondPrecision());
+            mappingField.setOptionalSuffix(sourceField.getOptionalSuffix());
             mappingField.setColumnDefinition(sourceField.getColumnDefinition());
+            mappingField.setComment(sourceField.getComment());
 
             // Check if the translated field specified a table qualifier.
             if (sourceField.hasTableName()) {

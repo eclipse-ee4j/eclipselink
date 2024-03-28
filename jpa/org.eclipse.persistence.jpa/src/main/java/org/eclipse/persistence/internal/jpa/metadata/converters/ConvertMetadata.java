@@ -21,6 +21,7 @@
 //       - 374688: JPA 2.1 Converter support
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import jakarta.persistence.AttributeConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -74,7 +75,7 @@ public class ConvertMetadata extends ORMetadata {
     public ConvertMetadata(MetadataAnnotation convert, MetadataAccessor accessor) {
         super(convert, accessor);
 
-        m_converterClass = getMetadataClass(convert.getAttributeClass("converter", Void.class));
+        m_converterClass = getMetadataClass(convert.getAttributeClass("converter", AttributeConverter.class));
         m_attributeName = convert.getAttributeString("attributeName");
         m_disableConversion = convert.getAttributeBooleanDefaultFalse("disableConversion");
     }
@@ -175,7 +176,7 @@ public class ConvertMetadata extends ORMetadata {
      * INTERNAL:
      */
     public boolean hasConverterClass() {
-        return m_converterClass != null && ! m_converterClass.isVoid();
+        return m_converterClass != null && ! m_converterClass.isClass(AttributeConverter.class) && ! m_converterClass.isVoid();
     }
 
     /**

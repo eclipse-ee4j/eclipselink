@@ -24,6 +24,10 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.tables.CheckConstraintMetadata;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -43,6 +47,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 public abstract class MetadataColumn extends ORMetadata {
     private String m_name;
     private String m_columnDefinition;
+    private String m_options;
+    private String m_comment;
+    private List<CheckConstraintMetadata> m_checkConstraints = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -62,6 +69,12 @@ public abstract class MetadataColumn extends ORMetadata {
         if (column != null) {
             m_name = column.getAttributeString("name");
             m_columnDefinition =  column.getAttributeString("columnDefinition");
+            m_options = column.getAttributeString("options");
+            m_comment = column.getAttributeString("comment");
+
+            for (Object checkConstraint : column.getAttributeArray("check")) {
+                m_checkConstraints.add(new CheckConstraintMetadata((MetadataAnnotation) checkConstraint, accessor));
+            }
         }
     }
 
@@ -84,7 +97,19 @@ public abstract class MetadataColumn extends ORMetadata {
                 return false;
             }
 
-            return valuesMatch(m_name, column.getName());
+            if (! valuesMatch(m_name, column.getName())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_comment, column.getComment())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_checkConstraints, column.getCheckConstraints())) {
+                return false;
+            }
+
+            return valuesMatch(m_options, column.getOptions());
         }
 
         return false;
@@ -95,7 +120,18 @@ public abstract class MetadataColumn extends ORMetadata {
         int result = super.hashCode();
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_columnDefinition != null ? m_columnDefinition.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
+        result = 31 * result + (m_comment != null ? m_comment.hashCode() : 0);
+        result = 31 * result + (m_checkConstraints != null ? m_checkConstraints.hashCode() : 0);
         return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<CheckConstraintMetadata> getCheckConstraints() {
+        return m_checkConstraints;
     }
 
     /**
@@ -104,6 +140,14 @@ public abstract class MetadataColumn extends ORMetadata {
      */
     public String getColumnDefinition() {
         return m_columnDefinition;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getComment() {
+        return m_comment;
     }
 
     /**
@@ -117,6 +161,8 @@ public abstract class MetadataColumn extends ORMetadata {
         //use the following method to manage delimited or case insensitive defaults
         setFieldName(databaseField, m_name == null ? "" : m_name);
         databaseField.setColumnDefinition(m_columnDefinition == null ? "" : m_columnDefinition);
+        databaseField.setComment(m_comment);
+        databaseField.setOptionalSuffix(m_options);
 
         return databaseField;
     }
@@ -133,6 +179,22 @@ public abstract class MetadataColumn extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public String getOptions() {
+        return m_options;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCheckConstraints(List<CheckConstraintMetadata> checkConstraints) {
+        m_checkConstraints = checkConstraints;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setColumnDefinition(String columnDefinition) {
         m_columnDefinition = columnDefinition;
     }
@@ -141,8 +203,24 @@ public abstract class MetadataColumn extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setComment(String comment) {
+        m_comment = comment;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 
 }

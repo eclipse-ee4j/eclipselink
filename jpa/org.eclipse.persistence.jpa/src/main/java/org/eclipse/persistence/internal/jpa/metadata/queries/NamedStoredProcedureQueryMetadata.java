@@ -118,7 +118,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      */
     public boolean callByIndex() {
-        return m_callByIndex == null ? false : m_callByIndex;
+        return m_callByIndex != null && m_callByIndex;
     }
 
     /**

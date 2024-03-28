@@ -1043,6 +1043,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         }
 
         for (CacheIndexMetadata indexMetadata : m_cacheIndexes) {
+            indexMetadata.setProject(getProject());
             indexMetadata.process(getDescriptor(), null);
         }
     }

@@ -47,6 +47,7 @@ public class ForeignKeyMetadata extends ORMetadata {
     protected String m_name;
     protected String m_constraintMode;
     protected String m_foreignKeyDefinition;
+    private String m_options;
 
     /**
      * INTERNAL:
@@ -66,6 +67,7 @@ public class ForeignKeyMetadata extends ORMetadata {
         m_name = foreignKey.getName();
         m_constraintMode = foreignKey.getConstraintMode();
         m_foreignKeyDefinition = foreignKey.getForeignKeyDefinition();
+        m_options = foreignKey.getOptions();
     }
 
     /**
@@ -78,6 +80,7 @@ public class ForeignKeyMetadata extends ORMetadata {
         m_name = foreignKey.getAttributeString("name");
         m_constraintMode = foreignKey.getAttributeString("value");
         m_foreignKeyDefinition = foreignKey.getAttributeString("foreignKeyDefinition");
+        m_options = foreignKey.getAttributeString("options");
     }
 
     /**
@@ -103,6 +106,10 @@ public class ForeignKeyMetadata extends ORMetadata {
                 return false;
             }
 
+            if (! valuesMatch(m_options, foreignKey.getOptions())) {
+                return false;
+            }
+
             return valuesMatch(m_constraintMode, foreignKey.getConstraintMode());
         }
 
@@ -115,6 +122,7 @@ public class ForeignKeyMetadata extends ORMetadata {
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_constraintMode != null ? m_constraintMode.hashCode() : 0);
         result = 31 * result + (m_foreignKeyDefinition != null ? m_foreignKeyDefinition.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         return result;
     }
 
@@ -140,6 +148,14 @@ public class ForeignKeyMetadata extends ORMetadata {
      */
     public String getName() {
         return m_name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getOptions() {
+        return m_options;
     }
 
     /**
@@ -222,5 +238,13 @@ public class ForeignKeyMetadata extends ORMetadata {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 }

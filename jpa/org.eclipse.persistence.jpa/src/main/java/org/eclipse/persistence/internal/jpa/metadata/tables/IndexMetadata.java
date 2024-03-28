@@ -60,6 +60,7 @@ public class IndexMetadata extends ORMetadata {
     private String m_catalog;
     private String m_table;
     private String m_columnList;
+    private String m_options;
 
     private List<String> m_columnNames = new ArrayList<>();
 
@@ -83,6 +84,7 @@ public class IndexMetadata extends ORMetadata {
         m_table = index.getAttributeString("table");
         m_unique = index.getAttributeBooleanDefaultFalse("unique");
         m_columnList = index.getAttributeString("columnList");
+        m_options = index.getAttributeString("options");
 
         for (Object columnName : index.getAttributeArray("columnNames")) {
             m_columnNames.add((String) columnName);
@@ -120,6 +122,10 @@ public class IndexMetadata extends ORMetadata {
                 return false;
             }
 
+            if (! valuesMatch(m_options, index.getOptions())) {
+                return false;
+            }
+
             return m_columnNames.equals(index.getColumnNames());
         }
 
@@ -136,6 +142,7 @@ public class IndexMetadata extends ORMetadata {
         result = 31 * result + (m_table != null ? m_table.hashCode() : 0);
         result = 31 * result + (m_columnList != null ? m_columnList.hashCode() : 0);
         result = 31 * result + (m_columnNames != null ? m_columnNames.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         return result;
     }
 
@@ -185,6 +192,14 @@ public class IndexMetadata extends ORMetadata {
      */
     public String getName() {
         return m_name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getOptions() {
+        return m_options;
     }
 
     /**
@@ -370,6 +385,14 @@ public class IndexMetadata extends ORMetadata {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 
     /**

@@ -70,6 +70,7 @@ public class FieldDefinition implements Serializable, Cloneable {
     protected String additional;
     protected String constraint;
     protected String foreignKeyFieldName;
+    protected String comment;
 
     public FieldDefinition() {
         this.name = "";
@@ -206,6 +207,11 @@ public class FieldDefinition implements Serializable, Cloneable {
                     writer.write(" " + additional);
                 }
             }
+            if (comment != null) {
+                writer.write(" /* ");
+                writer.write(comment);
+                writer.write(" */ ");
+            }
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -246,6 +252,11 @@ public class FieldDefinition implements Serializable, Cloneable {
             if (additional != null) {
                 writer.write(" " + additional);
             }
+            if (comment != null) {
+                writer.write(" /* ");
+                writer.write(comment);
+                writer.write(" */ ");
+            }
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -269,6 +280,10 @@ public class FieldDefinition implements Serializable, Cloneable {
      */
     public String getAdditional() {
         return additional;
+    }
+
+    public String getComment() {
+        return comment;
     }
 
     /**
@@ -379,6 +394,10 @@ public class FieldDefinition implements Serializable, Cloneable {
      */
     public void setAdditional(String string) {
         additional = string;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     /**
