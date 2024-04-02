@@ -187,8 +187,8 @@
         <docs.status>DRAFT</docs.status>
 
         <!--Eclipse Dependencies version-->
-        <eclipselink.asm.version>9.6.0</eclipselink.asm.version>
-        <asm.version>9.6</asm.version>
+        <eclipselink.asm.version>9.7.0</eclipselink.asm.version>
+        <asm.version>9.7</asm.version>
         <activation-api.version>2.1.3</activation-api.version>
         <angus-activation.version>2.0.2</angus-activation.version>
         <annotation.version>3.0.0</annotation.version>
@@ -196,33 +196,33 @@
         <ejb.version>4.0.1</ejb.version>
         <el-api.version>5.0.1</el-api.version>
         <el.version>5.0.0-M1</el.version>
-        <glassfish.version>8.0.0-M2</glassfish.version>
+        <glassfish.version>8.0.0-M3</glassfish.version>
         <jaxwsrt.version>4.0.2</jaxwsrt.version>
-        <jaxb.version>4.0.4</jaxb.version>
-        <jaxb.api.version>4.0.1</jaxb.api.version>
-        <soap.api.version>3.0.1</soap.api.version>
+        <jaxb.version>4.0.5</jaxb.version>
+        <jaxb.api.version>4.0.2</jaxb.api.version>
         <jersey.version>4.0-M1-GF1</jersey.version>
         <jms.version>3.1.0</jms.version>
         <json.version>2.1.3</json.version>
-        <jpa.api.version>3.2.0-M2</jpa.api.version>
+        <jpa.api.version>3.2.0</jpa.api.version>
         <mail-api.version>2.1.3</mail-api.version>
         <angus-mail.version>2.0.3</angus-mail.version>
         <oracle.ddlparser.version>3.0.1</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.5</org.glassfish.corba.version>
         <parsson.version>1.1.6</parsson.version>
         <resource.version>2.1.0</resource.version>
-        <servlet.version>6.1.0-M2</servlet.version>
+        <servlet.version>6.1.0</servlet.version>
+        <soap.api.version>3.0.2</soap.api.version>
         <transaction.version>2.0.1</transaction.version>
-        <validation.version>3.1.0-M1</validation.version>
-        <ws-api.version>4.0.1</ws-api.version>
-        <ws-rs.version>3.1.0</ws-rs.version>
+        <validation.version>3.1.0</validation.version>
+        <ws-api.version>4.0.2</ws-api.version>
+        <ws-rs.version>4.0.0</ws-rs.version>
 
         <!--Third-Party Dependencies version-->
         <!-- CQ #23046 -->
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
         <!-- CQ #21133 -->
         <ant.version>1.10.14</ant.version>
-        <aspectj.version> 1.9.21.1</aspectj.version>
+        <aspectj.version> 1.9.22</aspectj.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.17.1.0</derby.version>
         <db2.version>11.5.9.0</db2.version>
@@ -232,7 +232,7 @@
         <hamcrest.version>1.3</hamcrest.version>
         <!-- CQ #23048 -->
         <hibernate.version>8.0.1.Final</hibernate.version>
-        <checkstyle.version>10.14.0</checkstyle.version>
+        <checkstyle.version>10.15.0</checkstyle.version>
         <!-- CQ #23049 -->
         <jgroups.version>5.3.4.Final</jgroups.version>
         <jmh.version>1.37</jmh.version>
@@ -243,9 +243,9 @@
         <mysql.version>8.3.0</mysql.version>
         <mariadb.version>3.3.3</mariadb.version>
         <mssql.version>12.6.1.jre11</mssql.version>
-        <pgsql.version>42.7.2</pgsql.version>
+        <pgsql.version>42.7.3</pgsql.version>
         <!-- CQ #21139, 21140 -->
-        <logback.version>1.5.1</logback.version>
+        <logback.version>1.5.3</logback.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
         <!-- CQ #2437 -->
         <oracle.aqapi.version>23.3.1.0</oracle.aqapi.version>
@@ -259,7 +259,7 @@
         <!-- CQ #21143 -->
         <slf4j.version>2.0.12</slf4j.version>
         <!-- CQ #23051, 23052, 23053, 53054, 53055 -->
-        <springframework.version>6.1.4</springframework.version>
+        <springframework.version>6.1.5</springframework.version>
         <!-- CQ #23233 -->
         <weld-se.version>6.0.0.Beta1</weld-se.version>
         <weblogic.version>12.2.1-3</weblogic.version>
@@ -268,8 +268,8 @@
 
         <!--Documentation Dependencies version-->
         <asciidoctorj.version>3.0.0-alpha.2</asciidoctorj.version>
-        <asciidoctorj.pdf.version>2.3.13</asciidoctorj.pdf.version>
-        <asciidoctorj.epub.version>2.0.1</asciidoctorj.epub.version>
+        <asciidoctorj.pdf.version>2.3.15</asciidoctorj.pdf.version>
+        <asciidoctorj.epub.version>2.1.0</asciidoctorj.epub.version>
         <jruby.version>9.4.6.0</jruby.version>
     </properties>
 
@@ -1111,7 +1111,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.7.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1121,7 +1121,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.12.1</version>
+                    <version>3.13.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1251,7 +1251,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>sql-maven-plugin</artifactId>
-                    <version>1.5</version>
+                    <version>3.0.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>${db.driver.groupId}</groupId>
@@ -1355,7 +1355,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>9.0.9</version>
+                    <version>9.1.0</version>
                     <configuration>
 <!--                        <failBuildOnCVSS>7</failBuildOnCVSS>-->
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
@@ -1396,7 +1396,7 @@
                 <plugin>
                     <groupId>org.wildfly.plugins</groupId>
                     <artifactId>wildfly-maven-plugin</artifactId>
-                    <version>5.0.0.Beta3</version>
+                    <version>5.0.0.Beta4</version>
                 </plugin>
             </plugins>
         </pluginManagement>
