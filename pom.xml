@@ -215,7 +215,7 @@
         <transaction.version>2.0.1</transaction.version>
         <validation.version>3.1.0</validation.version>
         <ws-api.version>4.0.2</ws-api.version>
-        <ws-rs.version>4.0.0-M2</ws-rs.version>
+        <ws-rs.version>3.1.0</ws-rs.version>
 
         <!--Third-Party Dependencies version-->
         <!-- CQ #23046 -->
@@ -267,14 +267,6 @@
         <wsdl4j.version>1.6.3</wsdl4j.version>
 
         <!--Documentation Dependencies version-->
-<!--
-        <asciidoctorj.version>3.0.0-alpha.2</asciidoctorj.version>
-        <asciidoctorj.pdf.version>2.3.13</asciidoctorj.pdf.version>
-        <asciidoctorj.epub.version>2.0.1</asciidoctorj.epub.version>
-        <jruby.version>9.4.6.0</jruby.version>
--->
-
-
         <asciidoctorj.version>3.0.0-alpha.2</asciidoctorj.version>
         <asciidoctorj.pdf.version>2.3.15</asciidoctorj.pdf.version>
         <asciidoctorj.epub.version>2.1.0</asciidoctorj.epub.version>
