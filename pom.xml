@@ -215,7 +215,7 @@
         <transaction.version>2.0.1</transaction.version>
         <validation.version>3.1.0</validation.version>
         <ws-api.version>4.0.2</ws-api.version>
-        <ws-rs.version>3.1.0</ws-rs.version>
+        <ws-rs.version>4.0.0</ws-rs.version>
 
         <!--Third-Party Dependencies version-->
         <!-- CQ #23046 -->
