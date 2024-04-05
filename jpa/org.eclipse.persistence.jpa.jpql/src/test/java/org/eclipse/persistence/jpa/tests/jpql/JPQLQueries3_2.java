@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,4 +103,19 @@ public class JPQLQueries3_2 {
                 "except Select a from Address a where a.city = 'Ottawa'";
     }
 
+    public static String query_IdFunction_Select01() {
+        return "SELECT ID(c) FROM Customer c";
+    }
+
+    public static String query_IdFunction_Where() {
+        return "SELECT c FROM Customer c WHERE ID(c) = 1";
+    }
+
+    public static String query_VersionFunction_Select01() {
+        return "SELECT VERSION(c) FROM Customer c";
+    }
+
+    public static String query_VersionFunction_Where() {
+        return "SELECT c FROM Customer c WHERE VERSION(c) = 1";
+    }
 }

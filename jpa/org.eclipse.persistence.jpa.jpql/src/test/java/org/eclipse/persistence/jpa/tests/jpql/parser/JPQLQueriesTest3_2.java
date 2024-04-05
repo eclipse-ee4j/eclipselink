@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,8 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_Concat
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Select02;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Select_Chained;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_IdFunction_Select01;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_IdFunction_Where;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select01;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select02;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select03;
@@ -35,6 +37,8 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightF
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Select02;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Select03;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_VersionFunction_Select01;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_VersionFunction_Where;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_Union01;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.concatPipes;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.count;
@@ -42,6 +46,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.exc
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.from;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.groupBy;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.having;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.id;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.intersect;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.left;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.leftJoin;
@@ -57,6 +62,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.sub
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.union;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.unionAll;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.variable;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.version;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.where;
 
 public class JPQLQueriesTest3_2 extends JPQLParserTest {
@@ -378,5 +384,57 @@ public class JPQLQueriesTest3_2 extends JPQLParserTest {
         );
 
         testQuery(query_Union01(), selectStatement);
+    }
+
+    @Test
+    public final void test_Query_IdFunction_Select01() {
+        // select id(c)
+        // FROM Customer c
+
+        ExpressionTester selectStatement = selectStatement(
+            select(id("c")),
+            from("Customer", "c"));
+
+        testQuery(query_IdFunction_Select01(), selectStatement);
+    }
+
+    @Test
+    public final void test_Query_IdFunction_Where() {
+        // SELECT c
+        // FROM Customer
+        // c WHERE ID(c).id = 1
+
+        ExpressionTester selectStatement = selectStatement(
+                select(variable("c")),
+                from("Customer", "c"),
+                where(id("c").equal(numeric(1))));
+
+        testQuery(query_IdFunction_Where(), selectStatement);
+    }
+
+    @Test
+    public final void test_Query_VersionFunction_Select01() {
+        // select version(c)
+        // FROM Customer c
+
+        ExpressionTester selectStatement = selectStatement(
+                select(version("c")),
+                from("Customer", "c"));
+
+        testQuery(query_VersionFunction_Select01(), selectStatement);
+    }
+
+    @Test
+    public final void test_Query_VersionFunction_Where() {
+        // SELECT c
+        // FROM Customer
+        // c WHERE version(c).id = 1
+
+        ExpressionTester selectStatement = selectStatement(
+                select(variable("c")),
+                from("Customer", "c"),
+                where(version("c").equal(numeric(1))));
+
+        testQuery(query_VersionFunction_Where(), selectStatement);
     }
 }

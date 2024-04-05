@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,12 +20,14 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CAST;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONCAT_PIPES;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.ID;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.EXCEPT;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.INTERSECT;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.LEFT;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.REPLACE;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.RIGHT;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.UNION;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.VERSION;
 
 /**
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in Jakarta Persistence 3.2.
@@ -124,6 +126,8 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         registerBNF(new UnionClauseBNF());
         registerBNF(new CastExpressionBNF());
         registerBNF(new DatabaseTypeQueryBNF());
+        registerBNF(new IdExpressionBNF());
+        registerBNF(new VersionExpressionBNF());
 
         // Extend some query BNFs
         addChildBNF(StringPrimaryBNF.ID,   SimpleStringExpressionBNF.ID);
@@ -135,6 +139,14 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         addChildBNF(FunctionsReturningDatetimeBNF.ID,    CastExpressionBNF.ID);
         addChildBNF(FunctionsReturningNumericsBNF.ID,    CastExpressionBNF.ID);
         addChildBNF(FunctionsReturningStringsBNF.ID,     CastExpressionBNF.ID);
+
+        // ID function
+        addChildBNF(SelectExpressionBNF.ID,              IdExpressionBNF.ID);
+        addChildBNF(ComparisonExpressionBNF.ID,          IdExpressionBNF.ID);
+
+        // VERSION function
+        addChildBNF(SelectExpressionBNF.ID,              VersionExpressionBNF.ID);
+        addChildBNF(ComparisonExpressionBNF.ID,          VersionExpressionBNF.ID);
     }
 
     @Override
@@ -146,6 +158,8 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         registerFactory(new UnionClauseFactory());
         registerFactory(new DatabaseTypeFactory());
         registerFactory(new CastExpressionFactory());
+        registerFactory(new IdExpressionFactory());
+        registerFactory(new VersionExpressionFactory());
     }
 
     @Override
@@ -166,6 +180,10 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         registerIdentifierVersion(EXCEPT,      JPAVersion.VERSION_3_2);
         registerIdentifierRole(CAST,           IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
         registerIdentifierVersion(CAST,        JPAVersion.VERSION_3_2);
+        registerIdentifierRole(ID,           IdentifierRole.FUNCTION);          // ID(x)
+        registerIdentifierVersion(ID,        JPAVersion.VERSION_3_2);
+        registerIdentifierRole(VERSION,           IdentifierRole.FUNCTION);          // VERSION(x)
+        registerIdentifierVersion(VERSION,        JPAVersion.VERSION_3_2);
     }
 
     @Override

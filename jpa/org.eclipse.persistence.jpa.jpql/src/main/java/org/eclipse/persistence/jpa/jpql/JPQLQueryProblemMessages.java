@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -192,6 +192,10 @@ public interface JPQLQueryProblemMessages {
     String IdentificationVariableDeclaration_JoinsEndWithComma = "IDENTIFICATION_VARIABLE_DECLARATION_JOINS_END_WITH_COMMA";
     String IdentificationVariableDeclaration_JoinsHaveComma = "IDENTIFICATION_VARIABLE_DECLARATION_JOINS_HAS_COMMA";
     String IdentificationVariableDeclaration_MissingRangeVariableDeclaration = "IDENTIFICATION_VARIABLE_DECLARATION_MISSING_RANGE_VARIABLE_DECLARATION";
+    String IdExpression_InvalidExpression = "ID_EXPRESSION_INVALID_EXPRESSION";
+    String IdExpression_MissingExpression = "ID_EXPRESSION_MISSING_EXPRESSION";
+    String IdExpression_MissingLeftParenthesis = "ID_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+    String IdExpression_MissingRightParenthesis = "ID_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
     String IndexExpression_InvalidExpression = "INDEX_EXPRESSION_INVALID_EXPRESSION";
     String IndexExpression_InvalidJPAVersion = "INDEX_EXPRESSION_INVALID_JPA_VERSION";
     String IndexExpression_MissingExpression = "INDEX_EXPRESSION_MISSING_EXPRESSION";
@@ -434,6 +438,10 @@ public interface JPQLQueryProblemMessages {
     String ValueExpression_MissingExpression = "VALUE_EXPRESSION_MISSING_EXPRESSION";
     String ValueExpression_MissingLeftParenthesis = "VALUE_EXPRESSION_MISSING_LEFT_PARENTHESIS";
     String ValueExpression_MissingRightParenthesis = "VALUE_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+    String VersionExpression_InvalidExpression = "VERSION_EXPRESSION_INVALID_EXPRESSION";
+    String VersionExpression_MissingExpression = "VERSION_EXPRESSION_MISSING_EXPRESSION";
+    String VersionExpression_MissingLeftParenthesis = "VERSION_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+    String VersionExpression_MissingRightParenthesis = "VERSION_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
     String WhenClause_MissingThenExpression = "WHEN_CLAUSE_MISSING_THEN_EXPRESSION";
     String WhenClause_MissingThenIdentifier = "WHEN_CLAUSE_MISSING_THEN_IDENTIFIER";
     String WhenClause_MissingWhenExpression = "WHEN_CLAUSE_MISSING_WHEN_EXPRESSION";

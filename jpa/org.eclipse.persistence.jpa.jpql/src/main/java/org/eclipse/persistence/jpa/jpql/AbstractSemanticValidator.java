@@ -67,6 +67,7 @@ import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
@@ -120,6 +121,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
@@ -1613,6 +1615,16 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     /**
+     * Validates the given {@link IdExpression}. The default behavior does not require to
+     * semantically validate it.
+     *
+     * @param expression The {@link IdExpression} to validate
+     */
+    protected void validateIdExpression(IdExpression expression) {
+        super.visit(expression);
+    }
+
+    /**
      * Validates the given {@link IndexExpression}. It validates the identification variable and
      * makes sure is it defined in <code><b>IN</b></code> or <code><b>IN</b></code> expression.
      *
@@ -2723,6 +2735,16 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     /**
+     * Validates the given {@link VersionExpression}. The default behavior does not require to
+     * semantically validate it.
+     *
+     * @param expression The {@link VersionExpression} to validate
+     */
+    protected void validateVersionExpression(VersionExpression expression) {
+        super.visit(expression);
+    }
+
+    /**
      * Validates the given {@link WhenClause}. The default behavior does not require to semantically
      * validate it.
      *
@@ -2958,6 +2980,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     @Override
     public final void visit(IdentificationVariableDeclaration expression) {
         validateIdentificationVariableDeclaration(expression);
+    }
+
+    @Override
+    public final void visit(IdExpression expression) {
+        validateIdExpression(expression);
     }
 
     @Override
@@ -3220,6 +3247,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     @Override
     public final void visit(ValueExpression expression) {
         validateValueExpression(expression);
+    }
+
+    @Override
+    public final void visit(VersionExpression expression) {
+        validateVersionExpression(expression);
     }
 
     @Override

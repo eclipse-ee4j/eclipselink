@@ -162,7 +162,7 @@ import java.util.Map;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class TypeResolver implements EclipseLinkExpressionVisitor {
+final class TypeResolver extends JPQLFunctionsAbstractBuilder implements EclipseLinkExpressionVisitor {
 
     /**
      * This visitor is responsible to retrieve the {@link CollectionExpression} if it is visited.
@@ -178,11 +178,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
      * This visitor resolves a path expression by retrieving the mapping and descriptor of the last segment.
      */
     private PathResolver pathResolver;
-
-    /**
-     * The context used to query information about the application metadata and cached information.
-     */
-    private final JPQLQueryContext queryContext;
 
     /**
      * The well defined type, which does not have to be calculated.
@@ -201,8 +196,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
      * cached information
      */
     TypeResolver(JPQLQueryContext queryContext) {
-        super();
-        this.queryContext = queryContext;
+        super(queryContext);
     }
 
     /**

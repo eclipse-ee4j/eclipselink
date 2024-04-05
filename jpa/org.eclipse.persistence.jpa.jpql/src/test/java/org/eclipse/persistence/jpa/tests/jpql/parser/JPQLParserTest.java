@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,6 +72,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -138,6 +139,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLBasicTest;
@@ -2945,6 +2947,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class IdExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected IdExpressionTester(ExpressionTester identificationVariable) {
+            super(identificationVariable);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return IdExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return ID;
+        }
+    }
+
     public static final class IndexExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
         protected IndexExpressionTester(ExpressionTester identificationVariable) {
@@ -4715,6 +4734,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         @Override
         protected String identifier() {
             return UPPER;
+        }
+    }
+
+    public static final class VersionExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected VersionExpressionTester(ExpressionTester identificationVariable) {
+            super(identificationVariable);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return VersionExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return VERSION;
         }
     }
 
