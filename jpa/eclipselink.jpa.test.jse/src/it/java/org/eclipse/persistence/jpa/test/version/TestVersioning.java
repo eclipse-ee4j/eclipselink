@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -43,13 +43,13 @@ public class TestVersioning {
                            value = "UseNationalCharacterVaryingTypeForString=true")})
     private EntityManagerFactory emf;
 	
-	private final static String qStr1 = "UPDATE TemporalVersionedEntity e " +
-			"SET e.updatetimestamp = ?3 " +
-			"WHERE e.id = ?1 AND e.updatetimestamp = ?2";
+	private final static String qStr1 = "UPDATE TemporalVersionedEntity " +
+			"SET updatetimestamp = ?3 " +
+			"WHERE id = ?1 AND updatetimestamp = ?2";
 	
-	private final static String qStr2 = "UPDATE TemporalVersionedEntity2 e " +
-			"SET e.version = ?3 " +
-			"WHERE e.id = ?1 AND e.version = ?2";
+	private final static String qStr2 = "UPDATE TemporalVersionedEntity2 " +
+			"SET version = ?3 " +
+			"WHERE id = ?1 AND version = ?2";
 			
 	@Test
     public void testTemporalVersionField1() throws Exception {
@@ -272,7 +272,7 @@ public class TestVersioning {
         	Assert.assertEquals(newEntity.getTheVersion(), findEntity1.getTheVersion());
         	
         	try {
-            	em.createQuery("UPDATE IntegerVersionedEntity e SET e.data = 'Lore' WHERE e.id = 2").executeUpdate();
+            	em.createQuery("UPDATE IntegerVersionedEntity SET data = 'Lore' WHERE id = 2").executeUpdate();
             	
             	findEntity1.setData("Information");
             	
@@ -313,7 +313,7 @@ public class TestVersioning {
         	em.clear();
         	
         	em.getTransaction().begin();
-        	int updates = em.createQuery("UPDATE IntegerVersionedEntity e SET e.theVersion = 10 WHERE e.id = 3 AND e.theVersion = 1").executeUpdate();
+        	int updates = em.createQuery("UPDATE IntegerVersionedEntity SET theVersion = 10 WHERE id = 3 AND theVersion = 1").executeUpdate();
         	Assert.assertEquals(1,  updates);
         	
         	em.getTransaction().commit();

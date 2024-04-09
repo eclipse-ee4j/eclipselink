@@ -48,8 +48,12 @@ public final class IdExpressionFactory extends ExpressionFactory {
                                                  AbstractExpression expression,
                                                  boolean tolerant) {
 
-        expression = new IdExpression(parent);
-        expression.parse(wordParser, tolerant);
+        if(super.isIdentifier(wordParser, word)) {
+            expression = new IdExpression(parent);
+            expression.parse(wordParser, tolerant);
+        } else {
+            expression = null;
+        }
         return expression;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -379,9 +379,9 @@ public class JUnitJPQLModifyTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         try {
-           Query query = em.createQuery("update Employee set salary = :salary where gender = :gender");
+           Query query = em.createQuery("update Employee set salary = :salary where version = :version");
            query.setParameter("salary",  1);
-           query.setParameter("gender", Employee.Gender.Male);
+           query.setParameter("version", 2);
         }
         finally {
            if (isTransactionActive(em)){

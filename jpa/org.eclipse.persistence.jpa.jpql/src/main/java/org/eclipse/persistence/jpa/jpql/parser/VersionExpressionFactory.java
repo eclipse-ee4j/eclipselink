@@ -48,8 +48,12 @@ public final class VersionExpressionFactory extends ExpressionFactory {
                                                  AbstractExpression expression,
                                                  boolean tolerant) {
 
+        if(super.isIdentifier(wordParser, word)) {
         expression = new VersionExpression(parent);
         expression.parse(wordParser, tolerant);
+        } else {
+            expression = null;
+        }
         return expression;
     }
 }
