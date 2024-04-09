@@ -82,6 +82,7 @@ import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
@@ -145,6 +146,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 
@@ -652,6 +654,35 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             @Override
             public String rightParenthesisMissingKey(FunctionExpression expression) {
                 return FunctionExpression_MissingRightParenthesis;
+            }
+        };
+    }
+
+    protected AbstractSingleEncapsulatedExpressionHelper<IdExpression> buildIdExpressionHelper() {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
+            @Override
+            public String encapsulatedExpressionInvalidKey(IdExpression expression) {
+                return IdExpression_InvalidExpression;
+            }
+
+            @Override
+            public String encapsulatedExpressionMissingKey(IdExpression expression) {
+                return IdExpression_MissingExpression;
+            }
+
+            @Override
+            public boolean isEncapsulatedExpressionValid(IdExpression expression) {
+                return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
+            }
+
+            @Override
+            public String leftParenthesisMissingKey(IdExpression expression) {
+                return IdExpression_MissingLeftParenthesis;
+            }
+
+            @Override
+            public String rightParenthesisMissingKey(IdExpression expression) {
+                return IdExpression_MissingRightParenthesis;
             }
         };
     }
@@ -1432,6 +1463,35 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         };
     }
 
+    protected AbstractSingleEncapsulatedExpressionHelper<VersionExpression> buildVersionExpressionHelper() {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
+            @Override
+            public String encapsulatedExpressionInvalidKey(VersionExpression expression) {
+                return VersionExpression_InvalidExpression;
+            }
+
+            @Override
+            public String encapsulatedExpressionMissingKey(VersionExpression expression) {
+                return VersionExpression_MissingExpression;
+            }
+
+            @Override
+            public boolean isEncapsulatedExpressionValid(VersionExpression expression) {
+                return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
+            }
+
+            @Override
+            public String leftParenthesisMissingKey(VersionExpression expression) {
+                return VersionExpression_MissingLeftParenthesis;
+            }
+
+            @Override
+            public String rightParenthesisMissingKey(VersionExpression expression) {
+                return VersionExpression_MissingRightParenthesis;
+            }
+        };
+    }
+
     protected AbstractSingleEncapsulatedExpressionHelper<CoalesceExpression> coalesceExpressionHelper() {
         AbstractSingleEncapsulatedExpressionHelper<CoalesceExpression> helper = getHelper(COALESCE);
         if (helper == null) {
@@ -1883,6 +1943,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         return true;
     }
 
+    protected AbstractSingleEncapsulatedExpressionHelper<IdExpression> idExpressionHelper() {
+        AbstractSingleEncapsulatedExpressionHelper<IdExpression> helper = getHelper(ID);
+        if (helper == null) {
+            helper = buildIdExpressionHelper();
+            registerHelper(ID, helper);
+        }
+        return helper;
+    }
+
     protected AbstractSingleEncapsulatedExpressionHelper<KeyExpression> keyExpressionHelper() {
         AbstractSingleEncapsulatedExpressionHelper<KeyExpression> helper = getHelper(KEY);
         if (helper == null) {
@@ -2077,6 +2146,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         if (helper == null) {
             helper = buildUpperExpressionHelper();
             registerHelper(UPPER, helper);
+        }
+        return helper;
+    }
+
+    protected AbstractSingleEncapsulatedExpressionHelper<VersionExpression> versionExpressionHelper() {
+        AbstractSingleEncapsulatedExpressionHelper<VersionExpression> helper = getHelper(VERSION);
+        if (helper == null) {
+            helper = buildVersionExpressionHelper();
+            registerHelper(VERSION, helper);
         }
         return helper;
     }
@@ -3811,6 +3889,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(IdExpression expression) {
+        validateAbstractSingleEncapsulatedExpression(expression, idExpressionHelper());
+    }
+
+    @Override
     public void visit(IndexExpression expression) {
 
         // JPA 1.0 does not support an INDEX expression
@@ -4846,6 +4929,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else {
             validateAbstractSingleEncapsulatedExpression(expression, valueExpressionHelper());
         }
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+        validateAbstractSingleEncapsulatedExpression(expression, versionExpressionHelper());
     }
 
     @Override

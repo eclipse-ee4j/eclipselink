@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,6 +64,18 @@ public final class JPQLExpression extends AbstractExpression {
      * or incomplete queries.
      */
     private boolean tolerant;
+
+    /**
+     * Determines if one or more {@link IdExpression} exist in the parsed tree.
+     *
+     */
+    private boolean idExpression = false;
+
+    /**
+     * Determines if one or more {@link VersionExpression} exist in the parsed tree.
+     *
+     */
+    private boolean versionExpression = false;
 
     /**
      * If the expression could not be fully parsed, meaning some unknown text is trailing the query,
@@ -253,6 +265,34 @@ public final class JPQLExpression extends AbstractExpression {
     public boolean hasUnknownEndingStatement() {
         return unknownEndingStatement != null &&
               !unknownEndingStatement.isNull();
+    }
+
+    /**
+     * Determines if one or more {@link IdExpression} exist in the parsed tree.
+     *
+     * @return <code>true</code> one or more {@link IdExpression} exist in the parsed tree
+     * <code>false</code> if not
+     */
+    public boolean hasIdExpression() {
+        return idExpression;
+    }
+
+    public void setIdExpression(boolean idExpression) {
+        this.idExpression = idExpression;
+    }
+
+    /**
+     * Determines if one or more {@link VersionExpression} exist in the parsed tree.
+     *
+     * @return <code>true</code> one or more {@link VersionExpression} exist in the parsed tree
+     * <code>false</code> if not
+     */
+    public boolean hasVersionExpression() {
+        return versionExpression;
+    }
+
+    public void setVersionExpression(boolean versionExpression) {
+        this.versionExpression = versionExpression;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -327,6 +327,13 @@ public interface Expression {
      * The constant for 'HAVING'.
      */
     String HAVING = "HAVING";
+
+    /**
+     * The constant for 'ID'.
+     *
+     * @since 5.0
+     */
+    String ID = "ID";
 
     /**
      * The constant for 'IN'.
@@ -825,6 +832,13 @@ public interface Expression {
      * The constant for 'VALUE'.
      */
     String VALUE = "VALUE";
+
+    /**
+     * The constant for 'VERSION'.
+     *
+     * @since 5.0
+     */
+    String VERSION = "VERSION";
 
     /**
      * The constant for the identifier 'WHEN'.

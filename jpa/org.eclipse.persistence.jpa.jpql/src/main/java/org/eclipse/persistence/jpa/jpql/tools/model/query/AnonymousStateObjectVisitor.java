@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -203,6 +203,11 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
 
     @Override
     public void visit(IdentificationVariableStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
+    public void visit(IdExpressionStateObject stateObject) {
         visit((StateObject) stateObject);
     }
 
@@ -461,6 +466,11 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
 
     @Override
     public void visit(ValueExpressionStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
+    public void visit(VersionExpressionStateObject stateObject) {
         visit((StateObject) stateObject);
     }
 

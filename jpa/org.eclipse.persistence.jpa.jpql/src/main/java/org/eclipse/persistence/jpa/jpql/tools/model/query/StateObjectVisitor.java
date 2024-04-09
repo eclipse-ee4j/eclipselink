@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -281,6 +281,13 @@ public interface StateObjectVisitor {
      * @param stateObject The {@link IdentificationVariableStateObject} to visit
      */
     void visit(IdentificationVariableStateObject stateObject);
+
+    /**
+     * Visits the given {@link IdExpressionStateObject}.
+     *
+     * @param stateObject The {@link IdExpressionStateObject} to visit
+     */
+    void visit(IdExpressionStateObject stateObject);
 
     /**
      * Visits the given {@link IndexExpressionStateObject}.
@@ -631,6 +638,13 @@ public interface StateObjectVisitor {
      * @param stateObject The {@link ValueExpressionStateObject} to visit
      */
     void visit(ValueExpressionStateObject stateObject);
+
+    /**
+     * Visits the given {@link VersionExpressionStateObject}.
+     *
+     * @param stateObject The {@link VersionExpressionStateObject} to visit
+     */
+    void visit(VersionExpressionStateObject stateObject);
 
     /**
      * Visits the given {@link WhenClauseStateObject}.

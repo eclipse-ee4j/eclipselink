@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
@@ -80,6 +81,7 @@ import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 
@@ -365,6 +367,11 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     }
 
     @Override
+    public void visit(IdExpression expression) {
+        super.visit(expression);
+    }
+
+    @Override
     public void visit(IndexExpression expression) {
         this.expression = expression;
     }
@@ -642,6 +649,11 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     public void visit(ValueExpression expression) {
         // VALUE() always have a type
         this.expression = expression;
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+        super.visit(expression);
     }
 
     @Override

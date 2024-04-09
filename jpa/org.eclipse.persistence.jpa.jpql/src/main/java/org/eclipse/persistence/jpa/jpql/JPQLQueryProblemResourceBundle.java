@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -297,6 +297,12 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
             {"IDENTIFICATION_VARIABLE_DECLARATION_JOINS_END_WITH_COMMA",               "The JOIN expressions cannot end with a comma."},
             {"IDENTIFICATION_VARIABLE_DECLARATION_JOINS_HAS_COMMA",                    "JOIN expressions cannot be separated by a comma."},
             {"IDENTIFICATION_VARIABLE_DECLARATION_MISSING_RANGE_VARIABLE_DECLARATION", "The range variable declaration must be specified."},
+
+            // IdExpression - Grammar
+            {"ID_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
+            {"ID_EXPRESSION_MISSING_EXPRESSION",        "An identification variable must be provided for an ID expression."},
+            {"ID_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the ID expression."},
+            {"ID_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the ID expression."},
 
             // IndexExpression - Grammar
             {"INDEX_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
@@ -646,6 +652,12 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
             {"VALUE_EXPRESSION_MISSING_EXPRESSION",        "An identification variable must be provided for a VALUE expression."},
             {"VALUE_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the VALUE expression."},
             {"VALUE_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the VALUE expression."},
+
+            // VersionExpression - Grammar
+            {"VERSION_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
+            {"VERSION_EXPRESSION_MISSING_EXPRESSION",        "An identification variable must be provided for an VERSION expression."},
+            {"VERSION_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the VERSION expression."},
+            {"VERSION_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the VERSION expression."},
 
             // WhenClause - Grammar
             {"WHEN_CLAUSE_MISSING_THEN_EXPRESSION", "A conditional expression must be provided for a WHEN clause."},

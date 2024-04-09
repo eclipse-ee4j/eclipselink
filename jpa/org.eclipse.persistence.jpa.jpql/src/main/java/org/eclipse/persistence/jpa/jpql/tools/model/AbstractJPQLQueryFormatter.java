@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,6 +67,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.GroupByClauseStateObje
 import org.eclipse.persistence.jpa.jpql.tools.model.query.HavingClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.IdentificationVariableDeclarationStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.IdentificationVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.IdExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.InExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.IndexExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.InputParameterStateObject;
@@ -120,6 +121,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.UpdateItemStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.UpdateStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.UpperExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ValueExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.VersionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.WhenClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.WhereClauseStateObject;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -856,6 +858,22 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
     }
 
     @Override
+    public void visit(IdExpressionStateObject stateObject) {
+
+        if (stateObject.isDecorated()) {
+            toText(stateObject);
+        }
+        else {
+            writer.append(formatIdentifier(ID));
+            writer.append(formatIdentifier(LEFT_PARENTHESIS));
+            if (stateObject.hasIdentificationVariable()) {
+                writer.append(stateObject.getIdentificationVariable());
+            }
+            writer.append(formatIdentifier(RIGHT_PARENTHESIS));
+        }
+    }
+
+    @Override
     public void visit(IndexExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1403,6 +1421,22 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
     @Override
     public void visit(ValueExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
+    }
+
+    @Override
+    public void visit(VersionExpressionStateObject stateObject) {
+
+        if (stateObject.isDecorated()) {
+            toText(stateObject);
+        }
+        else {
+            writer.append(formatIdentifier(VERSION));
+            writer.append(formatIdentifier(LEFT_PARENTHESIS));
+            if (stateObject.hasIdentificationVariable()) {
+                writer.append(stateObject.getIdentificationVariable());
+            }
+            writer.append(formatIdentifier(RIGHT_PARENTHESIS));
+        }
     }
 
     @Override

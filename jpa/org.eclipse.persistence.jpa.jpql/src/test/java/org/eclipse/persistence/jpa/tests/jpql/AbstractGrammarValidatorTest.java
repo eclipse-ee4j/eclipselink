@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -3237,7 +3237,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
     @Test
     public final void test_JPQLExpression_InvalidQuery_3() throws Exception {
 
-        String jpqlQuery  = "JPA version 2.0";
+        String jpqlQuery  = "JPA ver. 2.0";
         int startPosition = 0;
         int endPosition   = jpqlQuery.length();
 

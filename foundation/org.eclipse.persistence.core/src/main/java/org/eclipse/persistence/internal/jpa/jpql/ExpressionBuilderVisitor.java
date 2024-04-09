@@ -178,7 +178,7 @@ import java.util.Set;
  * @author John Bracken
  */
 @SuppressWarnings("nls")
-final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
+final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implements EclipseLinkExpressionVisitor {
 
     /**
      * This visitor creates a list by retrieving either the single child or the children of the
@@ -196,11 +196,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
      * type that takes precedence.
      */
     private Comparator<Class<?>> numericTypeComparator;
-
-    /**
-     * The context used to query information about the application metadata.
-     */
-    private final JPQLQueryContext queryContext;
 
     /**
      * The EclipseLink {@link Expression} that represents a visited parsed
@@ -226,9 +221,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
      * cached information
      */
     ExpressionBuilderVisitor(JPQLQueryContext queryContext) {
-        super();
+        super(queryContext);
         this.type = new Class<?>[1];
-        this.queryContext = queryContext;
     }
 
     private void appendJoinVariables(org.eclipse.persistence.jpa.jpql.parser.Expression expression,

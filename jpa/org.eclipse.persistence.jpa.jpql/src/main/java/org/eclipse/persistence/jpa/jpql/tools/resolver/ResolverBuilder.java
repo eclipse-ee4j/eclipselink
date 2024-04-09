@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,6 +70,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -129,6 +130,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.tools.JPQLQueryContext;
@@ -682,6 +684,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(IdExpression expression) {
+        expression.getExpression().accept(this);
+    }
+
+    @Override
     public void visit(IndexExpression expression) {
         resolver = buildClassResolver(Integer.class);
     }
@@ -1123,6 +1130,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         // Wrap the Resolver used to determine the type of the identification
         // variable so we can return the actual type
         resolver = new ValueResolver(resolver);
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+        expression.getExpression().accept(this);
     }
 
     @Override

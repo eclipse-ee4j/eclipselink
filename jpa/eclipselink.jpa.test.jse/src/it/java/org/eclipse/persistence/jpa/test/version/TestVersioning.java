@@ -43,11 +43,11 @@ public class TestVersioning {
                            value = "UseNationalCharacterVaryingTypeForString=true")})
     private EntityManagerFactory emf;
 	
-	private final static String qStr1 = "UPDATE TemporalVersionedEntity " + 
+	private final static String qStr1 = "UPDATE TemporalVersionedEntity " +
 			"SET updatetimestamp = ?3 " +
 			"WHERE id = ?1 AND updatetimestamp = ?2";
 	
-	private final static String qStr2 = "UPDATE TemporalVersionedEntity2 " + 
+	private final static String qStr2 = "UPDATE TemporalVersionedEntity2 " +
 			"SET version = ?3 " +
 			"WHERE id = ?1 AND version = ?2";
 			

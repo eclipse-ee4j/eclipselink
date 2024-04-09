@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,6 +66,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.HavingClause
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.HierarchicalQueryClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IdentificationVariableDeclarationTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IdentificationVariableTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IdExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.InExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IndexExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.InputParameterTester;
@@ -126,6 +127,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateClause
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateItemTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateStatementTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpperExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.VersionExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhenClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhereClauseTester;
 
@@ -1071,6 +1073,14 @@ public final class JPQLParserTester {
             rangeVariableDeclarationAs(abstractSchemaName, identificationVariable),
             spacedCollection(joins)
         );
+    }
+
+    public static IdExpressionTester id(ExpressionTester identificationVariable) {
+        return new IdExpressionTester(identificationVariable);
+    }
+
+    public static IdExpressionTester id(String identificationVariable) {
+        return id(variable(identificationVariable));
     }
 
     public static InExpressionTester in(ExpressionTester stateFieldPathExpression,
@@ -4118,6 +4128,14 @@ public final class JPQLParserTester {
         }
 
         return new IdentificationVariableTester(identificationVariable, false, nullExpression());
+    }
+
+    public static VersionExpressionTester version(ExpressionTester identificationVariable) {
+        return new VersionExpressionTester(identificationVariable);
+    }
+
+    public static VersionExpressionTester version(String identificationVariable) {
+        return version(variable(identificationVariable));
     }
 
     public static IdentificationVariableTester virtualVariable(String identificationVariable) {

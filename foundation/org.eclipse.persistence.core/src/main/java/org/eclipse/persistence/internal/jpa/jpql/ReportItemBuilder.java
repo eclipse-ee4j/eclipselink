@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -94,7 +94,7 @@ import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_LAST_
  * @author John Bracken
  */
 @SuppressWarnings("nls")
-final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
+final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
 
     /**
      * The visitor responsible to visit the constructor items.
@@ -110,12 +110,6 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
      * The {@link ReportQuery} to add the select expressions.
      */
     private ReportQuery query;
-
-    /**
-     * The {@link JPQLQueryContext} is used to query information about the application metadata and
-     * cached information.
-     */
-    private final JPQLQueryContext queryContext;
 
     /**
      * If the select expression is aliased with a result variable, then temporarily cache it so it
@@ -138,10 +132,9 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
      * tree representation of the JPQL query
      */
     ReportItemBuilder(JPQLQueryContext queryContext, ReportQuery query) {
-        super();
+        super(queryContext);
         this.query        = query;
         this.type         = new Class<?>[1];
-        this.queryContext = queryContext;
     }
 
     private void addAttribute(String generateName, Expression queryExpression) {

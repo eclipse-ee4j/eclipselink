@@ -99,6 +99,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
@@ -176,6 +177,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals.ClassType;
@@ -3085,6 +3087,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
+    public void visit(IdExpression expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
     public void visit(IndexExpression expression) {
         super.visit(expression);
         visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
@@ -4104,6 +4112,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     public void visit(ValueExpression expression) {
         super.visit(expression);
         visitSingleEncapsulatedExpression(expression, IdentificationVariableType.LEFT_COLLECTION);
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
     }
 
     @Override
@@ -5966,6 +5980,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(IdExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
+        }
+
+        @Override
         public void visit(IndexExpression expression) {
             appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
@@ -6474,6 +6494,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         public void visit(ValueExpression expression) {
             appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
+        }
+
+        @Override
+        public void visit(VersionExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
         }
 
         @Override
@@ -7888,6 +7914,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(IdExpression expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
         public void visit(IndexExpression expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
@@ -8672,6 +8703,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
         @Override
         public void visit(ValueExpression expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(VersionExpression expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
 

@@ -171,6 +171,24 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
         this.expressionRegistry = expressionRegistry;
     }
 
+    public boolean isIdentifier(WordParser wordParser, String word) {
+        boolean result = false;
+        int leadingWhitespaces = 0;
+        try {
+            wordParser.moveForwardIgnoreWhitespace(word);
+            leadingWhitespaces = wordParser.skipLeadingWhitespace();
+
+            if ('(' == wordParser.character()) {
+                result = true;
+            }
+        } finally {
+            //set wordParser to the previous state
+            wordParser.moveBackward(leadingWhitespaces);
+            wordParser.moveBackward(word);
+        }
+        return result;
+    }
+
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
