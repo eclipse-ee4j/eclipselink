@@ -252,8 +252,7 @@ public final class HermesParser implements JPAQueryBuilder {
     private boolean isJakartaDataValidationLevel() {
         if (validationLevel != null) {
             return switch (validationLevel) {
-                case ParserValidationType.JPA32 -> true;
-                case ParserValidationType.None -> true;
+                case ParserValidationType.JPA32, ParserValidationType.None -> true;
                 default -> false;
             };
         } else {
