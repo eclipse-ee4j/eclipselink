@@ -84,6 +84,16 @@ public final class JPQLExpression extends AbstractExpression {
     private AbstractExpression unknownEndingStatement;
 
     /**
+     * Jakarta data support. e.g. generate missing aliases
+     */
+    private boolean jakartaData = false;
+
+    /**
+     * Automatically add missing "this" prefixes into where field variables if it doesn't exist.
+     */
+    private boolean generateThisPrefix = false;
+
+    /**
      * Creates a new <code>JPQLExpression</code>, which is the root of the JPQL parsed tree.
      *
      * @param query The string representation of the JPQL query to parse
@@ -124,7 +134,35 @@ public final class JPQLExpression extends AbstractExpression {
                           String queryBNFId,
                           boolean tolerant) {
 
-        this(jpqlGrammar, queryBNFId, tolerant);
+        this(jpqlGrammar, queryBNFId, tolerant, false);
+        parse(new WordParser(jpqlFragment), tolerant);
+    }
+
+    /**
+     * Creates a new <code>JPQLExpression</code> that will parse the given fragment of a JPQL query.
+     * This means {@link #getQueryStatement()} will not return a query statement (select, delete or
+     * update) but only the parsed tree representation of the fragment if the query BNF can pare it.
+     * If the fragment of the JPQL query could not be parsed using the given {@link JPQLQueryBNF},
+     * then {@link #getUnknownEndingStatement()} will contain the non-parsable fragment.
+     *
+     * @param jpqlFragment A fragment of a JPQL query, which is a portion of a complete JPQL query
+     * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
+     * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
+     * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+     * to parse invalid or incomplete queries
+     * @param jakartaData Jakarta data support. Used to control to generate missing Entity alias for SELECT queries like "SELECT e FROM Entity",
+     * @since 5.0
+     */
+    public JPQLExpression(CharSequence jpqlFragment,
+                          JPQLGrammar jpqlGrammar,
+                          String queryBNFId,
+                          boolean tolerant,
+                          boolean jakartaData) {
+
+        this(jpqlGrammar, queryBNFId, tolerant, jakartaData);
+        if (jakartaData) {
+            jpqlFragment = preParse(jpqlFragment);
+        }
         parse(new WordParser(jpqlFragment), tolerant);
     }
 
@@ -133,13 +171,14 @@ public final class JPQLExpression extends AbstractExpression {
      *
      * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
-     * to parse invalid or incomplete queries
+     * @param jakartaData Jakarta data support. Used to control to generate missing Entity alias for SELECT queries like "SELECT e FROM Entity",
      */
-    private JPQLExpression(JPQLGrammar jpqlGrammar, String queryBNFId, boolean tolerant) {
+    private JPQLExpression(JPQLGrammar jpqlGrammar, String queryBNFId, boolean tolerant, boolean jakartaData) {
         super(null);
         this.queryBNFId  = queryBNFId;
         this.tolerant    = tolerant;
         this.jpqlGrammar = jpqlGrammar;
+        this.jakartaData = jakartaData;
     }
 
     @Override
@@ -217,6 +256,18 @@ public final class JPQLExpression extends AbstractExpression {
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(queryBNFId);
+    }
+
+    public boolean isGenerateThisPrefix() {
+        return generateThisPrefix;
+    }
+
+    public void setGenerateThisPrefix(boolean generateThisPrefix) {
+        this.generateThisPrefix = generateThisPrefix;
+    }
+
+    public boolean isJakartaData() {
+        return this.jakartaData;
     }
 
     /**
@@ -365,5 +416,14 @@ public final class JPQLExpression extends AbstractExpression {
         if (unknownEndingStatement != null) {
             unknownEndingStatement.toParsedText(writer, actual);
         }
+    }
+
+    private CharSequence preParse(CharSequence jpqlFragment) {
+        WordParser wordParser = new WordParser(jpqlFragment);
+        wordParser.skipLeadingWhitespace();
+        if (Expression.FROM.equalsIgnoreCase(wordParser.word())) {
+            return Expression.SELECT + " " + Expression.THIS + " " + jpqlFragment;
+        }
+        return jpqlFragment;
     }
 }

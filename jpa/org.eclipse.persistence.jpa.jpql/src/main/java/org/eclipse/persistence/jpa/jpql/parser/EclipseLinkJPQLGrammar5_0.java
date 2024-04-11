@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,24 +20,24 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 /**
  * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined
- * in Jakarta Persistence 3.2 and the additional support provided by EclipseLink 4.1.</p>
+ * in Jakarta Persistence 3.2 and the additional support provided by EclipseLink 5.0.</p>
  */
-public class EclipseLinkJPQLGrammar4_1 extends AbstractJPQLGrammar {
+public class EclipseLinkJPQLGrammar5_0 extends AbstractJPQLGrammar {
 
     /**
-     * The singleton instance of this {@link EclipseLinkJPQLGrammar4_1}.
+     * The singleton instance of this {@link EclipseLinkJPQLGrammar5_0}.
      */
-    private static final JPQLGrammar INSTANCE = new EclipseLinkJPQLGrammar4_1();
+    private static final JPQLGrammar INSTANCE = new EclipseLinkJPQLGrammar5_0();
 
     /**
-     * The EclipseLink version, which is 4.1.
+     * The EclipseLink version, which is 5.0.
      */
-    public static final EclipseLinkVersion VERSION = EclipseLinkVersion.VERSION_4_1;
+    public static final EclipseLinkVersion VERSION = EclipseLinkVersion.VERSION_5_0;
 
     /**
      * Creates a new <code>EclipseLinkJPQLGrammar4_0</code>.
      */
-    public EclipseLinkJPQLGrammar4_1() {
+    public EclipseLinkJPQLGrammar5_0() {
         super();
     }
 
@@ -47,7 +47,7 @@ public class EclipseLinkJPQLGrammar4_1 extends AbstractJPQLGrammar {
      * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
      * instantiating the base {@link JPQLGrammar}
      */
-    public EclipseLinkJPQLGrammar4_1(AbstractJPQLGrammar jpqlGrammar) {
+    public EclipseLinkJPQLGrammar5_0(AbstractJPQLGrammar jpqlGrammar) {
         super(jpqlGrammar);
     }
 
@@ -59,13 +59,13 @@ public class EclipseLinkJPQLGrammar4_1 extends AbstractJPQLGrammar {
      * instantiating the base {@link JPQLGrammar}
      */
     public static void extend(AbstractJPQLGrammar jpqlGrammar) {
-        new EclipseLinkJPQLGrammar4_1(jpqlGrammar);
+        new EclipseLinkJPQLGrammar5_0(jpqlGrammar);
     }
 
     /**
      * Returns the singleton instance of this class.
      *
-     * @return The singleton instance of {@link EclipseLinkJPQLGrammar4_1}
+     * @return The singleton instance of {@link EclipseLinkJPQLGrammar5_0}
      */
     public static JPQLGrammar instance() {
         return INSTANCE;
@@ -120,7 +120,7 @@ public class EclipseLinkJPQLGrammar4_1 extends AbstractJPQLGrammar {
 
     @Override
     public String toString() {
-        return "EclipseLink 4.1";
+        return "EclipseLink 5.0";
     }
 
 }

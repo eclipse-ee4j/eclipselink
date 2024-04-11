@@ -82,15 +82,6 @@ public class JPQLExceptionTest extends JPQLTestCase {
         return theTest;
     }
 
-    //This test produced a stack overflow in the Beta of Pine
-    public static JPQLExceptionTest noAliasWithWHEREAndParameterExceptionTest() {
-        JPQLExceptionTest theTest = new JPQLExceptionTest();
-        theTest.expectedException = JPQLException.unexpectedToken(null, 0, 0, null, null);
-        theTest.setEjbqlString("FROM Employee WHERE firstName = ?1");
-        theTest.setName("No Alias With WHERE and Parameter Exception Test");
-        return theTest;
-    }
-
     public static JPQLExceptionTest generalExceptionTest() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.unexpectedToken(null, 0, 0, null, null);
@@ -164,7 +155,6 @@ public class JPQLExceptionTest extends JPQLTestCase {
         // theSuite.addTest(EJBQLExceptionTest.expressionNotSupportedTest());
         // Removed by JED - Member of is now supported
         // theSuite.addTest(EJBQLExceptionTest.memberOfNotSupportedTest());
-        theSuite.addTest(JPQLExceptionTest.noAliasWithWHEREAndParameterExceptionTest());
     }
 
     @Override

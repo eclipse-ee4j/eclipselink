@@ -26,9 +26,9 @@ package org.eclipse.persistence.jpa.jpql;
 public enum EclipseLinkVersion {
 
     /**
-     * A constant that points to the current release of EclipseLink, which is 4.1.
+     * A constant that points to the current release of EclipseLink, which is 5.0.
      */
-    DEFAULT_VERSION(4.1),
+    DEFAULT_VERSION(5.0),
 
     /**
      * The constant for the EclipseLink 1.x release.
@@ -81,9 +81,9 @@ public enum EclipseLinkVersion {
     VERSION_4_0(4.0),
 
     /**
-     * The constant for the EclipseLink 4.1 release.
+     * The constant for the EclipseLink 5.0 release.
      */
-    VERSION_4_1(4.1);
+    VERSION_5_0(5.0);
 
     /**
      * The real version number.
@@ -133,7 +133,7 @@ public enum EclipseLinkVersion {
         values[6] = VERSION_2_5;
         values[7] = VERSION_3_0;
         values[8] = VERSION_4_0;
-        values[9] = VERSION_4_1;
+        values[9] = VERSION_5_0;
         return values;
     }
 

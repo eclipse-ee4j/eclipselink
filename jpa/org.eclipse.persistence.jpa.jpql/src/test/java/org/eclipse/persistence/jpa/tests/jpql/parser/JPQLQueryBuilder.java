@@ -135,6 +135,54 @@ public final class JPQLQueryBuilder {
     }
 
     /**
+     * Parses the given JPQL query and tests its generated string with the given query, which will be
+     * formatted first. Both the parsed and actual generated strings will be tested.
+     *
+     * @param jpqlQuery The JPQL query to parse into a parsed tree
+     * @param jpqlGrammar The JPQL grammar that defines how to parse the given JPQL query
+     * @param jpqlQueryBNFId The unique identifier of the {@link JPQLQueryBNF JPQLQueryBNF}
+     * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+     * to parse invalid or incomplete queries
+     * @param jakartaData Jakarta data support. Used to control to generate missing Entity alias for SELECT queries like "SELECT e FROM Entity",
+     * @return The parsed tree representation of the given JPQL query
+     */
+    public static JPQLExpression buildQuery(String jpqlQuery,
+                                            JPQLGrammar jpqlGrammar,
+                                            String jpqlQueryBNFId,
+                                            boolean tolerant,
+                                            boolean jakartaData) {
+
+        JPQLQueryStringFormatter formatter = JPQLQueryStringFormatter.DEFAULT;
+
+        // Format the JPQL query to reflect how the parsed tree outputs the query back as a string
+        String parsedJPQLQuery = toParsedText(jpqlQuery, jpqlGrammar);
+        String actualJPQLQuery = toActualText(jpqlQuery, jpqlGrammar);
+
+        // Format the JPQL query with this formatter so the invoker can tweak the default formatting
+        parsedJPQLQuery = formatter.format(parsedJPQLQuery);
+        actualJPQLQuery = formatter.format(actualJPQLQuery);
+
+        // Parse the JPQL query
+        JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, jpqlGrammar, jpqlQueryBNFId, tolerant, jakartaData);
+
+        // Make sure the JPQL query was correctly parsed and the
+        // generated string matches the original JPQL query
+        assertEquals(parsedJPQLQuery, jpqlExpression.toParsedText());
+        assertEquals(actualJPQLQuery, jpqlExpression.toActualText());
+
+        // If the JPQL query is parsed with tolerance turned off, then the query should
+        // be completely parsed and there should not be any unknown ending statement
+        if (!tolerant && (jpqlQueryBNFId == JPQLStatementBNF.ID)) {
+            assertFalse(
+                    "A valid JPQL query cannot have an unknown ending fragment:" + jpqlQueryBNFId,
+                    jpqlExpression.hasUnknownEndingStatement()
+            );
+        }
+
+        return jpqlExpression;
+    }
+
+    /**
      * Formats the given JPQL query by converting it to what
      * {@link Expression#toActualText() Expression.toActualText()} would return.
      * <p>
