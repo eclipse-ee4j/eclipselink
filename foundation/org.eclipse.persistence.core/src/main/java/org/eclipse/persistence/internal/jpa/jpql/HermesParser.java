@@ -18,6 +18,7 @@
 //       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.internal.jpa.jpql;
 
+import org.eclipse.persistence.Version;
 import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
@@ -25,6 +26,7 @@ import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemResourceBundle;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
@@ -41,6 +43,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_1;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_2;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLStatementBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -246,6 +249,18 @@ public final class HermesParser implements JPAQueryBuilder {
         };
     }
 
+    private boolean isJakartaDataValidationLevel() {
+        if (validationLevel != null) {
+            return switch (validationLevel) {
+                case ParserValidationType.JPA32 -> true;
+                case ParserValidationType.None -> true;
+                default -> false;
+            };
+        } else {
+            return false;
+        }
+    }
+
     @Override
     public void populateQuery(CharSequence jpqlQuery, DatabaseQuery query, AbstractSession session) {
         populateQueryImp(jpqlQuery, query, session);
@@ -256,11 +271,17 @@ public final class HermesParser implements JPAQueryBuilder {
                                            AbstractSession session) {
 
         try {
+            String version = Version.getVersion();
+            String majorMinorVersion = version.substring(0, version.indexOf(".", version.indexOf(".") + 1));
+            EclipseLinkVersion elVersion = EclipseLinkVersion.value(majorMinorVersion);
+            boolean isJakartaDataVersion = elVersion.isNewerThanOrEqual(EclipseLinkVersion.VERSION_5_0) || isJakartaDataValidationLevel();
             // Parse the JPQL query with the most recent JPQL grammar
             JPQLExpression jpqlExpression = new JPQLExpression(
                 jpqlQuery,
                 DefaultEclipseLinkJPQLGrammar.instance(),
-                isTolerant()
+                JPQLStatementBNF.ID,
+                isTolerant(),
+                isJakartaDataVersion
             );
 
             // Create a context that caches the information contained in the JPQL query

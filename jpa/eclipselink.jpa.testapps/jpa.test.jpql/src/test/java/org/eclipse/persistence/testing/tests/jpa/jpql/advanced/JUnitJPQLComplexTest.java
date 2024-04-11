@@ -3888,9 +3888,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
     // Test JPQL with no select clause.
     public void testNoSelect() {
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("from Employee e where e.firstName = 'Bob'");
-        query.getResultList();
-        query = em.createQuery("from Employee e join e.address a where a.city = 'Ottawa'");
+        Query query = em.createQuery("from Employee this where this.firstName = 'Bob'");
         query.getResultList();
         closeEntityManager(em);
     }

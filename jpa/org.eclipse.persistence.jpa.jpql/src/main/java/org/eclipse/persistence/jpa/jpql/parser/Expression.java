@@ -770,6 +770,11 @@ public interface Expression {
     String THEN = "THEN";
 
     /**
+     * The constant for 'this'.
+     */
+    String THIS = "this";
+
+    /**
      * The constant for 'TIME'.
      */
     String TIME = "TIME";

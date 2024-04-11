@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -337,6 +337,13 @@ public abstract class AbstractFromClause extends AbstractExpression {
         else if (hierarchicalQueryClause == null) {
             hasSpaceDeclaration = false;
             wordParser.moveBackward(count);
+        }
+        //Check if from part is in "FROM Entity this" form with
+        if (this.hasDeclaration() && this.getDeclaration() instanceof IdentificationVariableDeclaration identificationVariableDeclaration &&
+            identificationVariableDeclaration.hasRangeVariableDeclaration() && identificationVariableDeclaration.getRangeVariableDeclaration() instanceof RangeVariableDeclaration rangeVariableDeclaration &&
+            rangeVariableDeclaration.hasIdentificationVariable() && rangeVariableDeclaration.getIdentificationVariable() instanceof IdentificationVariable identificationVariable &&
+            Expression.THIS.equals(identificationVariable.getText())) {
+            this.getRoot().setGenerateThisPrefix(true);
         }
     }
 

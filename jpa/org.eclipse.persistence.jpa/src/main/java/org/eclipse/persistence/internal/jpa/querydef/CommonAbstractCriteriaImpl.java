@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -177,7 +177,7 @@ public abstract class CommonAbstractCriteriaImpl<T>
      *
      * @param restrictions zero or more restriction predicates
      * @return the modified query
-     * @since 4.1
+     * @since 5.0
      */
     public CommonAbstractCriteria where(List<Predicate> restrictions) {
         Predicate predicate = queryBuilder.and(restrictions);
