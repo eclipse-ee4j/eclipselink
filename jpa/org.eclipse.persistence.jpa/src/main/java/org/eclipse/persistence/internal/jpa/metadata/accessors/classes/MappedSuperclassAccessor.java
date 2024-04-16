@@ -1002,6 +1002,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process cache index information for the given metadata descriptor.
      */
     protected void processCacheIndexes() {
+        for (CacheIndexMetadata indexMetadata : m_cacheIndexes) {
+            indexMetadata.setProject(getDescriptor().getProject());
+        }
+
         // TODO: This method is adding annotation metadata to XML metadata. This
         // is wrong and does not follow the spec ideology. XML metadata should
         // override not merge with annotations.
