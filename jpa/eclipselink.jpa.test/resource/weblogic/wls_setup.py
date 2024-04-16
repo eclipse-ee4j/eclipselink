@@ -48,6 +48,7 @@ try:
     cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCConnectionPoolParams/EclipseLinkDS')
     cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
     cmo.setWrapTypes(false)
+    cmo.setStatementCacheSize(0)
 
     cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS')
     cmo.createProperty('user')
@@ -91,6 +92,7 @@ try:
     cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCConnectionPoolParams/ELNonJTADS')
     cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
     cmo.setWrapTypes(false)
+    cmo.setStatementCacheSize(0)
 
     cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS/Properties/ELNonJTADS')
     cmo.createProperty('user')
