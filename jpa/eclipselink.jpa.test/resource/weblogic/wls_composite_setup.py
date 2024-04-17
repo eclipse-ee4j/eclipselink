@@ -49,6 +49,7 @@ set('PasswordEncrypted','@DBPWD@')
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCConnectionPoolParams/EclipseLinkDS')
 cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
 cmo.setWrapTypes(false)
+cmo.setStatementCacheSize(0)
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS')
 cmo.createProperty('user')
