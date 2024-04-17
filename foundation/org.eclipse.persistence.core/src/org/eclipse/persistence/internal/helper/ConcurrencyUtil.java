@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle, IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 Oracle, IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -570,8 +570,8 @@ public class ConcurrencyUtil {
         writer.write(createInformationThreadDump());
         // (b) log information about the threads that are waiting to acquire WRITE/DEFERRED locks
         // PAGE 02 of logging information
-        writer.write(createInformationAboutAllThreadsWaitingToAcquireReadCacheKeys(concurrencyManagerState.getMapThreadToWaitOnAcquireReadLockClone(),
-                concurrencyManagerState.getMapThreadToWaitOnAcquireReadLockCloneMethodName()));
+        writer.write(createInformationAboutAllThreadsWaitingToAcquireCacheKeys(concurrencyManagerState.getUnifiedMapOfThreadsStuckTryingToAcquireWriteLock(),
+                concurrencyManagerState.getUnifiedMapOfThreadsStuckTryingToAcquireWriteLockMethodName()));
         // (c) log information about the threads that are waiting to acquire READ locks
         // PAGE 03 of logging information
         writer.write(createInformationAboutAllThreadsWaitingToAcquireReadCacheKeys(concurrencyManagerState.getMapThreadToWaitOnAcquireReadLockClone(),
