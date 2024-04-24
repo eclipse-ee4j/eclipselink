@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+
+    Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.parent</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.eclipse.persistence.javadocs</artifactId>
+    <packaging>pom</packaging>
+    <name>EclipseLink API documentation</name>
+
+    <properties>
+        <apidocs.api.src>${project.build.directory}/api-sources</apidocs.api.src>
+        <apidocs.api.tmp>${project.build.directory}/api-sources-tmp</apidocs.api.tmp>
+        <apidocs.api.dist>${project.build.directory}/api-javadoc</apidocs.api.dist>
+
+        <apidocs.core>*</apidocs.core>
+        <apidocs.dbws>org.eclipse.persistence.dbws*,org.eclipse.persistence.jpars*</apidocs.dbws>
+        <apidocs.moxy>org.eclipse.persistence.moxy*</apidocs.moxy>
+        <apidocs.persistence>org.eclipse.persistence.jpa,org.eclipse.persistence.jpa.*</apidocs.persistence>
+        <apidocs.sdo>org.eclipse.persistence.sdo*</apidocs.sdo>
+
+        <apidocs.windowtitle><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></apidocs.windowtitle>
+        <apidocs.doctitle><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></apidocs.doctitle>
+        <apidocs.header><![CDATA[<br>${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></apidocs.header>
+        <apidocs.bottom/>
+
+        <apidocs.classpath.deps>ant,glassfish-corba-omgapi,nosqldriver,aqapi-jakarta,oracle-nosql-client</apidocs.classpath.deps>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-sources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${apidocs.api.tmp}</outputDirectory>
+                            <includeGroupIds>org.eclipse.persistence</includeGroupIds>
+                            <classifier>sources</classifier>
+                            <useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
+                            <stripVersion>true</stripVersion>
+                            <excludeScope>provided</excludeScope>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>configure-module-path</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>apidocs.modulepath</outputProperty>
+                            <excludeArtifactIds>${apidocs.classpath.deps}</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>configure-class-path</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>apidocs.classpath</outputProperty>
+                            <includeArtifactIds>${apidocs.classpath.deps}</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <dependencies>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>prepare-sources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${apidocs.api.src}"/>
+                                <copy todir="${apidocs.api.src}" >
+                                    <fileset dir="${apidocs.api.tmp}">
+                                        <include name="*-sources-jar/**"/>
+                                        <exclude name="org.eclipse.persistence.moxy.utils.xjc-sources-jar/**"/>
+                                    </fileset>
+                                    <mapper type="regexp" from="^(.*)-sources-jar(.*)$$" to="\1\2"/>
+                                </copy>
+
+                                <copy todir="${apidocs.api.src}/org.eclipse.persistence.moxy.xjc" >
+                                    <fileset dir="${apidocs.api.tmp}/org.eclipse.persistence.moxy.utils.xjc-sources-jar">
+                                        <include name="**/*"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build-javadocs</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${apidocs.api.dist}"/>
+                                <javadoc destdir="${apidocs.api.dist}"
+                                         modulesourcepath="${apidocs.api.src}"
+                                         modulepath="${apidocs.modulepath}"
+                                         classpath="${apidocs.classpath}"
+                                         author="false"
+                                         docfilessubdirs="true"
+                                         failonerror="true"
+                                         source="${maven.compiler.release}"
+                                         splitindex="true"
+                                         use="true"
+                                         windowtitle="${apidocs.windowtitle}"
+                                >
+                                    <arg value="-J-Xmx4g"/>
+                                    <arg value="-Xdoclint:none"/>
+                                    <arg value="-notimestamp"/>
+                                    <arg value="-quiet"/>
+                                    <arg line="--add-reads org.eclipse.persistence.core=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.corba=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.dbws.builder=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.extension=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.jpa=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.nosql=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.oracle.nosql=ALL-UNNAMED"/>
+                                    <doctitle>${apidocs.doctitle}</doctitle>
+                                    <bottom>${apidocs.bottom}</bottom>
+                                    <header>${apidocs.header}</header>
+                                    <group title="Core Modules" packages="${apidocs.core}"/>
+                                    <group title="Persistence" packages="${apidocs.persistence}"/>
+                                    <group title="MOXy" packages="${apidocs.moxy}"/>
+                                    <group title="DBWS" packages="${apidocs.dbws}"/>
+                                    <group title="SDO" packages="${apidocs.sdo}"/>
+                                    <fileset dir="${apidocs.api.src}">
+                                        <include name="**/*.java"/>
+                                    </fileset>
+                                    <link href="https://jakarta.ee/specifications/activation/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/activation-api"/>
+                                    <link href="https://jakarta.ee/specifications/annotations/3.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/annotation-api"/>
+                                    <link href="https://jakarta.ee/specifications/cdi/4.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/cdi-api"/>
+                                    <link href="https://jakarta.ee/specifications/messaging/3.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/jms-api"/>
+                                    <link href="https://jakarta.ee/specifications/jsonp/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/json-api"/>
+                                    <link href="https://jakarta.ee/specifications/mail/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/mail-api"/>
+                                    <link href="https://jakarta.ee/specifications/persistence/3.2/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/persistence-api"/>
+                                    <link href="https://jakarta.ee/specifications/connectors/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/resource-api"/>
+                                    <link href="https://jakarta.ee/specifications/servlet/6.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/servlet-api"/>
+                                    <link href="https://jakarta.ee/specifications/transactions/2.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/transaction-api"/>
+                                    <link href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/validation-api"/>
+                                    <link href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/ws-rs-api"/>
+                                    <link href="https://jakarta.ee/specifications/xml-binding/4.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/xml-bind-api"/>
+                                    <link href="https://jakarta.ee/specifications/soap-attachments/3.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/xml-soap-api"/>
+                                    <link href="https://jakarta.ee/specifications/xml-web-services/4.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/xml-ws-api"/>
+                                </javadoc>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.nosql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
+        </dependency>
+
+        <!-- persistence -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+        </dependency>
+
+        <!-- dbws -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars.server</artifactId>
+        </dependency>
+
+        <!-- moxy -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
+        </dependency>
+
+        <!-- sdo -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.sdo</artifactId>
+        </dependency>
+
+        <!-- extras -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.corba</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.extension</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.pgsql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.jms</groupId>
+            <artifactId>jakarta.jms-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.resource</groupId>
+            <artifactId>jakarta.resource-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.soap</groupId>
+            <artifactId>jakarta.xml.soap-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.ws</groupId>
+            <artifactId>jakarta.xml.ws-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc11</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ucp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.messaging</groupId>
+            <artifactId>aqapi-jakarta</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.observability</groupId>
+            <artifactId>dms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.xml</groupId>
+            <artifactId>xdb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.xml</groupId>
+            <artifactId>xmlparserv2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.kv</groupId>
+            <artifactId>oracle-nosql-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.nosql.sdk</groupId>
+            <artifactId>nosqldriver</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-omgapi</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jgroups</groupId>
+            <artifactId>jgroups</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>
