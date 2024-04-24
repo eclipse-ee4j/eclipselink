@@ -33,12 +33,12 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
  * @author Martin Vojtek (martin.vojtek@oracle.com)
  *
  */
-public class Benchmarks {
+public class MOXyBenchmarks {
     public static void main(String[] args) throws RunnerException {
 
         int warmupIterations = 20;
         int measurementIterations = 20;
-        String resultFile = "jmh-result.txt";
+        String resultFile = "jmh-moxy-result.txt";
         String resultFormat = "text";
 
         if (null != args && args.length == 4) {

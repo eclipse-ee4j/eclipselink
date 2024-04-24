@@ -604,18 +604,23 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         this.transactionId = transactionId;
     }
 
-    public synchronized Object waitForObject(){
+    public Object waitForObject(){
+        getInstanceLock().lock();
         try {
-            int count = 0;
-            while (this.object == null && isAcquired()) {
-                if (count > MAX_WAIT_TRIES)
-                    throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(getActiveThread(), Thread.currentThread());
-                wait(10);
-                ++count;
+            try {
+                int count = 0;
+                while (this.object == null && isAcquired()) {
+                    if (count > MAX_WAIT_TRIES)
+                        throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(getActiveThread(), Thread.currentThread());
+                    wait(10);
+                    ++count;
+                }
+            } catch(InterruptedException ex) {
+                //ignore as the loop is broken
             }
-        } catch(InterruptedException ex) {
-            //ignore as the loop is broken
+            return this.object;
+        } finally {
+            getInstanceLock().unlock();
         }
-        return this.object;
     }
 }
