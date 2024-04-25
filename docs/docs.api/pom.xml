@@ -21,9 +21,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.eclipse.persistence</groupId>
-        <artifactId>org.eclipse.persistence.parent</artifactId>
+        <artifactId>org.eclipse.persistence.documentation</artifactId>
         <version>5.0.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.eclipse.persistence.javadocs</artifactId>
@@ -48,149 +48,6 @@
 
         <apidocs.classpath.deps>ant,glassfish-corba-omgapi,nosqldriver,aqapi-jakarta,oracle-nosql-client</apidocs.classpath.deps>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-sources</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${apidocs.api.tmp}</outputDirectory>
-                            <includeGroupIds>org.eclipse.persistence</includeGroupIds>
-                            <classifier>sources</classifier>
-                            <useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
-                            <stripVersion>true</stripVersion>
-                            <excludeScope>provided</excludeScope>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>configure-module-path</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>build-classpath</goal>
-                        </goals>
-                        <configuration>
-                            <outputProperty>apidocs.modulepath</outputProperty>
-                            <excludeArtifactIds>${apidocs.classpath.deps}</excludeArtifactIds>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>configure-class-path</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>build-classpath</goal>
-                        </goals>
-                        <configuration>
-                            <outputProperty>apidocs.classpath</outputProperty>
-                            <includeArtifactIds>${apidocs.classpath.deps}</includeArtifactIds>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <dependencies>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>prepare-sources</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${apidocs.api.src}"/>
-                                <copy todir="${apidocs.api.src}" >
-                                    <fileset dir="${apidocs.api.tmp}">
-                                        <include name="*-sources-jar/**"/>
-                                        <exclude name="org.eclipse.persistence.moxy.utils.xjc-sources-jar/**"/>
-                                    </fileset>
-                                    <mapper type="regexp" from="^(.*)-sources-jar(.*)$$" to="\1\2"/>
-                                </copy>
-
-                                <copy todir="${apidocs.api.src}/org.eclipse.persistence.moxy.xjc" >
-                                    <fileset dir="${apidocs.api.tmp}/org.eclipse.persistence.moxy.utils.xjc-sources-jar">
-                                        <include name="**/*"/>
-                                    </fileset>
-                                </copy>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>build-javadocs</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${apidocs.api.dist}"/>
-                                <javadoc destdir="${apidocs.api.dist}"
-                                         modulesourcepath="${apidocs.api.src}"
-                                         modulepath="${apidocs.modulepath}"
-                                         classpath="${apidocs.classpath}"
-                                         author="false"
-                                         docfilessubdirs="true"
-                                         failonerror="true"
-                                         source="${maven.compiler.release}"
-                                         splitindex="true"
-                                         use="true"
-                                         windowtitle="${apidocs.windowtitle}"
-                                >
-                                    <arg value="-J-Xmx4g"/>
-                                    <arg value="-Xdoclint:none"/>
-                                    <arg value="-notimestamp"/>
-                                    <arg value="-quiet"/>
-                                    <arg line="--add-reads org.eclipse.persistence.core=ALL-UNNAMED"/>
-                                    <arg line="--add-reads org.eclipse.persistence.corba=ALL-UNNAMED"/>
-                                    <arg line="--add-reads org.eclipse.persistence.dbws.builder=ALL-UNNAMED"/>
-                                    <arg line="--add-reads org.eclipse.persistence.extension=ALL-UNNAMED"/>
-                                    <arg line="--add-reads org.eclipse.persistence.jpa=ALL-UNNAMED"/>
-                                    <arg line="--add-reads org.eclipse.persistence.nosql=ALL-UNNAMED"/>
-                                    <arg line="--add-reads org.eclipse.persistence.oracle.nosql=ALL-UNNAMED"/>
-                                    <doctitle>${apidocs.doctitle}</doctitle>
-                                    <bottom>${apidocs.bottom}</bottom>
-                                    <header>${apidocs.header}</header>
-                                    <group title="Core Modules" packages="${apidocs.core}"/>
-                                    <group title="Persistence" packages="${apidocs.persistence}"/>
-                                    <group title="MOXy" packages="${apidocs.moxy}"/>
-                                    <group title="DBWS" packages="${apidocs.dbws}"/>
-                                    <group title="SDO" packages="${apidocs.sdo}"/>
-                                    <fileset dir="${apidocs.api.src}">
-                                        <include name="**/*.java"/>
-                                    </fileset>
-                                    <link href="https://jakarta.ee/specifications/activation/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/activation-api"/>
-                                    <link href="https://jakarta.ee/specifications/annotations/3.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/annotation-api"/>
-                                    <link href="https://jakarta.ee/specifications/cdi/4.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/cdi-api"/>
-                                    <link href="https://jakarta.ee/specifications/messaging/3.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/jms-api"/>
-                                    <link href="https://jakarta.ee/specifications/jsonp/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/json-api"/>
-                                    <link href="https://jakarta.ee/specifications/mail/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/mail-api"/>
-                                    <link href="https://jakarta.ee/specifications/persistence/3.2/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/persistence-api"/>
-                                    <link href="https://jakarta.ee/specifications/connectors/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/resource-api"/>
-                                    <link href="https://jakarta.ee/specifications/servlet/6.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/servlet-api"/>
-                                    <link href="https://jakarta.ee/specifications/transactions/2.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/transaction-api"/>
-                                    <link href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/validation-api"/>
-                                    <link href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/ws-rs-api"/>
-                                    <link href="https://jakarta.ee/specifications/xml-binding/4.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/xml-bind-api"/>
-                                    <link href="https://jakarta.ee/specifications/soap-attachments/3.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/xml-soap-api"/>
-                                    <link href="https://jakarta.ee/specifications/xml-web-services/4.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/xml-ws-api"/>
-                                </javadoc>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>
@@ -422,7 +279,149 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-sources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${apidocs.api.tmp}</outputDirectory>
+                            <includeGroupIds>org.eclipse.persistence</includeGroupIds>
+                            <classifier>sources</classifier>
+                            <useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
+                            <stripVersion>true</stripVersion>
+                            <excludeScope>provided</excludeScope>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>configure-module-path</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>apidocs.modulepath</outputProperty>
+                            <excludeArtifactIds>${apidocs.classpath.deps}</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>configure-class-path</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>apidocs.classpath</outputProperty>
+                            <includeArtifactIds>${apidocs.classpath.deps}</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <dependencies>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>prepare-sources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${apidocs.api.src}"/>
+                                <copy todir="${apidocs.api.src}" >
+                                    <fileset dir="${apidocs.api.tmp}">
+                                        <include name="*-sources-jar/**"/>
+                                        <exclude name="org.eclipse.persistence.moxy.utils.xjc-sources-jar/**"/>
+                                    </fileset>
+                                    <mapper type="regexp" from="^(.*)-sources-jar(.*)$$" to="\1\2"/>
+                                </copy>
+
+                                <copy todir="${apidocs.api.src}/org.eclipse.persistence.moxy.xjc" >
+                                    <fileset dir="${apidocs.api.tmp}/org.eclipse.persistence.moxy.utils.xjc-sources-jar">
+                                        <include name="**/*"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build-javadocs</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${apidocs.api.dist}"/>
+                                <javadoc destdir="${apidocs.api.dist}"
+                                         modulesourcepath="${apidocs.api.src}"
+                                         modulepath="${apidocs.modulepath}"
+                                         classpath="${apidocs.classpath}"
+                                         author="false"
+                                         docfilessubdirs="true"
+                                         failonerror="true"
+                                         source="${maven.compiler.release}"
+                                         splitindex="true"
+                                         use="true"
+                                         windowtitle="${apidocs.windowtitle}"
+                                >
+                                    <arg value="-J-Xmx4g"/>
+                                    <arg value="-Xdoclint:none"/>
+                                    <arg value="-notimestamp"/>
+                                    <arg value="-quiet"/>
+                                    <arg line="--add-reads org.eclipse.persistence.core=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.corba=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.dbws.builder=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.extension=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.jpa=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.nosql=ALL-UNNAMED"/>
+                                    <arg line="--add-reads org.eclipse.persistence.oracle.nosql=ALL-UNNAMED"/>
+                                    <doctitle>${apidocs.doctitle}</doctitle>
+                                    <bottom>${apidocs.bottom}</bottom>
+                                    <header>${apidocs.header}</header>
+                                    <group title="Core Modules" packages="${apidocs.core}"/>
+                                    <group title="Persistence" packages="${apidocs.persistence}"/>
+                                    <group title="MOXy" packages="${apidocs.moxy}"/>
+                                    <group title="DBWS" packages="${apidocs.dbws}"/>
+                                    <group title="SDO" packages="${apidocs.sdo}"/>
+                                    <fileset dir="${apidocs.api.src}">
+                                        <include name="**/*.java"/>
+                                    </fileset>
+                                    <link href="https://jakarta.ee/specifications/activation/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/activation-api"/>
+                                    <link href="https://jakarta.ee/specifications/annotations/3.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/annotation-api"/>
+                                    <link href="https://jakarta.ee/specifications/cdi/4.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/cdi-api"/>
+                                    <link href="https://jakarta.ee/specifications/messaging/3.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/jms-api"/>
+                                    <link href="https://jakarta.ee/specifications/jsonp/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/json-api"/>
+                                    <link href="https://jakarta.ee/specifications/mail/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/mail-api"/>
+                                    <link href="https://jakarta.ee/specifications/persistence/3.2/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/persistence-api"/>
+                                    <link href="https://jakarta.ee/specifications/connectors/2.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/resource-api"/>
+                                    <link href="https://jakarta.ee/specifications/servlet/6.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/servlet-api"/>
+                                    <link href="https://jakarta.ee/specifications/transactions/2.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/transaction-api"/>
+                                    <link href="https://jakarta.ee/specifications/bean-validation/3.1/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/validation-api"/>
+                                    <link href="https://jakarta.ee/specifications/restful-ws/4.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/ws-rs-api"/>
+                                    <link href="https://jakarta.ee/specifications/xml-binding/4.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/xml-bind-api"/>
+                                    <link href="https://jakarta.ee/specifications/soap-attachments/3.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/xml-soap-api"/>
+                                    <link href="https://jakarta.ee/specifications/xml-web-services/4.0/apidocs" offline="true" packagelistLoc="${project.build.javadocResourceDirectory}/xml-ws-api"/>
+                                </javadoc>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
