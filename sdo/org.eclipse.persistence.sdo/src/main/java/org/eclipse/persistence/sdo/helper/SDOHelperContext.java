@@ -106,11 +106,9 @@ public class SDOHelperContext implements HelperContext {
      * Default value is <code>true</code>.
      * </p>
      *
-     * @deprecated
-     * @see org.eclipse.persistence.sdo.SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME
-     * Moved to {@link org.eclipse.persistence.sdo.SDOSystemProperties}.     *
+     * @deprecated Use {@link org.eclipse.persistence.sdo.SDOSystemProperties#SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME}.
      */
-    @Deprecated
+    @Deprecated(since = "4.0", forRemoval = true)
     public static final String STRICT_TYPE_CHECKING_PROPERTY_NAME = SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME;
 
     private static int helperContextsMaxSize = Integer.parseInt(PrivilegedAccessHelper.getSystemProperty(SDOSystemProperties.SDO_HELPER_CONTEXTS_MAX_SIZE, "1000000"));

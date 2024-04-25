@@ -1,0 +1,11 @@
+module:jakarta.xml.ws
+jakarta.jws
+jakarta.jws.soap
+jakarta.xml.ws
+jakarta.xml.ws.handler
+jakarta.xml.ws.handler.soap
+jakarta.xml.ws.http
+jakarta.xml.ws.soap
+jakarta.xml.ws.spi
+jakarta.xml.ws.spi.http
+jakarta.xml.ws.wsaddressing
