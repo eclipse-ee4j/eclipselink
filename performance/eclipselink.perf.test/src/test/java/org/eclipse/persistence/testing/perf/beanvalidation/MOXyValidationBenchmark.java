@@ -103,7 +103,7 @@ public class MOXyValidationBenchmark {
     }
 
     private void prepareJAXB() throws Exception {
-        ctx = JAXBContextFactory.createContext(EMPLOYEES, new HashMap<Object, Object>(){{put(JAXBContextProperties
+        ctx = JAXBContextFactory.createContext(EMPLOYEES, new HashMap<>(){{put(JAXBContextProperties
                 .BEAN_VALIDATION_MODE, BeanValidationMode.CALLBACK);}});
         mar = (JAXBMarshaller) ctx.createMarshaller();
         mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);

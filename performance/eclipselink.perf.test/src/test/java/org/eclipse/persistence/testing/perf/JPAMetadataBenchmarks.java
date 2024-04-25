@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,27 +11,25 @@
  */
 
 // Contributors:
-//              Oracle - initial implementation
+//              ljungmann - initial implementation
 package org.eclipse.persistence.testing.perf;
 
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadLargeAmmountCacheTests;
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadLargeAmmountNoCacheTests;
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadSmallAmmountCacheTests;
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadSmallAmmountNoCacheTests;
+import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAMetadataProcessingTests;
+import org.eclipse.persistence.testing.perf.jpa.tests.basic.MethodHandleComparisonTests;
+
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-public class JPABenchmarks {
+public class JPAMetadataBenchmarks {
 
     public static void main(String[] args) throws RunnerException {
 
         int warmupIterations = 20;
         int measurementIterations = 20;
-        int threads = 10;
-        String resultFile = "jmh-jpa-result.txt";
+        String resultFile = "jmh-jpa-metadata-result.txt";
         String resultFormat = "text";
 
         if (null != args && args.length == 4) {
@@ -42,17 +40,14 @@ public class JPABenchmarks {
         }
 
         Options opt = new OptionsBuilder()
-                .include(getInclude(JPAReadSmallAmmountCacheTests.class))
-                .include(getInclude(JPAReadSmallAmmountNoCacheTests.class))
-                .include(getInclude(JPAReadLargeAmmountCacheTests.class))
-                .include(getInclude(JPAReadLargeAmmountNoCacheTests.class))
+                .include(getInclude(JPAMetadataProcessingTests.class))
+                .include(getInclude(MethodHandleComparisonTests.class))
                 .jvmArgsPrepend("-javaagent:" + System.getProperty("eclipselink.agent"))
                 .result(resultFile)
                 .resultFormat(ResultFormatType.valueOf(resultFormat.toUpperCase()))
                 .warmupIterations(warmupIterations)
                 .measurementIterations(measurementIterations)
                 .forks(1)
-                .threads(threads)
                 .build();
 
         new Runner(opt).run();
