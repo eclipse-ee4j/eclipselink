@@ -36,7 +36,7 @@ final class ReflectionUtils {
 
     /**
      * Retrieves declared fields.
-     * <p/>
+     * <p>
      * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
      * privileged calls}.
      *

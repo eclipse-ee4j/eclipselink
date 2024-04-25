@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,6 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.internal.helper;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
@@ -39,6 +35,19 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static java.util.Collections.unmodifiableMap;
 
@@ -122,6 +131,10 @@ public class WriteLockManager {
     /*  the first element in this list will be the prevailing thread */
     protected ExposedNodeLinkedList prevailingQueue;
 
+    private final Lock toWaitOnLock = new ReentrantLock();
+    private final Lock instancePrevailingQueueLock = new ReentrantLock();
+    private final Condition toWaitOnLockCondition = toWaitOnLock.newCondition();
+
     public WriteLockManager() {
         this.prevailingQueue = new ExposedNodeLinkedList();
     }
@@ -167,14 +180,17 @@ public class WriteLockManager {
                 // using the exact same approach we have been adding to the concurrency manager
                 ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(toWaitOn, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_TRUE);
 
-                synchronized (toWaitOn) {
+                toWaitOnLock.lock();
+                try {
                     try {
                         if (toWaitOn.isAcquired()) {//last minute check to insure it is still locked.
-                            toWaitOn.wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());// wait for lock on object to be released
+                            toWaitOnLockCondition.await(ConcurrencyUtil.SINGLETON.getAcquireWaitTime(), TimeUnit.MILLISECONDS);// wait for lock on object to be released
                         }
                     } catch (InterruptedException ex) {
                         // Ignore exception thread should continue.
                     }
+                } finally {
+                    toWaitOnLock.unlock();
                 }
                 Object waitObject = toWaitOn.getObject();
                 // Object may be null for loss of identity.
@@ -419,8 +435,11 @@ public class WriteLockManager {
                                 // set the QueueNode to be the node from the
                                 // linked list for quick removal upon
                                 // acquiring all locks
-                                synchronized (this.prevailingQueue) {
+                                instancePrevailingQueueLock.lock();
+                                try {
                                     mergeManager.setQueueNode(this.prevailingQueue.addLast(mergeManager));
+                                } finally {
+                                    instancePrevailingQueueLock.unlock();
                                 }
                             }
 
@@ -430,14 +449,15 @@ public class WriteLockManager {
                             try {
                                 if (activeCacheKey != null){
                                     //wait on the lock of the object that we couldn't get.
-                                    synchronized (activeCacheKey) {
+                                    activeCacheKey.getInstanceLock().lock();
+                                    try {
                                         // verify that the cache key is still locked before we wait on it, as
                                         //it may have been released since we tried to acquire it.
                                         if (activeCacheKey.isAcquired() && (activeCacheKey.getActiveThread() != Thread.currentThread())) {
                                                 Thread thread = activeCacheKey.getActiveThread();
                                                 if (thread.isAlive()){
                                                     long time = System.currentTimeMillis();
-                                                    activeCacheKey.wait(MAX_WAIT);
+                                                    activeCacheKey.getInstanceLockCondition().await(MAX_WAIT, TimeUnit.MILLISECONDS);
                                                     if (System.currentTimeMillis() - time >= MAX_WAIT){
                                                         Object[] params = new Object[]{MAX_WAIT /1000, descriptor.getJavaClassName(), activeCacheKey.getKey(), thread.getName()};
                                                         StringBuilder buffer = new StringBuilder(TraceLocalization.buildMessage("max_time_exceeded_for_acquirerequiredlocks_wait", params));
@@ -459,6 +479,8 @@ public class WriteLockManager {
                                                     }
                                                 }
                                             }
+                                        } finally {
+                                            activeCacheKey.getInstanceLock().unlock();
                                         }
                                     }
                             } catch (InterruptedException exception) {
@@ -497,8 +519,11 @@ public class WriteLockManager {
         }finally {
             if (mergeManager.getWriteLockQueued() != null) {
                 //the merge manager entered the wait queue and must be cleaned up
-                synchronized(this.prevailingQueue) {
+                instancePrevailingQueueLock.lock();
+                try {
                     this.prevailingQueue.remove(mergeManager.getQueueNode());
+                } finally {
+                    instancePrevailingQueueLock.unlock();
                 }
                 mergeManager.setWriteLockQueued(null);
             }

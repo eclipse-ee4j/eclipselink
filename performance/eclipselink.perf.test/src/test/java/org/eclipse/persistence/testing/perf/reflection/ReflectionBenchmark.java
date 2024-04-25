@@ -35,7 +35,7 @@ import java.security.PrivilegedAction;
  *
  * Tests are ran in multi-threaded environment.
  *
- * @author Marcel Valovy <marcel.valovy@oracle.com>
+ * @author Marcel Valovy marcel.valovy@oracle.com
  */
 @State(Scope.Benchmark)
 public class ReflectionBenchmark {

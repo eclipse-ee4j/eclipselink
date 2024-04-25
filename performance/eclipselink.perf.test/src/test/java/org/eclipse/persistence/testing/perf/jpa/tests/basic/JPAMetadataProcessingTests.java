@@ -41,7 +41,7 @@ import org.openjdk.jmh.annotations.State;
 public class JPAMetadataProcessingTests {
 
     private ServerSession session;
-    private Set<Class> entities;
+    private Set<Class<?>> entities;
 
     @Setup
     public void setup() {
