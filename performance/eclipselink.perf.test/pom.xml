@@ -189,15 +189,15 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>test-performance-benchmark</id>
+                        <id>test-core-performance-benchmark</id>
                         <configuration>
                             <arguments>
                                 <argument>${warmup.iterations}</argument>
                                 <argument>${run.iterations}</argument>
-                                <argument>${project.build.directory}/${jmh.resultFile}</argument>
+                                <argument>${project.build.directory}/jmh-core-result.txt</argument>
                                 <argument>${jmh.resultFormat}</argument>
                             </arguments>
-                            <mainClass>org.eclipse.persistence.testing.perf.Benchmarks</mainClass>
+                            <mainClass>org.eclipse.persistence.testing.perf.CoreBenchmarks</mainClass>
                         </configuration>
                         <phase>test</phase>
                         <goals>
@@ -205,12 +205,44 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>test-performance-jpa-benchmark</id>
+                        <id>test-moxy-performance-benchmark</id>
                         <configuration>
                             <arguments>
                                 <argument>${warmup.iterations}</argument>
                                 <argument>${run.iterations}</argument>
-                                <argument>${project.build.directory}/jpa-${jmh.resultFile}</argument>
+                                <argument>${project.build.directory}/jmh-moxy-result.txt</argument>
+                                <argument>${jmh.resultFormat}</argument>
+                            </arguments>
+                            <mainClass>org.eclipse.persistence.testing.perf.MOXyBenchmarks</mainClass>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-jpa-metadata-performance-benchmark</id>
+                        <configuration>
+                            <arguments>
+                                <argument>${warmup.iterations}</argument>
+                                <argument>${run.iterations}</argument>
+                                <argument>${project.build.directory}/jmh-jpa-metadata-result.txt</argument>
+                                <argument>${jmh.resultFormat}</argument>
+                            </arguments>
+                            <mainClass>org.eclipse.persistence.testing.perf.JPAMetadataBenchmarks</mainClass>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-jpa-performance-benchmark</id>
+                        <configuration>
+                            <arguments>
+                                <argument>${warmup.iterations}</argument>
+                                <argument>${run.iterations}</argument>
+                                <argument>${project.build.directory}/jmh-jpa-result.txt</argument>
                                 <argument>${jmh.resultFormat}</argument>
                             </arguments>
                             <mainClass>org.eclipse.persistence.testing.perf.JPABenchmarks</mainClass>

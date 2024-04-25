@@ -11,27 +11,26 @@
  */
 
 // Contributors:
-//              Oracle - initial implementation
+//     Oracle - initial implementation
 package org.eclipse.persistence.testing.perf;
 
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadLargeAmmountCacheTests;
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadLargeAmmountNoCacheTests;
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadSmallAmmountCacheTests;
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadSmallAmmountNoCacheTests;
+import org.eclipse.persistence.testing.perf.core.ConcurrencyManagerBenchmark;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-public class JPABenchmarks {
-
+/**
+ * This class wraps core module related benchmarks. It is analogy to JUnit suites.
+ *
+ */
+public class CoreBenchmarks {
     public static void main(String[] args) throws RunnerException {
 
         int warmupIterations = 20;
         int measurementIterations = 20;
-        int threads = 10;
-        String resultFile = "jmh-jpa-result.txt";
+        String resultFile = "jmh-core-result.txt";
         String resultFormat = "text";
 
         if (null != args && args.length == 4) {
@@ -42,17 +41,13 @@ public class JPABenchmarks {
         }
 
         Options opt = new OptionsBuilder()
-                .include(getInclude(JPAReadSmallAmmountCacheTests.class))
-                .include(getInclude(JPAReadSmallAmmountNoCacheTests.class))
-                .include(getInclude(JPAReadLargeAmmountCacheTests.class))
-                .include(getInclude(JPAReadLargeAmmountNoCacheTests.class))
-                .jvmArgsPrepend("-javaagent:" + System.getProperty("eclipselink.agent"))
+                .include(getInclude(ConcurrencyManagerBenchmark.class))
                 .result(resultFile)
                 .resultFormat(ResultFormatType.valueOf(resultFormat.toUpperCase()))
                 .warmupIterations(warmupIterations)
                 .measurementIterations(measurementIterations)
                 .forks(1)
-                .threads(threads)
+                .threads(50)
                 .build();
 
         new Runner(opt).run();
