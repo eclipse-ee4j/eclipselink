@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,33 @@
             <property name="javax.persistence.jdbc.url"         value="@url@"/>
             <property name="javax.persistence.jdbc.user"        value="@user@"/>
             <property name="javax.persistence.jdbc.password"    value="@pwd@"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="jpa-performance-read-cache">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.MasterEntity</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.DetailEntity</class>
+        <properties>
+            <property name="javax.persistence.jdbc.driver"      value="@driver@"/>
+            <property name="javax.persistence.jdbc.url"         value="@url@"/>
+            <property name="javax.persistence.jdbc.user"        value="@user@"/>
+            <property name="javax.persistence.jdbc.password"    value="@pwd@"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="jpa-performance-read-no-cache">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.MasterEntity</class>
+        <class>org.eclipse.persistence.testing.perf.jpa.model.basic.DetailEntity</class>
+        <properties>
+            <property name="javax.persistence.jdbc.driver"      value="@driver@"/>
+            <property name="javax.persistence.jdbc.url"         value="@url@"/>
+            <property name="javax.persistence.jdbc.user"        value="@user@"/>
+            <property name="javax.persistence.jdbc.password"    value="@pwd@"/>
+            <property name="eclipselink.cache.shared.default" value="false"/>
+            <property name="eclipselink.cache.size.default" value="0"/>
+            <property name="eclipselink.query-results-cache" value="false"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,12 +33,12 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
  * @author Martin Vojtek (martin.vojtek@oracle.com)
  *
  */
-public class Benchmarks {
+public class MOXyBenchmarks {
     public static void main(String[] args) throws RunnerException {
 
         int warmupIterations = 20;
         int measurementIterations = 20;
-        String resultFile = "jmh-result.txt";
+        String resultFile = "jmh-moxy-result.txt";
         String resultFormat = "text";
 
         if (null != args && args.length == 4) {
