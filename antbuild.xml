@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,6 +71,10 @@
         - test-oxm : runs MOXY oxm tests
         - test-sdo : runs SDO tests
         - test-sdo-srg : runs SDO SRG
+        - test-core-perf: runs the core performance tests
+        - test-moxy-perf: run the MOXy performance tests
+        - test-jpa-metadata-perf: run the JPA metadata performance tests
+        - test-jpa-perf: run the JPA performance tests
 
         It may require some configuration of the build.properties to run.
     -->
@@ -1967,6 +1971,15 @@
     </target>
     <target name="test-perf" description="run the performance tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test"/>
+    </target>
+    <target name="test-core-perf" description="run the core performance tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test-core"/>
+    </target>
+    <target name="test-moxy-perf" description="run the MOXy performance tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test-moxy"/>
+    </target>
+    <target name="test-jpa-metadata-perf" description="run the performance tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test-jpa-metadata"/>
     </target>
     <target name="test-jpa-perf" description="run the performance tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test-jpa"/>

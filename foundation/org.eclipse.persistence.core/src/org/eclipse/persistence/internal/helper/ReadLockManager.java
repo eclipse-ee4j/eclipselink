@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.internal.helper;
 import org.eclipse.persistence.internal.helper.type.ReadLockAcquisitionMetadata;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ReadLockManager {
 
@@ -42,21 +44,28 @@ public class ReadLockManager {
      */
     private final List<String> removeReadLockProblemsDetected = new ArrayList<>();
 
+    private final Lock instanceLock  = new ReentrantLock();
+
     /**
      * add a concurrency manager as deferred locks to the DLM
      */
-    public synchronized void addReadLock(ConcurrencyManager concurrencyManager) {
-        final Thread currentThread = Thread.currentThread();
-        final long currentThreadId = currentThread.getId();
-        ReadLockAcquisitionMetadata readLockAcquisitionMetadata = ConcurrencyUtil.SINGLETON.createReadLockAcquisitionMetadata(concurrencyManager);
+    public void addReadLock(ConcurrencyManager concurrencyManager) {
+        instanceLock.lock();
+        try {
+            final Thread currentThread = Thread.currentThread();
+            final long currentThreadId = currentThread.getId();
+            ReadLockAcquisitionMetadata readLockAcquisitionMetadata = ConcurrencyUtil.SINGLETON.createReadLockAcquisitionMetadata(concurrencyManager);
 
-        this.readLocks.add(FIRST_INDEX_OF_COLLECTION, concurrencyManager);
-        if(!mapThreadToReadLockAcquisitionMetadata.containsKey(currentThreadId)) {
-            List<ReadLockAcquisitionMetadata> newList = Collections.synchronizedList(new ArrayList<ReadLockAcquisitionMetadata>());
-            mapThreadToReadLockAcquisitionMetadata.put(currentThreadId, newList );
+            this.readLocks.add(FIRST_INDEX_OF_COLLECTION, concurrencyManager);
+            if (!mapThreadToReadLockAcquisitionMetadata.containsKey(currentThreadId)) {
+                List<ReadLockAcquisitionMetadata> newList = Collections.synchronizedList(new ArrayList<ReadLockAcquisitionMetadata>());
+                mapThreadToReadLockAcquisitionMetadata.put(currentThreadId, newList);
+            }
+            List<ReadLockAcquisitionMetadata> acquiredReadLocksInCurrentTransactionList = mapThreadToReadLockAcquisitionMetadata.get(currentThreadId);
+            acquiredReadLocksInCurrentTransactionList.add(FIRST_INDEX_OF_COLLECTION, readLockAcquisitionMetadata);
+        } finally {
+            instanceLock.unlock();
         }
-        List<ReadLockAcquisitionMetadata> acquiredReadLocksInCurrentTransactionList = mapThreadToReadLockAcquisitionMetadata.get(currentThreadId);
-        acquiredReadLocksInCurrentTransactionList.add(FIRST_INDEX_OF_COLLECTION, readLockAcquisitionMetadata);
     }
 
     /**
@@ -67,46 +76,56 @@ public class ReadLockManager {
      * @param concurrencyManager
      *            the concurrency cache key that is about to be decrement in number of readers.
      */
-    public synchronized void removeReadLock(ConcurrencyManager concurrencyManager) {
-        final Thread currentThread = Thread.currentThread();
-        final long currentThreadId = currentThread.getId();
-        boolean readLockManagerHasTracingAboutAddedReadLocksForCurrentThread = mapThreadToReadLockAcquisitionMetadata.containsKey(currentThreadId);
+    public void removeReadLock(ConcurrencyManager concurrencyManager) {
+        instanceLock.lock();
+        try {
+            final Thread currentThread = Thread.currentThread();
+            final long currentThreadId = currentThread.getId();
+            boolean readLockManagerHasTracingAboutAddedReadLocksForCurrentThread = mapThreadToReadLockAcquisitionMetadata.containsKey(currentThreadId);
 
-        if (!readLockManagerHasTracingAboutAddedReadLocksForCurrentThread) {
-            String errorMessage = ConcurrencyUtil.SINGLETON.readLockManagerProblem02ReadLockManageHasNoEntriesForThread(concurrencyManager, currentThreadId);
-            removeReadLockProblemsDetected.add(errorMessage);
-            return;
-        }
-
-        List<ReadLockAcquisitionMetadata> readLocksAcquiredDuringCurrentThread = mapThreadToReadLockAcquisitionMetadata.get(currentThreadId);
-        ReadLockAcquisitionMetadata readLockAquisitionMetadataToRemove = null;
-        for (ReadLockAcquisitionMetadata currentReadLockAcquisitionMetadata : readLocksAcquiredDuringCurrentThread) {
-            ConcurrencyManager currentCacheKeyObjectToCheck = currentReadLockAcquisitionMetadata.getCacheKeyWhoseNumberOfReadersThreadIsIncrementing();
-            boolean dtoToRemoveFound = concurrencyManager.getConcurrencyManagerId() == currentCacheKeyObjectToCheck.getConcurrencyManagerId();
-            if (dtoToRemoveFound) {
-                readLockAquisitionMetadataToRemove = currentReadLockAcquisitionMetadata;
-                break;
+            if (!readLockManagerHasTracingAboutAddedReadLocksForCurrentThread) {
+                String errorMessage = ConcurrencyUtil.SINGLETON.readLockManagerProblem02ReadLockManageHasNoEntriesForThread(concurrencyManager, currentThreadId);
+                removeReadLockProblemsDetected.add(errorMessage);
+                return;
             }
-        }
 
-        if (readLockAquisitionMetadataToRemove == null) {
-            String errorMessage = ConcurrencyUtil.SINGLETON.readLockManagerProblem03ReadLockManageHasNoEntriesForThread(concurrencyManager, currentThreadId);
-            removeReadLockProblemsDetected.add(errorMessage);
-            return;
-        }
-        this.readLocks.remove(concurrencyManager);
-        readLocksAcquiredDuringCurrentThread.remove(readLockAquisitionMetadataToRemove);
+            List<ReadLockAcquisitionMetadata> readLocksAcquiredDuringCurrentThread = mapThreadToReadLockAcquisitionMetadata.get(currentThreadId);
+            ReadLockAcquisitionMetadata readLockAquisitionMetadataToRemove = null;
+            for (ReadLockAcquisitionMetadata currentReadLockAcquisitionMetadata : readLocksAcquiredDuringCurrentThread) {
+                ConcurrencyManager currentCacheKeyObjectToCheck = currentReadLockAcquisitionMetadata.getCacheKeyWhoseNumberOfReadersThreadIsIncrementing();
+                boolean dtoToRemoveFound = concurrencyManager.getConcurrencyManagerId() == currentCacheKeyObjectToCheck.getConcurrencyManagerId();
+                if (dtoToRemoveFound) {
+                    readLockAquisitionMetadataToRemove = currentReadLockAcquisitionMetadata;
+                    break;
+                }
+            }
 
-        if (readLocksAcquiredDuringCurrentThread.isEmpty()) {
-            mapThreadToReadLockAcquisitionMetadata.remove(currentThreadId);
+            if (readLockAquisitionMetadataToRemove == null) {
+                String errorMessage = ConcurrencyUtil.SINGLETON.readLockManagerProblem03ReadLockManageHasNoEntriesForThread(concurrencyManager, currentThreadId);
+                removeReadLockProblemsDetected.add(errorMessage);
+                return;
+            }
+            this.readLocks.remove(concurrencyManager);
+            readLocksAcquiredDuringCurrentThread.remove(readLockAquisitionMetadataToRemove);
+
+            if (readLocksAcquiredDuringCurrentThread.isEmpty()) {
+                mapThreadToReadLockAcquisitionMetadata.remove(currentThreadId);
+            }
+        } finally {
+            instanceLock.unlock();
         }
     }
 
     /**
      * Return a set of the deferred locks
      */
-    public synchronized List<ConcurrencyManager> getReadLocks() {
-        return Collections.unmodifiableList(readLocks);
+    public List<ConcurrencyManager> getReadLocks() {
+        instanceLock.lock();
+        try {
+            return Collections.unmodifiableList(readLocks);
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -116,8 +135,13 @@ public class ReadLockManager {
      * @param problemDetected
      *            the detected problem
      */
-    public synchronized void addRemoveReadLockProblemsDetected(String problemDetected) {
-        removeReadLockProblemsDetected.add(problemDetected);
+    public void addRemoveReadLockProblemsDetected(String problemDetected) {
+        instanceLock.lock();
+        try {
+            removeReadLockProblemsDetected.add(problemDetected);
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /** Getter for {@link #mapThreadToReadLockAcquisitionMetadata} */
@@ -139,8 +163,13 @@ public class ReadLockManager {
      *         any read lock acquired in the tracing we definitely do not want this object instance to be thrown out
      *         from our main tracing. It is probably revealing problems in read lock acquisition and released.
      */
-    public synchronized boolean isEmpty() {
-        return readLocks.isEmpty() && removeReadLockProblemsDetected.isEmpty();
+    public boolean isEmpty() {
+        instanceLock.lock();
+        try {
+            return readLocks.isEmpty() && removeReadLockProblemsDetected.isEmpty();
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -154,16 +183,21 @@ public class ReadLockManager {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public synchronized ReadLockManager clone() {
-        ReadLockManager clone = new ReadLockManager();
-        clone.readLocks.addAll(this.readLocks);
-        for (Map.Entry<Long, List<ReadLockAcquisitionMetadata>> currentEntry : this.mapThreadToReadLockAcquisitionMetadata.entrySet()) {
-            Long key = currentEntry.getKey();
-            List<ReadLockAcquisitionMetadata> value = currentEntry.getValue();
-            clone.mapThreadToReadLockAcquisitionMetadata.put(key, new ArrayList<>(value));
+    public ReadLockManager clone() {
+        instanceLock.lock();
+        try {
+            ReadLockManager clone = new ReadLockManager();
+            clone.readLocks.addAll(this.readLocks);
+            for (Map.Entry<Long, List<ReadLockAcquisitionMetadata>> currentEntry : this.mapThreadToReadLockAcquisitionMetadata.entrySet()) {
+                Long key = currentEntry.getKey();
+                List<ReadLockAcquisitionMetadata> value = currentEntry.getValue();
+                clone.mapThreadToReadLockAcquisitionMetadata.put(key, new ArrayList<>(value));
+            }
+            clone.removeReadLockProblemsDetected.addAll(this.removeReadLockProblemsDetected);
+            return clone;
+        } finally {
+            instanceLock.unlock();
         }
-        clone.removeReadLockProblemsDetected.addAll(this.removeReadLockProblemsDetected);
-        return clone;
     }
 
 }

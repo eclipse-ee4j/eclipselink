@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Record;
 
+import java.util.concurrent.TimeUnit;
 /**
  * <p><b>Purpose</b>: Container class for storing objects in an IdentityMap.
  * <p><b>Responsibilities</b>:<ul>
@@ -584,18 +585,23 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         this.transactionId = transactionId;
     }
 
-    public synchronized Object waitForObject(){
+    public Object waitForObject() {
+        getInstanceLock().lock();
         try {
-            int count = 0;
-            while (this.object == null && isAcquired()) {
-                if (count > MAX_WAIT_TRIES)
-                    throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(getActiveThread(), Thread.currentThread());
-                wait(10);
-                ++count;
+            try {
+                int count = 0;
+                while (this.object == null && isAcquired()) {
+                    if (count > MAX_WAIT_TRIES)
+                        throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(getActiveThread(), Thread.currentThread());
+                    getInstanceLockCondition().await(10, TimeUnit.MILLISECONDS);
+                    ++count;
+                }
+            } catch (InterruptedException ex) {
+                //ignore as the loop is broken
             }
-        } catch(InterruptedException ex) {
-            //ignore as the loop is broken
+            return this.object;
+        } finally {
+            getInstanceLock().unlock();
         }
-        return this.object;
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,11 +80,12 @@
     <property name="javax.validation.lib"   value="${perftest.2.common.plugins.dir}/${javax.validation.jar}"/>
     <property name="jpa21.lib"   value="${perftest.2.trunk.dir}/jpa/plugins/${persistence22.jar}"/>
 
+    <property name="jaxb-api.lib" value="${perftest.2.common.plugins.dir}/${jaxb-api.jar}"/>
     <property name="json-api.lib" value="${perftest.2.common.plugins.dir}/${json-api.jar}"/>
     <property name="json-impl.lib" value="${perftest.2.common.plugins.dir}/${json-impl.jar}"/>
     <property name="validation-impl.lib"   value="${perftest.2.common.plugins.dir}/${validation-impl.jar}"/>
-    <property name="jboss-logging.lib"   value="${extensions.depend.dir}/${jboss-logging.jar}"/>
-    <property name="javax.el-api.lib"   value="${extensions.depend.dir}/${javax.el-api.jar}"/>
+    <property name="jboss-logging.lib"   value="${perftest.2.common.plugins.dir}/${jboss-logging.jar}"/>
+    <property name="javax.el-api.lib"   value="${perftest.2.common.plugins.dir}/${javax.el-api.jar}"/>
     <property name="classmate.lib"   value="${extensions.depend.dir}/${classmate.jar}"/>
 
     <property name="jmh-core.lib" value="${extensions.depend.dir}/${jmh-core.jar}"/>
@@ -100,6 +101,7 @@
     <path id="perf.compile.path">
         <pathelement path="${jmh-core.lib}"/>
         <pathelement path="${jmh-generator-annprocess.lib}"/>
+        <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${json-api.lib}"/>
         <pathelement path="${jpa21.lib}"/>
         <pathelement path="${perftest.2.core.dir}/target/${classes.dir}"/>
@@ -119,6 +121,7 @@
         <pathelement path="${javax.el-api.lib}"/>
         <pathelement path="${classmate.lib}"/>
         <pathelement path="${asm.lib}"/>
+        <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${json-api.lib}"/>
         <pathelement path="${json-impl.lib}"/>
         <pathelement path="${perftest.2.moxy.dir}/target/${classes.dir}"/>
@@ -131,6 +134,8 @@
     <path id="perf.compile.against.jar.path">
         <pathelement path="${jmh-core.lib}"/>
         <pathelement path="${jmh-generator-annprocess.lib}"/>
+        <pathelement path="${jpa21.lib}"/>
+        <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${json-api.lib}"/>
         <pathelement path="${jpa21.lib}"/>
         <pathelement path="${eclipselink.lib}"/>
@@ -141,6 +146,7 @@
         <pathelement path="${jmh-generator-annprocess.lib}"/>
         <pathelement path="${commons-math.lib}"/>
         <pathelement path="${jpa21.lib}"/>
+        <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${jdbc.driver.lib}"/>
         <pathelement path="${javax.validation.lib}"/>
         <pathelement path="${validation-impl.lib}"/>
@@ -157,13 +163,22 @@
     <!-- Test targets -->
     <target name="test" depends="clean, clean-reports, filter-tokens, compile-and-run-tests"
             description="run perf tests"/>
-    <target name="test-against-jar"
-            depends="clean, clean-reports, filter-tokens, compile-and-run-tests-against-jar"
-            description="run perf tests against eclipselink.jar"/>
+
+    <target name="test-core"
+            depends="clean, clean-reports, filter-tokens, compile-and-run-core-tests-against-jar"
+            description="run JPA metadata perf tests against eclipselink.jar"/>
+
+    <target name="test-moxy"
+            depends="clean, clean-reports, filter-tokens, compile-and-run-moxy-tests-against-jar"
+            description="run JPA metadata perf tests against eclipselink.jar"/>
+
+    <target name="test-jpa-metadata"
+            depends="clean, clean-reports, filter-tokens, compile-and-run-jpa-metadata-tests-against-jar"
+            description="run JPA metadata perf tests against eclipselink.jar"/>
 
     <target name="test-jpa"
-            depends="clean, clean-reports, filter-tokens, compile-and-run-tests-against-jar"
-            description="run perf tests against eclipselink.jar"/>
+            depends="clean, clean-reports, filter-tokens, compile-and-run-jpa-tests-against-jar"
+            description="run JPA perf tests against eclipselink.jar"/>
 
     <!-- Build targets -->
     <target name="compile-tests" depends="clean" description="build perf test classes">
@@ -180,7 +195,25 @@
         <run_perf_tests runpathref="perf.run.path"/>
     </target>
 
-    <target name="compile-and-run-tests-against-jar" depends="compile-tests-against-jar" description="build and run perf tests against eclipselink.jar">
+    <target name="compile-and-run-core-tests-against-jar" depends="compile-tests-against-jar" description="build and run core perf tests against eclipselink.jar">
+        <available file="${eclipselink.lib}" property="eclipselink.lib.exists"/>
+        <fail unless="${eclipselink.lib.exists}" message="${eclipselink.lib} not found"/>
+        <run_core_perf_tests runpathref="perf.run.against.jar.path"/>
+    </target>
+
+    <target name="compile-and-run-moxy-tests-against-jar" depends="compile-tests-against-jar" description="build and run MOXy perf tests against eclipselink.jar">
+        <available file="${eclipselink.lib}" property="eclipselink.lib.exists"/>
+        <fail unless="${eclipselink.lib.exists}" message="${eclipselink.lib} not found"/>
+        <run_moxy_perf_tests runpathref="perf.run.against.jar.path"/>
+    </target>
+
+    <target name="compile-and-run-jpa-metadata-tests-against-jar" depends="compile-tests-against-jar" description="build and run JPA metadata perf tests against eclipselink.jar">
+        <available file="${eclipselink.lib}" property="eclipselink.lib.exists"/>
+        <fail unless="${eclipselink.lib.exists}" message="${eclipselink.lib} not found"/>
+        <run_jpa_metadata_perf_tests runpathref="perf.run.against.jar.path"/>
+    </target>
+
+    <target name="compile-and-run-jpa-tests-against-jar" depends="compile-tests-against-jar" description="build and run JPA perf tests against eclipselink.jar">
         <available file="${eclipselink.lib}" property="eclipselink.lib.exists"/>
         <fail unless="${eclipselink.lib.exists}" message="${eclipselink.lib} not found"/>
         <run_jpa_perf_tests runpathref="perf.run.against.jar.path"/>
@@ -213,17 +246,31 @@
         <copy file="${persistence.xml}.template" tofile="${persistence.xml}" overwrite="true"/>
     </target>
 
-    <macrodef name="run_jpa_perf_tests">
+    <macrodef name="run_core_perf_tests">
         <attribute name="runpathref" />
         <sequential>
-            <run_perf_test runpathref="@{runpathref}" clsname="org.eclipse.persistence.testing.perf.JPABenchmarks"/>
+            <run_perf_test runpathref="@{runpathref}" clsname="org.eclipse.persistence.testing.perf.CoreBenchmarks" resultFile="jmh-core-result.txt"/>
         </sequential>
     </macrodef>
 
-    <macrodef name="run_perf_tests">
+    <macrodef name="run_moxy_perf_tests">
         <attribute name="runpathref" />
         <sequential>
-            <run_perf_test runpathref="@{runpathref}" clsname="org.eclipse.persistence.testing.perf.Benchmarks"/>
+            <run_perf_test runpathref="@{runpathref}" clsname="org.eclipse.persistence.testing.perf.MOXyBenchmarks" resultFile="jmh-moxy-result.txt"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="run_jpa_metadata_perf_tests">
+        <attribute name="runpathref" />
+        <sequential>
+            <run_perf_test runpathref="@{runpathref}" clsname="org.eclipse.persistence.testing.perf.JPAMetadataBenchmarks" resultFile="jmh-jpa-metadata-result.txt"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="run_jpa_perf_tests">
+        <attribute name="runpathref" />
+        <sequential>
+            <run_perf_test runpathref="@{runpathref}" clsname="org.eclipse.persistence.testing.perf.JPABenchmarks" resultFile="jmh-jpa-result.txt"/>
         </sequential>
     </macrodef>
 
@@ -231,6 +278,7 @@
     <macrodef name="run_perf_test">
         <attribute name="runpathref"/>
         <attribute name="clsname"/>
+        <attribute name="resultFile"/>
         <sequential>
             <property name="eclipselink.agent.path" location="${eclipselink.lib}"/>
             <java classname="@{clsname}" dir="${report.dir}" fork="true" failonerror="false">
@@ -238,7 +286,7 @@
                 <jvmarg line="${additional.jvmargs}"/>
                 <arg value="${warmup.iterations}"/>
                 <arg value="${run.iterations}"/>
-                <arg value="${jmh.resultFile}"/>
+                <arg value="@{resultFile}"/>
                 <arg value="${jmh.resultFormat}"/>
                 <classpath>
                     <path refid="@{runpathref}"/>
