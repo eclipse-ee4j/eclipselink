@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -124,6 +124,8 @@ public class CriteriaBuilderTest extends AbstractSuite {
                 et.begin();
                 CriteriaBuilder cb = em.getCriteriaBuilder();
                 CriteriaQuery<SyntaxEntity> cQuery = cb.createQuery(SyntaxEntity.class);
+                Root<SyntaxEntity> root = cQuery.from(SyntaxEntity.class);
+                cQuery.select(root);
                 cQuery.where(cb.and(Collections.emptyList()));
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 List<SyntaxEntity> result = query.getResultList();
@@ -145,6 +147,8 @@ public class CriteriaBuilderTest extends AbstractSuite {
                 et.begin();
                 CriteriaBuilder cb = em.getCriteriaBuilder();
                 CriteriaQuery<SyntaxEntity> cQuery = cb.createQuery(SyntaxEntity.class);
+                Root<SyntaxEntity> root = cQuery.from(SyntaxEntity.class);
+                cQuery.select(root);
                 cQuery.where(cb.or(Collections.emptyList()));
                 TypedQuery<SyntaxEntity> query = em.createQuery(cQuery);
                 List<SyntaxEntity> result = query.getResultList();
