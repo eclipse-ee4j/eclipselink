@@ -26,9 +26,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.eclipse.persistence.javadocs</artifactId>
+    <artifactId>org.eclipse.persistence.javadoc</artifactId>
     <packaging>pom</packaging>
-    <name>EclipseLink API documentation</name>
+    <name>Documentation - API</name>
 
     <properties>
         <apidocs.api.src>${project.build.directory}/api-sources</apidocs.api.src>
@@ -392,7 +392,7 @@
                                     <doctitle>${apidocs.doctitle}</doctitle>
                                     <bottom>${apidocs.bottom}</bottom>
                                     <header>${apidocs.header}</header>
-                                    <group title="Core Modules" packages="${apidocs.core}"/>
+                                    <group title="Core" packages="${apidocs.core}"/>
                                     <group title="Persistence" packages="${apidocs.persistence}"/>
                                     <group title="MOXy" packages="${apidocs.moxy}"/>
                                     <group title="DBWS" packages="${apidocs.dbws}"/>
