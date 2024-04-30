@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,6 +100,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.platform.server.wls;
     exports org.eclipse.persistence.platform.xml;
     exports org.eclipse.persistence.queries;
+    exports org.eclipse.persistence.security;
     exports org.eclipse.persistence.sequencing;
     exports org.eclipse.persistence.services;
     exports org.eclipse.persistence.services.glassfish;
