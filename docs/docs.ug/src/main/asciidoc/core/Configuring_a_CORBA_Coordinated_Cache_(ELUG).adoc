@@ -1,0 +1,38 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_CORBA_Coordinated_Cache_(ELUG)[Related
+Topics]
+
+[#Table 102-1]## *_Configurable Options for a CORBA Coordinated Cache_*
+
+Option to Configure
+
+EclipseLink Workbench
+
+Java
+
+Cache coordination change propagation at the descriptor level
+
+Synchronous change propagation mode
+
+Service channel
+
+Multicast group address
+
+Multicast port
+
+Naming service type
+
+Announcement delay
+
+Connection handling
+
+Context properties
+
+Packet time-to-live
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

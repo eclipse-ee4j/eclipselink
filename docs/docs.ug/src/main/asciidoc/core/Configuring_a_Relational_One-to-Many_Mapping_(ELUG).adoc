@@ -1,0 +1,99 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_One-to-Many_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for a relational one-to-many
+mapping.
+
+[#Table 38-1]## *_Configurable Options for Relational One-to-Many
+Mapping_*
+
+[width="100%",cols="<65%,<17%,<18%",options="header",]
+|===
+|*Option* |*Workbench* |*Java*
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Reference_Descriptor[Configuring
+Reference Descriptor] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Configuring
+Read-Only Mappings] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Configuring
+Mapping Comments] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Batch_Reading[Configuring
+Batch Reading] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Configuring
+Mapping Comments] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Bidirectional_Relationship[Configuring
+Bidirectional Relationship]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Configuring
+Container Policy] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Configuring
+Mapping Comments] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Joining_at_the_Mapping_Level[Configuring
+Joining at the Mapping Level]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Query_Key_Order[Configuring
+Query Key Order] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+This example shows how to create a one-to-many mapping and add it to a
+descriptor using Java code.
+
+[#Example 40-1]## *_One-to-Many Mapping_*
+
+....
+public void customize(ClassDescriptor descriptor) {
+    OneToManyMapping mapping = new OneToManyMapping();
+
+    // configure mapping
+    ...
+
+    // add mapping to descriptor
+    descriptor.addMapping(mapping);
+}
+....
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-Many_Mapping[One-to-Many
+Mapping]
+* link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring a
+Relational Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+For information on using JPA to configure one-to-many mappings, see
+link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)#@OneToMany[@OneToMany].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

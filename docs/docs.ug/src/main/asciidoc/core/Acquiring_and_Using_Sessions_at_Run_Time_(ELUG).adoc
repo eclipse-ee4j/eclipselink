@@ -1,0 +1,732 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Acquiring_and_Using_Sessions_at_Run_Time_(ELUG)[Related
+Topics]
+
+After you create and configure sessions, you can use the session manager
+to acquire a session instance at run time.
+
+== Introduction to Session Acquisition
+
+We recommend that you export session instances from the Workbench to one
+or more uniquely named `+sessions.xml+` files and then use the session
+manager to load sessions from these `+sessions.xml+` files.
+
+The EclipseLink session manager lets you build a series of sessions that
+are maintained under a single entity. The session manager is a static
+utility class that loads EclipseLink sessions from the `+sessions.xml+`
+file, caches the sessions by name in memory, and provides a single
+access point for EclipseLink sessions. The session manager supports the
+following session types:
+
+* Server Session
+* Database Session
+* SessionBroker
+
+See
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#CACJAFDF[Introduction
+to EclipseLink Sessions] for detailed information on these available
+sessions.
+
+The session manager has two main functions: it creates instances of the
+sessions and it ensures that only a single instance of each named
+session exists for any instance of a session manager.
+
+This is particularly useful for EJB applications in that an enterprise
+bean can acquire the session manager and acquire the desired session
+from it.
+
+=== Session Manager
+
+When a client application requires a session, it requests the session
+from the EclipseLink session manager. The two main functions of the
+session manager are to instantiate EclipseLink sessions for the server,
+and to hold the sessions for the life of the application. The session
+manager instantiates database sessions, server sessions, or session
+brokers based on the configuration information in the `+sessions.xml+`
+file.
+
+The session manager instantiates sessions as follows:
+
+* The client application requests a session by name.
+* The session manager looks up the session name in the `+sessions.xml+`
+file. If the session name exists, the session manager instantiates the
+specified session; otherwise, it throws an exception.
+* After instantiation, the session remains viable until the application
+is shut down.
+
+=== Multiple Sessions
+
+We recommend that you acquire sessions from the session manager and
+perform all persistence operations using a client session or the unit of
+work.
+
+Note that in the case of a server session or a session broker that
+contains server sessions, after you acquire the session you will acquire
+a client session from it. From a given server session (or session broker
+that contains server sessions), you can acquire as many client sessions
+as you have clients.
+
+Each client can easily manage concurrent access and referential
+constraints by acquiring a unit of work from its client session and
+performing all persistence operations using the unit of work.
+
+== Acquiring the Session Manager
+
+EclipseLink maintains only one instance of the session manager class.
+The singleton session manager maintains all the named EclipseLink
+sessions at run time. When an application requests a session by name,
+the session manager retrieves the specified session from the appropriate
+configuration file.
+
+As the link:#Example_86-1[Acquiring a Session Manager Instance] example
+illustrates, to access the session manager instance, use the
+`+org.eclipse.persistence.tools.sessionmanagement.SessionManager+`
+method `+getManager+`. You can then use the session manager instance to
+load EclipseLink sessions.
+
+[#Example 86-1]## *_Acquiring a Session Manager Instance_*
+
+[source,java]
+----
+ import org.eclipse.persistence.tools.sessionmanagement.SessionManager;
+ SessionManager sessionManager = SessionManager.getManager();
+----
+
+== Acquiring a Session from the Session Manager
+
+When the session manager loads a session that is not yet in its cache,
+the session manager creates an instance of the appropriate session type
+and configures it according to the `+sessions.xml+` file configuration.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* To best use the methods associated with the session type that
+is being instantiated, cast the session that is returned from the
+`+getSession+` method. This type must match the session type that is
+defined in the `+sessions.xml+` file for the named session.
+|===
+
+This section explains the following:
+
+* link:#How_to_Load_a_Session_from_sessions.xml_Using_Defaults[How to
+Load a Session from sessions.xml Using Defaults]
+* link:#How_to_Load_a_Session_from_sessions.xml_with_an_Alternative_Class_Loader[How
+to Load a Session from sessions.xml with an Alternative Class Loader]
+* link:#How_to_Load_a_Session_from_an_Alternative_Session_Configuration_File[How
+to Load a Session from an Alternative Session Configuration File]
+* link:#How_to_Load_a_Session_Without_Logging_In[How to Load a Session
+Without Logging In]
+* link:#How_to_Reload_and_Refresh_Session_Configuration[How to Reload
+and Refresh Session Configuration]
+* link:#How_to_Refresh_a_Session_when_the_Class_Loader_Changes[How to
+Refresh a Session when the Class Loader Changes]
+
+=== How to Load a Session from sessions.xml Using Defaults
+
+If you have a single sessions configuration file (`+sessions.xml+`) that
+contains all the session instances created by the Workbench, then you
+can load a session by name, as this example illustrates.
+
+[#Example 86-2]## *_Acquiring a Named Session from Session Manager Using
+Defaults_*
+
+[source,java]
+----
+ // Load a named session (mysession) defined in the sessions.xml file
+ SessionManager manager = SessionManager.getManager();
+ Session session = manager.getSession("mysession");
+----
+
+In this example, the following session manager default configuration
+applies:
+
+* Class loader – The thread-based class loader is used to find and load
+the `+sessions.xml+` resource and resolve any classes referenced in the
+`+sessions.xml+` and `+project.xml+` files. If you acquire the session
+in an application class, this will typically be the application’s class
+loader, which is correct. In a Java EE application, it is best to
+specify this as the class loader from a class in the same JAR file that
+the `+sessions.xml+` file is deployed in.
+* File – By default, the file named `+sessions.xml+` in the root
+directory relative to the class loader is used. If the file is named
+differently, or not in the root directory, the relative path must be
+specified. Relative resource paths in Java must use `+" / "+`, not
+`+" \ "+`.
+* Session name – The name passed into the `+getSession+` call. This name
+must be unique for the entire application server, not just unique within
+the application.
+* Login – `+true+`. The session will be connected by default. If you
+must manually configure the session before login, set this option to
+`+false+` (see link:#How_to_Load_a_Session_Without_Logging_In[How to
+Load a Session Without Logging In]).
+* Refresh – `+false+`. If already loaded, the same session will be
+returned. Refresh should only be used, if it is known that the existing
+session is not being used, and the configuration has changed, such as in
+a Java EE environment redeployment scenario.
+* Verify class loader – false. The session manager will not refresh the
+session if the class loader changes. This should normally be set to
+`+true+`. It must be set to `+true+` in a Java EE environment, if hot
+deployment or redeployment to a running application server is required
+(see link:#How_to_Refresh_a_Session_when_the_Class_Loader_Changes[How to
+Refresh a Session when the Class Loader Changes]).
+
+=== How to Load a Session from sessions.xml with an Alternative Class Loader
+
+You can use an alternative class loader to load sessions. This is common
+when your EclipseLink application integrates with a Java EE container.
+The session manager uses the class loader to find and load the
+`+sessions.xml+` resource and resolve any classes referenced in the
+`+sessions.xml+` and `+project.xml+` files.
+
+In most cases, you use the class loader from the current thread context,
+as the link:#Example_86-3[Loading a Session Using the Current Thread
+Context Class Loader] example illustrates. In this example, the session
+named `+mysession+` is loaded from the first file in the application
+classpath named `+sessions.xml+` using the class loader associated with
+the current thread context.
+
+[#Example 86-3]## *_Loading a Session Using the Current Thread Context
+Class Loader_*
+
+[source,java]
+----
+ /* Use the specified ClassLoader to load a session (mysession) defined in the sessions.xml file */
+
+ SessionManager manager = SessionManager.getManager();
+ Session session = manager.getSession(
+     "mysession",  // session name to load
+     Thread.current().getContextClassLoader() // ClassLoader instance to use
+ );
+----
+
+However, if your Java EE container does not support using the current
+thread context class loader, you can use the class loader from the
+current class, as this example illustrates.
+
+[#Example 86-4]## *_Loading a Session Using the Current Class’s Class
+Loader_*
+
+[source,java]
+----
+ /* Use the specified ClassLoader to load a session (mysession) defined in the sessions.xml file */
+ SessionManager manager = SessionManager.getManager();
+ Session session = manager.getSession(
+     "mysession",  // session name to load
+     this.getClass().getClassLoader() // ClassLoader instance to use
+ );
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Oracle Containers for J2EE supports the use of the class loader
+from the current thread.
+|===
+
+=== How to Load a Session from an Alternative Session Configuration File
+
+If your session instances are contained in multiple, uniquely named
+session configuration files (`+sessions.xml+` files), then you must
+explicitly create an `+XMLSessionConfigLoader+` object initialized with
+the name of the `+sessions.xml+` file and pass that
+`+XMLSessionConfigLoader+` into the `+SessionManager+` method
+`+getSession+`, as the link:#Example_86-5[Loading a Session from an
+Alternative Configuration File] example illustrates.
+
+The file path you specify is relative to the class loader root
+directory. Relative resource paths in Java must use the forward slash (
+`+/+` ), not back slash ( `+\+` ).
+
+In this example, the session named `+mysession+` is loaded by the
+specified class loader from the first file in the application classpath
+named `+eclipselink-sessions.xml+`.
+
+[#Example 86-5]## *_Loading a Session from an Alternative Configuration
+File_*
+
+[source,java]
+----
+ // XMLSessionConfigLoader loads the eclipselink-sessions.xml file
+ SessionManager manager = SessionManager.getManager();
+ manager.getSession(
+     new XMLSessionConfigLoader("eclipselink-sessions.xml"),
+     "mysession",
+     this.class.getClassLoader()
+ );
+----
+
+=== How to Load a Session Without Logging In
+
+The `+XMLSessionConfigLoader+` (see
+link:#How_to_Load_a_Session_from_an_Alternative_Session_Configuration_File[How
+to Load a Session from an Alternative Session Configuration File]) lets
+you call a session using the `+SessionManager+` method `+getSession+`,
+without invoking the `+Session+` method `+login+`, as the
+link:#Example_86-6[Open Session with No Login] example shows. This lets
+you prepare a session for use and leave login to the application.
+
+[#Example 86-6]## *_Open Session with No Login_*
+
+[source,java]
+----
+ SessionManager manager = SessionManager.getManager();
+ Session session = manager.getSession(
+     new XMLSessionConfigLoader(), // XMLSessionConfigLoader (sessions.xml file)
+     "mysession", // session name
+     YourApplicationClass.getClassLoader(), // class loader
+     false, // do not log in session
+     false); // do not refresh session
+----
+
+=== How to Reload and Refresh Session Configuration
+
+You can tell the session manager to refresh an existing session from the
+`+sessions.xml+` file. Typically, this would only ever be used in a Java
+EE environment at redeployment time, or after a reset of a running
+server. You should only use this option when you know that the existing
+session is not being used.
+
+[#Example 86-7]## *_Forcing a Reparse of the sessions.xml File_*
+
+[source,java]
+----
+ //In this example, XMLSessionConfigLoader loads sessions.xml from the classpath
+ SessionManager manager = SessionManager.getManager();
+ Session session = manager.getSession(
+     new XMLSessionConfigLoader(), // XMLSessionConfigLoader (sessions.xml file)
+     "mysession", // session name
+     YourApplicationClass.getClassLoader(), // class loader
+     true, // log in session
+     true  // refresh session
+ );
+----
+
+=== How to Refresh a Session when the Class Loader Changes
+
+In an unmanaged (POJO) Java EE environment, if you require hot
+deployment or redeployment to a running application server, you must
+tell the session manager to refresh your session if the class loader
+changes, as the link:#Example_86-8[Forcing a Reparse of the sessions.xml
+File] example shows. This option makes the session manager refresh the
+session if the class loader changes, which occurs when the application
+is redeployed. When this option is set to `+true+`, the same class
+loader must always be used to retrieve the session.
+
+[#Example 86-8]## *_Forcing a Reparse of the sessions.xml File_*
+
+[source,java]
+----
+ //In this example, XMLSessionConfigLoader loads sessions.xml from the classpath
+ SessionManager manager = SessionManager.getManager();
+ Session session = manager.getSession(
+     new XMLSessionConfigLoader(), // XMLSessionConfigLoader (sessions.xml file)
+     "mysession", // session name
+     YourApplicationClass.getClassLoader(), // class loader
+     true,   // log in session'''
+     false,  // do not refresh session when loaded
+     true    // do refresh session if class loader changes
+ );
+----
+
+== Acquiring a Client Session
+
+Before you can acquire a client session, you must first use the session
+manager to acquire a server session or a session broker that contains
+server sessions (see
+link:#Acquiring_a_Session_from_the_Session_Manager[Acquiring a Session
+from the Session Manager]).
+
+This table summarizes the methods used to acquire various types of
+client sessions from a server session and a session broker session that
+contains server sessions.
+
+[#Table 86-1]## *_Method Used to Acquire a Client Session_*
+
+[width="100%",cols="<22%,<40%,<38%",options="header",]
+|===
+|*Client Session* |*Server Session Method* |*Session Broker Session
+Method*
+|Regular or Isolated |`+acquireClientSession()+`
+|`+acquireClientSessionBroker()+`
+
+|Regular or Isolated |`+acquireClientSession(ConnectionPolicy)+` |_not
+applicable_
+
+|Historical |`+acquireHistoricalSession(AsOfClause)+`
+|`+acquireHistoricalSession(AsOfClause)+`
+|===
+
+The `+acquireClientSession+` method returns a session of type
+`+ClientSession+`.
+
+The `+acquireClientSessionBroker+` method returns a session of type
+`+SessionBroker+`.
+
+In both cases, you should cast the returned object to type `+Session+`
+and use it as you would any other session.
+
+For more information, see the following:
+
+* link:#How_to_Acquire_an_Isolated_Client_Session[ow to Acquire an
+Isolated Client Session]
+* link:#Acquiring_a_Historical_Session[Acquiring a Historical Session]
+* link:#How_to_Acquire_a_Client_Session_that_Uses_Exclusive_Connections[How
+to Acquire a Client Session that Uses Exclusive Connections]
+* link:#How_to_Acquire_a_Client_Session_that_Uses_Connection_Properties[ow
+to Acquire a Client Session that Uses Connection Properties]
+* link:#How_to_Acquire_a_Client_Session_that_Uses_a_Named_Connection_Pool[How
+to Acquire a Client Session that Uses a Named Connection Pool]
+* link:#How_to_Acquire_a_Client_Session_that_Does_Not_Use_Lazy_Connection_Allocation[How
+to Acquire a Client Session that Does Not Use Lazy Connection
+Allocation]
+
+=== How to Acquire an Isolated Client Session
+
+If in your EclipseLink project you configure all classes as isolated
+(see
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Cache_Isolation_at_the_Project_Level[Configuring
+Cache Isolation at the Project Level]), or one or more classes as
+isolated (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Isolation_at_the_Descriptor_Level[Configuring
+Cache Isolation at the Descriptor Level]), then all client sessions that
+you acquire from a parent server session will be isolated client
+sessions (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions[Isolated
+Client Sessions]).
+
+Using a `+ConnectionPolicy+`, you can acquire an isolated client session
+that uses exclusive connections (see
+link:#How_to_Acquire_a_Client_Session_that_Uses_Exclusive_Connections[How
+to Acquire a Client Session that Uses Exclusive Connections]). This
+isolated client session can be configured with connection properties for
+use with the Oracle Virtual Private Database (VPD) feature (see
+link:#How_to_Acquire_a_Client_Session_that_Uses_Connection_Properties[How
+to Acquire a Client Session that Uses Connection Properties]).
+Typically, you use Oracle Database proxy authentication to pass user
+credentials to the Oracle Database. For more information about Oracle
+Database proxy authentication, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Oracle_Database_Proxy_Authentication[Oracle
+Database Proxy Authentication].
+
+For more information about VPD, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions_and_Oracle_Virtual_Private_Database_(VPD)[Isolated
+Client Sessions and Oracle Virtual Private Database (VPD)].
+
+=== How to Acquire a Client Session that Uses Exclusive Connections
+
+This example illustrates how to configure a `+ConnectionPolicy+` and use
+it to acquire a client session that uses exclusive connections.
+
+[#Example 86-9]## *_Acquiring a Client Session that Uses Connection
+Properties_*
+
+[source,java]
+----
+ ConnectionPolicy connectionPolicy = new ConnectionPolicy();
+ // Use an exclusive connection for the session
+ connectionPolicy.setShouldUseExclusiveConnection(true);
+
+ Session clientSession = server.acquireClientSession(connectionPolicy);
+ // By default, an exclusive connection will be acquired lazily
+----
+
+An exclusive connection is allocated from a shared connection pool. The
+connection is dedicated to the client session that acquires it.
+
+Note: Typically, the life cycle of a client session is the duration of a
+server request. However, if you are using JTA, it is the life cycle of a
+JTA transaction.
+
+You cannot hold the client session across the JTA transaction
+boundaries. If you are not using a unit of work in your transaction and
+you are configuring a client session to use an exclusive connection (see
+Configuring Exclusive Isolated Client Sessions for Virtual Private
+Database), you must explicitly acquire and release the session when you
+are finished using it. Although client sessions have a finalizer that
+would release the session when it is garbage-collected, you must not
+rely on the finalizer and release the exclusive client session (or a
+non-lazy session) in the application to release the data source
+connection. Note that the requirement to release the session is not
+JTA-specific.
+
+If you are using a unit of work (see Using Advanced Unit of Work API),
+you do not have to worry about releasing its client session as the unit
+of work always automatically releases it at the end of the JTA
+transaction.
+
+A named query can also use an exclusive connection (see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Named Query
+Advanced Options]).
+
+For more information, see the following:
+
+* link:#How_to_Acquire_a_Client_Session_that_Does_Not_Use_Lazy_Connection_Allocation[How
+to Acquire a Client Session that Does Not Use Lazy Connection
+Allocation]
+* link:Configuring%20a%20Session%20(ELUG)#Configuring_Connection_Policy[Configuring
+Connection Policy]
+
+=== How to Acquire a Client Session that Uses Connection Properties
+
+The link:#Example_86-10[Acquiring an Isolated Session Using Connection
+Properties] example illustrates how to configure a `+ConnectionPolicy+`
+and use it to acquire a client session that uses connection properties.
+In this example, the properties are used by the Oracle VPD feature (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions_and_Oracle_Virtual_Private_Database_(VPD)[Isolated
+Client Sessions and Oracle Virtual Private Database (VPD)]). You can use
+connection properties for other application purposes.
+
+[#Example 86-10]## *_Acquiring an Isolated Session Using Connection
+Properties_*
+
+[source,java]
+----
+ ConnectionPolicy connectionPolicy = new ConnectionPolicy();
+ // Set VPD specific properties to be used in the events
+ connectionPolicy.setProperty("userLevel", new Integer(5));
+
+ Session clientSession = server.acquireClientSession(connectionPolicy);
+----
+
+For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Connection_Policy[Configuring
+Connection Policy].
+
+=== How to Acquire a Client Session that Uses a Named Connection Pool
+
+Before you can acquire a client session that uses a named connection
+pool, you must configure your session with a named connection pool. For
+more information on named connection pools, see
+link:Introduction%20to%20Data%20Access%20(ELUG)[Application-Specific
+Connection Pools]. For more information on creating a named connection
+pool, see
+link:Creating%20an%20Internal%20Connection%20Pool%20(ELUG)[Introduction
+to the Internal Connection Pool Creation].
+
+To acquire a client session that uses a named connection pool, use
+`+Server+` method `+acquireClientSession+`, passing in a
+`+ConnectionPolicy+` configured with the desired connection pool. The
+acquired `+ClientSession+` uses connections from the specified pool for
+writes (reads still go through the `+Server+` read connection pool).
+
+This example illustrates how to configure a `+ConnectionPolicy+` to
+specify a named connection pool named `+myConnectionPool+`.
+
+[#Example 86-11]## *_Acquiring a Client Session that Uses a Named
+Connection Pool_*
+
+[source,java]
+----
+ // Assuming you created a connection pool named "myConnectionPool"
+ Session clientSession = server.acquireClientSession(
+     new ConnectionPolicy("myConnectionPool")
+ );
+----
+
+For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Connection_Policy[Configuring
+Connection Policy].
+
+=== How to Acquire a Client Session that Does Not Use Lazy Connection Allocation
+
+By default, the server session does not allocate a data source
+connection for a client session until a transaction starts (a lazy data
+source connection). Alternatively, you can acquire a client session that
+allocates a connection immediately.
+
+This example illustrates how to configure a `+ConnectionPolicy+` to
+specify that lazy connection allocation is not used.
+
+[#Example 86-12]## *_Acquiring a Client Session that Does Not Use Lazy
+Connections_*
+
+[source,java]
+----
+ ConnectionPolicy connectionPolicy = new ConnectionPolicy();
+ connectionPolicy.setIsLazy(false);
+ Session clientSession = server.acquireClientSession(connectionPolicy);
+----
+
+For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Connection_Policy[Configuring
+Connection Policy].
+
+== Acquiring a Historical Session
+
+After you configure EclipseLink to access historical data (see
+link:Configuring%20Historical%20Sessions%20(ELUG)#Introduction_to_Historical_Session_Configuration[Introduction
+to Historical Session Configuration]), you can query historical data
+using any session type.
+
+When you query historical data using a regular client session or
+database session, you must always set `+ObjectLevelReadQuery+` method
+`+maintainCache+` to `+false+` in order to prevent old (historical) data
+from corrupting the session cache. However, you can query both current
+and historical object versions.
+
+As a convenience, EclipseLink provides a historical session to simplify
+this process. When you query historical data using a historical session,
+you do not need to set `+ObjectLevelReadQuery+` method `+maintainCache+`
+to `+false+`. However, you can query objects only as of the specified
+time.
+
+Before you can acquire a historical session, you must first use the
+session manager to acquire a server session.
+
+To acquire a historical session, use `+Server+` method
+`+acquireHistoricalSession+` passing in an `+AsOfClause+`.
+
+The `+AsOfClause+` specifies a point in time that applies to all queries
+and expressions subsequently executed on the historical session. The
+historical session’s cache is a read-only snapshot of object versions as
+of the specified time. Its cache is isolated from its parent server
+session’s shared object cache.
+
+== Logging In to a Session
+
+Before you can use a session, you must first log in to the session using
+`+Session+` method `+login+`.
+
+By default, when you load a session using the session manager,
+EclipseLink automatically logs in to the session using the zero-argument
+`+login+` method. For information on loading a session without
+automatically logging into the session, see
+link:#How_to_Load_a_Session_Without_Logging_In[How to Load a Session
+Without Logging In].
+
+If you load a session without logging in, you can choose from the
+following signatures of the `+login+` method:
+
+* `+login()+`: Use the Login, user name, and password defined in the
+corresponding `+sessions.xml+` file.
+* `+login(Login login)+`: Override the `+Login+` defined in the
+corresponding `+sessions.xml+` file with the specified `+Login+`.
+* `+login(String username, String password)+`: Override the user name
+and password defined in the corresponding `+sessions.xml+` file with the
+specified user name and password.
+
+When you log in to a session broker, the session broker logs in all
+contained sessions and initializes the descriptors in the sessions.
+After login, the session broker appears and functions as a regular
+session. EclipseLink handles the multiple database access transparently.
+
+== Using Session API
+
+For more information on using session API, for caching, see
+link:Introduction%20to%20Cache%20(ELUG)[Introduction to Cache].
+
+For more information on using session API for queries, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Introduction to
+EclipseLink Queries].
+
+For more information on using session API for transactions, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions].
+
+== Logging Out of a Session
+
+When you are finished using a server session, session broker session, or
+database session, you must log out of the session using `+Session+`
+method `+logout+`. Logging out of a session broker session logs out of
+all sessions registered with the session broker.
+
+When you are finished using a client session, you must release the
+session using `+Session+` method `+release+`.
+
+You can configure a `+Session+` with a finalizer to release the session
+using `+Session+` method `+setIsFinalizersEnabled(true)+`. By default,
+finalizers are disabled. If you choose to enable a finalizer for a
+session, you should do so only as a last resort. We recommend that you
+always log out of or release your sessions.
+
+== Storing Sessions in the Session Manager Instance
+
+Although we recommend that you export all session instances from the
+Workbench to one or more `+sessions.xml+` files, alternatively, you can
+manually create a session in your application and, as the
+link:#Example_86-13[Storing Sessions Manually in the Session Manager]
+example illustrates, manually store it in the session manager using
+`+SessionManager+` method `+addSession+`. Then, you can acquire a
+session by name using the `+SessionManager+` method `+getSession+`.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: The `+addSession+` method is not necessary if you are loading
+sessions from a session configuration file.
+|===
+
+[#Example 86-13]## *_Storing Sessions Manually in the Session Manager_*
+
+[source,java]
+----
+ // create and log in to the session programmatically
+ Session theSession = project.createDatabaseSession();
+ theSession.login();
+ // store the session in the SessionManager instance
+ SessionManager manager = SessionManager.getManager();
+ manager.addSession("mysession", theSession);
+ // retrieve the session
+ Session session = SessionManager.getManager().getSession("mysession");
+----
+
+== Destroying Sessions in the Session Manager Instance
+
+You can destroy sessions individually by name or destroy all sessions.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You should only do this when a Java EE application is
+un-deployed, or when the entire application is shut down and only when
+it is known that the session is no longer in use. You should log out of
+a session before destroying it (see
+link:#Logging_Out_of_a_Session[Logging Out of a Session]). If you do not
+log out of a session, the session manager will at the time you use it to
+destroy a session.
+|===
+
+To destroy one session instance by name, use `+SessionManager+` method
+`+destroySession+`, as the link:#Example_86-14[Destroying a Session in
+the Session Manager] example illustrates. If the specified session is
+not in the session manager cache, a `+ValidationException+` is thrown.
+
+[#Example 86-14]## *_Destroying a Session in the Session Manager_*
+
+[source,java]
+----
+ SessionManager manager = SessionManager.getManager();
+ Server server = (Server) manager.getSession("myserversession");
+ …
+ // Destroy session by name. If the session named myserversession is not in the
+ // session manager cache, throw a ValidationException'''
+ manager.destroySession("myserversession");
+----
+
+To destroy all session instances, use the `+SessionManager+` method
+`+destoryAllSessions+`, as this example illustrates.
+
+[#Example 86-15]## *_Destroying All Sessions in the Session Manager_*
+
+[source,java]
+----
+ SessionManager manager = SessionManager.getManager();
+ Server server = (Server) manager.getSession("myserversession");
+ SessionBroker broker = (SessionBroker) manager.getSession("mysessionbroker");
+ …
+ // Destroy all sessions stored in the session manager
+ manager.destroyAllSessions();
+----
+
+>
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

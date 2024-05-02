@@ -1,0 +1,654 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Introduction_to_Projects_(ELUG)[Related
+Topics]
+
+An EclipseLink project encapsulates both mapping metadata and, where
+relevant, data source access information. The project is the primary
+object used by EclipseLink at run time. Each session (excluding the
+session broker) in a deployed application references a single project.
+
+== EclipseLink Project Types
+
+This table lists the project types available in EclipseLink and
+indicates how to create each.
+
+[#Table 13-1]##
+
+Project Type
+
+Description
+
+EclipseLink Workbench
+
+Java
+
+Relational Projects
+
+A project for transactional persistence of Java objects to a relational
+database or an object-relational data type database accessed using Java
+Database Connectivity (JDBC). Supports EclipseLink queries and
+expressions.
+
+EIS Projects
+
+A project for transactional persistence of Java objects to a
+nonrelational data source accessed using a Java EE Connector
+Architecture (JCA) adapter and any supported EIS record type, including
+indexed, mapped, or XML. Supports EclipseLink queries and expressions.
+
+XML Projects
+
+A project for nontransactional, nonpersistent (in-memory) conversion
+between Java objects and XML schema (XSD)-based documents using Java
+Architecture for XML Binding (JAXB). Does not support EclipseLink
+queries and expressions.
+
+For more information, see the following:
+
+* link:Creating%20a%20Project%20(ELUG)[Creating a Project]
+* link:Configuring%20a%20Project%20(ELUG)[Configuring a Project]
+* link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[Introduction
+to EclipseLink Sessions]
+
+== Project Concepts
+
+This section describes concepts unique to EclipseLink projects,
+including:
+
+* link:#Project_Architecture[Project Architecture]
+* link:#Relational_and_Nonrelational_Projects[Relational and
+Nonrelational Projects]
+* link:#Persistent_and_Nonpersistent_Project[Persistent and
+Nonpersistent Projects]
+* link:#Projects_and_Login[Projects and Login]
+* link:#Projects_and_Platforms[Projects and Platforms]
+* link:#Projects_and_Sequencing[Projects and Sequencing]
+* link:#XML_Namespaces[XML Namespaces]
+
+=== Project Architecture
+
+The project type you choose determines the type of descriptors and
+mappings you can use. There is a project type for each data source type
+that EclipseLink supports.
+
+This table summarizes the relationship between project, descriptor, and
+mappings.
+
+[#Table 13-2]## *_Project, Descriptor, and Mapping Support_*
+
+[width="100%",cols="<17%,<42%,<41%",options="header",]
+|===
+|*Project* |*Descriptor* |*Mapping*
+|link:Introduction%20to%20Relational%20Projects%20(ELUG)[Relational
+Projects]
+|link:Introduction%20to%20Relational%20Descriptors%20(ELUG)[Relational
+Descriptors] and
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Descriptors%20(ELUG)[Object-Relational
+Data Type Descriptors]
+|link:Introduction%20to%20Mappings%20(ELUG)#Relational_Mappings[Relational
+Mappings] and
+link:Introduction%20to%20Mappings%20(ELUG)#Object-Relational_Data_Type_Mappings[Object-Relational
+Data Type Mappings]
+
+|link:Introduction%20to%20EIS%20Projects%20(ELUG)[EIS Projects]
+|link:Introduction%20to%20EIS%20Descriptors%20(ELUG)[EIS Descriptor
+Concepts] |link:Introduction%20to%20Mappings%20(ELUG)#EIS_Mappings[EIS
+Mappings]
+
+|link:Introduction%20to%20XML%20Projects%20(ELUG)[XML Projects]
+|link:Introduction%20to%20XML%20Descriptors%20(ELUG)[XML Descriptor
+Concepts] |link:Introduction%20to%20Mappings%20(ELUG)#XML_Mappings[XML
+Mappings]
+|===
+
+=== Relational and Nonrelational Projects
+
+EclipseLink supports both relational and nonrelational projects.
+
+Relational projects persist Java objects to a relational database.
+
+Nonrelational projects persist Java objects to another (nonrelational)
+type of data source, or perform nonpersistent (see
+link:#Persistent_and_Nonpersistent_Projects[Persistent and Nonpersistent
+Projects]) data conversion. For example, to persist Java objects to an
+EIS data source by using a JCA adapter, use an EIS project. To perform
+nonpersistent (in-memory) conversions between Java objects and XML
+elements, use an XML project.
+
+=== Persistent and Nonpersistent Projects
+
+EclipseLink supports projects you use for applications that require
+persistent storage of Java objects. For example, use a relational
+project to persist Java objects to a relational database, or an EIS
+project to persist Java objects to an EIS data source by way of a JCA
+adapter.
+
+EclipseLink also supports projects you use for applications that require
+only nonpersistent (in-memory) data conversion. For example, use an XML
+project to perform nonpersistent (in-memory) conversion between Java
+objects and XML elements.
+
+=== Projects and Login
+
+The login (if any) associated with a project determines how the
+EclipseLink runtime connects to the project’s data source.
+
+A login includes details of data source access, such as authentication,
+use of connection pools, and use of external transaction controllers. A
+login owns a platform.
+
+A platform includes options specific to a particular data source, such
+as binding, use of native SQL, use of batch writing, and sequencing. For
+more information about platforms, see
+link:#Projects_and_Platforms[Projects and Platforms].
+
+For projects that do not persist to a data source, a login is not
+required. For projects that do persist to a data source, a login is
+always required.
+
+In Workbench, the project type determines the type of login that the
+project uses, if applicable.
+
+You can use a login in a variety of roles. A login’s role determines
+where and how you create it. The login role you choose depends on the
+type of project you are creating and how you intend to use the login:
+
+* link:#POJO_Session_Role[POJO Session Role]
+* link:#Development_Role[Development Role]
+
+==== POJO Session Role
+
+You create a session login in the `+sessions.xml+` file for EclipseLink
+applications that do not use container-managed persistence (CMP).
+
+Typically, the EclipseLink runtime instantiates a project when you
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Acquiring_and_Using_Sessions_at_Run_Time[load
+a session from the `+sessions.xml+` file]. The runtime also instantiates
+a login and its platform based on the information in the
+`+sessions.xml+` file.
+
+The EclipseLink runtime uses the information in the session login
+whenever you perform a persistence operation using the session in your
+POJO EclipseLink application.
+
+If you are using Workbench and your login is based on a relational
+database platform, you must also configure link:#Development_Role[a
+development login].
+
+If a `+sessions.xml+` file contains a login, this login overrides any
+other login definition.
+
+There is a session login type for each project type that persists to a
+data source. For a complete list of login types available, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Login_Types[Data
+Source Login Types].
+
+For information on configuring a session login, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Session_Login[Configuring
+a Session Login].
+
+==== Development Role
+
+Using Workbench, you create a development login in the Workbench project
+file when your project is based on a relational database platform.
+
+Workbench uses the information in the development login whenever you
+perform a data source operation from within Workbench, for example,
+whenever you read or write schema information from or to a data store
+during application development. The development login information is
+never written to a `+sessions.xml+` or `+project.xml+` file.
+
+The development login is never used when you deploy your application: it
+is overridden by either the `+sessions.xml+` file (see
+link:#POJO_Session_Role[POJO Session Role]) or the `+project.xml+` file.
+
+For more information on creating a development login, see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Development_and_Deployment_Logins[Configuring
+Development and Deployment Logins].
+
+=== Projects and Platforms
+
+The platform (if any) associated with a project tells the EclipseLink
+runtime what specific type of data source a project uses.
+
+A platform includes options specific to a particular data source, such
+as binding, use of native SQL, use of batch writing, and sequencing.
+
+A login includes details of data source access, such as authentication,
+use of connection pools, and use of external transaction controllers. A
+login owns a platform. For more information about logins, see
+link:#Projects_and_Login[Projects and Login].
+
+For projects that do not persist to a data source, a platform is not
+required. For projects that do persist to a data source, a platform is
+always required.
+
+In Workbench, the project type determines the type of platform that the
+project uses, if applicable.
+
+There is a platform type for each project type that persists to a data
+source. For a complete list of platform types available, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Platform_Types[Data
+Source Platform Types].
+
+=== Projects and Sequencing
+
+An essential part of
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Type_and_Object_Identity[maintaining
+object identity] is sequencing: managing the assignment of unique values
+to distinguish one instance from another.
+
+Projects have different sequencing requirements, depending on their
+types:
+
+* For relational projects, you typically obtain object identifier values
+from a separate sequence table (or database object) dedicated to
+managing object identifier values (see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)[Sequencing in
+Relational Projects]).
+* For EIS projects, you typically
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Returning_Policy[use
+a returning policy] to obtain object identifier values managed by the
+EIS data source.
+* For XML projects, because you are simply performing transformations
+between objects and XML documents, sequencing is not an issue.
+
+To configure sequencing, you must configure the following:
+
+* link:#Configuring_How_to_Obtain_Sequence_Values[how to obtain sequence
+values], and
+* link:#Configuring_Where_to_Write_Sequence_Values[where to write
+sequence values] when an instance of a descriptor’s reference class is
+created.
+
+Depending on the type of sequencing you use and the architecture of your
+application, you may consider using
+link:Introduction%20to%20Data%20Access%20(ELUG)#Sequence_Connection_Pools[Sequence
+Connection Pools].
+
+==== Configuring How to Obtain Sequence Values
+
+To determine how EclipseLink obtains sequence values, you configure
+EclipseLink sequencing at the project or session level, depending on the
+type of project you are building, as follows:
+
+* In a POJO project, you can configure a session directly: in this case,
+you can use session-level sequence configuration instead of
+project-level sequence configuration or to override project level
+sequence configuration on a session-by-session basis, if required (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Sequencing_at_the_Session_Level[Configuring
+Sequencing at the Session Level]).
+
+==== Configuring Where to Write Sequence Values
+
+To tell EclipseLink into which table and column to write the sequence
+value when an instance of a descriptor’s reference class is created, you
+configure EclipseLink
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[sequencing
+at the descriptor level].
+
+=== XML Namespaces
+
+As defined in http://www.w3.org/TR/REC-xml-names/, an XML namespace is a
+collection of names, identified by a URI reference, which are used in
+XML documents as element types and attribute names. To promote
+reusability and modularity, XML document constructs should have
+universal names, whose scope extends beyond their containing document.
+XML namespaces are the mechanism which accomplishes this.
+
+XML namespaces are applicable in projects that reference an XML schema:
+link:Creating%20an%20EIS%20Project%20(ELUG)#Creating_an_EIS_Project_with_XML_Records[EIS
+projects that use XML records] and
+link:Introduction%20to%20XML%20Projects%20(ELUG)#XML_Project_Concepts[XML
+projects].
+
+For more information, see link:#XML_Namespaces_Overview[XML Namespaces
+Overview]].
+
+== Project API
+
+This section describes the following:
+
+* link:#Project_Inheritance_Hierarchy[Project Inheritance Hierarchy]
+
+=== Project Inheritance Hierarchy
+
+There is only one type of project:
+`+org.eclipse.eclipselink.sessions.Project+`.
+
+== XML Namespaces Overview
+
+As defined in http://www.w3.org/TR/REC-xml-names/, an XML namespace is a
+collection of names, identified by a URI reference, which are used in
+XML documents as element types and attribute names. To promote
+reusability and modularity, XML document constructs should have
+universal names, whose scope extends beyond their containing document.
+XML namespaces are the mechanism which accomplishes this.
+
+XML namespaces are applicable in projects that reference an XML schema:
+link:Creating%20an%20EIS%20Project%20(ELUG)#Creating_an_EIS_Project_with_XML_Records[EIS
+projects that use XML records] and
+link:Introduction%20to%20XML%20Projects%20(ELUG)#XML_Project_Concepts[XML
+projects].
+
+This section describes the following:
+
+* link:#Workbench_Namespace_Resolution[Workbench Namespace Resolution]
+* link:#Element_and_Attribute_Form_Options[Element and Attribute Form
+Options]
+* link:#EclipseLink_Runtime_Namespace_Resolution[EclipseLink Runtime
+Namespace Resolution]
+
+=== Workbench Namespace Resolution
+
+Using Workbench, you can configure the XML schema namespace for your
+project. For more information, see
+link:Using%20Workbench%20(ELUG)#How_to_Configure_XML_Schema_Namespace[How
+to Configure XML Schema Namespace].
+
+=== Element and Attribute Form Options
+
+The `+xsd:schema+` element provides attributes that you can use to
+specify how elements and attributes should be qualified by namespace.
+
+This section describes the consequences of the following combinations of
+element and attribute form configuration:
+
+* link:#Element_Form_Default_Qualified_and_Attribute_Form_Default_Unqualified[Element
+Form Default Qualified and Attribute Form Default Unqualified]
+* link:#Element_and_Attribute_Form_Default_Unqualified[Element and
+Attribute Form Default Unqualified]
+* link:#Element_and_Attribute_Form_Default_Qualified[Element and
+Attribute Form Default Qualified]
+
+==== Element Form Default Qualified and Attribute Form Default Unqualified
+
+The link:#Example_13-1[XML Schema with Element Form Default Qualified
+and Attribute Form Default Unqualified] example shows an XML schema in
+which a target namespace is set. It is coded with `+elementFormDefault+`
+set to `+qualified+` and `+attributeFormDefault+` set to
+`+unqualified+`. This means all elements must be namespace qualified and
+globally declared attributes must be namespace qualified and locally
+defined attributes must not be namespace qualified.
+
+[#Example 13-1]## *_XML Schema with Element Form Default Qualified and
+Attribute Form Default Unqualified_*
+
+[source,xml]
+----
+ <?xml version="1.0" encoding="UTF-8"?>
+ <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     '''<tt>elementFormDefault="qualified"</tt>'''
+     '''<tt>attributeFormDefault="unqualified"</tt>'''
+     ns="urn:namespace-example"
+     targetNamespace="urn:namespace-example">
+     <xsd:element name="customer" type="customer-type"/>
+
+     <xsd:complexType name="customer-type">
+         <xsd:sequence>
+             <xsd:element name="name" type="xsd:string"/>
+             <xsd:element ref="date-of-birth"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:integer"/>
+
+     </xsd:complexType>
+     <xsd:element name="date-of-birth" type="xsd:date"/>
+ </xsd:schema>
+----
+
+This example shows an XML document that conforms to this XML schema.
+
+[#Example 13-2]## *_XML Document_*
+
+[source,xml]
+----
+ <?xml version="1.0" encoding="UTF-8"?>
+ <'''<tt>ns:</tt>'''customer xmlns:ns="urn:namespace-example" id="1">
+     <'''<tt>ns:</tt>'''name>Jane Doe</'''<tt>ns:</tt>'''name>
+     <'''<tt>ns:</tt>'''date-of-birth>1975-02-21</'''<tt>ns:</tt>'''date-of-birth>
+
+ </'''<tt>ns:</tt>'''customer>
+----
+
+The link:#Example_13-3[XML Descriptors and Mappings] example shows the
+Java code for a `+Customer+` class `+XMLDescriptor+` and XML mappings
+for its attributes to illustrate how this schema configuration affects
+the XPaths you specify for default root element and mappings (for more
+information, see
+link:Configuring%20an%20XML%20Descriptor%20(ELUG)#Configuring_an_XML_Descriptor[Configuring
+an XML Descriptor] and
+link:Configuring%20an%20XML%20Mapping%20(ELUG)#Configuring_an_XML_Mapping[Configuring
+an XML Mapping]).
+
+[#Example 13-3]## *_XML Descriptors and Mappings_*
+
+[source,java]
+----
+ NamespaceResolver namespaceResolver = new NamespaceResolver();
+ namespaceResolver.put("ns", "urn:namespace-example");
+
+ XMLDescriptor customerDescriptor = new XMLDescriptor();
+ customerDescriptor.setJavaClass(Customer.class);
+ customerDescriptor.setDefaultRootElement("'''<tt>ns:</tt>'''customer");
+ customerDescriptor.setNamespaceResolver(namespaceResolver);
+         XMLDirectMapping idMapping = new XMLDirectMapping();
+ idMapping.setAttributeName("id");
+ idMapping.setXPath("@id");
+ customerDescriptor.addMapping(idMapping);
+
+ XMLDirectMapping nameMapping = new XMLDirectMapping();
+ nameMapping.setAttributeName("name");
+ nameMapping.setXPath("'''<tt>ns:</tt>'''name/text()");
+ customerDescriptor.addMapping(nameMapping);
+
+ XMLDirectMapping birthDateMapping = new XMLDirectMapping();
+ birthDateMapping.setAttributeName("birthDate");
+ birthDateMapping.setXPath("'''<tt>ns:</tt>'''date-of-birth/text()");
+ customerDescriptor.addMapping(birthDateMapping);
+----
+
+==== Element and Attribute Form Default Unqualified
+
+The link:#Example_13-4[XML Schema with Element and Attribute Form
+Default Unqualified] example shows an XML schema in which a target
+namespace is set. It is coded with `+elementFormDefault+` and
+`+attributeFormDefault+` set to `+unqualified+`. This means that
+globally defined nodes must be namespace qualified and locally defined
+nodes must not be namespace qualified.
+
+[#Example 13-4]## *_XML Schema with Element and Attribute Form Default
+Unqualified_*
+
+[source,xml]
+----
+ <?xml version="1.0" encoding="UTF-8"?>
+
+ <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     '''<tt>elementFormDefault="unqualified"</tt>'''
+     '''<tt>attributeFormDefault="unqualified"</tt>'''
+     ns="urn:namespace-example"
+     targetNamespace="urn:namespace-example">
+     <xsd:element name="customer" type="customer-type"/>
+     <xsd:complexType name="customer-type">
+         <xsd:sequence>
+
+             <xsd:element name="name" type="xsd:string"/>
+             <xsd:element ref="date-of-birth"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:integer"/>
+     </xsd:complexType>
+     <xsd:element name="date-of-birth" type="xsd:date"/>
+
+ </xsd:schema>
+----
+
+This example shows an XML document that conforms to this XML schema.
+
+[#Example 13-5]## *_XML Document_*
+
+[source,xml]
+----
+ <?xml version="1.0" encoding="UTF-8"?>
+ <'''<tt>ns:</tt>'''customer xmlns:ns="urn:namespace-example" id="1">
+
+     <name>Jane Doe</name>
+     <'''<tt>ns:</tt>'''date-of-birth>1975-02-21</'''<tt>ns:</tt>'''date-of-birth>
+ </'''<tt>ns:</tt>'''customer>
+----
+
+The link:#Example_13-6[XML Descriptors and Mappings] example shows the
+Java code for a `+Customer+` class `+XMLDescriptor+` and XML mappings
+for its attributes to illustrate how this schema configuration affects
+the XPaths you specify for default root element and mappings (for more
+information, see
+link:Configuring%20an%20XML%20Descriptor%20(ELUG)[Configuring an XML
+Descriptor] and
+link:Configuring%20an%20XML%20Mapping%20(ELUG)[Configuring an XML
+Mapping]).
+
+[#'Example 13-6]## *_XML Descriptors and Mappings_*
+
+[source,java]
+----
+
+ NamespaceResolver namespaceResolver = new NamespaceResolver();
+ namespaceResolver.put("ns", "urn:namespace-example");
+
+ XMLDescriptor customerDescriptor = new XMLDescriptor();
+ customerDescriptor.setJavaClass(Customer.class);
+ customerDescriptor.setDefaultRootElement("'''<tt>ns:</tt>'''customer");
+ customerDescriptor.setNamespaceResolver(namespaceResolver);
+                         XMLDirectMapping idMapping = new XMLDirectMapping();
+ idMapping.setAttributeName("id");
+ idMapping.setXPath("@id");
+ customerDescriptor.addMapping(idMapping);
+
+ XMLDirectMapping nameMapping = new XMLDirectMapping();
+ nameMapping.setAttributeName("name");
+ nameMapping.setXPath("name/text()");
+ customerDescriptor.addMapping(nameMapping);
+
+ XMLDirectMapping birthDateMapping = new XMLDirectMapping();
+ birthDateMapping.setAttributeName("birthDate");
+ birthDateMapping.setXPath("'''<tt>ns:</tt>'''date-of-birth/text()");
+ customerDescriptor.addMapping(birthDateMapping);
+----
+
+==== Element and Attribute Form Default Qualified
+
+The link:#Example_13-7[XML Schema with Element and Attribute Form
+Default Qualified] example shows an XML schema in which a target
+namespace is set. It is coded with `+elementFormDefault+` and
+`+attributeFormDefault+` set to qualified. This means that all nodes
+must be namespace qualified.
+
+[#Example 13-7]## *_XML Schema with Element and Attribute Form Default
+Qualified_*
+
+[source,xml]
+----
+ <?xml version="1.0" encoding="UTF-8"?>
+ <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     '''<tt>elementFormDefault="qualified"</tt>'''
+     '''<tt>attributeFormDefault="qualified"</tt>'''
+     ns="urn:namespace-example"
+     targetNamespace="urn:namespace-example">
+     <xsd:element name="customer" type="customer-type"/>
+
+     <xsd:complexType name="customer-type">
+         <xsd:sequence>
+             <xsd:element name="name" type="xsd:string"/>
+             <xsd:element ref="date-of-birth"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:integer"/>
+
+     </xsd:complexType>
+     <xsd:element name="date-of-birth" type="xsd:date"/>
+ </xsd:schema>
+----
+
+This example shows an XML document that conforms to this XML schema.
+
+[#Example 13-8]## *_XML Document_*
+
+[source,xml]
+----
+ <?xml version="1.0" encoding="UTF-8"?>
+ <'''<tt>ns:</tt>'''customer xmlns:ns="urn:namespace-example" '''<tt>ns:</tt>'''id="1">
+     <'''<tt>ns:</tt>'''name>Jane Doe</'''<tt>ns:</tt>'''name>
+     <'''<tt>ns:</tt>'''date-of-birth>1975-02-21</'''<tt>ns:</tt>'''date-of-birth>
+
+ </'''<tt>ns:</tt>'''customer>
+----
+
+The link:#Example_13-9[XML Descriptors and Mappings] exampel shows the
+Java code for a `+Customer+` class `+XMLDescriptor+` and XML mappings
+for its attributes to illustrate how this schema configuration affects
+the XPaths you specify for default root element and mappings (for more
+information, see
+link:Configuring%20an%20XML%20Descriptor%20(ELUG)#Configuring_an_XML_Descriptor[Configuring
+an XML Descriptor] and
+link:Configuring%20an%20XML%20Mapping%20(ELUG)#Configuring_an_XML_Mapping[Configuring
+an XML Mapping]).
+
+[#Example 13-9]## *_XML Descriptors and Mappings_*
+
+[source,java]
+----
+ NamespaceResolver namespaceResolver = new NamespaceResolver();
+ namespaceResolver.put("ns", "urn:namespace-example");
+
+ XMLDescriptor customerDescriptor = new XMLDescriptor();
+ customerDescriptor.setJavaClass(Customer.class);
+ customerDescriptor.setDefaultRootElement("'''<tt>ns:</tt>'''customer");
+ customerDescriptor.setNamespaceResolver(namespaceResolver);
+                         XMLDirectMapping idMapping = new XMLDirectMapping();
+ idMapping.setAttributeName("id");
+ idMapping.setXPath("@'''<tt>ns:</tt>'''id");
+ customerDescriptor.addMapping(idMapping);
+
+ XMLDirectMapping nameMapping = new XMLDirectMapping();
+ nameMapping.setAttributeName("name");
+ nameMapping.setXPath("'''<tt>ns:</tt>'''name/text()");
+ customerDescriptor.addMapping(nameMapping);
+
+ XMLDirectMapping birthDateMapping = new XMLDirectMapping();
+ birthDateMapping.setAttributeName("birthDate");
+ birthDateMapping.setXPath("'''<tt>ns:</tt>'''date-of-birth/text()");
+ customerDescriptor.addMapping(birthDateMapping);
+----
+
+=== EclipseLink Runtime Namespace Resolution
+
+It is common for an XML document to include one or more namespaces.
+EclipseLink supports this using its `+NamespaceResolver+`. The namespace
+resolver maintains pairs of namespace prefixes and Uniform Resource
+Identifiers (URIs). EclipseLink uses these prefixes in conjunction with
+the XPath statements you specify on EIS mappings to XML records and XML
+mappings.
+
+Although EclipseLink captures namespace prefixes in the XPath statements
+for mappings (if applicable), the input document is not required to use
+the same namespace prefixes. As the link:#Example_13-9[XML Descriptors
+and Mappings] example shows, EclipseLink will use the namespace prefixes
+specified in the mapping when creating new documents.
+
+[#Figure 13-1]## *_Namespaces in EclipseLink_*
+
+.Namespaces in EclipseLink
+image::namesp.gif[Namespaces in
+EclipseLink,title="Namespaces in EclipseLink"]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

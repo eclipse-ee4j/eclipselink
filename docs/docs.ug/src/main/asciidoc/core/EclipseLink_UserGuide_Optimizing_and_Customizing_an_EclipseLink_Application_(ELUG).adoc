@@ -1,0 +1,21 @@
+== Optimizing and Customizing an EclipseLink Application
+
+The following sections describe how to optimize and customize an
+EclipseLink application:
+
+* link:Optimizing_the_EclipseLink_Application_(ELUG)[Optimizing the
+EclipseLink Application] – contains information on the diverse set of
+features EclipseLink provides to optimize performance.
+
+* link:Customizing_the_EclipseLink_Application_(ELUG)[Customizing the
+EclipseLink Application] – describes how to customize various aspects of
+EclipseLink, based on your application’s specific needs.
+
+*Special:Whatlinkshere_EclipseLink_UserManual_Optimizing_and_Customizing_an_EclipseLink_Application_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

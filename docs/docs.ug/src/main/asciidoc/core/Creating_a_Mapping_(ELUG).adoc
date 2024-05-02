@@ -1,0 +1,238 @@
+*TOC* Special:Whatlinkshere_Creating_a_Mapping_(ELUG)[Related Topics]
+
+You can create a database mapping using the Workbench or Java code. We
+recommend using the Workbench to create and manage your mappings.
+
+For more information on creating mappings in Java, see
+link:Introduction_to_EclipseLink_JPA_(ELUG)[EclipseLink API Reference].
+
+For complete information on the various types of mapping that
+EclipseLink supports, see
+link:Introduction%20to%20Mappings%20(ELUG)#Mapping_Types[Mapping Types].
+
+During development, you can create mappings individually (see
+link:#Creating_Mappings_Manually_During_Development[Creating Mappings
+Manually During Development]) or you can allow Workbench to
+automatically map all attributes (see
+link:#Creating_Mappings_Automatically_During_Development[Creating
+Mappings Automatically During Development]).
+
+For JPA projects, you can create mappings using JPA annotations (see
+link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)#Object_Relational_Mapping_with_EclipseLink_JPA[Object
+Relational Mapping with EclipseLink JPA]). JPA lets you create mappings
+automatically at run time.
+
+After you create a mapping, you must configure its various options (see
+link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping]).
+
+== Creating Mappings Manually During Development
+
+You can manually create a mapping from each persistent field of a class
+to a data source using Workbench or Java code. We recommend that you use
+Workbench.
+
+=== How to Create Mappings Manually During Development Using Workbench
+
+To manually create a mapping using Workbench, use this procedure:
+
+[arabic]
+. Select a descriptor in the *Navigator*. Its properties appear in the
+Editor.
+. On the *Descriptor Info* tab, associate the descriptor with its data
+source:
+[arabic]
+.. For a relational project, in the *Editor*, select the table for this
+descriptor from the *Associated Table* menu. The Workbench populates
+this menu with tables from the database login you associated with your
+project. For more information, see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level].
+.. For an XML project, in the *Editor*, select the appropriate schema
+context for this descriptor by clicking on the *Browse* button next to
+the *Schema Context* field. The Workbench displays the schema context
+from the XML schema you associated with your project. For more
+information, see link:Using%20Workbench%20(ELUG)#Using_XML_Schemas[Using
+XML Schemas].
+. In the *Navigator*, expand the descriptor to display its attributes.
+. Select an attribute and do one of the following:
+[arabic]
+.. Click the appropriate mapping on the toolbar (see
+link:Using%20Workbench%20(ELUG)#Using_Context_Toolbar[Using Context
+Toolbar]).
+.. Right-click the attribute and select *Map As >* to choose a specific
+mapping type from the context menu (see
+link:Using%20Workbench%20(ELUG)#Using_Context_Menus[Using Context
+Menus]).
+
+Continue with link:Configuring%20a%20Mapping%20(ELUG)[Configuring a
+Mapping] to complete the mapping.
+
+*See Also*
+
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Mapping[Configuring
+a Mapping]
+
+link:#Creating_Mappings_Automatically_During_Development[Creating
+Mappings Automatically During Development]
+
+=== How to Create Mappings During Development Using Java
+
+You create mappings using the constructor of the particular mapping
+type, as the following examples show:
+
+[#Example 116-1]## *_Creating Relational One-to-One Mapping_*
+
+`+ org.eclipse.persistence.mappings.OneToOneMapping oom = new OneToOneMappiing();+`
+
+[#Example 116-2]## *_Creating Relational Direct Collection Mapping_*
+
+`+org.eclipse.persistence.mappings.DirectCollectionMapping dcm =new DirectCollectionMappiing();+`
+
+[#Example 116-3]## *_Creating Object-Relational Data Type Structure
+Mapping_*
+
+`+org.eclipse.persistence.mappings.structures.StructureMapping sm = new StructureMappiing();+`
+
+[#Example 116-4]## *_Creating Object-Relational Data Type Array
+Mapping_*
+
+`+org.eclipse.persistence.mappings.structures.ArrayMapping am = new ArrayMappiing();+`
+
+== Creating Mappings Automatically During Development
+
+For relational database projects, the Workbench can automatically map
+class attributes to a similarly named database field. For example, these
+tools can map the attribute `+province+` to the database field `+PROV+`,
+the attribute `+street+` to the field `+ST+`, and the attribute
+`+postalCode+` to the field `+POSTAL_CODE+`.
+
+The Automap function creates mappings only for unmapped attributes–it
+does not change previously defined mappings.
+
+You can automatically map classes for an entire project or for specific
+classes or descriptors.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Associating a descriptor with a database table (see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Associated_Tables[Configuring
+Associated Tables]) before using the Automap function can aid the
+automapper if it cannot guess the correct table for a class.
+|===
+
+=== How to Create Mappings Automatically During Development Using Workbench
+
+To automatically map _all_ the descriptors in a project, right-click the
+project icon in the *Navigator* window and choose *Automap* from the
+context menu or choose *Selected* *>* *Automap* from the menu.
+
+To automatically map a _specific_ descriptor or attribute, choose the
+descriptor or attributes and right-click, and then select *Automap* from
+the context menu or choose *Selected* *>* *Automap* from the menu.
+
+*See Also*
+
+link:#Creating_Mappings_Manually_During_Development[Creating Mappings
+Manually During Development]
+
+link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping]
+
+== Creating Mappings to Oracle LOB Database Objects
+
+In an Oracle Database, large amounts of binary or character data is
+stored as a `+BLOB+` (binary large object) or `+CLOB+` (character large
+object), respectively. Depending on the size of the `+LOB+` value and
+your Oracle Database database version, the value may be stored either
+inside or outside of the table, as follows:
+
+* With Oracle8i version 8.1.6 and earlier, `+LOB+` values less than 4K
+are stored inline; values more than 4K are stored outside the table.
+* With Oracle8i version 8.1.7 and later, `+LOB+` values less than 5.9K
+are stored inline; values more than 5.9K are stored outside the table.
+
+A client application (such as EclipseLink) must use a LOB locator to
+write a LOB value, if the value is stored outside of the database. The
+Oracle JDBC OCI driver and server driver handle these LOB (large object)
+values differently than the Oracle JDBC thin driver.
+
+=== How to Create Mappings to Oracle LOB Database Objects Using the Oracle JDBC Thin Driver
+
+When using the Oracle JDBC thin driver, EclipseLink is responsible for
+acquiring the LOB locator before writing the value. You can use a type
+conversion mapping (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter]) to retrieve the locator during a commit
+operation.
+
+Use this procedure to map `+LOB+` values using the Oracle JDBC thin
+driver:
+
+[arabic]
+. Use a type conversion mapping to map the attributes of a EclipseLink
+descriptor to a LOB value. The followiing figure shows a type conversion
+mapping to a `+BLOB+` value in Workbench. The
+link:#Example_116-11[Mapping a BLOB in Java Code] example shows the Java
+code for the same mapping. [#Example 116-10]##*_Mapping a BLOB in
+Workbench_* image:blob.gif[Mapping a BLOB in
+Workbench,title="Mapping a BLOB in Workbench"] [#Example 116-11]## ***
+Mapping a BLOB in Java Code***
++
+`+TypeConversionMapping pictureMapping = new TypeConversionMapping();+`
+`+pictureMapping.set.AttributeName("picture");+`
+`+pictureMapping.setFieldName("IMAGE.PICTURE");+`
+`+pictureMapping.setFieldClassification(java.sql.Blob.class);+`
+`+descriptor.addMapping(pictureMapping);+`
+. Acquire the `+DatabaseLogin+` from the session:
+`+DatabaseLogin login = session.getLogin();+`
+. Configure a platform that provides locator support, as follows:
+* For Oracle8i, use the
+`+org.eclipse.persistence.oraclespecific.Oracle8Platform+` class:
++
+`+   login.usePlatform(new Oracle8Platform());+`
+* For Oracle9__i__ Database Server, use the
+`+org.eclipse.persistence.oraclespecific.Oracle9Platform+` class:
++
+`+   login.usePlatform(new Oracle9Platform());+`
+* Oracle Database 10__g__, use the
+`+org.eclipse.persistence.oraclespecific.Oracle10Platform+` class:
++
+`+   login.usePlatform(new Oracle10Platform());+`
++
+In Workbench, select the appropriate platform in the Database
+editor.[#Figure 116-1]## *_Selecting Database Platform in Workbench_*
+image:dplalog.gif[Selecting Database Platform in
+Workbench,title="Selecting Database Platform in Workbench"]
+
+== Removing Mappings
+
+If you are using the Workbench, you can unmap any mapped attribute.
+
+=== How to Remove Mappings Using Workbench
+
+To unmap an attribute (that is, remove its mapping), use this procedure:
+
+image:unmapbtn.gif[Unmap button,title="Unmap button"] Select the
+attribute in the *Navigator* window and click *Unmap*. You can also
+unmap the attribute by right-clicking the attribute and selecting *Map
+As > Unmapped* from the context menu.
+
+To unmap all the attributes in a descriptor or Java package, use this
+procedure:
+
+image:unmapbtn.gif[Unmap all Descriptors
+button,title="Unmap all Descriptors button"] Right-click the descriptor
+or Java package in the *Navigator* window and select *Unmap > Unmap
+Selected Descriptor* or *Unmap All Descriptors in Package* from the
+context menu.
+
+=== How to Remove Mappings Using Java
+
+Use the `+ClassDescriptor+` method `+removeMappingForAttributeName+` to
+unmap an attribute.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

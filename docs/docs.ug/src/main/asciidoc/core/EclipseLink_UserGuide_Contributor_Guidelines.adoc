@@ -1,0 +1,102 @@
+This page contains guidelines and information for EclipseLink users who
+would like to contribute to the link:EclipseLink_UserGuide[EclipseLink
+User’s Guide].
+
+== General Markup and Formatting
+
+The _EclipseLink User’s Guide_ is created with the
+link:Main_Page[Eclipse Wiki (Eclipsepedia)] which uses
+http://www.mediawiki.org[Mediawiki]. See
+http://meta.wikimedia.org/wiki/Help:Wikitext_examples[Wikitext Examples]
+for information on using wiki markup and formatting.
+
+== Page Names
+
+* Do not use "`CamelCase`" or "`WikiWords`" when creating new pages.
+This makes the page name difficult to read. The Eclipsepedia wiki is
+capable of using spaces and other punctuation in wiki page names.
+* Append *(ELUG)* to the end of each _EclipseLink User’s Guide_ page.
+This allows users to filter searches to include _only_ pages from the
+guide.
+
+== Categories
+
+Categories help users find information that pertains only to specific
+EclipseLink uses. We use :Category:EclipseLink_User%27s_Guide[these
+categories]:
+
+* Architecture
+** :Category:JPA[JPA]
+** :Category:ORM[ORM]
+** :Category:EIS[EIS]
+** :Category:XML[XML]
+* Status
+** :Category:Draft[Draft]
+** Final
+* Type
+** :Category:Concept[Concept]
+** :Category:Task[Task]
+* Version
+** 1.0
+
+== Figures
+
+* Include an anchor point for all figures. This allows incoming links
+directly to the figure. Use [#'''XXXXX''']## where *XXXXX* is a unique
+identifier.
+* Include a title for each figure. Use *_bold+italic_* for the title.
+* When referencing (and linking to) figures, use the format:
+
+For more information see the Foo figure.
+
+== Examples
+
+* Include an anchor point for all examples. This allows incoming links
+directly to the example. Use [#'''XXXXX''']## where *XXXXX* is a unique
+identifier.
+* Include a title for each figure. Use *_bold+italic_* for the title.
+* When referencing (and linking to) figures, use the format:
+
+For more information see the Foo example.
+
+* To show multiple lines of code examples correctly, simply indent the
+first characters (single space) of each line. For example:
+
+`+example line 1+` `+example line 2+` `+example line 3+`
+
+* To show examples inline, in example font, use: `+Example+` to produce
+`+Example+`.
+
+== Tables
+
+* Include an anchor point for all tables. This allows incoming links
+directly to the table. Use [#'''XXXXX''']## where *XXXXX* is a unique
+identifier.
+* Include a title for each table, if necessary. Use *_bold+italic_* for
+the title.
+* When referencing (and linking to) tables, use the format:
+
+For more information see the Foo table.
+
+== Documentation Bugs
+
+If you find an error in the _EclipseLink User’s Guide_, you can log in
+and make the correction. If you’re unsure of the correction, or want to
+request a new section, please
+https://bugs.eclipse.org/bugs/enter_bug.cgi?product=EPS%28EclipseLink%29[log
+a documentation bug] using:
+
+* Classification: RT
+* Product: EclipseLink
+* Keyword: Documentation
+* URL: Specific URL of the ELUG
+
+== API Links
+
+When linking to the API/Javadocs, use the following link syntax:
+
+`+http://www.eclipse.org/eclipselink/api/latest+`
+
+This will automatically link to the latest available (current) version.
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

@@ -1,0 +1,35 @@
+== Object-Relational Data Type Mappings
+
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+An object-relational data type mapping taransforms certain object data
+member types to structured data source representations optimized for
+storage in specialized object-relational data type databases (such as
+Oracle Database). Object-relational data type mappings let you map an
+object model into an object-relational data type data model.
+
+Consider the following sections:
+
+* link:Introduction_to_Object-Relational_Data_Type_Mappings_(ELUG)[Introduction
+to Object-Relational Data Type Mappings] – describes each of the
+different EclipseLink object-relational data type mapping types and
+important object-relational data type mapping concepts.
+
+* link:Configuring_an_Object-Relational_Data_Type_Mapping_(ELUG)[Configuring
+an Object-Relational Data Type Mapping] – explains how to configure
+EclipseLink object-relational data type mapping options common to two or
+more object-relational data type mapping types.
+
+*Special:Whatlinkshere_Object-Relational_Data_Type_Mappings_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

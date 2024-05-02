@@ -1,0 +1,392 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Configuring_a_Data_Source_Login_(ELUG)[Related
+Topics]
+
+This table lists the types of EclipseLink data source logins that you
+can configure, and provides a cross-reference to the type-specific
+section that lists the configurable options supported by that type.
+
+[#Table 93-1]## *_Configuring EclipseLink Data Source Logins_*
+
+[width="100%",cols="<50%,<50%",options="header",]
+|===
+|*If you are configuring a…* |*See…*
+|link:Introduction%20to%20Data%20Access%20(ELUG)#DatabaseLogin[DatabaseLogin]
+|link:Configuring%20a%20Database%20Login%20(ELUG)[Configuring a Database
+Login]
+
+|link:Introduction%20to%20Data%20Access%20(ELUG)#EISLogin[EISLogin]
+|link:Configuring%20an%20EIS%20Login%20(ELUG)#[Configuring an EIS Login]
+|===
+
+When using the `+sessions.xml+` file to configure login information,
+EclipseLink will override any login information in the `+project.xml+`
+and instead use the information from the `+sessions.xml+` configuration.
+
+For more information, see the following:
+
+* link:Introduction%20to%20Data%20Access%20(ELUG)#Introduction_to_Data_Access[Introduction
+to Data Access]
+* link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level]
+
+== Configuring Common Data Source Login Options
+
+The following table lists the configurable options shared by two or more
+EclipseLink data source login types. In addition to the configurable
+options described here, you must also configure the options described
+for the specific data source login types (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Login_Types[Data
+Source Login Types]), as shown in the link:#Table_93-1[Configuring
+EclipseLink Data Source Logins] table.
+
+[#Table 93-2]## *_Common Data Source Login Options_*
+
+[width="99%",cols="<57%,<23%,<20%",options="header",]
+|===
+|*Option to Configure* |*Workbench* |*Java*
+|link:#Configuring_User_Name_and_Password[User name and password]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Password_Encryption[Password encryption]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_External_Connection_Pooling[Configuring external
+connection pooling] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Properties[Configuring properties]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_a_Default_Null_Value_at_the_Login_Level[Default null
+value at the login level]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+== Configuring User Name and Password
+
+Optionally, you can specify the user name and password of a login.
+
+We recommend that you do not save the password with a deployment login.
+
+If you specify a password, using an EclipseLink tool or Java, enter the
+plain text (not encrypted) value. EclipseLink will encrypt the password
+using JCE encryption.
+
+By default, EclipseLink writes passwords to and read passwords from the
+`+sessions.xml+` file in encrypted form using JCE encryption.
+
+By default, EclipseLink does not write passwords to and read passwords
+from the `+project.xml+` file unless you configure your project-level
+data source login accordingly. When you configure EclipseLink to write
+passwords and read passwords from the `+project.xml+` file, by default,
+it does so in encrypted form using JCE encryption.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level]
+* link:#Configuring_Password_Encryption[Configuring Password Encryption]
+
+=== How to Configure User Name and Password Using Workbench
+
+To specify a user name and password, use this procedure:
+
+[arabic]
+. Select a server or database session in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Connection* subtab. The Connection subtab appears.
+[#Figure 93-1]##*_Login Tab, Connection Subtab, User Name and Password
+Fields_* image:unpwlog.gif[Login Tab, Connection Subtab, User Name and
+Password
+Fields,title="Login Tab, Connection Subtab, User Name and Password Fields"]
+. Enter a user name and password in plain text (not encrypted).
+
+== Configuring Password Encryption
+
+By default, EclipseLink writes passwords to and read passwords from the
+`+sessions.xml+` file in encrypted form using JCE encryption.
+
+By default, EclipseLink does not write passwords to and read passwords
+from the `+project.xml+` file unless you configure your project-level
+data source login accordingly. When you configure EclipseLink to write
+passwords and read passwords from the `+project.xml+` file, by default,
+it does so in encrypted form using JCE encryption.
+
+You can implement your own encryption class and configure your session
+`+DatasourceLogin+` to use it.
+
+Currently, the Workbench does not support specifying the encryption
+class used. To change the encryption class used, you must modify the
+login in Java.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level]
+* link:#Configuring_User_Name_and_Password[Configuring User Name and
+Password]
+
+=== How to Configure Password Encryption Using Java
+
+To configure a password encryption class, follow this procedure:
+
+[arabic]
+. Create your encryption class. Your encryption class must implement the
+`+org.eclipse.persistence.internal.security.Securable+` interface, as
+this example shows.
++
+[#Example 93-1]## *_Custom Encryption Class Implementing Securable_*
++
+`+import org.eclipse.persistence.internal.security.Securable;+`
+
+`+public class MyEncryptor implements Securable {+`
+
+`+    public String encryptPassword(String pswd) {+` `+    ...+`
+`+    }+`
+
+`+    public String decryptPassword(String encryptedPswd) {+`
+`+    ...+` `+    }+` `+}+`
+. Create a session event listener class for the `+preLogin+` event that
+calls `+DatasourceLogin+` method `+setEncryptionClassName+` to configure
+your session with your encryption class. Use the `+SessionEventAdapter+`
+to simplify your session event listener, as this examle shows.
++
+[#Example 93-2]## *_Specifying a Custom Encryption Class in a Session
+Event Listener_*
++
+`+import org.eclipse.persistence.tools.sessionconfiguration.SessionEventAdapter;+`
+`+import org.eclipse.persistence.sessions.SessionEvent;+`
+`+import org.eclipse.persistence.sessions.Session;+`
+`+import org.eclipse.persistence.sessions.DatasourceLogin;+`
+
+`+public class MySessionEventListener extends SessionEventAdapter {+`
+
+`+    public void preLogin(SessionEvent event) {+`
+`+        Session session = event.getSession();+`
+`+        DatasourceLogin login = session.getDatasourceLogin();+`
+`+        login.setEncryptionClassName(MyEncryptor.class.getName());+`
+`+    }+` `+}+`
+. Associate your session event listener class with your session. For
+more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners].
+
+== Configuring External Connection Pooling
+
+For non-Java EE applications, you typically use
+link:Introduction%20to%20Data%20Access%20(ELUG)#Internal_Connection_Pools[Internal
+Connection Pools] provided by EclipseLink. In this case, you can use
+Workbench to configure connection pool options and to create a sequence
+connection pool and application-specific (named) connection pools.
+
+For Java EE applications, you typically use
+link:Introduction%20to%20Data%20Access%20(ELUG)#External_Connection_Pools[External
+Connection Pools] provided by a JDBC driver or Java EE container.
+Optionally, you can configure a read connection pool to use a
+nontransactional login, and you can configure a sequence connection pool
+to use a separate (preferably nontransactional) login of its own.
+
+Because JTA external transaction controllers are dependent upon the
+external transaction service that the application server provides, you
+must configure EclipseLink to use external connection pools if you are
+using an external transaction controller (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service]).
+
+External connection pools enable your EclipseLink application to do the
+following:
+
+* Integrate into a Java EE-enabled system.
+* Integrate with JTA transactions (JTA transactions require a
+JTA-enabled data source).
+* Leverage a shared connection pool in which multiple applications use
+the same data source.
+* Use a data source configured and managed directly on the server.
+
+For more information about connection pools, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Connection_Pools[Connection
+Pools].
+
+=== How to Configure External Connection Pooling Using Workbench
+
+To specify if the session login uses external connection pooling, use
+this procedure:
+
+[arabic]
+. Configure a data source on the application server. If you are using
+the external connection pool with an external transaction controller
+(see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]), be sure to configure a JTA-enabled data source.
+For more information, see your Java EE container documentation.
+. Select a server or database session in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Connection* subtab. The Connection subtab appears. *_Login
+Tab, Connection Subtab, External Connection Pooling Field, Database
+Driver_* image:ecpdblog.gif[Login Tab, Connection Subtab, External
+Connection Pooling Field, Database
+Driver,title="Login Tab, Connection Subtab, External Connection Pooling Field, Database Driver"]
++
+*** Connection Tab, External Connection Pooling Field, Java EE Data
+Source*** image:ecpj2log.gif[Connection Tab, External Connection Pooling
+Field, Java EE Data
+Source,title="Connection Tab, External Connection Pooling Field, Java EE Data Source"]
+. Select the External Connection Pooling option. For a database driver,
+external connection pooling is optional. For a Java EE data source,
+external connection pooling is mandatory. Specify if this login uses
+External Connection Pooling. For a database driver, external connection
+pooling is optional. For a Java EE data source, external connection
+pooling is mandatory.
+
+=== How to Configure External Connection Pooling Using Java
+
+To configure the use of an external connection pool in Java, do the
+following:
+
+[arabic]
+. Configure the data source on the application server. If you are using
+the external connection pool with an external transaction controller
+(see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]), be sure to configure a JTA-enabled data source.
+For more information, see your Java EE container documentation.
+. Configure the `+DatasourceLogin+` to specify the data source and to
+use an external connection pool by using the
+`+useExternalConnectionPooling+` method.
+
+== Configuring Properties
+
+For all `+DatasourceLogin+` types, you can specify custom named values,
+called properties. Some data sources require additional, driver-specific
+properties not supported in the `+DatasourceLogin+` API (for example,
+see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#How_to_Optimize_JDBC_Driver_Properties[How
+to Optimize JDBC Driver Properties]). Add these properties to the
+`+DatasourceLogin+` so that EclipseLink can pass them to the driver.
+
+For relational sessions, you must first enable advanced option *Use
+Properties* (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Advanced_Options[Configuring
+Advanced Options]).
+
+For EIS sessions, properties are always enabled.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Do not set a password as a property. Always use the Workbench
+or `+DatabaseLogin+` method `+setPassword+`. For more information on
+configuring a password, see
+link:#Configuring_User_Name_and_Password[Configuring User Name and
+Password].
+|===
+
+When using Workbench, you can only set character values, which
+EclipseLink returns as `+String+` objects (see
+link:#How_to_Configure_Properties_Using_Workbench[How to Configure
+Properties Using Workbench]).
+
+When using Java, you can set any `+Object+` value (see
+link:#How_to_Configure_Properties_Using_Java[How to Configure Properties
+Using Java]).
+
+=== How to Configure Properties Using Workbench
+
+To specify arbitrary named value pairs that EclipseLink associates with
+a `+DatasourceLogin+`, use this procedure:
+
+[arabic]
+. Select a server or database session in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. If necessary, enable support for properties:
+* for relational sessions, you must first enable advanced option *Use
+Properties* (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Advanced_Options[Configuring
+Advanced Options]);
+* for EIS sessions, properties are always enabled.
+. Click the *Properties* subtab. The Properties subtab appears. *_Login
+Tab, Properties Subtab_* image:sesprop.gif[Login Tab, Properties
+Subtab,title="Login Tab, Properties Subtab"]
+. You can add, edit, or remove properties using Add Property dialog box.
+. To add (or change) a new *Name*/*Value* property, click *Add* (or
+*Edit*). Add Property dialog box appears.
+
+Use the following information to add or edit a login property on the Add
+Property dialog box:
+
+[width="100%",cols="<6%,<94%",options="header",]
+|===
+|*Option* |*Description*
+|*Name* |The name by which EclipseLink retrieves the property value
+using the `+DatasourceLogin+` method `+getProperty+`.
+
+|*Value* |The value EclipseLink retrieves using the `+DatasourceLogin+`
+method `+getProperty+` passing in the corresponding property name. Using
+Workbench, you can set only character values that EclipseLink returns as
+`+String+` objects.
+|===
+
+To delete an existing property, select the *Name*/*Value* row and click
+*Remove*.
+
+=== How to Configure Properties Using Java
+
+Using Java, you can set any `+Object+` value using `+DatasourceLogin+`
+method `+setProperty+`. To remove a property, use `+DatasourceLogin+`
+method `+removeProperty+`.
+
+== Configuring a Default Null Value at the Login Level
+
+A default null value is the Java `+Object+` type and value that
+EclipseLink uses instead of `+null+` when EclipseLink reads a `+null+`
+value from a data source.
+
+When you configure a default null value at the login level, it applies
+to all mappings used in a session. In this case, EclipseLink uses it to
+translate in one direction only: when EclipseLink reads `+null+` from
+the data source, it converts this `+null+` to the specified type and
+value.
+
+You can also use EclipseLink to set a default null value on a
+per-mapping basis (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Default_Null_Value_at_the_Mapping_Level[Configuring
+a Default Null Value at the Mapping Level]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: A default null value must be an `+Object+`. To specify a
+primitive value (such as `+int+`), you must use the corresponding
+`+Object+` wrapper (such as `+Integer+`).
+|===
+
+=== How to Configure a Default Null Value at the Login Level Using Java
+
+Using Java API, you can configure a default null value for all mappings
+used in a session with the `+DatabaseLogin+` method
+`+setDefaultNullValue(Class,Object)+`.
+
+For example:
+
+*`+//\'\' \'\'Defaults\'\' \'\'all\'\' \'\'null\'\' \'\'String\'\' \'\'values\'\' \'\'read\'\' \'\'from\'\' \'\'the\'\' \'\'database\'\' \'\'to\'\' \'\'empty\'\' \'\'String+`*
+`+session.getLogin().setDefaultNullValue(String.class, "");+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

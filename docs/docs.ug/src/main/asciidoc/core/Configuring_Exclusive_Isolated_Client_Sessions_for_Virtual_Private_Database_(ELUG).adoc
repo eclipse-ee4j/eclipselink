@@ -1,0 +1,231 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Configuring_Exclusive_Isolated_Client_Sessions_for_Virtual_Private_Database_(ELUG)[Related
+Topics]
+
+This table lists the configurable options for isolated sessions.
+
+[#Table 88-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Configuring Cache Isolation at the Descriptor Level
+
+Configuring Connection Policy
+
+How to Configure Oracle Database Proxy Authentication Using Java
+
+Using PostAcquireExclusiveConnection Event Handler
+
+Using PreReleaseExclusiveConnection Event Handler
+
+Using NoRowsModifiedSessionEvent Event Handler
+
+Accessing Indirection
+
+These options are used throughout the isolated session life cycle (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Session_Life_Cycle[Isolated
+Client Session Life Cycle]).
+
+== Using PostAcquireExclusiveConnection Event Handler
+
+EclipseLink raises this event after an exclusive connection is allocated
+to an isolated session after the user has logged in to the database with
+it.
+
+If you are using Oracle Database proxy authentication (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Oracle_Database_Proxy_Authentication[Oracle
+Database Proxy Authentication]), then you do not need to implement this
+session event handler.
+
+If you are not using Oracle Database proxy authentication, then, as part
+of the isolated session life cycle, you must implement a
+`+SessionEventListener+` for
+`+SessionEvent.PostAcquireExclusiveConnection+`.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You must add this session event listener to the server session
+from which you acquire your isolated client session. You cannot add them
+to the isolated client session itself. For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners]
+|===
+
+=== How to Use Java
+
+The `+SessionEvent.PostAcquireExclusiveConnection+` event listener is
+your opportunity to authenticate your user and interact with the
+underlying database platform: for example, to execute PL/SQL to create
+VPD packages and set VPD context information.
+
+This example illustrates a typical session event listener used to handle
+`+postAcquireExclusiveConnection+` events for an isolated session.
+
+[#Example 88-1]## *_Session Event Listener for an Isolated Session_*
+
+`+class VPDEventListener extends SessionEventAdaptor{+`
+`+    public void postAcquireExclusiveConnection(SessionEvent event){+`
+`+        ClientSession session = (ClientSession)event.getSession();+`
+`+        +`*`+//\'\' \'\'Get\'\' \'\'property\'\' \'\'set\'\' \'\'on\'\' \'\'the\'\' \'\'ConnectionPolicy\'\' \'\'prior\'\' \'\'to\'\' \'\'acquiring\'\' \'\'the\'\' \'\'connection+`*
+`+        String userLevel = session.getConnectionPolicy().getProperty("userLevel");+`
+`+        +`*`+//\'\' \'\'Make\'\' \'\'the\'\' \'\'Stored\'\' \'\'Procedure\'\' \'\'call\'\' \'\'for\'\' \'\'VPD\'\' \'\'to\'\' \'\'set\'\' \'\'up\'\' \'\'the\'\' \'\'Context\'\' \'\'Information+`*
+
+`+        session.executeNonSelectingSQL("StoreProcSetContextUser("+ userLevel + ")");+`
+`+    }+` `+}+`
+
+To get the required user credentials, use `+ClientSession+` method
+`+getConnectionPolicy+` to get the associated `+ConnectionPolicy+`, and
+then use `+ConnectionPolicy+` method `+getProperty+`. The
+`+ConnectionPolicy+` associated with the `+ClientSession+` should
+contain all required user credentials (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Connection_Policy[Configuring
+Connection Policy]).
+
+After you implement the required `+SessionEventListener+`, add it to the
+parent server session from which you acquire your isolated client
+session. For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners].
+
+== Using PreReleaseExclusiveConnection Event Handler
+
+EclipseLink raises a `+SessionEvent.PreReleaseExclusiveConnection+`
+event after you call the isolated session method `+release+`.
+
+If you are using Oracle Database proxy authentication (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Oracle_Database_Proxy_Authentication[Oracle
+Database Proxy Authentication]), then you do not need to implement this
+session event handler.
+
+If you are not using Oracle Database proxy authentication, then as part
+of the isolated session life cycle, you must implement a
+`+SessionEventListener+` for
+`+SessionEvent.PreReleaseExclusiveConnection+`.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You must add this session event listener to the server session
+from which you acquire your isolated client session. You cannot add them
+to the isolated client session itself. For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners]
+|===
+
+=== How to Use Java
+
+The `+SessionEvent.PreReleaseExclusiveConnection+` event listener gives
+you an opportunity to interact with the underlying database platform:
+for example, to perform any VPD-specific cleanup such as executing
+PL/SQL to delete VPD packages or context information.
+
+This example illustrates a typical session event listener used to handle
+`+preReleaseExclusiveConnection+` events for an isolated session.
+
+[#Example 88-2]## *_Session Event Listener for an Isolated Session_*
+
+`+class VPDEventListener extends SessionEventAdaptor{+`
+`+    public void preReleaseExclusiveConnection(SessionEvent event){+`
+`+        Session session event.getSession();+`
+`+        +`*`+//\'\' \'\'Make\'\' \'\'the\'\' \'\'Stored\'\' \'\'Procedure\'\' \'\'call\'\' \'\'for\'\' \'\'VPD\'\' \'\'to\'\' \'\'reset\'\' \'\'the\'\' \'\'Context\'\' \'\'Information+`*
+`+        session.executeNonSelectingSQL("StoreProcResetContext()");+`
+`+    }+` `+}+`
+
+To get the required user credentials, use `+ClientSession+` method
+`+getConnectionPolicy+` to get the associated `+ConnectionPolicy+`, and
+then use `+ConnectionPolicy+` method `+getProperty+`. The
+`+ConnectionPolicy+` associated with the `+ClientSession+` should
+contain all required user credentials (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Connection_Policy[Configuring
+Connection Policy]).
+
+After you implement the required `+SessionEventListener+`, add it to the
+parent server session, from which you acquire your isolated client
+session. For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners].
+
+== Using NoRowsModifiedSessionEvent Event Handler
+
+As part of your general error handling strategy, you should implement a
+`+SessionEventListener+` for
+`+SessionEvent.NoRowsModifiedSessionEvent+`.
+
+EclipseLink raises this event when an update or delete query is executed
+against the database, but no rows are updated, that is, a zero row count
+is returned.
+
+If optimistic locking is not enabled and you query the database and
+violate your VPD security configuration, no exception is thrown: the
+query simply returns zero rows updated.
+
+If optimistic locking is enabled and you query the database and violate
+your VPD security configuration, an `+OptimisticLockException+` is
+thrown even though the root cause of the failure was a security
+violation, not an optimistic locking issue.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You must add this session event listener to the server session
+from which you acquire your isolated client session. You cannot add them
+to the isolated client session itself. For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners]
+|===
+
+=== How to Use Java
+
+This event listener gives you an opportunity to determine whether the
+update failure was due to a security violation (in which case you should
+not retry the operation), or due to an optimistic lock issue (in which
+case a retry may be appropriate).
+
+You can use the existing session event API, such as
+`+getQuery().getResult()+`, to get the affected object, if any.
+
+After you implement the required `+SessionEventListener+`, add it to the
+parent server session, from which you acquire your isolated client
+session. For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners].
+
+== Accessing Indirection
+
+As part of your general error handling strategy, your application should
+be prepared to handle a `+ValidationException+` of type
+`+ISOLATED_SESSION_IS_NO_LONGER_AVAILABLE+`.
+
+EclipseLink throws an `+ISOLATED_SESSION_IS_NO_LONGER_AVAILABLE+` when a
+client triggers the indirection (lazy loading) on an isolated object
+when the isolated session used to load that object is no longer
+available, that is, after you call the isolated session method
+`+release+`.
+
+Ensure that you have instantiated every relationship that you need prior
+to calling the `+release+` method: to instantiate a one-to-one
+relationship, call the `+get+` method; to instantiate a one-to-many
+relationship, call the `+size+` method on the collection.
+
+Fore more information, see the following:
+
+* link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Exception_Handlers[Exception
+Handlers]
+* link:Configuring%20a%20Session%20(ELUG)#Configuring_an_Exception_Handler[Configuring
+an Exception Handler]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

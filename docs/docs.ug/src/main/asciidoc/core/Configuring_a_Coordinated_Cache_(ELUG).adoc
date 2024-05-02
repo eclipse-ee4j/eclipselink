@@ -1,0 +1,999 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Configuring_a_Coordinated_Cache_(ELUG)[Related
+Topics]
+
+[#Table 99-1]## *_Configuring EclipseLink Coordinated Caches_*
+
+If you are configuring a…
+
+See…
+
+JMS Coordinated Cache
+
+Configuring a JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+Configuring an RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Configuring a CORBA Coordinated Cache
+
+Custom Coordinated Cache
+
+Configuring a Custom Coordinated Cache
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination].
+
+== Configuring Common Coordinated Cache Options
+
+This table lists the configurable options shared by two or more
+EclipseLink coordinated cache types. In addition, you must configure the
+options described for specific
+link:Introduction%20to%20Cache%20(ELUG)#Coordinated_Cache_Types[Coordinated
+Cache Types], as shown in the link:#Table_99-1[Configuring EclipseLink
+Coordinated Caches] table.
+
+[#Table 99-2]## *_Common Coordinated Cache Options_*
+
+Option to Configure
+
+Workbench
+
+Java
+
+Cache coordination change propagation at the descriptor level
+
+Synchronous change propagation mode
+
+Service channel
+
+Multicast group address
+
+Multicast port
+
+Naming service type
+
+Announcement delay
+
+Connection handling
+
+Context properties
+
+Packet time-to-live
+
+== Configuring the Synchronous Change Propagation Mode
+
+You can configure whether the coordinated cache should propagate object
+changes asynchronously or synchronously.
+
+The following table summarizes which coordinated caches support
+propagation mode configuration.
+
+[#Table 99-3]## *_Coordinated Cache Support for Propagation Mode
+Configuration_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java
+
+JMS Coordinated Cache (asynchronous only)
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+Synchronous propagation mode forces the session to wait for an
+acknowledgement before sending the next object change notification: this
+reduces the likelihood of stale data at the expense of performance.
+
+Asynchronous propagation mode allows the session to create separate
+threads to propagate changes to remote servers. EclipseLink returns
+control to the client immediately after the local commit operation,
+whether or not the changes merge successfully on the remote servers.
+This offers superior performance for applications that are somewhat
+tolerant of stale data.
+
+For more information,
+link:Introduction%20to%20Cache%20(ELUG)#Handling_Stale_Data[Handling
+Stale Data].
+
+=== How to Configure the Synchronous Change Propagation Mode Using Workbench
+
+To specify the change propagation mode, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-4[Coordinated Cache Support for Propagation Mode
+Configuration] table). The cache coordination options appear on the tab.
+*_Cache Coordination Tab, Synchronous Field_* image:sesrmisy.gif[Cache
+Coordination Tab, Synchronous
+Field,title="Cache Coordination Tab, Synchronous Field"]
+. Select the *Synchronous* option to use synchronous change propagation.
+Do not select this option to use asynchronous change propagation.
+
+=== How to Configure the Synchronous Change Propagation Mode Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.RemoteCommandManager+`
+method `+setShouldPropagateAsynchronously+` to define whether changes
+should be propagated synchronously or asynchronously for this
+coordinated cache.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+== Configuring a Service Channel
+
+The *service channel* is the name of the EclipseLink coordinated cache
+channel to which sessions subscribe in order to participate in the same
+coordinated cache. Such sessions use the service channel to exchange
+messages with each other. Messages sent on other service channels will
+not be exchanged with this coordinated cache.
+
+This table summarizes which coordinated caches support service channel
+configuration.
+
+[#Table 99-4]## *_Coordinated Cache Support for Service Channel
+Configuration_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+=== How to Configure a Service Channel Using Workbench
+
+To specify the service channel, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-4[Coordinated Cache Support for Service Channel
+Configuration] table). The cache coordination options appear on the tab.
+*_Cache Coordination Tab, Channel Field_* image:cachchannel.gif[Cache
+Coordination Tab, Channel
+Field,title="Cache Coordination Tab, Channel Field"]
+. In the *Channel* field, enter the name of the service channel for this
+coordinated cache.
+
+=== How to Configure a Service Channel Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.RemoteCommandManager+`
+method `+setChannel+` to set the name of the service channel for this
+coordinated cache.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+== Configuring a Multicast Group Address
+
+A multicast group address is an Internet Protocol (IP) address in the
+range 224.0.0.0 to 239.255.255.255 that identifies the members of an IP
+multicast group. To efficiently broadcast the same message to all
+members of an IP multicast group, you configure each recipient with the
+same multicast group address and send the message to that address.
+
+This table summarizes which coordinated caches support multicast group
+address configuration.
+
+[#Table 99-5]## *_Coordinated Cache Support for Multicast Group Address
+Configuration_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Ensure your host and network are configured to support
+multicast operation before configuring this option.
+|===
+
+In addition to configuring the multicast group address, you must also
+configure the multicast port (see
+link:#Configuring_a_Multicast_Port[Configuring a Multicast Port]) for
+the coordinated cache types shown in the link:#Table_99-5[Coordinated
+Cache Support for Multicast Group Address Configuration] table.
+
+=== How to Configure a Multicast Group Address Using Workbench
+
+To specify the multicast group address, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-5[Coordinated Cache Support for Multicast Group Address
+Configuration] table). The cache coordination options appear on the tab.
+*_Cache Coordination Tab, Multicast Group Address Field_*
+image:rmiclumg.gif[Cache Coordination Tab, Multicast Group Address
+Field,title="Cache Coordination Tab, Multicast Group Address Field"]
+. Enter the multicast group address in the range 224.0.0.0 to
+239.255.255.255 to subscribe this session to a given coordinated cache.
+
+=== How to Configure a Multicast Group Address Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.DiscoveryManager+`
+method `+setMulticastGroupAddress+` to subscribe this session to a given
+coordinated cache. Ensure that the address falls in the range 224.0.0.0
+to 239.255.255.255.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+== Configuring a Multicast Port
+
+The multicast port is the port on which multicast messages are received.
+Members of a multicast group (see
+link:#Configuring_a_Multicast_Group_Address[Configuring a Multicast
+Group Address]) rely on messages broadcast to their multicast group
+address to communicate with one another.
+
+This table summarizes which coordinated caches support multicast port
+configuration.
+
+[#Table 99-6]## *_Coordinated Cache Support for Multicast Port
+Configuration_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Ensure your host and network are configured to support
+multicast operation before configuring this option
+|===
+
+=== How to Configure a Multicast Port Using Workbench
+
+To specify the multicast port, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-6[Coordinated Cache Support for Multicast Port
+Configuration] table). The cache coordination options appear on the tab.
+*_Cache Coordination Tab, Multicast Port Field_*
+image:rmiclump.gif[Cache Coordination Tab, Multicast Port
+Field,title="Cache Coordination Tab, Multicast Port Field"]
+. Enter the multicast port on which messages broadcast to the multicast
+group address are received.
+
+=== How to Configure a Multicast Port Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.DiscoveryManager+`
+method `+setMulticastPort+` to define the multicast port on which
+messages broadcast to the multicast group address are to be received.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+== Configuring a Naming Service Type
+
+The session’s message transport service uses a naming service when it
+looks up connections to other sessions in the coordinated cache. You can
+configure the message transport service to look up remote objects using
+an RMI registry or Java Naming and Directory Interface (JNDI). By
+default, JNDI is used.
+
+This table summarizes which coordinated caches support naming service
+configuration.
+
+[#Table 99-7]## *_Coordinated Cache Support for Naming Service
+Configuration_*
+
+Coordinated Cache
+
+JNDI Naming Service
+
+RMI Registry Naming Service
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+== Configuring JNDI Naming Service Information
+
+The session’s message transport service uses a naming service when it
+looks up connections to other sessions in the coordinated cache. If you
+choose to use a JNDI naming service, you must configure JNDI naming
+service information.
+
+This table summarizes which coordinated caches support JNDI naming
+service configuration.
+
+[#Table 99-8]## *_Coordinated Cache Support for JNDI Naming Service
+Configuration_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+EclipseLink uses JNDI naming service information differently, depending
+on the type of coordinated cache.
+
+For a JMS coordinated cache, when a particular session’s coordinated
+cache starts up, it uses its JNDI naming service information to locate
+and create a connection to the JMS server. The coordinated cache is
+ready when all participating sessions are connected to the JMS server.
+At this point, sessions can start sending and receiving object change
+messages. You can then configure all sessions that are participating in
+the same coordinated cache with the same JNDI naming service
+information.
+
+For an RMI or CORBA coordinated cache, when a particular session’s
+coordinated cache starts up, the session binds its connection in JNDI,
+creates an announcement message (that includes its own JNDI naming
+service information), and broadcasts the announcement to its multicast
+group (see link:#Configuring_a_Multicast_Group_Address[Configuring a
+Multicast Group Address] and
+link:#Configuring_a_Multicast_Port[Configuring a Multicast Port]). When
+a session that belongs to the same multicast group receives this
+announcement, it uses the JNDI naming service information in the
+announcement message to establish bidirectional connections with the
+newly announced session’s coordinated cache. The coordinated cache is
+ready when all participating sessions are interconnected in this way, at
+which point, sessions can start sending and receiving object change
+messages. You can then configure each session with JNDI naming
+information that identifies the host on which the session is deployed.
+
+=== How to Configure JNDI Naming Service Information Using Workbench
+
+To specify the sessions’s JNDI naming service, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-8[Coordinated Cache Support for JNDI Naming Service
+Configuration] table). The cache coordination options appear on the tab.
+*_Cache Coordination Tab, JNDI Naming Service Options_*
+image:jndisrvc.gif[Cache Coordination Tab, JNDI Naming Service
+Options,title="Cache Coordination Tab, JNDI Naming Service Options"]
+. Complete the Naming Service options.
+
+Use the following information to enter data in the fields of the Cache
+Coordination tab to configure the naming service options:
+
+Field
+
+Description
+
+URL
+
+The location of the JNDI naming service.
+
+For a JMS coordinated cache: If you are using the Oracle Containers for
+J2EE (OC4J) JNDI naming service and all the hosts in your coordinated
+cache can communicate using the OC4J proprietary RMI protocol ORMI, use
+a URL similar to the following:
+
+ormi://:
+
+where JMS-host-IP is the IP address of the host on which the JMS service
+provider is running and JMS-host-port is the port on which the JMS
+service provider is listening for JMS requests.
+
+For an RMI or CORBA coordinated cache: If you are using the OC4J JNDI
+naming service and all the hosts in your coordinated cache can
+communicate using the OC4J proprietary RMI protocol ORMI on OC4J default
+port 23791, use a URL similar to the following:
+
+ormi://:23791
+
+where session-host-IP is the IP address of the host on which this
+session is deployed.
+
+Username
+
+The user name required to log in to the JNDI naming service.
+
+The value you enter defines the Context.SECURITY_PRINCIPAL environment
+property.
+
+Password
+
+The plain text (unencrypted) password required to log in to the JNDI
+naming service.
+
+The password appears in plain text in Workbench, but it is encrypted
+when written to the sessions.xml file.
+
+The value you enter defines the Context.SECURITY_CREDENTIALS environment
+property.
+
+Initial Context Factory
+
+The name of the factory class, provided by your JNDI naming service
+provider, that implements the javax.naming.spi.InitialContextFactory
+interface. This factory class is used to create a javax.naming.Context
+instance that can access the JNDI naming service provider’s context
+implementation.
+
+The value you enter defines the Context.INITIAL_CONTEXT_FACTORY
+environment property.
+
+Properties
+
+The JNDI context properties.
+
+Click Properties to configure custom JNDI context properties (see
+Configuring Context Properties).
+
+=== How to Configure JNDI Naming Service Information Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.TransportManager+`
+method `+setNamingServiceType+` as follows:
+
+`+setNamingServiceType(TransportManager.JNDI_NAMING_SERVICE)+`
+
+Then use the following TransportManager methods to configure the JNDI
+naming service options:
+
+* `+setUserName+`–Set the user name required to log in to the JNDI
+naming service. The value you enter defines the
+`+Context.SECURITY_PRINCIPAL+` environment property.
+* `+setPassword+`–Set the unencrypted password required to log in to the
+JNDI naming service. The value you enter defines the
+`+Context.SECURITY_CREDENTIALS+` in the cached context properties.
+* `+setEncriptedPassword+`–Set the encrypted password required to log in
+to the JNDI naming service. The value you enter defines the
+`+Context.SECURITY_CREDENTIALS+` in the cached context properties.
+* `+setInitialContextFactoryName+`–The name of the factory class,
+provided by your JNDI naming service provider, that implements the
+`+javax.naming.spi.InitialContextFactory+` interface. This factory class
+is used to create a `+javax.naming.Context+` instance that can access
+the JNDI naming service provider’s context implementation. The value you
+enter defines the `+Context.INITIAL_CONTEXT_FACTORY+` in the cached
+context properties.
+* `+setLocalContextProperties+`–Set the properties that will be used to
+create the initial context for local JNDI access. For more information,
+see …
+
+Do not forget to specify the location of the JNDI naming service by
+providing its URL. Consider the following:
+
+* For a JMS coordinated cache, if you are using the OC4J JNDI naming
+service and all the hosts in your coordinated cache can communicate
+using the OC4J proprietary RMI protocol ORMI, use a URL similar to the
+following:
+
+`+ormi://+``+:+`
+
+where `+JMS-host-IP+` is the IP address of the host on which the JMS
+service provider is running, and `+JMS-host-port+` is the port on which
+the JMS service provider is listening for JMS requests.
+
+* For an RMI or CORBA coordinated cache, if you are using the OC4J JNDI
+naming service and all the hosts in your coordinated cache can
+communicate using the OC4J proprietary RMI protocol ORMI on OC4J default
+port 23791, use a URL similar to the following:
+
+`+ormi://+``+:23791+`
+
+where `+session-host-IP+` is the IP address of the host on which this
+session is deployed.
+
+Note that the default protocol value is "`ormi`", and the default port
+value is "`23791`". You can also use the
+`+TransportManager.DEFAULT_URL_PROTOCOL+` and `+DEFAULT_URL_PORT+`.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+== Configuring RMI Registry Naming Service Information
+
+The session’s message transport service uses a naming service when it
+looks up connections to other sessions in the coordinated cache. If you
+choose to use an RMI registry naming service, you can configure RMI
+registry naming service options.
+
+This table summarizes which coordinated caches support RMI registry
+naming service configuration.
+
+[#Table 99-9]## *_Coordinated Cache Support for RMI Registry Naming
+Service Configuration_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java<
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server Cluster 10g Coordinated Cache
+
+Custom Coordinated Cache
+
+For an RMI coordinated cache, when a particular session’s coordinated
+cache starts up, the session binds its connection in its RMI registry,
+creates an announcement message (that includes its own naming service
+information), and broadcasts the announcement to its multicast group
+(see link:#Configuring_a_Multicast_Group_Address[Configuring a Multicast
+Group Address] and link:#Configuring_a_Multicast_Port[Configuring a
+Multicast Port]). When a session that belongs to the same multicast
+group receives this announcement, it uses the JNDI naming service
+information in the announcement message to establish bidirectional
+connections with the newly announced session’s coordinated cache. The
+coordinated cache is ready when all participating sessions are
+interconnected in this way, at which point, sessions can start sending
+and receiving object change messages. You can then configure each
+session with RMI registry naming information that identifies the host on
+which the session is deployed.
+
+=== How to Configure RMI Registry Naming Service Information Using Workbench
+
+To specify the sessions’s registry naming service, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor window.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-9[Coordinated Cache Support for RMI Registry Naming
+Service Configuration] table). The cache coordination options appear on
+the tab. *_Cache Coordination Tab, Naming Service Options_*
+image:rmisrvc.gif[Cache Coordination Tab, Naming Service
+Options,title="Cache Coordination Tab, Naming Service Options"]
+. Complete the Registry Naming Service options.
+
+Use the following information to configure the naming service options:
+
+Field
+
+Description
+
+URL
+
+Assuming that you are using the OC4J JNDI naming service and that all
+the hosts in your coordinated cache can communicate using the OC4J
+proprietary RMI protocol ORMI on OC4J default port 23791, use a URL
+similar to the following:
+
+ormi://:23791
+
+where session-host-IP is the IP address of the host on which this
+session is deployed.
+
+=== How to Configure RMI Registry Naming Service Information Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.TransportManager+`
+method `+setNamingServiceType+` as follows:
+
+`+setNamingServiceType(TransportManager.REGISTRY_NAMING_SERVICE)+`
+
+Then specify the location of the JNDI naming service by providing its
+URL. Consider the following:
+
+For an RMI or CORBA coordinated cache, if you are using the OC4J JNDI
+naming service and all the hosts in your coordinated cache can
+communicate using the OC4J proprietary RMI protocol ORMI on OC4J default
+port 23791, use a URL similar to the following:
+
+`+ormi://+``+:23791+`
+
+where `+session-host-IP+` is the IP address of the host on which this
+session is deployed.
+
+Note that the default protocol value is "`ormi`", and the default port
+value is "`23791`". You can also use the
+`+TransportManager.DEFAULT_URL_PROTOCOL+` and `+DEFAULT_URL_PORT+`
+contstants.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+== Configuring an Announcement Delay
+
+Use the announcement delay option to set the amount of time (in
+milliseconds) that a session should wait between the time that it is
+available and the time that it broadcasts its announcement message to
+the members of the coordinated cache. This additional delay may be
+necessary to give some systems more time to post their connections into
+the naming service (see
+link:#Configuring_a_Naming_Service_Type[Configuring a Naming Service
+Type]).
+
+This table summarizes which coordinated caches support announcement
+delay configuration.
+
+[#Table 99-10]## *_Coordinated Cache Support for Announcement Delay
+Configuration_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+In addition to announcement delay, you may also need to consider packet
+time-to-live configuration (see
+link:#Configuring_a_Packet_Time-to-Live[Configuring a Packet
+Time-to-Live]).
+
+=== How to Configure an Announcement Delay Using Workbench
+
+To specify the announcement delay (in milliseconds) for an RMI
+coordinated cache, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-10[Coordinated Cache Support for Announcement Delay
+Configuration] table). The cache coordination options appear on the tab.
+*_Cache Coordination Tab, Announcement Delay Field_*
+image:rmicluad.gif[Cache Coordination Tab, Announcement Delay
+Field,title="Cache Coordination Tab, Announcement Delay Field"]
+. Select the amount of time (in milliseconds) that this session should
+wait between the time that it is available and the time that it
+broadcasts its announcement message to the members of the coordinated
+cache.
+
+See Also:
+
+link:#Configuring_a_Packet_Time-to-Live[Configuring a Packet
+Time-to-Live]
+
+=== How to Configure an Announcement Delay Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.DiscoveryManager+`
+method `+setAnnouncementDelay+` to select the amount of time (in
+milliseconds) that this session should wait between the time that it is
+available and the time that it broadcasts its announcement message to
+the members of the coordinated cache.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+== Configuring Connection Handling
+
+The session’s transport manager creates connections to the various
+members of the coordinated cache. If a communication error occurs on one
+of these connections, you can configure the session to either ignore the
+error or remove the connection.
+
+This table summarizes which coordinated caches support connection
+handling configuration.
+
+[#Table 99-11]## *_Coordinated Cache Support for Connection Handling
+Configuration_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+If you configure the session to remove the connection on error, the next
+time the session tries to communicate with that coordinated cache
+member, it will construct a new connection.
+
+If you configure the session to ignore the error, the next time the
+session tries to communicate with that coordinated cache member, it will
+continue to use the same connection.
+
+=== How to Configure Connection Handling Using Workbench
+
+To specify how EclipseLink handles session connections in the event of
+an error, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-11[Coordinated Cache Support for Connection Handling
+Configuration] table). The cache coordination options appear on the tab.
+*_Cache Coordination Tab, Remove Connection on Error Option_*
+image:clonerr.gif[Cache Coordination Tab, Remove Connection on Error
+Option,title="Cache Coordination Tab, Remove Connection on Error Option"]
+. Select the *Remove Connection on Error* option to configure the
+session to remove the data source connection in the event of an error.
+
+=== How to Configure Connection Handling Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.TransportManager+`
+method `+setShouldRemoveConnectionOnError+` to configure the session to
+remove the data source connection if an error occurs.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+== Configuring Context Properties
+
+When you configure a coordinated cache to use a JNDI naming service (see
+link:#Configuring_a_Naming_Service_Type[Configuring a Naming Service
+Type]), you can add new environment properties to the environment of the
+initial JNDI context.
+
+This table summarizes which coordinated caches support context
+properties.
+
+[#Table 99-12]## *_Coordinated Cache Support for Context Properties_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache 1
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+1When JNDI naming service is selected (see
+link:#Configuring_a_Naming_Service_Type[Configuring a Naming Service
+Type]). Using Workbench, EclipseLink uses the new environment properties
+you add to create the initial context for both local and remote JNDI
+access.
+
+Using Java, you can configure different properties for local and remote
+JNDI access using a session customizer class to call
+`+TransportManager+` methods `+setLocalContextProperties+` and
+`+setRemoteContectProperties+` (for more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Session_Customizer_Class[Configuring
+a Session Customizer Class]).
+
+=== How to Configure Context Properties Using Workbench
+
+To define JNDI context properties, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-12[Coordinated Cache Support for Context Properties]
+table). The cache coordination options appear on the tab.
+. Ensure the *JNDI Naming Service* option is selected. See
+link:#Configuring_a_Naming_Service_Type[Configuring a Naming Service
+Type].
+. In the JNDI Naming Service area, click *Properties*. The Edit
+Properties dialog box appears. *_Edit Properties Dialog Box_*
+image:cachepropdialog.gif[Edit Properties Dialog
+Box,title="Edit Properties Dialog Box"]
+. Click *Add* to create a new property. The Add New Property dialog box
+appears.
+
+Use this table to enter data in the following fields on the dialog box.
+
+[cols="<,<",options="header",]
+|===
+|*Field* |*Description*
+|*Name* |The name of the property.
+|*Value* |The value of the property.
+|===
+
+To change (or delete) an existing property, select the property and
+click *Edit* (or *Remove*).
+
+=== How to Configure Context Properties Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.TransportManager+`
+method `+setLocalContextProperties+` to define a `+Hashtable+` of the
+JNDI context properties that will be used to create the initial context
+for the local JNDI access. Note that the "`dedicated.connection`" is the
+default key with the default value of "`true`".
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+== Configuring a Packet Time-to-Live
+
+The *packet time-to-live* is the number of hops that session data
+*packets* can take before expiring. The default is 2. This allows for a
+*hub* and an interface card, and prevents the data packets from leaving
+the local network. If sessions are hosted on different local area
+networks (LANs) that are part of wide area network (WAN), or if a
+firewall configuration prevents it, the announcement sent by one session
+may not reach the other sessions in the coordinated cache. In this case,
+consult your network administrator for the correct time-to-live value.
+
+This table summarizes which coordinated caches support packet
+time-to-live configuration.
+
+[#Table 99-13]## *_Coordinated Cache Support for Packet Time-to-Live
+Configuration_*
+
+Coordinated Cache
+
+Using Workbench
+
+Using Java
+
+JMS Coordinated Cache
+
+RMI Coordinated Cache
+
+CORBA Coordinated Cache
+
+Oracle Application Server 10g Cluster Coordinated Cache
+
+Custom Coordinated Cache
+
+In addition to configuring packet time-to-live, you may also need to
+configure announcement delay (see
+link:#Configuring_an_Announcement_Delay[Configuring an Announcement
+Delay]).
+
+=== How to Configure a Packet Time-to-Live Using Workbench
+
+To specify the number of hops that session data packets can take before
+expiring, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (see the
+link:#Table_99-12[Coordinated Cache Support for Packet Time-to-Live
+Configuration] table). The cache coordination options appear on the tab.
+*_Cache Coordination Tab, Packet Time to Live Field_*
+image:rmipacket.gif[DCache Coordination Tab, Packet Time to Live
+Field,title="DCache Coordination Tab, Packet Time to Live Field"]
+. In the *Packet Time to Live* field, specify the number of hops
+(default = `+2+`) that session data packets can take before expiring.
+
+=== How to Configure a Packet Time-to-Live Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.DiscoveryManager+`
+method `+setPacketTimeToLive+` to specify the number of hops (default =
+2) that session data packets can take before expiring.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination_API[Cache
+Coordination API].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

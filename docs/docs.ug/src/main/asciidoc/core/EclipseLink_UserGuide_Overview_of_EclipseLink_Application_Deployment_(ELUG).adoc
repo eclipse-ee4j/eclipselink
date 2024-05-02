@@ -1,0 +1,29 @@
+== Overview of EclipseLink Application Deployment
+
+The following sections describe how to package and deploy an EclipseLink
+application to an application server:
+
+* link:Integrating_EclipseLink_with_an_Application_Server_(ELUG)[Integrating
+EclipseLink with an Application Server] – contains information on
+software requirements for integrating EclipseLink with your specific
+application server.
+
+* link:Creating_EclipseLink_Files_for_Deployment_(ELUG)[Creating
+EclipseLink Files for Deployment] – describes how to create the
+necessary EclipseLink files for deployment to your application server.
+
+* link:Packaging_a_EclipseLink_Application_(ELUG)[Packaging an
+EclipseLink Application] – explains how to package the deployment files.
+
+* link:Deploying_a_EclipseLink_Application_(ELUG)[Deploying an
+EclipseLink Application] – provides procedures for deploying different
+types of EclipseLink applications in a variety of environments.
+
+*Special:Whatlinkshere_EclipseLink_UserManual_Overview_of_EclipseLink_Application_Deployment_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

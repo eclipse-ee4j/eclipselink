@@ -1,0 +1,207 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_Direct_Collection_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for a relational direct
+collection mapping.
+
+[#Table 41-1]##
+
+[width="100%",cols="<68%,<16%,<16%",options="header",]
+|===
+|*Option* |*Workbench* |*Java*
+|link:#Configuring_Target_Table[Target table]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Direct_Value_Field[Direct value field]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Method
+or direct field access] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Read-only
+mapping] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Batch_Reading[Batch
+reading] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Indirection_(Lazy_Loading)[Indirection
+(lazy loading)] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Container
+policy] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Mapping
+comments] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Serialized_Object_Converter[Configuring
+a Serialized Object Converter]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Type
+conversion converter] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_an_Object_Type_Converter[Object
+type converter] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Table_and_Field_References_(Foreign_and_Target_Foreign_Keys)[Table
+and field references] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+This example shows how to create a direct collection mapping and add it
+to a descriptor using Java code.
+
+[#Example 43-1]## *_Direct Collection Mapping_*
+
+....
+public void customize(ClassDescriptor descriptor) {
+    DirectCollectionMapping mapping = new DirectCollectionMapping();
+
+    // configure mapping
+    ...
+
+    // add mapping to descriptor
+    descriptor.addMapping(mapping);
+}
+....
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Collection_Mapping[Direct
+Collection Mapping]
+* link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring a
+Relational Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+For information on using JPA to configure direct collection mappings,
+see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Use_the_@BasicCollection_Annotation[How
+to Use the @BasicCollection Annotation].
+
+== Configuring Target Table
+
+Each direct collection stores reference information in a target table.
+In the
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Figure_32-6[Direct
+Collection Mappings] figure, the `+RESPONS+` table contains the primary
+key and object of the instance owning the collection. You must create
+this table in your database.
+
+=== How to Configure a Target Table Using Workbench
+
+To specify the direct collection specifics, use this procedure:
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears.
+[#Figure 41-1]##*_General Tab, Target Table Options_*
+image:dcmaptar.gif[General Tab, Target Table
+Options,title="General Tab, Target Table Options"]
+
+Use the *Target Table* list to select the table that contains the
+reference fields for the direct collection mapping.
+
+=== How to Configure a Target Table Using Java
+
+Direct collection mappings store collections of Java objects that are
+not EclipseLink-enabled. Direct collections usually store Java types,
+such as `+String+`.
+
+Direct collection mappings are instances of the
+`+DirectCollectionMapping+` class and require the following elements:
+
+* The attribute mapped, set by using the `+setAttributeName+` method.
+* The database table that holds the values to be stored in the
+collection, set by using the `+setReferenceTableName+` method.
+* The field in the reference table from which the values are read and
+placed into the collection; this is called the direct field. Set it
+using the `+setDirectFieldName+` method.
+* The foreign key information, which you specify using the
+`+setReferenceKeyFieldName+` method and passing the name of the field
+that is a foreign reference to the primary key of the source object.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If the target primary key is composite, call the
+`+addReferenceKeyFieldName+` method for each of the fields that make up
+the key.
+|===
+
+[#Example 41-1]## *_Configuring a Simple Direct Collection Mapping_*
+
+`+public void customize(ClassDescriptor descriptor) { +`
+`+    DirectCollectionMapping directCollectionMapping = new DirectCollectionMapping();+`
+`+    directCollectionMapping.setAttributeName ("responsibilitiesList");+`
+`+    directCollectionMapping.setReferenceTableName ("RESPONS"); +`*`+//\'\' \'\'target\'\' \'\'table+`*
+`+    directCollectionMapping.setDirectFieldName ("DESCRIP");+`
+`+    directCollectionMapping.setReferenceKeyFieldName ("EMP_ID");+`
+`+    directCollectionMapping.useCollectionClass (Collection.class); +`*`+//\'\' \'\'default+`*
+
+`+    +`*`+//\'\' \'\'add\'\' \'\'this\'\' \'\'mapping\'\' \'\'to\'\' \'\'descriptor+`*
+`+    descriptor.addMapping (directCollectionMapping);+` `+}+`
+
+In addition to the API that the link:#Example_41-1[Configuring a Simple
+Direct Collection Mapping] example illustrates, other common API for use
+with direct collection mappings include the following:
+
+* `+useBasicIndirection+`: implements EclipseLink value holder
+indirection.
+* `+useTransparentCollection+`: if you use transparent indirection, this
+element places a special collection in the source object’s attribute.
+* `+dontUseIndirection+`: implements no indirection.
+
+For more information about the available methods for
+`+DirectCollectionMapping+`, see the _EclipseLink API Reference_.
+
+== Configuring Direct Value Field
+
+The direct value field, located in the reference table, stores the
+primitive data value. In the
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Figure_32-6[Direct
+Collection Mappings] figure, the `+DESCRIP+` field stores the
+collection.
+
+=== How to Configure a Direct Value Field Using Workbench
+
+To specify the direct collection specifics, use this procedure:
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears.
+[#Figure 41-2]##*_General Tab, Direct Value Field_*
+image:dcmapdir.gif[General Tab, Direct Value
+Field,title="General Tab, Direct Value Field"]
+. Use the *Direct Value Field* list to select the field from the *Target
+Table* table that contains the object of the collection.
+
+=== How to Configure Direct Value Field Using Java
+
+The link:#Example_41-1[Configuring a Simple Direct Collection Mapping]
+example demonstrates how to create and configure a direct collection
+mapping, including the setting of a direct field. The example also shows
+how to add this mapping to the descriptor.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

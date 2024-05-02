@@ -1,0 +1,101 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EclipseLink_Mapping_and_Configuration_(ELUG)[Related
+Topics]
+
+EclipseLink uses
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Working_with_EclipseLink_Metadata[metadata]
+to describe how objects relate to a data source representation. Your
+mapping and configuration activities construct this metadata.
+
+After creating the metadata, you can use it in any number of
+applications by referencing the metadata from
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[a session]. The
+EclipseLink runtime uses this metadata in all persistence and data
+transformation operations.
+
+== Mapping and Configuration Concepts
+
+This section describes concepts unique to EclipseLink mapping and
+configuration, including the following:
+
+* link:#Projects[Projects]
+* link:#Descriptors[Descriptors]
+* link:#Mappings[Mappings]
+
+=== Projects
+
+The `+Project+` class is the primary container in which EclipseLink
+stores its mapping and configuration metadata. A project relates a set
+of object classes to a data source at the data model level.
+
+A project contains link:#Descriptors[a descriptor] for each class and
+each descriptor contains link:#Mappings[a mapping] for each data member
+that EclipseLink should persist or transform.
+
+Using the Workbench, you can export mapping and configuration metadata
+into a deployment XML file called `+project+`. For more information, see
+link:Creating%20a%20Project%20(ELUG)#Exporting_Project_Information[Exporting
+Project Information].
+
+After creating the project XML file, you must associate it with a
+session so that EclipseLink can use it at run time. For more
+information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Primary_Mapping_Project[Configuring
+a Primary Mapping Project].
+
+For Enterprise JavaBeans (EJB) applications where there is no session,
+deploy the project XML file to the target application server. In this
+context, the project XML file is also known as the deployment XML file.
+
+For more information, see the following:
+
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#sessions.xml_File[sessions.xml
+File]
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#project.xml_File[project.xml
+File]
+* link:Introduction_to_Projects_(ELUG)[Introduction to Projects].
+
+=== Descriptors
+
+Descriptors describe how a Java class relates to a data source
+representation. They relate object classes to the data source at the
+data model level. For example, persistent class attributes may map to
+database columns.
+
+EclipseLink uses descriptors to store the information that describes how
+an instance of a particular class can be represented in a data source
+(see link:#Mappings[Mappings]). Most descriptor information can be
+defined by the Workbench, then read from the project XML file at run
+time.
+
+See link:Introduction%20to%20Descriptors%20(ELUG)[Introduction to
+Descriptors] for more information.
+
+=== Mappings
+
+Mappings describe how individual object attributes relate to a data
+source representation. Mappings can involve a complex transformation or
+a direct entry.
+
+EclipseLink uses mappings to determine how to transform data between
+object and data source representation. Most mapping information can be
+defined by the Workbench, then read from the project XML file at run
+time. Mappings are owned by link:#Descriptors[Descriptors].
+
+See link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings]
+for more information.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

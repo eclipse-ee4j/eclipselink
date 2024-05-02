@@ -1,0 +1,188 @@
+*TOC*
+Special:Whatlinkshere_Introduction_to_Object-Relational_Data_Type_Mappings_(ELUG)[Related
+Topics]
+
+An object-relational data type mapping transforms certain object data
+member types to structured data source representations optimized for
+storage in specialized object-relational data type databases (such as
+Oracle Database). Object-relational data type mappings let you map an
+object model into an object-relational data type data model.
+
+Do not confuse object-relational data type mappings with relational
+mappings (see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Transformation_Mapping[Transformation
+Mapping]). A relational mapping transforms any object data member type
+to a corresponding relational database (SQL) data source representation
+in any supported relational database. Relational mappings let you map an
+object model into a relational data model. In general, you can use
+relational mappings with any supported relational database. You can only
+use object-relational data type mappings with specialized
+object-relational data type databases optimized to support
+object-relational data type data source representations.
+
+For information on mapping concepts and features common to more than one
+type of EclipseLink mappings, see
+link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings].
+
+EclipseLink supports the following object-relational data type mappings.
+These mappings allow for an object model to persist in an
+object-relational data type data model. The Workbench does not support
+object-relational data type mappings–they must be defined in code or
+through amendment methods.
+
+[#Table 45-1]##
+
+[width="100%",cols="<34%,<43%,<12%,<11%",options="header",]
+|===
+|*Type of Mapping* |*Description* |*EclipseLink Workbench* |*Java*
+|link:#Object-Relational_Data_Type_Structure_Mapping[Object-relational
+data type structure mapping] |Map to object-relational data type
+aggregate structures (the `+Struct+` type in JDBC and the `+OBJECT+`
+type in Oracle Database__i__)
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Object-Relational_Data_Type_Reference_Mapping[Object-relational
+data type reference mapping] |Map to object-relational data type
+references (the `+Ref+` type in JDBC and the `+REF+` type in Oracle
+Database) |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Object-Relational_Data_Type_Array_Mapping[Object-relational data
+type array mapping] |Map a collection of primitive data to
+object-relational data type array data types (the `+Array+` type in JDBC
+and the `+VARRAY+` type in Oracle Database).
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Object-Relational_Data_Type_Object_Array_Mapping[Object-relational
+data type object array mapping] |Map to object-relational data type
+array data types (the `+Array+` type in JDBC and the `+VARRAY+` type in
+Oracle Database). |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Object-Relational_Data_Type_Nested_Table_Mapping[Object-relational
+data type nested table mapping] |Map to object-relational data type
+nested tables (the `+Array+` type in JDBC and the `+NESTED+` `+TABLE+`
+type in Oracle Database)
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+== Object-Relational Data Type Structure Mapping
+
+In an object-relational data type data model, *structures* are
+user-defined data types or object types. This is similar to a Java
+class–it defines attributes or fields in which each attribute is one of
+the following:
+
+* A primitive data type.
+* Another structure.
+* Reference to another structure.
+
+EclipseLink maps nested structures with the `+StructureMapping+` class.
+The structure mapping supports null values and shared aggregates without
+requiring additional settings (because of the object-relational data
+type support of the database).
+
+See
+link:Configuring%20an%20Object-Relational%20Data%20Type%20Structure%20Mapping%20(ELUG)[Configuring
+an Object-Relational Data Type Structure Mapping] for more information.
+
+== Object-Relational Data Type Reference Mapping
+
+In an object-relational data type data model, structures reference each
+other through *refs*–not through foreign keys (as in a traditional data
+model). Refs are based on the target structure’s `+ObjectID+`. They
+represent an object reference in Java.
+
+EclipseLink maps refs with the `+ReferenceMapping+` class. The reference
+mapping does not require foreign key information (because of the
+object-relational data type support of the database).
+
+See
+link:Configuring%20an%20Object-Relational%20Data%20Type%20Reference%20Mapping%20(ELUG)[Configuring
+an Object-Relational Data Type Reference Mapping] for more information.
+
+== Object-Relational Data Type Array Mapping
+
+In an object-relational data type data model, structures can contain
+*arrays* (collections of other data types). These arrays can contain
+primitive data types or collections of other structures.
+
+EclipseLink maps arrays of primitive data types with the
+`+ArrayMapping+` class. An array mapping maps to object-relational data
+type array data types (the `+Array+` type in JDBC and the `+VARRAY+`
+type in Oracle Database). To map a collection of aggregate structures,
+use an object array mapping (see
+link:#Object-Relational_Data_Type_Object_Array_Mapping[Object-Relational
+Data Type Object Array Mapping]).
+
+The object-relational data type database stores the arrays with their
+parent structure in the same table. To store information in a separate
+table from the parent structure’s table, use a nested table mapping (see
+link:#Object-Relational_Data_Type_Nested_Table_Mapping[Object-Relational
+Data Type Nested Table Mapping]).
+
+All elements in the array must be the same data type. The number of
+elements in an array controls the size of the array. An Oracle Database
+allows arrays of variable sizes (the `+VARRAY+` type).
+
+See
+link:Configuring%20an%20Object-Relational%20Data%20Type%20Array%20Mapping%20(ELUG)[Configuring
+an Object-Relational Data Type Array Mapping] for more information.
+
+== Object-Relational Data Type Object Array Mapping
+
+In an object-relational data type data model, structures can contain
+_arrays_ (collections of other data types). These arrays can contain
+primitive data types or collections of other structures.
+
+EclipseLink maps arrays of structures with the `+ObjectArrayMapping+`
+class. An object array mapping defines a collection-aggregated
+relationship, in which the target objects share the same row as the
+source object.
+
+You must associate this mapping to an attribute in the parent class.
+
+See
+link:Configuring%20an%20Object-Relational%20Data%20Type%20Object%20Array%20Mapping%20(ELUG)[Configuring
+an Object-Relational Data Type Object Array Mapping] for more
+information.
+
+== Object-Relational Data Type Nested Table Mapping
+
+*Nested table* types model an unordered set of elements. These elements
+may be built-in or user-defined types. You can view a nested table as a
+single-column table or, if the nested table is an object type, as a
+multicolumn table (with a column for each attribute of the object type).
+
+EclipseLink maps nested tables with the `+NestedTableMapping+` class. It
+represents a collection of object references in Java. Because of the
+object-relational data type support of the database, nested table
+mapping does not require foreign key information (as with a one-to-many
+mapping) or a relational table (as with a many-to-many mapping).
+
+Typically, nested tables represent a one-to-many or many-to-many
+relationship of references to another independent structure. They
+support querying and joining better than the `+VARRAY+` types that are
+in-lined to the parent table. EclipseLink supports mapping a nested
+table of `+REF+` types only. EclipseLink does not support nested tables
+of basic or other structured data types–use array (see
+link:#Object-Relational_Data_Type_Array_Mapping[Object-Relational Data
+Type Array Mapping]) or object array (see
+link:#Object-Relational_Data_Type_Object_Array_Mapping[Object-Relational
+Data Type Object Array Mapping]) mappings instead.
+
+See
+link:Configuring%20an%20Object-Relational%20Data%20Type%20Nested%20Table%20Mapping%20(ELUG)[Configuring
+an Object-Relational Data Type Nested Table Mapping] for more
+information.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_ORM[Category: ORM]

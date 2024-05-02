@@ -1,0 +1,325 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Creating_EclipseLink_Files_for_Deployment_(ELUG)[Related
+Topics]
+
+This section includes EclipseLink information that you need when
+creating deployment files for various types of applications.
+
+For more information on packaging and deployment, see the following:
+
+* link:#Introduction_to_the_EclipseLink_Deployment_File_Creation[Introduction
+to the EclipseLink Deployment File Creation]
+* link:Integrating%20EclipseLink%20with%20an%20Application%20Server%20(ELUG)[Integrating
+EclipseLink with an Application Server]
+* link:Packaging%20a%20EclipseLink%20Application%20(ELUG)[Packaging a
+EclipseLink Application]
+* link:Deploying%20a%20EclipseLink%20Application%20(ELUG)[Deploying a
+EclipseLink Application]
+* link:Packaging_and_Deploying_EclipseLink_JPA_Applications_(ELUG)[Packaging
+and Deploying EclipseLink JPA Applications]
+* link:EclipseLink_UserGuide_Creating_Deployment_Files_for_EclipseLink_Database_Web_Services_%28ELUG%29[Creating
+Deployment Files for EclipseLink Web Services]
+
+== Introduction to the EclipseLink Deployment File Creation
+
+Depending on the type of application you are deploying, you may need to
+create any of the following deployment files:
+
+* link:#project.xml_File[project.xml File]
+* link:#sessions.xml_File[sessions.xml File]
+
+Workbench provides the ability to
+link:Creating%20a%20Project%20(ELUG)#Exporting_Project_Information[create
+deployment files from a Workbench project] "`wikilink`"). After you
+build a project, you have two options to create the deployment files:
+
+* Create XML deployment files that require no compiling.
+* Create Java source files, which you compile and deploy outside of
+Workbench.
+
+We recommend XML deployment because XML files are easier to deploy and
+troubleshoot than compiled Java files. This approach gives you a very
+flexible configuration that enables you to make changes safely and
+easily. XML deployment files do not require third-party applications or
+compilers to deploy successfully.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If you are using JPA, you can use annotations to specify most
+of what you formerly specified in deployment descriptors. Use deployment
+descriptors to override annotations or specify options not supported by
+annotations.
+|===
+
+=== project.xml File
+
+The `+project.xml+` file is the core of your application. It contains
+the descriptors and mappings you define and also includes any named
+queries or finders associated with your project.
+
+==== XSD File Format
+
+The `+project.xml+` file XSD is `+persistence_1_0.xsd+` and it is
+located in the __`+\xsds+` directory.
+
+See link:EclipseLink_XSDs[EclipseLink/XSDs] for more information.
+
+==== POJO Applications and Project Metadata
+
+For a POJO application, you define your project metadata in a
+`+project.xml+` file.
+
+The `+project.xml+` file provides a simple and flexible way to
+configure, modify, and troubleshoot the project metadata. Because of
+these attributes, the `+project.xml+` file is the preferred way to
+configure an EclipseLink project.Workbench provides a graphical tool to
+build and edit the `+project.xml+` file. For information on creating
+projects with Workbench, see
+link:#Creating_the_project.xml_File_with_Workbench[Creating the
+project.xml File with Workbench].
+
+==== JPA Applications and Project Metadata
+
+For a JPA application, you can express project metadata using JPA
+annotations, `+persistence.xml+`, `+orm.xml+`, and EclipseLink JPA
+annotation and `+persistence.xml+` property extensions. The EclipseLink
+JPA persistence provider interprets all these sources of metadata to
+create an in-memory EclipseLink session and project at run time.
+
+Using EclipseLink JPA, you also have the option of specifying your
+metadata using EclipseLink `+sessions.xml+` and `+project.xml+` while
+accessing your persistent classes using JPA and an `+EntityManager+`.
+For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Overriding_Mechanisms[What
+You May Need to Know About EclipseLink JPA Overriding Mechanisms].
+
+==== Creating the project.xml File with Workbench
+
+Because you must synchronize the `+project.xml+` file with the classes
+and data source associated with your application, we recommend that you
+not modify this file manually. Workbench ensures proper synchronization,
+and is the best way to make changes to the project. Simply modify the
+project in Workbench and redeploy the `+project.xml+` file. Using this
+option reduces development time by eliminating the need to regenerate
+and recompile Java code each time the project changes.
+
+See
+link:Creating%20a%20Project%20(ELUG)#Exporting_Project_Information[Exporting
+Project Information] for detailed information on exporting the
+deployment XML information.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: You can name this file with a name other than `+project.xml+`;
+however, for clarity, this discussion assumes that the file has not been
+renamed.
+|===
+
+==== Creating project.xml Programatically
+
+Optionally, you can use the `+DeploymentXMLGenerator+` API to
+programatically generate the `+project.xml+` file in either of the
+following ways:
+
+* From an application, instantiate the `+DeploymentXMLGenerator+` and
+your java source. Call the following
+method:`+generate (+`_`+<MW_Project.mwp>+`_`+,+`
+_`+<output file.xml>+`_`+)+`
+* From the command line, use the following:
+
+`+java -classpath eclipselink.jar;eclispelinkmw.jar;+`
+`+org.eclipse.persistence.tools.workbench.mappings.DeploymentXMLGenerator +`_`+<MW_Project.mwp>+`_`+ +`_`+<output\'\' \'\'file.xml>+`_
+
+Before you use either method, ensure that your classpath includes the
+__`+\jlib\eclipselink.jar+` and
+__`+\utils\workbench\jlib\eclipselinkmw.jar+` files.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If you are using EJB 3.0, you can use annotations to specify
+most of what you formerly specified in the `+project.xml+` file. To
+override annotations or specify options not supported by annotations,
+you can still provide a `+project.xml+` file in your EJB 3.0
+application.
+|===
+
+=== sessions.xml File
+
+Each EclipseLink project belongs to an EclipseLink _session_. A session
+is the facade through which an application accesses EclipseLink
+functionality (for more information on sessions, see
+link:EclipseLink_UserGuide_Using_EclipseLink_Sessions_(ELUG)[EclipseLink
+Sessions]).
+
+==== XSD File Format
+
+The `+sessions.xml+` file XSD is
+`+eclipse_persistence_sessions_1_0.xsd+` and it is located in the
+__`+\xsds+` directory as well as on the web at
+http://www.eclipse.org/eclipselink/xsds/eclipse_persistence_sessions_1_0.xsd.
+
+When you use the XSD formatted `+sessions.xml+` file, the EclipseLink
+run time separates `+sessions.xml+` file validation from session
+instantiation. Separating XML file formatting problems from Session
+Manager session instantiation problems simplifies troubleshooting.
+Exceptions thrown during validation clearly indicate that the failure is
+due to an invalid `+sessions.xml+` file, as the following illustrates.
+
+[#Example 8-1]## *_Enhanced Validation Exceptions_*
+
+`+Exception [ECLIPSELINK-9010] (EclipseLink): org.eclipselink.exceptions.SessionLoaderException+`
+`+Exception Description: A End tag does not match start tag 'session'. was thrown while parsing the XML file against the XML schema.+`
+`+Internal Exception: oracle.xml.parser.v2.XMLParseException: End tag does not match start tag 'session'.+`
+
+==== POJO Applications and Session Metadata
+
+For a POJO application, you define your sessions in a `+sessions.xml+`
+file.
+
+The `+sessions.xml+` file provides a simple and flexible way to
+configure, modify, and troubleshoot the application sessions. Because of
+these attributes, the `+sessions.xml+` file is the preferred way to
+configure an EclipseLink session.EclipseLink provides graphical toosl to
+build and edit the `+sessions.xml+` file. For information see
+link:Creating%20a%20Session%20(ELUG)[Creating a Session].
+
+==== JPA Applications and Session Metadata
+
+For a JPA application, you can express session metadata using JPA
+annotations, `+persistence.xml+`, `+orm.xml+`, and EclipseLink JPA
+annotation and `+persistence.xml+` property extensions. The EclipseLink
+JPA persistence provider interprets all these sources of metadata to
+create an in-memory EclipseLink session and project at run time.
+
+Using EclipseLink JPA, you also have the option of specifying your
+metadata using EclipseLink `+sessions.xml+` and `+project.xml+` while
+accessing your persistent classes using JPA and an `+EntityManager+`.
+For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Overriding_Mechanisms[What
+You May Need to Know About EclipseLink JPA Overriding Mechanisms].
+
+== Creating Deployment Files for Java Applications
+
+In a Java application, EclipseLink does not use a Java EE container for
+deployment. Instead, it relies on EclipseLink mechanisms to provide
+functionality and persistence. The key elements of this type of
+application are the lack of a Java EE container and the fact that you
+deploy the application by placing the application JAR file on the
+classpath.
+
+Java applications require the following deployment files:
+
+* link:#project.xml_File[project.xml File]
+* link:#sessions.xml_File[sessions.xml File]
+
+== Creating Deployment Files for JavaServer Pages and Servlet Applications
+
+Many designers build EclipseLink applications that use JavaServer Pages
+(JSP) and Java servlets. This type of design generally supports
+Web-based applications.
+
+JSP and servlet applications require the following deployment files:
+
+* link:#project.xml_File[project.xml File]
+* link:#sessions.xml_File[sessions.xml File]
+
+== Creating Deployment Files for Session Bean Applications
+
+Session beans generally model a process, operation, or service and as
+such, are not persistent. You can build EclipseLink applications that
+wrap interaction with EclipseLink in session beans. Session beans
+execute all EclipseLink-related operations on behalf of the client.
+
+This type of design uses JTS and externally managed transactions, but
+does not incur the overhead associated with persistence applications.
+Session bean applications also scale and deploy easily.
+
+This section describes the following:
+
+* link:#How_to_Create_Deployment_Files_for_EJB_3.0_Session_Bean_Applications[How
+to Create Deployment Files for EJB 3.0 Session Bean Applications]
+
+=== How to Create Deployment Files for EJB 3.0 Session Bean Applications
+
+We recommend using JPA annotations and persistence unit properties, or a
+special-case `+eclipselink.sessions-xml+` persistence unit property (see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#EclipseLink_JPA_Persistence_Unit_Properties_for_Database,_Session,_and_Application_Server[EclipseLink
+JPA Persistence Unit Properties for Database&#44; Session&#44; and
+Application Server]) in your EJB 3.0 session bean application.
+
+You may also choose to use the link:#project.xml_File[project.xml File]
+and link:#sessions.xml_File[sessions.xml File].
+
+For more information, see the following:
+
+* link:Introduction_to_Java_Persistence_API_(ELUG)#Java_Persistence_API_Overview[Java
+Persistence API Overview]
+* link:Introduction_to_EclipseLink_JPA_(ELUG)#EclipseLink_JPA_Overview[EclipseLink
+JPA Overview]
+* link:Developing_Applications_Using_EclipseLink_JPA_(ELUG)#Application_Development_with_EclipseLink_JPA[Application
+Development with EclipseLink JPA)]
+
+== Creating Deployment Files for JPA Applications
+
+See
+link:Packaging_and_Deploying_EclipseLink_JPA_Applications_(ELUG)[Packaging
+and Deploying EclipseLink JPA Applications] for information on how to
+create deployment files for your JPA application.
+
+== Configuring the weblogic-ejb-jar.xml File for WebLogic Server
+
+Before you deploy a EclipseLink application to Oracle WebLogic Server,
+you must modify the `+weblogic-ejb-jar.xml+` file.
+
+Avoid the `+weblogic-ejb-jar.xml+` tags that EclipseLink either does not
+support or does not require (see
+link:#What_You_May_Need_to_Know_About_Unsupported_weblogic-ejb-jar.xml_File_Tags[What
+You May Need to Know About Unsupported weblogic-ejb-jar.xml File Tags]).
+
+=== What You May Need to Know About Unsupported weblogic-ejb-jar.xml File Tags
+
+The `+weblogic-ejb-jar.xml+` file includes the following tags that
+EclipseLink either does not support or does not require:
+
+* `+concurrency-strategy+`: This tag specifies how Oracle WebLogic
+Server manages concurrent users for a given bean. Because EclipseLink
+manages concurrent access internally, it does not require this tag. For
+more information about the EclipseLink concurrency strategy, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+* `+db-is-shared+`: Because EclipseLink does not make any assumptions
+about the exclusivity of database access, EclipseLink does not require
+this tag. EclipseLink addresses multiuser access issues through various
+locking and refreshing policies.
+* `+delay-updates-until-end-of-tx+`: EclipseLink always delays updates
+until the end of a transaction, and does not require this tag.
+* `+finders-load-bean+`: EclipseLink always loads the bean upon
+execution of the finder, and does not require this tag.
+* `+pool+`: EclipseLink does not use a pooling strategy for entity
+beans. This avoids object-identity problems that can occur due to
+pooling.
+* `+lifecycle+`: This element manages beans that follow a pooling
+strategy. Because EclipseLink does not use a pooling strategy,
+EclipseLink ignores this tag.
+* `+is-modified-method-name+`: EclipseLink does not require a bean
+developer-defined method to detect changes in the object state.
+* `+isolation-level+`: Because isolation level settings for the cache or
+database transactions are specified in the EclipseLink project,
+EclipseLink ignores this tag.
+* `+cache+`: Because you define EclipseLink cache properties in
+Workbench, this tag is unnecessary.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

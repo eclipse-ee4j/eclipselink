@@ -1,0 +1,25 @@
+== Queries
+
+The following sections describe how to build EclipseLink queries and use
+them to create, read, update, and delete objects:
+
+* link:Introduction_to_EclipseLink_Queries_(ELUG)[Introduction to
+EclipseLink Queries] - describes each of the different EclipseLink query
+types and important query concepts.
+
+* link:Using_Basic_Query_API_(ELUG)[Using Basic Query API]
+
+* link:Introduction_to_EclipseLink_Expressions_(ELUG)[Introduction to
+EclipseLink Expressions] - describes the EclipseLink expressions
+framework and how to use it with EclipseLink queries.
+
+* link:Using_Advanced_Query_API_(ELUG)[Using Advanced Query API]
+
+* link:Introduction_to_EclipseLink_Support_for_Oracle_Spatial_(ELUG)[Introduction
+to EclipseLink Support for Oracle Spatial]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

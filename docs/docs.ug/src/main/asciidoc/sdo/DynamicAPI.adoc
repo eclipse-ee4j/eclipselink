@@ -1,0 +1,44 @@
+[#sdo-example-dynamicapi]
+=== Using Dynamic DataObjects
+
+* <<sdo-example-dynamicapi-do>>
+** <<sdo-example-dynamicapi-do-df>>
+** <<sdo-example-dynamicapi-do-do>>
+* <<sdo-example-dynamicapi-props>>
+
+[#sdo-example-dynamicapi-do]
+==== Creating DataObjects
+
+[#sdo-example-dynamicapi-do-df]
+===== Using DataFactory
+
+DataObjects can be created by Type using DataFactory:
+
+[source,java]
+----
+Type customerType = TypeHelper.INSTANCE.getType("http://www.example.org/customer-example", "customer-type");
+DataObject customerDO = DataFactory.INSTANCE.create(customerType);
+----
+
+[#sdo-example-dynamicapi-do-do]
+===== Using DataObject
+
+Once you have a DataObject you can use it to create child DataObjects
+based on its properties:
+
+[source,java]
+----
+DataObject contactInfoDO = customerDO.createDataObject("contact-info");
+DataObject billingAddressDO = contactInfoDO.createDataObject("billing-address");
+----
+
+[#sdo-example-dynamicapi-props]
+==== Getting/Setting Properties
+
+An SDO path (similar to XPath) can be used with the String based
+accessors:
+
+[source,java]
+----
+DataObject billingAddressDO = customerDO.getDataObject("contact-info/billing-address");
+----

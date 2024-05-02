@@ -1,0 +1,165 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_Aggregate_Object_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You configure the relational aggregate object mapping in the
+source object’s descriptor. However, before doing so, you must designate
+the target object’s descriptor as an aggregate (see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_a_Relational_Descriptor_as_a_Class_or_Aggregate_Type[Configuring
+a Relational Descriptor as a Class or Aggregate Type]).
+|===
+
+This table lists the configurable options for a relational aggregate
+object mapping.
+
+[#Table 42-1]##
+
+[width="100%",cols="<64%,<16%,<20%",options="header",]
+|===
+|*Option* |*Workbench* |*Java*
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Reference_Descriptor[Reference
+descriptor] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Method
+or direct field access] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Read-only
+mapping] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Allowing_Null_Values[Allowing null values]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Mapping
+comments] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported.,title="Unsupported."]
+
+|link:#Configuring_Aggregate_Fields[Aggregate fields]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+This example shows how to create a aggregate object mapping and add it
+to a descriptor using Java code.
+
+[#Example 44-1]## *_Aggregate Object Mapping_*
+
+....
+public void customize(ClassDescriptor descriptor) {
+    AggregateObjectMapping mapping = new AggregateObjectMapping();
+
+    // configure mapping
+    ...
+
+    // add mapping to descriptor
+    descriptor.addMapping(mapping);
+}
+....
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Object_Mapping[Aggregate
+Object Mapping]
+* link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring a
+Relational Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+== Configuring Aggregate Fields
+
+When you designate a descriptor as an aggregate, EclipseLink allows you
+to specify a mapping type for each field in the target class, but defers
+associating the field with a database table until you configure the
+aggregate object mapping in the source class descriptor. In other words,
+the target class descriptor defines how each target class field is
+mapped but the source class descriptor defines where each target class
+field is mapped.
+
+This section explains how to configure the source class descriptor to
+define where each target class field is mapped.
+
+For more information on how to configure the target class descriptor to
+define how each target class field is mapped, see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_a_Relational_Descriptor_as_a_Class_or_Aggregate_Type[Configuring
+a Relational Descriptor as a Class or Aggregate Type].
+
+=== How to Configure Aggregate Fields Using Workbench
+
+To specify the mapped fields of an aggregate mapping, use this
+procedure.
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *Fields* tab. The Fields tab appears.
+[#Figure 42-1]##*_Fields Tab_* image:agmapfie.gif[Fields
+Tab,title="Fields Tab"]
+. Complete the fields on the *Fields* tab.
+
+Use the following information to complete each field on the tab:
+
+[width="100%",cols="<8%,<92%",options="header",]
+|===
+|*Field* |*Description*
+|*Field Description* |This column shows the name of the fields from the
+target object, whose descriptor is designated
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_a_Relational_Descriptor_as_a_Class_or_Aggregate_Type[as
+an aggregate]. These are for display only and cannot be changed.
+
+|*Fields* |Use this column to select the source object database table
+field that EclipseLink will map to the corresponding target object
+field.
+|===
+
+=== How to Configure Aggregate Fields Using Java
+
+Using the `+AggregateObjectMapping+` method `+addFieldNameTranslation+`
+you can set a field name translation that maps from a field name in the
+source table to a field name in the aggregate descriptor
+
+For more information about the available methods for
+`+AggregateObjectMapping+`, see the _EclipseLink API Reference_.
+
+== Configuring Allowing Null Values
+
+If all the fields in the database row for the aggregate object are
+`+null+`, then, by default, EclipseLink places `+null+` in the
+appropriate source object, as opposed to filling an aggregate object
+with `+null+` values.
+
+=== How to Configure Allowing Null Values Using Workbench
+
+To allow a mapping to contain a null value, use this procedure.
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears.
+[#Figure 42-2]##*_General Tab, Allow Null Option_*
+image:agmapnul.gif[General Tab, Allow Null
+Option,title="General Tab, Allow Null Option"]
+. Select the *Allows Null* option to allow this mapping to contain a
+null value.
+
+=== How to Configure Allowing Null Values Using Java
+
+You can configure whether or not to allow null values using the
+`+AggregateObjectMapping+` methods `+allowNull+` and `+dontAllowNull+`.
+
+For more information about the available methods for
+`+AggregateObjectMapping+`, see the _EclipseLink API Reference_.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

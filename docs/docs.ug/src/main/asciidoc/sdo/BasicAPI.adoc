@@ -1,0 +1,240 @@
+[#sdo-example-basic]
+=== Using the SDO API
+
+* <<sdo-example-basic-helperctx>>
+* <<sdo-example-basic-typehelper>>
+* <<sdo-example-basic-xsdhelper>>
+* <<sdo-example-basic-datafactory>>
+* <<sdo-example-basic-datahelper>>
+* <<sdo-example-basic-xmlhelper>>
+* <<sdo-example-basic-copyhelper>>
+* <<sdo-example-basic-equalityhelper>>
+
+[#sdo-example-basic-helperctx]
+==== HelperContext
+
+The helper context is the access point for all the SDO helpers and
+factories. If a type is defined in the TypeHelper for a HelperContext,
+then the DataFactory from that HelperContext can be used to create a
+DataObject of that Type.
+
+===== Default HelperContext
+
+SDO provides a default helper context. The helpers and factories
+obtained from the default helper context are the same ones available
+from the static INSTANCE variables on each of the helpers and factory
+classes. De-serialization is always performed in the scope of the
+default HelperContext.
+
+[source,java]
+----
+HelperContext helperContext = HelperProvider.getDefaultContext();
+----
+
+===== Local HelperContext
+
+SDO also allows for HelperContexts other than the default
+
+[source,java]
+----
+HelperContext helperContext = new SDOHelperContext();
+----
+
+If you are using type safe DataObjects then you can provide the
+ClassLoader that contains the generated interfaces.
+
+[source,java]
+----
+HelperContext helperContext = new SDOHelperContext(aClassLoader);
+----
+
+[#sdo-example-basic-typehelper]
+==== TypeHelper - Access Metadata
+
+TypeHelper provides a convenient means of handling SDO metadata.
+
+[source,java]
+----
+TypeHelper typeHelper = helperContext.getTypeHelper();
+----
+
+===== Get Types
+
+You can lookup the SDO type by name and uri.
+
+[source,java]
+----
+typeHelper.getType("http://www.example.org/customer-example", "customer-type");
+----
+
+You can also use the type safe interface classes to look up the
+corresponding SDO type.
+
+[source,java]
+----
+typeHelper.getType(Customer.class);
+----
+
+===== Get Open Content Properties
+
+You can lookup open content properties by name and uri.
+
+[source,java]
+----
+typeHelper.getOpenContentProperty("http://www.example.org/customer-example", "phone-number");
+----
+
+[#sdo-example-basic-xsdhelper]
+==== XSDHelper - Access XML Schema Metadata
+
+XSDHelper provides a convenient means of handling XML Schema metadata.
+
+[source,java]
+----
+XSDHelper xsdHelper = helperContext.getXSDHelper();
+----
+
+===== Define
+
+The XSDHelper contains a number of define methods for generating SDO
+types from an XML Schema.
+
+[source,java]
+----
+URL xsdURL = new URL("http://www.example.org/customer-example/customer.xsd");
+List types = xsdHelper.define(xsdUrl.openStream(), xsdUrl.toExternalForm());
+----
+
+===== Generate
+
+The XSDHelper contains a number of generate methods to generate an XML
+Schema from SDO types.
+
+[source,java]
+----
+String xmlSchema = xsdHelper.generate(types);
+----
+
+[#sdo-example-basic-datafactory]
+==== DataFactory - Create DataObjects
+
+DataFactory provides a convenient means of creating SDO DataObjects.
+
+[source,java]
+----
+DataFactory dataFactory = helperContext.getDataFactory();
+----
+
+===== Create
+
+[#sdo-example-basic-datahelper]
+==== DataHelper - Convert Simple Values
+
+DataHelper provides a convenient means of converting SDO data type
+values.
+
+[source,java]
+----
+DataHelper dataHelper = helperContext.getDataHelper();
+----
+
+[#sdo-example-basic-xmlhelper]
+==== XMLHelper - Handle XML Data as DataObjects
+
+XMLHelper provides a convenient means of handling XML data as
+DataObjects.
+
+[source,java]
+----
+XMLHelper xmlHelper = helperContext.getXMLHelper();
+----
+
+===== Load
+
+Load methods are used to unmarshal XML into DataObjects.
+
+[source,java]
+----
+FileInputStream xmlInputStream = new FileInputStream("customer.xml");
+XMLDocument xmlDocument = xmlHelper.load(xmlInputStream);
+DataObject customerDO = xmlDocument.getRootObject;
+----
+
+===== Save
+
+Save methods are used to convert DataObjects to XML.
+
+[source,java]
+----
+xmlHelper.save(customerDO, "http://www.example.org/customer-example", "customer", System.out);
+----
+
+The XML root information can also be encapsulated in an XMLDocument
+object.
+
+[source,java]
+----
+XMLDocument xmlDocument =
+    xmlHelper.createDocument(customerDO, "http://www.example.org/customer-example", "customer");
+xmlHelper.save(xmlDocument, System.out, null);
+----
+
+[#sdo-example-basic-copyhelper]
+==== CopyHelper - Create Copies of DataObjects
+
+CopyHelper provides a convenient means of copying DataObjects.
+
+[source,java]
+----
+CopyHelper copyHelper = helperContext.getCopyHelper();
+----
+
+===== Shallow Copy
+
+Create a new DataObject containing the values of all dataType=true
+properties (excluding the ChangeSummary property).
+
+[source,java]
+----
+DataObject shallowCopy = copyHelper.copyShallow(dataObject);
+----
+
+===== Deep Copy
+
+Create a copy of the entire tree.
+
+[source,java]
+----
+DataObject deepCopy = copyHelper.copy(dataObject);
+----
+
+[#sdo-example-basic-equalityhelper]
+==== EqualityHelper - Compare DataObjects
+
+EqualityHelper provides a convenient means of comparing DataObjects.
+
+[source,java]
+----
+EqualityHelper equalityHelper = helperContext.getEqualityHelper();
+----
+
+===== Shallow Equal
+
+Two DataObjects are considered shallow equal if the data objects are of
+the same type and all the values of all dataType=true properties
+(excluding the ChangeSummary property) are equal.
+
+[source,java]
+----
+boolean isShallowEqual = equalityHelper.equalShallow(dataObject1, dataObject2);
+----
+
+===== Deep Equal
+
+Two DataObjects are considered deep equal if the data objects and the
+trees that they belong to are both equal.
+
+[source,java]
+----
+boolean isDeepEqual = equalityHelper.equal(dataObject1, dataObject2);
+----

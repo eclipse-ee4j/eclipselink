@@ -1,0 +1,183 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_Many-to-Many_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for a relational many-to-many
+mapping.
+
+[width="100%",cols="<69%,<15%,<16%",options="header",]
+|===
+|*Option to Configure* |*Workbench* |*Java*
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Reference_Descriptor[Configuring
+Reference Descriptor] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Method
+or direct field access] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Read-only
+mapping] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Private_or_Independent_relationships[Private
+or Independent relationships]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Batch_Reading[Batch
+reading] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Indirection_(lazy_loading)[Indirection
+(lazy loading)] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Bidirectional_Relationship[Bidirectional
+relationship] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Container
+policy] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Mapping
+comments] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Supported,title="Supported"]
+
+|link:#Configuring_a_Relation_Table[Relational table]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Table_and_Field_References_(Foreign_and_Target_Foreign_Keys)[Table
+and field references] (Source)
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Table_and_Field_References_(Foreign_and_Target_Foreign_Keys)[Table
+and field references] (Target)
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Query_Key_Order[Query
+key order] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+This example shows how to create a many-to-many mapping and add it to a
+descriptor using Java code.
+
+[#Example 41-1]## *_Many-to-Many Mapping_*
+
+....
+public void customize(ClassDescriptor descriptor) {
+    ManyToManyMapping mapping = new ManyToManyMapping();
+
+    // configure mapping
+    ...
+
+    // add mapping to descriptor
+    descriptor.addMapping(mapping);
+}
+....
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Many-to-Many_Mapping[Many-to-Many
+Mapping]
+* link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring a
+Relational Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+For information on using JPA to configure many-to-many mappings, see
+link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)#@ManyToMany[@ManyToMany].
+
+== Configuring a Relation Table
+
+The relation table contains the columns for the primary keys of the
+source table and target table involved in the many-to-many mapping. You
+must create this table in the database before completing the mapping.
+See link:Using%20Workbench%20(ELUG)#Using_Databases[Using Databases] for
+information on creating database tables.
+
+In the
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Figure_32-5[Many-to-Many
+Relationships] figure, the `+PROJ_EMP+` table serves as the relation
+table between the `+PROJECT+` and `+EMPLOYEE+` tables.
+
+=== How to Configure a Relation Table Using Workbench
+
+To select a relation table for a mapping, use this procedure:
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears.
+[#Figure 39-1]##*_Table Reference Tab, Relation Table Option_*
+image:mmreltabl.gif[Table Reference Tab, Relation Table
+Option,title="Table Reference Tab, Relation Table Option"]
+. Use the *Relation Table* field to select a database table to define
+this mapping.
+
+=== How to Configure a Relation Table Using Java
+
+Many-to-many mappings represent the relationships between a collection
+of source objects and a collection of target objects. This requires an
+intermediate table that manages the associations between the source and
+target records.
+
+Many-to-many mappings are instances of the `+ManyToManyMapping+` class
+and requires the following elements:
+
+* The attribute mapped, set by using the `+setAttributeName+` method.
+* The reference class, set by using the `+setReferenceClass+` method.
+* The relation table, set by using the `+setRelationTableName\'\'()+`
+method.
+* The foreign key information (for noncomposite target primary keys),
+which you specify by calling the `+setSourceRelationKeyFieldName+` and
+`+setTargetRelationKeyFieldName+` methods.
+* The foreign key information if the source or target primary keys are
+composite, which you specify by sending the
+`+addSourceRelationKeyFieldName+` or `+addTargetRelationKeyFieldName+`
+methods.
+
+[#Example 39-1]## *_Configuring a Relational Table_*
+
+`+public void customize(ClassDescriptor descriptor) { +`
+*`+//\'\' \'\'In\'\' \'\'the\'\' \'\'Employee\'\' \'\'class,\'\' \'\'create\'\' \'\'the\'\' \'\'mapping\'\' \'\'that\'\' \'\'references\'\' \'\'Project\'\' \'\'class+`*
+`+    ManyToManyMapping manyToManyMapping = new ManyToManyMapping();+`
+`+    manyToManyMapping.setAttributeName("projects");+`
+`+    manyToManyMapping.setReferenceClass(Project.class);+`
+
+`+    +`*`+//\'\' \'\'Configure\'\' \'\'the\'\' \'\'relational\'\' \'\'table+`*
+`+    manyToManyMapping.setRelationTableName("PROJ_EMP");+`
+`+    manyToManyMapping.setSourceRelationKeyFieldName ("EMPID");+`
+`+    manyToManyMapping.setTargetRelationKeyFieldName ("PROJID");+`
+
+`+    +`*`+//\'\' \'\'Add\'\' \'\'mapping\'\' \'\'to\'\' \'\'descriptor+`*
+
+`+    descriptor.addMapping(manyToManyMapping);+` `+}+`
+
+In addition to the API that link:#Example_39-1[Configuring a Relational
+Table] illustrates, other common API for use with many-to-many mappings
+include the following:
+
+* `+useBasicIndirection+`: implements EclipseLink value holder
+indirection.
+* `+useTransparentCollection+`: if you use transparent indirection, this
+element places a special collection in the source object’s attribute.
+* `+dontUseIndirection+`: implements no indirection.
+
+For more information about the available methods for
+`+ManyToManyMapping+`, see the _EclipseLink API Reference_.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

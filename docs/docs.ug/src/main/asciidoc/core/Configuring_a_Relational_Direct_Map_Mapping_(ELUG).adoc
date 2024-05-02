@@ -1,0 +1,245 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_Direct_Map_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for a relational direct map
+mapping.
+
+[#Table 43-1]##
+
+[width="100%",cols="<63%,<18%,<19%",options="header",]
+|===
+|*Option* |*Workbench* |*Java*
+|link:Configuring%20a%20Relational%20Direct%20Collection%20Mapping_(ELUG)#Configuring_Target_Table[Configuring
+Target Table] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Direct_Value_Field[Direct value field]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Direct_Key_Field[Direct key field]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Method
+or direct field access] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Read-only
+mapping] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Batch_Reading[Batch
+reading] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)[Indirection (lazy loading)]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Container
+policy] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Mapping
+comments] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Supported,title="Supported"]
+
+|link:#Configuring_Key_Converters[Key converters]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Value_Converters[Value converters]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Joining_at_the_Mapping_Level[Table
+and field references] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+This example shows how to create a direct map mapping and add it to a
+descriptor using Java code.
+
+[#Example 36-1]## *_Direct Map Mapping_*
+
+`+public void customize(ClassDescriptor descriptor) { +`
+`+   DirectMapMapping mapping = new DirectMapMapping();  +`
+
+`+   // configure mapping+` `+   ... +`
+
+`+   // add mapping to descriptor+`
+`+   descriptor.addMapping(mapping);+` `+}+`
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Map_Mapping[Direct
+Map Mapping]
+* link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring a
+Relational Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+For information on using JPA to configure direct map mappings, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Use_the_@BasicMap_Annotation[How
+to Use the @BasicMap Annotation].
+
+== Configuring Direct Value Field
+
+The direct value field in the reference table stores the primitive data
+value of the map value. If the value’s object value and database value
+are different types, use a converter (see
+link:#Configuring_Value_Converters[Configuring Value Converters]).
+
+=== How to Configure Direct Value Fields Using Workbench
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears. *_General Tab,
+Direct Value Field_* image:dmdirval.gif[General Tab, Direct Value
+Field,title="General Tab, Direct Value Field"]
+. Use the *Direct Value Field* list to select the field from the *Target
+Table* table that contains the object of the direct map mapping.
+
+=== How to Configure Direct Value Fields Using Java
+
+Use the `+DirectMapMapping+` method `+setDirectFieldName+` to set the
+direct fields for your mapping.
+
+For more information about the available methods for
+`+DirectMapMapping+`, see the _EclipseLink API Reference_.
+
+== Configuring Direct Key Field
+
+The direct key field in the reference table stores the primitive data
+value of the map key. If the key’s object value and database value are
+different types, use a converter (see
+link:#Configuring_Key_Converters[Configuring Key Converters]).
+
+=== How to Configure Direct Key Field Using Workbench
+
+To specify the direct key field in the reference table, use this
+procedure.
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears. *_General Tab,
+Direct Key Field_* image:dmdirkey.gif[General Tab, Direct Key
+Field,title="General Tab, Direct Key Field"]
+. Use the *Direct Key Field* list to select the key from the *Target
+Table* table that contains the object of the direct map mapping.
+
+=== How to Configure Direct Key Field Using Java
+
+Use the `+DirectMapMapping+` method `+setDirectKeyFieldName+` to set the
+direct key field for your mapping.
+
+For more information about the available methods for
+`+DirectMapMapping+`, see the _EclipseLink API Reference_.
+
+== Configuring Key Converters
+
+If the key’s object value and database value are different types, use a
+converter. EclipseLink supports the following key converters:
+
+* link:Introduction%20to%20Mappings%20(ELUG)#Serialized_Object_Converter[Serialized
+Object Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#Type_Conversion_Converter[Type
+Conversion Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#Object_Type_Converter[Object
+Type Converter]
+
+=== How to Configure Key Converters Using Workbench
+
+Use this procedure to specify the converter for a direct map mapping
+key:
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *Converter* tab. The Converter tab appears.
+. Click the *Key Converter* tab. The Key Converter tab appears.
+*_Converter Tab, Key Converter Subtab_* image:keyconv.gif[Converter Tab,
+Key Converter Subtab,title="Converter Tab, Key Converter Subtab"]
+. Select the appropriate Key Converter.
+
+[width="100%",cols="<22%,<78%",options="header",]
+|===
+|*Converter* |*Description*
+|*No Converter* |Do not use a Key Converter for this mapping.
+
+|*Serialized Object* *Converter* |See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Serialized_Object_Converter[Configuring
+a Serialized Object Converter].
+
+|*Type Conversion Converter* |See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter].
+
+|*Object Type* *Converter* |See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_an_Object_Type_Converter[Configuring
+an Object Type Converter].
+|===
+
+=== How to Configure Key Converters Using Java
+
+You can configure whether or not to allow null values using the
+`+DirectMapMapping+` method `+setKeyConverter+`.
+
+For more information about the available methods for
+`+DirectMapMapping+`, see the _EclipseLink API Reference_.
+
+== Configuring Value Converters
+
+If the value’s object value and database value are different types, use
+a converter. EclipseLink supports the following value converters:
+
+* link:Introduction%20to%20Mappings%20(ELUG)#Serialized_Object_Converter[Serialized
+Object Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#Type_Conversion_Converter[Type
+Conversion Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#Object_Type_Converter[Object
+Type Converter]
+
+=== How to Configure Value Converters Using Workbench
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *Converter* tab. The Converter tab appears.
+. Click the *Value Converter* tab. The Value Converter tab appears.
+*_Converter Tab, Value Converter Subtab_* image:valconv.gif[Converter
+Tab, Value Converter
+Subtab,title="Converter Tab, Value Converter Subtab"]
+. Select the appropriate Value Converter.
+
+[width="100%",cols="<22%,<78%",options="header",]
+|===
+|*Converter* |*Description*
+|*No Converter* |Do not use a Value Converter for this mapping.
+
+|*Serialized Object* *Converter* |See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Serialized_Object_Converter[Configuring
+a Serialized Object Converter]
+
+|*Type Conversion Converter* |See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter]
+
+|*Object Type Converter* |See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_an_Object_Type_Converter[Configuring
+an Object Type Converter]
+|===
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Task[Category: Task] Category:_Release_1[Category: Release 1]
+Category:_ORM[Category: ORM]

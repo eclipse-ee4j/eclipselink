@@ -1,0 +1,66 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_Direct-to-Field_Mapping_(ELUG)[Related
+Topics] "`wikilink`")
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for a relational
+direct-to-field mapping.
+
+[#Table 34-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Database field
+
+Method or direct field access
+
+Default null value
+
+Read-only
+
+Mapping comments
+
+Serialized object converter
+
+Type conversion converter
+
+Object type converter
+
+This example shows how to create a direct-to-field mapping and add it to
+a descriptor using Java code.
+
+[#Example 36-1]## *_Direct-to-Field Mapping_*
+
+....
+public void customize(ClassDescriptor descriptor) {
+    DirectToFieldMapping mapping = new DirectToFieldMapping();
+
+    // configure mapping
+    ...
+
+    // add mapping to descriptor
+    descriptor.addMapping(mapping);
+}
+....
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-Field_Mapping[Direct-to-Field
+Mapping]
+* link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring a
+Relational Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_ORM[Category: ORM]

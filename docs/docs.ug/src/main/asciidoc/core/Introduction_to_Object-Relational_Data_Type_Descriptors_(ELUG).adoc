@@ -1,0 +1,46 @@
+*TOC*
+Special:Whatlinkshere_Introduction_to_Object-Relational_Data_Type_Descriptors_(ELUG)[Related
+Topics]
+
+This section provides an overview of object-relational data type
+descriptors.
+
+For information on descriptor concepts and features common to more than
+one type of EclipseLink descriptors, see
+link:Introduction%20to%20Descriptors%20(ELUG)[Introduction to
+Descriptors].
+
+The object-relational data type paradigm extends traditional relational
+databases to include object-oriented functions. Oracle, IBM DB2,
+Informix, and other DBMS databases allow users to store, access, and use
+complex data in more sophisticated ways.The object-relational data type
+standard is an evolving standard concerned mainly with extending the
+database data structures and SQL (SQL 3).
+
+Object-relational data type descriptors describe Java objects that you
+map to special relational database types that correspond more closely to
+object types. Using these special object-relational data type database
+types can simplify mapping objects to relational database tables. Not
+all relational databases support these special object-relational data
+type database types.
+
+Using object-relational data type descriptors in a relational project,
+you can configure object-relational data type mappings to these special
+object-relational data type database data types (see
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Mappings%20(ELUG)#Object-Relational_Data_Type_Mapping_Types[Object-Relational
+Data Type Mapping Types]).
+
+For more information, see the following:
+
+* link:Creating%20an%20Object-Relational%20Data%20Type%20Descriptor%20(ELUG)[Creating
+an Object-Relational Data Type Descriptor]
+* link:Configuring%20an%20Object-Relational%20Data%20Type%20Descriptor%20(ELUG)[Configuring
+an Object-Relational Data Type Descriptor]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_ORM[Category: ORM]

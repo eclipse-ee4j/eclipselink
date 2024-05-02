@@ -1,0 +1,2009 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+
+For more information, see
+link:Using%20Advanced%20Query%20API%20(ELUG)[Using Advanced Query API].
+
+== Using Session Queries
+
+[width="100%",cols="<100%",]
+|===
+|*Note* We recommend that you perform all data source operations using a
+unit of work: doing so is the most efficient way to manage transactions,
+concurrency, and referential constraints. For more information, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions].
+|===
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Session_Queries[Session
+Queries].
+
+=== How to Read Objects with a Session Query
+
+Using the session query API, you can perform the following read
+operations:
+
+* link:#Reading_an_Object_with_a_Session_Query[Reading an Object with a
+Session Query]
+* link:#Reading_All_Objects_with_a_Session_Query[Reading All Objects
+with a Session Query]
+* link:#Refreshing_an_Object_with_a_Session_Query[Refreshing an Object
+with a Session Query]
+
+==== Reading an Object with a Session Query
+
+The `+readObject+` method retrieves a single object from the database.
+The application must specify the class of object to read. If no object
+matches the criteria, a null value is returned.
+
+For example, the basic read operation is:
+
+`+session.readObject(MyDomainObject.class);+`
+
+The following example returns the first instance of `+MyDomainObject+`
+found in the table used for `+MyDomainObject+`. EclipseLink provides the
+`+Expression+` class to specify querying parameters for a specific
+object.
+
+When you search for a single, specific object using a primary key, the
+`+readObject+` method is more efficient than the `+readAllObjects+`
+method, because `+readObject+` can find an instance in the cache without
+accessing database. Because a `+readAllObjects+` method does not know
+how many objects match the criteria, it always searches the database to
+find matching objects, even if it finds matching objects in the cache.
+
+[#Example 105-1]## *_readObject Using an Expression_*
+
+`+import org.eclipse.persistence.sessions.*;+`
+`+import org.eclipse.persistence.expressions.*;+` `+...+`
+
+*`+//\'\' \'\'Use\'\' \'\'an\'\' \'\'expression\'\' \'\'to\'\' \'\'read\'\' \'\'in\'\' \'\'the\'\' \'\'employee\'\' \'\'whose\'\' \'\'last\'\' \'\'name\'\' \'\'is\'\' \'\'Smith.+`*
+*`+//\'\' \'\'Create\'\' \'\'an\'\' \'\'expression\'\' \'\'using\'\' \'\'the\'\' \'\'Expression\'\' \'\'Builder\'\' \'\'and\'\' \'\'use\'\' \'\'it\'\' \'\'as\'\' \'\'the\'\' \'\'selection\'\' \'\'criterion\'\' \'\'of\'\' \'\'the\'\' \'\'search+`*
+`+Employee employee = (Employee) session.readObject(Employee.class, new ExpressionBuilder().get("lastName").equal("Smith"));+`
+
+==== Reading All Objects with a Session Query
+
+The `+readAllObjects+` method retrieves a `+List+` of objects from the
+database and does not put the returned objects in order. If the query
+does not find any matching objects, it returns an empty `+List+`.
+
+Specify the class for the query. You can also include an expression to
+define more complex search criteria, as illustrated in the following
+example.
+
+[#Example 105-2]## *_readAllObjects Using an Expression_*
+
+*`+//\'\' \'\'Returns\'\' \'\'a\'\' \'\'List\'\' \'\'of\'\' \'\'employees\'\' \'\'whose\'\' \'\'employee\'\' \'\'salary\'\' \'\'is\'\' \'\'greater\'\' \'\'than\'\' \'\'10000+`*
+`+List employees = session.readAllObjects(Employee.class,new ExpressionBuilder.get("salary").greaterThan(10000));+`
+
+==== Refreshing an Object with a Session Query
+
+The `+refreshObject+` method causes EclipseLink to update the object in
+memory using data from the database. This operation refreshes any
+privately owned objects as well.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: A privately owned object is one that cannot exist without its
+parent, or source object.
+|===
+
+=== How to Create, Update, and Delete Objects with a Session Query
+
+Using the session query API, you can perform the following create,
+update, and delete operations:
+
+* link:#Writing_a_Single_Object_to_the_Database_with_a_Session_Query[Writing
+a Single Object to the Database with a Session Query]
+* link:#Writing_All_Objects_to_the_Database_with_a_Session_Query[Writing
+All Objects to the Database with a Session Query]
+* link:#Adding_New_Objects_to_the_Database_with_a_Session_Query[Adding
+New Objects to the Database with a Session Query]
+* link:#Modifying_Existing_Objects_in_the_Database_with_a_Session_Query[Modifying
+Existing Objects in the Database with a Session Query]
+* link:#Deleting_Objects_in_the_Database_with_a_Session_Query[Deleting
+Objects in the Database with a Session Query]
+
+==== Writing a Single Object to the Database with a Session Query
+
+When you invoke the `+writeObject+` method, the method performs a
+_does-exist_ check to determine whether or not an object exists. If the
+object exists, `+writeObject+` updates the object; if it does not exist,
+`+writeObject+` inserts a new object.
+
+The `+writeObject+` method writes privately owned objects in the correct
+order to maintain referential integrity.
+
+Call the `+writeObject+` method when you cannot verify that an object
+exists in the database.
+
+[#Example 105-3]## *_Writing a Single Object Using writeObject_*
+
+*`+//\'\' \'\'Create\'\' \'\'an\'\' \'\'instance\'\' \'\'of\'\' \'\'the\'\' \'\'employee\'\' \'\'and\'\' \'\'write\'\' \'\'it\'\' \'\'to\'\' \'\'the\'\' \'\'database+`*
+`+Employee susan = new Employee();+` `+susan.setName("Susan");+` `+...+`
+*`+//\'\' \'\'Initialize\'\' \'\'the\'\' \'\'susan\'\' \'\'object\'\' \'\'with\'\' \'\'all\'\' \'\'other\'\' \'\'instance\'\' \'\'variables+`*
+`+session.writeObject(susan); +`
+
+==== Writing All Objects to the Database with a Session Query
+
+You can call the `+writeAllObjects+` method to write multiple objects to
+the database. The `+writeAllObjects+` method performs the same
+_does-exist_ check as the `+writeObject+` method and then performs the
+appropriate insert or update operations.
+
+<span id='`Example 105-4”> **’Writing Several Objects Using
+writeAllObjects**`'’
+
+*`+//\'\' \'\'Read\'\' \'\'a\'\' \'\'List\'\' \'\'of\'\' \'\'all\'\' \'\'the\'\' \'\'current\'\' \'\'employees\'\' \'\'in\'\' \'\'the\'\' \'\'database.+`*
+`+List employees = session.readAllObjects(Employee.class);+`
+
+*`+//\'\' \'\'Modify\'\' \'\'any\'\' \'\'employee\'\' \'\'data\'\' \'\'as\'\' \'\'necessary+`*
+`+...+`
+
+*`+//\'\' \'\'Create\'\' \'\'a\'\' \'\'new\'\' \'\'employee\'\' \'\'and\'\' \'\'add\'\' \'\'it\'\' \'\'to\'\' \'\'the\'\' \'\'list\'\' \'\'of\'\' \'\'employees+`*
+`+Employee susan = new Employee();+` `+...+`
+*`+//\'\' \'\'Initialize\'\' \'\'the\'\' \'\'new\'\' \'\'instance\'\' \'\'of\'\' \'\'employee+`*
+`+employees.add(susan);+`
+*`+//\'\' \'\'Write\'\' \'\'all\'\' \'\'employees\'\' \'\'to\'\' \'\'the\'\' \'\'database.+`*`+ +`
+*`+//\'\' \'\'The\'\' \'\'new\'\' \'\'instance\'\' \'\'of\'\' \'\'susan\'\' \'\'not\'\' \'\'currently\'\' \'\'in\'\' \'\'the\'\' \'\'database\'\' \'\'will\'\' \'\'be\'\' \'\'inserted.+`*`+ +`
+*`+//\'\' \'\'All\'\' \'\'the\'\' \'\'other\'\' \'\'employees\'\' \'\'currently\'\' \'\'stored\'\' \'\'in\'\' \'\'the\'\' \'\'database\'\' \'\'will\'\' \'\'be\'\' \'\'updated+`*
+`+session.writeAllObjects(employees);+`
+
+==== Adding New Objects to the Database with a Session Query
+
+The `+insertObject+` method creates a new object in the database, but
+does not perform the _does-exist_ check before it attempts the insert
+operation. The `+insertObject+` method is more efficient than the
+`+writeObject+` method if you are certain that the object does not yet
+exist in the database. If the object does exist, the database throws an
+exception when you execute the `+insertObject+` method.
+
+==== Modifying Existing Objects in the Database with a Session Query
+
+The `+updateObject+` method updates existing objects in the database,
+but does not perform the _does-exist_ check before it attempts the
+update operation. The `+updateObject+` is more efficient than the
+`+writeObject+` method if you are certain that the object does exist in
+the database. If the object does not exist, the database throws an
+exception when you execute the `+updateObject+` method.
+
+==== Deleting Objects in the Database with a Session Query
+
+To delete an EclipseLink object from the database, read the object from
+the database and then call the `+deleteObject+` method. This method
+deletes both the specified object and any privately owned data.
+
+== Using DatabaseQuery Queries
+
+This section describes creating and executing `+DatabaseQuery+` queries
+to perform a variety of basic persistence operations, showing how to do
+the following:
+
+* link:#How_to_Read_Objects_Using_a_DatabaseQuery[How to Read Objects
+Using a DatabaseQuery]
+* link:#How_to_Create,_Update,_and_Delete_Objects_with_a_DatabaseQuery[How
+to Create&#44; Update&#44; and Delete Objects with a DatabaseQuery]
+* link:#How_to_Update_and_Delete_Multiple_Objects_with_a_DatabaseQuery[How
+to Update and Delete Multiple Objects with a DatabaseQuery]
+* link:#How_to_Read_Data_with_a_DatabaseQuery[How to Read Data with a
+DatabaseQuery]
+* link:#How_to_Update_Data_with_a_DatabaseQuery[How to Update Data with
+a DatabaseQuery]
+* link:#How_to_Specify_a_Custom_SQL_String_in_a_DatabaseQuery[How to
+Specify a Custom SQL String in a DatabaseQuery]
+* link:#How_to_Specify_a_Custom_JPQL_String_in_a_DatabaseQuery[How to
+Specify a Custom JPQL String in a DatabaseQuery]
+* link:#How_to_Use_Parameterized_SQL_and_Statement_Caching_in_a_DatabaseQuery[How
+to Use Parameterized SQL and Statement Caching in a DatabaseQuery]
+
+=== How to Read Objects Using a DatabaseQuery
+
+This section provides examples of how to read objects using a
+`+DatabaseQuery+`, including the following:
+
+* link:#Performing_Basic_DatabaseQuery_Read_Operations[Performing Basic
+DatabaseQuery Read Operations]
+* link:#Reading_Objects_Using_Partial_Object_Queries[Reading Objects
+Using Partial Object Queries]
+* link:#Reading_Objects_Using_Report_Queries[Reading Objects Using
+Report Queries]
+* link:#Reading_Objects_Using_Query-By-Example[Reading Objects Using
+Query-By-Example]
+* link:#Specifying_Read_Ordering[Specifying Read Ordering]
+* link:#Specifying_a_Collection_Class[Specifying a Collection Class]
+* link:#Specifying_the_Maximum_Rows_Returned[Specifying the Maximum Rows
+Returned]
+* link:#Configuring_Query_Timeout_at_the_Query_Level[Configuring Query
+Timeout at the Query Level]
+* link:#Using_Batch_Reading[Using Batch Reading]
+* link:#Using_Join_Reading_with_ObjectLevelReadQuery[Using Join Reading
+with ObjectLevelReadQuery]
+
+==== Performing Basic DatabaseQuery Read Operations
+
+The following example illustrates a simple read query. It uses an
+EclipseLink expression, but does not use its own arguments for the
+query. Instead, it relies on the search parameters the expression
+provides. This example builds the expression within its code, but does
+not register the query with the session.
+
+[#Example 105-5]## *_Simple ReadAllQuery_*
+
+*`+//\'\' \'\'This\'\' \'\'example\'\' \'\'returns\'\' \'\'a\'\' \'\'List\'\' \'\'of\'\' \'\'employees\'\' \'\'whose\'\' \'\'employee\'\' \'\'ID\'\' \'\'is\'\' \'\'>\'\' \'\'100+`*
+
+*`+//\'\' \'\'Initialize\'\' \'\'the\'\' \'\'DatabaseQuery\'\' \'\'by\'\' \'\'specifying\'\' \'\'the\'\' \'\'query\'\' \'\'type+`*
+*`+//\'\' \'\'and\'\' \'\'set\'\' \'\'the\'\' \'\'reference\'\' \'\'class\'\' \'\'for\'\' \'\'the\'\' \'\'query+`*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+
+*`+//\'\' \'\'Retrieve\'\' \'\'ExpressionBuilder\'\' \'\'from\'\' \'\'the\'\' \'\'query+`*
+`+ExpressionBuilder builder = query.getExpressionBuilder();+`
+
+*`+//\'\' \'\'Configure\'\' \'\'the\'\' \'\'query\'\' \'\'execution.\'\' \'\'Because\'\' \'\'this\'\' \'\'example\'\' \'\'uses+`*`+ +`
+*`+//\'\' \'\'an\'\' \'\'expression,\'\' \'\'it\'\' \'\'uses\'\' \'\'the\'\' \'\'setSelectionCriteria\'\' \'\'method+`*
+`+query.setSelectionCriteria(builder.get("id").greaterThan(100)); +`
+
+*`+//\'\' \'\'Execute\'\' \'\'the\'\' \'\'query+`*
+`+List employees = (List) session.executeQuery(query);+`
+
+The following example illustrates a complex `+readObject+` query that
+uses all available configuration options.
+
+[#Example 105-6]## *_Named Read Query with Two Arguments_*
+
+*`+//\'\' \'\'Initialize\'\' \'\'the\'\' \'\'DatabaseQuery\'\' \'\'by\'\' \'\'specifying\'\' \'\'the\'\' \'\'query\'\' \'\'type+`*
+*`+//\'\' \'\'and\'\' \'\'set\'\' \'\'the\'\' \'\'reference\'\' \'\'class\'\' \'\'for\'\' \'\'the\'\' \'\'query+`*
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+*`+//\'\' \'\'Retrieve\'\' \'\'ExpressionBuilder\'\' \'\'from\'\' \'\'the\'\' \'\'query+`*
+`+ExpressionBuilder builder = query.getExpressionBuilder();+`
+*`+//\'\' \'\'Define\'\' \'\'two\'\' \'\'expressions\'\' \'\'that\'\' \'\'map\'\' \'\'to\'\' \'\'the\'\' \'\'first\'\' \'\'and\'\' \'\'last\'\' \'\'names\'\' \'\'of\'\' \'\'the\'\' \'\'employee+`*
+`+Expression firstNameExpression = builder.get("firstName").equal(emp.getParameter("firstName"));+`
+`+Expression lastNameExpression = builder.get("lastName").equal(emp.getParameter("lastName"));+`
+
+*`+//\'\' \'\'Configure\'\' \'\'the\'\' \'\'query\'\' \'\'execution.\'\' \'\'Because\'\' \'\'this\'\' \'\'example\'\' \'\'uses\'\' \'\'an\'\' \'\'expression,+`*`+ +`
+*`+//\'\' \'\'it\'\' \'\'uses\'\' \'\'the\'\' \'\'setSelectionCriteria\'\' \'\'method+`*
+`+query.setSelectionCriteria(firstNameExpression.and(lastNameExpression)); +`
+*`+//\'\' \'\'Specify\'\' \'\'the\'\' \'\'required\'\' \'\'arguments\'\' \'\'for\'\' \'\'the\'\' \'\'query+`*
+`+query.addArgument("firstName");+` `+query.addArgument("lastName");+`
+
+*`+//\'\' \'\'Add\'\' \'\'the\'\' \'\'query\'\' \'\'to\'\' \'\'the\'\' \'\'session+`*
+`+session.addQuery("getEmployeeWithName", query);+`
+
+*`+//\'\' \'\'Execute\'\' \'\'the\'\' \'\'query\'\' \'\'by\'\' \'\'referencing\'\' \'\'its\'\' \'\'name\'\' \'\'and\'\' \'\'providing\'\' \'\'values\'\' \'\'for\'\' \'\'the\'\' \'\'specified\'\' \'\'arguments+`*
+`+Employee employee = (Employee) session.executeQuery("getEmployeeWithName","Bob","Smith");+`
+
+==== Reading Objects Using Partial Object Queries
+
+The following example demonstrates the use of partial object reading. It
+reads only the last name and primary key for the employees. This reduces
+the amount of data read from the database.
+
+[#Example 105-7]## *_Using Partial Object Reading_*
+
+*`+//\'\' \'\'Read\'\' \'\'all\'\' \'\'the\'\' \'\'employees\'\' \'\'from\'\' \'\'the\'\' \'\'database,\'\' \'\'ask\'\' \'\'the\'\' \'\'user\'\' \'\'to\'\' \'\'choose\'\' \'\'one\'\' \'\'and\'\' \'\'return\'\' \'\'it.+`*`+ +`
+*`+//\'\' \'\'This\'\' \'\'uses\'\' \'\'partial\'\' \'\'object\'\' \'\'reading\'\' \'\'to\'\' \'\'read\'\' \'\'just\'\' \'\'the\'\' \'\'last\'\' \'\'name\'\' \'\'of\'\' \'\'the\'\' \'\'employees.\'\' \'\'Since+`*`+  +`
+`+'''// EclipseLink automatically includes the primary key of the object, the full object +`
+*`+//\'\' \'\'can\'\' \'\'easily\'\' \'\'be\'\' \'\'read\'\' \'\'for\'\' \'\'editing+`*
+`+List list;+`
+*`+//\'\' \'\'Fetch\'\' \'\'data\'\' \'\'from\'\' \'\'database\'\' \'\'and\'\' \'\'add\'\' \'\'to\'\' \'\'list\'\' \'\'box+`*
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.addPartialAttribute("lastName");+`
+
+*`+//\'\' \'\'The\'\' \'\'next\'\' \'\'line\'\' \'\'avoids\'\' \'\'a\'\' \'\'query\'\' \'\'exception+`*
+`+query.dontMaintainCache();+`
+`+List employees = (List) session.executeQuery(query);+`
+`+list.addAll(employees);+`
+
+*`+//\'\' \'\'Display\'\' \'\'list\'\' \'\'box+`* `+...+`
+*`+//\'\' \'\'Get\'\' \'\'selected\'\' \'\'employee\'\' \'\'from\'\' \'\'list+`*
+`+Employee selectedEmployee = (Employee)session.readObject(list.getSelectedItem());+`
+`+return selectedEmployee;+`
+
+==== Reading Objects Using Report Queries
+
+The following example reports the total and average salaries for
+Canadian employees grouped by their city.
+
+[#Example 105-8]## *_Querying Reporting Information on Employees_*
+
+`+ExpressionBuilder emp = new ExpressionBuilder();+`
+`+ReportQuery query = new ReportQuery(Employee.class, emp);+`
+`+query.addMaximum("max-salary", emp.get("salary"));+`
+`+query.addAverage("average-salary", emp.get("salary"));+`
+`+query.addAttribute("city", emp.get("address").get("city"));+`
+
+`+query.setSelectionCriteria(emp.get("address").get("country").equal("Canada"));+`
+`+query.addOrdering(emp.get("address").get("city"));+`
+`+query.addGrouping(emp.get("address").get("city"));+`
+`+List reports = (List) session.executeQuery(query);+`
+
+The `+Report\'\'Q\'\'uery+` class provides an extensive reporting API,
+including methods for computing average, maximum, minimum, sum, standard
+deviation, variance, and count of attributes. For more information about
+the available methods for the `+Report\'\'Q\'\'uery+`, see the
+_EclipseLink API Reference_.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Because `+ReportQuery+` inherits from `+ReadAllQuery+`, it also
+supports most `+ReadAllQuery+` properties.
+|===
+
+==== Reading Objects Using Query-By-Example
+
+Query-by-example enables you to specify query selection criteria in the
+form of a sample object instance that you populate with only the
+attributes you want to use for the query.
+
+To define a query-by-example, provide a `+ReadObjectQuery+` or a
+`+ReadAllQuery+` with a sample persistent object instance and an
+optional query-by-example policy. The sample instance contains the data
+to query, and, optionally, a `+QueryByExamplePolicy+` (see
+link:#Defining_a_QueryByExamplePolicy[Defining a QueryByExamplePolicy])
+that specifies configuration settings, such as the operators to use and
+the attribute values to ignore. You can also combine a query-by-example
+with an expression (see
+link:#Combining_Query-by-Example_and_Expressions[Combining
+Query-by-Example and Expressions]).
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Query-by-Example].
+
+The following example queries the employee Bob Smith.
+
+[#Example 105-9]## *_Using Query-by-Example to Query an Employee_*
+
+`+Employee employee = new Employee();+`
+`+employee.setFirstName("Bob");+` `+employee.setLastName("Smith");+`
+
+*`+//\'\' \'\'Create\'\' \'\'a\'\' \'\'query\'\' \'\'and\'\' \'\'set\'\' \'\'Employee\'\' \'\'as\'\' \'\'its\'\' \'\'reference\'\' \'\'class+`*
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+`+query.setExampleObject(employee);+`
+
+`+Employee result = (Employee) session.executeQuery(query);+`
+
+The following example queries across the employee’s address.
+
+[#Example 105-10 ]## *_Using Query-by-Example to Query an Employee’s
+Address_*
+
+`+Employee employee = new Employee();+`
+`+Address address = new Address();+` `+address.setCity("Ottawa");+`
+`+employee.setAddress(address);+`
+
+*`+//\'\' \'\'Create\'\' \'\'a\'\' \'\'query\'\' \'\'and\'\' \'\'set\'\' \'\'Employee\'\' \'\'as\'\' \'\'its\'\' \'\'reference\'\' \'\'class+`*
+`+ReadAllQuery query = new ReadAllQuery (Employee.class);+`
+`+query.setExampleObject(employee);+`
+
+`+List results = (List) session.executeQuery(query);+`
+
+*Defining a QueryByExamplePolicy*
+
+EclipseLink support for query-by-example includes a query-by-example
+policy. You can edit the policy to modify query-by-example default
+behavior. You can modify the policy to do the following:
+
+* Use `+LIKE+` or other operations to compare attributes. By default,
+query-by-example allows only `+EQUALS+`.
+* Modify the set of values query-by-example ignores (the `+IGNORE+`
+set). The default ignored values are zero (0), empty strings, and
+`+FALSE+`.
+* Force query-by-example to consider attribute values, even if the value
+is in the `+IGNORE+` set.
+* Use `+isNull+` or `+notNull+` for attribute values.
+
+To specify a query-by-example policy, include an instance of
+`+QueryByExamplePolicy+` with the query.
+
+The following example uses `+like+` operator for strings and includes
+only objects whose salary is greater than zero.
+
+[#Example 105-11]## *_Query-by-Example Policy Using like Operator_*
+
+`+Employee employee = new Employee();+` `+employee.setFirstName("B%");+`
+`+employee.setLastName("S%");+` `+employee.setSalary(0);+`
+
+*`+//\'\' \'\'Create\'\' \'\'a\'\' \'\'query\'\' \'\'and\'\' \'\'set\'\' \'\'Employee\'\' \'\'as\'\' \'\'its\'\' \'\'reference\'\' \'\'class+`*
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.setExampleObject(employee);+`
+*`+//\'\' \'\'Query\'\' \'\'by\'\' \'\'example\'\' \'\'policy\'\' \'\'section\'\' \'\'adds\'\' \'\'like\'\' \'\'and\'\' \'\'greaterThan+`*
+`+QueryByExamplePolicy policy = new QueryByExamplePolicy();+`
+`+policy.addSpecialOperation(String.class, "like");+`
+`+policy.addSpecialOperation(Integer.class, "greaterThan");+`
+`+policy.alwaysIncludeAttribute(Employee.class, "salary");+`
+`+query.setQueryByExamplePolicy(policy);+`
+`+List results = (List) session.executeQuery(query);+`
+
+This example uses keywords for strings and ignores the value -1.
+
+[#Example 105-12]## *_Query-by-Example Policy Using Keywords_*
+
+`+Employee employee = new Employee();+`
+`+employee.setFirstName("bob joe fred");+`
+`+employee.setLastName("smith mc mac");+` `+employee.setSalary(-1);+`
+
+*`+//\'\' \'\'Create\'\' \'\'a\'\' \'\'query\'\' \'\'and\'\' \'\'set\'\' \'\'Employee\'\' \'\'as\'\' \'\'its\'\' \'\'reference\'\' \'\'class+`*
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.setExampleObject(employee);+`
+*`+//\'\' \'\'Query\'\' \'\'by\'\' \'\'example\'\' \'\'policy\'\' \'\'section+`*
+`+QueryByExamplePolicy policy = new QueryByExamplePolicy();+`
+`+policy.addSpecialOperation(String.class, "containsAnyKeyWords");+`
+`+policy.excludeValue(-1);+` `+query.setQueryByExamplePolicy(policy);+`
+`+List results = (List) session.executeQuery(query);+`
+
+*Combining Query-by-Example and Expressions*
+
+To create more complex query-by-example queries, combine
+query-by-example with EclipseLink expressions, as shown in the following
+example.
+
+[#Example 105-13]## *_Combining Query-by-Example with Expressions_*
+
+`+Employee employee = new Employee();+`
+`+employee.setFirstName("Bob");+` `+employee.setLastName("Smith");+`
+
+*`+//\'\' \'\'Create\'\' \'\'a\'\' \'\'query\'\' \'\'and\'\' \'\'set\'\' \'\'Employee\'\' \'\'as\'\' \'\'its\'\' \'\'reference\'\' \'\'class+`*
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+
+`+query.setExampleObject(employee);+`
+
+*`+//\'\' \'\'Specify\'\' \'\'expression+`*
+`+ExpressionBuilder builder = query.getExpressionBuilder();+`
+`+query.setSelectionCriteria(builder.get("salary").between(100000,200000);+`
+`+List results = (List) session.executeQuery(query);+`
+
+==== Specifying Read Ordering
+
+Ordering is a common `+DatabaseQuery+` option. You can order a
+collection of objects returned from a `+ReadAllQuery+` using the
+`+addOrdering+`, `+addAscendingOrdering+`, or `+addDescendingOrdering+`
+methods. You can apply order based on attribute names or query keys and
+expressions.
+
+[#Example 105-14]## *_A Query with Simple Ordering_*
+
+*`+//\'\' \'\'Retrieves\'\' \'\'objects\'\' \'\'ordered\'\' \'\'by\'\' \'\'last\'\' \'\'name\'\' \'\'then\'\' \'\'first\'\' \'\'name\'\' \'\'in\'\' \'\'ascending\'\' \'\'order+`*
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.addAscendingOrdering ("lastName");+`
+`+query.addAscendingOrdering ("firstName");+`
+`+List employees = (List) session.executeQuery(query);+`
+
+[#'Example 105-15]## *_A Query with Complex Ordering_*
+
+*`+//\'\' \'\'Retrieves\'\' \'\'objects\'\' \'\'ordered\'\' \'\'by\'\' \'\'street\'\' \'\'address,\'\' \'\'descending\'\' \'\'case-insensitive+`*`+ +`
+*`+//\'\' \'\'order\'\' \'\'of\'\' \'\'cities,\'\' \'\'and\'\' \'\'manager's\'\' \'\'last\'\' \'\'name+`*
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+ExpressionBuilder emp = query.getExpressionBuilder();+`
+`+query.addOrdering (emp.getAllowingNull("address").get("street"));+`
+`+query.addOrdering(emp.getAllowingNull("address").get("city").toUpperCase().descending());+`
+`+query.addOrdering(emp.getAllowingNull("manager").get("lastName"));+`
+`+List employees = (List) session.executeQuery(query);+`
+
+Note the use of `+getAllowingNull+`, which creates an outer join for the
+address and manager relationships. This ensures that employees without
+an address or manager still appear in the list.
+
+For more information about configuring read ordering, see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Read All Query
+Order].
+
+==== Specifying a Collection Class
+
+By default, a `+ReadAllQuery+` returns its result objects in a list. You
+can configure the query to return the results in any collection class
+that implements the `+Collection+` or `+Map+` interface, as shown in the
+following example.
+
+[#Example 105-16]## *_Specifying the Collection Class for a Collection_*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.useCollectionClass(LinkedList.class);+`
+`+LinkedList employees = (LinkedList) getSession().executeQuery(query);+`
+
+[#Example 105-17]## *_Specifying the Collection Class for a Map_*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.useMapClass(HashMap.class, "getFirstName");+`
+`+HashMap employees = (HashMap) getSession().executeQuery(query);+`
+
+==== Specifying the Maximum Rows Returned
+
+You can limit a query to a specified maximum number of rows. Use this
+feature to avoid queries that can return an excessive number of objects.
+
+To specify a maximum number of rows, use the `+setMaxRows+` method, and
+pass an integer that represents the maximum number of rows for the
+query, as shown in the following example.
+
+[#Example 105-18]## *_Setting the Maximum Returned Object Size_*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.setMaxRows(5);+`
+`+List employees = (List) session.executeQuery(query);+`
+
+The `+setMaxRows+` method limits the number of rows the query returns,
+but does not let you acquire more records after the initial result set.
+
+If you want to browse the result set in fixed increments, use either
+cursors or cursored streams. For more information, see
+link:Using%20Advanced%20Query%20API%20(ELUG)[Handling Cursor and Stream
+Query Results].
+
+==== Configuring Query Timeout at the Query Level
+
+You can set the maximum amount of time that EclipseLink waits for
+results from a query. This forces a hung or lengthy query to abort after
+the specified time has elapsed. EclipseLink throws a
+`+DatabaseException+` after the timeout interval.
+
+To specify a timeout interval on a per-query basis, use
+`+DatabaseQuery+` method `+setQueryTimeout+` and pass the timeout
+interval as an integer representing the number of seconds before the
+timeout interval should occur, as the following example shows.
+
+[#Example 105-19]## *_DatabaseQuery Timeout_*
+
+`+ +`*`+//\'\' \'\'Create\'\' \'\'the\'\' \'\'appropriate\'\' \'\'query\'\' \'\'and\'\' \'\'set\'\' \'\'timeout\'\' \'\'limits+`*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.setQueryTimeout(2);+` `+try {+`
+`+    List employees = (List) session.executeQuery(query);+` `+} +`
+`+catch (DatabaseException ex) {+`
+`+    +`*`+//\'\' \'\'timeout\'\' \'\'occurs+`* `+}+`
+
+To specify a timeout interval for all queries on a particular object
+type, configure a query timeout interval at the descriptor level (see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Query Timeout at
+the Descriptor Level]).
+
+==== Using Batch Reading
+
+Batch reading propagates query selection criteria through an object’s
+relationship attribute mappings. You can also nest batch read operations
+down through complex object graphs. This significantly reduces the
+number of required SQL select statements and improves database access
+efficiency.
+
+Consider the following guidelines when you implement batch reading:
+
+* Use batch reading for processes that read in objects and all their
+related objects.
+* Do not enable batch reading for both sides of a bidirectional
+relationship.
+* Avoid nested batch read operations, because they result in multiple
+joins on the database, slowing query execution.
+
+For more information, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)[Reading Case
+2: Batch Reading Objects].
+
+For example, in reading _n_ employees and their related projects,
+EclipseLink may require _n + 1_ select operations. All employees are
+read at once, but the projects of each are read individually. With batch
+reading, all related projects can also be read with one select operation
+by using the original selection criteria, for a total of only two select
+operations.
+
+To implement batch reading, add the batch read attribute to a query, use
+the `+query.addBatchReadAttribute(Expression anExpression)+` API, as the
+following example shows:
+
+`+…+` `+ReadAllQuery raq = new ReadAllQuery(Trade.class);+`
+`+ExpressionBuilder tradeBuilder = raq.getBuilder();+` `+…+`
+`+Expression batchReadProduct = tradeBuilder.get("product");+`
+`+readAllQuery.addBatchReadAttribute(batchReadProduct); +`
+`+Expression batchReadPricingDetails = batchReadProduct.get("pricingDetails");+`
+`+readAllQuery.addBatchReadAttribute(batchReadPricingDetails); +` `+…+`
+
+Alternatively, you can add batch reading at the mapping level for a
+descriptor. For more information, see
+link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring Batch
+Reading].
+
+You can combine batch reading and indirection (lazy loading) to provide
+controlled reading of object attributes. For example, if you have
+one-to-one back pointer relationship attributes, you can defer back
+pointer instantiation until the end of the query, when all parent and
+owning objects are instantiated. This prevents unnecessary database
+access and optimizes EclipseLink cache use.
+
+==== Using Join Reading with ObjectLevelReadQuery
+
+Use join reading with `+ObjectLevelReadQuery+` to configure a query for
+a class to return the data to build an instance of that class and its
+related objects. For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Join Reading and
+Object-Level Read Queries].
+
+To use join reading with an `+ObjectLevelReadQuery+`, you can use
+Workbench (see link:Configuring%20a%20Descriptor%20(ELUG)[Configuring
+Named Query Optimization]))or Java.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use Workbench to create an `+ObjectLevelReadQuery+`
+with a join expression on a one-to-many mapped attribute: you must use
+Java.
+|===
+
+===== Using Java
+
+You can use `+ObjectLevelReadQuery+` API to add joined attributes for
+mappings.
+
+You can use any of the following API:
+
+* Use the `+ObjectLevelReadQuery+` method `+addJoinedAttribute+` with a
+join expression or attribute name for one-to-one or one-to-many mapped
+attributes. Using this method, you can add multiple joined attributes,
+including nested joins. The source and target can be the same class
+type. On a one-to-one mapped attribute, use this method to get the class
+of the `+ObjectLevelReadQuery+` and the target of the one-to-one mapped
+attribute of that class with a single database hit. On a one-to-many
+mapped attribute, use this method to get the class of the
+`+ObjectLevelReadQuery+` and the target collection of the one-to-many
+mapped attribute of that class with a single database hit.
+* Use the `+ObjectLevelReadQuery+` method `+setShouldFilterDuplicates+`
+with a join expression on a one-to-many mapped attribute to filter
+duplicate rows. Default is *true*, unless using a JPA query.
+* Use the `+ObjectLevelReadQuery+` method
+`+setShouldOuterJoinSubclasses+` to configure an object-level read query
+to allow inherited subclasses to be outer-joined to avoid the cost of a
+single query per class.
+
+Use a join expression to configure nested batch reads and inner or outer
+joins (see
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Expressions
+for Joining and Complex Relationships]). You can also specify inner or
+outer joins using the mapping methods `+useInnerJoinFetch+` or
+`+useOuterJoinFetch+`.
+
+The link:#Example_105-20[Join Reading Multiple Attributes] example is
+based on the EclipseLink `+ThreeTierEmployee+` example project. It shows
+a `+ReadAllQuery+` configured to join-read multiple attributes.
+
+[#Example 105-20]## *_Join Reading Multiple Attributes_*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+
+`+Expression managedEmployees = query.getExpressionBuilder().anyOfAllowingNone("managedEmployees");+`
+`+query.addJoinedAttribute(managedEmployees);+`
+`+query.addJoinedAttribute(managedEmployees.get("address"));+`
+`+query.addJoinedAttribute(managedEmployees.anyOf("phoneNumbers"));+`
+
+`+List employees = (List) getSession().executeQuery(query);+`
+
+Use the `+ObjectLevelReadQuery+` method
+`+addJoinedAttribute(java.lang.String attributeName)+` to configure the
+query to join-read a single attribute, as the following shows.
+
+[#Example 105-22]## *_Join Reading a Single Attribute_*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.addJoinedAttribute("address");+`
+`+List employees = (List)getSession().executeQuery(query);+`
+
+=== How to Create, Update, and Delete Objects with a DatabaseQuery
+
+You can create, update or delete object with a `+DatabaseQuery+` using a
+`+DatabaseSession+`. For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Session
+Queries].
+
+This section describes the following:
+
+* link:#Using_Write_Query[Using Write Query]
+* link:#Performing_Noncascading_Write_Queries[Noncascading Write
+Queries]
+* link:#Disabling_the_Identity_Map_Cache_During_a_Write_Query[Disabling
+the Identity Map Cache During a Write Query]
+
+==== Using Write Query
+
+To execute a write query, use a `+WriteObjectQuery+` instance instead of
+using the `+writeObject+` method of the session. Likewise, substitute
+`+DeleteObjectQuery+`, `+UpdateObjectQuery+`, and `+InsertObjectQuery+`
+objects for their respective `+Session+` methods.
+
+[#Example 105-24]## *_Using a WriteObjectQuery_*
+
+`+WriteObjectQuery writeQuery = new WriteObjectQuery();+`
+`+writeQuery.setObject(domainObject);+`
+`+session.executeQuery(writeQuery);+`
+
+[#Example 105-25]## *_Using InsertObjectQuery, UpdateObjectQuery, and
+DeleteObjectQuery_*
+
+`+InsertObjectQuery insertQuery= new InsertObjectQuery();+`
+`+insertQuery.setObject(domainObject);+`
+`+session.executeQuery(insertQuery);+`
+
+*`+//\'\' \'\'When\'\' \'\'you\'\' \'\'use\'\' \'\'UpdateObjectQuery\'\' \'\'without\'\' \'\'a\'\' \'\'unit\'\' \'\'of\'\' \'\'work,+`*
+*`+//\'\' \'\'UpdateObjectQuery\'\' \'\'writes\'\' \'\'all\'\' \'\'direct\'\' \'\'attributes\'\' \'\'to\'\' \'\'the\'\' \'\'database+`*
+`+UpdateObjectQuery updateQuery= new UpdateObjectQuery();+`
+`+updateQuery.setObject(domainObject2);+`
+`+session.executeQuery(updateQuery);+`
+
+`+DeleteObjectQuery deleteQuery = new DeleteObjectQuery();+`
+`+deleteQuery.setObject(domainObject2);+`
+`+session.executeQuery(deleteQuery);+`
+
+==== Performing Noncascading Write Queries
+
+When you execute a write query, it writes both the object and its
+privately owned parts to the database by default. To build write queries
+that do not update privately owned parts, include the
+`+dontCascadeParts+` method in your query definition.
+
+Use this method to do the following:
+
+* Increase performance when you know that only the object’s direct
+attributes have changed.
+* Resolve referential integrity dependencies when you write large groups
+of new, independent objects.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Because the unit of work resolves referential integrity
+internally, this method is not required if you use the unit of work to
+write to the database.
+|===
+
+[#Example 105-27]## *_Performing a Noncascading Write Query_*
+
+*`+//\'\' \'\'the\'\' \'\'Employee\'\' \'\'is\'\' \'\'an\'\' \'\'existing\'\' \'\'employee\'\' \'\'read\'\' \'\'from\'\' \'\'the\'\' \'\'database+`*
+`+Employee.setFirstName("Bob");+`
+`+UpdateObjectQuery query = new UpdateObjectQuery();+`
+`+query.setObject(Employee);+` `+query.dontCascadeParts();+`
+`+session.executeQuery(query);+`
+
+==== Disabling the Identity Map Cache During a Write Query
+
+When you write objects to the database, EclipseLink copies them to the
+session cache by default. To disable this within a query, call the
+`+dontMaintainCache+` method within the query. This improves query
+performance when you insert objects into the database, but must be used
+only on objects that will not be required later by the application.
+
+The following example reads all the objects from a flat file and writes
+new copies of the objects into a table.
+
+[#Example 105-28]## *_Disabling the Identity Map Cache During a Write
+Query_*
+
+*`+//\'\' \'\'Reads\'\' \'\'objects\'\' \'\'from\'\' \'\'an\'\' \'\'employee\'\' \'\'file\'\' \'\'and\'\' \'\'writes\'\' \'\'them\'\' \'\'to\'\' \'\'the\'\' \'\'employee\'\' \'\'table+`*
+`+void createEmployeeTable(String filename, Session session) {+`
+`+   Iterator iterator;+` `+   Employee employee;+`
+
+`+   +`*`+//\'\' \'\'Read\'\' \'\'the\'\' \'\'employee\'\' \'\'data\'\' \'\'file+`*
+`+   List employees = Employee.parseFromFile(filename);+`
+`+   Iterator iterator = employees.iterator();+`
+`+   while (iterator.hasNext()) {+`
+`+      Employee employee = (Employee) iterator.next();+`
+`+      InsertObjectQuery query = new InsertObjectQuery();+`
+`+      query.setObject(employee);+`
+`+      query.dontMaintainCache();+`
+`+      session.executeQuery(query);+` `+   }+` `+}+`
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Disable the identity map only when object identity is
+unimportant in subsequent operations.
+|===
+
+=== How to Update and Delete Multiple Objects with a DatabaseQuery
+
+Using the unit of work, you can perform update and delete operations on
+multiple objects.
+
+This section describes the following:
+
+* link:#Using_UpdateAll_Queries[Using UpdateAll Queries]
+* link:#Using_DeleteAll_Queries[Using DeleteAll Queries]
+
+==== Using UpdateAll Queries
+
+Use an `+UpdateAllQuery+` to update a large number of objects at once.
+With this query, you can update a large number of objects with a single
+SQL statement instead of reading the objects into memory and updating
+them individually. The following example shows an `+UpdateAllQuery+` to
+give all full-time employees a raise.
+
+[#Example 105-26]## *_Using UpdateAllQuery_*
+
+*`+//\'\' \'\'Give\'\' \'\'all\'\' \'\'full\'\' \'\'time\'\' \'\'employees\'\' \'\'a\'\' \'\'10%\'\' \'\'raise+`*
+`+UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);+`
+`+ExpressionBuilder employee = updateQuery.getExpressionBuilder();+`
+`+updateQuery.setSelectionCriteria(employee.get("status").equal("FULL_TIME"));+`
+`+updateQuery.addUpdateExpression(employee.get("salary"), +`
+`+            ExpressionMath.multiply(employee.get("salary"), new Float(1.10)));+`
+
+`+UpdateAllQuery+` takes the cache into consideration and ensures that
+the cache is kept up to date. You can configure the `+UpdateAllQuery+`
+to invalidate cache (see link:Introduction%20to%20Cache%20(ELUG)[Cache
+Invalidation]) by setting the cache usage to `+INVALIDATE_CACHE+`
+(default), or to not use the cache by specifying `+NO_CACHE+` option.
+You can manipulate these settings through the `+setCacheUsage+` method.
+You can only update the cache for expressions that can conform. For more
+information on cache, see
+link:Introduction%20to%20Cache%20(ELUG)[Introduction to Cache].
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can set an attribute within an aggregate only, but not an
+entire aggregate.
+|===
+
+You can use an `+UpdateAllQuery+` with optimistic locking (see
+link:Introduction%20to%20Descriptors%20(ELUG)[Descriptors and Locking])
+at the level of updating a row in a database–there should be no updates
+in the cache. You will update the locking field on the database. There
+is also support for version and timestamp locking, as well as indirect
+support for field locking.
+
+==== Using DeleteAll Queries
+
+The following example shows a `+DeleteAllQuery+` to eliminate all
+part-time employee positions.
+
+[#Example 105-27]## *_Using DeleteAllQuery_*
+
+*`+//\'\' \'\'Delete\'\' \'\'all\'\' \'\'part-time\'\' \'\'employees+`*
+`+DeleteAllQuery deleteQuery = new DeleteAllQuery(Employee.class);+`
+`+ExpressionBuilder employee = deleteQuery.getExpressionBuilder();+`
+`+deleteQuery.setSelectionCriteria(employee.get("status").equal("PART_TIME"));+`
+`+deleteQuery.setObjects(domainObjects);+`
+`+session.executeQuery(deleteQuery);+`
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[DeleteAllQuery]
+
+=== How to Read Data with a DatabaseQuery
+
+This section describes the following:
+
+* link:#Using_a_DataReadQuery[Using a DataReadQuery]
+* link:#Using_a_DirectReadQuery[Using a DirectReadQuery]
+* link:#Using_a_ValueReadQuery[Using a ValueReadQuery]
+
+==== Using a DataReadQuery
+
+You can use a `+DataReadQuery+` to execute a selecting SQL string that
+returns a `+Collection+` of the `+Record+` objects representing the
+result set, as the following example shows.
+
+[#Example 105-29]## *_Using a DataReadQuery_*
+
+`+DataReadQuery dataReadQuery = new DataReadQuery();+`
+`+dataReadQuery.setSQLString("Select * from EMPLOYEE"); +`
+
+*`+//\'\' \'\'queryResults\'\' \'\'is\'\' \'\'a\'\' \'\'List\'\' \'\'of\'\' \'\'DatabaseRow\'\' \'\'objects+`*
+`+List queryResults = (List)session.executeQuery(dataReadQuery);+`
+
+==== Using a DirectReadQuery
+
+You can use a `+DirectReadQuery+` to read a single column of data (that
+is, one field) that returns a `+Collection+` of the `+Record+` objects
+representing the result set, as this example shows.
+
+[#Example 105-30]## *_Using a DirectReadQuery_*
+
+`+DirectReadQuery directReadQuery = new DirectReadQuery();+`
+`+directReadQuery.setSQLString("Select * from EMPLOYEE"); +`
+
+*`+//\'\' \'\'queryResults\'\' \'\'is\'\' \'\'a\'\' \'\'List\'\' \'\'of\'\' \'\'Record\'\' \'\'objects+`*
+`+List queryResults = (List)session.executeQuery(directReadQuery);+`
+
+==== Using a ValueReadQuery
+
+You can use a `+ValueReadQuery+` to read a single data value (that is,
+one field). A single data value is returned, or null if no rows are
+returned, as this example shows.
+
+[#Example 105-31]## *_Using a ValueReadQuery_*
+
+`+ValueReadQuery valueReadQuery = new ValueReadQuery();+`
+`+valueReadQuery.setSQLString("SELECT DISTINCT CURRENT TIMESTAMP FROM SYSTABLES");+`
+
+*`+//\'\' \'\'result\'\' \'\'is\'\' \'\'a\'\' \'\'single\'\' \'\'Object\'\' \'\'value+`*
+`+Object result = session.executeQuery(valueReadQuery);+`
+
+\{| class="`NoteWarn oac_no_warn`" width="`80%`" border="`1`"
+frame="`hsides`" rules="`groups`" cellpadding="`3`" frame="`hsides`"
+rules="`groups`" | align="`left`" | *WARNING:* Allowing an unverified
+SQL string to be passed into methods (for example: `+setSQLString+`
+method) makes your application vulnerable to SQL injection attacks. |}
+
+=== How to Update Data with a DatabaseQuery
+
+You can use a `+DataModifyQuery+` to execute a nonselecting SQL
+statement (directly or as an `+SQLCall+`), as the
+link:#Example_105-32[Using a DataModifyQuery] example shows. This is
+equivalent to `+Session+` method `+executeNonSelectingCall+` (see
+link:#Using_a_SQLCall[Using a SQLCall]).
+
+[#Example 105-32]## *_Using a DataModifyQuery_*
+
+`+DataModifyQuery query = new DataModifyQuery(new SQLCall("Delete from Employee"));+`
+`+session.executeQuery(query);+`
+
+=== How to Specify a Custom SQL String in a DatabaseQuery
+
+All `+DatabaseQuery+` objects provide a `+setSQLString+` method that you
+can use to define a custom SQL string.
+
+For more information about using custom SQL in queries, see
+link:#Using_a_SQLCall[Using a SQLCall].
+
+The following example uses SQL to read all employee IDs.
+
+[#Example 105-33]## *_A Direct Read Query with SQL_*
+
+`+DirectReadQuery query = new DirectReadQuery();+`
+`+query.setSQLString("SELECT EMP_ID FROM EMPLOYEE");+`
+`+List ids = (List) session.executeQuery(query);+`
+
+The following example uses SQL to switch to a different database.
+
+[#Example 105-34]## *_A Data Modify Query with SQL_*
+
+`+DataModifyQuery query = new DataModifyQuery();+`
+`+query.setSQLString("USE SALESDATABASE");+`
+`+session.executeQuery(query);+`
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Allowing an unverified SQL string to be passed into methods
+(for example: `+setSQLString+` method) makes your application vulnerable
+to SQL injection attacks.
+|===
+
+=== How to Specify a Custom JPQL String in a DatabaseQuery
+
+Information pending
+
+=== How to Use Parameterized SQL and Statement Caching in a DatabaseQuery
+
+By default, EclipseLink enables parameterized SQL (parameter binding)
+and statement caching. This causes EclipseLink to use a prepared
+statement, binding all SQL parameters and caching the prepared
+statement. When you reexecute this query, you avoid the SQL preparation,
+which improves performance.
+
+To disable parameterized SQL and statement caching on individual
+queries, use `+DatabaseQuery+` methods `+setShouldBindAllParameters+`
+and `+setShouldCacheStatement+`, passing in an argument of `+false+`. To
+re-enable this feature, pass in an argument of `+true+`.
+
+[#Example 105-35]## *_A Simple ReadObjectQuery with Parameterized SQL_*
+
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+`+query.setShouldBindAllParameters(true);+`
+`+query.setShouldCacheStatement(true);+`
+
+Alternatively, you can configure parameterized SQL and binding at any of
+the following levels:
+
+* project level–applies to all named queries (see
+link:Configuring%20a%20Relational%20Project%20(ELUG)[Configuring Named
+Query Parameterized SQL and Statement Caching at the Project Level]);
+* descriptor level–applies on a per-named-query basis (see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Named Query
+Options]);
+* session database login level–applies to all queries (see
+link:Configuring%20a%20Database%20Login%20(ELUG)[Configuring JDBC
+Options]) and provides additional parameter binding API to alleviate the
+limit imposed by some drivers on SQL statement size;
+
+For more information about using parameterized SQL and binding for data
+access optimization, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)[How to Use
+Parameterized SQL (Parameter Binding) and Prepared Statement Caching for
+Optimization].
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: For applications using a Java EE data source or external
+connection pool, you must configure statement caching in the Java EE
+server’s data source–not in EclipseLink.
+|===
+
+== Using Named Queries
+
+Named queries improve application performance because they are prepared
+once and they (and all their associated supporting objects) can be
+efficiently reused thereafter making them well suited for frequently
+executed operations.
+
+You can configure named queries at the session (see
+link:Configuring%20a%20Session%20(ELUG)[Configuring Named Queries at the
+Session Level]) or descriptor (see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Named Queries at
+the Descriptor Level]) level.
+
+For a session-level named query, you can execute the query using any of
+the following `+Session+` API methods:
+
+* `+executeQuery(String queryName)+`
+* `+executeQuery(String queryName, arg1)+`
+* `+executeQuery(String queryName, arg1, arg2)+`
+* `+executeQuery(String queryName, arg1, arg2, arg3)+`
+* `+executeQuery(String queryName, List args)+`
+
+[#Example 105-36]## *_Executing a Session-Level Named Query_*
+
+`+List args = new ArrayList();+` `+args.add("Sarah");+`
+`+Employee sarah = (Employee)session.executeQuery("employeeReadByFirstName", args);+`
+
+For a descriptor-level named query, you can execute the query using any
+of the following `+Session+` API calls, as the
+link:#Example_105-37[Executing a Descriptor Level Named Query] example
+shows:
+
+* `+executeQuery(String queryName, Class domainClass)+`
+* `+executeQuery(String queryName, Class domainClass, arg1)+`
+* `+executeQuery(String queryName, Class domainClass, arg1, arg2)+`
+* `+executeQuery(String queryName, Class domainClass, arg1, arg2, arg3)+`
+* `+executeQuery(String queryName, Class domainClass, List args)+`
+
+[#Example 105-37]## *_Executing a Descriptor Level Named Query_*
+
+`+List args = new ArrayList();+` `+args.add("Sarah");+`
+`+Employee sarah = (Employee)session.executeQuery("ReadByFirstName", Employee.class, args);+`
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Named Queries]
+
+== Using a SQLCall
+
+The EclipseLink expression framework enables you to define complex
+queries at the object level. If your application requires a more complex
+query or one that accesses data directly, you can specify a custom SQL
+string in an `+SQLCall+` object and execute the SQL string in the
+context of a `+DatabaseQuery+` or using Session API for executing
+`+Call+` objects.
+
+You can provide an `+SQLCall+` object to any query instead of an
+expression, but the SQL string contained in the `+SQLCall+` must return
+all data required to build an instance of the queried class.
+
+The SQL string can be a complex SQL query that includes input, output,
+and input/output arguments using JDBC data types.
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Allowing an unverified SQL string to be passed into methods
+makes your application vulnerable to SQL injection attacks.
+|===
+
+=== How to Configure a SQLCall Without Arguments
+
+You can configure a `+SQLCall+` without arguments and execute it
+directly using `+Session+` API. Use this approach when you want to
+execute a SQL string without arguments (or with hard-coded argument
+values).
+
+*To configure a SQLCall input without arguments:*
+
+[arabic]
+. Instantiate a `+SQLCall+` object.
+. Pass the SQL string into the constructor, as the
+link:#Example_105-38[Executing a SQLCall Without Arguments] example
+shows. Alternatively, you can use `+SQLCall+` method `+setSQLString+`.
+. Execute the `+SQLCall+` using the appropriate `+Session+` API, as the
+link:#Example_105-38[Executing a SQLCall Without Arguments] example
+shows. You can use any of the following `+Session+` methods, depending
+on the type of SQL string you define:
+* `+executeSelectingCall+`: returns a `+List+` of `+Record+` objects,
+each representing a database row.
+* `+executeNonSelectingCall+`: returns `+void+`.
+
+[#Example 105-38]## *_Executing a SQLCall Without Arguments_*
+
+`+List result = session.executeSelectingCall(new SQLCall("SELECT * FROM EMPLOYEE WHERE DEPT_ID =44"));+`
+
+=== How to Configure a SQLCall with Arguments Using JDBC Data Types
+
+You can configure a `+SQLCall+` that takes any combination of input,
+output, or input/output arguments. Use this approach when you want to
+bind argument values to the `+SQLCall+` at runtime, receive output
+values from the `+SQLCall+` at execution time, or both.
+
+*To configure a SQLCall with arguments using JDBC data types:*
+
+[arabic]
+. Instantiate a `+SQLCall+` object.
+. Create the SQL string and designate arguments as input, output, or
+input/output. EclipseLink assumes that a token in the custom SQL string
+of an `+SQLCall+` is an argument if it is prefixed with one or more
+number signs (`+#+` ), as follows:
+* Input parameter prefix:`+#+` (see link:#Example_105-39[Example 1]).
+* Output parameter prefix:`+###+` (see link:#Example_105-40[Example 2]).
+* Input/output parameter prefix:`+####+` (see
+link:#Example_105-41[Example 3]).
+. Pass the SQL string into the constructor, as
+link:#Example_105-39[Example 1], link:#Example_105-40[Example 2], and
+link:#Example_105-41[Example 3] show. Alternatively, you can use
+`+SQLCall+` method `+setSQLString+`.
+. For each output argument, use the appropriate `+SQLCall+` method
+`+setCustomSQLArgumentType+` to specify the Java data type EclipseLink
+uses to return the output value, as link:#Example_105-40[Example 2]
+shows. For an input argument, EclipseLink automatically converts the
+Java data type to the appropriate JDBC data type. For an input/output
+argument, the type of the input value determines the type of the output
+value. As link:#Example_105-41[Example 3] shows, the data type of the
+argument value passed into `+in_out+` is `+String+` ("`MacDonald`") so
+EclipseLink returns the output value (for `+EMP_ID+`) as a `+String+`.
+. Instantiate a `+DatabaseQuery+` appropriate for your SQL string.
+. Configure the `+DatabaseQuery+` with your `+SQLCall+` using
+`+DatabaseQuery+` method `+setCall+`, as link:#Example_105-39[Example
+1], link:#Example_105-40[Example 2], and link:#Example_105-41[Example 3]
+show.
+. Specify the names for all input and input/output arguments using
+`+DatabaseQuery+` method `+addArgument+`, as
+link:#Example_105-39[Example 1], link:#Example_105-40[Example 2], and
+link:#Example_105-41[Example 3] show.
+. Create a `+Vector+` of argument values in the same order as you
+specified argument names in step 7, as link:#Example_105-39[Example 1],
+link:#Example_105-40[Example 2], and link:#Example_105-41[Example 3]
+show.
+. Bind values to the arguments and execute the `+DatabaseQuery+` using
+`+Session+` method `+executeQuery(DatabaseQuery, java.util.Vector)+`,
+passing in your `+DatabaseQuery+` and `+Vector+` of argument values, as
+link:#Example_105-39[Example 1], link:#Example_105-40[Example 2], and
+link:#Example_105-41[Example 3] show.
+
+[#Example 105-39]## *_Example 1: Specifying an SQLCall with an Input
+Argument Using the # Prefix: JDBC Data Types_*
+
+`+SQLCall sqlCall = new SQLCall("INSERT INTO EMPLOYEE (L_NAME) VALUES (#last_name)");+`
+
+`+DataModifyQuery query = new DataModifyQuery();+`
+`+query.setCall(sqlCall);+`
+`+query.addArgument("last_name");   +`*`+//\'\' \'\'input+`*
+
+`+List args = new ArrayList();+` `+args.add("MacDonald"); +`
+`+session.executeQuery(query, args);+`
+
+[#Example 105-40]## *_Example 2: Specifying a SQLCall with an Output
+Argument Using the ### Prefix: JDBC Data Types_*
+
+`+SQLCall sqlCall = new SQLCall("BEGIN INSERT INTO EMPLOYEE (L_NAME) VALUES (#last_name) RETURNING EMP_ID INTO ###employee_id; END;");+`
+`+sqlCall.setCustomSQLArgumentType("employee_id", Integer.class); +`*`+// specify output value type+`*
+
+`+ValueReadQuery query = new ValueReadQuery();+`
+`+query.setCall(sqlCall);+`
+`+query.addArgument("last_name");   +`*`+//\'\' \'\'input+`*
+
+`+List args = new ArrayList();+` `+args.add("MacDonald");+`
+
+`+Integer employeeID = (Integer) getSession().executeQuery(query, args);+`
+
+[#Example 105-41]## *_Example 3: Specifying a SQLCall with an
+Input/Output Argument Using the #### Prefix: JDBC Data Types_*
+
+`+SQLCall sqlCall = new SQLCall("BEGIN INSERT INTO EMPLOYEE (L_NAME) VALUES (####in_out) RETURNING EMP_ID INTO ####in_out; END;");+`
+
+`+ValueReadQuery query = new ValueReadQuery();+`
+`+query.setCall(sqlCall);+`
+`+query.addArgument("in_out");   +`*`+//\'\' \'\'input\'\' \'\'and\'\' \'\'outpu+`*
+`+ +` `+List args = new ArrayList();+`
+`+args.add("MacDonald");         +`*`+// type of input argument determines type of output value+`*
+
+`+String lastName = (String) getSession().executeQuery(query, args);+`
+
+=== What You May Need to Know About Using a SQLCall
+
+When using SQL calls, you can use a `+ReturningPolicy+` to control
+whether or not EclipseLink writes a parameter out or retrieves a value
+generated by the database.
+
+If you want to invoke a stored procedure or stored function, use a
+`+StoredProcedureCall+` or `+StoredFunctionCall+`.
+
+Alternatively, you can specify a simple SQL string directly on
+`+DatabaseQuery+`. You can use this approach to avoid the overhead of
+creating a `+SQLCall+` object when your SQL string is simple, uses
+hard-coded arguments (or no arguments), and you do not require the
+additional API that `+SQLCall+` provides.
+
+For more information, see the following:
+
+* link:#How_to_Specify_a_Custom_SQL_String_in_a_DatabaseQuery[How to
+Specify a Custom SQL String in a DatabaseQuery]
+* link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Returning
+Policy]
+* link:#Using_a_StoredProcedureCall[Using a StoredProcedureCall]
+* link:#Using_a_StoredFunctionCall[Using a StoredFunctionCall]
+
+== Using a StoredProcedureCall
+
+The EclipseLink expression framework enables you to define complex
+queries at the object level. If your application requires a more complex
+query or one that invokes an existing stored procedure that your
+database provides, you can define a `+StoredProcedureCall+` object using
+both JDBC and PL/SQL data types and invoke the stored procedure in the
+context of a `+DatabaseQuery+`.
+
+If you are using an Oracle Database, you can pass in both JDBC and
+PL/SQL (non-JDBC) data types.
+
+If you are using a non-Oracle database, you may pass in only JDBC data
+types.
+
+link:EclipseLink_Examples_JPA_nonJDBCArgsToStoredProcedures[This
+example] contains additional samples on on using stored procedures.
+
+=== How to Configure a StoredProcedureCall Without Arguments
+
+You can configure a `+StoredProcedureCall+` without arguments and
+execute it directly using `+Session+` API. Use this approach when you
+want to execute a stored procedure that does not take arguments or
+return values.
+
+*To configure a StoredProcedureCall without arguments using JDBC data
+types:*
+
+[arabic]
+. Instantiate a `+StoredProcedureCall+` object.
+. Set the name of the stored procedure to execute using
+`+StoredProcedureCall+` method `+setProcedureName+`, as the
+link:#Example_105-42[Executing a SQLCall Without Arguments] example
+shows.
+. Execute the `+StoredProcedureCall+` using the appropriate `+Session+`
+API, as the link:#Example_105-42[Executing a SQLCall Without Arguments]
+example shows. You can use any of the following `+Session+` methods,
+depending on the type of stored procedure you are executing:
+* `+executeSelectingCall+`: returns a `+List+` of `+Record+` objects,
+each representing a database row.
+* `+executeNonSelectingCall+`: returns `+void+`.
+
+[#Example 105-42]## *_Executing a SQLCall Without Arguments_*
+
+`+StoredProcedureCall spcall = new StoredProcedureCall();+`
+`+spcall.setProcedureName("Read_All_Employees");+`
+`+spcall.useNamedCursorOutputAsResultSet("RESULT_SET");+`
+
+`+List employees = (List) getSession().executeSelectingCall(spcall);+`
+
+=== How to Configure a StoredProcedureCall with Arguments Using JDBC Data Types
+
+You can configure a `+StoredProcedureCall+` that takes any combination
+of input, output, or input/output arguments. Use this approach when you
+want to bind argument values to the `+StoredProcedureCall+` at runtime,
+receive output values from the `+StoredProcedureCall+` at execution
+time, or both.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Use this procedure when all input, output, and input/output
+arguments are JDBC data types. If one or more arguments are PL/SQL
+(non-JDBC) data types, see
+link:#How_to_Configure_a_PLSQLStoredProcedureCall_with_PL_SQL_Data_Type_Arguments[How
+to Configure a PLSQLStoredProcedureCall with PL/SQL Data Type
+Arguments].
+|===
+
+*To configure a StoredProcedureCall with arguments using JDBC data
+types:*
+
+[arabic]
+. Instantiate a `+StoredProcedureCall+` object.
+. Specify the name of the stored procedure to call using
+`+StoredProcedureCall+` method `+setProcedureName+`, as
+link:#Example_105-43[Example 1], link:#Example_105-44[Example 2], and
+link:#Example_105-45[Example 3] show.
+. For each argument, use the appropriate `+StoredProcedureCall+` methods
+to specify whether arguments are input, output, or input/output
+arguments:
+* Input argument: `+addNamedArgument+` (see link:#Example_105-43[Example
+1]).
+* Output argument: `+addNamedOutputArgument+` (see
+link:#Example_105-44[Example 2]).
+* Input/output argument: `+addNamedInOutputArgument+` (see
+link:#Example_105-45[Example 3]). In general, you should always specify
+the return Java data type for all output and input/output arguments, as
+link:#Example_105-44[Example 2] and link:#Example_105-45[Example 3]
+show. If you do not specify a return Java data type, the default is
+`+java.lang.String+`. Typically, you specify arguments using the stored
+procedure argument name as is. However, you may associate a stored
+procedure argument name with an alternate name that you use in the
+`+DatabaseQuery+`, as link:#Example_105-43[Example 1] shows. Use this
+approach to specify a more meaningful argument name if the stored
+procedure argument name is cryptic.
+. Instantiate a `+DatabaseQuery+` appropriate for your stored procedure.
+. Configure the `+DatabaseQuery+` with your `+StoredProcedureCall+`
+using `+DatabaseQuery+` method `+setCall+`, as
+link:#Example_105-43[Example 1], link:#Example_105-44[Example 2], and
+link:#Example_105-45[Example 3] show.
+. Specify the names for all input and input/output arguments using
+`+DatabaseQuery+` method `+addArgument+`, as
+link:#Example_105-43[Example 1], link:#Example_105-44[Example 2], and
+link:#Example_105-45[Example 3] show. If you associated stored procedure
+argument names with more meaningful alternate names in step
+[[#3],_use_the_alternate_names_in_the_DatabaseQuery<_tt>__method__addArgument<_tt>,_as_link:#Example_105-43[Example
+1] shows.
+. Create a `+Vector+` of argument values in the same order as you
+specified argument names in step [[#6],_as_link:#Example_105-43[Example
+1], link:#Example_105-44[Example 2], and link:#Example_105-45[Example 3]
+show.
+. Bind values to the arguments and execute the `+DatabaseQuery+` using
+`+Session+` method `+executeQuery(DatabaseQuery, java.util.Vector)+`,
+passing in your `+DatabaseQuery+` and `+Vector+` of argument values, as
+link:#Example_105-43[Example 1], link:#Example_105-44[Example 2], and
+link:#Example_105-45[Example 3] show.
+
+[#Example 105-43]## *_Example 1: Specifying a StoredProcedureCall with
+an Input Argument: JDBC Data Types_*
+
+*`+//\'\' \'\'CREATE\'\' \'\'PROCEDURE\'\' \'\'INSERT_EMPLOYEE(L_NAME\'\' \'\'IN\'\' \'\'VARCHAR)\'\' \'\'AS+`*
+*`+//\'\' \'\'BEGIN+`*
+*`+//\'\' \'\'Insert\'\' \'\'an\'\' \'\'EMP\'\' \'\'record\'\' \'\'initialized\'\' \'\'with\'\' \'\'last\'\' \'\'name.+`*
+*`+//\'\' \'\'END;+`*
+
+`+StoredProcedureCall spcall = new StoredProcedureCall();+`
+`+spcall.setProcedureName("INSERT_EMPLOYEE");+`
+`+spcall.addNamedArgument("L_NAME", "last_name");+`
+
+`+DataModifyQuery query = new DataModifyQuery();+`
+`+query.setCall(spcall);+`
+`+query.addArgument("last_name");   +`*`+//\'\' \'\'input+`*
+
+`+Vector arguments = new Vector();+` `+arguments.add("MacDonald");+`
+`+session.executeQuery(query, arguments);+`
+
+[#Example 105-44]## *_Example 2: Specifying a StoredProcedureCall with
+an Output Argument: JDBC Data Types_*
+
+*`+//\'\' \'\'CREATE\'\' \'\'PROCEDURE\'\' \'\'GET_EMP_ID(L_NAME\'\' \'\'IN\'\' \'\'VARCHAR,\'\' \'\'EMP_ID\'\' \'\'OUT\'\' \'\'INTEGER)\'\' \'\'AS+`*
+*`+//\'\' \'\'BEGIN+`*
+*`+//\'\' \'\'Insert\'\' \'\'an\'\' \'\'EMP\'\' \'\'record\'\' \'\'initialized\'\' \'\'with\'\' \'\'last\'\' \'\'name\'\' \'\'and\'\' \'\'return\'\' \'\'the\'\' \'\'EMP_ID\'\' \'\'for\'\' \'\'this\'\' \'\'record.+`*
+*`+//\'\' \'\'END;+`*
+
+`+StoredProcedureCall spcall = new StoredProcedureCall();+`
+`+spcall.setProcedureName("GET_EMP_ID");+`
+`+spcall.addNamedArgument("L_NAME");+`
+`+spcall.addNamedOutputArgument(+`
+`+    "EMP_ID",      +`*`+//\'\' \'\'procedure\'\' \'\'parameter\'\' \'\'name+`*
+`+    "EMP_ID",      +`*`+//\'\' \'\'out\'\' \'\'argument\'\' \'\'field\'\' \'\'name+`*
+`+    Integer.class  +`*`+//\'\' \'\'Java\'\' \'\'type\'\' \'\'corresponding\'\' \'\'to\'\' \'\'type\'\' \'\'returned\'\' \'\'by\'\' \'\'procedure+`*
+`+);+`
+
+`+ValueReadQuery query = new ValueReadQuery();+`
+`+query.setCall(spcall);+`
+`+query.addArgument("L_NAME");   +`*`+//\'\' \'\'input+`*
+
+`+List args = new ArrayList();+` `+args.add("MacDonald");+`
+
+`+Integer employeeID = (Integer) getSession().executeQuery(query, args);+`
+
+[#Example 105-45]## *_Example 3: Specifying a StoredProcedureCall with
+an Input/Output Argument: JDBC Data Types_*
+
+*`+//\'\' \'\'CREATE\'\' \'\'PROCEDURE\'\' \'\'INSERT_EMPLOYEE(IN_OUT\'\' \'\'INOUT\'\' \'\'VARCHAR)\'\' \'\'AS+`*
+*`+//\'\' \'\'BEGIN+`*
+*`+//\'\' \'\'Insert\'\' \'\'an\'\' \'\'EMP\'\' \'\'record\'\' \'\'initialized\'\' \'\'with\'\' \'\'last\'\' \'\'name\'\' \'\'and\'\' \'\'return\'\' \'\'the\'\' \'\'EMP_CODE_NAME\'\' \'\'for\'\' \'\'this\'\' \'\'record.+`*
+*`+//\'\' \'\'END;+`*
+
+`+StoredProcedureCall spcall = new StoredProcedureCall();+`
+`+spcall.setProcedureName("INSERT_EMP"); +`*`+//\'\' \'\'returns\'\' \'\'EMP_CODE_NAME\'\' \'\'after\'\' \'\'insert+`*
+`+spcall.addNamedInOutputArgument(+`
+`+    "IN_OUT",       +`*`+//\'\' \'\'procedure\'\' \'\'parameter\'\' \'\'name+`*
+`+    "IN_OUT",       +`*`+//\'\' \'\'out\'\' \'\'argument\'\' \'\'field\'\' \'\'name+`*
+`+    String.class    +`*`+//\'\' \'\'Java\'\' \'\'type\'\' \'\'corresponding\'\' \'\'to\'\' \'\'type\'\' \'\'returned\'\' \'\'by\'\' \'\'procedure+`*
+`+);+`
+
+`+ValueReadQuery query = new ValueReadQuery();+`
+`+query.setCall(sqlCall);+`
+`+query.addArgument("INOUT");   +`*`+//\'\' \'\'input\'\' \'\'and\'\' \'\'outpu+`*
+`+ +` `+List args = new ArrayList();+`
+`+args.add("MacDonald");         +`*`+// type of input argument determines type of output value+`*
+`+ +`
+`+String employeeCode = (String)getSession().executeQuery(query, args));+`
+
+=== How to Configure a PLSQLStoredProcedureCall with PL/SQL Data Type Arguments
+
+You must use the
+`+org.eclipse.persistence.platform.database.oracle.PLSQLStoredProcedureCall+`
+class if *any* combination of input, output, or input/output arguments
+are PL/SQL (non-JDBC) data types. Use this approach when you want to
+bind argument values to the `+PLSQLStoredProcedureCall+` at run time,
+receive output values from the `+PLSQLStoredProcedureCall+` at execution
+time, or both.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If all arguments are JDBC (not PL/SQL data types), see
+link:#How_to_Configure_a_StoredProcedureCall_with_Arguments_Using_JDBC_Data_Types[How
+to Configure a StoredProcedureCall with Arguments Using JDBC Data
+Types].
+|===
+
+*To configure a PLSQLStoredProcedureCall with arguments using JDBC and
+PL/SQL data types:*
+
+[arabic]
+. Instantiate a `+PLSQLStoredProcedureCall+` object.
+. Specify the name of the stored procedure to call using
+`+PLSQLStoredProcedureCall+` method `+setProcedureName+`, as
+link:#Example_105-46[Example 1], link:#Example_105-47[Example 2], and
+link:#Example_105-48[Example 3] show.
+. For each argument, use the appropriate `+PLSQLStoredProcedureCall+`
+methods to specify whether arguments are input, output, or input/output
+arguments:
+* Input argument: `+addNamedArgument+` (see link:#Example_105-46[Example
+1]).
+* Output argument: `+addNamedOutputArgument+` (see
+link:#Example_105-47[Example 2]).
+* Input/output argument: `+addNamedInOutputArgument+` (see
+link:#Example_105-48[Example 3]). You must specify the data type for all
+arguments: input, output, and input/output. You use
+`+org.eclipse.persistence.platform.database.jdbc.JDBCTypes+` to specify
+JDBC types and
+`+org.eclipse.persistence.platform.database.oracle.OraclePLSQLTypes+` to
+specify PL/SQL types. For JDBC and PL/SQL input arguments (and the in
+value of input/output arguments), you may use any Java type with
+sufficient size and precision for the argument. For JDBC output
+arguments (and the out value of input/output arguments) EclipseLink
+converts the JDBC data types to Java types as before. For PL/SQL output
+arguments (and the out value of input/output arguments), EclipseLink
+converts PL/SQL data types to the Java data types that
+link:#Table_105-1[Table 105-1] lists. Typically, you specify the
+arguments using the stored procedure argument name as is. However, you
+may associate a stored procedure argument name with an alternate name
+that you use in the `+DatabaseQuery+`, as link:#Example_105-48[Example
+3] shows. Use this approach to specify a more meaningful argument name
+if the stored procedure argument name is cryptic.
+. Instantiate a `+DatabaseQuery+` appropriate for your stored procedure.
+. Configure the `+DatabaseQuery+` with your `+PLSQLStoredProcedureCall+`
+using `+DatabaseQuery+` method `+setCall+`, as
+link:#Example_105-46[Example 1], link:#Example_105-47[Example 2], and
+link:#Example_105-48[Example 3] show.
+. Specify the names for all input and input/output arguments using
+`+DatabaseQuery+` method `+addArgument+`, as
+link:#Example_105-46[Example 1], link:#Example_105-47[Example 2], and
+link:#Example_105-48[Example 3] show. If you associated stored procedure
+argument names with more meaningful alternate names in step 3, use the
+alternate names in the `+DatabaseQuery+` method `+addArgument+`, as
+link:#Example_105-48[Example 3] shows.
+. Create a `+Vector+` of argument values in the same order as you
+specified argument names in step #6, as link:#Example_105-46[Example 1],
+link:#Example_105-47[Example 2], and link:#Example_105-48[Example 3]
+show.
+. Bind values to the arguments and execute the `+DatabaseQuery+` using
+`+Session+` method `+executeQuery(DatabaseQuery, java.util.Vector)+`,
+passing in your `+DatabaseQuery+` and `+Vector+` of argument values, as
+link:#Example_105-46[Example 1], link:#Example_105-47[Example 2], and
+link:#Example_105-48[Example 3] show.
+
+[#Example 105-46]## *_Example 1: Specifying a PLSQLStoredProcedureCall
+with an Input Argument: JDBC and PL/SQL Data Types_*
+
+*`+//\'\' \'\'CREATE\'\' \'\'PROCEDURE\'\' \'\'INSERT_EMPLOYEE(L_NAME\'\' \'\'IN\'\' \'\'VARCHAR,\'\' \'\'MANAGER\'\' \'\'IN\'\' \'\'BOOLEAN)\'\' \'\'AS+`*
+*`+//\'\' \'\'BEGIN+`*
+*`+//\'\' \'\'Insert\'\' \'\'an\'\' \'\'EMP\'\' \'\'record\'\' \'\'initialized\'\' \'\'with\'\' \'\'last\'\' \'\'name\'\' \'\'and\'\' \'\'whether\'\' \'\'or\'\' \'\'not\'\' \'\'the\'\' \'\'employee\'\' \'\'is\'\' \'\'a\'\' \'\'manager.+`*
+*`+//\'\' \'\'END;+`*
+
+`+PLSQLStoredProcedureCall plsqlcall = new PLSQLStoredProcedureCall();+`
+`+plsqlcall.setProcedureName("INSERT_EMPLOYEE");+`
+`+plsqlcall.addNamedArgument("L_NAME", JDBCTypes.VARCHAR_TYPE, 40); // must specify a length+`
+`+plsqlcall.addNamedArgument("MANAGER", OraclePLSQLTypes.PLSQLBoolean);+`
+
+`+DataModifyQuery query = new DataModifyQuery();+`
+`+query.setCall(plsqlcall);+`
+`+query.addArgument("L_NAME");    +`*`+//\'\' \'\'input+`*
+`+query.addArgument("MANAGER");   +`*`+//\'\' \'\'input+`*
+
+`+Vector arguments = new Vector();+` `+arguments.add("MacDonald");+`
+`+arguments.add(Integer.valueOf(1));+`
+`+session.executeQuery(query, arguments);+`
+
+[#Example 105-47]## *_Example 2: Specifying a PLSQLStoredProcedureCall
+with an Output Argument: JDBC and PL/SQL Data Types_*
+
+*`+//\'\' \'\'CREATE\'\' \'\'PROCEDURE\'\' \'\'GET_EMP_ID(L_NAME\'\' \'\'IN\'\' \'\'VARCHAR,\'\' \'\'EMP_ID\'\' \'\'OUT\'\' \'\'PLS_INTEGER)\'\' \'\'AS+`*
+*`+//\'\' \'\'BEGIN+`*
+*`+//\'\' \'\'Insert\'\' \'\'an\'\' \'\'EMP\'\' \'\'record\'\' \'\'initialized\'\' \'\'with\'\' \'\'last\'\' \'\'name\'\' \'\'and\'\' \'\'return\'\' \'\'EMP_ID\'\' \'\'for\'\' \'\'this\'\' \'\'row.+`*
+*`+//\'\' \'\'END;+`*
+
+`+PLSQLStoredProcedureCall plsqlcall= new PLSQLStoredProcedureCall();+`
+`+plsqlcall.setProcedureName("GET_EMP_ID");+`
+`+plsqlcall.addNamedArgument("L_NAME", JDBCTypes.VARCHAR_TYPE, 25);+`
+`+plsqlcall.addNamedOutputArgument("EMP_ID", OraclePLSQLTypes.PLSQLInteger);+`
+
+`+ValueReadQuery query = new ValueReadQuery();+`
+`+query.setCall(plsqlcall);+`
+`+query.addArgument("L_NAME");   +`*`+//\'\' \'\'input+`*
+
+`+List args = new ArrayList();+` `+args.add("MacDonald");+`
+
+`+Number employeeID = (Number) getSession().executeQuery(query, args);+`
+
+[#Example 105-48]## *_Example 3: Specifying a PLSQLStoredProcedureCall
+with an Input/Output Argument: JDBC and PL/SQL Data Types_*
+
+*`+//\'\' \'\'CREATE\'\' \'\'PROCEDURE\'\' \'\'INSERT_EMP(IN_OUT\'\' \'\'INOUT\'\' \'\'PLS_INTEGER)\'\' \'\'AS+`*
+*`+//\'\' \'\'BEGIN+`*
+*`+//\'\' \'\'Insert\'\' \'\'an\'\' \'\'EMP\'\' \'\'record\'\' \'\'initialized\'\' \'\'with\'\' \'\'department\'\' \'\'id\'\' \'\'and\'\' \'\'return+`*`+ +`
+*`+//\'\' \'\'the\'\' \'\'EMP_ID\'\' \'\'for\'\' \'\'this\'\' \'\'record.+`*
+*`+//\'\' \'\'END;+`*
+
+`+PLSQLStoredProcedureCall plsqlcall= new PLSQLStoredProcedureCall();+`
+`+plsqlcall.setProcedureName("INSERT_EMP");+`
+`+plsqlcall.addNamedInOutputArgument("IN_OUT", OraclePLSQLTypes.PLSQLInteger);+`
+
+`+ValueReadQuery query = new ValueReadQuery();+`
+`+query.setCall(plsqlcall);+`
+`+query.addArgument("IN_OUT");       +`*`+//\'\' \'\'input\'\' \'\'and\'\' \'\'outpu+`*
+
+`+List args = new ArrayList();+`
+`+args.add(Integer.valueOf(1234));   +`*`+// department id+`*
+
+`+Integer employeeID = new Integer(BigDecimal.intValue(getSession().executeQuery(query, args)));+`
+
+=== How to Specify a Simple Optimistic Version Locking Value with a StoredProcedureCall Using JDBC Data Types
+
+When using optimistic version locking, you typically delegate the
+responsibility for updating the version field to EclipseLink.
+
+Alternatively, you may choose to use stored procedures to manually
+update the version field for all of create, read, update, and delete
+operations.
+
+When using optimistic locking and stored procedure calls, you may only
+use a simple, sequential numeric value that the stored procedure can
+generate independently of EclipseLink. To use a complex value, such as a
+timestamp, you must delegate the responsibility for updating the version
+field to EclipseLink.
+
+For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)[Optimistic Version Locking
+Policies].
+
+*To specify a simple optimistic version locking value with a
+StoredProcedureCall using JDBC data types:*
+
+[arabic]
+. Create stored procedures for create, read, update, and delete
+operations. Each stored procedure is responsible for checking and
+updating the optimistic lock field: a simple sequential numeric value in
+your database. The following example shows a typical stored procedure
+for the update operation. [#Example 105-49]## *_Stored Procedure for
+Update Operation Using Simple Optimistic Version Locking_*
++
+`+PROCEDURE Update_Employee (+` `+    P_EMP_ID NUMBER,+`
+`+    P_SALARY NUMBER,+` `+    P_END_DATE DATE,+`
+`+    P_MANAGER_ID NUMBER,+` `+    P_START_DATE DATE,+`
+`+    P_F_NAME VARCHAR2,+` `+    P_L_NAME VARCHAR2,+`
+`+    P_GENDER VARCHAR2,+` `+    P_ADDR_ID NUMBER,+`
+`+    P_VERSION NUMBER,+` `+    P_START_TIME DATE,+`
+`+    P_END_TIME DATE,+` `+    O_ERROR_CODE OUT NUMBER) AS+` `+BEGIN +`
+`+Update SALARY set SALARY = P_SALARY WHERE (EMP_ID = P_EMP_ID); +`
+`+Update EMPLOYEE set END_DATE = P_END_DATE, MANAGER_ID = P_MANAGER_ID, VERSION = P_VERSION + 1, START_DATE = P_START_DATE, F_NAME = P_F_NAME, L_NAME = P_L_NAME, GENDER = P_GENDER, ADDR_ID = P_ADDR_ID where ((EMP_ID = P_EMP_ID) and (VERSION = P_VERSION)); +`
+`+O_ERROR_CODE := SQL%ROWCOUNT; +` `+END;+`
+. Create a `+StoredProcedureCall+` for each of your custom create, read,
+update, and delete stored procedures. The following example shows the
+`+StoredProcedureCall+` for the update stored procedure in the
+link:#Example_105-49[Stored Procedure for Update Operation Using Simple
+Optimistic Version Locking]. [#Example 105-50]## example.
++
+*_StoredProcedureCall for Update Stored Procedure_*
++
+`+UpdateObjectQuery updateQuery = new UpdateObjectQuery();+`
+`+call = new StoredProcedureCall();+` `+call.setUsesBinding(true);+`
+`+call.setProcedureName("Update_Employee");+`
+`+call.addNamedArgument("P_EMP_ID", "EMP_ID");+`
+`+call.addNamedArgument("P_SALARY", "SALARY");+`
+`+call.addNamedArgument("P_END_DATE", "END_DATE");+`
+`+call.addNamedArgument("P_MANAGER_ID", "MANAGER_ID");+`
+`+call.addNamedArgument("P_START_DATE", "START_DATE");+`
+`+call.addNamedArgument("P_F_NAME", "F_NAME");+`
+`+call.addNamedArgument("P_L_NAME", "L_NAME");+`
+`+call.addNamedArgument("P_GENDER", "GENDER");+`
+`+call.addNamedArgument("P_ADDR_ID", "ADDR_ID");+`
+`+call.addNamedArgument("P_VERSION", "VERSION");+`
+`+call.addNamedArgument("P_START_TIME", "START_TIME");+`
+`+call.addNamedArgument("P_END_TIME", "END_TIME");+`
+`+call.addNamedOutputArgument("O_ERROR_CODE", "O_ERROR_CODE", Long.class);+`
+`+updateQuery.setCall(call);+`
++
+For more information, see the following:
+* link:#How_to_Configure_a_StoredProcedureCall_Without_Arguments[How to
+Configure a StoredProcedureCall Without Arguments]
+* link:#How_to_Configure_a_StoredProcedureCall_with_Arguments_Using_JDBC_Data_Types[How
+to Configure a StoredProcedureCall with Arguments Using JDBC Data Types]
+* link:#How_to_Configure_a_StoredProcedureCall_with_Arguments_Using_JDBC_and_PL_SQL_Data_Types[How
+to Configure a StoredProcedureCall with Arguments Using JDBC and PL/SQL
+Data Types]
+. Configure the EclipseLink descriptor query manager to use your
+`+StoredProcedureCall+` objects for create, read, update, and delete
+operations. The following example shows how to use a descriptor
+customizer class to update the EclipseLink descriptor query manager with
+the update `+StoredProcedureCall+` from the
+link:#Example_105-50[StoredProcedureCall for Update Stored Procedure]
+example. [#Example 105-51]## *_Configuring the EclipseLink Descriptor
+Query Manager with a StoredProcedureCall_*
++
+`+import org.eclipse.persistence.sessions.factories.DescriptorCustomizer;+`
+`+import org.eclipse.persistence.descriptors.ClassDescriptor;+`
+
+`+public class EmployeeDescriptorCustomizer implements DescriptorCustomizer {+`
+
+`+    public void customize(ClassDescriptor descriptor) {+`
+`+        descriptor.getQueryManager().setUpdateQuery(updateQuery);+`
+`+    }+` `+}+`
++
+For more information, see the following:
+* link:Configuring%20a%20Relational%20Descriptor%20(ELUG)[Configuring
+Custom SQL Queries for Basic Persistence Operations]
+* link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a Descriptor
+Customizer Class]
+. Define a `+StoredProcedureCall+` output parameter event to handle any
+errors.
++
+In the Oracle database, the rowcount is not maintained when calling a
+stored procedure. You must ensure that the rowcount is returned using an
+output parameter. Use the `+Session+` event `+outputParametersDetected+`
+to check the rowcount and raise an error. Alternatively, the stored
+procedure could check the rowcount and throw an exception.
++
+For more information, see
+link:#How_to_Configure_a_StoredProcedureCall_Output_Parameter_Event_Using_JDBC_or_PL_SQL_Data_Types[How
+to Configure a StoredProcedureCall Output Parameter Event Using JDBC or
+PL/SQL Data Types]
+
+=== How to Configure a StoredProcedureCall Output Parameter Event Using JDBC or PL/SQL Data Types
+
+EclipseLink manages output parameter events for databases that support
+them. For example, if a stored procedure returns an error code that
+indicates that the application wants to check for an error condition,
+EclipseLink raises the session event `+outputParametersDetected+` to
+allow the application to process the output parameters.
+
+*To configure a StoredProcedureCall output parameter event using JDBC or
+PL/SQL data types:*
+
+[arabic]
+. Create a `+StoredProcedureCall+` using JDBC arguments, PL/SQL
+arguments, or both. The link:#Example_105-55[Stored Procedure] example
+shows a `+StoredProcedureCall+` using JDBC arguments. For more
+information, see the following:
+* link:#How_to_Configure_a_StoredProcedureCall_with_Arguments_Using_JDBC_Data_Types[How
+to Configure a StoredProcedureCall with Arguments Using JDBC Data Types]
+* link:#How_to_Configure_a_StoredProcedureCall_with_Arguments_Using_JDBC_and_PL_SQL_Data_Types[How
+to Configure a StoredProcedureCall with Arguments Using JDBC and PL/SQL
+Data Types]
++
+[#Example 105-52]##
++
+*_Stored Procedure_*
++
+`+PROCEDURE Update_Employee (+` `+    P_EMP_ID NUMBER,+`
+`+    P_SALARY NUMBER,+` `+    P_END_DATE DATE,+`
+`+    P_MANAGER_ID NUMBER,+` `+    P_START_DATE DATE,+`
+`+    P_F_NAME VARCHAR2,+` `+    P_L_NAME VARCHAR2,+`
+`+    P_GENDER VARCHAR2,+` `+    P_ADDR_ID NUMBER,+`
+`+    P_VERSION NUMBER,+` `+    P_START_TIME DATE,+`
+`+    P_END_TIME DATE,+` `+    O_ERROR_CODE OUT NUMBER) AS+` `+BEGIN +`
+`+Update SALARY set SALARY = P_SALARY WHERE (EMP_ID = P_EMP_ID); +`
+`+Update EMPLOYEE set END_DATE = P_END_DATE, MANAGER_ID = P_MANAGER_ID, VERSION = P_VERSION + 1, START_DATE = P_START_DATE, F_NAME = P_F_NAME, L_NAME = P_L_NAME, GENDER = P_GENDER, ADDR_ID = P_ADDR_ID where ((EMP_ID = P_EMP_ID) and (VERSION = P_VERSION)); +`
+`+O_ERROR_CODE := SQL%ROWCOUNT; +` `+END;+`
+. Create a `+SessionEventListener+` that handles the
+`+outputParametersDetected+` event, as the
+link:#Example_105-53[SessionEventListener for outputParametersDetected
+Event] example shows. Subclassing the
+`+org.eclipse.persistence.sessions.SessionEventAdapter+` is an easy way
+to create a `+SessionEventListener+`: you only need to override the
+specific `+SessionEventListener+` methods you are interested in. In the
+link:#Example_105-53[SessionEventListener for outputParametersDetected
+Event] example, `+SessionEvent+` method `+getProperty+` uses an argument
+value of `+ERROR_CODE+`. This property name and its data type is defined
+in the `+StoredProcedureCall+` method `+addNamedOutputArgument+`.
++
+[#Example 105-53]##
++
+*_SessionEventListener for outputParametersDetected Event_*
++
+`+import org.eclipse.persistence.sessions.SessionEventAdapter;+`
+`+importorg.eclipse.persistence.sessions.SessionEvent;+`
+
+`+public class OptimisticLockListener extends SessionEventAdapter {+`
+
+`+    public OptimisticLockListener() {}+` `+ +`
+`+    public void outputParametersDetected(SessionEvent event) {+`
+`+        DatabaseQuery query = event.getQuery();+`
+`+        if ((query != null) && query.isObjectLevelModifyQuery()) {+`
+`+            Number rowcount = new Integer(1);+`
+`+            if (event.getResult() instanceof Map) {+`
+`+                rowcount = (Number)((Map)event.getResult()).get("O_ERROR_CODE");+`
+`+            }+` `+            if (rowcount.longValue() <= 0) {+`
+`+                if (query.isDeleteObjectQuery()) {+`
+`+                    DeleteObjectQuery deleteQuery = (DeleteObjectQuery)query;+`
+`+                    throw OptimisticLockException.objectChangedSinceLastReadWhenDeleting+`
+`+                                                  (deleteQuery.getObject(), deleteQuery);+`
+`+                } +`
+`+                else if (query.isWriteObjectQuery()) {+`
+`+                    WriteObjectQuery updateQuery = (WriteObjectQuery)query;+`
+`+                    throw OptimisticLockException.objectChangedSinceLastReadWhenUpdating+`
+`+                                                  (updateQuery.getObject(), updateQuery);+`
+`+                }+` `+            }+` `+        }+` `+    }+` `+}+`
+. Add your `+SessionEventListener+` instance to the session event
+manager, as the link:#Example_105-54[Adding SessionEventListener to the
+Session Event Manager] example shows. You must do this step before
+executing your stored procedure. For more information, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[Managing
+Session Events with the Session Event Manager] [#Example 105-54]##
+*_Adding SessionEventListener to the Session Event Manager_*
++
+`+getSession().getEventManager().addListener(new OptimisticLockListener());+`
+. Execute the query. If there is an error and a `+SessionEvent+` of type
+`+outputParametersDetected+` is raised, EclipseLink will notify your
+`+SessionEventListener+`.
++
+
+=== What You May Need to Know About Using a StoredProcedureCall
+
+EclipseLink automatically converts PL/SQL data types into the Java data
+types that the following table lists for out arguments (and the out
+value of input/output arguments).
+
+[#Table 105-1]## *_EclipseLink PL/SQL to Java Data Type Conversion: Out
+Arguments and Out Value of Input/Output Arguments_*
+
+[width="100%",cols="<32%,<36%,<32%",options="header",]
+|===
+|*PL/SQL Data Type* |*OraclePLSQLTypes Enum* |*Java Type*
+|`+BINARY_INTEGER+` |`+BinaryInteger+` |`+java.math.BigDecimal+`
+|`+BOOLEAN+` |`+PLSQLBoolean+` |`+java.lang.Integer+`
+|`+DEC+` |`+Dec+` |`+java.math.BigDecimal+`
+|`+INT+` |`+Int+` |`+java.math.BigDecimal+`
+|`+NATURAL+` |`+Natural+` |`+java.math.BigDecimal+`
+|`+NATURALN+` |`+NaturalN+` |`+java.math.BigDecimal+`
+|`+PLS_INTEGER+` |`+PLSQLInteger+` |`+java.math.BigDecimal+`
+|`+POSITIVE+` |`+Positive+` |`+java.math.BigDecimal+`
+|`+POSITIVEN+` |`+PositiveN+` |`+java.math.BigDecimal+`
+|`+SIGNTYPE+` |`+SignType+` |`+java.lang.Integer+`
+|===
+
+You may use the value from any Java type for a PL/SQL in argument (or in
+value of an input/output argument) as long as the size and precision of
+the Java type is appropriate for the PL/SQL type.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You no longer need to use `+DatabaseQuery+` method
+`+bindAllParameters+` when using a `+StoredProcedureCall+` with `+OUT+`
+or `+INOUT+` parameters. However, you should always specify the Java
+type for all `+OUT+` and `+INOUT+` parameters. If you do not, be aware
+of the fact that they default to type `+String+`.
+|===
+
+== Using a StoredFunctionCall
+
+The EclipseLink expression framework enables you to define complex
+queries at the object level. If your application requires a more complex
+query or one that invokes an existing stored function that your database
+provides, you can define a `+StoredFunctionCall+` object using both JDBC
+and PL/SQL data types and invoke the stored function in the context of a
+`+DatabaseQuery+`.
+
+Note that not all databases provide stored functions.
+
+In the link:#Example_105-56[Creating a StoredFunctionCall] example, note
+that the name of the stored function is set using `+StoredFunctionCall+`
+method `+setProcedureName+`.
+
+[#Example 105-56]## *_Creating a StoredFunctionCall_*
+
+`+StoredFunctionCall functionCall = new StoredFunctionCall();+`
+`+functionCall.setProcedureName("CHECK_VALID_EMPLOYEE");+`
+`+functionCall.addNamedArgument("EMP_ID");+`
+`+functionCall.setResult("FUNCTION_RESULT", String.class);+`
+`+ValueReadQuery query = new ValueReadQuery();+`
+`+query.setCall(functionCall);+` `+query.addArgument("EMP_ID");+`
+`+List args = new ArrayList();+` `+args.addElement(new Integer(44));+`
+`+String valid = (String) session.executeQuery(query, args);+`
+
+=== What You May Need to Know About Using a StoredFunctionCall
+
+In general, both stored procedures and stored functions let you specify
+input parameters, output parameters, and input and output parameters.
+For more information, see link:#Using_a_StoredProcedureCall[Using a
+StoredProcedureCall]. However, stored procedures need not return values,
+while stored functions always return a single value.
+
+The `+StoredFunctionCall+` class extends `+StoredProcedureCall+` to add
+one new method - `+setResult+`. Use this method to specify the name (and
+alternatively both the name and type) under which EclipseLink stores the
+return value of the stored function.
+
+When EclipseLink prepares a `+StoredFunctionCall+`, it validates its SQL
+and throws a `+ValidationException+` under the following circumstances:
+
+* If your current platform does not support stored functions. Stored
+functions are supported only for Oracle.
+* If you fail to specify the return type.
+
+== Using Java Persistence Query Language (JPQL) Calls
+
+Information pending
+
+== Using EIS Interactions
+
+For an EIS root descriptor, you can define EIS interactions to invoke
+methods on an EIS.
+
+EclipseLink represents EIS interactions using instances of
+`+org.eclipse.persistence.eis.interactions.EISInteraction+`. These
+classes implement the `+Call+` interface and can be used wherever a
+`+Call+` can be used.
+
+This table lists the type of EIS interactions that EclipseLink supports.
+
+[#Table 105-2]##
+
+[width="100%",cols="<8%,<92%",options="header",]
+|===
+|*EIS Interaction Type* |*Description*
+|`+IndexedInteraction+` |Defines the specification for a call to a JCA
+interaction that uses indexed records. Builds the input and output
+records from the arguments by position.
+
+|`+MappedInteraction+` |Defines the specification for a call to a JCA
+interaction that uses mapped records. Builds the input and output
+records from the arguments by name.
+
+|`+XMLInteraction+` |Specifies an instance of `+MappedInteraction+` that
+defines the specification for a call to a JCA interaction that uses XML
+records defined by the XML schema document (XSD) associated with the EIS
+project (for more information, see link:Using%20Workbench%20(ELUG)[How
+to Import an XML Schema]).
+
+|`+QueryStringInteraction+` |Specifies an instance of
+`+MappedInteraction+` that defines the specification for a call to a JCA
+interaction that uses a query string. Prefix arguments in the query
+string with a number sign ( `+#+` ) character.
+
+|`+XQueryInteraction+` |Specifies an instance of `+XMLInteraction+` that
+defines the specification for a call to a JCA interaction that uses
+XQuery. Translates the XQuery from the query arguments.
+|===
+
+You can use EclipseLink to define an interaction for each basic
+persistence operation (`+insert+`, `+update+`, `+delete+`,
+`+read object+`, `+read all+`, or `+does exist+`) so that when you query
+and modify your EIS-mapped objects, the EclipseLink runtime will use the
+appropriate EIS interaction. For more information, see
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)[Configuring Custom EIS
+Interactions for Basic Persistence Operations].
+
+You can also use EclipseLink to define an interaction as a named query
+for read object and read-all object queries. These queries are not
+called for basic persistence operations; you can call these additional
+queries by name in your application for special purposes. For more
+information, see link:Configuring%20a%20Descriptor%20(ELUG)[Creating an
+EIS Interaction for a Named Query].
+
+== Handling Exceptions
+
+Most exceptions in queries are database exceptions, resulting from a
+failure in the database operation. Write operations can also throw an
+`+OptimisticLockException+` on a write, update, or delete operation in
+applications that use optimistic locking. To catch these exceptions,
+execute all database operations within a `+try+`-`+catch+` block:
+
+`+    try {+`
+`+        List employees = session.readAllObjects(Employee.class); +`
+`+    } +` `+    catch (DatabaseException exception) {+`
+`+        +`*`+//\'\' \'\'handle\'\' \'\'exception+`*`+ +` `+    }+`
+
+See
+link:EclipseLink%20Exception%20Error%20Reference%20(ELUG)%20[EclipseLink
+Exception Error Reference] for more information about exceptions in an
+EclipseLink application.
+
+== Handling Collection Query Results
+
+EclipseLink provides a `+useCollectionClass+` method to all subclasses
+of `+DataReadQuery+` and `+ReadAllQuery+`, that you can use to configure
+a query to return results as any concrete instance of `+Collection+` or
+`+Map+`.
+
+Do not confuse collection query result configuration with a mapping
+container policy (see
+link:Configuring%20a%20Mapping%20(ELUG)[Configuring Container Policy]):
+there is no relationship between the two. Collection query result
+configuration determines how EclipseLink returns multiobject results
+from a particular query. A mapping container policy tells EclipseLink
+how your domain object implements a data member that contains a
+collection.
+
+For example, consider a class `+Employee+` with a data member
+`+phoneNumbers+`. In your implementation of `+Employee+`, the
+`+getPhoneNumbers+` method returns a `+Vector+`. Using Workbench, you
+map the `+phoneNumbers+` data member as a one-to-many mapping. You
+configure the mapping container policy so that the mapping contains its
+value (many `+PhoneNumber+` objects) in a `+Vector+`. This corresponds
+to your implementation of `+Employee+`.
+
+You define a `+ReadAllQuery+` named `+localPhoneNumbers+` on the
+`+DescriptorQueryManager+` of the `+PhoneNumber+`. The
+`+localPhoneNumbers+` query takes one argument, the ID of an
+`+Employee+` object, and returns all the phone numbers from its
+`+phoneNumbers+` data member whose area code is 613.
+
+You get this query by name from the `+DescriptorQueryManager+` for
+`+PhoneNumber+`. You call the `+useCollectionClass+` method on this
+`+ReadAllQuery+`, passing in the `+ArrayList+` class. You execute the
+query, passing in the ID of an `+Employee+`. The query returns all the
+`+PhoneNumber+` objects from the `+Employee+` object’s `+phoneNumbers+`
+data member whose area code is 613. The query returns these results as
+an `+ArrayList+`.
+
+== Handling Report Query Results
+
+The following table lists the `+ReportQuery+` methods you can use to
+configure how a `+ReportQuery+` returns its results.
+
+By default, the `+ReportQuery+` returns a `+Collection+` of
+`+ReportQueryResult+` objects.
+
+[#Table 105-3]## *_Report Query Result Options_*
+
+Method
+
+Query Returns
+
+Description
+
+setShouldReturnSingleAttribute
+
+Collection
+
+Returns a single attribute (not wrapped in a ReportQueryResult).
+
+Use this option if you know that the ReportQuery returns only one
+attribute.
+
+setShouldReturnSingleResult
+
+ReportQueryResult
+
+Returns only the first ReportQueryResult object (not wrapped in a
+Collection or Map).
+
+Use this option if you know that the ReportQuery returns only one row.
+
+setShouldReturnSingleValue
+
+Object
+
+Returns only a single value.
+
+Use this option if you know that the ReportQuery returns only one row
+that contains only one attribute.
+
+For more information, see the following:
+
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Report_Query[Report
+Query]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Report_Query_Results[Report
+Query Results]
+* link:#Reading_Objects_Using_Report_Queries[Reading Objects Using
+Report Queries]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Query_Attributes[Configuring
+Named Query Attributes]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

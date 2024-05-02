@@ -1,0 +1,66 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Custom_Coordinated_Cache_(ELUG)[Related
+Topics]
+
+[#Table 103-1]## *_Configurable Options for a Custom Coordinated Cache_*
+
+Option to Configure
+
+Workbench
+
+Java
+
+Configuring cache coordination change propagation at the descriptor
+level
+
+Configuring a service channel
+
+Configuring transport class
+
+Configuring connection handling
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Custom_Coordinated_Cache[Custom
+Coordinated Cache].
+
+== Configuring Transport Class
+
+To configure a custom coordinated cache, you must specify your custom
+instance of
+`+org.eclipse.persistence.sessions.coordination.TransportManager+`.
+
+=== How to Configure Transport Class Using Workbench
+
+To select the transport class for the user defined coordinated cache,
+use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected and the
+*Type* is *User Defined* (see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination]). [#Figure 103-1]##*_Cache Coordination, Transport Class
+Option_* image:chcusttr.gif[Cache Coordination, Transport Class
+Option,title="Cache Coordination, Transport Class Option"]
+. Click *Browse* and select the transport class for the user-defined
+coordinated cache.
+
+=== How to Configure Transport Class Using Java
+
+Create a custom instance of the
+`+org.eclipse.persistence.sessions.coordination.TransportManager+` that
+you use as a transport class for your coordinated cache.
+
+You obtain the `+TransportManager+` using the following `+Session+` API:
+
+`+Session.getCommandManager().getTransportManager()+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

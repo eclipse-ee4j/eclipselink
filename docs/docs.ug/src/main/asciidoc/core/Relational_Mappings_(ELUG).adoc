@@ -1,0 +1,29 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+A relational mapping transforms any object data member type to a
+corresponding relational database (SQL) data source representation in
+any supported relational database. Relational mappings let you map an
+object model into a relational data model.
+
+Consider the following sections:
+
+* link:Introduction_to_Relational_Mappings_(ELUG)[Introduction to
+Relational Mappings] – describes each of the different EclipseLink
+relational mapping types and important relational mapping concepts.
+
+* link:Configuring_a_Relational_Mapping_(ELUG)[Configuring a Relational
+Mapping] – explains how to configure EclipseLink relational mapping
+options common to two or more relational mapping types.
+
+*Special:Whatlinkshere_Relational_Mappings_(ELUG)[Related Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

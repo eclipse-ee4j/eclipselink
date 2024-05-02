@@ -1,0 +1,175 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+// include::header.adoc[]
+
+= Service Data Objects (SDO)
+
+// :nofooter:
+// :description: EclipseLink
+// :keywords: eclipselink, java, jpa, persistence, introduction, sdo
+// :pdf-theme: ../../theme/jakartaee-theme.yml
+// :authors: Jakarta Persistence Team, https://projects.eclipse.org/projects/ee4j.jpa
+// :email: https://dev.eclipse.org/mailman/listinfo/sdo-example-persistence-dev
+// :version-label!:
+:doctype: book
+// :license: Eclipse Foundation Specification License v1.0
+:source-highlighter: coderay
+// :toc: left
+:toc:
+:toclevels: 4
+:sectnumlevels: 4
+// :sectanchors:
+:xrefstyle: short
+
+
+
+
+
+// include::attributes.adoc[]
+
+// What Is SDO
+include::EclipseLink_UserGuide_SDO_Introduction_to_SDO_(ELUG).adoc[]
+
+// Using SDO Metadata
+include::EclipseLink_UserGuide_SDO_Introduction_to_EclipseLink_SDO_(ELUG).adoc[]
+
+// Using SDO  actions
+include::EclipseLink_UserGuide_SDO_Using_EclipseLink_SDO_(ELUG).adoc[]
+
+// //Title and Copyright Information
+
+
+
+include::sdo-examples.adoc[]
+
+//Preface
+// [preface]
+// include::Compiler.adoc[]
+//
+// //List of Examples
+// // :sectnums!:
+// include::DynamicAPI.adoc[]
+//
+// include::DynamicAPIXML.adoc[]
+//
+// include::JAXB.adoc[]
+//
+// include::JPA.adoc[]
+//
+// include::MetadataXMLSchema.adoc[]
+//
+// include::StaticAPI.adoc[]
+
+//Introduction
+// :sectnums:
+// :sectnumlevels: 1
+// include::{rootdir}/introduction.adoc[]
+//
+// //Annotation Extensions Reference
+// include::{rootdir}/annotations_ref.adoc[]
+//
+// //Java Persistence Query Language Extensions
+// include::{rootdir}/jpql.adoc[]
+//
+// //JPA Query Customization Extensions
+// include::{rootdir}/queryhints.adoc[]
+//
+// //Persistence Property Extensions Reference
+// include::{rootdir}/persistenceproperties_ref.adoc[]
+//
+// //eclipselink-orm.xml Schema Reference
+// include::{rootdir}/schema.adoc[]
+//
+// include::copyright.adoc[]
+//
+//
+// = Jakarta Persistence
+// :pdf-theme: ../../theme/jakartaee-theme.yml
+// :authors: Jakarta Persistence Team, https://projects.eclipse.org/projects/ee4j.jpa
+// :email: https://dev.eclipse.org/mailman/listinfo/sdo-example-persistence-dev
+// :version-label!:
+// :doctype: book
+// :license: Eclipse Foundation Specification License v1.0
+// :source-highlighter: coderay
+// :toc: left
+// :toclevels: 4
+// :sectnumlevels: 4
+// :sectanchors:
+// :xrefstyle: short
+//
+// // == License
+// :sectnums!:
+// include::license-efsl.adoc[]
+//
+// // == Scope
+// // :sectnums!:
+// // include::scope.adoc[]
+//
+// // == The Introduction
+// :sectnums:
+// include::ch01-introduction.adoc[]
+//
+// // == Entities
+// :sectnums:
+// include::ch02-entities.adoc[]
+//
+// // == Entity Operations
+// :sectnums:
+// include::ch03-entity-operations.adoc[]
+//
+// // == Query Language
+// :sectnums:
+// include::ch04-query-language.adoc[]
+//
+// // == Metamodel API
+// :sectnums:
+// include::ch05-metamodel-api.adoc[]
+//
+// // == Criteria API
+// :sectnums:
+// include::ch06-criteria-api.adoc[]
+//
+// // == Entity Managers and Persistence Contexts
+// :sectnums:
+// include::ch07-entitymanagers-and-persistence-contexts.adoc[]
+//
+// // == Entity Packaging
+// :sectnums:
+// include::ch08-entity-packaging.adoc[]
+//
+// // == Container and Provider Contracts for Deployment and Bootstrapping
+// :sectnums:
+// include::ch09-container-provider-contracts.adoc[]
+//
+// // == Metadata Annotations
+// :sectnums:
+// include::ch10-sdo-example-metadata-annotations.adoc[]
+//
+// // == Metadata for Object/Relational Mapping
+// :sectnums:
+// include::ch11-sdo-example-metadata-for-or-mapping.adoc[]
+//
+// // == XML Object/Relational Mapping Descriptor
+// :sectnums:
+// include::ch12-xml-or-mapping-descriptor.adoc[]
+//
+// // == Related Documents
+// :sectnums:
+// include::related-documents.adoc[]
+//

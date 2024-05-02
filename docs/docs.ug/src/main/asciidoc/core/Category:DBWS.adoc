@@ -1,0 +1,16 @@
+*'`image:Elug_draft_icon.png[Warning,title="Warning"] This page is
+obsolete. Please see the
+http://www.eclipse.org/eclipselink/documentation/[EclipseLink
+Documentation Center]* for current information.`'’’
+
+*NOTOC*
+
+[width="100%",cols="36%,64%",]
+|===
+|image:Eclipselink_dbws.png‎[Image:Eclipselink_dbws.png‎,title="Image:Eclipselink_dbws.png‎"]
+|This page lists all sections in the
+_link:EclipseLink_UserGuide[EclipseLink User’s Guide 1.x]_ for *DBWS*
+(Database Web Services) projects.
+|===
+
+Category:EclipseLink_User's_Guide[Category:EclipseLink User’s Guide]

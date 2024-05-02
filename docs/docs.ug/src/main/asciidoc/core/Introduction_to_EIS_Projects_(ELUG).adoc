@@ -1,0 +1,126 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Introduction_to_EIS_Projects_(ELUG)[Related
+Topics]
+
+This section provides an overview of EIS projects and their components.
+
+For information on project concepts and features common to more than one
+type of EclipseLink projects, see
+link:Introduction%20to%20Projects_(ELUG)[Introduction to Projects].
+
+== EIS Project Concepts
+
+Use an EIS project for transactional persistence of Java objects to a
+_nonrelational_ data source accessed using a Java EE Connector
+Architecture (JCA) adapter and EIS records.
+
+JCA provides a Common Client Interface (CCI) API to access nonrelational
+EIS. This provides a similar interface to nonrelational data sources as
+JDBC provides for relational data sources. This API defines several
+types of nonrelational record types including mapped and indexed. XML
+has emerged as the standard format to exchange data, and most leading
+JCA adapter providers have extended the CCI API to define XML data
+records.
+
+To use a JCA adapter with EclipseLink EIS, the JCA adapter must support
+the JCA CCI interface. At run time, your JCA adapter and the Java
+`+connector.jar+` file (that contains the `+javax.resource.cci+` and
+`+javax.resource.spi+` interfaces that EclipseLink EIS uses) must be on
+your application or application server classpath.
+
+If you are using Workbench, you must add your JCA adapter to the
+Workbench classpath. By default, Workbench updates its classpath to
+include the Java 1.5._n_ `+connector.jar+` file from
+`+<+`_`+ECLIPSELINK_HOME+`_`+>/utils/workbench/jlib+`. If this version
+of the `+connector.jar+` file is incompatible with your environment,
+edit the `+workbench.cmd+` or `+workbench.sh+` file in
+`+<+`_`+ECLIPSELINK_HOME+`_`+>/utils/workbench/bin+` to change the path
+to this file. For more information, see
+link:Using%20Workbench%20(ELUG)#Configuring_the_Workbench_Environment[Configuring
+the Workbench Environment].
+
+EIS includes legacy data sources, enterprise applications, legacy
+applications, and other information systems. These systems include such
+sources as Custormer Information Control System (CICS), Virtual Storage
+Access Method (VSAM), Information Management System (IMS), ADABASE
+database, and flat files.
+
+We recommend using EIS projects to integrate EclipseLink with a legacy
+or nonrelational data source. Other methods of accessing EIS data
+sources include:
+
+* Using a specialized JDBC driver that allows connecting to an EIS
+system as if it were a relational database. You could use an
+link:Introduction%20to%20Relational%20Projects%20(ELUG)[EclipseLink
+relational project] with these drivers.
+* Linking to or integrating with the EIS data from a relational
+database, such as Oracle Database.
+* Using a proprietary API to access the EIS system. In this case it may
+be possible to wrap the API with a JCA CCI interface to allow usage with
+an EclipseLink EIS project.
+
+EclipseLink provides support for mapping Java objects to EIS mapped,
+indexed, and XML records, through JCA, using the
+link:EIS_Mappings_(ELUG)[EclipseLink EIS mappings].
+
+You configure an EclipseLink EIS descriptor to use a
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_Record_Format[particular
+EIS record format]. EclipseLink EIS mappings use their EIS descriptor’s
+record format configuration to determine how to map their Java objects
+to EIS records.
+
+If you use XML records, the EclipseLink runtime performs XML data
+conversion based on one or more XML schemas. In an EIS project that uses
+XML records, Workbench directly references schemas in the deployment
+XML, and exports mappings configured with respect to the schemas you
+specify. For information on how to use Workbench with XML schemas, see
+link:Using%20Workbench%20(ELUG)#Using_XML_Schemas[Using XML Schemas].
+For information on how EclipseLink supports XML namespaces, see
+link:Introduction%20to%20Projects_(ELUG)#XML_Namespaces_Overview[XML
+Namespaces Overview].
+
+This table describes the components of an EIS project.
+
+[#Table 67-1]## *_EIS Project Components_*
+
+[width="100%",cols="<9%,<91%",options="header",]
+|===
+|*Component* |*Supported Types*
+|Data Source
+|link:Introduction%20to%20Data%20Access%20(ELUG)#EISLogin[EISLogin] and
+link:Introduction%20to%20Data%20Access%20(ELUG)#EIS_Platforms[EIS
+Platforms]
+
+|Descriptors
+|link:Introduction%20to%20EIS%20Descriptors%20(ELUG)#EIS_Descriptor_Concepts[EIS
+Descriptor Concepts]
+
+|Mappings |link:EIS_Mappings_(ELUG)[EIS Mappings]
+|===
+
+You can create an EIS project with Workbench for use with
+link:Creating%20an%20EIS%20Project%20(ELUG)#Creating_an_EIS_Project_with_XML_Records[EIS
+XML records] or you can build an EIS project in Java for use with
+link:Creating%20an%20EIS%20Project%20(ELUG)#Creating_an_EIS_Project_with_Indexed_or_Mapped_Records[any
+supported EIS record type].
+
+In an EIS project, your
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Enterprise_Information_System_(EIS)_Interactions[EIS
+interactions] can make full use of
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[EclipseLink
+queries]. However, you cannot use EclipseLink expressions with EIS: in
+an EIS project, interactions replace expressions.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_EIS[Category: EIS]

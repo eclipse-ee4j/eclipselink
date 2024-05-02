@@ -1,0 +1,95 @@
+*TOC*
+Special:Whatlinkshere_Configuring_an_Object-Relational_Data_Type_Descriptor_(ELUG)[Related
+Topics]
+
+For information on how to create object-relational data type
+descriptors, see
+link:Creating%20an%20Object-Relational%20Data%20Type%20Descriptor%20(ELUG)[Creating
+an Object-Relational Data Type Descriptor].
+
+This table lists the configurable options for an object-relational data
+type descriptor.
+
+[#Table 31-1]##
+
+Option to Configure
+
+EclipseLink Workbench
+
+Java
+
+Field ordering
+
+Primary keys
+
+Read-only descriptors
+
+Unit of work conforming
+
+Query keys
+
+Cache expiration
+
+Amendment methods
+
+Reading subclasses on queries
+
+Inheritance for a child class descriptor
+
+Inheritance for a parent class descriptor
+
+Inheritance expressions for a parent class descriptor
+
+Inherited attribute mapping in a subclass
+
+Cache type and size
+
+Domain object method as an event handler
+
+Descriptor event listener as an event handler
+
+Locking policy
+
+Copy policy
+
+Instantiation policy
+
+Wrapper policy
+
+History policy
+
+Returning policy
+
+For more information, see
+link:Introduction%20to%20Relational%20Descriptors%20(ELUG)[Introduction
+to Relational Descriptors].
+
+== Configuring Field Ordering
+
+If your object-relational data type data source driver uses JDBC indexed
+arrays, you can specify the order in which EclipseLink persists object
+attributes to define the field index.
+
+=== How to Configure Field Ordering Using Java
+
+Use `+ObjectRelationalDescriptor+` method `+addFieldOrdering+` to
+specify the field ordering. This example shows how to specify the order
+of the object-relational data type database fields `+OBJECT_ID+`,
+`+F_NAME+`, and `+L_NAME+` for the `+Employee+` descriptor.
+
+[#Example 31-1]## *_Field Ordering_*
+
+[source,java]
+----
+ descriptor.addFieldOrdering("ID");
+ descriptor.addFieldOrdering("F_NAME");
+ descriptor.addFieldOrdering("L_NAME");
+----
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

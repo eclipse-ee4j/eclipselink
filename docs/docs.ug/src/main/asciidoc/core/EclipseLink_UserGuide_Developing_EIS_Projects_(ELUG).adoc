@@ -1,0 +1,22 @@
+== EIS Projects
+
+The following sections describe EIS projects, descriptors and mappings:
+
+* link:Introduction_to_EIS_Projects_(ELUG)[Introduction to EIS Projects]
+
+* link:Creating_an_EIS_Project_(ELUG)[Creating an EIS Project]
+
+* link:Configuring_an_EIS_Project_(ELUG)[Configuring an EIS Project]
+
+* link:EIS_Descriptors_(ELUG)[Creating and Configuring EIS Descriptors]
+
+* link:EIS_Mappings_(ELUG)[Creating and Configuring EIS Mappings]
+
+*Special:Whatlinkshere_EclipseLink_UserGuide_Developing_EIS_Projects_(ELUG)[Related
+topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

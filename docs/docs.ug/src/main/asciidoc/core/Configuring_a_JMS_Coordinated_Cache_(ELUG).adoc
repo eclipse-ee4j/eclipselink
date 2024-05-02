@@ -1,0 +1,245 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_JMS_Coordinated_Cache_(ELUG)[Related
+Topics]
+
+[#Table 100-1]## *_Configurable Options for a JMS Coordinated Cache_*
+
+Option to Configure
+
+EclipseLink Workbench
+
+Java
+
+Cache coordination change propagation at the descriptor level
+
+Synchronous change propagation mode
+
+JNDI naming service information
+
+Topic name
+
+Topic connection factory name
+
+Topic host URL
+
+Connection handling
+
+Context properties
+
+Packet time-to-live
+
+== Configuring a Topic Name
+
+A JMS topic identifies a publish/subscribe destination for a JMS server.
+JMS users who wish to share messages subscribe to the same JMS topic.
+
+The topic name you configure is the name that EclipseLink uses to look
+up the `+javax.jms.Topic+` instance from the JNDI service. You must
+provide a fully qualified JNDI name, such as
+`+jms/<+`_`+topic_name+`_`+>+`.
+
+All the members of the same JMS coordinated cache must use the same JMS
+topic.
+
+=== How to Configure a Topic Name Using Workbench
+
+To specify the topic name for JMS cache coordination, use this
+procedure:
+
+[arabic]
+. Select a server session in the *Navigator*. Its properties appear in
+the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure *Enable Cache Coordination* is selected and the *Type* is *JMS*
+(see link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination] for more information). [#Figure 100-1]##*_Cache
+Coordination Tab, Topic Name Field, JMS_* image:jmsclutn.gif[Cache
+Coordination Tab, Topic Name Field,
+JMS,title="Cache Coordination Tab, Topic Name Field, JMS"]
+. Enter the topic name to use with the JMS coordinated cache for this
+session. This must be a fully qualified JNDI name, such as `+jms/+`__.
+
+Enter the topic name to use with the JMS coordinated cache for this
+session. This must be a fully qualified JNDI name, such as `+jms/+`__.
+
+=== How to Configure a Topic Name Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager+`
+method `+setTopicName+` to configure the Topic name for the Topic to
+which this transport manager will be connecting.
+
+You obtain the `+BroadcastTransportManager+` using the following
+`+Session+` API:
+
+`+Session.getCommandManager().getTransportManager()+`
+
+== Configuring a Topic Connection Factory Name
+
+A JMS topic connection factory creates connections with the JMS provider
+for a specific JMS destination. Each connection factory contains the
+specific configuration information to create a connection to a JMS
+destination.
+
+The topic connection factory name you configure is the name that
+EclipseLink uses to look up the `+javax.jms.TopicConnectionFactory+`
+instance from the JNDI service. This must be a fully qualified JNDI
+name, such as `+jms/<+`_`+resource_name+`_`+>+`.
+
+=== How to Configure a Topic Connection Factory Name Using Workbench
+
+To specify the topic connection factory for a JMS coordinated cache, use
+this procedure:
+
+[arabic]
+. Select a server session in the *Navigator*. Its properties appear in
+the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure *Enable Cache Coordination* is selected and the *Type* is *JMS*
+(see link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination] for more information). [#Figure 100-2]##*_Cache
+Coordination Tab, Topic Connection Factory Name Field_*
+image:jmscluto.gif[Cache Coordination Tab, Topic Connection Factory Name
+Field,title="Cache Coordination Tab, Topic Connection Factory Name Field"]
+. Enter the topic connection factory name to use with the JMS
+coordinated cache for this session. This must be a fully qualified JNDI
+name, such as `+jms/+`__.
+
+Enter the topic connection factory name to use with the JMS coordinated
+cache for this session. This must be a fully qualified JNDI name, such
+as `+jms/+`__.
+
+=== How to Configure a Topic Connection Factory Name Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager+`
+method `+setTopicConnectionFactoryName+` to configure the the JMS Topic
+connection factory name for the JMS Topic connections.
+
+You obtain the `+JMSTopicTransportManager+` using the following
+`+Session+` API:
+
+`+Session.getCommandManager().getTransportManager()+`
+
+== Configuring a Topic Host URL
+
+The JMS topic host URL is the URL of the machine on the network that
+hosts the JMS topic (see link:#Configuring_a_Topic_Name[Configuring a
+Topic Name]).
+
+=== How to Configure a Topic Host URL Using Workbench
+
+To specify the topic host URL for a JMS coordinated cache, use this
+procedure:
+
+[arabic]
+. Select a server session in the *Navigator*. Its properties appear in
+the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure *Enable Cache Coordination* is selected and the *Type* is *JMS*
+(see link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination] for more information). [#Figure 100-3]##*_Cache
+Coordination Tab, Topic Host URL Field_* image:jmsurl.gif[Cache
+Coordination Tab, Topic Host URL
+Field,title="Cache Coordination Tab, Topic Host URL Field"]
+
+Enter the URL of the machine on the network that hosts the JMS topic
+(see link:#Configuring_a_Topic_Name[Configuring a Topic Name]) to use
+with the JMS coordinated cache for this session.
+
+=== How to Configure a Topic Host URL Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager+`
+method `+setTopicHostUrl+` to configure the URL of the computer on the
+network that hosts the JMS Topic.
+
+You obtain the `+JMSTopicTransportManager+` using the following
+`+Session+` API:
+
+`+Session.getCommandManager().getTransportManager()+`
+
+== Configuring Connection Handling
+
+The session’s transport manager creates connections to the various
+members of the coordinated cache. If a communication error occurs on one
+of these connections, you can configure the session to either ignore the
+error or remove the connection.
+
+If you configure the session to remove the connection on error, the next
+time the session tries to communicate with that coordinated cache
+member, it will construct a new connection. If an error occurs during
+the connection creation phase, EclipseLink will either throw a
+`+RemoteCommandManagerException.ERROR_CREATING_JMS_CONNECTION+` (if the
+error occurred while sending a message) or a
+`+RemoteCommandManagerException.ERROR_CREATING_LOCAL_JMS_CONNECTION+`
+(if the error occurred while receiving a message). If you want to
+recover from this failure, consider the following options:
+
+* You may choose to take no action: messages will not be sent or
+received.
+* You may choose to handle the exception. You may do so by changing some
+of the
+`+org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager+`
+settings and calling the `+createExternalConnection+` or
+`+createInternalConnection+` method of the `+JMSTopicTransportManager+`.
+
+If you configure the session to ignore the error, the next time the
+session tries to communicate with that coordinated cache member, it will
+continue to use the same connection. In this case, if the listening
+(local) connection gets a
+`+RemoteCommandManagerException.ERROR_RECEIVING_JMS_MESSAGE+` exception,
+the coordinated cache waits for 10 seconds before resuming listening. If
+you want to recover from this failure, consider the following options:
+
+* You may choose to take no action (wait for the connection recovery).
+* You may choose to handle the
+`+RemoteCommandManagerException.ERROR_PROPAGATING_COMMAND+` or
+`+RemoteCommandManagerException.ERROR_RECEIVING_JMS_MESSAGE+` exception.
+You may do so by shutting down the remote command manager.
+
+In either case, if the coordinated cache receives a null JMS message, it
+will throw a
+`+RemoteCommandManagerException.ERROR_RECEIVED_JMS_MESSAGE_IS_NULL+`
+exception.
+
+=== How to Configure Connection Handling Using Workbench
+
+To specify how EclipseLink handles session connections in the event of
+an error, use this procedure:
+
+[arabic]
+. Select a session or session broker in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Cache Coordination* tab. The Cache Coordination tab
+appears.
+. Ensure the *Enable Cache Coordination* option is selected, then select
+the appropriate coordinated cache *Type* (JMS). The cache coordination
+options appear on the tab. [#Figure 100-4]##*_Cache Coordination Tab,
+Remove Connection on Error Option_* image:clonerr.gif[Cache Coordination
+Tab, Remove Connection on Error
+Option,title="Cache Coordination Tab, Remove Connection on Error Option"]
+. Select the *Remove Connection on Error* option to configure the
+session to remove the data source connection in the event of an error.
+
+=== How to Configure Connection Handling Using Java
+
+Use the
+`+org.eclipse.persistence.sessions.coordination.TransportManager+`
+method `+setShouldRemoveConnectionOnError+` to define whether
+connections to remote services should be disconnected when an error
+occurs.
+
+You obtain the `+TransportManager+` using the following `+Session+` API:
+
+`+Session.getCommandManager().getTransportManager()+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

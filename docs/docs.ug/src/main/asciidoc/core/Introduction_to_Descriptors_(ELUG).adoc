@@ -1,0 +1,1033 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Introduction_to_Descriptors_(ELUG)[Related
+Topics]
+
+EclipseLink uses descriptors to store the information that describes how
+an instance of a particular class can be represented by a data source.
+Descriptors own mappings that associate class instance variables with a
+data source and transformation routines that are used to store and
+retrieve values. As such, the descriptor acts as the connection between
+a Java object and its data source representation.
+
+== Descriptor Types
+
+This table lists the descriptor types you use to describe the classes in
+your object model and how to create each type.
+
+[#Table 14-1]##
+
+Descriptor Type
+
+Description
+
+EclipseLink Workbench
+
+Java
+
+Relational
+
+Describes Java objects that you map to tables in a relational database.
+Applicable to all relational databases that EclipseLink supports.
+
+Object-relational
+
+Describes Java objects that you map to tables in a relational database
+that provides special database data types that correspond more closely
+to object types. Applicable only to the relational databases that
+EclipseLink supports that provide these special data types.
+
+EIS
+
+Describes Java objects that you map to an EIS data source by way of a
+JCA adapter.
+
+XML
+
+Describes Java objects that you map, in memory, to complex types in XML
+documents defined by an XML schema document (XSD).
+
+For more information, see the following:
+
+* link:Creating%20a%20Descriptor%20(ELUG)[Creating a Descriptor]
+* link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a Descriptor]
+
+== Descriptor Concepts
+
+This section introduces descriptor concepts unique to EclipseLink,
+including the following:
+
+* link:#Descriptor_Architecture[Descriptor Architecture]
+* link:#Descriptors_and_Inheritance[Descriptors and Inheritance]
+* link:#Fetch_Groups[Fetch Groups]
+* link:#Descriptors_and_Aggregation[Descriptors and Aggregation]
+* link:#Descriptor_Customization[Descriptor Customization]
+* link:#Amendment_and_After-Load_Methods[Amendment and After-Load
+Methods]
+* link:#Descriptor_Event_Manager[Descriptor Event Manager]
+* link:#Descriptor_Query_Manager[Descriptor Query Manager]
+* link:#Descriptors_and_Sequencing[Descriptors and Sequencing]
+* link:#Descriptors_and_Locking[Descriptors and Locking]
+* link:#Default_Root_Element[Default Root Element]
+
+=== Descriptor Architecture
+
+A *descriptor* stores all the information describing how an instance of
+a particular object class can be represented in a data source.
+
+EclipseLink descriptors contain the following information:
+
+* The persistent Java class it describes and the corresponding data
+source (database tables, XML complex type, or EIS interaction)
+* A collection of mappings, which describe how the attributes and
+relationships for that class are stored in the database
+* The primary key information (or equivalent) of the data source
+* A list of query keys (or aliases) for field names
+* Information for sequence numbers
+* A set of optional properties for tailoring the behavior of the
+descriptor, including support for caching refresh options, identity
+maps, optimistic locking, the event manager, and the query manager
+
+There is a descriptor type for each data source type that EclipseLink
+supports. In some cases, multiple descriptor types are valid for the
+same data source type. The type of descriptor you use determines the
+type of mappings that you can define.
+
+This table summarizes the relationship between project, descriptor, and
+mappings.
+
+[#Table 14-2]## *_Project, Descriptor, and Mapping Support_*
+
+[width="100%",cols="<17%,<42%,<41%",options="header",]
+|===
+|*Project* |*Descriptor* |*Mapping*
+|link:Introduction%20to%20Relational%20Projects%20(ELUG)[Relational
+Projects]
+|link:Introduction%20to%20Relational%20Descriptors%20(ELUG)[Relational
+Descriptors] and
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Descriptors%20(ELUG)[Object-Relational
+Data Type Descriptors]
+|link:Introduction%20to%20Mappings%20(ELUG)#Relational_Mappings[Relational
+Mappings] and
+link:Introduction%20to%20Mappings%20(ELUG)#Object-Relational_Data_Type_Mappings[Object-Relational
+Data Type Mappings]
+
+|link:Introduction%20to%20EIS%20Projects%20(ELUG)[EIS Projects]
+|link:Introduction%20to%20EIS%20Descriptors%20(ELUG)[EIS Descriptor
+Concepts] |link:Introduction%20to%20Mappings%20(ELUG)#EIS_Mappings[EIS
+Mappings]
+
+|link:Introduction%20to%20XML%20Projects%20(ELUG)[XML Projects]
+|link:Introduction%20to%20XML%20Descriptors%20(ELUG)[XML Descriptor
+Concepts] |link:Introduction%20to%20Mappings%20(ELUG)#XML_Mappings[XML
+Mappings]
+|===
+
+=== Descriptors and Inheritance
+
+*Inheritance* describes how a derived (child) class inherits the
+characteristics of its superclass (parent). You can use descriptors to
+describe the inheritance relationships between classes in relational,
+EIS, and XML projects.
+
+In the descriptor for a child class, you can override mappings that have
+been specified in the descriptor for a parent class, or map attributes
+that have not been mapped at all in the parent class descriptor.
+
+For more information, see link:#Descriptors_and_Inheritance[Descriptors
+and Inheritance].
+
+=== Fetch Groups
+
+By default, when you execute an object-level read query for a particular
+object class, EclipseLink returns all the persistent attributes mapped
+in the object’s descriptor. With this single query, all the object’s
+persistent attributes are defined, and calling their `+get+` methods
+returns the value directly from the object.
+
+When you are interested in only some of the attributes of an object, it
+may be more efficient to return only a subset of the object’s attributes
+using a fetch group with which you can define a subset of an object’s
+attributes and associate the fetch group with either a
+`+ReadObjectQuery+` or `+ReadAllQuery+` query.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Fetch_Groups[Configuring
+Fetch Groups]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Fetch_Groups_and_Object-Level_Read_Queries[Fetch
+Groups and Object-Level Read Queries]
+
+=== Descriptors and Aggregation
+
+Two objects – a source (parent or owning) object and a target (child or
+owned) object – are related by aggregation if there is a strict
+one-to-one relationship between them, and all the attributes of the
+target object can be retrieved from the same data source representation
+as the source object. This means that if the source object exists, then
+the target object must also exist, and if the source object is
+destroyed, then the target object is also destroyed.
+
+In this case, the descriptors for the source and target objects must be
+designated to reflect this relationship.
+
+In EJB 3.0, an aggregate is known as an embeddable. In the EJB 3.0
+specification, an embeddable may not contain another embeddable (that
+is, the EJB 3.0 specification does not support nested aggregates).
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Descriptors%20(ELUG)#Aggregate_and_Composite_Descriptors_in_Relational_Projects[Aggregate
+and Composite Descriptors in Relational Projects]
+* link:Introduction%20to%20EIS%20Descriptors%20(ELUG)#EIS_Descriptors_and_Aggregation[EIS
+Descriptors and Aggregation]
+* link:Introduction%20to%20XML%20Descriptors%20(ELUG)#Composite_Descriptors_in_XML_Projects[Composite
+Descriptors in XML Projects]
+
+=== Descriptor Customization
+
+You can customize a descriptor at run time by specifying a descriptor
+customizer – a Java class that implements the
+`+org.eclipse.persistence.sessions.factories.DescriptorCustomizer+`
+interface and provides a default (zero-argument) constructor.
+
+You use a descriptor customizer to customize a descriptor at run time
+through code API similar to how you use an amendment method to customize
+a descriptor (see link:#Amendment_and_After-Load_Methods[Amendment and
+After-Load Methods]).
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_a_Descriptor_Customizer_Class[Configuring
+a Descriptor Customizer Class].
+
+=== Amendment and After-Load Methods
+
+Using Workbench, you can associate a static Java method that is called
+when a descriptor is loaded at run time. This method can amend the
+run-time descriptor instance through the descriptor Java code API. Use
+this method to make some advanced configuration options that may not be
+currently supported by Workbench.
+
+You can only modify descriptors before the session has been connected;
+you should not modify descriptors after the session has been connected.
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Amendment
+Methods].
+
+=== Descriptor Event Manager
+
+In relational and EIS projects, EclipseLink raises various instances of
+`+DescriptorEvent+` (see the
+link:Configuring%20a%20Descriptor%20(ELUG)#Table_115-25[Descriptor
+Events] and
+link:Configuring%20a%20Descriptor%20(ELUG)#Table_115-27[Descriptor
+Events] tables) during the persistence life cycle. Each descriptor owns
+an instance of `+DescriptorEventManager+` that is responsible for
+receiving these events and dispatching them to the descriptor event
+handlers registered with it.
+
+Using a descriptor event handler, you can execute your own application
+specific logic whenever descriptor events occur, allowing you to take
+customized action at various points in the persistence life-cycle. For
+example, using a descriptor event handler, you can do the following:
+
+* Synchronize persistent objects with other systems, services, and
+frameworks. Maintain nonpersistent attributes of which EclipseLink is
+not aware.
+* Notify other objects in the application when the persistent state of
+an object changes.
+* Implement complex mappings or optimizations not directly supported by
+EclipseLink mappings.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_a_Domain_Object_Method_as_an_Event_Handler[Configuring
+a Domain Object Method as an Event Handler]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_a_Descriptor_Event_Listener_as_an_Event_Handler[Configuring
+a Descriptor Event Listener as an Event Handler]
+
+=== Descriptor Query Manager
+
+Each relational and EIS descriptor provides an instance of
+`+DescriptorQueryManager+` that you can use to configure the following:
+
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Queries_at_the_Descriptor_Level[named
+queries]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#How_to_Configure_Default_Query_Implementations[custom
+default queries for basic persistence operations]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#How_to_Configure_Additional_Join_Expressions[additional
+join expressions]
+
+For more information on using the query manager, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Descriptor_Query_Manager_Queries[Descriptor
+Query Manager Queries].
+
+=== Descriptors and Sequencing
+
+An essential part of maintaining object identity is managing the
+assignment of unique values (that is, a specific sequence) to
+distinguish one object instance from another. For more information, see
+link:Introduction%20to%20Projects_(ELUG)#Projects_and_Sequencing[Projects
+and Sequencing].
+
+Sequencing options you configure at the project (or session) level
+determine the type of sequencing that EclipseLink uses. In a POJO
+project, you can use session-level sequence configuration to override
+project-level sequence configuration, on a session-by-session basis, if
+required (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Sequencing_at_the_Session_Level[Configuring
+Sequencing at the Session Level]).
+
+After configuring the sequence type, for each descriptor’s reference
+class, you must associate one attribute, typically the attribute used as
+the primary key (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Primary_Keys[Configuring
+Primary Keys]), with its own sequence (see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[Configuring
+Sequencing at the Descriptor Level]).
+
+=== Descriptors and Locking
+
+You can configure a descriptor with any of the following locking
+policies to control concurrent access to a domain object:
+
+* Optimistic – All users have read access to the data. When a user
+attempts to make a change, the application checks to ensure the data has
+not changed since the user read the data (see
+link:#Optimistic_Version_Locking_Policies[Optimistic Version Locking
+Policies] and link:#Optimistic_Field_Locking_Policies[Optimistic Field
+Locking Policies]).
+* Pessimistic – The first user who accesses the data with the purpose of
+updating it locks the data until completing the update (see
+link:#Pessimistic_Locking_Policy[Pessimistic Locking Policy]).
+* No locking – The application does not prevent users overwriting each
+other’s changes.
+
+We recommend using optimistic locking for most types of applications to
+ensure that users do not overwrite each other’s changes.
+
+For more information, see the following:
+
+* link:#Descriptors_and_Locking[Descriptors and Locking]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy]
+
+=== Default Root Element
+
+You configure EIS root descriptors (
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_Default_Root_Element[Configuring
+Default Root Element]) and XML descriptors (
+link:Configuring%20an%20XML%20Descriptor%20(ELUG)#Configuring_Default_Root_Element[Configuring
+Default Root Element]) with a default root element so that the
+EclipseLink runtime knows the data source data type associated with the
+class the descriptor describes.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* The undefined document root element of a referenced object is
+ignored during marshalling with an any collection mapping and object
+mapping.
+|===
+
+This section describes what a default root element is and how
+EclipseLink uses it.
+
+Consider the `+Customer+` and `+Address+` classes and their mappings,
+shown in this example:
+
+[#Example 14-1]## *_Customer and Address Classes_*
+
+*`+Class:+`*`+ Customer+`
+
+*`+Default Root:+`*`+ customer+` *`+Attributes and Mappings:+`*
+`+    name:String                Drect Mapping to                name/text()+`
+`+    billingAddress:Address     Composite Object Mapping to     billing-address+`
+`+    shippingAddress:Address    Composite Object Mapping to     shipping-address+`
+
+*`+Class:+`*`+ Address+` *`+Default Root:+`*`+ address+`
+*`+Attributes and Mappings:+`*
+`+    street:String              Direct Mapping to               street/text()+`
+`+    city:String                Direct Mapping to               city/text()+`
+
+These classes correspond to the XML schema, shown in this example.
+
+[#Example 14-2]## *_Customer and Address Schema_*
+
+`+    +` `+        +`
+
+`+            +` `+            +` `+        +` `+    +` `+    +`
+`+    +`
+
+`+        +` `+            +` `+            +` `+            +`
+`+        +` `+    +`
+
+When an instance of the `+Customer+` class is persisted to XML, the
+EclipseLink runtime performs the following:
+
+[arabic]
+. Gets the default root element.The `+Customer+` class instance
+corresponds to the root of the XML document. The EclipseLink runtime
+uses the default root element specified on the descriptor (`+customer+`)
+to start the XML document. EclipseLink then uses the mappings on the
+descriptor to marshal the object’s attributes:
++
+`+    +``+…+`
+. When the EclipseLink runtime encounters an object attribute such as
+`+billingAddress+`, it checks the mapping associated with it to
+determine with what element (`+billing-address+`) to continue:
++
+`+    +``+…+` `+    +`
++
+The EclipseLink runtime checks the mapping’s reference descriptor
+(`+Address+`) to determine what attributes to persist:
++
+`+    +``+…+` `+    +` `+        +``+…+` `+        +``+…+`
+
+`+    +`
+
+== Descriptors and Inheritance
+
+Inheritance describes how a derived class inherits the characteristics
+of its superclass. You can use descriptors to describe the inheritance
+relationships between classes in relational, EIS, and XML projects.
+
+The link:#Figure_14-1[Example Inheritance Hierarchy] figure illustrates
+the `+Vehicle+` object model – a typical Java inheritance hierarchy. The
+root class `+Vehicle+` contains two branch classes: `+FueledVehicle+`
+and `+NonFueledVehicle+`. Each branch class contains a leaf class:
+`+Car+` and `+Bicycle+`, respectively.
+
+[#Figure 14-1]## *_Example Inheritance Hierarchy_*
+
+.Example Inheritance Hierarchy
+image::javainhr.gif[Example Inheritance
+Hierarchy,title="Example Inheritance Hierarchy"]
+
+EclipseLink recognizes the following three types of classes in an
+inheritance hierarchy:
+
+[arabic]
+. The root class stores information about _all_ instantiable classes in
+its subclass hierarchy. By default, queries performed on the root class
+return instances of the root class and its instantiable subclasses.
+However, the root class can be configured so queries on it return only
+instances of itself, without instances of its subclasses. For example,
+the `+Vehicle+` class in the link:#Figure_14-1[Example Inheritance
+Hierarchy] figure is a root class.
+. Branch classes have a persistent superclass and also have subclasses.
+By default, queries performed on the branch class return instances of
+the branch class and any of its subclasses. However, as with the root
+class, the branch class can be configured so queries on it return only
+instances of itself without instances of its subclasses. For example,
+the `+FueledVehicle+` class in the link:#Figure_14-1[Example Inheritance
+Hierarchy] figure is a branch class.
+. Leaf classes have a persistent superclass in the hierarchy but do not
+have subclasses. Queries performed on the leaf class can only return
+instances of the leaf class. For example, the `+Car+` class in the
+link:#Figure_14-1[Example Inheritance Hierarchy] figure is a leaf class.
+
+In the descriptor for a child class, you can override mappings that have
+been specified in the descriptor for a parent class, or map attributes
+that have not been mapped at all in the parent class descriptor.
+
+This section includes information on the following topics:
+
+* link:#How_to_Specify_a_Class_Indicator[How to Specify a Class
+Indicator]
+* link:#Inheritance_and_Primary_Keys[Inheritance and Primary Keys]
+* link:#Single_and_Multi-Table_Inheritance[Single and Multi-Table
+Inheritance]
+* link:#Aggregate_and_Composite_Descriptors_and_Inheritance[Aggregate
+and Composite Descriptors and Inheritance]
+
+For more information about configuring inheritance for a parent (root)
+class descriptor, see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Inheritance for a
+Parent (Root) Descriptor].
+
+For more information about configuring inheritance for a child (branch
+or leaf) class descriptor, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inheritance_for_a_Child_(Branch_or_Leaf)_Class_Descriptor[Configuring
+Inheritance for a Child (Branch or Leaf) Class Descriptor].
+
+=== How to Specify a Class Indicator
+
+When configuring inheritance, you configure the root class descriptor
+with the means of determining which subclasses it should instantiate.
+
+You can do this in one of the following ways:
+
+* link:#Using_Class_Indicator_Fields[Using Class Indicator Fields]
+* link:#Using_Class_Extraction_Methods[Using Class Extraction Methods]
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: All leaf classes in the hierarchy must have a class indicator
+and they must have the same type of class indicator (field or class
+extraction method).
+|===
+
+==== Using Class Indicator Fields
+
+You can use a persistent attribute of a class to indicate which subclass
+should be instantiated. For example, in a relational descriptor, you can
+use a class indicator field in the root class table. The indicator field
+should not have an associated direct mapping unless it is set to
+read-only.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If the indicator field is part of the primary key, define a
+write-only transformation mapping for the indicator field (see
+link:Configuring%20a%20Relational%20Transformation%20Mapping%20(ELUG)#Configuring_a_Relational_Transformation_Mapping[Configuring
+a Relational Transformation Mapping]).
+|===
+
+You can use strings or numbers as values in the class indicator field.
+
+The root class descriptor must specify how the value in the class
+indicator field translates into the class to be instantiated.
+
+One approach is to configure the root class descriptor with a class
+indicator dictionary: a collection of key-values that associates a
+simple key, stored in the class indicator field, with a class to
+instantiate. The link:#Table_14-3[Class Indicator Dictionary for the
+Vehicle Class] table illustrates the class indicator dictionary for the
+`+Vehicle+` class’ subclasses, as shown in the link:#Figure_14-1[Example
+Inheritance Hierarchy] figure.
+
+[#Table 14-3]## *_Class Indicator Dictionary for the Vehicle Class_*
+
+[cols="<,<",options="header",]
+|===
+|*Key* |*Value*
+|*F* |FueledVehicle
+|*N* |NonFueledVehicle
+|*C* |Car
+|*B* |Bicycle
+|===
+
+Another approach is to simply use the class name itself as the value
+stored in the class indicator field. This avoids having to define unique
+indicators for each class at the expense of a slightly larger key value
+(depending on the length of your class names).
+
+==== Using Class Extraction Methods
+
+You can define a Java method to compute the class indicator based on any
+available information in the object’s data source record. Such a method
+is called a class extraction method.
+
+Using a class extraction method, you do not need to include an explicit
+class indicator field in your data model and you can handle
+relationships that are too complex to describe using class indicator
+fields.
+
+A class extraction method must have the following characteristics:
+
+* it must be defined on the root descriptor’s class;
+* it must be static;
+* it must take a `+Record+` as an argument;
+* it must return the `+java.lang.Class+` object to use for the
+`+Record+` passed in.
+
+You may also need to define only-instances and with-all-subclasses
+expressions (see
+link:#Specifying_Expressions_for_Only-Instances_and_With-All-Subclasses[Specifying
+Expressions for Only-Instances and With-All-Subclasses]).
+
+For example, the link:#Table_14-4[EMPLOYEE Table] lists the rows in the
+`+EMPLOYEE+` table. The `+Employee+` class is the base class.
+`+Director+`, `+Manager+`, `+Programmer+`, and `+TechWriter+` classes
+each derive from the `+Employee+` class. However, in your application,
+instances of `+Manager+`, `+Programmer+`, and `+TechWriter+` classes
+must be represented as `+Employee+` instances and instances of
+`+Director+` must be represented as `+Director+` instances. Because
+there is no a one-to-one correspondence between class and `+JOB_TYPE+`
+field value, the `+JOB_TYPE+` field alone cannot serve as a class
+indicator field (see link:#Using_Class_Indicator_Fields[Using Class
+Indicator Fields]). To resolve this issue, you could use the class
+extraction method, shown in the link:#Example_14-3[Class Extraction
+Method] example.
+
+[#Table 14-4]## *_EMPLOYEE Table_*
+
+[cols="<,<,<,<",options="header",]
+|===
+|*ID* |*NAME* |*JOB_TYPE* |*JOB_TITLE*
+|732 |Bob Jones |1 |Manager
+|733 |Sarah Smith |3 |Technical Writer
+|734 |Ben Ng |2 |Director
+|735 |Sally Johnson |3 |Programmer
+|===
+
+[#Example 14-3]## *_Class Extraction Method_*
+
+`+...+`
+*`+//\'\' \'\'If\'\' \'\'the\'\' \'\'JOB_TYPE\'\' \'\'field\'\' \'\'value\'\' \'\'in\'\' \'\'record\'\' \'\'equals\'\' \'\'2,\'\' \'\'return\'\' \'\'the\'\' \'\'Director\'\' \'\'class.+`*
+*`+//\'\' \'\'Return\'\' \'\'the\'\' \'\'Employee\'\' \'\'class\'\' \'\'for\'\' \'\'all\'\' \'\'other\'\' \'\'JOB_TYPE\'\' \'\'field\'\' \'\'values+`*
+
+`+public static Class getClassFromRecord(Record record) {+`
+`+    if (record.get("JOB_TYPE").equals(new Integer(2)) {+`
+`+        return Director.class;+` `+    }+` `+    else {+`
+`+        return Employee.class;+` `+    }+` `+}+`
+
+When configuring inheritance using a class extraction method,
+EclipseLink does not generate SQL for queries on the root class.
+
+===== Specifying Expressions for Only-Instances and With-All-Subclasses
+
+If you use a class extraction method (see
+link:#Using_Class_Extraction_MethodsUsing_Class_Extraction_Methods[Using
+Class Extraction MethodsUsing Class Extraction Methods]), you must
+provide EclipseLink with expressions to correctly filter sibling
+instances for all classes that share a common table (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inheritance_Expressions_for_a_Parent_(Root)_Class_Descriptor[Configuring
+Inheritance Expressions for a Parent (Root) Class Descriptor]).
+
+=== Inheritance and Primary Keys
+
+For relational and EIS projects, EclipseLink assumes that all of the
+classes in an inheritance hierarchy have the same primary key, as set in
+the root descriptor.
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Descriptors%20(ELUG)#Inheritance_and_Primary_Keys_in_Relational_Projects[Inheritance
+and Primary Keys in Relational Projects]
+* link:Introduction%20to%20EIS%20Descriptors%20(ELUG)#Inheritance_and_Primary_Keys_in_EIS_Projects[Inheritance
+and Primary Keys in EIS Projects]
+
+=== Single and Multi-Table Inheritance
+
+In a relational project, you can map your inheritance hierarchy to a
+single table (see
+link:Introduction_to_Relational_Descriptors_(ELUG)#Single-Table_Inheritance[Single-Table
+Inheritance]) or to multiple tables (see
+link:Introduction_to_Relational_Descriptors_(ELUG)#Multi-Table_Inheritance[Multi-Table
+Inheritance]).
+
+=== Aggregate and Composite Descriptors and Inheritance
+
+You can designate relational descriptors as aggregates, and EIS
+descriptors as composites. XML descriptors are always composites (see
+link:Introduction%20to%20XML%20Descriptors%20(ELUG)#XML_Descriptors_and_Aggregation[XML
+Descriptors and Aggregation]).
+
+When configuring inheritance for a relational aggregate descriptor, all
+the descriptors in the inheritance tree must be aggregates. The
+descriptors for aggregate and non-aggregate classes cannot exist in the
+same inheritance tree.
+
+Similarly, when configuring inheritance for an EIS composite descriptor,
+all the descriptors in the inheritance tree must be composites. The
+descriptors for composite and noncomposite classes cannot exist in the
+same inheritance tree.
+
+When configuring inheritance for an XML descriptor, because all XML
+descriptors are composites, descriptor type does not restrict
+inheritance.
+
+== Descriptors and Locking
+
+This section describes the various types of locking policy that
+EclipseLink supports, including the following:
+
+* link:#Optimistic_Version_Locking_Policies[Optimistic Version Locking
+Policies]
+* link:#Optimistic_Version_Locking_Policies_and_Cascading[Optimistic
+Version Locking Policies and Cascading]
+* link:#Optimistic_Locking_and_Rollbacks[Optimistic Locking and
+Rollbacks]
+* link:#Optimistic_Field_Locking_Policies[Optimistic Field Locking
+Policies]
+* link:#Pessimistic_Locking_Policy[Pessimistic Locking Policy]
+* link:#Locking_in_a_Three-Tier_Application[Locking in a Three-Tier
+Application]
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+
+=== Optimistic Version Locking Policies
+
+With optimistic locking, all users have read access to the data. When a
+user attempts to make a change, the application checks to ensure the
+data has not changed since the user read the data.
+
+Optimistic version locking policies enforce optimistic locking by using
+a version field (also known as a write-lock field) that you provide in
+the reference class that EclipseLink updates each time an object change
+is committed.
+
+EclipseLink caches the value of this version field as it reads an object
+from the data source. When the client attempts to write the object,
+EclipseLink compares the cached version value with the current version
+value in the data source in the following way:
+
+* If the values are the same, EclipseLink updates the version field in
+the object and commits the changes to the data source.
+* If the values are different, the write operation is disallowed because
+another client must have updated the object since this client initially
+read it.
+
+EclipseLink provides the following version-based optimistic locking
+policies:
+
+* `+VersionLockingPolicy+`: requires a _numeric_ version field;
+EclipseLink updates the version field by incrementing its value by one.
+* `+TimestampLockingPolicy+`: requires a _timestamp_ version field;
+EclipseLink updates the version field by inserting a new timestamp (this
+policy can be configured to get the time from the data source or
+locally; by default, the policy gets the time from the data source).
+
+Note: In general, we recommend numeric version locking because of the
+following:
+
+accessing the timestamp from the data source can have a negative impact
+on performance;
+
+time stamp locking is limited to the precision that the database stores
+for timestamps.
+
+Whenever any update fails because optimistic locking has been violated,
+EclipseLink throws an `+OptimisticLockException+`. This should be
+handled by the application when performing any database modification.
+The application must notify the client of the locking contention,
+refresh the object, and have the client reapply its changes.
+
+You can choose to store the version value in the object as a mapped
+attribute, or in the cache. In three-tier applications, you typically
+store the version value in the object to ensure it is passed to the
+client when updated (see
+link:#Locking_in_a_Three-Tier_Application[Locking in a Three-Tier
+Application]).
+
+If you store the version value in the cache, you do not need to map it.
+If you do map the version field, you must configure the mapping as
+read-only (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Configuring
+Read-Only Mappings]).
+
+To ensure that the parent object’s version field is updated whenever a
+privately owned child object is modified, consider
+link:#Optimistic_Version_Locking_Policies_and_Cascading[Optimistic
+Version Locking Policies and Cascading].
+
+When using optimistic version locking with the unit of work, consider
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Using_Optimistic_Read_Locking_with_the_forceUpdateToVersionField_Method[Using
+Optimistic Read Locking with the forceUpdateToVersionField Method].
+
+If you are using a stored procedure to update or delete an object, your
+database may not return the row-count required to detect an optimistic
+lock failure, so your stored procedure is responsible for checking the
+optimistic lock version and throwing an error if they do not match. Only
+version locking is directly supported with a `+StoredProcedureCall+`.
+Because timestamp and field locking require two versions of the same
+field to be passed to the call, an SQL call that uses an `+##+`
+parameter to access the translation row could be used for other locking
+policies. For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)[Using a StoredProcedureCall]
+and
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_a_StoredFunctionCall[Using
+a StoredFunctionCall].
+
+=== Optimistic Version Locking Policies and Cascading
+
+If your database schema is such that both a parent object and its
+privately owned child object are stored in the same table, then if you
+update the child object, the parent object’s version field will be
+updated.
+
+However, if the parent and its privately owned child are stored in
+separate tables, then changing the child will not, by default, update
+the parent’s version field.
+
+To ensure that the parent object’s version field is updated in this
+case, you can either manually update the parent object’s version field
+(see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Using_Optimistic_Read_Locking_with_the_forceUpdateToVersionField_Method[Using
+Optimistic Read Locking with the forceUpdateToVersionField Method]) or,
+if you are using a `+VersionLockingPolicy+`, you can configure
+EclipseLink to automatically cascade the child object’s version field
+update to the parent (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Optimistic_Locking_Policy_Cascading[Configuring
+Optimistic Locking Policy Cascading]).
+
+After you enable optimistic version locking cascading, when a privately
+owned child object is modified, EclipseLink will traverse the privately
+owned foreign reference mappings, updating all the parent objects back
+to the root.
+
+Optimistic version locking cascading is only applied if the child object
+is registered in a unit of work.
+
+EclipseLink supports optimistic version locking cascading for:
+
+* object changes in privately owned one-to-one and one-to-many mappings
+* relationship changes (adding or removing) in the following collection
+mappings (privately owned or not):
+** direct collection
+** one-to-many
+** many-to-many
+** aggregate collection
+
+Consider the example object graph shown in this figure:
+
+[#Figure 14-2]## *_Optimistic Version Locking Policies and Cascading
+Example_*
+
+.Optimistic Version Locking Policies and Cascading Example
+image::oplckcas.gif[Optimistic Version Locking Policies and Cascading
+Example,title="Optimistic Version Locking Policies and Cascading Example"]
+
+In this example, `+ObjectA+` privately owns `+ObjectB+`, and `+ObjectB+`
+privately owns `+ObjectC+`, and `+ObjectC+` privately owns `+ObjectD+`.
+
+Suppose you register `+ObjectB+` in a unit of work, modify an
+`+ObjectB+` field, and commit the unit of work. In this case,
+`+ObjectB+` checks the cache for `+ObjectA+` and, if not present,
+queries the database for `+ObjectA+`. `+ObjectB+` then notifies
+`+ObjectA+` of its change. `+ObjectA+` forces an update on its version
+optimistic locking field even though it has no changes to its
+corresponding table.
+
+Suppose you register `+ObjectA+` in a unit of work, access its
+`+ObjectB+` to access its `+ObjectC+` to access its `+ObjectD+`, modify
+an `+ObjectD+` field, and commit the unit of work. In this case,
+`+ObjectD+` notifies `+ObjectC+` of its changes. `+ObjectC+` forces an
+update on its version optimistic locking field even though it has no
+changes to its corresponding table. `+ObjectC+` then notifies
+`+ObjectB+` of the `+ObjectD+` change. `+ObjectB+` then notifies
+`+ObjectA+` of the `+ObjectD+` change. `+ObjectA+` forces an update on
+its version optimistic locking field even though it has no changes to
+its corresponding table.
+
+=== Optimistic Locking and Rollbacks
+
+With optimistic locking, use the `+UnitOfWork+` method
+`+commitAndResumeOnFailure+` (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Resuming_a_Unit_of_Work_After_Commit[Resuming
+a Unit of Work After Commit]) to rollback a locked object’s value, if
+you store the optimistic lock versions in the cache.
+
+If you store the locked versions in an object, you must refresh the
+objects (or their versions) on a failure. Alternatively, you can acquire
+a new unit of work on the failure and reapply any changes into the new
+unit of work.
+
+=== Optimistic Field Locking Policies
+
+Optimistic field locking policies enforce optimistic locking by using
+one or more of the fields that currently exist in the table to determine
+if the object has changed since the client read the object.
+
+The unit of work caches the original state of the object when you first
+read the object or register it with the unit of work. At commit time,
+the unit of work compares the original values of the lock fields with
+their current values on the data source during the update. If any of the
+lock field’s values have changed, an optimistic lock exception is
+thrown.
+
+EclipseLink provides the following optimistic field locking policies:
+
+* `+AllFieldsLockingPolicy+`: For update and delete operations,
+EclipseLink compares all the fields of the object with all the fields in
+the data source. If the original value of any fields differ from that in
+the data source, the write operation is disallowed.For example, if you
+changed a customer’s last name, EclipseLink might produce SQL like:
+
+`+UPDATE CUSTOMER SET LNAME='new last name' WHERE ID=7 AND LNAME='old last name' AND FNAME='Donald' +`
+`+AND B_DAY='1972' AND CREDIT_RATING='A+' AND EYE_COLOR='Blue'+`
+
+The main disadvantage of this field locking policy is that it is not the
+most efficient, especially if the changed object has many attributes.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: This comparison is only on a per table basis. If an update
+operation is performed on an object that is mapped to multiple tables
+(multiple table inheritance), then only the changed fields for each
+table changed appear in the `+where+` clause.
+|===
+
+* `+ChangedFieldsLockingPolicy+`: For update operations, EclipseLink
+compares only the fields of the object that have changed with the
+corresponding fields in the data source. If the original value of any
+such field differs from that in the data source, the write operation is
+disallowed. EclipseLink does not make any field comparisons for
+deletes.The main advantage of this field locking policy is that it
+allows concurrent updates of different fields. For example, if one
+thread updates a customer’s last name and another thread updates the
+same customer’s credit rating, and you configure the `+Customer+`
+descriptor with `+ChangedFieldsLockingPolicy+`, then EclipseLink might
+produce SQL like:
+
+*`+//\'\' \'\'Unit\'\' \'\'of\'\' \'\'work\'\' \'\'1+`*
+`+UPDATE CUSTOMER SET LNAME='new name' WHERE ID=7 AND LNAME='old name'+`
+*`+//\'\' \'\'Unit\'\' \'\'of\'\' \'\'work\'\' \'\'2+`*
+`+UPDATE CUSTOMER SET CREDIT_RATING='B' WHERE ID=7 AND CREDIT_RATING='A+'+`
+
+* `+SelectedFieldsLockingPolicy+`: For update and delete operations,
+EclipseLink compares only the selected fields of the object with the
+corresponding fields in the data source. If the cached value of any such
+field differs from that in the data source, the write operation is
+disallowed.For example, if you select `+Customer+` attributes `+LNAME+`
+and `+CREDIT_RATING+`, then at run time, EclipseLink might produce SQL
+like:
+
+`+UPDATE CUSTOMER SET LNAME='new name' WHERE ID=7 AND LNAME='old name' AND CREDIT_RATING='A+'+`
+
+Whenever any update fails because optimistic locking has been violated,
+EclipseLink throws an `+OptimisticLockException+`. This should be
+handled by the application when performing any database modification.
+The application must notify the client of the locking contention,
+refresh the object, and have the client reapply its changes.
+
+When using field locking policies, a unit of work must be employed for
+updating the data source.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use an instance of `+FieldsLockingPolicy+` if you
+are using `+AttributeChangeTrackingPolicy+` (see
+link:Introduction_to_EclipseLink_Transactions_(ELUG)#Attribute_Change_Tracking_Policy[Attribute
+Change Tracking Policy]).
+|===
+
+=== Pessimistic Locking Policy
+
+With pessimistic locking, the first user who accesses the data with the
+purpose of updating it locks the data until completing the update.
+
+When using a pessimistic locking policy, you can configure the policy to
+either fail immediately or to wait until the read lock is acquired.
+
+You can also use pessimistic locking (but not a pessimistic locking
+policy) at the query level (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Query_Options[Configuring
+Named Query Options]).
+
+EclipseLink provides an optimization for pessimistic locking when this
+locking is used with entity beans with container-managed persistence: if
+you set your query to pessimistic locking and run the query in its own
+new transaction (which will end after the execution of the finder), then
+EclipseLink overrides the locking setting and does not append
+`+FOR UPDATE+` to the SQL. However, the use of this optimization may
+produce an undesirable result if the pessimistic lock query has been
+customized by the user with a SQL string that includes FOR UPDATE. In
+this case, if the conditions for the optimization are present, the query
+will be reset to nonpessimistic locking, but the SQL will remain the
+same resulting in the locking setting of the query conflicting with the
+query’s SQL string. To avoid this problem, you can take one of the
+following two approaches:
+
+* Use an EclipseLink expression (see
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#CJAGGAGJ[Introduction
+to EclipseLink Expressions]) for the selection criteria. This will give
+EclipseLink control over the SQL generation.
+* Place the finder in a transaction to eliminate conditions for the
+optimization.
+
+=== Locking in a Three-Tier Application
+
+If you are building a three-tier application, in order to correctly lock
+an object, you must obtain the lock before the object is sent to client
+for editing.
+
+==== Optimistic Locking in a Three-Tier Application
+
+If you are using optimistic locking, you have the following two choices
+for locking objects correctly:
+
+[arabic]
+. Map the optimistic lock field in your object as not read-only and pass
+the version to the client on the read and back to the server on the
+update. You must define a non-read-only mapping for the version field
+and make the optimistic locking policy store the version value in the
+object, not the cache (in Workbench, this is done on the Locking tab by
+unchecking *Store Version in Cache* (see
+link:Configuring%20a%20Descriptor%20(ELUG)#How_to_Configure_Locking_Policy_Using_Workbench[How
+to Configure Locking Policy Using Workbench]). Ensure that the original
+version value is sent to the client when it reads the object for the
+update. The client must then pass the original version value back with
+the update information, and this version must be set into the object to
+be updated after it is registered/read in the new unit of work on the
+server.
+. Hold the unit of work for the duration of the interaction with the
+client. Either through a stateful session bean, or in an HTTP session,
+store the unit of work used to read the object for the update for the
+duration of the client interaction. You must read the object through
+this unit of work before passing it to the client for the update. This
+ensures that the version value stored in the unit of work cache or in
+the unit of work clone will be the original value. This same unit of
+work must be used for the update.
+
+The first option is more commonly used, and is required if developing a
+stateless application.
+
+==== Pessimistic Locking in a Three-Tier Application
+
+If you are using pessimistic locking, you must use the unit of work to
+start a database transaction before the object is read. You must hold
+this unit of work and database transaction while the client is editing
+the object and until the client updates the object. You must use this
+same unit of work to update the object. If you are building a three-tier
+Web application (where it is not normally desirable to hold a database
+transaction open across client interactions), optimistic locking is
+normally more desirable than pessimistic locking (see
+link:#Optimistic_Locking_in_a_Three-Tier_Application[Optimistic Locking
+in a Three-Tier Application]).
+
+== Descriptor API
+
+The descriptor API can be used to define, or amend EclipseLink
+descriptors through Java code. The descriptor API classes are mainly in
+the `+org.eclipse.persistence.descriptors+` package. These include the
+following classes:
+
+* `+ClassDescriptor+` (abstract generic descriptor API)
+* `+RelationalDescriptor+` (relational project-specific API)
+* `+DescriptorEventManager+` (event API)
+* `+DescriptorQueryManager+` (query API)
+* `+InheritancePolicy+`
+* `+InterfacePolicy+`
+* `+ReturningPolicy+`
+* Locking policies (various optimistic locking policies)
+
+For object-relational data type, EIS, and XML projects, descriptor
+classes are in the `+org.eclipse.persistence.mappings.structures+`,
+`+org.eclipse.persistence.eis+`, and `+org.eclipse.persistence.ox+`
+packages, respectively.
+
+This section describes the important descriptor classes in the
+EclipseLink Foundation Library, including the
+link:#Descriptor_Inheritance_Hierarchy[Descriptor Inheritance
+Hierarchy].
+
+=== Descriptor Inheritance Hierarchy
+
+This example illustrates the descriptor types that derive from class
+`+org.eclipse.persistence.descriptors.ClassDescriptor+`.
+
+[#Example 14-4]## *_Descriptor Inheritance Hierarchy_*
+
+`+class org.eclipse.persistence.descriptors.ClassDescriptor+`
+`+    class org.eclipse.persistence.descriptors.RelationalDescriptor+`
+`+        class org.eclipse.persistence.mappings.structures.ObjectRelationalDescriptor+`
+`+    class org.eclipse.persistence.eis.EISDescriptor+`
+`+    class org.eclipse.persistence.ox.XMLDescriptor+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

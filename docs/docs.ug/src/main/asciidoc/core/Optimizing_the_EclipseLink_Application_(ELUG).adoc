@@ -1,0 +1,2618 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Optimizing_the_EclipseLink_Application_(ELUG)[Related
+Topics]
+
+EclipseLink provides a diverse set of features to measure and optimize
+application performance. You can enable or disable most features in the
+descriptors or session, making any resulting performance gains global.
+
+== Introduction to Optimization
+
+Performance considerations are present at every step of the development
+cycle. Although this implies an awareness of performance issues in your
+design and implementation, it does not mean that you should expect to
+achieve the best possible performance in your first pass.
+
+For example, if optimization complicates the design, leave it until the
+final development phase. You should still plan for these optimizations
+from your first iteration, to make them easier to integrate later.
+
+The most important concept associated with tuning your EclipseLink
+application is the idea of an iterative approach. The most effective way
+to tune your application is to do the following:
+
+[arabic]
+. link:#Measuring_EclipseLink_Performance_with_the_EclipseLink_Profiler[Measure
+EclipseLink Performance with the EclipseLink Profiler].
+. link:#Identifying_Sources_of_Application_Performance_Problems[Identify
+sources of application performance problems] and modify application
+components;
+. Measure performance again.
+
+To identify the changes that improve your application performance,
+modify only one or two components at a time. You should also tune your
+application in a nonproduction environment before you deploy the
+application.
+
+== Identifying Sources of Application Performance Problems
+
+For various parts of an EclipseLink-enabled application, this section
+describes the performance problems most commonly encountered and
+provides suggestions for improving performance. Areas of the application
+where performance problems could occur include the following:
+
+* link:#Identifying_General_Performance_Optimization[Identifying General
+Performance Optimization]
+* link:#Optimizing_Schema[Schema]
+* link:#Optimizing_Mappings_and_Descriptors[Mappings and Descriptors]
+* link:#Optimizing_Sessions[Sessions]
+* link:#Optimizing_Cache[Cache]
+* link:#Optimizing_Data_Access[Data Access]
+* link:#Optimizing_Queries[Queries]
+* link:#Optimizing_the_Unit_of_Work[Unit of Work]
+* link:#Optimizing_the_Application_Server_and_Database_Optimization[Application
+Server and Database Optimization]
+
+== Measuring EclipseLink Performance with the EclipseLink Profiler
+
+The most important challenge to performance tuning is knowing what to
+optimize. To improve the performance of your application, identify the
+areas of your application that do not operate at peak efficiency. The
+EclipseLink performance profiler helps you identify performance problems
+by logging performance statistics for every executed query in a given
+session.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: You should also consider using general performance profilers
+such as JDeveloper or JProbe to analyze performance problems. These
+tools can provide more detail that may be required to properly diagnose
+a problem.
+|===
+
+The EclipseLink performance profiler logs the following information to
+the EclipseLink log file (for general information about EclipseLink
+logging, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Logging[Logging]):
+
+* query class;
+* domain class;
+* total time, total execution time of the query, including any nested
+queries (in milliseconds);
+* local time, execution time of the query, excluding any nested queries
+(in milliseconds);
+* number of objects, the total number of objects affected;
+* number of objects handled per second;
+* logging, the amount of time spent printing logging messages (in
+milliseconds);
+* SQL prepare, the amount of time spent preparing the SQL script (in
+milliseconds);
+* SQL execute, the amount of time spent executing the SQL script (in
+milliseconds);
+* row fetch, the amount of time spent fetching rows from the database
+(in milliseconds);
+* cache, the amount of time spent searching or updating the object cache
+(in milliseconds);
+* object build, the amount of time spent building the domain object (in
+milliseconds);
+* query prepare, the amount of time spent to prepare the query prior to
+execution (in milliseconds);
+* SQL generation, the amount of time spent to generate the SQL script
+before it is sent to the database (in milliseconds).
+
+Note: Use the EclipseLink profiler to profile single-threaded finite use
+cases to determine the bottle neck.
+
+Do not use the EclipseLink profiler to enable monitoring of a
+long-running multi-threaded server.
+
+This section includes information on the following topics:
+
+* link:#How_to_Configure_the_EclipseLink_Performance_Profiler[How to
+Configure the EclipseLink Performance Profiler]
+* link:#How_to_Access_the_EclipseLink_Profiler_Results[How to Access the
+EclipseLink Profiler Results]
+
+=== How to Configure the EclipseLink Performance Profiler
+
+To enable the EclipseLink performance profiler, select the *EclipseLink*
+profiler option when configuring your session (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Performance_Profiler[Configuring
+a Performance Profiler]).
+
+When using JPA the profiler can be set in your `+persistence.xml+`
+through the persistence property `+"eclipselink.profiler"+` to
+`+"PerformanceProfiler"+`. See the `+ProfilerType+` in the `+config+`
+package for other profiling options.
+
+The EclipseLink performance profiler is an instance of
+`+org.eclipse.persistence.tools.profiler.PerformanceProfiler+` class. It
+provides the following public API:
+
+* `+logProfile+` – enables the profiler;
+* `+dontLogProfile+` – disables the profiler;
+* `+logProfileSummary+` – organizes the profiler log into a summary of
+all the individual operation profiles including operation statistics
+like the shortest time of all the operations that were profiled, the
+total time of all the operations, the number of objects returned by
+profiled queries, and the total time that was spent in each kind of
+operation that was profiled;
+* `+logProfileSummaryByQuery+` – organizes the profiler log into a
+summary of all the individual operation profiles by query;
+* `+logProfileSummaryByClass+` – organizes the profiler log into a
+summary of all the individual operation profiles by class.
+
+=== How to Access the EclipseLink Profiler Results
+
+The simplest way to view EclipseLink profiler results is to read the
+EclipseLink log files with a text editor. For general information about
+EclipseLink logging, such as logging file location, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Logging[Logging].
+
+This example shows an example of the EclipseLink profiler output.
+
+[#Example 11-1]## *_Performance Profiler Output_*
+
+[source,text]
+----
+Begin Profile of{
+ReadAllQuery(com.demos.employee.domain.Employee)
+Profile(ReadAllQuery,# of obj=12, time=1399,sql execute=217,
+prepare=495, row fetch=390, time/obj=116,obj/sec=8)
+} End Profile
+----
+
+The second line of the profile contains the following information about
+a query:
+
+* *Vote for enhancement bug# http://bugs.eclipse.org/310820[310820] if
+you would like to see nanosecond (10^6 ms) resolution*
+* `+ReadAllQuery(com.demos.employee.domain.Employee)+`: specific query
+profiled, and its arguments.
+* `+Profile(ReadAllQuery+`: start of the profile and the type of query.
+* `+# of obj=12+`: number of objects involved in the query.
+* `+time=1399+`: total execution time of the query (in milliseconds).
+* `+sql execute=217+`: total time spent executing the SQL statement.
+* `+prepare=495+`: total time spent preparing the SQL statement.
+* `+row fetch=390+`: total time spent fetching rows from the database.
+* `+time/obj=116+`: number of milliseconds spent on each object.
+* `+obj/sec=8+`: number of objects handled per second.
+
+== Identifying General Performance Optimization
+
+In general, avoid overriding EclipseLink default behavior unless your
+application requires it. Some EclipseLink defaults are suitable for a
+development environment; you should change these defaults to suit your
+production environment (see
+link:#Optimizing_for_a_Production_Environment[Optimizing for a
+Production Environment]).
+
+Use the Workbench rather than manual coding. These tools are not only
+easy to use: the default configuration they export to deployment XML
+(and the code it generates, if required) represents best practices
+optimized for most applications.
+
+== Optimizing for a Production Environment
+
+Some EclipseLink defaults are suitable for a development environment but
+we recommend that you change these to suit your production environment
+for optimal performance. These defaults include:
+
+* Batch writing: enable. For more information, see
+link:#How_to_Use_Batch_Writing_for_Optimization[How to Use Batch Writing
+for Optimization].
+* Statement caching: enable either in EclipseLink when using an internal
+connection pool or in the data source when using an external connection
+pool and choose a statement cache size appropriate for your application.
+For more information, see
+link:#How_to_Use_Parameterized_SQL_(Parameter_Binding)_and_Prepared_Statement_Caching_for_Optimization[How
+to Use Parameterized SQL (Parameter Binding) and Prepared Statement
+Caching for Optimization].
+* Read and write connection pool size: increase to the desired number of
+concurrent threads (for example, 50). For more information, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Connection_Pools[Connection
+Pools].
+* Session cache size: increase to the desired number of objects to be
+cached in memory (for example, 1000). Note that you can configure
+session cache size for each class individually. For more information,
+see
+link:Introduction%20to%20Cache%20(ELUG)#Guidelines_for_Configuring_the_Cache_and_Identity_Maps[Guidelines
+for Configuring the Cache and Identity Maps].
+
+== Optimizing Schema
+
+Optimization is an important consideration when you design your database
+schema and object model. Most performance issues occur when the object
+model or database schema is too complex, which can make the database
+slow and difficult to query. This is most likely to happen if you derive
+your database schema directly from a complex object model.
+
+To optimize performance, design the object model and database schema
+together. However, allow each model to be designed optimally: do not
+require a direct one-to-one correlation between the two.
+
+This section includes the following schema optimization examples:
+
+* #Schema_Case_1:_Aggregation_of_Two_Tables_Into_One[Schema Case 1:
+Aggregation of Two Tables Into One]
+* #Schema_Case_2:_Splitting_One_Table_Into_Many[Schema Case 2: Splitting
+One Table Into Many]
+* #Schema_Case_3:_Collapsed_Hierarchy[Schema Case 3: Collapsed
+Hierarchy]
+* #Schema_Case_4:_Choosing_One_Out_of_Many[Schema Case 4: Choosing One
+Out of Many]
+
+=== Schema Case 1: Aggregation of Two Tables Into One
+
+A common schema optimization technique is to aggregate two tables into a
+single table. This improves read and write performance by requiring only
+one database operation instead of two.
+
+The link:#Table_11-1[Original Schema (Aggregation of Two Tables Case)]
+and link:#Table_11-2[Optimized Schema (Aggregation of Two Tables Case)]
+tables illustrate the table aggregation technique.
+
+[#Table 11-1]## *_Original Schema (Aggregation of Two Tables Case)_*
+
+[cols="<,<",options="header",]
+|===
+|*Elements* |*Details*
+|Title |ACME Member Location Tracking System
+|Classes |Member, Address
+|Tables |MEMBER, ADDRESS
+|Relationships |address - OneToOne - Address
+|===
+
+The nature of this application dictates that you always look up
+employees and addresses together. As a result, querying a member based
+on address information requires a database join, and reading a member
+and its address requires two read statements. Writing a member requires
+two write statements. This adds unnecessary complexity to the system,
+and results in poor performance.
+
+A better solution is to combine the MEMBER and ADDRESS tables into a
+single table, and change the one-to-one relationship to an aggregate
+relationship. This lets you read all information with a single
+operation, and doubles the update and insert speed, because only a
+single row in one table requires modifications.
+
+[#Table 11-2]## *_Optimized Schema (Aggregation of Two Tables Case)_*
+
+[cols="<,<",options="header",]
+|===
+|*Elements* |*Details*
+|Classes |Member, Address
+|Tables |MEMBER
+|Relationships |address - Embedded (aggregate) - Address
+|===
+
+=== Schema Case 2: Splitting One Table Into Many
+
+To improve overall performance of the system, split large tables into
+two or more smaller tables. This significantly reduces the amount of
+data traffic required to query the database.
+
+For example, the system illustrated in the link:#Table_11-3[Original
+Schema (Splitting One Table into Many Case)] table assigns employees to
+projects within an organization. The most common operation reads a set
+of employees and projects, assigns employees to projects, and update the
+employees. The employee’s address or job classification is also
+occasionally used to determine the project on which the employee is
+placed.
+
+[#Table 11-3]## *_Original Schema (Splitting One Table into Many Case)_*
+
+Elements
+
+Details
+
+Instance Variable
+
+Mapping
+
+Target
+
+Title
+
+ACME Employee Workflow System
+
+Classes
+
+Employee, Address, PhoneNumber, EmailAddress, JobClassification, Project
+
+Tables
+
+EMPLOYEE, PROJECT, PROJ_EMP
+
+Relationships
+
+Employee
+
+address
+
+Embedded (aggregate)
+
+Address
+
+Employee
+
+phoneNumber
+
+Embedded (aggregate)
+
+EmailAddress
+
+Employee
+
+emailAddress
+
+Embedded (aggregate)
+
+EmailAddress
+
+Employee
+
+job
+
+Embedded (aggregate)
+
+JobClassification
+
+Employee
+
+projects
+
+ManyToMany
+
+Project
+
+When you read a large volume of employee records from the database, you
+must also read their aggregate parts. Because of this, the system
+suffers from general read performance issues. To resolve this, break the
+EMPLOYEE table into the EMPLOYEE, ADDRESS, PHONE, EMAIL, and JOB tables,
+as illustrated in the link:#Table_11-4[Optimized Schema (Splitting One
+Table into Many Case)] table.
+
+Because you usually read only the employee information, splitting the
+table reduces the amount of data transferred from the database to the
+client. This improves your read performance by reducing the amount of
+data traffic by 25 percent.
+
+[#Table 11-4]## *_Optimized Schema (Splitting One Table into Many
+Case)_*
+
+Elements
+
+Details
+
+Instance Variable
+
+Mapping
+
+Target
+
+Title
+
+ACME Employee Workflow System
+
+Classes
+
+Employee, Address, PhoneNumber, EmailAddress, JobClassification, Project
+
+Tables
+
+EMPLOYEE, ADDRESS, PHONE, EMAIL, JOB, PROJECT, PROJ_EMP
+
+Relationships
+
+Employee
+
+address
+
+OneToOne
+
+Address
+
+Employee
+
+phoneNumber
+
+OneToOne
+
+EmailAddress
+
+Employee
+
+emailAddress
+
+OneToOne
+
+EmailAddress
+
+Employee
+
+job
+
+OneToOne
+
+JobClassification
+
+Employee
+
+projects
+
+ManyToMany
+
+Project
+
+=== Schema Case 3: Collapsed Hierarchy
+
+A common mistake when you transform an object-oriented design into a
+relational model, is to build a large hierarchy of tables on the
+database. This makes querying difficult, because queries against this
+type of design can require a large number of joins. It is usually a good
+idea to collapse some of the levels in your inheritance hierarchy into a
+single table.
+
+The link:#Table_11-5[Original Schema (Collapsed Hierarchy Case)] table
+represents a system that assigns clients to a company’s sales
+representatives. The managers also track the sales representatives that
+report to them.
+
+[#Table 11-5]## *_Original Schema (Collapsed Hierarchy Case)_*
+
+[cols="<,<",options="header",]
+|===
+|*Elements* |*Details*
+|Title |ACME Sales Force System
+|Classes |Tables
+|Person |PERSON
+|Employee |PERSON, EMPLOYEE
+|SalesRep |PERSON, EMPLOYEE, REP
+|Staff |PERSON, EMPLOYEE, STAFF
+|Client |PERSON, CLIENT
+|Contact |PERSON, CONTACT
+|===
+
+The system suffers from complexity issues that hinder system development
+and performance. Nearly all queries against the database require large,
+resource-intensive joins. If you collapse the three-level table
+hierarchy into a single table, as illustrated in the
+link:#Table_11-6[Optimized Schema (Collapsed Hierarchy Case)] table, you
+substantially reduce system complexity. You eliminate joins from the
+system, and simplify queries.
+
+[#Table 11-6]## *_Optimized Schema (Collapsed Hierarchy Case)_*
+
+[cols="<,<",options="header",]
+|===
+|*Elements* |*Details*
+|Classes |Tables
+|Person |none
+|Employee |EMPLOYEE
+|SalesRep |EMPLOYEE
+|Staff |EMPLOYEE
+|Client |CLIENT
+|Contact |CLIENT
+|===
+
+=== Schema Case 4: Choosing One Out of Many
+
+In a one-to-many relationship, a single source object has a collection
+of other objects. In some cases, the source object frequently requires
+one particular object in the collection, but requires the other objects
+only infrequently. You can reduce the size of the returned result set in
+this type of case by adding an instance variable for the frequently
+required object. This lets you access the object without instantiating
+the other objects in the collection.
+
+The link:#Table_11-7[Original Schema (Choosing One out of Many Case)]
+table represents a system by which an international shipping company
+tracks the location of packages in transit. When a package moves from
+one location to another, the system creates a new a location entry for
+the package in the database. The most common query against any given
+package is for its current location.
+
+[#Table 11-7]## *_Original Schema (Choosing One out of Many Case)_*
+
+Elements
+
+Details
+
+Instance Variable
+
+Mapping
+
+Target
+
+Title
+
+ACME Shipping Package Location Tracking system
+
+Classes
+
+Package, Location
+
+Tables
+
+PACKAGE, LOCATION
+
+Relationships
+
+Package
+
+locations
+
+OneToMany
+
+Location
+
+A package in this system can accumulate several location values in its
+LOCATION collection as it travels to its destination. Reading all
+locations from the database is resource intensive, especially when the
+only location of interest is the current location.
+
+To resolve this type of problem, add a specific instance variable that
+represents the current location. You then add a one-to-one mapping for
+the instance variable, and use the instance variable to query for the
+current location. As illustrated in the link:#Table_11-7[Original Schema
+(Choosing One out of Many Case)] table, because you can now query for
+the current location without reading all locations associated with the
+package, this dramatically improves the performance of the system.
+
+[#Table 11-8|Optimized Schema (Choosing One out of Many Case)]##
+*_Optimized Schema (Choosing One out of Many Case)_*
+
+Elements
+
+Details
+
+Instance Variable
+
+Mapping
+
+Target
+
+Classes
+
+Package, Location
+
+Tables
+
+PACKAGE, LOCATION
+
+Relationships
+
+Package
+
+locations
+
+OneToMany
+
+Location
+
+Package
+
+currentLocation
+
+OneToOne
+
+Location
+
+== Optimizing Mappings and Descriptors
+
+Always use indirection (lazy loading). It is not only critical in
+optimizing database access, but also allows EclipseLink to make several
+other optimizations including optimizing its cache access and unit of
+work processing. See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Indirection_(Lazy_Loading)[Configuring
+Indirection (Lazy Loading)].
+
+Avoid using the existence checking option `+checkCacheThenDatabase+` on
+descriptors (see
+link:Configuring%20a%20Descriptor%20(ELUG)#BCGIIBFA[Configuring Cache
+Existence Checking at the Descriptor Level]), unless required by the
+application. The default existence checking behavior offers better
+performance.
+
+Avoid expensive initialization in the default constructor that
+EclipseLink uses to instantiate objects. Instead, use lazy
+initialization or use an EclipseLink instantiation policy (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Instantiation_Policy[Configuring
+Instantiation Policy]) to configure the descriptor to use a different
+constructor.
+
+Avoid using method access in your EclipseLink mappings (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Configuring
+Method or Direct Field Accessing at the Mapping Level]), especially if
+you have expensive or potentially dangerous side-effect code in your get
+or set methods; use the default direct attribute access instead.
+
+== Optimizing Sessions
+
+Use a Server session in a server environment, not a `+DatabaseSession+`.
+
+Use the EclipseLink client session instead of remote session. A client
+session is appropriate for most multiuser Java EE application server
+environments.
+
+Do not pool client sessions. Pooling sessions offers no performance
+gains.
+
+We recommend you increase the size of your session read and write
+connection pools to the desired number of concurrent threads (for
+example, 50). You configure this in EclipseLink when using an internal
+connection pool or in the data source when using an external connection
+pool.
+
+For more information, see the following:
+
+* link:#Optimizing_for_a_Production_Environment[Optimizing for a
+Production Environment]
+* link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#CServer_and_Client_Sessions[Server
+and Client Sessions]
+* link:Introduction%20to%20Data%20Access%20(ELUG)#Connection_Pools[Connection
+Pools]
+
+== Optimizing Cache
+
+Cache coordination (see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination]) is one way to allow multiple, possibly distributed,
+instances of a session to broadcast object changes among each other so
+that each session’s cache can be kept up-to-date.
+
+However, cache coordination is best suited to applications with specific
+characteristics (see
+link:Introduction%20to%20Cache%20(ELUG)#hen_to_Use_Cache_CoordinationI[When
+to Use Cache Coordination]). Before implementing cache coordination,
+tune the EclipseLink cache for each class using alternatives such as
+object identity type (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Type_and_Size_at_the_Descriptor_Level[Configuring
+Cache Type and Size at the Descriptor Level]), cache invalidation (see
+link:Introduction%20to%20Cache%20(ELUG)#CCache_InvalidationI[Cache
+Invalidation]), or cache isolation (see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Isolation[Cache
+Isolation]). Doing so lets you configure the optimal cache configuration
+for each type of class (see the link:#Table_11-9[Identity Map and Cache
+Configuration by Class Type] table) and may eliminate the need for
+distributed cache coordination altogether.
+
+[#Table 11-9]## *_Identity Map and Cache Configuration by Class Type_*
+
+Class Type
+
+Identity Map Options
+
+Cache Options
+
+read-only
+
+soft, hard, or full 1
+
+read-mostly
+
+soft or hard
+
+cache invalidation or cache coordination
+
+write-mostly
+
+weak
+
+cache invalidation
+
+1If the number of instances is finite.
+
+If you do use cache coordination, use JMS for cache coordination rather
+than RMI. JMS is more robust, easier to configure, and runs
+asynchronously. If you require synchronous cache coordination, use RMI.
+
+You can configure a descriptor to control when the EclipseLink runtime
+will refresh the session cache when an instance of this object type is
+queried (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Refreshing[Configuring
+Cache Refreshing]). We do not recommend the use of *Always Refresh* or
+*Disable Cache Hits*.
+
+Using *Always Refresh* may result in refreshing the cache on queries
+when not required or desired. As an alternative, consider configuring
+cache refresh on a query by query basis (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#How_to_Refresh_the_Cache[How
+to Refresh the Cache]).
+
+Using *Disable Cache Hits* instructs EclipseLink to bypass the cache for
+object read queries based on primary key. This results in a database
+round trip every time an object read query based on primary key is
+executed on this object type, negating the performance advantage of the
+cache. When used in conjunction with *Always Refresh*, this option
+ensures that all queries go to the database. This can have a significant
+impact on performance. These options should only be used in specialized
+circumstances.
+
+== Optimizing Data Access
+
+Depending on the type of data source your application accesses,
+EclipseLink offers a variety of `+Login+` options that you can use to
+tune the performance of low level data reads and writes.
+
+You can use several techniques to improve data access performance for
+your application. This section discusses some of the more common
+approaches, including the following:
+
+* link:#How_to_Optimize_JDBC_Driver_Properties[How to Optimize JDBC
+Driver Properties]
+* link:#How_to_Optimize_Data_Format[How to Optimize Data Format]
+* link:#How_to_Use_Batch_Writing_for_Optimization[How to Use Batch
+Writing for Optimization]
+* link:#How_to_Use_Outer-Join_Reading_with_Inherited_Subclasses[How to
+Use Outer-Join Reading with Inherited Subclasses]
+* link:#How_to_Use_Parameterized_SQL_(Parameter_Binding)_and_Prepared_Statement_Caching_for_Optimization[How
+to Use Parameterized SQL (Parameter Binding) and Prepared Statement
+Caching for Optimization]
+
+=== How to Optimize JDBC Driver Properties
+
+Consider the default behavior of the JDBC driver you choose for your
+application. Some JDBC driver options can affect data access
+performance.
+
+Some important JDBC driver properties can be configured directly using
+the Workbench or EclipseLink API (for example, see
+link:#How_to_Use_JDBC_Fetch_Size_for_Optimization[How to Use JDBC Fetch
+Size for Optimization]).
+
+JDBC driver properties that are not supported directly by Workbench or
+EclipseLink API can still be configured as generic JDBC properties that
+EclipseLink passes to the JDBC driver.
+
+For example, some JDBC drivers, such as Sybase JConnect, perform a
+database round trip to test whether or not a connection is closed: that
+is, calling the JDBC driver method `+isClosed+` results in a stored
+procedure call or SQL select. This database round-trip can cause a
+significant performance reduction. To avoid this, you can disable this
+behavior: for Sybase JConnect, you can set property name `+CLOSED_TEST+`
+to value `+INTERNAL+`.
+
+For more information about configuring general JDBC driver properties
+from within your EclipseLink application, see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Properties[Configuring
+Properties].
+
+=== How to Optimize Data Format
+
+By default, EclipseLink optimizes data access by accessing the data from
+JDBC in the format the application requires. For example, EclipseLink
+retrieves `+long+` data types from JDBC instead of having the driver
+return a `+BigDecimal+` that EclipseLink would then have to convert into
+a `+long+`.
+
+Some older JDBC drivers do not perform data conversion correctly and
+conflict with this optimization. In this case, you can disable this
+optimization (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Advanced_Options[Configuring
+Advanced Options]).
+
+=== How to Use Batch Writing for Optimization
+
+Batch writing can improve database performance by sending groups of
+`+INSERT+`, `+UPDATE+`, and `+DELETE+` statements to the database in a
+single transaction, rather than individually.
+
+When used without parameterized SQL, this is known as dynamic batch
+writing.
+
+When used with parameterized SQL (see
+link:#How_to_Use_Parameterized_SQL_(Parameter_Binding)_and_Prepared_Statement_Caching_for_Optimization[How
+to Use Parameterized SQL (Parameter Binding) and Prepared Statement
+Caching for Optimization]), this is known as parameterized batch
+writing. This allows a repeatedly executed statement, such as a group of
+inserts of the same type, to be executed as a single statement and a set
+of bind parameters. This can provide a large performance benefit as the
+database does not have to parse the batch.
+
+When using batch writing, you can tune the maximum batch writing size.
+
+In JPA applications, you can use persistence unit property
+`+eclipselink.jdbc.batch-writing+` (see
+link:Using_EclipseLink_JPA_Extensions_%28ELUG%29#How_to_Use_EclipseLink_JPA_Extensions_for_JDBC_Connection_Communication[EclipseLink
+JPA Persistence Unit Properties for JDBC Connection Communication]).
+
+In POJO applications, you can use `+setMaxBatchWritingSize+` method of
+the `+Login+` interface. The meaning of this value depends on whether or
+not you are using parameterized SQL:
+
+* If you are using parameterized SQL (you configure your `+Login+` by
+calling its `+bindAllParameters+` method), the maximum batch writing
+size is the number of statements to batch with 100 being the default.
+* If you are using dynamic SQL, the maximum batch writing size is the
+size of the SQL string buffer in characters with 32000 being the
+default.
+
+By default, EclipseLink does not enable batch writing because not all
+databases and JDBC drivers support it. We recommend that you enable
+batch writing for selected databases and JDBC drivers that support this
+option. If your JDBC driver does not support batch writing, use the
+batch writing capabilities of EclipseLink, known as native batch writing
+(see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_JDBC_Options[Configuring
+JDBC Options]).
+
+For a more detailed example of using batch writing to optimize write
+queries, see link:#Batch_Writing_and_Parameterized_SQL[Batch Writing and
+Parameterized SQL].
+
+=== How to Use Outer-Join Reading with Inherited Subclasses
+
+You can configure an object-level read query to allow inherited
+subclasses to be outer-joined to avoid the cost of a single query per
+class, as the following exampple shows.
+
+[#Example 11-2|Configuring an ObjectLevelReadQuery to Outer-Join Inherited Subclasses]##
+*_Configuring an ObjectLevelReadQuery to Outer-Join Inherited
+Subclasses_*
+
+[source,java]
+----
+objectLevelReadQuery.setShouldOuterJoinSubclasses(true);
+----
+
+You can configure a descriptor’s `+InheritancePolicy+` to allow the same
+thing, as the link:#Example_11-3[Configuring a Descriptor to Allow
+Inherited Subclasses to be Outer-Joined] example shows. By configuring
+the `+InheritancePolicy+`, this option applies to all queries on the
+descriptor’s class.
+
+[#Example 11-3]## *_Configuring a Descriptor to Allow Inherited
+Subclasses to be Outer-Joined_*
+
+[source,java]
+----
+descriptor.getInheritancePolicy().setShouldOuterJoinSubclasses(true);
+----
+
+For more information, see the following:
+
+* link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Reading_Subclasses_on_Queries[Configuring
+Reading Subclasses on Queries]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Join_Reading_and_Object-Level_Read_Queries[Join
+Reading and Object-Level Read Queries]
+
+=== How to Use Parameterized SQL (Parameter Binding) and Prepared Statement Caching for Optimization
+
+Using parameterized SQL, you can keep the overall length of an SQL query
+from exceeding the statement length limit that your JDBC driver or
+database server imposes.
+
+Using parameterized SQL and prepared statement caching, you can improve
+performance by reducing the number of times the database SQL engine
+parses and prepares SQL for a frequently called query.
+
+By default, EclipseLink enables parameterized SQL but not prepared
+statement caching. We recommend that you enable statement caching either
+in EclipseLink when using an internal connection pool or in the data
+source when using an external connection pool and choose a statement
+cache size appropriate for your application.
+
+*Note*: When parameter binding is enabled, querying a database field
+with a fixed CHAR length may result in no results returned. This is
+because the white space may not be trimmed. Instead, you can:
+
+[arabic]
+. Use a Variable length column type (for example, VARCHAR).
+. Force the proper padding manually (either in your application or in a
+converter).
+. Not use parameter binding.
+
+Not all JDBC drivers support all JDBC binding options (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_JDBC_Options[Configuring
+JDBC Options]). Selecting a combination of options may result in
+different behavior from one driver to another. Before selecting JDBC
+options, consult your JDBC driver documentation. When choosing binding
+options, consider the following approach:
+
+[arabic]
+. Try binding all parameters with all other binding options disabled.
+. If this fails to bind some large parameters, consider enabling one of
+the following options, depending on the parameter’s data type and the
+binding options that your JDBC driver supports:
+[arabic]
+.. To bind large `+String+` parameters, try enabling string binding.If
+large `+String+` parameters still fail to bind, consider adjusting the
+maximum `+String+` size. EclipseLink sets the maximum `+String+` size to
+32000 characters by default.
+.. To bind large `+Byte+` array parameters, try enabling byte array
+binding.
+. If this fails to bind some large parameters, try enabling streams for
+binding. Typically, configuring string or byte array binding will invoke
+streams for binding. If not, explicitly configuring streams for binding
+may help.
+
+For Java EE applications that use EclipseLink external connection pools,
+you must configure parameterized SQL in EclipseLink, but you cannot
+configure prepared statement caching in EclipseLink. In this case, you
+must configure prepared statement caching in the application server
+connection pool. For example, in OC4J, if you configure your
+`+data-source.xml+` file with a managed `+data-source+` (where
+`+connection-driver+` is `+oracle.jdbc.OracleDriver+`, and `+class+` is
+`+oracle.j2ee.sql.DriverManagerDataSource+`), you can configure a
+non-zero `+num-cached-statements+` that enables JDBC statement caching
+and defines the maximum number of statements cached.
+
+For applications that use EclipseLink internal connection pools, you can
+configure parameterized SQL and prepared statement caching.
+
+You can configure parameterized SQL and prepared statement caching at
+the following levels:
+
+* session database login level–applies to all queries and provides
+additional parameter binding API to alleviate the limit imposed by some
+drivers on SQL statement size. We recommend that you use this approach.
+For more information, see the following:
+** JPA applications: see persistence unit properties
+`+eclipselink.jdbc.bind-parameters+` and
+`+eclipselink.jdbc.cache-statements+` in
+link:Using_EclipseLink_JPA_Extensions_%28ELUG%29#How_to_Use_EclipseLink_JPA_Extensions_for_JDBC_Connection_Communication[EclipseLink
+JPA Persistence Unit Properties for JDBC Connection Communication].
+** POJO applications: see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_JDBC_Options[Configuring
+JDBC Options]
+* project level–applies to all named queries (see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Named_Query_Parameterized_SQL_and_Statement_Caching_at_the_Project_Level[Configuring
+Named Query Parameterized SQL and Statement Caching at the Project
+Level]);
+* descriptor level–applies on a per-named-query basis (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Query_Options[Configuring
+Named Query Options]);
+* query level–applies on a per-query basis (see
+link:Using%20Basic%20Query%20API%20(ELUG)#How_to_Use_Parameterized_SQL_and_Statement_Caching_in_a_DatabaseQuery[How
+to Use Parameterized SQL and Statement Caching in a DatabaseQuery]).
+
+== Optimizing Queries
+
+EclipseLink provides an extensive query API for reading, writing, and
+updating data. This section describes ways of optimizing query
+performance in various circumstances.
+
+Before optimizing queries, consider the optimization suggestions in
+link:#Optimizing_Data_Access[Optimizing Data Access].
+
+This section includes information on the following:
+
+* link:#How_to_Use_Parameterized_SQL_and_Prepared_Statement_Caching_for_Optimization[How
+to Use Parameterized SQL and Prepared Statement Caching for
+Optimization]
+* link:#How_to_Use_Named_Queries_for_Optimization[How to Use Named
+Queries for Optimization]
+* link:#How_to_Use_Batch_and_Join_Reading_for_Optimization[How to Use
+Batch and Join Reading for Optimization]
+* link:#How_to_Use_Partial_Object_Queries_and_Fetch_Groups_for_Optimization[How
+to Use Partial Object Queries and Fetch Groups for Optimization]
+* link:#How_to_Use_Read-Only_Queries_for_Optimization[How to Use
+Read-Only Queries for Optimization]
+* link:#How_to_Use_JDBC_Fetch_Size_for_Optimization[How to Use JDBC
+Fetch Size for Optimization]
+* link:#How_to_Use_Cursored_Streams_and_Scrollable_Cursors_for_Optimization[How
+to Use Cursored Streams and Scrollable Cursors for Optimization]
+* link:#How_to_Use_Result_Set_Pagination_for_Optimization[How to Use
+Result Set Pagination for Optimization]
+* link:#Read_Optimization_Examples[Read Optimization Examples]
+* link:#Write_Optimization_Examples[Write Optimization Examples]
+
+=== How to Use Parameterized SQL and Prepared Statement Caching for Optimization
+
+These features let you cache and reuse a query’s preparsed database
+statement when the query is reexecuted.
+
+For more information, see
+link:#How_to_Use_Parameterized_SQL_(Parameter_Binding)_and_Prepared_Statement_Caching_for_Optimization[How
+to Use Parameterized SQL (Parameter Binding) and Prepared Statement
+Caching for Optimization].
+
+=== How to Use Named Queries for Optimization
+
+Whenever possible, use named queries in your application. Named queries
+help you avoid duplication, are easy to maintain and reuse, and easily
+add complex query behavior to the application. Using named queries also
+allows for the query to be prepared once, and for the SQL generation to
+be cached.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Named_Queries[Named
+Queries].
+
+=== How to Use Batch and Join Reading for Optimization
+
+To optimize database read operations, EclipseLink supports both batch
+and join reading. When you use these techniques, you dramatically
+decrease the number of times you access the database during a read
+operation, especially when your result set contains a large number of
+objects.
+
+For more information, see the following:
+
+* For JPA applications, see the following:
+** link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Use_the_@JoinFetch_Annotation[How
+to Use the @JoinFetch Annotation]
+** link:Using_EclipseLink_JPA_Extensions_%28ELUG%29#Join_Fetch[Join
+Fetch Query Hint]
+** link:Using_EclipseLink_JPA_Extensions_%28ELUG%29#Batch[Batch Query
+Hint]
+* For POJO applications, see the following:
+** link:Introduction_to_EclipseLink_Queries_%28ELUG%29#Join_Reading_and_Object-Level_Read_Queries[Join
+Reading and Object-Level Read Queries]
+** link:Using%20Basic%20Query%20API%20(ELUG)#Using_Batch_Reading[Using
+Batch Reading]
+
+=== How to Use Partial Object Queries and Fetch Groups for Optimization
+
+Partial object queries let you retrieve partially populated objects from
+the database rather than complete objects.
+
+When using weaving with JPA or POJO applications, you can use fetch
+groups to accomplish the same performance optimization.
+
+For more information about partial object reading, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Partial_Object_Queries[Partial
+Object Queries].
+
+For more information about fetch groups, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Fetch_Groups[Fetch
+Groups].
+
+=== How to Use Read-Only Queries for Optimization
+
+You can configure an object-level read query as read-only, as this
+shows. When you execute such a query in the context of a `+UnitOfWork+`
+(or EclipseLink JPA persistence provider), EclipseLink returns a
+read-only, non-registered object. You can improve performance by
+querying read-only data in this way because the read-only objects need
+not be registered or checked for changes.
+
+*_Configuring an ObjectLevelReadQuery as Read-Only_*
+
+[source,java]
+----
+objectLevelReadQuery.setIsReadOnly(true);
+----
+
+For more information, see the following:
+
+* For JPA applications, see the following:
+** link:Using_EclipseLink_JPA_Extensions_%28ELUG%29#Read_Only[Read Only
+Query Hint]
+** link:Using_EclipseLink_JPA_Extensions_%28ELUG%29#How_to_Use_the_.40ReadOnly_Annotation[How
+to Use the ReadOnly Annotation]
+* For POJO applications, see the following:
+** link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Read-Only_Descriptors[Configuring
+Read-Only Descriptors]
+** link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Read-Only_Query[Read-Only
+Query]
+
+=== How to Use JDBC Fetch Size for Optimization
+
+The JDBC fetch size gives the JDBC driver a hint as to the number of
+rows that should be fetched from the database when more rows are needed.
+
+For large queries that return a large number of objects you can
+configure the row fetch size used in the query to improve performance by
+reducing the number database hits required to satisfy the selection
+criteria.
+
+Most JDBC drivers default to a fetch size of 10, so if you are reading
+1000 objects, increasing the fetch size to 256 can significantly reduce
+the time required to fetch the query’s results. The optimal fetch size
+is not always obvious. Usually, a fetch size of one half or one quarter
+of the total expected result size is optimal. Note that if you are
+unsure of the result set size, incorrectly setting a fetch size too
+large or too small can decrease performance.
+
+Set the query fetch size with `+ReadQuery+` method `+setFetchSize+`, as
+the link:#Example_11-5[JDBC Driver Fetch Size] example shows.
+Alternatively, you can use `+ReadQuery+` method `+setMaxRows+` to set
+the limit for the maximum number of rows that any `+ResultSet+` can
+contain.
+
+[#Example 11-5]## *_JDBC Driver Fetch Size_*
+
+[source,java]
+----
+// Create query and set Employee as its reference class
+ReadAllQuery query = new ReadAllQuery(Employee.class);
+ExpressionBuilder builder = query.getExpressionBuilder();
+query.setSelectionCriteria(builder.get("id").greaterThan(100));
+
+// Set the JDBC fetch size
+query.setFetchSize(50);
+
+// Configure the query to return results as a ScrollableCursor
+query.useScrollableCursor();
+
+// Execute the query
+ScrollableCursor cursor = (ScrollableCursor) session.executeQuery(query);
+
+// Iterate over the results
+
+while (cursor.hasNext()) {
+    System.out.println(cursor.next().toString());
+}
+cursor.close();
+----
+
+In this example, when you execute the query, the JDBC driver retrieves
+the first 50 rows from the database (or all rows if less than 50 rows
+satisfy the selection criteria). As you iterate over the first 50 rows,
+each time you call `+cursor.next()+`, the JDBC driver returns a row from
+local memory–it does not need to retrieve the row from the database.
+When you try to access the fifty first row (assuming there are more than
+50 rows that satisfy the selection criteria), the JDBC driver again goes
+to the database and retrieves another 50 rows. In this way, 100 rows are
+returned with only two database hits.
+
+If you specify a value of zero (default; means the fetch size is not
+set), then the hint is ignored and the JDBC driver’s default is used.
+
+For more information see the following:
+
+* link:Using_EclipseLink_JPA_Extensions_%28ELUG%29#Fetch_Size[Fetch Size
+Query Hint]
+
+=== How to Use Cursored Streams and Scrollable Cursors for Optimization
+
+You can configure a query to retrieve data from the database using a
+cursored Java stream or scrollable cursor. This lets you view a result
+set in manageable increments rather than as a complete collection. This
+is useful when you have a large result set. You can further tune
+performance by configuring the JDBC driver fetch size used (see
+link:#How_to_Use_JDBC_Fetch_Size_for_Optimization[How to Use JDBC Fetch
+Size for Optimization]).
+
+For more information about scrollable cursors, see
+link:Using%20Advanced%20Query%20API%20(ELUG)#Handling_Cursor_and_Stream_Query_Results[Handling
+Cursor and Stream Query Results].
+
+=== How to Use Result Set Pagination for Optimization
+
+As this figure shows, using `+ReadQuery+` methods
+`+setMaxRows(maxRows)+` and `+setFirstResult(firstResult)+`, you can
+configure a query to retrieve a result set in pages, that is, a partial
+result as a `+List+` of `+pageSize+` (or less) results.
+
+[#Figure 11-1]## *_Using Result Set Pagination_*
+
+.Using Result Set Pagination
+image::page.gif[Using Result Set
+Pagination,title="Using Result Set Pagination"]
+
+In this example, for the first query invocation, `+pageSize=3+`,
+`+maxRows=pageSize+`, and `+firstResult=0+`. This returns a List of
+results `+00+` through `+02+`.
+
+For each subsequent query invocation, you increment
+`+maxRows=maxRows+pageSize+` and `+firstResult=firstResult+pageSize+`.
+This returns a new `+List+` for each page of results `+03+` through
+`+05+`, `+06+` through `+08+`, and so on.
+
+Typically, you use this approach when you do not necessarily need to
+process the entire result set. For example, when a user wishes to scan
+the result set a page at a time looking for a particular result and may
+abandon the query after the desired record is found.
+
+The advantage of this approach over cursors is that it does not require
+any state or live connection on the server; you only need to store the
+`+firstResult+` index on the client. This makes it useful for paging
+through a Web result.
+
+For more information, see the following:
+
+* link:Using%20Advanced%20Query%20API%20(ELUG)#Handling_Query_Results_Using_Pagination[Handling
+Query Results Using Pagination]
+* link:#How_to_Use_Cursored_Streams_and_Scrollable_Cursors_for_Optimization[How
+to Use Cursored Streams and Scrollable Cursors for Optimization]
+
+=== Read Optimization Examples
+
+EclipseLink provides the read optimization features listed in the
+link:#Table_11-10[Read Optimization Features] table.
+
+This section includes the following read optimization examples:
+
+* #Reading_Case_1:_Displaying_Names_in_a_List[Reading Case 1: Displaying
+Names in a List]
+* #Reading_Case_2:_Batch_Reading_Objects[Reading Case 2: Batch Reading
+Objects]
+* #Reading_Case_3:_Using_Complex_Custom_SQL_Queries[Reading Case 3:
+Using Complex Custom SQL Queries]
+* #Reading_Case_4:_Using_View_Objects[Reading Case 4: Using View
+Objects]
+* #Reading_Case_5:_Inheritance_Subclass_Outer-Joining[Reading Case 5:
+Inheritance Subclass Outer-Joining]
+
+[#Table 11-10]## *_Read Optimization Features_*
+
+Feature
+
+Function
+
+Performance Technique
+
+Unit of work
+
+Tracks object changes within the unit of work.
+
+To minimize the amount of tracking required, registers only those
+objects that will change. For more information, see Introduction to
+EclipseLink Transactions.
+
+Indirection (lazy loading)
+
+Uses indirection objects to defer the loading and processing of
+relationships.
+
+Provides a major performance benefit. It allows database access to be
+optimized and allows EclipseLink to internally make several
+optimizations in caching and unit of work.
+
+Soft cache, weak identity map
+
+Offers client-side caching for objects read from database, and drops
+objects from the cache when memory becomes low.
+
+Reduces database calls and improves memory performance. For more
+information, see Cache Type and Object Identity.
+
+Weak identity map
+
+Offers client-side caching for objects.
+
+Reduces database access and maintains a cache of all referenced objects.
+For more information, see Cache Type and Object Identity.
+
+Batch reading and joining
+
+Reduces database access by batching many queries into a single query
+that reads more data.
+
+Dramatically reduces the number of database accesses required to perform
+a read query. For more information, see Using Batch Reading and Using
+Join Reading with ObjectLevelReadQuery.
+
+Partial object reading and fetch groups.
+
+Allows reading of a subset of a result set of the object’s attributes.
+
+Reduces the amount of data read from the database. For more information,
+see Partial Object Queries. For more information about fetch groups, see
+Fetch Groups.
+
+Report query
+
+Similar to partial object reading, but returns only the data instead of
+the objects.
+
+Supports complex reporting functions such as aggregation and group-by
+functions. Also lets you compute complex results on the database,
+instead of reading the objects into the application and computing the
+results locally. For more information, see Report Query.
+
+Read-only query
+
+EclipseLink returns a read-only, non-registered object.
+
+The read-only objects need not be registered or checked for changes. For
+more information, see How to Use Read-Only Queries for Optimization
+
+JDBC fetch size and ReadQuery first result maximum rows
+
+Reduces the number of database hits required to return all the rows that
+satisfy selection criteria.
+
+For more information, see How to Use JDBC Fetch Size for Optimization.
+
+Cursors
+
+Lets you view a large result set in manageable increments rather than as
+a complete collection
+
+For more information, see How to Use Cursored Streams and Scrollable
+Cursors for Optimization
+
+Inheritance subclass outer joins
+
+Allows queries against an inheritance superclass that can read all of
+its subclasses in a single query, instead of multiple queries, with or
+without a view.
+
+For more information, see Reading Case 5: Inheritance Subclass
+Outer-Joining.
+
+Soft identity map
+
+Similar to the weak identity map, except that the map uses soft
+references instead of weak references. This method allows full garbage
+collection and provides full caching and guaranteed identity
+
+Allows for optimal caching of the objects without the overhead of a
+sub-cache, while still allowing the JVM to garbage collect the objects
+if memory is low. For more information, see Soft Identity Map.
+
+==== Reading Case 1: Displaying Names in a List
+
+An application may ask the user to choose an element from a list.
+Because the list displays only a subset of the information contained in
+the objects, it is not necessary to query for all information for
+objects from the database.
+
+EclipseLink features that optimize these types of operations include the
+following:
+
+* link:#Partial_Object_Reading[Partial Object Reading]
+* link:#Report_Query[Report Query]
+* link:#Fetch_Groups[Fetch Groups]
+
+These features let you query only the information required to display
+the list. The user can then select an object from the list.
+
+[#Example 11-6]## *_No Optimization_*
+
+JPA
+
+[source,java]
+----
+/* Read all the employees from the database, ask the user to choose one and return it. */
+/* This must read in all the information for all the employees */
+ListBox list;
+
+// Fetch data from database and add to list box
+List employees = entityManager.createQuery("Select e from Employee e").getResultList();
+list.addAll(employees);
+
+// Display list box
+....
+
+// Get selected employee from list
+Employee selectedEmployee = (Employee) list.getSelectedItem();
+
+return selectedEmployee;
+----
+
+Native API
+
+[source,java]
+----
+/* Read all the employees from the database, ask the user to choose one and return it. */
+/* This must read in all the information for all the employees */
+ListBox list;
+
+// Fetch data from database and add to list box
+List employees = session.readAllObjects(Employee.class);
+list.addAll(employees);
+
+// Display list box
+....
+
+// Get selected employee from list
+Employee selectedEmployee = (Employee) list.getSelectedItem();
+
+return selectedEmployee;
+----
+
+===== Partial Object Reading
+
+Partial object reading is a query designed to extract only the required
+information from a selected record in a database, rather than all the
+information the record contains. Because partial object reading does not
+fully populate objects, you can neither cache nor edit partially read
+objects.
+
+For more information about partial object queries, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Partial_Object_Queries[Partial
+Object Queries].
+
+In this example, the query builds complete employee objects, even though
+the list displays only employee last names. With no optimization, the
+query reads all the employee data.
+
+The link:#Example_11-7[Optimization Through Partial Object Reading]
+example demonstrates the use of partial object reading. It reads only
+the last name and primary key for the employee data. This reduces the
+amount of data read from the database.
+
+[#Example 11-7]## *_Optimization Through Partial Object Reading_*
+
+JPA
+
+[source,java]
+----
+/* Read all the employees from the database, ask the user to choose one and return it. */
+/* This uses partial object reading to read just the last names of the employees. */
+ListBox list;
+
+// Fetch data from database and add to list box
+List employees = entityManager.createQuery("Select new Employee(e.id, e.lastName) from Employee e").getResultList();
+list.addAll(employees);
+
+// Display list box
+....
+
+// Get selected employee from list
+Employee selectedEmployee = (Employee)entityManager.find(Employee.class, ((Employee)list.getSelectedItem()).getId());
+return selectedEmployee;
+----
+
+Native API
+
+[source,java]
+----
+/* Read all the employees from the database, ask the user to choose one and return it. */
+/* This uses partial object reading to read just the last names of the employees. */
+/* Since EclipseLink automatically includes the primary key of the object, the full object can easily be read for editing */
+ListBox list;
+
+// Fetch data from database and add to list box
+ReadAllQuery query = new ReadAllQuery(Employee.class);
+query.addPartialAttribute("lastName");
+
+// The next line avoids a query exception
+query.dontMaintainCache();
+List employees = session.executeQuery(query);
+list.addAll(employees);
+
+// Display list box
+....
+
+// Get selected employee from list
+Employee selectedEmployee = (Employee)session.readObject(list.getSelectedItem());
+return selectedEmployee;
+----
+
+===== Report Query
+
+Report query lets you retrieve data from a set of objects and their
+related objects. Report query supports database reporting functions and
+features.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Report_Query_Results[Report
+Query Results].
+
+The link:#Example_11-8[Optimization Through Report Query] example
+demonstrates the use of report query to read only the last name of the
+employees. This reduces the amount of data read from the database
+compared to the code in the link:#Example_11-6[No Optimization] example,
+and avoids instantiating employee instances.
+
+[#Example 11-8]## *_Optimization Through Report Query_*
+
+JPA
+
+[source,java]
+----
+/* Read all the employees from the database, ask the user to choose one and return it. */
+/* This uses a report query to read just the last names of the employees. */
+ListBox list;
+
+// Fetch data from database and add to list box
+// This query returns a List of Object[] data values
+List rows = entityManager.createQuery("Select e.id, e.lastName from Employee e").getResultList();
+list.addAll(rows);
+
+// Display list box
+....
+
+// Get selected employee from list
+Object selectedItem[] = (Object[])list.getSelectedItem();
+Employee selectedEmployee = (Employee)entityManager.find(Employee.class, selectedItem[0]);
+return selectedEmployee;
+----
+
+Native API
+
+[source,java]
+----
+/* Read all the employees from the database, ask the user to choose one and return it. */
+/* The report query is used to read just the last name of the employees. */
+/* Then the primary key stored in the report query result to read the real object */
+ListBox list;
+
+// Fetch data from database and add to list box
+ExpressionBuilder builder = new ExpressionBuilder();
+ReportQuery query = new ReportQuery (Employee.class, builder);
+query.addAttribute("lastName");
+query.retrievePrimaryKeys();
+List reportRows = (List) session.executeQuery(query);
+list.addAll(reportRows);
+
+// Display list box
+....
+
+// Get selected employee from list
+ReportQueryResult result = (ReportQueryResult) list.getSelectedItem();
+Employee selectedEmployee = (Employee)result.readobject(Employee.Class, session);
+----
+
+Although the differences between the unoptimized example
+(link:#Example_11-6[No Optimization]) and the report query optimization
+in the link:#Example_11-8[Optimization Through Report Query] example
+appear to be minor, report queries offer a substantial performance
+improvement.
+
+===== Fetch Groups
+
+Fetch groups are similar to partial object reading, but does allow
+caching of the objects read. For objects with many attributes or
+reference attributes to complex graphs (or both), you can define a fetch
+group that determines what attributes are returned when an object is
+read. Because EclipseLink will automatically execute additional queries
+when the `+get+` method is called for attributes not in the fetch group,
+ensure that the unfetched data is not required: refetching data can
+become a performance issue.
+
+For more information about querying with fetch groups, see
+link:Using%20Advanced%20Query%20API%20(ELUG)#Using_Queries_with_Fetch_Groups[Using
+Queries with Fetch Groups].
+
+The link:#Example_11-9[Configuring a Query with a FetchGroup Using the
+FetchGroupManager] example demonstrates the use of a static fetch group.
+
+*_Configuring a Query with a FetchGroup Using the FetchGroupManager_*
+
+JPA
+
+[source,java]
+----
+// Use fetch group at query level
+ReadAllQuery query = new ReadAllQuery(Employee.class);
+FetchGroup group = new FetchGroup("nameOnly");
+group.addAttribute("firstName");
+group.addAttribute("lastName");
+query.setFetchGroup(group);
+
+JpaQuery jpaQuery = (JpaQuery)entityManager.createQuery("Select e from Employee e");
+jpaQuery.setDatabaseQuery(query);
+
+List employees = jpaQuery.getResultList();
+
+
+/* Only Employee attributes firstName and lastName are fetched.
+   If you call the Employee get method for any other attribute, EclipseLink executes
+   another query to retrieve all unfetched attribute values. Thereafter,
+   calling that get method will return the value directly from the object */
+----
+
+Native API
+
+[source,java]
+----
+// Use fetch group at query level
+ReadAllQuery query = new ReadAllQuery(Employee.class);
+FetchGroup group = new FetchGroup("nameOnly");
+group.addAttribute("firstName");
+group.addAttribute("lastName");
+query.setFetchGroup(group);
+
+List employees = session.executeQuery(query);
+
+/* Only Employee attributes firstName and lastName are fetched.
+   If you call the Employee get method for any other attribute, EclipseLink executes
+   another query to retrieve all unfetched attribute values. Thereafter,
+   calling that get method will return the value directly from the object */
+----
+
+==== Reading Case 2: Batch Reading Objects
+
+The way your application reads data from the database affects
+performance. For example, reading a collection of rows from the database
+is significantly faster than reading each row individually.
+
+A common performance challenge is to read a collection of objects that
+have a one-to-one reference to another object. This typically requires
+one read operation to read in the source rows, and one call for each
+target row in the one-to-one relationship.
+
+To reduce the number of read operations required, use join and batch
+reading. The link:#Example_11-10[No Optimization] example illustrates
+the unoptimized code required to retrieve a collection of objects with a
+one-to-one reference to another object. The
+link:#Example_11-11[Optimization Through Joining] and
+link:#Example_11-12[Optimization Through Batch Reading] examples
+illustrate the use of joins and batch reading to improve efficiency.
+
+[#Example 11-10]## *_No Optimization_*
+
+JPA
+
+[source,java]
+----
+// Read all the employees, and collect their address' cities. This takes N + 1 queries if not optimized
+// Read all the employees from the database. This requires 1 SQL call
+List employees = entityManager.createQuery("Select e from Employee e where e.lastName = 'Smith'").getResultList();
+//SQL: Select * from Employee where l_name = 'Smith
+
+// Iterate over employees and get their addresses.
+// This requires N SQL calls
+Iterator iterator = employees.iterator();
+List cities = new ArrayList();
+while(iterator.hasNext()) {
+   Employee employee = (Employee) iterator.next();
+   cities.add(employee.getAddress().getCity());
+}
+//SQL: Select * from Address where address_id = 123, etc (* n)
+----
+
+Native API
+
+[source,java]
+----
+// Read all the employees, and collect their address' cities. This takes N + 1 queries if not optimized
+// Read all the employees from the database. This requires 1 SQL call
+List employees = session.readAllObjects(Employee.class,
+        new ExpressionBuilder().get("lastName").equal("Smith"));
+
+//SQL: Select * from Employee where l_name = 'Smith
+
+// Iterate over employees and get their addresses.
+// This requires N SQL calls
+Iterator iterator = employees.iterator();
+List cities = new ArrayList();
+while(iterator.hasNext()) {
+   Employee employee = (Employee) iterator.next();
+   cities.add(employee.getAddress().getCity());
+}
+//SQL: Select * from Address where address_id = 123, etc (* n)
+----
+
+[#Example 11-11]## *_Optimization Through Joining_*
+
+JPA
+
+[source,java]
+----
+// Read all the employees; collect their address' cities. Although the code
+// is almost identical because joining optimization is used it takes only 1 query
+
+// Read all the employees from the database using joining.
+// This requires 1 SQL call
+List employees = entityManager.createQuery("Select e from Employee e join fetch e.address where e.lastName = 'Smith'").getResultList();
+/// SQL: Select E.*, A.* from Employee E, Address A where E.l_name = 'Smith' and E.address_id = A.address_id
+
+// Iterate over employees and get their addresses.
+// The previous SQL already read all the addresses, so no SQL is required
+
+Iterator iterator = employees.iterator();
+List cities = new ArrayList();
+while (iterator.hasNext()) {
+    Employee employee = (Employee) iterator.next();
+    cities.add(employee.getAddress().getCity());
+}
+----
+
+Native API
+
+[source,java]
+----
+// Read all the employees; collect their address' cities. Although the code
+// is almost identical because joining optimization is used it takes only 1 query
+
+// Read all the employees from the database using joining.
+// This requires 1 SQL call
+ReadAllQuery query = new ReadAllQuery(Employee.class);
+ExpressionBuilder builder = query.getExpressionBuilder();
+query.setSelectionCriteria(builder.get("lastName").equal("Smith"));
+query.addJoinedAttribute("address");
+List employees = session.executeQuery(query);
+/// SQL: Select E.*, A.* from Employee E, Address A where E.l_name = 'Smith' and E.address_id = A.address_id
+
+// Iterate over employees and get their addresses.
+// The previous SQL already read all the addresses, so no SQL is required
+Iterator iterator = employees.iterator();
+List cities = new ArrayList();
+while (iterator.hasNext()) {
+    Employee employee = (Employee) iterator.next();
+    cities.add(employee.getAddress().getCity());
+}
+----
+
+[#Example 11-12]## *_Optimization Through Batch Reading_*
+
+JPA
+
+[source,java]
+----
+// Read all the employees; collect their address' cities. Although the code
+// is almost identical because batch reading optimization is used it takes only 2 queries
+
+// Read all the employees from the database, using batch reading.
+
+// This requires 1 SQL call, note that only the employees are read
+Query query = entityManager.createQuery("Select e from Employee e where e.lastName = 'Smith'");
+query.setHint("eclipselink.batch", "e.address");
+List employees = query.getResultList();
+// SQL: Select * from Employee where l_name = 'Smith
+
+// Iterate over employees and get their addresses.
+// The first address accessed will cause all the addresses to be read in a single SQL call
+Iterator iterator = employees.iterator();
+List cities = new ArrayList();
+while (iterator.hasNext()) {
+    Employee employee = (Employee) iterator.next();
+    cities.add(employee.getAddress().getCity());
+    // SQL: Select distinct A.* from Employee E, Address A
+    // where E.l_name = 'Smith' and E.address_id = A.address_i
+}
+----
+
+Native API
+
+[source,java]
+----
+// Read all the employees; collect their address' cities. Although the code
+// is almost identical because batch reading optimization is used it takes only 2 queries
+
+// Read all the employees from the database, using batch reading.
+
+// This requires 1 SQL call, note that only the employees are read
+ReadAllQuery query = new ReadAllQuery(Employee.class);
+ExpressionBuilder builder = query.getExpressionBuilder();
+query.setSelectionCriteria(bulder.get("lastName").equal("Smith"));
+query.addBatchReadAttribute("address");
+List employees = (List)session.executeQuery(query);
+// SQL: Select * from Employee where l_name = 'Smith
+
+// Iterate over employees and get their addresses.
+// The first address accessed will cause all the addresses to be read in a single SQL call
+Iterator iterator = employees.iterator();
+List cities = new ArrayList();
+while (iterator.hasNext()) {
+    Employee employee = (Employee) iterator.next();
+    cities.add(employee.getAddress().getCity());
+    // SQL: Select distinct A.* from Employee E, Address A
+    // where E.l_name = 'Smith' and E.address_id = A.address_i
+}
+----
+
+Because the two-phase approach to the query (the
+link:#Example_11-11[Optimization Through Joining] and
+link:#Example_11-12[Optimization Through Batch Reading] examples)
+accesses the database only twice, it is significantly faster than the
+approach illustrated in the link:#Example_11-10[No Optimization]
+example.
+
+Joins offer a significant performance increase under most circumstances.
+Batch reading offers a further performance advantage in that it allows
+for delayed loading through value holders, and has much better
+performance where the target objects are shared.
+
+For example, if employees in the link:#Example_11-10[No Optimization],
+link:#Example_11-11[Optimization Through Joining], and
+link:#Example_11-12[Optimization Through Batch Reading] examples are at
+the same address, batch reading reads much less data than joining,
+because batch reading uses a SQL `+DISTINCT+` call to filter duplicate
+data.
+
+Batch reading and joining are available for one-to-one, one-to-many,
+many-to-many, direct collection, direct map and aggregate collection
+mappings. Note that one-to-many joining will return a large amount of
+duplicate data and so is normally less efficient than batch reading.
+
+==== Reading Case 3: Using Complex Custom SQL Queries
+
+EclipseLink provides a high-level query mechanism. However, if your
+application requires a complex query, a direct SQL or stored procedure
+call may be the best solution.
+
+For more information about executing SQL calls, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#SQLCall[SQLCall].
+
+==== Reading Case 4: Using View Objects
+
+Some application operations require information from several objects
+rather than from just one. This can be difficult to implement, and
+resource-intensive. The link:#Example_11-13[No Optimization] example
+illustrates unoptimized code that reads information from several
+objects.
+
+[#Example 11-13]## *_No Optimization_*
+
+JPA
+
+[source,java]
+----
+/* Gather the information to report on an employee and return the summary of the
+   information. In this situation, a hash table is used to hold the report
+   information. Notice that this reads a lot of objects from the database, but
+   uses very little of the information contained in the objects. This may take 5
+   queries and read in a large number of objects */
+
+public Map reportOnEmployee(String employeeName) {
+    List projects, associations;
+    Map report = new HashMap();
+    // Retrieve employee from database
+    Query query = entityManager.createQuery("Select e from Employee e where e.lastName = :name");
+    query.setParameter("name", employeeName);
+    Employee employee = (Employee)query.getSingleResult();
+
+    // Get all the projects affiliated with the employee
+    projects = entityManager.createNativeQuery("SELECT P.* FROM PROJECT P," +
+                       "EMPLOYEE E WHERE P.MEMBER_ID = E.EMP_ID AND E.L_NAME = " +
+                       employeeName, Project.class).getResultList();
+
+    // Get all the associations affiliated with the employee
+    associations = entityManager.createNativeQuery("SELECT A.* " +
+      "FROM ASSOC A, EMPLOYEE E WHERE A.MEMBER_ID = E.EMP_ID AND E.L_NAME = "
+      + employeeName, Association.class).getResultList();
+
+    report.put("firstName", employee.getFirstName());
+    report.put("lastName", employee.getLastName());
+    report.put("manager", employee.getManager());
+    report.put("city", employee.getAddress().getCity());
+    report.put("projects", projects);
+    report.put("associations", associations);
+    return report;
+}
+----
+
+Native API
+
+[source,java]
+----
+/* Gather the information to report on an employee and return the summary of the
+   information. In this situation, a hash table is used to hold the report
+   information. Notice that this reads a lot of objects from the database, but
+   uses very little of the information contained in the objects. This may take 5
+   queries and read in a large number of objects */
+
+public Map reportOnEmployee(String employeeName) {
+    List projects, associations;
+    Map report = new HashMap();
+    // Retrieve employee from database
+    Employee employee = session.readObject(Employee.class,
+                        new ExpressionBuilder.get("lastName").equal(employeeName));
+
+    // Get all the projects affiliated with the employee
+    projects = session.readAllObjects(Project.class,
+                       "SELECT P.* FROM PROJECT P," +
+                       "EMPLOYEE E WHERE P.MEMBER_ID = E.EMP_ID AND E.L_NAME = " +
+                       employeeName);
+
+    // Get all the associations affiliated with the employee
+    associations = session.readAllObjects(Association.class, "SELECT A.* " +
+      "FROM ASSOC A, EMPLOYEE E WHERE A.MEMBER_ID = E.EMP_ID AND E.L_NAME = "
+      + employeeName);
+
+    report.put("firstName", employee.getFirstName());
+    report.put("lastName", employee.getLastName());
+    report.put("manager", employee.getManager());
+    report.put("city", employee.getAddress().getCity());
+    report.put("projects", projects);
+    report.put("associations", associations);
+    return report;
+}
+----
+
+To improve application performance in these situations, define a new
+read-only object to encapsulate this information, and map it to a view
+on the database. To set the object to be read-only, configure its
+descriptor as read-only (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Read-Only_Descriptors[Configuring
+Read-Only Descriptors]).
+
+[#Example 11-14]## *_Optimization Through View Object_*
+
+[source,sql]
+----
+CREATE VIEW NAMED EMPLOYEE_VIEW AS (SELECT F_NAME = E.F_NAME, L_NAME = E.L_NAME,EMP_ID = E.EMP_ID, MANAGER_NAME = E.NAME, CITY = A.CITY, NAME = E.NAME
+ FROM EMPLOYEE E, EMPLOYEE M, ADDRESS A
+ WHERE E.MANAGER_ID = M.EMP_ID
+ AND E.ADDRESS_ID = A.ADDRESS_ID)
+----
+
+Define a descriptor for the `+EmployeeReport+` class as follows:
+
+* Define the descriptor as usual, but specify the `+tableName+` as
+`+EMPLOYEE_VIEW+`.
+* Map only the attributes required for the report. In the case of the
+`+numberOfProjects+` and associations, use a transformation mapping to
+retrieve the required data.
+
+You can now query the report from the database in the same way as any
+other object enabled by EclipseLink.
+
+[#Example 11-15]## *_View the Report from
+link:#Example_11-14[Optimization Through View Object]_*
+
+[source,java]
+----
+// Return the report for the employee
+public EmployeeReport reportOnEmployee(String employeeName) {
+    EmployeeReport report;
+    report = (EmployeeReport) session.readObject(EmployeeReport.class,
+             new ExpressionBuilder.get("lastName").equal(employeeName));
+    return report;
+}
+----
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Allowing an unverified SQL string to be passed into methods
+(for example: `+readAllObjects(Class class, String sql)+` and
+`+readObject(Class class, String sql)+` method) makes your application
+vulnerable to SQL injection attacks.’’’
+|===
+
+==== Reading Case 5: Inheritance Subclass Outer-Joining
+
+If you have an inheritance hierarchy that spans multiple tables and
+frequently query for the root class, consider using outer joining. This
+allows an outer-joining to be used for queries against an inheritance
+superclass that can read all of its subclasses in a single query instead
+of multiple queries.
+
+Note that on some databases, the outer joins may be less efficient than
+the default multiple queries mechanism.
+
+For more information about inheritance, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance].
+
+For more information about querying on inheritance, see
+link:Using%20Advanced%20Query%20API%20(ELUG)#Querying_on_an_Inheritance_Hierarchy[Querying
+on an Inheritance Hierarchy].
+
+=== Write Optimization Examples
+
+EclipseLink provides the write optimization features listed in the
+link:#Table_11-11[Write Optimization Features] table.
+
+This section includes the following write optimization examples:
+
+* #Writing_Case:_Batch_Writes[Writing Case: Batch Writes]
+
+[#Table 11-11]## *_Write Optimization Features_*
+
+Feature
+
+Effect on Performance
+
+Unit of work
+
+Improves performance by updating only the changed fields and objects.
+
+Minimizes the amount of tracking required (which can be expensive) by
+registering only those objects that will change.
+
+For more information, see Introduction to EclipseLink Transactions).
+
+Note: The unit of work supports marking classes as read-only (see
+Configuring Read-Only Descriptors and Declaring Read-Only Classes). This
+avoids tracking of objects that do not change.
+
+Batch writing
+
+Lets you group all insert, update, and delete commands from a
+transaction into a single database call. This dramatically reduces the
+number of calls to the database (see Batch Writing and Parameterized
+SQL).
+
+Parameterized SQL
+
+Improves performance for frequently executed SQL statements (see How to
+Use Parameterized SQL and Prepared Statement Caching for Optimization).
+
+Sequence number preallocation
+
+Dramatically improves insert performance (see Sequence Number
+Preallocation).
+
+Multiprocessing
+
+Splitting a batch job across threads lets you synchronize reads from a
+cursored stream and use parallel units of work for performance
+improvements even on a single machine (see Multiprocessing).
+
+Does exist alternatives
+
+The does exist call on write object can be avoided in certain situations
+by checking the cache for does exist, or assuming the existence of the
+object (see Configuring Existence Checking at the Project Level or
+Configuring Cache Existence Checking at the Descriptor Level and How to
+Use Registration and Existence Checking).
+
+Change Tracking
+
+Improves writing and transactional read performance (see Unit of Work
+and Change Policy and Configuring Change Policy).
+
+Isolated Client Sessions
+
+For write-only, or non-cached (isolated) objects, the unit of work
+isolation level should be set to isolated-always to avoid caching
+overhead when not caching (see Cache Isolation).
+
+==== Writing Case: Batch Writes
+
+The most common write performance problem occurs when a batch job
+inserts a large volume of data into the database. For example, consider
+a batch job that loads a large amount of data from one database, and
+then migrates the data into another. The following objects are involved:
+
+* Simple individual objects with no relationships.
+* Objects that use generated sequence numbers as their primary key.
+* Objects that have an address that also uses a sequence number.
+
+The batch job loads 10,000 employee records from the first database and
+inserts them into the target database. With no optimization, the batch
+job reads all the records from the source database, acquires a unit of
+work from the target database, registers all objects, and commits the
+unit of work.
+
+[#Example 11-16]## *_No Optimization_*
+
+JPA
+
+[source,java]
+----
+// Read all the employees from source entity manager
+
+// Read all the employees from the database. This requires 1 SQL call,
+// but will be very memory intensive as 10,000 objects will be read
+List<Employee> employees = (List<Employee>)sourceEntityManager.createQuery("Select e from Employee e").getResultList();
+
+//SQL: Select * from Employee
+
+// Acquire a unit of work and register the employees
+targetEntityManager.getTransaction().begin();
+for (Employee employee : employees) {
+    targetEntityManager.persist(employee);
+}
+targetEntityManager.getTransaction().commit();
+----
+
+Native API
+
+[source,java]
+----
+// Read all the employees, acquire a unit of work, and register them
+
+// Read all the employees from the database. This requires 1 SQL call,
+// but will be very memory intensive as 10,000 objects will be read
+List employees = sourceSession.readAllObjects(Employee.class);
+
+//SQL: Select * from Employee
+
+// Acquire a unit of work and register the employees
+UnitOfWork uow = targetSession.acquireUnitOfWork();
+uow.registerAllObjects(employees);
+uow.commit();
+----
+
+SQL
+
+[source,sql]
+----
+BEGIN
+Update Sequence set count = count + 1 where name = 'EMP'
+Select count from Sequence
+// ... repeat this 10,000 times + 10,000 times for the addresses ...
+COMMIT
+BEGIN
+Insert into Address (...) values (...)
+// ... repeat this 10,000 times
+Insert into Employee (...) values (...)
+// ... repeat this 10,000 times
+COMMIT
+----
+
+This batch job performs poorly, because it requires 60,000 SQL
+executions. It also reads huge amounts of data into memory, which can
+raise memory performance issues. EclipseLink offers several optimization
+features to improve the performance of this batch job.
+
+To improve this operation, do the following:
+
+* Use EclipseLink batch read operations and cursor support (see
+link:#Cursors[Cursors]).
+* Use batch writing or parameterized batch writing to write to the
+database (see link:#Batch_Writing_and_Parameterized_SQL[Batch Writing
+and Parameterized SQL]). If your database does not support batch
+writing, use parameterized SQL to implement the write query.
+* Implement sequence number preallocation (see
+link:#Sequence_Number_Preallocation[Sequence Number Preallocation]).
+* Implement multiprocessing (see
+link:#Multiprocessing[Multiprocessing]).
+
+===== Cursors
+
+To optimize the query in the link:#Example_11-16[No Optimization]
+example, use a cursored stream to read the Employees from the source
+database. You can also employ a weak identity map instead of a hard or
+soft cache identity map in both the source and target databases.
+
+To address the potential for memory problems, use the
+`+releasePrevious+` method after each read to stream the cursor in
+groups of 100. Register each batch of 100 employees in a new unit of
+work and commit them.
+
+Although this does not reduce the amount of executed SQL, it does
+address potential out-of-memory issues. When your system runs out of
+memory, the result is performance degradation that increases over time,
+and excessive disk activity caused by memory swapping on disk.
+
+For more information, see
+link:#How_to_Use_Cursored_Streams_and_Scrollable_Cursors_for_Optimization[How
+to Use Cursored Streams and Scrollable Cursors for Optimization].
+
+===== Batch Writing and Parameterized SQL
+
+Batch writing lets you combine a group of SQL statements into a single
+statement and send it to the database as a single database execution.
+This feature reduces the communication time between the application and
+the server, and substantially improves performance.
+
+You can enable batch writing alone (dynamic batch writing) using
+`+Login+` method `+useBatchWriting+`. If you add batch writing to the
+link:#Example_11-16[No Optimization] example, you execute each batch of
+100 employees as a single SQL execution. This reduces the number of SQL
+executions from 20,200 to 300.
+
+You can also enable batch writing and parameterized SQL (parameterized
+batch writing) and prepared statement caching. Parameterized SQL avoids
+the prepare component of SQL execution. This improves write performance
+because it avoids the prepare cost of an SQL execution. For
+parameterized batch writing you would get one statement per Employee,
+and one for Address: this reduces the number of SQL executions from
+20,200 to 400. Although this is more than dynamic batch writing alone,
+parameterized batch writing also avoids all parsing, so it is much more
+efficient overall.
+
+Although parameterized SQL avoids the prepare component of SQL
+execution, it does not reduce the number of executions. Because of this,
+parameterized SQL alone may not offer as big of a gain as batch writing.
+However, if your database does not support batch writing, parameterized
+SQL will improve performance. If you add parameterized SQL in the
+link:#Example_11-16[No Optimization] example, you must still execute
+20,200 SQL executions, but parameterized SQL reduces the number of SQL
+PREPAREs to 4.
+
+For more information, see
+link:#How_to_Use_Batch_Writing_for_Optimization[How to Use Batch Writing
+for Optimization].
+
+===== Sequence Number Preallocation
+
+SQL select calls are more resource-intensive than SQL modify calls, so
+you can realize large performance gains by reducing the number of select
+calls you issue. The code in the link:#Example_11-16[No Optimization]
+example uses the select calls to acquire sequence numbers. You can
+substantially improve performance if you use sequence number
+preallocation.
+
+In EclipseLink, you can configure the sequence preallocation size on the
+login object (the default size is 50). The link:#Example_11-16[No
+Optimization] example uses a preallocation size of 1 to demonstrate this
+point. If you stream the data in batches of 100 as suggested in
+link:#Cursors[Cursors], set the sequence preallocation size to 100.
+Because employees and addresses in the example both use sequence
+numbering, you further improve performance by letting them share the
+same sequence. If you set the preallocation size to 200, this reduces
+the number of SQL execution from 60,000 to 20,200.
+
+For more information about sequencing preallocation, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Sequencing_and_Preallocation_Size[Sequencing
+and Preallocation Size].
+
+===== Multiprocessing
+
+You can use multiple processes or multiple machines to split the batch
+job into several smaller jobs. In this example, splitting the batch job
+across threads enables you to synchronize reads from the cursored
+stream, and use parallel Units of Work on a single machine.
+
+This leads to a performance increase, even if the machine has only a
+single processor, because it takes advantage of the wait times inherent
+in SQL execution. While one thread waits for a response from the server,
+another thread uses the waiting cycles to process its own database
+operation.
+
+The following example illustrates the optimized code for this example.
+Note that it does not illustrate multiprocessing.
+
+[#Example 11-17]## *_Fully Optimized_*
+
+JPA
+
+[source,java]
+----
+// Read each batch of employees, begin a transaction, and persist them
+Map properties = new HashMap();
+properties.put("eclipselink.jdbc.batch-writing", "JDBC");
+properties.put("eclipselink.jdbc.cache-statements", "true");
+EntityManagerFactory factory = Persistence.createEntityManagerFactory("my-batch-app", properties);
+EntityManager targetEntityManager = factory.createEntityManager();
+
+// Read all the page of employees from the database.
+// This requires 1 SQL call for each page, but fewer rows.
+Query query = sourceEntityManager.createQuery("Select e from Employee e");
+int start = 0;
+boolean done = false;
+while (!done) {
+    query.setFirstResult(start);
+    query.setMaxRows(start + 100);
+    List page = query.getResultList();
+    start = start + 100;
+    if (page.size() < 100) {
+        done = true;
+    }
+    //SQL: Select * from Employee. Process each batch
+    targetEntityManager.getTransaction().begin();
+    for (Employee employee : employees) {
+        targetEntityManager.persist(employee);
+    }
+    targetEntityManager.getTransaction().commit();
+}
+----
+
+Native API
+
+[source,java]
+----
+// Read each batch of employees, acquire a unit of work, and register them
+targetSession.getLogin().useBatchWriting();
+targetSession.getLogin().setSequencePreallocationSize(200);
+targetSession.getLogin().bindAllParameters();
+targetSession.getLogin().cacheAllStatements();
+targetSession.getLogin().setMaxBatchWritingSize(200);
+...
+
+// Read all the employees from the database into a stream.
+// This requires 1 SQL call, but none of the rows will be fetched.
+ReadAllQuery query = new ReadAllQuery(Employee.class);
+query.useCursoredStream();
+CursoredStream stream;
+stream = (CursoredStream) sourceSession.executeQuery(query);
+//SQL: Select * from Employee. Process each batch
+while (! stream.atEnd()) {
+    List employees = stream.read(100);
+    // Acquire a unit of work to register the employees
+    UnitOfWork uow = targetSession.acquireUnitOfWork();
+    uow.registerAllObjects(employees);
+    uow.commit();
+}
+----
+
+SQL
+
+[source,sql]
+----
+BEGIN
+Update Sequence set count = count + 200 where name = 'SEQ'
+Select count from Sequence where name = 'SEQ'
+COMMIT
+BEGIN
+BEGIN BATCH
+Insert into Address (...) values (...)
+//... repeat this 100 times
+Insert into Employee (...) values (...)
+//... repeat this 100 times
+END BATCH
+COMMIT
+----
+
+== Optimizing the Unit of Work
+
+For best performance when using a unit of work, consider the following
+tips:
+
+* Register objects with a unit of work only if objects are eligible for
+change. If you register objects that will not change, the unit of work
+needlessly clones and processes those objects.
+* Avoid the cost of existence checking when you are registering a new or
+existing object (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#How_to_Use_Registration_and_Existence_Checking[How
+to Use Registration and Existence Checking]).
+* Avoid the cost of change set calculation on a class you know will not
+change by telling the unit of work that the class is read-only (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Declaring_Read-Only_Classes[Declaring
+Read-Only Classes]).
+* Avoid the cost of change set calculation on an object read by a
+`+ReadAllQuery+` in a unit of work that you do not intend to change by
+unregistering the object (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#How_to_Unregister_Working_Clones[How
+to Unregister Working Clones]).
+* Before using conforming queries, be sure that it is necessary. For
+alternatives, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Using_Conforming_Queries_and_Descriptors[Using
+Conforming Queries and Descriptors].
+* Enable weaving and change tracking to greatly improve transactional
+performance. For more information, see
+link:#Optimizing_Using_Weaving[Optimizing Using Weaving].
+
+If your performance measurements show that you have a performance
+problem during unit of work commit, consider using object level or
+attribute level change tracking, depending on the type of objects
+involved and how they typically change. For more information, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#Unit_of_Work_and_Change_Policy[Unit
+of Work and Change Policy].
+
+== Optimizing Using Weaving
+
+We recommend that you enable weaving to improve performance.
+
+In addition to using weaving to transparently configure lazy loading
+(indirection) and change tracking, EclipseLink uses weaving to make
+numerous internal optimizations.
+
+We recommend that you enable weaving. Transactional performance can be
+greatly improved through using weaving and change tracking.
+
+For more information, see
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Using_Weaving[Using
+Weaving].
+
+== Optimizing the Application Server and Database Optimization
+
+Configuring your application server and database correctly can have a
+big impact on performance and scalabilty. Ensure that you correctly
+optimize these key components of your application in addition to your
+EclipseLink application and persistence.
+
+For your application or Java EE server, ensure your memory, thread pool
+and connection pool sizes are sufficient for your server’s expected
+load, and that your JVM has been configured optimally.
+
+Ensure that your database has been configured correctly for optimal
+performance and its expected load.
+
+== Optimizing Storage and Retrieval of Binary Data in XML
+
+When working with Java API for XML Web Services (JAX-WS), you can use
+XML binary attachments to optimize the storage and retrieval of binary
+data in XML. Rather than storing the data as a base64 BLOB, you can
+optimize it by sending the data as a Multipurpose Internet Mail
+Extensions (MIME) attachment in order to retrieve it on the other end.
+
+To make the use of XML binary attachments, register an instance of the
+`+org.eclipselink.persistence.ox.attachment.XMLAttachmentMarshaller+` or
+`+XMLAttachmentUnmarshaller+` interface with the binding framework.
+During a marshal operation, binary data will be handed into the
+`+XMLAttachmentMarshaller+`, which will be required to provide an ID
+that you can use at a later time to retrieve the data.
+
+EclipseLink runtime supports MtOM and SwaRef-style attachments.
+
+EclipseLink provides support for the following Java types as
+attachments:
+
+* `+java.awt.Image+`
+* `+javax.activation.DataHandler+`
+* `+javax.mail.internet.MimeMultipart+`
+* `+javax.xml.transform.Source+`
+* `+byte[]+`
+* `+Byte[]+`
+
+You can generate schema and mappings based on JAXB classes for these
+types.
+
+You can configure which mappings will be treated as attachments and set
+the MIME types of those attachments. You perform configurations using
+the following JAXB annotations:
+
+* `+XmlAttachmentRef+`–Used on a `+DataHandler+` to indicate that this
+should be mapped to a `+swaRef+` in the XML schema. This means it should
+be treated as a SwaRef attachment.
+* `+XmlMimeType+`–Specifies the expected MIME type of the mapping. When
+used on a byte array, this value should be passed into the
+`+XMLAttachmentMarshaller+` during a marshal operation. During schema
+generation, this will result in an `+expectedContentType+` attribute
+being added to the related element.
+* `+XmlInlineBinaryData+`–Indicates that this binary field should always
+be written inline as `+base64Binary+` and never treated as an
+attachment.
+
+For information on JAXB annotations, see Chapter 8 of the specification
+at http://jcp.org/aboutJava/communityprocess/pfd/jsr222/index.html
+
+Additionally, you have to set the schema type on a mapping going to
+binary if it is to be considered an attachment: it is either
+`+base64Binary+` or `+swaRef+`.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: EclipseLink lets you override treating an object as an
+attachment on a per-mapping basis.
+|===
+
+Consider the following examples.
+
+[#Example 11-44]## *_Using SwaRef_*
+
+[source,java]
+----
+ public class Employee {
+
+    @XmlAttachmentRef
+    public DataHandler photo;
+    ...
+ }
+----
+
+The preceding code yeilds the following XML schema type:
+
+[source,xml]
+----
+ <xs:complexType name="employee">
+    <xs:sequence>
+        <xs:element name="photo" type="xs:swaRef"/>
+    </xs:sequence>
+ </xs:complexType>
+----
+
+The XML would look as follows:
+
+[source,xml]
+----
+ <employee>
+    <photo>attachment_id</photo>
+ </employee>
+----
+
+[#Example 11-45]## *_Using MtOM Without MimeType_*
+
+[source,java]
+----
+ public class Employee {
+
+    public java.awt.Image photo;
+    ...
+ }
+----
+
+The preceding code generates the following XML schema type:
+
+[source,xml]
+----
+ <xs:complexType name="employee">
+    <xs:sequence>
+        <xs:element name="photo" type="base64Binary"/>
+    </xs:sequence>
+ </xs:complexType>
+</xml>
+
+The XML would look as follows:
+<source lang="xml">
+ <employee>
+    <photo>
+        <xop:Include href="attachment_id"/>
+    </photo>
+ </employee>
+----
+
+[#Example 11-46]## *_Using MtOM with MimeType_*
+
+[source,java]
+----
+ public class Employee {
+
+    @XmlMimeType("image/jpeg")
+    public java.awt.Image photo;
+    ...
+ }
+----
+
+The preceding code generates the following XML schema type:
+
+[source,xml]
+----
+ <xs:complexType name="employee">
+    <xs:sequence>
+        <xs:element name="photo"
+            ns:expectedContentTypes="image/jpeg"
+            type="xs:base64Binary"/>
+    </xs:sequence>
+ </xs:complexType>
+----
+
+The XML would look as follows:
+
+[source,xml]
+----
+ <employee>
+    <photo>
+        <xop:Include href="attachment_id"/>
+    </photo>
+ </employee>
+----
+
+[#Example 11-47]## *_Using Binary Object with Forced Inline_*
+
+[source,java]
+----
+ public class Employee {
+
+    @XmlInlineBinaryData
+    public java.awt.Image photo;
+    ...
+ }
+----
+
+The preceding code generates the following XML schema type:
+
+[source,xml]
+----
+ <xs:complexType name="employee">
+    <xs:sequence>
+        <xs:element name="photo" type="xs:base64Binary"/>
+    </xs:sequence>
+ </xs:complexType>
+----
+
+The XML would look as follows:
+
+[source,xml]
+----
+ <employee>
+    <photo>ASWIUHFD1323423OIJEUFHEIUFWE134DFO3IR3298RY== </photo>
+ </employee>
+----
+
+If you are not using JAXB, use the
+`+org.eclipselink.persistence.ox.mappings.XMLBinaryDataMapping+` and
+`+XMLBinaryDataCollectionMapping+` API to handle binary data. For more
+information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Binary_Data_Mapping[XML
+Binary Data Mapping] and
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Binary_Data_Collection_Mapping[XML
+Binary Data Collection Mapping].
+
+=== How to Use an Attachment Marshaller and Unmarshaller
+
+You implement EclipseLink `+XMLAttachmentMarshaller+` and
+`+XMLAttachmentUnmarshaller+` interfaces to add and retrieve various
+types of XML attachments. An `+XMLMarshaller+` holds an instance of an
+`+XMLAttachmentMarshaller+`, and `+XMLUnmarshaller+`–an instance of an
+`+XMLAttachmentUnmarshaller+`.
+
+You set and obtain an attachment marshaller and unmarshaller using the
+following corresponding `+XMLMarshaller+` and `+XMLUnmarshaller+`
+methods: `+setAttachmentMarshaller(XMLAttachmentMarshaller am)+`
+`+getAttachmentMarshaller()+`
+`+setAttachmentUnmarshaller(XMLAttachmentUnmarshaller au)+`
+`+getAttachmentUnmarshaller()+`
+
+The following example shows how to use an attachment marshaller in your
+application.
+
+[#Example 11-48]## *_Using an Attachment Marshaller_*
+
+[source,java]
+----
+ ...
+ XMLMarshaller marshaller = context.createMarshaller();
+ XMLAttachmentMarshaller am = new EmployeeAttachmentMarshaller();
+ marshaller.setAttachmentMarshaller(am);
+ ...
+----
+
+For the preceding example to be valid, the XML schema type should be set
+to `+swaRef+`.
+
+For more information, see
+link:Introduction_to_XML_Projects_(ELUG)#How_to_Use_EclipseLink_XMLContext[How
+to Use EclipseLink XMLContext].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_Task[Category: Task]

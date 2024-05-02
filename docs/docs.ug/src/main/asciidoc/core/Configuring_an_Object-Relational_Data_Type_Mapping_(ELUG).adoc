@@ -1,0 +1,297 @@
+*TOC*
+Special:Whatlinkshere_Configuring_an_Object-Relational_Data_Type_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the types of object-relational data type mappings that
+you can configure and provides a cross-reference to the type-specific
+chapter that lists the configurable options supported by that type.
+
+[#Table 50-1]##
+
+If you are creating…
+
+See…
+
+Object-relational data type structure mapping
+
+Configuring an Object-Relational Data Type Structure Mapping
+
+Object-relational data type reference mapping
+
+Configuring an Object-Relational Data Type Reference Mapping
+
+Object-relational data type array mapping
+
+Configuring an Object-Relational Data Type Array Mapping
+
+Object-relational data type object array mapping
+
+Configuring an Object-Relational Data Type Object Array Mapping
+
+Object-relational data type nested table mapping
+
+Configuring an Object-Relational Data Type Nested Table Mapping
+
+For more information, see the following:
+
+* link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings]
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)[Introduction
+to Relational Mappings]
+
+== Configuring Common Object-Relational Data Type Mapping Options
+
+Thist able lists the configurable options shared by two or more
+object-relational data type mapping types. In addition to the
+configurable options described here, you must also configure the options
+described for the specific object-relational data type mapping types
+(see
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Mappings%20(ELUG)#Object-Relational_Data_Type_Mapping_Types[Object-Relational
+Data Type Mapping Types]), as shown in the following table.
+
+[#Table 50-2]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Reference class
+
+Attribute name
+
+Field name
+
+Structure name
+
+Read-only
+
+Method or direct field access
+
+Indirection (lazy loading)
+
+Container policy
+
+== Configuring Reference Class
+
+When mapping an attribute that involves a relationship to another class,
+you must specify the reference class–the Java class to which the mapped
+attribute refers.
+
+This table summarizes which object-relational data type mappings support
+this option.
+
+[#Table 50-3]##
+
+Mapping
+
+Using the Workbench
+
+Using Java
+
+Object-relational data type structure mapping
+
+Object-relational data type reference mapping
+
+Object-relational data type array mapping
+
+Object-relational data type object array mapping
+
+Object-relational data type nested table mapping
+
+=== How to Configure Reference Class Using Java
+
+Use `+org.eclipse.persistence.mappings.ForeignReferenceMapping+` method
+`+setReferenceClass+` to specify the target class of the attribute being
+mapped.
+
+Tihs example shows how to use this method with a `+ReferenceMapping+`
+that maps the `+manager+` attribute of the `+Employee+` class.
+
+[#Example 50-1]## *_Configuring Reference Class in Java_*
+
+[source,java]
+----
+ public void customize(ClassDescriptor descriptor) {
+     ReferenceMapping managerMapping = new ReferenceMapping();
+     managerMapping.setReferenceClass("Employee.class"); // set reference class
+     managerMapping.setAttributeName("manager");
+
+     // add this mapping to descriptor
+     descriptor.addMapping (managerMapping);
+ }
+----
+
+For more information, see the _EclipseLink API Reference_.
+
+== Configuring Attribute Name
+
+All object-relational data type mappings map an attribute in a Java
+object to field in the database. The attribute name is the name of the
+attribute being mapped. The name is as specified in the reference class
+(see link:#Configuring_Reference_Class[Configuring Reference Class]).
+
+This table summarizes which object-relational data type mappings support
+this option.
+
+[#Table 50-4]##
+
+Mapping
+
+Using the Workbench
+
+Using Java
+
+Object-relational data type structure mapping
+
+Object-relational data type reference mapping
+
+Object-relational data type array mapping
+
+Object-relational data type object array mapping
+
+Object-relational data type nested table mapping
+
+=== How to Configure Attribute Name Using Java
+
+Use `+org.eclipse.persistence.mappings.DatabaseMapping+` method
+`+setAttributeName+` to specify the name of the attribute being mapped.
+
+This table shows how to use this method with a `+ReferenceMapping+` that
+maps the `+manager+` attribute of the `+Employee+` class.
+
+[#Example 50-2]## *_Configuring Attribute Name in Java_*
+
+[source,java]
+----
+ public void customize(ClassDescriptor descriptor) {
+     ReferenceMapping managerMapping = new new ReferenceMapping();
+     managerMapping.setReferenceClass("Employee.class");
+     managerMapping.setAttributeName("manager"); // set attribute name
+
+     '''// add this mapping to descriptor'''
+     descriptor.addMapping (managerMapping);
+ }
+----
+
+For more information, see the _EclipseLink API Reference_.
+
+== Configuring Field Name
+
+All object-relational data type mappings require the name of database
+field to which their specified attribute is mapped. This field name can
+be the column name of a database table or the name of a field in an
+object type created on the database.
+
+This table summarizes which object-relational data type mappings support
+this option.
+
+[#Table 50-5]##
+
+Mapping
+
+Using the Workbench
+
+Using Java
+
+Object-relational data type structure mapping
+
+Object-relational data type reference mapping
+
+Object-relational data type array mapping
+
+Object-relational data type object array mapping
+
+Object-relational data type nested table mapping
+
+=== How to Configure Field Name Using Java
+
+Use the object-relational data type mapping method `+setFieldName+` to
+specify the database field to which the attribute is mapped.
+
+This example shows how to use this method with an `+ObjectArrayMapping+`
+that maps the `+Employee+` class attribute `+phone+` to database field
+name `+PHONE_NUMBER+`.
+
+[#Example 50-3]## *_Configuring Field Name in Java_*
+
+[source,java]
+----
+ public void customize(ClassDescriptor descriptor) {
+     ObjectArrayMapping phonesMapping = new ObjectArrayMapping();
+     phonesMapping.setReferenceClass("Employee.class");
+     phonesMapping.setAttributeName("phone");
+     phonesMapping.setFieldName("PHONE_NUMBER"); '''// set field name'''
+
+     '''// add this mapping to descriptor'''
+     descriptor.addMapping (phonesMapping);
+ }
+----
+
+For more information, see the _EclipseLink API Reference_.
+
+== Configuring Structure Name
+
+Certain object-relational data type mappings require the specification
+of the data type or structure name of the field being mapped. The
+structure name is the name of the array or table type that defines the
+field.
+
+This table summarizes which object-relational data type mappings support
+this option.
+
+[#Table 50-6]##
+
+Mapping
+
+Using the Workbench
+
+Using Java
+
+Object-relational data type structure mapping
+
+Object-relational data type reference mapping
+
+Object-relational data type array mapping
+
+Object-relational data type object array mapping
+
+Object-relational data type nested table mapping
+
+=== How to Configure Structure Name Using Java
+
+Use the object-relational data type mapping method `+setStructureName+`
+to specify the structure of the attribute being mapped.
+
+This example shows how to use this method with an `+ObjectArrayMapping+`
+that maps the `+Employee+` class attribute `+phones+` to database field
+name `+PHONE_NUMBERS+` of type `+PHONE_ARRAY_TYPE+`.
+
+[#Example 50-4]## *_Configuring Structure Name in Java_*
+
+[source,java]
+----
+ public void customize(ClassDescriptor descriptor) {
+     ObjectArrayMapping phonesMapping = new ObjectArrayMapping();
+     phonesMapping.setReferenceClass("Employee.class");
+     phonesMapping.setAttributeName("phones");
+     phonesMapping.setFieldName("PHONE_NUMBERS");
+     phonesMapping.setStructureName("PHONE_ARRAY_TYPE"); // set structure name
+
+     // add this mapping to descriptor
+     descriptor.addMapping (phonesMapping);
+ }
+----
+
+For more information, see the _EclipseLink API Reference_.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

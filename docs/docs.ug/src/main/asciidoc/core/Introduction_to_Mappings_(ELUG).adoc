@@ -1,0 +1,1494 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Introduction_to_Mappings_(ELUG)[Related
+Topics]
+
+EclipseLink can transform data between an object representation and a
+representation specific to a data source. This transformation is called
+mapping and it is the core of an EclipseLink project.
+
+A mapping corresponds to a single data member of a domain object. It
+associates the object data member with its data source representation
+and defines the means of performing the two-way conversion between
+object and data source.
+
+== Mapping Types
+
+This table describes the mapping types that EclipseLink supports.
+
+[#Table 16-1]##
+
+Type
+
+Description
+
+EclipseLink Workbench
+
+Java
+
+Relational
+
+Mappings that transform any object data member type to a corresponding
+relational database (SQL) data source representation in any supported
+relational database. Relational mappings allow you to map an object
+model into a relational data model.
+
+Object-relational data type
+
+Mappings that transform certain object data member types to structured
+data source representations optimized for storage in specialized
+object-relational data type databases such as Oracle Database.
+Object-relational data type mappings let you map an object model into an
+object-relational data type data model.
+
+EIS
+
+Mappings that transform object data members to the EIS record format
+defined by the object’s descriptor.
+
+XML
+
+Mappings that transform object data members to the XML elements of an
+XML document whose structure is defined by an XML schema document (XSD).
+
+For more information, see the following:
+
+* link:Creating%20a%20Mapping%20(ELUG)#CBBHHHJC[Creating a Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)#CEGFEFJG[Configuring a
+Mapping]
+
+== Mapping Concepts
+
+This section describes concepts unique to EclipseLink mappings,
+including the following:
+
+* link:#Mapping_Architecture[Mapping Architecture] (applicable to
+relational and nonrelational mappings)
+* link:#Example_Mapping[Example Mapping] (applicable to relational and
+nonrelational mappings)
+* link:#Automatic_Mappings[Automatic Mappings]
+** link:#JPA_Automapping[JPA Automapping] (applicable to relational
+mappings)
+** link:#Automapping_with_Workbench_at_Development_Time[Automapping with
+Workbench at Development Time] (applicable to relational and
+nonrelational mappings)
+** link:#JAXB_Project_Generation_at_Development_Time[JAXB Project
+Generation at Development Time] (applicable to XML mappings)
+* link:#Indirection_(Lazy_Loading)[Indirection (Lazy Loading)]
+(applicable to relational mappings)
+** link:#Value_Holder_Indirection[Value Holder Indirection]
+** link:#Transparent_Indirect_Container_Indirection[Transparent Indirect
+Container Indirection]
+** link:#Proxy_Indirection[Proxy Indirection]
+** link:#Weaved_IndirectionW[eaved Indirection]
+** link:#Indirection_and_JPA[Indirection and JPA]
+** link:#Indirection,_Serialization,_and_Detachment[Indirection&#44;
+Serialization&#44; and Detachment]
+* link:#Method_Accessors_and_Attribute_Accessors[Method Accessors and
+Attribute Accessors] (applicable to relational and nonrelational
+mappings)
+* link:#Mapping_Converters_and_Transformers[Mapping Converters and
+Transformers]
+** link:#Serialized_Object_Converter[Serialized Object Converter]
+(applicable to relational and nonrelational mappings)
+** link:#Type_Conversion_Converter[Type Conversion Converter]
+(applicable to relational and nonrelational mappings)
+** link:#Object_Type_Converter[Object Type Converter] (applicable to XML
+mappings)
+** link:#Simple_Type_Translator[Simple Type Translator] (applicable to
+XML mappings)
+** link:#Transformation_Mappings[Transformation Mappings] (applicable to
+relational and nonrelational mappings)
+* link:#Mappings_and_XPath[Mappings and XPath] (applicable to XML
+mappings)
+* #Mappings_and_xsd:list_and_xsd:union_Types[Mappings and xsd:list and
+xsd:union Types] (applicable to XML mappings)
+* #Mappings_and_the_jaxb:class_Customization[Mappings and the jaxb:class
+Customization] (applicable to XML mappings)
+* link:#Mappings_and_JAXB_Typesafe_Enumerations[Mappings and JAXB
+Typesafe Enumerations] (applicable to XML mappings)
+
+=== Mapping Architecture
+
+To define a mapping, you draw upon the following components:
+
+* The data representation specific to the data source (such as a
+relational database table or schema-defined XML element) in which you
+store the object’s data.
+* A descriptor for a particular object class.
+* An object class to map.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* A mapping is the same regardless of whether your project is
+persistent or nonpersistent.
+|===
+
+For an example of a typical EclipseLink mapping, see
+link:#Example_Mapping[Example Mapping].
+
+The type of data source you define in your EclipseLink project
+determines the type of mappings you can use and how you configure them.
+In a persistent project, you use mappings to persist to a data source.
+In a nonpersistent project, you use mappings simply to transform between
+the object format and some other data representation (such as XML). For
+more information about data source and project types, see
+link:Introduction%20to%20Projects_(ELUG)[EclipseLink Project Types].
+
+A descriptor represents a particular domain object: it describes the
+object’s class. It owns mappings: one mapping for each of the class data
+members that you intend to persist or transform in memory.
+
+[cols="<",]
+|===
+|*Note:* Persistence is applicable at the descriptor level.
+|===
+
+For more information about descriptors, see
+link:Introduction%20to%20Descriptors%20(ELUG)#CHECEAAE[Introduction to
+Descriptors].
+
+EclipseLink provides mappings to handle a wide variety of data types and
+data representations. For more information, see
+link:#Mapping_Types[Mapping Types].
+
+All mappings are subclasses of the
+`+org.eclipse.persistence.mappings.DatabaseMapping+` class. For more
+information about the mapping API, see link:#Mapping_API[Mapping API].
+
+=== Example Mapping
+
+Although EclipseLink supports more complex mappings, most EclipseLink
+classes map to a single database table or XML element that defines the
+type of information available in the class. Each object instance of a
+given class maps to a single row comprising the object’s attributes,
+plus an identifier (the primary key) that uniquely identifies the
+object.
+
+The link:#Figure_16-1[How Classes and Objects Map to a Database Table]
+figure illustrates the simplest database mapping case in which:
+
+* *Table_X* in the database represents *Class_X*.
+* *Object_X1* and *Object_X2* are instances of *Class_X*.
+* Individual rows in *Table_X* represent *Object_X1* and *Object_X2*, as
+well as any other instances of *Class_X*.
+
+[#Figure 16-1]## *_How Classes and Objects Map to a Database Table_*
+
+.How Classes and Objects Map to a Database Table
+image::example_map1.gif[How Classes and Objects Map to a Database
+Table,title="How Classes and Objects Map to a Database Table"]
+
+EclipseLink provides you with the tools to build these mappings, from
+the simple mappings illustrated in the link:#Figure_16-1[How Classes and
+Objects Map to a Database Tabl] figure, to complex mappings.
+
+For an additional example of a relational mapping, see the
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Figure_31-1[Direct-to-Field
+Mapping] figure.
+
+For an example of a nonrelational mapping, see the
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#Figure_58-34[XML
+Transformation Mappings] figure.
+
+=== Automatic Mappings
+
+Typically, you use the Workbench to define mappings on a class-by-class
+and data member-by-data-member basis manually (see
+link:Creating%20a%20Mapping%20(ELUG)#Creating_Mappings_Manually_During_Development[Creating
+Mappings Manually During Development]).
+
+Alternatively, you can take advantage of the following:
+
+* link:#JPA_Automapping[JPA Automapping]
+* link:#Automapping_with_Workbench_at_Development_Time[Automapping with
+Workbench at Development Time]
+* link:#JAXB_Project_Generation_at_Development_Time[JAXB Project
+Generation at Development Time]
+
+==== JPA Automapping
+
+To configure automapping in a JPA project, you just need to annotate
+your persistence classes with `+@Entity+` and define their primary key
+with `+@Id+` (or define the list of entities and their primary key
+fields in your `+orm.xml+`) and the EclipseLink JPA persistence provider
+will automatically map all unmapped properties. You can also configure
+`+persistence.xml+` properties to automatically create or replace the
+corresponding database tables. For more information, see
+link:Introduction_to_EclipseLink_JPA_(ELUG)[EclipseLink JPA Overview].
+
+==== Automapping with Workbench at Development Time
+
+You can use Workbench *Automap* feature to automatically define default
+mappings for every class and data member in your project (see
+link:Creating%20a%20Mapping%20(ELUG)#Creating_Mappings_Automatically_During_Development[Creating
+Mappings Automatically During Development]).
+
+Workbench automapping is available for all project types and assumes
+that both the object model and database schema are already defined.
+
+==== JAXB Project Generation at Development Time
+
+JAXB provides an API and a tool that allow automatic two-way mapping
+between XML documents and Java objects. The JAXB compiler generates all
+the Java classes and mappings based on the provided Document Type
+Definition (DTD) and a schema definition.
+
+For more information on JAXB, see _Architecture for XML Binding (JAXB):
+A Primer_ at
+http://java.sun.com/developer/technicalArticles/xml/jaxb/indexl[`+http://java.sun.com/developer/technicalArticles/xml/jaxb/indexl+`]
+
+For more information on XML mappings, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#Introduction_to_XML_Mappings[Introduction
+to XML Mappings].
+
+=== Indirection (Lazy Loading)
+
+By default, when EclipseLink retrieves a persistent object, it retrieves
+all of the dependent objects to which it refers. When you configure
+indirection (also known as lazy reading, lazy loading, and just-in-time
+reading) for an attribute mapped with a relationship mapping,
+EclipseLink uses an indirection object as a place holder for the
+referenced object: EclipseLink defers reading the dependent object until
+you access that specific attribute. This can result in a significant
+performance improvement, especially if the application is interested
+only in the contents of the retrieved object, rather than the objects to
+which it is related.
+
+We strongly recommend using indirection for all relationship mappings.
+Not only does this lets you optimize data source access, but it also
+allows EclipseLink to optimize the unit of work processing, cache
+access, and concurrency.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* The use of indirection is especially important for providing a
+proper maintenance of bidirectional relationships. In this case, you
+must use indirection. If you are operating with collections, you must
+use transparent indirection (see
+link:#Transparent_Indirect_Container_Indirection[Transparent Indirect
+Container Indirection]).
+|===
+
+The link:#Figure_16-2[EclipseLink Indirection] figure shows an
+indirection example. Without indirection, reading the `+Order+` object
+also reads the dependent collection of `+LineItem+` objects. With
+indirection, reading the `+Order+` object does not read the dependent
+collection of `+LineItem+` objects: the `+lineItems+` attribute refers
+to an indirection object. You can access other attributes (such as
+`+customerId+`), but EclipseLink reads the dependent `+LineItem+`
+objects only if and when you access the `+lineItems+` attribute.
+
+[#Figure 16-2]## *_EclipseLink Indirection_*
+
+.EclipseLink Indirection
+image::indirctn.gif[EclipseLink
+Indirection,title="EclipseLink Indirection"]
+
+EclipseLink supports the following types of indirection:
+
+* link:#Value_Holder_Indirection[Value Holder Indirection]
+* link:#Transparent_Indirect_Container_Indirection[Transparent Indirect
+Container Indirection]
+* link:#Proxy_Indirection[Proxy Indirection]
+
+When using indirection with an object that your application serializes,
+you must consider the effect of any untriggered indirection objects at
+deserialization time (see
+link:#Indirection,_Serialization,_and_Detachment[Indirection&#44;
+Serialization&#44; and Detachment]).
+
+For information on configuring indirection, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Indirection_(Lazy_Loading)[Configuring
+Indirection (Lazy Loading)].
+
+==== Value Holder Indirection
+
+Persistent classes that use indirection must replace relationship
+attributes with value holder attributes. A value holder is an instance
+of a class that implements the `+ValueHolderInterface+` interface, such
+as `+ValueHolder+`. This object stores the information necessary to
+retrieve the object it is replacing from the database. If the
+application does not access the value holder, the replaced object is
+never read from the database.
+
+To obtain the object that the value holder replaces, use the
+`+getValue+` and `+setValue+` methods of the `+ValueHolderInterface+`. A
+convenient way of using these methods is to hide the `+getValue+` and
+`+setValue+` methods of the `+ValueHolderInterface+` inside `+get+` and
+`+set+` methods, as shown in the following illustrations.
+
+The link:#Figure_16-3[Address Object Not Read] figure shows the
+`+Employee+` object being read from the database. The `+Address+` object
+is not read and will not be created unless it is accessed.
+
+[#Figure 16-3]## *_Address Object Not Read_*
+
+.Address Object Not Read
+image::vhstep1.gif[Address Object Not
+Read,title="Address Object Not Read"]
+
+The first time the address is accessed, as in the
+link:#Figure_16-4[Initial Request] figure, the `+ValueHolder+` reads and
+returns the `+Address+` object.
+
+[#Figure 16-4]## *_Initial Request_*
+
+.Initial Request
+image::vhstep2.gif[Initial Request,title="Initial Request"]
+
+Subsequent requests for the address do not access the database, as shown
+in the link:#Figure_16-5[Subsequent Requests] figure.
+
+[#Figure 16-5]## *_Subsequent Requests_*
+
+.Subsequent Requests
+image::vhstep3.gif[Subsequent Requests,title="Subsequent Requests"]
+
+If you are using method access (
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Configuring
+Method or Direct Field Accessing at the Mapping Level]), the get and set
+methods specified in the mapping must access the instance of
+`+ValueHolderInterface+`, rather than the object referenced by the value
+holder. The application should not use these getter and setter, but use
+the getter and setter that hide the usage of value holders. For more
+information, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_ValueHolder_Indirection_With_Method_Accessing[Configuring
+ValueHolder Indirection With Method Accessing].
+
+For JPA entities or POJO classes that you configure for weaving,
+EclipseLink weaves value holder indirection for one-to-one mappings. If
+you want EclipseLink to weave change tracking and your application
+includes collection mappings (one-to-many or many-to-many), then you
+must configure all collection mappings to use transparent indirect
+container indirection only (you may not configure your collection
+mappings to use eager loading nor value holder indirection).
+
+==== Transparent Indirect Container Indirection
+
+Transparent indirect container (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Configuring
+Container Policy]) indirection lets you declare any relationship
+attribute of a persistent class that holds a collection of related
+objects as any of the following:
+
+* `+java.util.Collection+`
+* `+java.util.Hastable+`
+* `+java.util.List+`
+* `+java.util.Map+`
+* `+java.util.Set+`
+* `+java.util.Vector+`
+
+EclipseLink will use an indirection object that implements the
+appropriate interface and also performs just-in-time reading of the
+related objects. When using transparent indirection, you do not have to
+declare the attributes as `+ValueHolderInterface+`.
+
+Newly created collection mappings use transparent indirection by default
+if their attribute _is not_ a `+ValueHolderInterface+`.
+
+For JPA entities or POJO classes that you configure for weaving,
+EclipseLink weaves value holder indirection for one-to-one mappings. If
+you want EclipseLink to weave change tracking and your application
+includes collection mappings (one-to-many or many-to-many), then you
+must configure all collection mappings to use transparent indirect
+container indirection only (you may not configure your collection
+mappings to use eager loading nor value holder indirection).
+
+You can configure EclipseLink to automatically weave transparent
+indirect container indirection for JPA entities and Plain Old Java
+Object (POJO) classes. For more information, see the following:
+
+* link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Using_Weaving[Using
+Weaving]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Weaving[Using
+EclipseLink JPA Weaving]
+
+==== Proxy Indirection
+
+Introduced in JDK 1.3, the Java class `+Proxy+` lets you use dynamic
+proxy objects as place-holders for a defined interface. Certain
+EclipseLink mappings (see the
+link:Configuring%20a%20Mapping%20(ELUG)#Table_117-4[Mapping Support for
+Indirection] table) can be configured to use proxy indirection, which
+gives you the benefits of EclipseLink indirection without the need to
+include EclipseLink classes in your domain model. Proxy indirection is
+to one-to-one relationship mappings as indirect containers are to
+collection mappings.
+
+To use proxy indirection, your domain model must satisfy all of the
+following criteria:
+
+* The target class of the one-to-one relationship must implement a
+public interface.
+* The one-to-one attribute on the source class must be of the
+`+interface+` type.
+* If you employ method accessing (
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Configuring
+Method or Direct Field Accessing at the Mapping Level]), then the getter
+and setter methods must use the interface.
+
+Before using proxy indirection, be aware of the restrictions it places
+on how you use the unit of work (see
+link:#Proxy_Indirection_Restrictions[Proxy Indirection Restrictions]).
+
+To configure proxy indirection, you can use the Workbench (see
+link:Configuring%20a%20Mapping%20(ELUG)#How_to_Configure_Indirection_Using_Workbench[How
+to Configure Indirection Using Workbench]) or Java in an amendment
+method (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Proxy_Indirection[Configuring
+Proxy Indirection]).
+
+===== Proxy Indirection Restrictions
+
+Proxy objects in Java are only able to intercept messages sent. If a
+primitive operation such as `+==+`, `+instanceof+`, or `+getClass+` is
+used on a proxy, it will not be intercepted. This limitation can require
+the application to be somewhat aware of the usage of proxy objects.
+
+You cannot register the target of a proxy indirection implementation
+with a unit of work. Instead, first register the source object with the
+unit of work. This lets you retrieve a target object clone with a call
+to a getter on the source object clone.
+
+For example:
+
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Employee emp = (Employee)session.readObject(Employee.class);+` `+ +`
+*`+//\'\' \'\'Register\'\' \'\'the\'\' \'\'source\'\' \'\'object+`*
+`+Employee empClone = (Employee)uow.registerObject(emp); +` `+ +`
+*`+//\'\' \'\'All\'\' \'\'of\'\' \'\'source\'\' \'\'object's\'\' \'\'relationships\'\' \'\'are\'\' \'\'cloned\'\' \'\'when\'\' \'\'source\'\' \'\'object\'\' \'\'is\'\' \'\'cloned+`*
+`+Address addressClone = empClone.getAddress();+`
+`+addressClone.setCity("Toronto"); +`
+
+For more information about clones and the unit of work, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#CIHEGFDA[Introduction
+to EclipseLink Transactions].
+
+==== Weaved Indirection
+
+For JPA entities or POJO classes that you configure for weaving,
+EclipseLink weaves value holder indirection for one-to-one mappings. If
+you want EclipseLink to weave change tracking and your application
+includes collection mappings (one-to-many or many-to-many), then you
+must configure all collection mappings to use transparent indirect
+container indirection only (you may not configure your collection
+mappings to use eager loading nor value holder indirection).
+
+For more information, see
+link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Using_Weaving[Using
+Weaving].
+
+==== Indirection and JPA
+
+When you set mapping annotation attribute `+fetch+` to `+lazy+`, the
+EclipseLink JPA persistence provider uses indirection.
+
+By default, one-to-many and many-to-many relationships are lazy and use
+transparent indirection, while one-to-one and many-to-one relationships
+are not lazy.
+
+If you set one-to-one or many-to-one relationships to lazy, and you
+enable weaving, the EclipseLink JPA persistence provider will use
+weaving to enable value holder indirection for these relationships.
+
+For more information, see the following:
+
+* link:#Weaved_Indirection[Weaved Indirection]
+* link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Using_Weaving[Using
+Weaving]
+
+==== Indirection, Serialization, and Detachment
+
+When using indirection (lazy loading), it is likely that a graph of
+persistent objects will contain untriggered indirection objects. Because
+indirection objects are transient and do not survive serialization
+between one JVM and another, untriggered indirection objects will
+trigger an error if the relationship is accessed after deserialization.
+
+The application must ensure that any indirect relationships that will be
+required after deserialization have been instantiated before
+serialization. This can be done through accessing the get method for any
+relationship using `+ValueHolder+` or weaved indirection, and by sending
+the `+size()+` method to any relationship using transparent indirection.
+If the application desired the relationships to be always instantiated
+on serialization, the serialization `+writeObject()+` method could be
+overwritten in the persistent class to first instantiate the desired
+relationships. Caution should be used for objects with many or deep
+relationships to avoid serializing large object graphs: ideally, only
+the relationships required by the client should be instantiated.
+
+When serializing JPA entities, any lazy relationships that have not been
+instantiated prior to serialization will trigger errors if they are
+accessed. If weaving is used on the server, and the entities are
+serialized to a client, the same weaved classes must exist on the
+client, either through static weaving of the jar, or through launching
+the client JVM using EclipseLink.
+
+For more information, see the following:
+
+* link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Using_Weaving[Using
+Weaving]
+* link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Merging_Changes_in_Working_Copy_Clones[Merging
+Changes in Working Copy Clones]
+
+=== Method Accessors and Attribute Accessors
+
+By default, EclipseLink uses direct access to access public attributes.
+Using EclipseLink, you can configure field access at the project level
+(see
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Method_or_Direct_Field_Access_at_the_Project_Level[Configuring
+Method or Direct Field Access at the Project Level]) and at the mapping
+level
+(link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Configuring
+Method or Direct Field Accessing at the Mapping Level]).
+
+=== Mapping Converters and Transformers
+
+If existing EclipseLink mappings do not meet your needs, you can create
+custom mappings using mapping extensions. These extensions include the
+following:
+
+* link:#Serialized_Object_Converter[Serialized Object Converter]
+* link:#Type_Conversion_Converter[Type Conversion Converter]
+* link:#Object_Type_Converter[Object Type Converter]
+* link:#Simple_Type_Translator[Simple Type Translator]
+* link:#Transformation_Mappings[Transformation Mappings]
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can use the mapping converters and transformers regardless
+of whether your data source is relational or nonrelational.
+|===
+
+==== Serialized Object Converter
+
+The serialized object converter is an extension of direct and direct
+collection mappings that lets you map complex objects into binary fields
+through Java object serialization. Serialized objects are normally
+stored in `+RAW+` or Binary Large Object (`+BLOB)+` fields in the
+database, or `+HEX+` or `+BASE64+` elements in an XML document.
+
+The link:#Figure_16-6[Serialized Object Converter] figure shows an
+example of a direct-to-field mappings that uses a serialized object
+converter. The attribute `+jobDescription+` contains a formatted text
+document that is stored in the JOB_DESC field of the database.
+
+[#Figure 16-6]## *_Serialized Object Converter (relational)_*
+
+.Serialized Object Converter (relational)
+image::serobjfg.gif[Serialized Object Converter
+(relational),title="Serialized Object Converter (relational)"]
+
+The link:#Figure_16-7[Serialized Object Converter (nonrelational)]
+figure demonstrates an example of a nonrelational mapping that uses a
+serialized object converter. The attribute `+jobDescription+` contains a
+formatted text document that EclipseLink stores in the
+`+JOB DESCRIPTION+` element of an XML schema.
+
+[#Figure 16-7]## *_Serialized Object Converter (nonrelational)_*
+
+.Serialized Object Converter (nonrelational)
+image::serobjxml.gif[Serialized Object Converter
+(nonrelational),title="Serialized Object Converter (nonrelational)"]
+
+The serialized object converter relies on the Java serializer. Before
+you map a domain object with the serialized object converter, ensure
+that the domain object implements the `+java.io.Serializable+` interface
+(or inherits that implementation) and marks all nonserializable fields
+transient.
+
+For more information, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Serialized_Object_Converter[Configuring
+a Serialized Object Converter].
+
+==== Type Conversion Converter
+
+The type conversion converter is an extension of direct and direct
+collection mappings that lets you explicitly map a data source type to a
+Java type. For example, a `+Number+` in the data source can be mapped to
+a `+String+` in Java, or a `+java.util.Date+` in Java can be mapped to a
+`+java.sql.Date+` in the data source.
+
+The link:#Figure_16-8[Type Conversion Mapping (relational)] figure
+illustrates a type conversion mapping (relational). Because the
+`+java.util.Date+` class is stored by default as a `+Timestamp+` in the
+database, it must first be converted to an explicit database type such
+as `+java.sql.Date+` (required only for DB2–most other databases have a
+single date data type that can store any date or time).
+
+[#Figure 16-8]## *_Type Conversion Mapping (relational)_*
+
+.Type Conversion Mapping (relational)
+image::tcmapfig.gif[Type Conversion Mapping
+(relational),title="Type Conversion Mapping (relational)"]
+
+The link:#Figure_16-9[Type Conversion Mapping (nonrelational)] figure
+illustrates a type conversion mapping (nonrelational).
+`+java.util.Date+` object is mapped to a String in a XML schema.
+
+[#Figure 16-9]## *_Type Conversion Mapping (nonrelational)_*
+
+.Type Conversion Mapping (nonrelational)
+image::tcmapxml.gif[Type Conversion Mapping
+(nonrelational),title="Type Conversion Mapping (nonrelational)"]
+
+You can use a type conversion converter to specify the specific database
+type when that type must be handled specially for the database. This
+includes support for the special Oracle JDBC binding options required
+for `+NCHAR+`, `+NVARCHAR2+`, and `+NCLOB+` fields as well as the
+special Oracle Thin JDBC insert and update requirements for handling
+`+BLOB+` and `+CLOB+` fields greater than 5K.
+
+EclipseLink uses the `+NCharacter+`, `+NClob+` and `+NString+` types in
+the `+org.eclipse.persistence.platform.database.oracle+` package as the
+converter data type to support the `+NCHAR+`, `+NCLOB+` and
+`+NVARCHAR2+` types. EclipseLink uses the `+java.sql.Blob+` and `+Clob+`
+types as the converter data type to support `+BLOB+` and `+CLOB+` values
+greater than 5K.
+
+You can configure a type conversion converter to map a data source time
+type (such as `+TIMESTAMP+`) to a `+java.lang.String+` provided that the
+String value conforms to the following formats:
+
+* `+YYYY/MM/DD HH:MM:SS+`
+* `+YY/MM/DD HH:MM:SS+`
+* `+YYYY-MM-DD HH:MM:SS+`
+* `+YY-MM-DD HH:MM:SS+`
+
+For more complex `+String+` to `+TIMESTAMP+` type conversion, consider a
+transformation mapping (see link:#Transformation_Mappings[Transformation
+Mappings]).
+
+For more information, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter].
+
+==== Object Type Converter
+
+The object type converter is an extension of direct and direct
+collection mappings that lets you match a fixed number of XML values to
+Java objects. Use this converter when the values in the schema differ
+from those in Java.
+
+The link:#Figure_16-10[Object Type XML Converter] figure illustrates an
+object type conversion between the `+Employee+` attribute `+gender+` and
+the XML element `+gender+`. If the value of the Java object attribute is
+`+Female+`, EclipseLink stores it in the XML element as `+F+`.
+
+[#Figure 16-10]## *_Object Type XML Converter_*
+
+.Object Type XML Converter
+image::obxmlfig.gif[Object Type XML
+Converter,title="Object Type XML Converter"]
+
+For more information, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_an_Object_Type_Converter[Configuring
+an Object Type Converter].
+
+==== Simple Type Translator
+
+The simple type translator is an extension of direct and direct
+collection mappings that lets you automatically translate an XML element
+value to an appropriate Java type based on the element’s attribute as
+defined in your XML schema.
+
+You can use a simple type translator only when the mapping’s XPath goes
+to a text node. You cannot use a simple type translator if the mapping’s
+XPath goes to an attribute.
+
+Using a simple type translator, you can make the XML document preserve
+type information. This is useful when your object model specifies
+generic object attributes such as `+java.lang.Object+` and
+`+java.io.Serializable+`, since they do not trigger specific type
+conversions in EclipseLink as do specific object attributes such as
+`+java.lang.Integer+` or `+java.util.Calendar+`.
+
+The link:#Figure_16-11[Simple Type Translator] figure illustrates a type
+translation XML mapping for the `+number+` attribute of the
+`+PhoneNumber+` class. Notice that the Java attribute is not specific
+enough to preserve the typing. The simple type translator adds the type
+information to the resulting document to preserve the typing.
+
+[#Figure 16-11]## *_Simple Type Translator_*
+
+.Simple Type Translator
+image::tcxmlfig.gif[Simple Type
+Translator,title="Simple Type Translator"]
+
+By default, EclipseLink uses built-in read and write conversion pairs
+(see link:#Default_Read_Conversions[Default Read Conversions] and
+link:#Default_Write_Conversions[Default Write Conversions]).
+
+You can override this behavior by specifying and configuring your own
+simple type translator, for example, to write XML binary data as
+`+Base64+`.
+
+For more information, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Simple_Type_Translator[Configuring
+a Simple Type Translator].
+
+===== Default Read Conversions
+
+The link:#Table_16-2[Simple Type Translator Read Conversions] table
+lists the built-in conversion pairs for reading XML elements. When the
+schema attribute is specified and the simple type translator is enabled,
+the value read is converted to the corresponding Java type.
+
+[#Table 16-2]## *_Simple Type Translator Read Conversions_*
+
+[cols="<,<",options="header",]
+|===
+|*Schema Type* |*Java Type*
+|base64Binary |Byte[]
+|boolean |Boolean
+|byte |Byte
+|date |Calendar
+|dateTime |Calendar
+|double |Double
+|float |Float
+|hexBinary |Byte[]
+|int |int
+|integer |BigInteger
+|long |Long
+|short |Short
+|string |String
+|time |Calendar
+|unsignedByte |Short
+|unsignedInt |Long
+|unsignedShort |Integer
+|===
+
+===== Default Write Conversions
+
+The link:#Table_16-3[Simple Type Translator Write Conversions] tabel
+lists the built-in conversion pairs for writing XML. When a Java class
+attribute is of a type in the following table and the simple type
+translator is enabled, the corresponding schema type is specified on the
+element written.
+
+[#Table 16-3]## *_Simple Type Translator Write Conversions_*
+
+[cols="<,<",options="header",]
+|===
+|*Java Type* |*Schema Type*
+|Byte[] |hexBinary
+|BigInteger |integer
+|Boolean |boolean
+|Byte |byte
+|Calendar |dateTime
+|Gregorian_Calendar |dateTime
+|Double |double
+|Float |float
+|Integer |int
+|Long |long
+|int |int
+|short |short
+|String |string
+|===
+
+=== Transformation Mappings
+
+In some special circumstances, existing mapping types and their default
+Java to data source type handling may be insufficient. In these special
+cases, you can consider using a transformation mapping to perform
+specialized translations between how a value is represented in Java and
+in the data source.
+
+A transformation mapping is made up of the following two components:
+
+* attribute transformer (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Attribute_Transformer[Configuring
+Attribute Transformer]): performs the object attribute transformation at
+read (unmarshall) time;
+* field transformer (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Field_Transformer_Associations[Configuring
+Field Transformer Associations]): performs the object attribute-to-field
+transformation at write (marshal) time;
+
+You can implement a transformer as either a separate class or as a
+method on your domain object.
+
+Within your implementation of the attribute and field transformer, you
+can take whatever actions are necessary to transform your application
+data to suit your data source, and vise versa.
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Transformation_Mapping[Transformation
+Mapping]
+* link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Transformation_Mapping[EIS
+Transformation Mapping]
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Transformation_Mapping[XML
+Transformation Mapping]
+
+=== Mappings and XPath
+
+EclipseLink uses XPath statements to efficiently map the attributes of a
+Java object in EIS mappings to XML records and in XML mappings to XML
+documents. When you create such a mapping, you can specify the
+following:
+
+* link:#XPath_by_Position[XPath by Position]
+* link:#XPath_by_Path_and_Name[XPath by Path and Name]
+* link:#XPath_by_Name[XPath by Name]
+* link:#Self_XPath[Self XPath]
+
+==== XPath by Position
+
+In a relational database table, columns are uniquely identified by name.
+In an XML document, elements are uniquely identified by name and
+position. The link:#Figure_16-12[Mapping to an XML Document by Position]
+figure illustrates mapping to an XML document in which the first
+instance of the `+street+` element stores apartment information and the
+second instance of the `+street+` element stores street information. The
+link:#Figure_16-12[Mapping to an XML Document by Position] figure shows
+that EclipseLink XML mappings preserve the order in which mappings are
+persisted and allow you to map Java object attributes to XML elements by
+position using an XPath like `+street[2]/text()+`.
+
+Other XML technologies only recognize the name of XML elements (not
+their position) and force you to store the simple values from elements
+with the same name in a collection.
+
+[#Figure 16-12]## *_Mapping to an XML Document by Position_*
+
+.Mapping to an XML Document by Position
+image::xpposit.gif[Mapping to an XML Document by
+Position,title="Mapping to an XML Document by Position"]
+
+==== XPath by Path and Name
+
+In an XML document, attributes and elements are uniquely identified by a
+combination of name and path. The link:#Figure_16-13[Mapping to an XML
+Document by Path and Name] figure illustrates that EclipseLink XML
+mappings can uniquely identify an XML element by name and path using an
+XPath such as `+item/name/text()+`. EclipseLink does not require a
+formal object relationship between XML elements `+lines+` and `+item+`.
+
+Other XML technologies force you to provide an object relationship for
+every level of nesting, resulting in the inclusion of many XML elements
+and classes simply to organize the data to satisfy this restriction.
+This produces an unnecessarily large object model that does not properly
+reflect the domain space.
+
+[#Figure 16-13]## *_Mapping to an XML Document by Path and Name_*
+
+.Mapping to an XML Document by Path and Name
+image::xpnampat.gif[Mapping to an XML Document by Path and
+Name,title="Mapping to an XML Document by Path and Name"]
+
+==== XPath by Name
+
+For simple XML documents, EclipseLink XML mappings can correctly place
+data in an XML document given an XPath of only an attribute or element
+name.
+
+The link:#Figure_16-14[Mapping to a Simple XML Document by Name] figure
+illustrates mapping to a simple XML document by name. You can map Java
+object attribute `+name+` to XML attribute `+name+` by specifying an
+XPath of only `+@NAME+`. Similarly, you can map Java object attribute
+`+age+` to XML text node `+AGE+` by specifying an XPath of only `+AGE+`.
+
+[#Figure 16-14]## *_Mapping to a Simple XML Document by Name_*
+
+.Mapping to a Simple XML Document by Name
+image::xpname.gif[Mapping to a Simple XML Document by
+Name,title="Mapping to a Simple XML Document by Name"]
+
+Specifying an XPath by name provides the worst performance of the XPath
+mapping options. We recommend that you use XPath by position (see
+link:#XPath_by_Position[XPath by Position]) or XPath by path and name
+(see link:#XPath_by_Path_and_Name[XPath by Path and Name]) instead.
+
+==== Self XPath
+
+For composite relationships, EclipseLink XML mappings can place data in
+the parent’s element rather than an element nested within it given the
+self XPath (`+"."+`).
+
+This figure illustrates mapping to an XML document using the self XPath.
+
+[#Figure 16-15]## *_Mapping to a XML Document Using Self XPath_*
+
+.Mapping to a XML Document Using Self XPath
+image::xpnameaddress.gif[Mapping to a XML Document Using Self
+XPath,title="Mapping to a XML Document Using Self XPath"]
+
+Note that in the preceding example represented by the
+link:#Figure_16-15[Mapping to a XML Document Using Self XPath] figure,
+`+name+` attribute of the `+Employee+` class is mapped using the
+`+@name+` annotation.
+
+Using the self XPath, you can make EclipseLink perform all read and
+write operations in the parent’s element and not an element nested
+within it (see #Mappings_and_the_jaxb:class_Customization[Mappings and
+the jaxb:class Customization]).
+
+=== Mappings and xsd:list and xsd:union Types
+
+EclipseLink supports mapping to `+xsd:list+` and `+xsd:union+` types in
+EIS mappings to XML records and XML mappings to XML documents, as this
+table shows.
+
+[#Table 16-4]## *_EclipseLink Support for xsd:list and xsd:union Types_*
+
+XSD
+
+EIS Direct Mapping XML Direct Mapping
+
+EIS Composite Direct Collection Mapping XML Composite Direct Collection
+Mapping
+
+Mapping an xsd:union Type
+
+Mapping an xsd:list Type
+
+Mapping a List of Unions
+
+Mapping a Union of Lists
+
+Mapping a Union of Unions
+
+==== Mapping an xsd:union Type
+
+Use an `+EISDirectMapping+` (with XML records), an `+XMLDirectMapping+`
+or their subclasses to map a Java attribute to an `+xsd:union+` type,
+such as the following:
+
+`+    +` `+        +`
+
+`+    +`
+
+When EclipseLink marshalls (writes) an object to XML, it uses its
+default conversion pairs to convert from the Java type to the
+appropriate `+xsd+` type.
+
+In the case where the `+memberTypes+` map to the same Java type,
+EclipseLink marshalls using the first `+memberType+` in the union which
+allows a successful conversion. For example, if you map a Java type of
+`+byte[]+` to an `+xsd:union+` with `+memberTypes+` of `+hexBinary+` and
+`+base64Binary+`, then EclipseLink marshalls using the first
+`+memberType+`: `+hexBinary+`.
+
+You can customize the default conversion pairs to control the Java type
+to `+xsd+` type conversion using `+XMLField+` method `+addConversion+`
+and configuring your mapping with that `+XMLField+` using
+`+EISDirectMapping+` or `+XMLDirectMapping+` method `+setField+`. For
+example, if the `+memberTypes+` were `+xsd:date+` and `+xsd:time+` and
+the Java attribute was of type `+java.util.Date+` instead of the JAXB
+1.0 standard `+java.util.Calendar+`, you can modify the conversion pair
+for `+xsd:date+` to be `+java.util.Date+`.
+
+When EclipseLink unmarshalls (reads) XML into an object, it tries each
+`+memberType+` in the order specified in the XSD until the first
+successful conversion is made.
+
+If your XML document specifies the `+xsi:type+` attribute on an element,
+then EclipseLink converts according to the `+xsi:type+` instead of
+trying the `+memberTypes+`.
+
+For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#Mapping_to_a_Union_Field_with_an_XML_Direct_Mapping[Mapping
+to a Union Field with an XML Direct Mapping]. The same applies to an
+`+EISDirectMapping+` with XML records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Direct_Mapping[EIS
+Direct Mapping]).
+
+==== Mapping an xsd:list Type
+
+You can map a Java attribute to an `+xsd:list+` type, such as:
+
+`+    +`
+
+If you represent the `+xsd:list+` in your object model as a Java
+`+List+` type, use an `+EISCompositeDirectCollectionMapping+` (with XML
+records), an `+XMLCompositeDirectCollectionMapping+` or their subclasses
+and use the mapping method `+useCollectionClass+` to specify the
+`+List+` type of the Java attribute.
+
+If you represent the list in your object model as a `+String+` of white
+space delimited tokens (for example, `+"aaa bbb ccc"+`), use an
+`+EISDirectMapping+` (with XML records), an `+XMLDirectMapping+` or
+their subclasses to map this Java attribute to an `+xsd:list+` (for
+example, `+aaa bbb ccc+`).
+
+In either case, you can configure whether or not the mapping unmarshalls
+(writes) the list to a single node, like `+aaa bbb ccc+`, or to multiple
+nodes, such as the following:
+
+`+aaa+` `+bbb+` `+ccc+`
+
+For more information on mapping to an `+xsd:list+` type using an
+`+XMLCompositeDirectCollectionMapping+` or its subclasses, see the
+following:
+
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)#Mapping_to_a_Single_Text_Node_with_an_XML_Composite_Direct_Collection_Mapping[Mapping
+to a Single Text Node with an XML Composite Direct Collection Mapping]
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)#Mapping_to_a_Single_Attribute_with_an_XML_Composite_Direct_Collection_Mapping[Mapping
+to a Single Attribute with an XML Composite Direct Collection Mapping]
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)#Specifying_the_Content_Type_of_a_Collection_with_an_XML_Composite_Direct_Collection_Mapping[Specifying
+the Content Type of a Collection with an XML Composite Direct Collection
+Mapping]
+
+The same applies to an `+EISCompositeDirectCollectionMapping+` (with XML
+records).
+
+For more information about mapping to an `+xsd:list+` type using an
+`+XMLDirectMapping+` or its subclasses, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#Mapping_to_a_List_Field_with_an_XML_Direct_Mapping[Mapping
+to a List Field with an XML Direct Mapping]. The same applies to an
+`+EISDirectMapping+` with XML records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Direct_Mapping[EIS
+Direct Mapping]).
+
+==== Mapping a List of Unions
+
+Use an `+EISCompositeDirectCollectionMapping+` (with XML records), an
+`+XMLCompositeDirectCollectionMapping+` or their subclasses to map a
+Java attribute to an `+xsd:list+` that contains `+xsd:union+` types,
+such as:
+
+`+    +` `+        +` `+            +` `+                +`
+`+            +`
+
+`+        +` `+    +`
+
+When EclipseLink marshalls (writes) an object to XML, it does not rely
+on a single `+xsd:list+` `+itemType+`. Instead, for each item in the
+list, EclipseLink tries each `+memberType+` until the first successful
+conversion.
+
+For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#Mapping_to_a_List_of_Unions_with_an_XML_Composite_Direct_Collection_Mapping[Mapping
+to a List of Unions with an XML Composite Direct Collection Mapping].
+The same applies to an `+EISCompositeDirectCollectionMapping+` with XML
+records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Composite_Direct_Collection_Mapping[EIS
+Composite Direct Collection Mapping]).
+
+==== Mapping a Union of Lists
+
+You can map a Java attribute to an `+xsd:union+` type whose
+`+memberTypes+` are `+xsd:list+` types where each `+xsd:list+` contains
+items of a single type, such as:
+
+`+    +` `+        +` `+            +` `+                +`
+`+            +`
+
+`+            +` `+                +` `+            +` `+        +`
+`+    +`
+
+Note that in this example, valid XML documents contain either all
+`+xsd:double+`, all `+xsd:date+`, or all `+xsd:integer+` values.
+
+If you represent the list in your object model as a `+String+` of white
+space delimited tokens (for example, `+"aaa bbb ccc"+`), use an
+`+EISDirectMapping+` (with XML records) or an `+XMLDirectMappng+` to map
+this Java attribute to an `+xsd:list+` (for example, `+aaa bbb ccc+`).
+
+If you represent the list in your object model as a Java `+List+` type,
+use an `+EISCompositeDirectCollectionMapping+` (with XML records), an
+`+XMLCompositeDirectCollectionMapping+` or their subclasses.
+
+For more information, see the following:
+
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)#Mapping_to_a_Union_of_Lists_with_an_XML_Direct_Mapping[Mapping
+to a Union of Lists with an XML Direct Mapping]. The same applies to an
+`+EISDirectMapping+` with XML records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Direct_Mapping[EIS
+Direct Mapping]).
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)#Mapping_to_a_Union_of_Lists_with_an_XML_Composite_Direct_Collection_Mapping[Mapping
+to a Union of Lists with an XML Composite Direct Collection Mapping].
+The same applies to an `+EISCompositeDirectCollectionMapping+` with XML
+records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Composite_Direct_Collection_Mapping[EIS
+Composite Direct Collection Mapping]).
+
+==== Mapping a Union of Unions
+
+Use an `+EISDirectMapping+` (with XML records), an `+XMLDirectMapping+`
+or their subclasses to map a Java attribute to an `+xsd:union+` that
+contains `+xsd:union+` types, such as:
+
+`+    +` `+        +` `+            +` `+              +`
+`+                +` `+              +`
+
+`+              +` `+                +` `+              +`
+`+              +` `+      +` `+      +`
+
+`+            +` `+              +` `+                +`
+`+              +` `+              +` `+                +`
+
+`+              +` `+              +` `+      +` `+    +`
+
+Note that in this example, valid XML documents may contain any of
+`+xsd:date+`, `+xsd:integer+`, `+xsd:string+`, or `+xsd:float+`.
+
+For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#Mapping_to_a_Union_of_Unions_with_an_XML_Direct_Mapping[Mapping
+to a Union of Unions with an XML Direct Mapping]. The same applies to an
+`+EISDirectMapping+` with XML records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Direct_Mapping[EIS
+Direct Mapping]).
+
+=== Mappings and the jaxb:class Customization
+
+Using the `+jaxb:class+` customization, you can declaratively specify an
+application-specific subclass of a schema-derived implementation class.
+This lets you write your own classes that extend JAXB’s generated
+implementation classes. The JAXB runtime binding framework can then
+access your subclasses.
+
+When you create an EIS composite object mapping to XML records or an XML
+composite object mapping to XML documents, you can configure the
+mapping’s XPath (
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_XPath[Configuring
+XPath]) to accommodate `+jaxb:class+` customizations with the following
+XSD structures:
+
+* link:#all,_choice,_or_sequence_Structure[all&#44; choice&#44; or
+sequence Structure]
+* link:#group_Structure[group Structure]
+* link:#sequence_or_choice_Structure_Containing_a_group[sequence or
+choice Structure Containing a group]
+* link:#group_Structure_Containing_a_sequence_or_choice[group Structure
+Containing a sequence or choice]
+* link:#group_Structure_Containing_a_group[group Structure Containing a
+group]
+
+When mapping to `+jaxb:class+` customized structures, consider the
+limitations of EclipseLink support for this customization (see
+#Limitations_of_jaxb:class_Customization_Support[Limitations of
+jaxb:class Customization Support]).
+
+==== all, choice, or sequence Structure
+
+You can use the `+jaxb:class+` customization with an `+all+`,
+`+choice+`, or `+sequence+` structure. The link:#Example_16-1[jaxb:class
+Customization of an all Structure] example shows a `+jaxb:class+`
+customization of an `+all+` structure.
+
+[#Example 16-1]## *_jaxb:class Customization of an all Structure_*
+
+`+    +` `+        +` `+            +` `+                +`
+
+`+                    +` `+                +` `+            +`
+`+            +` `+            +` `+        +`
+
+`+    +`
+
+This directs the JAXB compiler to create an inner class named `+Period+`
+in the owning element’s class for the `+all+` structure. Use an
+`+EISCompositeObjectMapping+` (with XML records) or an
+`+XMLCompositeObjectMapping+` to map a Java attribute to this inner
+class.
+
+For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Object_Mapping[XML
+Composite Object Mapping]. The same applies to an
+`+EISCompositeObjectMapping+` with XML records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Composite_Object_Mapping[EIS
+Composite Object Mapping]).
+
+==== group Structure
+
+You can use the `+jaxb:class+` customization with a `+group+` structure,
+as this example shows.
+
+[#Example 16-2]## *_jaxb:class Customization of a group Structure_*
+
+`+    +` `+        +` `+            +` `+        +`
+
+`+    +` `+    +` `+        +` `+        +` `+    +`
+
+`+    +` `+        +` `+    +`
+
+This directs the JAXB compiler to create an external wrapper class named
+`+Period+` for the `+group+` structure. Use an
+`+EISCompositeObjectMapping+` (with XML records) or an
+`+XMLCompositeObjectMapping+` to map a Java attribute to this external
+wrapper class.
+
+For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Object_Mapping[XML
+Composite Object Mapping]. The same applies to an
+`+EISCompositeObjectMapping+` with XML records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Composite_Object_Mapping[EIS
+Composite Object Mapping]).
+
+==== sequence or choice Structure Containing a group
+
+You can use the `+jaxb:class+` customization with a `+sequence+` or
+`+choice+` structure that contains a `+group+`. The
+link:#Example_16-3[jaxb:class Customization of a sequence Structure
+Containing a group] example shows a `+jaxb:class+` customization of a
+`+sequence+` structure containing a `+group+` structure.
+
+[#Example 16-3]## *_jaxb:class Customization of a sequence Structure
+Containing a group_*
+
+`+    +` `+        +` `+            +` `+                +`
+
+`+                    +` `+                +` `+            +`
+`+            +` `+            +` `+        +`
+
+`+    +`
+
+`+    +` `+        +` `+            +`
+
+`+        +` `+    +` `+    +` `+        +` `+        +` `+    +`
+
+This directs the JAXB compiler to create an inner class named
+`+EmploymentInfo+` in the owning element’s class for the `+sequence+`
+structure and an external wrapper class named `+Period+` for the
+`+group+` structure. The inner class references the external wrapper
+class. Use an `+EISCompositeObjectMapping+` (with XML records) or an
+`+XMLCompositeObjectMapping+` to map a Java attribute to this inner
+class.
+
+For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Object_Mapping[XML
+Composite Object Mapping]. The same applies to an
+`+EISCompositeObjectMapping+` with XML records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Composite_Object_Mapping[EIS
+Composite Object Mapping]).
+
+==== group Structure Containing a sequence or choice
+
+You can use the `+jaxb:class+` customization with a `+group+` structure
+that contains a `+sequence+` or `+choice+`. The
+link:#Example_16-4[jaxb:class Customization of a group Structure
+Containing a sequence] example shows a `+jaxb:class+` customization of a
+`+group+` structure containing a `+sequence+` structure.
+
+[#Example 16-4]## *_jaxb:class Customization of a group Structure
+Containing a sequence_*
+
+`+    +` `+        +` `+            +` `+        +`
+
+`+    +` `+    +` `+        +` `+            +` `+                +`
+`+            +`
+
+`+        +` `+        +` `+        +` `+    +`
+
+`+    +` `+        +` `+            +` `+            +`
+`+        +``+      +` `+    +`
+
+This directs the JAXB compiler to create an external wrapper class named
+`+EmploymentInfo+` for the `+group+` structure and an inner class named
+`+Period+` in the external wrapper class for the `+sequence+` structure.
+The owning element references the external wrapper class. Use an
+`+EISCompositeObjectMapping+` (with XML records) or an
+`+XMLCompositeObjectMapping+` to map a Java attribute to this external
+wrapper class.
+
+For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Object_Mapping[XML
+Composite Object Mapping]. The same applies to an
+`+EISCompositeObjectMapping+` with XML records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Composite_Object_Mapping[EIS
+Composite Object Mapping]).
+
+==== group Structure Containing a group
+
+You can use the `+jaxb:class+` customization with a `+group+` structure
+that contains another `+group+` structure, as the
+link:#Example_16-5[jaxb:class Customization of a group Structure
+Containing a group] example shows.
+
+[#Example 16-5]## *_jaxb:class Customization of a group Structure
+Containing a group_*
+
+`+    +` `+        +` `+            +` `+        +`
+
+`+    +` `+    +` `+        +` `+        +` `+    +`
+
+`+    +` `+        +` `+            +` `+        +` `+    +`
+
+`+    +` `+        +` `+        +` `+    +`
+
+`+    +` `+        +` `+    +`
+
+This directs the JAXB compiler to create a wrapper class named
+`+EmploymentInfo+` for the `+group+` structure that the owning element’s
+class references and another wrapper class named `+Period+` for the
+`+group+` structure that the `+EmploymentInfo+` class references. Use an
+`+EISCompositeObjectMapping+` (with XML records) or an
+`+XMLCompositeObjectMapping+` to map a Java attribute to these wrapper
+classes.
+
+For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Object_Mapping[XML
+Composite Object Mapping]. The same applies to an
+`+EISCompositeObjectMapping+` with XML records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Composite_Object_Mapping[EIS
+Composite Object Mapping]).
+
+==== Limitations of jaxb:class Customization Support
+
+When mapping to jaxb:class customized structures, consider the following
+limitations:
+
+* Unbounded structures are not supported.
+* Partial validation is not supported.
+* When mapping sequence elements to a composite object, the XML schema
+must order the elements so that the elements you map to the composite
+object are kept together. The `+sequence+` structure forces all elements
+to occur in the order in which they are specified in the XML schema.
+Consider the XML schema shown in the link:#Example_16-6[XML Schema With
+Unsupported Sequence Element Order] example. A valid XML instance must
+contain the sequence elements in the specified order: `+street+`,
+`+customerName+`, `+city+` In this example, you want to map the
+`+customerName+` attribute with a direct mapping and you want to map the
+`+street+` and `+city+` attributes to a composite `+Address+` object.
+Depending on the order in which you define the mappings, EclipseLink
+will marshall invalid XML document instances in the order
+`+customerName+`, `+street+`, `+city+` or `+street+`, `+city+`,
+`+customerName+`.
+
+[#Example 16-6]## *_XML Schema With Unsupported Sequence Element Order_*
+
+`+    +` `+        +` `+            +` `+            +` `+            +`
+
+`+        +` `+    +`
+
+To correct this problem, modify the XML schema to keep the elements you
+want to map to the composite object together (see the
+link:#Example_16-7[XML Schema With Supported Sequence Element Order]
+example) and define the mappings in the order specified by the XML
+schema.
+
+[#Example 16-7]## *_XML Schema With Supported Sequence Element Order_*
+
+`+    +` `+        +` `+            +` `+            +` `+            +`
+
+`+        +` `+    +`
+
+=== Mappings and JAXB Typesafe Enumerations
+
+JAXB binds a typesafe enumeration class to a named simple type
+definition with a `+basetype+` that derives from `+xsd:NCName+` and has
+`+enumeration+` facets (see this example).
+
+[#Example 16-8]## *_Schema Fragment with Typesafe Enumeration
+Declaration_*
+
+`+    +` `+        +` `+        +` `+    +`
+
+You can map a Java attribute to such an enumeration using the
+`+JAXBTypesafeEnumConverter+` with an `+EISDirectMapping+` or
+`+EISCompositeDirectCollectionMapping+` with XML records, or with an
+`+XMLDirectMapping+`, `+XMLCompositeDirectCollectionMapping+` or their
+subclasses with XML documents.
+
+The Workbench does not support the `+JAXBTypesafeEnumConverter+`
+directly: to configure a mapping with this converter, you must use a
+descriptor amendment method (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_JAXB_Typesafe_Enumeration_Converter[Configuring
+a JAXB Typesafe Enumeration Converter]).
+
+If you create a project and object model using the EclipseLink JAXB
+compiler (see
+link:Creating%20an%20XML%20Project%20(ELUG)#Creating_an_XML_Project_from_an_XML_Schema[Creating
+an XML Project from an XML Schema]), the compiler will create the type
+safe enumeration class and a class with descriptor amendment methods and
+register the required amendment methods automatically (see
+link:Introduction%20to%20XML%20Projects%20(ELUG)#Typesafe_Enumeration_Converter_Amendment_Method_DescriptorAfterLoads_Class[Typesafe
+Enumeration Converter Amendment Method DescriptorAfterLoads Class]).
+
+== Mapping API
+
+All the mapping classes are derived from the `+DatabaseMapping+` class.
+
+[#Table 16-5]## *_Platform and Mapping Package Compatibility_*
+
+Platform
+
+Mapping Package
+
+DatabasePlatform For relational projects
+
+org.eclipse.persistence.mappings org.eclipse.persistence.mappings.xdb
+org.eclipse.persistence.mappings.structures
+
+EISPlatform For EIS projects
+
+org.eclipse.persistence.eis.mappings
+
+XMLPlatform For XML projects
+
+org.eclipse.persistence.ox.mappings
+
+== Relational Mappings
+
+A relational mapping transforms any object data member type to a
+corresponding relational database (SQL) data source representation in
+any supported relational database. Relational mappings allow you to map
+an object model into a relational data-model.
+
+Relational mappings can also transform object data members that
+reference other domain objects that are stored in other tables in the
+database and are related through foreign keys.
+
+Use relational mappings in relational projects. For more information,
+see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Building_Relational_Projects[Building
+Relational Projects].
+
+For more information about relational mappings, see
+link:Relational_Mappings_(ELUG)[Relational Mappings (ELUG)]
+
+== Object-Relational Data Type Mappings
+
+An object-relational data type mapping transforms certain object data
+member types to structured data source representations optimized for
+storage in specialized object-relational data type databases such as
+Oracle Database. Object-relational data type mappings allow you to map
+an object model into an object-relational data type data-model.
+
+Use object-relational data type mappings in relational projects. For
+more information, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Building_Relational_Projects[Building
+Relational Projects].
+
+For more information about object-relational data type mappings, see
+link:Object-Relational_Data_Type_Mappings_(ELUG)[Object-Relational Data
+Type Mappings (ELUG)].
+
+== XML Mappings
+
+An XML mapping transforms object data members to the XML elements of an
+XML file whose structure is defined by an XML schema document (XSD).
+
+Use XML mappings in XML projects. For more information, see
+link:Introduction%20to%20XML%20Projects%20(ELUG)#XML_Project_Concepts[XML
+Project Concepts].
+
+For more information about XML mappings, see
+link:XML_Mappings_(ELUG)[XML Mappings (ELUG)].
+
+== EIS Mappings
+
+An EIS mapping transforms object data members to the EIS record format
+defined by the object’s descriptor.
+
+Use EIS mappings in EIS projects. For more information, see
+link:Introduction%20to%20EIS%20Projects%20(ELUG)#EIS_Project_Concepts[EIS
+Project Concepts].
+
+For more information about EIS mappings, see
+link:EIS_Mappings_(ELUG)[EIS Mappings (ELUG)].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Concept[Category: Concept] Category:_Release_1[Category:
+Release 1]
