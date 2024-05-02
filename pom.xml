@@ -13,7 +13,7 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
@@ -125,6 +125,7 @@
         <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
         <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
         <project.build.licenceResourceDirectory>${project.build.directory}/license</project.build.licenceResourceDirectory>
+        <project.build.javadocResourceDirectory>${project.build.directory}/javadoc-resources</project.build.javadocResourceDirectory>
 
         <!--Integration test sources/resources directory. Relative directory to ${project.basedir}
         !!!Can't start with / character!!!-->
@@ -184,6 +185,10 @@
 
         <!--Documentation properties-->
         <docs.status>DRAFT</docs.status>
+
+        <!--Javadoc properties-->
+        <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
+        <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
         <!--Eclipse Dependencies version-->
         <eclipselink.asm.version>9.6.0</eclipselink.asm.version>
@@ -1437,6 +1442,7 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>src/main/assembly/common-license.xml</descriptor>
+                                <descriptor>src/main/assembly/common-javadoc.xml</descriptor>
                                 <descriptor>src/main/assembly/test-defaults.xml</descriptor>
                                 <descriptor>src/main/assembly/test-report.xml</descriptor>
                                 <descriptor>src/main/assembly/spotbugs-filter.xml</descriptor>
@@ -1521,6 +1527,25 @@
                                     <classifier>spotbugs-filter</classifier>
                                     <type>zip</type>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-javadoc-resources</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>javadoc-resources</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.javadocResourceDirectory}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

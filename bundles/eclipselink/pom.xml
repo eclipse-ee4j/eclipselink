@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,7 +13,7 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
@@ -39,10 +39,6 @@
 
         <gen.src.dir>${project.build.directory}/generated-sources/dependency-sources</gen.src.dir>
         <gen.zip.dir>${project.build.directory}/generated-sources/zip-sources</gen.zip.dir>
-
-        <!--Javadoc properties-->
-        <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
-        <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
         <!--Properties used for MANIFEST.MF generation-->
         <manifest.specification.title>Eclipse Persistence Services</manifest.specification.title>
