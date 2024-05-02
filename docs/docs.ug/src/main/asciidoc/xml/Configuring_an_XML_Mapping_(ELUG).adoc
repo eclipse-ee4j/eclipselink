@@ -1,0 +1,581 @@
+*TOC* Special:Whatlinkshere_Configuring_an_XML_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the types of XML mappings that you can configure and
+provides a cross-reference to the type-specific chapter that lists the
+configurable options supported by that type.
+
+[#Table 59-1]##
+
+Mapping Type
+
+See…
+
+XML Direct Mapping
+
+Configuring an XML Direct Mapping
+
+XML Composite Direct Collection Mapping
+
+Configuring an XML Composite Direct Collection Mapping
+
+XML Composite Object Mapping
+
+Configuring an XML Composite Object Mapping
+
+XML Composite Collection Mapping
+
+Configuring an XML Composite Collection Mapping
+
+XML Any Object Mapping
+
+Configuring an XML Any Object Mapping
+
+XML Any Collection Mapping
+
+Configuring an XML Any Collection Mapping
+
+XML Transformation Mapping
+
+Configuring an XML Transformation Mapping
+
+XML Object Reference Mapping
+
+Configuring an XML Object Reference Mapping
+
+XML Collection Reference Mapping
+
+Configuring an XML Collection Reference Mapping
+
+XML Binary Data Mapping
+
+Configuring an XML Binary Data Mapping
+
+XML Binary Data Collection Mapping
+
+Configuring an XML Binary Data Collection Mapping
+
+XML Fragment Mapping
+
+Configuring an XML Fragment Mapping
+
+XML Fragment Collection Mapping
+
+Configuring an XML Fragment Collection Mapping
+
+XML Choice Object Mapping
+
+Configuring an XML Choice Object Mapping
+
+XML Choice Collection Mapping
+
+Configuring an XML Choice Collection Mapping
+
+XML Any Attribute Mapping
+
+Configuring an XML Any Attribute Mapping
+
+For more information, see the following:
+
+* link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings]
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)[Introduction to XML
+Mappings]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping]
+
+== Configuring Common XML Mapping Options
+
+This table lists the configurable options shared by two or more XML
+mapping types. In addition to the configurable options described here,
+you must also configure the options described for the specific
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Mapping_Types[XML
+Mapping Types], as shown in this table:
+
+[#Table 59-2]##
+
+Option
+
+EclipseLink Workbench
+
+Java
+
+Configuring XPath
+
+Configuring Reference Descriptor
+
+Configuring Container Policy
+
+Configuring Method or Direct Field Accessing at the Mapping Level
+
+Configuring a Mapping
+
+Configuring Maps to Wildcard
+
+Configuring a Serialized Object Converter
+
+Configuring a Type Conversion Converter
+
+Configuring an Object Type Converter
+
+Configuring a Simple Type Translator
+
+Configuring the Use of a Single Node
+
+Configuring the Use of CDATA
+
+Configuring Reference Class
+
+Configuring the Use of Inline Binary Data
+
+Configuring the Use of SwaRef Type
+
+Configuring Source to Target Key Field Association
+
+Configuring the Choice Element
+
+== Configuring Reference Descriptor
+
+For XML attributes that reference other descriptors (instead of a schema
+element), you may select a specific reference descriptor. If you do not
+specify a reference descriptor, EclipseLink uses the `+xsi:Type+`
+attribute to determine the reference class object.
+
+This table summarizes which XML mappings support reference descriptor
+configuration.
+
+[#Table 59-3]## *_XML Mapping Support for Reference Descriptor
+Configuration_*
+
+XML Mapping
+
+Using the Workbench
+
+Using Java
+
+XML direct mapping
+
+XML composite direct collection mapping
+
+XML composite object mapping
+
+XML composite collection mapping
+
+XML any object mapping
+
+XML any collection mapping
+
+XML transformation mapping
+
+XML object reference mapping
+
+XML object collection mapping
+
+XML binary data mapping
+
+XML binary data collection mapping
+
+XML fragment mapping
+
+XML fragment collection mapping
+
+XML choice object mapping
+
+XML choice collection mapping
+
+XML any attribute mapping
+
+=== How to Configure a Reference Descriptor Using Workbench
+
+To specify a reference descriptor for an XML mapping that references
+another descriptor (instead of a schema element), use this procedure.
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears.*_General Tab,
+Reference Descriptor Field_* image:xmlrefd.gif[General Tab, Reference
+Descriptor Field,title="General Tab, Reference Descriptor Field"]
+. If this XML attribute refers to another descriptor (instead of a
+schema element), use the *Reference Descriptor* field to select a
+descriptor in the project.
+
+== Configuring Maps to Wildcard
+
+This attribute applies only to the Workbench. Use this option to solve
+"`No XPath specified`" problems (see
+link:Using%20Workbench%20(ELUG)#How_to_Use_the_Problems_Window[How to
+Use the Problems Window]) for an XML mapping that does not need an XPath
+(see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_XPath[Configuring
+XPath]) for it maps to a wildcard.
+
+If the XML mapping is owned by an `+anyType+` descriptor (see
+link:Configuring%20an%20XML%20Descriptor%20(ELUG)#Configuring_for_Complex_Type_of_anyType[Configuring
+for Complex Type of anyType]), it cannot map to a wildcard, and you must
+specify an XPath.
+
+This table summarizes which XML mappings support maps to wildcard
+configuration.
+
+[#Table 59-4]## *_XML Mapping Support for Maps to Wildcard
+Configuration_*
+
+XML Mapping
+
+Using the Workbench
+
+Using Java
+
+XML direct mapping
+
+XML composite direct collection mapping
+
+XML composite object mapping
+
+XML composite collection mapping
+
+XML any object mapping
+
+XML any collection mapping
+
+XML transformation mapping
+
+XML object reference mapping
+
+XML object collection mapping
+
+XML binary data mapping
+
+XML binary data collection mapping
+
+XML fragment mapping
+
+XML fragment collection mapping
+
+XML choice object mapping
+
+XML choice collection mapping
+
+XML any attribute mapping
+
+=== How to Configure Maps to Wildcard Using Workbench
+
+To specify a map a schema element using the `+xs:any+` declaration, use
+this procedure.
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. *_Mapping Tab, Maps to Wildcard Option_* image:wildcard.gif[Mapping
+Tab, Maps to Wildcard
+Option,title="Mapping Tab, Maps to Wildcard Option"]
+. If the XML mapping is not owned by an `+anyType+` descriptor (see
+link:Configuring%20an%20XML%20Descriptor%20(ELUG)#Configuring_for_Complex_Type_of_anyType[Configuring
+for Complex Type of anyType]) and maps to a wildcard, then you do not
+need to specify an XPath (see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_XPath[Configuring
+XPath]). Select the *Maps to Wildcard (uses "`any`" tag)* option to
+clear the missing XPath neediness message.
+. If the XML mapping is owned by an `+anyType+` descriptor, it cannot
+map to a wildcard and you must specify an XPath. Deselect the *Maps to
+Wildcard (Uses "`any`" tag)* option and ensure that you specify an
+XPath.
+
+== Configuring Source to Target Key Field Association
+
+This option is applicable to key on source-based mappings. Use this
+option to add a source and target XPath pair to the map of such key
+pairs.
+
+This table summarizes which XML mappings support source to target key
+field association configuration.
+
+[#Table 59-5]## *_XML Mapping Support for Source to Target Key Field
+Association Configuration_*
+
+XML Mapping
+
+Using the Workbench
+
+Using Java
+
+XML direct mapping
+
+XML composite direct collection mapping
+
+XML composite object mapping
+
+XML composite collection mapping
+
+XML any object mapping
+
+XML any collection mapping
+
+XML transformation mapping
+
+XML object reference mapping
+
+XML object collection mapping
+
+XML binary data mapping
+
+XML binary data collection mapping
+
+XML fragment mapping
+
+XML fragment collection mapping
+
+XML choice object mapping
+
+XML choice collection mapping
+
+XML any attribute mapping
+
+=== How to Configure Source to Target Key Field Association Using Java
+
+To configure the source to target key field association for your
+mapping, use the `+XMLObjectReferenceMapping+` method
+`+addSourceToTargetKeyFieldAssociation+` to add a specified source and
+target XPath pair to the map.
+
+== Configuring Reference Class
+
+This option is applicable to key on source-based mappings.
+
+Use this option to define the reference class, whose instances your XML
+object reference mapping will store in the domain objects.
+
+This table summarizes which XML mappings support source to target key
+field association configuration.
+
+[#Table 59-6]## *_XML Mapping Support for Reference Class
+Configuration_*
+
+XML Mapping
+
+Using the Workbench
+
+Using Java
+
+XML direct mapping
+
+XML composite direct collection mapping
+
+XML composite object mapping
+
+XML composite collection mapping
+
+XML any object mapping
+
+XML any collection mapping
+
+XML transformation mapping
+
+XML object reference mapping
+
+XML object collection mapping
+
+XML binary data mapping
+
+XML binary data collection mapping
+
+XML fragment mapping
+
+XML fragment collection mapping
+
+XML choice object mapping
+
+XML choice collection mapping
+
+XML any attribute mapping
+
+=== How to Configure Reference Class Using Java
+
+To configure a reference class for your mapping, use the
+`+AggregateMapping+` method `+setReferenceClass+`.
+
+== Configuring the Use of Inline Binary Data
+
+This option is applicable to binary data mappings.
+
+Use this option to define whether or not there should always be inline
+binary data for this mapping.
+
+This table summarizes which XML mappings support the use of inline
+binary data configuration.
+
+[#Table 59-7]## *_XML Mapping Support for the Use of Inline Binary Data
+Configuration_*
+
+XML Mapping
+
+Using the Workbench
+
+Using Java
+
+XML direct mapping
+
+XML composite direct collection mapping
+
+XML composite object mapping
+
+XML composite collection mapping
+
+XML any object mapping
+
+XML any collection mapping
+
+XML transformation mapping
+
+XML object reference mapping
+
+XML object collection mapping
+
+XML binary data mapping
+
+XML binary data collection mapping
+
+XML fragment mapping
+
+XML fragment collection mapping
+
+XML choice object mapping
+
+XML choice collection mapping
+
+XML any attribute mapping
+
+=== How to Configure the Use of Inline Binary Data Using Java
+
+To configure the use of inline binary data for your mapping, use the
+`+XMLBinaryDataMapping+` or `+XMLBinaryDataCollectionMapping+` method
+`+setShouldInlineBinaryData+`. If you set it to `+true+`, you disable
+consideration for attachment handling for this mapping and indicate that
+you only want inline data.
+
+== Configuring the Use of SwaRef Type
+
+This option is applicable to binary data mappings.
+
+Use this option to specify that the target node of this mapping is of
+type xs:swaref.
+
+This table summarizes which XML mappings support the use of SwaRef type
+configuration.
+
+[#Table 59-8]## *_XML Mapping Support for the Use of SwaRef Type
+Configuration_*
+
+XML Mapping
+
+Using the Workbench
+
+Using Java
+
+XML direct mapping
+
+XML composite direct collection mapping
+
+XML composite object mapping
+
+XML composite collection mapping
+
+XML any object mapping
+
+XML any collection mapping
+
+XML transformation mapping
+
+XML object reference mapping
+
+XML object collection mapping
+
+XML binary data mapping
+
+XML binary data collection mapping
+
+XML fragment mapping
+
+XML fragment collection mapping
+
+XML choice object mapping
+
+XML choice collection mapping
+
+XML any attribute mapping
+
+=== How to Configure the Use of SwaRef Type Using Java
+
+To configure the use of SwaRef type for your mapping, use the
+`+XMLBinaryDataMapping+` or `+XMLBinaryDataCollectionMapping+` method
+`+setSwaRef+`. If you set it to `+true+`, you indicate that the target
+node of this mapping is of type `+xs:swaref+`.
+
+== Configuring the Choice Element
+
+This option is applicable to choice mappings.
+
+Use this option to specify an XPath and the type assocated with this
+XPath.
+
+This table summarizes which XML mappings support the choice element
+configuration.
+
+[#Table 59-9]## *_XML Mapping Support for the Choice Element
+Configuration_*
+
+XML Mapping
+
+Using the Workbench
+
+Using Java
+
+XML direct mapping
+
+XML composite direct collection mapping
+
+XML composite object mapping
+
+XML composite collection mapping
+
+XML any object mapping
+
+XML any collection mapping
+
+XML transformation mapping
+
+XML object reference mapping
+
+XML object collection mapping
+
+XML binary data mapping
+
+XML binary data collection mapping
+
+XML fragment mapping
+
+XML fragment collection mapping
+
+XML choice object mapping
+
+XML choice collection mapping
+
+XML any attribute mapping
+
+=== How to Configure the Choice Element Using Java
+
+Use the following `+XMLChoiceObjectMapping+` or
+`+XMLChoiceCollectionMapping+` methods to add choice element:
+
+* `+addChoiceElement(String xpath, Class elementType)+`
+* `+addChoiceElement(String xpath, String elementTypeName)+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_XML[Category: XML]

@@ -1,0 +1,529 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_Variable_One-to-One_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for a relational variable
+one-to-one mapping.
+
+[#Table 37-1]##
+
+[width="100%",cols="<63%,<18%,<19%",options="header",]
+|===
+|*Option* |*Workbench* |*Java*
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Reference_Descriptor[Configuring
+Reference Descriptor] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Configuring
+Read-Only Mappings] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Configuring
+Mapping Comments] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)[Configuring Mapping Comments]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)[Configuring Mapping Comments]
+|image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Supported,title="Supported"]
+
+|link:#Configuring_Query_Key_Association[Configuring Query Key
+Association] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Class_Indicator[Configuring Class Indicator]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Unique_Primary_Key[Configuring Unique Primary Key]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+This example shows how to create a variable one-to-one mapping and add
+it to a descriptor using Java code.
+
+[#Example 39-1]## *_Variable One-to-One Mapping_*
+
+`+public void customize(ClassDescriptor descriptor) { +`
+`+   VariableOneToOneMapping mapping = new VariableOneToOneMapping();  +`
+
+`+   // configure mapping+` `+   ... +`
+
+`+   // add mapping to descriptor+`
+`+   descriptor.addMapping(mapping);+` `+}+`
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Variable_One-to-One_Mapping[Variable
+One-to-One Mapping]
+* link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring a
+Relational Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+== Configuring Class Indicator
+
+In variable one-to-one mappings, you can use an indicator column in the
+source table to specify the correct target table, as illustrated in
+link:#Figure_37-1[Variable One-to-One Mapping using Class indicator
+Field]. This section includes information on implementing class
+indicators.
+
+A source table has an indicator column that specifies the target table
+through the class indicator field.
+
+The link:#Figure_37-1[Variable One-to-One Mapping using Class indicator
+Field] figure illustrates the `+EMPLOYEE+` table that has a `+TYPE+`
+column that indicates the target for the row (either `+PHONE+` or
+`+EMAIL+`).
+
+[#Figure 37-1]## *_Variable One-to-One Mapping using Class indicator
+Field_*
+
+.Variable One-to-One Mapping using Class indicator Field
+image::clinfig.gif[Variable One-to-One Mapping using Class indicator
+Field,title="Variable One-to-One Mapping using Class indicator Field"]
+
+The principles of defining such a variable class relationship are
+similar to defining a normal one-to-one relationship, except:
+
+* The reference class is a Java _interface_, not a Java _class_.
+However, the method to set the interface is identical.
+* You must specify a type indicator field.
+* You specify the class indicator values on the mapping so that mapping
+can determine the class of object to create.
+* You must specify the foreign key names and the respective abstract
+query keys from the target interface descriptor.
+
+Alternatively, you can use unique primary keys to specify the correct
+target. See link:#Configuring_Unique_Primary_Key[Configuring Unique
+Primary Key] for more information.
+
+=== How to Configure a Class Indicator Using Workbench
+
+To specify the class indicators for a variable one-to-one mapping, use
+this procedure:
+
+[arabic]
+. Select the variable one-to-one mapping in the *Navigator*. Its
+attributes appear in the Editor.
+. Click the *Class Indicator Info* tab. The Class Indicator Info tab
+appears. '`**’Figure 37-2 Class Indicator Info Tab**`'
+image:clindfld.gif[Class Indicator Info
+Tab,title="Class Indicator Info Tab"]
+. Use the *Class Indicator Field* to select the field on the database
+table (associated with the mapping’s descriptor) to use as the indicator
+for the variable mapping.
+. Use the *Indicator Type* to specify the data type of the class
+indicator field by selecting the data type from the list.
+. To specify the specific class indicator field values for each
+(nonabstract) child class, click *Edit* and enter the appropriate value
+for each child class.
+
+=== How to Configure a Class Indicator Using Java
+
+This example illustrates how to define a variable one-to-one mapping
+using a class (type) indicator in Java code.
+
+[#Example 37-1]## *_Defining Variable One-to-One Mapping Using a Class
+Indicator_*
+
+`+public void customize(ClassDescriptor descriptor) { +`
+`+    VariableOneToOneMapping variableOneToOneMapping = new VariableOneToOneMapping();  +`
+`+    variableOneToOneMapping.setAttributeName("contact");  +`
+`+    variableOneToOneMapping.setReferenceClass (Contact.class);  +`
+`+    variableOneToOneMapping.setForeignQueryKeyName ("C_ID", "id");  +`
+`+    variableOneToOneMapping.setTypeFieldName("TYPE");  +`
+
+`+    +`*`+//\'\' \'\'configure\'\' \'\'class\'\' \'\'indicators+`*
+`+    variableOneToOneMapping.addClassIndicator(Email.class, "Email");   +`
+`+    variableOneToOneMapping.addClassIndicator(Phone.class, "Phone");  +`
+
+`+    variableOneToOneMapping.dontUseIndirection();  +`
+`+    variableOneToOneMapping.privateOwnedRelationship();  +`
+
+`+    +`*`+//\'\' \'\'add\'\' \'\'mapping\'\' \'\'to\'\' \'\'descriptor+`*
+`+    descriptor.addMapping(variableOneToOneMapping);+` `+}+`
+
+For more information about the available methods for
+`+VariableOneToOneMapping+`, see the _EclipseLink API Reference_.
+
+== Configuring Unique Primary Key
+
+In variable one-to-one mappings, you can use a unique primary key in the
+source table to specify the correct target table, as illustrated in the
+link:#Figure_37-4[Variable One-to-One Relationship with Unique Primary
+Key] figure. This section includes information on implementing class
+indicators.
+
+Alternatively, you can use a class indicator to specify the correct
+target. See link:#Configuring_Class_Indicator[Configuring Class
+Indicator] for more information.
+
+=== How to Configure a Unique Primary Key UsingWorkbench
+
+To specify the variable one-to-one mapping with a primary key, use this
+procedure:
+
+[arabic]
+. Select the variable one-to-one mapping in the *Navigator*. Its
+attributes appear in the Editor.
+. Click the *Class Indicator Info* tab. The Class Indicator Info tab
+appears. *_Figure 37-3 Class Indicator Info Tab, Configuring Primary
+Key_* image:var11_map_conf_pk.gif[Class Indicator Info Tab, Configuring
+Primary Key,title="Class Indicator Info Tab, Configuring Primary Key"]
+* Use the *Class Indicator Field* to select none.
+* Use the *Indicator Type* to select none.
+* Use the *Indicator Value* column to specify none.
+. After choosing the reference descriptor for the mapping, deselect the
+*Include* check boxes.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot deselect the value in the Class Indicator Field,
+unless the foreign key values in the source table are unique.
+|===
+
+=== How to Configure a Unique Primary Key Using Java
+
+This example illustrates how to define a variable one-to-one mapping
+using a unique primary key in Java code.
+
+[#Example 37-2]## *_Defining Variable One-to-One Mapping Using a Unique
+Primary Key_*
+
+`+public void customize(ClassDescriptor descriptor) { +`
+`+    VariableOneToOneMapping variableOneToOneMapping = new VariableOneToOneMapping();  +`
+`+    variableOneToOneMapping.setAttributeName("contact");  +`
+`+    variableOneToOneMapping.setReferenceClass (Contact.class);  +`
+`+    variableOneToOneMapping.setForeignQueryKeyName ("C_ID", "id");  +`
+`+    variableOneToOneMapping.dontUseIndirection();  +`
+`+    variableOneToOneMapping.privateOwnedRelationship();+`
+
+`+    +`*`+//\'\' \'\'add\'\' \'\'mapping\'\' \'\'to\'\' \'\'descriptor+`*
+`+    descriptor.addMapping(variableOneToOneMapping);+` `+}+`
+
+For more information about the available methods for
+`+VariableOneToOneMapping+`, see the _EclipseLink API Reference_.
+
+=== What You May Need to Know About Unique Primary Keys
+
+As the link:#Figure_37-4[Variable One-to-One Relationship with Unique
+Primary Key] figure illustrates, the value of the foreign key in the
+source table (`+C_ID+`) mapped to the primary key of the target table is
+unique. No primary key values among the target tables are the same, so
+primary key values are not unique just in the table, but also among the
+tables.
+
+[#Figure 37-4]## *_Variable One-to-One Relationship with Unique Primary
+Key_*
+
+.Variable One-to-One Relationship with Unique Primary Key
+image::uniquepk.gif[Variable One-to-One Relationship with Unique Primary
+Key,title="Variable One-to-One Relationship with Unique Primary Key"]
+
+If there is no indicator stored in the source table, EclipseLink cannot
+determine to which target table the foreign key value is mapped.
+Therefore, EclipseLink reads through all the target tables until it
+finds an entry in one of the target tables. This is an inefficient way
+of setting up a relation model. The class indicator is much more
+efficient as it reduces the number of reads performed on the tables to
+get the data. In the class indicator method, EclipseLink knows exactly
+which target table to look into for the data.
+
+The principles of defining such a variable class relationship are
+similar to defining class indicator variable one-to-one relationships,
+except the following:
+
+* A type indicator field is not specified.
+* The class indicator values are not specified.
+
+The type indicator field and its values are not needed, because
+EclipseLink goes through all the target tables until data is finally
+found.
+
+== Configuring Query Key Association
+
+This section includes information on configuring query key assosications
+using development tools, as well as Java.
+
+=== How to Configure a Query Key Association Using Workbench
+
+To specify the query keys used for a variable one-to-one mapping, use
+this procedure:
+
+[arabic]
+. Select the variable one-to-one mapping in the *Navigator*. Its
+attributes appear in the Editor.
+. Click the *Query Key Associations* tab. The Query Key Associations tab
+appears [#Figure 37-5]##*_Query Key Associations Tab_*
+image:qkassoc.gif[Query Key Associations
+Tab,title="Query Key Associations Tab"]
+. Complete each field on the Query Key Associations tab.
+. Use the *Indicator Type* to specify the data type of the class
+indicator field by selecting the data type from the list.
+
+[width="100%",cols="<9%,<91%",options="header",]
+|===
+|*Field* |*Description*
+|*Foreign Key* |The field from the database table to use as the foreign
+key in this relationship.
+
+|*Query Key Name* |The name of the query key (from the referenced
+descriptor) for this association. See
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Query_Keys[Configuring
+Query Keys] for more information.
+|===
+
+=== How to Configure a Query Key Association Using Java
+
+The API to configure query key associations is
+`+org.eclipse.persistence.mappings.VariableOneToOneMapping+` method
+`+addForeingQueryKeyName(String, String)+`.
+
+For more information about the available methods for
+`+VariableOneToOneMapping+`, see the _EclipseLink API Reference_.
+
+== Configuring Class Indicator
+
+In variable one-to-one mappings, you can use an indicator column in the
+source table to specify the correct target table, as illustrated in the
+link:#Figure_37-1[Variable One-to-One Mapping using Class indicator
+Field] figure. This section includes information on implementing class
+indicators.
+
+A source table has an indicator column that specifies the target table
+through the class indicator field.
+
+The link:#Figure_37-1[Variable One-to-One Mapping using Class indicator
+Field] figure illustrates the `+EMPLOYEE+` table that has a `+TYPE+`
+column that indicates the target for the row (either `+PHONE+` or
+`+EMAIL+`).
+
+[#Figure 37-1]## *_Variable One-to-One Mapping using Class indicator
+Field_*
+
+.Variable One-to-One Mapping using Class indicator Field
+image::clinfig.gif[Variable One-to-One Mapping using Class indicator
+Field,title="Variable One-to-One Mapping using Class indicator Field"]
+
+The principles of defining such a variable class relationship are
+similar to defining a normal one-to-one relationship, except:
+
+* The reference class is a Java _interface_, not a Java _class_.
+However, the method to set the interface is identical.
+* You must specify a type indicator field.
+* You specify the class indicator values on the mapping so that mapping
+can determine the class of object to create.
+* You must specify the foreign key names and the respective abstract
+query keys from the target interface descriptor.
+
+Alternatively, you can use unique primary keys to specify the correct
+target. See link:#Configuring_Unique_Primary_Key[Configuring Unique
+Primary Key] for more information.
+
+=== How to Configure a Class Indicator Using Workbench
+
+To specify the class indicators for a variable one-to-one mapping, use
+this procedure:
+
+[arabic]
+. Select the variable one-to-one mapping in the *Navigator*. Its
+attributes appear in the Editor.
+. Click the *Class Indicator Info* tab. The Class Indicator Info tab
+appears. [#Figure 37-2]##'`**’ Class Indicator Info Tab**`'
+image:clindfld.gif[Class Indicator Info
+Tab,title="Class Indicator Info Tab"]
+. Use the *Class Indicator Field* to select the field on the database
+table (associated with the mapping’s descriptor) to use as the indicator
+for the variable mapping.
+. Use the *Indicator Type* to specify the data type of the class
+indicator field by selecting the data type from the list.
+. To specify the specific class indicator field values for each
+(nonabstract) child class, click *Edit* and enter the appropriate value
+for each child class.
+
+=== How to Configure a Class Indicator Using Java
+
+This example illustrates how to define a variable one-to-one mapping
+using a class (type) indicator in Java code.
+
+[#Example 37-1]## *_Defining Variable One-to-One Mapping Using a Class
+Indicator_*
+
+`+public void customize(ClassDescriptor descriptor) { +`
+`+    VariableOneToOneMapping variableOneToOneMapping = new VariableOneToOneMapping();  +`
+`+    variableOneToOneMapping.setAttributeName("contact");  +`
+`+    variableOneToOneMapping.setReferenceClass (Contact.class);  +`
+`+    variableOneToOneMapping.setForeignQueryKeyName ("C_ID", "id");  +`
+`+    variableOneToOneMapping.setTypeFieldName("TYPE");  +`
+
+`+    +`*`+//\'\' \'\'configure\'\' \'\'class\'\' \'\'indicators+`*
+`+    variableOneToOneMapping.addClassIndicator(Email.class, "Email");   +`
+`+    variableOneToOneMapping.addClassIndicator(Phone.class, "Phone");  +`
+
+`+    variableOneToOneMapping.dontUseIndirection();  +`
+`+    variableOneToOneMapping.privateOwnedRelationship();  +`
+
+`+    +`*`+//\'\' \'\'add\'\' \'\'mapping\'\' \'\'to\'\' \'\'descriptor+`*
+`+    descriptor.addMapping(variableOneToOneMapping);+` `+}+`
+
+For more information about the available methods for
+`+VariableOneToOneMapping+`, see the _EclipseLink API Reference_.
+
+== Configuring Unique Primary Key
+
+In variable one-to-one mappings, you can use a unique primary key in the
+source table to specify the correct target table, as illustrated in the
+link:#Figure_37-4[Variable One-to-One Relationship with Unique Primary
+Key] figure. This section includes information on implementing class
+indicators.
+
+Alternatively, you can use a class indicator to specify the correct
+target. See link:#Configuring_Class_Indicator[Configuring Class
+Indicator] for more information.
+
+=== How to Configure a Unique Primary Key UsingWorkbench
+
+To specify the variable one-to-one mapping with a primary key, use this
+procedure:
+
+[arabic]
+. Select the variable one-to-one mapping in the *Navigator*. Its
+attributes appear in the Editor.
+. Click the *Class Indicator Info* tab. The Class Indicator Info tab
+appears. [#Figure 37-3]##*_Class Indicator Info Tab, Configuring Primary
+Key_* image:var11_map_conf_pk.gif[Class Indicator Info Tab, Configuring
+Primary Key,title="Class Indicator Info Tab, Configuring Primary Key"]
+. Use the *Class Indicator Field* to select none.
+. Use the *Indicator Type* to select none.
+. Use the *Indicator Value* column to specify none.
+. After choosing the reference descriptor for the mapping, deselect the
+*Include* check boxes.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot deselect the value in the Class Indicator Field,
+unless the foreign key values in the source table are unique.
+|===
+
+=== How to Configure a Unique Primary Key Using Java
+
+This example illustrates how to define a variable one-to-one mapping
+using a unique primary key in Java code.
+
+[#Example 37-2]## *_Defining Variable One-to-One Mapping Using a Unique
+Primary Key_*
+
+`+public void customize(ClassDescriptor descriptor) { +`
+`+    VariableOneToOneMapping variableOneToOneMapping = new VariableOneToOneMapping();  +`
+`+    variableOneToOneMapping.setAttributeName("contact");  +`
+`+    variableOneToOneMapping.setReferenceClass (Contact.class);  +`
+`+    variableOneToOneMapping.setForeignQueryKeyName ("C_ID", "id");  +`
+`+    variableOneToOneMapping.dontUseIndirection();  +`
+`+    variableOneToOneMapping.privateOwnedRelationship();+`
+
+`+    +`*`+//\'\' \'\'add\'\' \'\'mapping\'\' \'\'to\'\' \'\'descriptor+`*
+`+    descriptor.addMapping(variableOneToOneMapping);+` `+}+`
+
+For more information about the available methods for
+`+VariableOneToOneMapping+`, see the _EclipseLink API Reference_.
+
+=== What You May Need to Know About Unique Primary Keys
+
+As the link:#Figure_37-4[Variable One-to-One Relationship with Unique
+Primary Key] figure illustrates, the value of the foreign key in the
+source table (`+C_ID+`) mapped to the primary key of the target table is
+unique. No primary key values among the target tables are the same, so
+primary key values are not unique just in the table, but also among the
+tables.
+
+[#Figure 37-4]## *_Variable One-to-One Relationship with Unique Primary
+Key_*
+
+.Variable One-to-One Relationship with Unique Primary Key
+image::uniquepk.gif[Variable One-to-One Relationship with Unique Primary
+Key,title="Variable One-to-One Relationship with Unique Primary Key"]
+
+If there is no indicator stored in the source table, EclipseLink cannot
+determine to which target table the foreign key value is mapped.
+Therefore, EclipseLink reads through all the target tables until it
+finds an entry in one of the target tables. This is an inefficient way
+of setting up a relation model. The class indicator is much more
+efficient as it reduces the number of reads performed on the tables to
+get the data. In the class indicator method, EclipseLink knows exactly
+which target table to look into for the data.
+
+The principles of defining such a variable class relationship are
+similar to defining class indicator variable one-to-one relationships,
+except the following:
+
+* A type indicator field is not specified.
+* The class indicator values are not specified.
+
+The type indicator field and its values are not needed, because
+EclipseLink goes through all the target tables until data is finally
+found.
+
+== Configuring Query Key Association
+
+This section includes information on configuring query key assosications
+using development tools, as well as Java.
+
+=== How to Configure a Query Key Association Using Workbench
+
+To specify the query keys used for a variable one-to-one mapping, use
+this procedure:
+
+[arabic]
+. Select the variable one-to-one mapping in the *Navigator*. Its
+attributes appear in the Editor.
+. Click the *Query Key Associations* tab. The Query Key Associations tab
+appears. [#Figure 37-5]##*_Query Key Associations Tab_*
+image:qkassoc.gif[Query Key Associations
+Tab,title="Query Key Associations Tab"]
+. Complete each field on the Query Key Associations tab.
+. Use the *Indicator Type* to specify the data type of the class
+indicator field by selecting the data type from the list.
+
+Use the following information to enter data in each field on the tab:
+
+[width="100%",cols="<9%,<91%",options="header",]
+|===
+|*Field* |*Description*
+|*Foreign Key* |The field from the database table to use as the foreign
+key in this relationship.
+
+|*Query Key Name* |The name of the query key (from the referenced
+descriptor) for this association. See
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Query_Keys[Configuring
+Query Keys] for more information.
+|===
+
+=== How to Configure a Query Key Association Using Java
+
+The API to configure query key associations is
+`+org.eclipse.persistence.mappings.VariableOneToOneMapping+` method
+`+addForeingQueryKeyName(String, String)+`.
+
+For more information about the available methods for
+`+VariableOneToOneMapping+`, see the _EclipseLink API Reference_.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

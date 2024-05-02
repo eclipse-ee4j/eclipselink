@@ -1,0 +1,24 @@
+== EclipseLink Application Development Overview
+
+The following sections describe the architecture of EclipseLink and how
+EclipseLink fits into your development process:
+
+* link:Introduction_to_EclipseLink_(ELUG)[Introduction to EclipseLink] –
+general information on EclipseLink including the EclipseLink application
+space, development process, components, and the EclipseLink metamodel.
+* link:Introduction_to_EclipseLink_Application_Development_(ELUG)[Introduction
+to EclipseLink Application Development] – overview of the key stages in
+the EclipseLink development process including choosing an application
+architecture and platform, object and relational mapping, building the
+persistence layer, and deploying and maintaining an EclipseLink
+application.
+
+*Special:Whatlinkshere_EclipseLink_UserManual_Overview_of_EclipseLink_Application_Development_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Concept[Category: Concept]

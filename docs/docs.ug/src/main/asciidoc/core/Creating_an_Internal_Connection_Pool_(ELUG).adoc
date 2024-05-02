@@ -1,0 +1,124 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Creating_an_Internal_Connection_Pool_(ELUG)[Related
+Topics]
+
+For information, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Internal_Connection_Pools[Internal
+Connection Pools].
+
+== Introduction to the Internal Connection Pool Creation
+
+You can create internal connection pools only for server sessions (not
+for any other session type, including database sessions). For more
+information, see link:#Creating_an_Internal_Connection_Pool[Creating an
+Internal Connection Pool].
+
+After you create an internal connection pool, you must configure its
+various options.
+
+After you create and configure a sequence connection pool, EclipseLink
+uses it whenever it needs to assign an identifier to a new object.
+
+After you create and configure a named connection pool, you use it in
+your application by passing in a `+ConnectionPolicy+` when you acquire a
+client session (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_a_Client_Session_that_Uses_a_Named_Connection_Pool[How
+to Acquire a Client Session that Uses a Named Connection Pool]).
+
+== Creating an Internal Connection Pool
+
+You can create an internal connection pool using the Workbench (see
+link:#How_to_Create_an_Internal_Connection_Pool_Using_Workbench[How to
+Create an Internal Connection Pool Using Workbench]) or Java code. We
+recommend that you use the Workbench to create and manage your internal
+connection pools.
+
+Alternatively, you can create internal connection pools in Java. For
+more information on creating sessions in Java, see the ’’EclipseLink API
+Reference.
+
+=== How to Create an Internal Connection Pool Using Workbench
+
+Before you create a connection pool, you must first create a server
+session (see
+link:Creating%20a%20Session%20(ELUG)#Creating_a_Server_Session[Creating
+a Server Session]).
+
+To create a new EclipseLink internal connection pool, use this
+procedure:
+
+[arabic]
+. Select the server session in the *Navigator* in which you want to
+create a connection pool.
+. image:conpolbt.gif[Create New Sequence Connection Pool
+button,title="Create New Sequence Connection Pool button"] Click the
+appropriate button on the toolbar to create the type of connection pool
+you want:
+* To create a named connection pool, select *Create a New Named
+Connection Pool*, enter a name, and click *OK*.
+* To create a sequence connection pool, select *Add the Sequence
+Connection Pool*.
+* To create a write connection pool, select *Add the Write Connection
+Pool*.
+
+You can also create a new internal connection pool by right-clicking the
+server session configuration in the *Navigator* and selecting *New >
+Named Connection Pool*, *Sequence Connection Pool*, or *Write Connection
+Pool* from the context menu.
+
+=== How to Create an Internal Connection Pool Using Java
+
+Using Java, you can create read, write, and named connection pools. The
+#Example:Creating_Connection_Pools[Creating Connection Pools example]
+shows how to create connection pools. The
+#Example:Using_a_Single_Pool_for_Read_and_Write[Using a Single Pool for
+Read and Write example] shows an optimized connection pool, using the
+same connetion for both read and write operations.
+
+[#Example:Creating Connection Pools]## *_Creating Connection Pools_*
+
+`+// Read+` `+ConnectionPool pool = new ConnectionPool();+`
+`+pool.setName("read");+` `+pool.setLogin(login);+`
+`+pool.setMaxNumberOfConnections(50);+`
+`+pool.setMinNumberOfConnections(50);+`
+`+serverSession.setReadConnectionPool(pool);+`
+
+`+// Write+` `+ConnectionPool pool = new ConnectionPool();+`
+`+pool.setName("default");+` `+pool.setLogin(login);+`
+`+pool.setMaxNumberOfConnections(50);+`
+`+pool.setMinNumberOfConnections(50);+`
+`+serverSession.addConnectionPool(pool);+`
+
+`+// Named+` `+ConnectionPool pool = new ConnectionPool();+`
+`+pool.setName("admin");+` `+pool.setLogin(login);+`
+`+pool.setMaxNumberOfConnections(2);+`
+`+pool.setMinNumberOfConnections(2);+`
+`+serverSession.addConnectionPool(pool);+`
+
+[#Using a Single Pool for Read and Write]## You can also use a single
+connection pools for both read and write operations, when the read and
+write pools use the same login information. This method requires fewer
+connections
+
+*_Using a Single Pool for Read and Write_*
+
+`+ConnectionPool pool = new ConnectionPool();+`
+`+pool.setName("default");+` `+pool.setLogin(login);+`
+`+pool.setMaxNumberOfConnections(50);+`
+`+pool.setMinNumberOfConnections(50);+`
+`+serverSession.setReadConnectionPool(pool);+`
+`+serverSession.addConnectionPool(pool);+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

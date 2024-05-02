@@ -1,0 +1,915 @@
+*TOC* Special:Whatlinkshere_Configuring_a_Project_(ELUG)[Related Topics]
+
+This section describes how to configure EclipseLink project options
+common to two or more project types.
+
+This table lists the types of EclipseLink projects that you can
+configure and provides a cross-reference to the type-specific chapter
+that lists the configurable options supported by that type.
+
+[#Table 113-1]##
+
+If you are creating…
+
+See also…
+
+Relational Projects
+
+Configuring a Relational Project
+
+EIS Projects
+
+Configuring an EIS Project
+
+XML Projects
+
+Configuring an XML Project
+
+The link:#Table_113-2[Common Project Options] table lists the
+configurable options shared by two or more EclipseLink project types.
+
+For more information, see the following:
+
+* link:Creating%20a%20Project%20(ELUG)#Introduction_to_the_Project_Creation[Introduction
+to the Project Creation]
+* link:Introduction%20to%20Projects_(ELUG)[Introduction to Projects]
+
+== Configuring Common Project Options
+
+This table lists the configurable options shared by two or more
+EclipseLink project types. In addition to the configurable options
+described here, you must also configure the options described for the
+specific EclipseLink project types (see
+link:Introduction%20to%20Projects_(ELUG)#EclipseLink_Project_Types[EclipseLink
+Project Types]), as shown in the link:#Table_113-1[Configuring
+EclipseLink Projects] table.
+
+[#Table 113-2]##
+
+Option to Configure
+
+EclipseLink Workbench
+
+Java
+
+Project save location
+
+Classpath
+
+Method or direct field access
+
+Default descriptor advanced properties
+
+Existence checking
+
+Deployment XML options
+
+Model Java source code options
+
+Cache type and size
+
+Cache isolation
+
+Cache coordination change propagation
+
+Cache expiration
+
+Comments
+
+== Configuring Project Save Location
+
+You can configure a project save location only when using Workbench.
+
+This table summarizes which projects support a project save location.
+
+[#Table 113-3]##
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+=== How to Configure Project Save Location Using Workbench
+
+The Project Save Location field on the project’s General tab is for
+display only. This field shows the full directory path for the project.
+All relative locations used in the project are based on this location.
+
+{empty}[#Figure 113-1]## *’’ General Tab, Project Save Location*’’
+image:saveloc.gif[General Tab, Project Save
+Location,title="General Tab, Project Save Location"]
+
+To select a new location, right-click on the project in the *Navigator*
+and select *Save As* from the context menu. See
+link:Creating%20a%20Project%20(ELUG)#How_to_Save_Projects[How to Save
+Projects] for more information.
+
+== Configuring Project Classpath
+
+The EclipseLink project uses a classpath – a set of directories, JAR
+files, and ZIP files – when importing Java classes and defining object
+types.
+
+This table summarizes which projects support project classpath
+configuration.
+
+[#Table 113-4]##
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+Do not include JDBC drivers or other elements required to access the
+data source in the project classpath. Use the `+setenv+` file to specify
+these application-level settings (see
+link:Using%20Workbench%20(ELUG)#Configuring_the_Workbench_Environment[Configuring
+the Workbench Environment]).
+
+After you configure the project classpath, you can use Workbench to
+import classes into your project (see
+link:Using%20Workbench%20(ELUG)#How_to_Import_and_Update_Classes[How to
+Import and Update Classes]).
+
+=== How to Configure Project Classpath Using Workbench
+
+To specify the project classpath information, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Click the *General* tab in the *Editor*. The General tab appears.
+[#Figure 113-2]##*_General Tab, Classpath Options_*
+image:genclassp.gif[General Tab, Classpath
+Options,title="General Tab, Classpath Options"]
+
+To add a new classpath entry, click *Add Entry* or *Browse* and select
+the directory, `+.jar+` file, or `+.zip+` file for this project. To
+create a relative classpath, select an entry and edit the path, as
+necessary. The path will be relative to the *Project Save Location*.
+
+To remove a classpath entry, select the entry and click *Remove*.
+
+To change the order of the entries, select the entry and click *Up* or
+*Down*.
+
+== Configuring Method or Direct Field Access at the Project Level
+
+By default, when EclipseLink performs a persistence operation, it
+accesses the persistent attributes of an object directly: this is known
+as direct field access. Alternatively, you can configure EclipseLink to
+access persistent attributes using accessor methods of the object: this
+is known as method access.
+
+We recommend using field access for mappings. Not only is it more
+efficient, but using method access may cause issues if the method
+produces unexpected side-effects.
+
+This table summarizes which projects support mapped field access
+configuration.
+
+[#Table 113-5]##
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+This section describes configuring mapped field access at the project
+level: by default, this configuration applies to all descriptors and
+their mappings.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If you change the access default, existing mappings retain
+their current access settings, but new mappings will be created with the
+new default.
+|===
+
+You can also configure mapped field access at the mapping level to
+override this project-level configuration on a mapping-by-mapping basis.
+For more information, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Configuring
+Method or Direct Field Accessing at the Mapping Level].
+
+If you enable change tracking on a property (for example, you decorate
+method `+getPhone+` with `+@ChangeTracking+`) and you access the field
+(`+phone+`) directly, note that EclipseLink does not detect the change.
+For more information, see
+link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Using_Method_and_Direct_Field_Access[Using
+Method and Direct Field Access].
+
+=== How to Configure Method or Direct Field Access at the Project Level Using Workbench
+
+To specify the field access method information, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Defaults* tab in the *Editor*. The Defaults tab appears.
+[#Figure 113-3]##*_Defaults Tab, Field Accessing Options_*
+image:genfield.gif[Defaults Tab, Field Accessing
+Options,title="Defaults Tab, Field Accessing Options"]
+. Complete the Mapped Field Accessing options.
+
+== Configuring Default Descriptor Advanced Properties
+
+You can configure default descriptor advanced properties when using the
+Workbench.
+
+By default, Workbench displays a subset of features for each descriptor
+type. You can modify this subset so that descriptors include additional
+advanced properties by default.
+
+You can also select specific advanced properties for individual
+descriptors (see link:Configuring%20a%20Descriptor%20(ELUG)[Configuring
+a Descriptor]).
+
+This table summarizes which projects support default descriptor advanced
+property configuration.
+
+[#Table 113-6]##
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+=== How to Configure Default Descriptor Advanced Properties Using Workbench
+
+To specify the default advanced properties for newly created descriptors
+in your project, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Defaults* tab in the *Editor*. The Defaults tab appears.
+[#Figure 113-4]##*_Defaults Tab, Descriptor Advanced Properties_*
+image:desadv.gif[Defaults Tab, Descriptor Advanced
+Properties,title="Defaults Tab, Descriptor Advanced Properties"]
+
+Select which *Descriptor Advanced Properties* to add to newly created
+descriptors. The list of advanced properties will vary, depending on the
+project type.
+
+*See Also*
+
+link:#Configuring_Default_Descriptor_Advanced_Properties[Configuring
+Default Descriptor Advanced Properties]
+
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a Descriptor]
+
+link:#Configuring_a_Project[Configuring a Project]
+
+== Configuring Existence Checking at the Project Level
+
+When EclipseLink writes an object to the database, it runs an existence
+check to determine whether to perform an insert or an update operation.
+
+By default, EclipseLink checks against the cache. We recommend that you
+use this default existence check option for most applications. Checking
+the database for existence can cause a performance bottleneck in your
+application.
+
+This table summarizes which projects support existence checking
+configuration.
+
+[#Table 113-7]##
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+By default, this configuration applies to all descriptors in a project.
+You can also configure existence checking at the descriptor level to
+override this project-level configuration on a descriptor-by-descriptor
+basis. For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Existence_Checking_at_the_Descriptor_Level[Configuring
+Cache Existence Checking at the Descriptor Level].
+
+For more information see the following:
+
+* link:Introduction%20to%20Cache%20(ELUG)#Cache_Type_and_Object_Identity[Cache
+Type and Object Identity]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Queries_and_the_Cache[Queries
+and the Cache]
+* link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#How_to_Use_Registration_and_Existence_Checking[How
+to Use Registration and Existence Checking]
+
+=== How to Configure Existence Checking at the Project Level Using Workbench
+
+To specify the existence checking information, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Defaults* tab in the *Editor*. The Defaults tab appears.
+[#Figure 113-5]##*_Defaults Tab, Existence Checking Options_*
+image:existnc.gif[Defaults Tab, Existence Checking
+Options,title="Defaults Tab, Existence Checking Options"]
+. Complete the Existence Checking options on the tab.
+
+Use this table to enter data in following fields to specify the
+existence checking options for newly created descriptors:
+
+[width="100%",cols="<7%,<93%",options="header",]
+|===
+|*Field* |*Description*
+|*Check Cache* |Check the session cache. If the object is not in the
+cache, assume that the object does not exist (do an insert). If the
+object is in the cache, assume that the object exists (do an update). We
+recommend using this option for most applications.
+
+|*Check Database* |If an object is not in the cache, query the database
+to determine if the object exists. If the object exists, do an update.
+Otherwise, do an insert. Selecting this option may negatively impact
+performance. For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Using_Check_Database[Using
+Check Database].
+
+|*Assume Existence* |Always assume objects exist: always do an update
+(never do an insert). For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Using_Assume_Existence[Using
+Assume Existence].
+
+|*Assume Nonexistence* |Always assume objects do not exist: always do an
+insert (never do an update). For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Using_Assume_Nonexistence[Using
+Assume Nonexistence].
+|===
+
+== Configuring Project Deployment XML Options
+
+You can configure project deployment XML options when using Workbench.
+
+Using Workbench, you can specify the default file names, class names,
+and directories, when exporting or generating deployment XML.
+Directories are relative to the project save location (see
+link:#Configuring_Project_Save_Location[Configuring Project Save
+Location]), and will contain folders for each generated package.
+
+This table summarizes which projects support deployment XML options.
+
+[#Table 113-8]##
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+=== How to Configure Project Deployment XML Options Using Workbench
+
+To specify the default export options, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Options* tab in the *Editor*. The Options tab appears.
+[#Figure 113-6]##*_Options Tab, Project Deployment XML Options_*
+image:prjoptxml.gif[Options Tab, Project Deployment XML
+Options,title="Options Tab, Project Deployment XML Options"]
+. Complete the fields on the [topicid:project.options.deployment Project
+Deployment XML options] on the tab.
+
+Use this table to enter data in following fields to specify the default
+Project Deployment XML options:
+
+[width="100%",cols="<16%,<84%",options="header",]
+|===
+|*Field* |*Description*
+|*File Name* |File name (such as `+project.xml+`) to use when generating
+project deployment XML.
+
+|*Directory* |Directory in which to save the generated deployment XML
+file.
+|===
+
+*See Also*
+
+link:#Configuring_Project_Deployment_XML_Options[Configuring Project
+Deployment XML Options]
+
+link:#Configuring_a_Project[Configuring a Project]
+
+link:Creating%20a%20Project%20(ELUG)#Exporting_Project_Information[Exporting
+Project Information]
+
+== Configuring Model Java Source Code Options
+
+You can configure model java source code options when using the
+Workbench.
+
+Using Workbench, you can specify the default file names, class names,
+and directories, when exporting or generating Java source code for your
+domain objects. Directories are relative to the project save location
+(see link:#Configuring_Project_Save_Location[Configuring Project Save
+Location]), and will contain folders for each generated package.
+
+This table summarizes which projects support model Java source code
+options.
+
+[#Table 113-9]## *_Project Support for Model Java Source Options_*
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+=== How to Configure Model Java Source Code Options Using Workbench
+
+To specify the default export options, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Options* tab in the *Editor*. The Options tab appears.
+[#Figure 113-7]##*_Options Tab, Model Java Source options_*
+image:prjoptmd.gif[Options Tab, Model Java Source
+options,title="Options Tab, Model Java Source options"]
+. Complete the fields on the Model Java Source options on the tab.
+. Specify the project root directory to which Workbench generates model
+Java source files. For more information, see
+link:Creating%20a%20Descriptor%20(ELUG)#Generating_Java_Code_for_Descriptors[Generating
+Java Code for Descriptors].
+
+*See Also*
+
+link:#Configuring_a_Project[Configuring a Project]
+
+link:Creating%20a%20Project%20(ELUG)#Exporting_Project_Information[Exporting
+Project Information]
+
+== Configuring Cache Type and Size at the Project Level
+
+The EclipseLink cache is an in-memory repository that stores recently
+read or written objects based on class and primary key values.
+EclipseLink uses the cache to achieve the following:
+
+* improve performance by holding recently read or written objects and
+accessing them in-memory to minimize database access;
+* manage locking and isolation level;
+* manage object identity.
+
+This table summarizes which projects support identity map configuration.
+
+[#'Table 113-10]## *_Project Support for Identity Map Configuration_*
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+The cache options you configure at the project level apply globally to
+all descriptors. Use this section to define global cache options for an
+EclipseLink project.
+
+You can override the project-level identity map configuration by
+defining identity map configuration at the descriptor level. For
+information on caching and defining identity map configuration for a
+specific descriptor, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Type_and_Size_at_the_Descriptor_Level[Configuring
+Cache Type and Size at the Descriptor Level].
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: When using Workbench, changing the project’s default identity
+map does not affect descriptors that already exist in the project; only
+newly added descriptors ar affected.
+|===
+
+For detailed information on caching and object identity, and the
+recommended settings to maximize EclipseLink performance, see to
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Type_and_Object_Identity[Cache
+Type and Object Identity].
+
+For more information about the cache, see
+link:Introduction%20to%20Cache%20(ELUG)[Introduction to Cache].
+
+=== How to Configure Cache Type and Size at the Project Level Using Workbench
+
+To specify the cache identity map, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Defaults* tab in the *Editor*. The Defaults tab appears.
+[#Figure 113-8]##*_Defaults Tab, Cache Identity Map Options_*
+image:projident.gif[Defaults Tab, Cache Identity Map
+Options,title="Defaults Tab, Cache Identity Map Options"]
+. Complete the *Caching* options on the tab.
+
+Use this table to enter data in each of the following fields to specify
+the caching options:
+
+Field
+
+Description
+
+Type
+
+Use the Type list to choose the identity map as follows:
+
+Weak with Soft Subcache – cache first n elements in soft space, anything
+after that in weak space (see SoftCacheWeakIdentityMap).
+
+Weak with Hard Subcache – cache first n elements in soft space, anything
+after that in hard space (see HardCacheWeakIdentityMap).
+
+Weak – cache everything in weak space (see WeakIdentityMap).
+
+Soft – cache everything in soft space (see SoftIdentityMap).
+
+Full – cache everything permanently (see FullIdentityMap).
+
+None – cache nothing (see No Identity Map|NoIdentityMap).
+
+For more information, see Cache Type and Object Identity.
+
+Changing the project’s default identity map does not affect descriptors
+that already exist in the project.
+
+Size
+
+Specify the size of the cache as follows:
+
+When using Weak with Soft Subcache or Weak with Hard Subcache, the size
+is the maximum number of objects stored in the identity map.
+
+When using Full or Weak, the size indicates the starting size of the
+identity map.
+
+=== How to Configure Cache Type and Size at the Project Level Using Java
+
+Use one of the following `+ClassDescriptor+` methods to configure the
+descriptor to use the appropriate type of identity map:
+
+* `+useFullIdentitMap+`
+* `+useWeakIdentitMap+`
+* `+useSoftIdentitMap+`
+* `+useSoftCacheWeakIdentitMap+`
+* `+useHardCacheWeakIdentityMap+`
+* `+useNoIdentityMap+`
+
+Use the `+ClassDescriptor+` method `+setIdentityMapSize+` to configure
+the size of the identity map.
+
+== Configuring Cache Isolation at the Project Level
+
+If you plan to use isolated sessions (see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Isolation[Cache
+Isolation]), you must configure descriptors as isolated for any object
+that you want confined to an isolated session cache.
+
+Configuring a descriptor to be isolated means that EclipseLink will not
+store the object in the shared session cache and the object will not be
+shared across client sessions. This means that each client will have
+their own object read directly from the database. Objects in an isolated
+client session cache can reference objects in their parent server
+session’s shared session cache, but no objects in the shared session
+cache can reference objects in an isolated client session cache.
+Isolation is required when using Oracle Database Virtual Private
+Database (VPD) support or database user-based read security. Isolation
+can also be used if caching is not desired across client sessions.
+
+This table summarizes which projects support cache isolation
+configuration.
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+The cache isolation options you configure at the project level apply
+globally to all descriptors. Use this section to define global options
+for an EclipseLink project.
+
+You can override the project-level configuration by defining cache
+isolation options at the descriptor level. For information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Isolation_at_the_Descriptor_Level[Configuring
+Cache Isolation at the Descriptor Level].
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: When using Workbench, changing the project’s default cache
+isolation option does not affect descriptors that already exist in the
+project; only newly added descriptors ar affected.
+|===
+
+=== How to Configure Cache Isolation at the Project Level Using Workbench
+
+To specify the cache isolation options, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Defaults* tab in the *Editor*. The Defaults tab appears.
+[#Figure 113-9]##*_Defaults Tab, Cache Isolation Options_*
+image:projisol.gif[Defaults Tab, Cache Isolation
+Options,title="Defaults Tab, Cache Isolation Options"]
+. Complete the Isolation option on the tab. Use the *Isolation* list to
+choose one of the following:
+* *Isolated* – if you want all objects confined to an isolated client
+session cache. For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Isolation[Cache
+Isolation].
+* *Shared* – if you want all objects visible in the shared session cache
+(default).
+
+== Configuring Cache Coordination Change Propagation at the Project Level
+
+If you plan to use a coordinated cache (see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination]), you can configure how and under what conditions a
+coordinated cache propagates changes.
+
+This table summarizes which projects support cache coordination change
+propagation configuration.
+
+[#Table 113-12]## *_Project Support for Cache Coordination Change
+Propagation Configuration_*
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+The cache coordination change propagation options you configure at the
+project level apply globally to all descriptors. Use this section to
+define global options for an EclipseLink project.
+
+You can override the project-level configuration by defining cache
+coordination change propagation options at the descriptor level. For
+information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Coordination_Change_Propagation_at_the_Descriptor_Level[Configuring
+Cache Coordination Change Propagation at the Descriptor Level].
+
+To complete your coordinated cache configuration, see
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)#Configuring_a_Coordinated_Cache[Configuring
+a Coordinated Cache].
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: When using Workbench, changing the project’s default cache
+coordination change propagation option does not affect descriptors that
+already exist in the project; only newly added descriptors ar affected.
+|===
+
+=== How to Configure Cache Coordination Change Propagation at the Project Level Using Workbench
+
+To specify the coordinated cache change propagation options, use this
+procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Defaults* tab in the *Editor*. The Defaults tab appears.
+[#Figure 113-10]##*_Defaults Tab, Coordination Options_*
+image:projcord.gif[Defaults Tab, Coordination
+Options,title="Defaults Tab, Coordination Options"]
+. Complete the *Coordination* option] on the tab.
+
+Use the following information to enter data in the Coordination field:
+
+[width="100%",cols="<8%,<59%,<33%",options="header",]
+|===
+|*Coordination Option* |*Description* |*When to Use*
+|*None* |For both existing and new instances, do not propagate a change
+notification. |Infrequently read or changed objects.
+
+|*Synchronize Changes* |For an existing instance, propagate a change
+notification that contains each changed attribute. For a new instance,
+propagate an object creation (along with all the new instance’s
+attributes) only if the new instance is related to other existing
+objects that are also configured with this change propagation option.
+|Frequently read or changed objects that contain few attributes or in
+cases where only a few attributes are frequently changed. Objects that
+have many or complex relationships.
+
+|*Synchronize Changes and New Objects* |For an existing instance,
+propagate a change notification that contains each changed attribute.
+For a new instance, propagate an object creation (along with all the new
+instance’s attributes). |Frequently read or changed objects that contain
+few attributes or in cases where only a few attributes are frequently
+changed. Objects that have few or simple relationships.
+
+|*Invalidate Changed Objects* |For an existing instance, propagate an
+object invalidation that marks the object as invalid in all other
+sessions. This tells other sessions that they must update their cache
+from the data source the next time this object is read. For a new
+instance, no change notification is propagated. |Frequently read or
+changed objects that contain many attributes in cases where many of the
+attributes are frequently changed.
+|===
+
+== Configuring Cache Expiration at the Project Level
+
+By default, objects remain in the cache until they are explicitly
+deleted (see
+link:Using%20Basic%20Unit%20of%20Work%20API%20(ELUG)#Deleting_Objects[Deleting
+Objects]) or garbage-collected when using a weak identity map (see
+link:#Configuring_Cache_Type_and_Size_at_the_Project_Level[Configuring
+Cache Type and Size at the Project Level]). Alternatively, you can
+configure an object with a `+CacheInvalidationPolicy+` that lets you
+specify, either automatically or manually, that an object is invalid:
+when any query attempts to read an invalid object, EclipseLink will go
+to the data source for the most up-to-date version of that object and
+update the cache with this information.
+
+Using cache invalidation ensures that your application does not use
+stale data. It provides a better performing alternative to refreshing
+(see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Refreshing[Configuring
+Cache Refreshing]).
+
+This table summarizes which projects support cache invalidation
+configuration.
+
+[#Table 113-13]##
+
+Descriptor
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+The cache invalidation options you configure at the project level apply
+globally to all descriptors. Use this section to define global cache
+invalidation options for an EclipseLink project.
+
+You can override the project-level cache invalidation configuration by
+defining cache invalidation at the descriptor (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Expiration_at_the_Descriptor_Level[Configuring
+Cache Expiration at the Descriptor Level]) or query level (see
+link:Using%20Advanced%20Query%20API%20(ELUG)#How_to_Configure_Cache_Expiration_at_the_Query_Level[How
+to Configure Cache Expiration at the Query Level]).
+
+You can customize how EclipseLink communicates the fact that an object
+has been declared invalid to improve efficiency if you are using a
+coordinated cache. For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Coordination_Change_Propagation_at_the_Descriptor_Level[Configuring
+Cache Coordination Change Propagation at the Descriptor Level].
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: When using Workbench, changing the project’s default cache
+invalidation does not affect descriptors that already exist in the
+project; only newly added descriptors are affected.
+|===
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Invalidation[Cache
+Invalidation].
+
+=== How to Configure Cache Expiration at the Project Level Using Workbench
+
+To specify the cache expiration options for the project, use this
+procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Defaults* tab in the *Editor*. The Defaults tab appears.
+[#Figure 113-11]##*_Defaults Tab, Cache Expiry Options_*
+image:cachexp.gif[Defaults Tab, Cache Expiry
+Options,title="Defaults Tab, Cache Expiry Options"]
+. Complete the Cache Expiry options on the tab.
+
+Use this table to enter data in the following fields on this tab:
+
+[width="100%",cols="<14%,<86%",options="header",]
+|===
+|*Field* |*Description*
+|*No Expiry* |Specify that objects in the cache do not expire.
+
+|*Time to Live Expiry* |Specify that objects in the cache will expire
+after a specified amount of time. Use the *Expire After* field to
+indicate the time (in milliseconds) after which the objects will expire.
+
+|*Daily Expiry* |Specify that objects in the cache will expire at a
+specific time each day. Use the *Expire At* field to indicate the exact
+time to the second (using a 24-hour clock) at which the objects will
+expire.
+
+|*Update Read Time on Update* |Specify if the expiry time should be
+reset after updating an object.
+|===
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* These options apply to all descriptors in a project. See
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Expiration_at_the_Descriptor_Level[Configuring
+Cache Expiration at the Descriptor Level] for information on configuring
+descriptor-specific options.
+|===
+
+== Configuring Project Comments
+
+You can define a free-form textual comment for each project. You can use
+these comments however you whish: for example, to record important
+project implementation details such as the purpose or importance of a
+project.
+
+In a Workbench project, the comments are stored in the EclipseLink
+deployment XML file. There is no Java API for this feature.
+
+This table summarizes which projects support this option.
+
+[#Table 113-14]##
+
+Project Type
+
+Using the Workbench
+
+Using Java
+
+Relational Projects
+
+EIS Projects
+
+XML Projects
+
+=== How to Configure Project Comments Using Workbench
+
+To specify a comment for the project, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *General* tab in the *Editor*. The General tab appears.
+[#Figure 113-12]##*_General Tab, Comments Options_*
+image:gencomment.gif[General Tab, Comments
+Options,title="General Tab, Comments Options"]
+. Enter descriptive text information in the *Comment* field.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

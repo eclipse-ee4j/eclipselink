@@ -1,0 +1,90 @@
+*TOC* Special:Whatlinkshere_Configuring_Server_Sessions_(ELUG)[Related
+Topics]
+
+This table lists the configurable options for server and client
+sessions.
+
+[#Table 87-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Configuring Internal Connection Pools
+
+Configuring a Primary Mapping Project
+
+Configuring a Session Login
+
+Configuring Logging
+
+Configuring External Connection Pools
+
+Configuring Multiple Mapping Projects
+
+Configuring a Performance Profiler
+
+Configuring an Exception Handler
+
+Configuring a Session Customizer Class
+
+Configuring the Server Platform
+
+Configuring Session Event Listeners
+
+Configuring a Coordinated Cache
+
+Configuring the Integrity Checker
+
+Configuring Named Queries at the Session Level
+
+== Configuring Internal Connection Pools
+
+An internal connection pool is a collection of reusable connections to a
+single data source provided by any session that persists to a data
+source. By default, such a session provides both an internal read and
+write connection pool.
+
+In this case, you can do the following:
+
+* Configure read and write connection pool options such as minimum and
+maximum number of connections, alternate connection configuration, and
+properties (arbitrary, application-specific named values).
+* Create named connection pools for whatever application-specific
+purpose you choose.
+* Create sequence connection pools that EclipseLink uses exclusively for
+obtaining object identifiers.
+
+For more information about creating and configuring internal connection
+pools, see the following:
+
+* link:Creating%20an%20Internal%20Connection%20Pool%20(ELUG)[Creating an
+Internal Connection Pool]
+* link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)[Configuring
+an Internal Connection Pool]
+
+For more information about configuring the type of connection pool your
+session uses, see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[Configuring
+External Connection Pooling].
+
+== Configuring External Connection Pools
+
+An external connection pool is a collection of reusable connections to a
+single data source provided by a JDBC driver or Java EE container.
+
+By default, a session uses internal connection pools (see
+link:#Configuring_Internal_Connection_Pools[Configuring Internal
+Connection Pools]). For more information about configuring a session to
+use an external connection pool, see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[Configuring
+External Connection Pooling].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

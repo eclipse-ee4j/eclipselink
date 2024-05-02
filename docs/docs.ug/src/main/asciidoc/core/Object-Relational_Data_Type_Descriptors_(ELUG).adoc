@@ -1,0 +1,32 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+== Object-Relational Data Type Descriptors
+
+The following sections contain general information about
+object-relational data type descriptors, as well as detailed information
+on how to create and configure these descriptors:
+
+* link:Introduction_to_Object-Relational_Data_Type_Descriptors_(ELUG)[Introduction
+to Object-Relational Data Type Descriptors]
+
+* link:Creating_an_Object-Relational_Data_Type_Descriptor_(ELUG)[Creating
+an Object-Relational Data Type Descriptor]
+
+* link:Configuring_an_Object-Relational_Data_Type_Descriptor_(ELUG)[Configuring
+an Object-Relational Data Type Descriptor] – explains how to configure
+descriptor options specific to an object-relational data type
+descriptor.
+
+*Special:Whatlinkshere_Object-Relational_Data_Type_Descriptors_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

@@ -1,0 +1,232 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Using_an_Integrated_Development_Environment_(ELUG)[Related
+Topics]
+
+In addition to the development environment described in this section,
+you can use EclipseLink with _any_ Java EE development environment and
+process.
+
+== Configuring Workbench with Source Control Management Software
+
+You can use Workbench with a source control management (SCM) system to
+facilitate enterprise-level team development (see
+link:#How_to_Use_a_Source_Control_Management_System[How to Use a Source
+Control Management System]). If you have a small development team, you
+can manage the changes from within XML files (see
+link:#How_to_Share_Project_Objects[How to Share Project Objects]).
+
+When using a Workbench project in a team environment, you must
+synchronize your changes with other developers. See
+link:#How_to_Merge_Files[How to Merge Files] for more information.
+
+=== How to Use a Source Control Management System
+
+If you use an enterprise, file-based source control management system to
+manage your Java source files, you can use the same system with your
+Workbench project files. These project files are maintained by Workbench
+and written out in XML file format.
+
+The _check in_ and _check out_ mechanism for the source control system
+defines how to manage the source (the XML source and Workbench project
+file) in a multiuser environment.
+
+*Checking Out and Checking In Workbench Project Files*
+
+Although your actual development process will vary depending on your SCM
+tool, a typical process involves the following steps:
+
+[arabic]
+. Determine (based on your SCM system) which files to retrieve from the
+source management system.
+. Edit the project using Workbench.
+. Save the edited project. If Workbench displays the Read-Only Files
+dialog box, make a note of these files, they must be unlocked and
+possibly merged. See link:#How_to_Work_with_Locked_Files[How to Work
+with Locked Files] for more information.
+. Merge the required project files. See link:#How_to_Merge_Files[How to
+Merge Files] for details.
+. Check in the modified files, then retrieve from the repository any
+files that have been added or modified for this Workbench project.
+
+=== How to Merge Files
+
+The most difficult aspect of application development is merging changes
+from two (or more) development team members that have simultaneously
+edited the same file. If you check in your changes, a _merge_ condition
+exists. Use a file comparison tool to determine the merged aspects of
+the project. The files to edit will vary, depending on the type of
+merge, as follows:
+
+* link:#Project_Files[Project Files]
+* link:#Merging_Table,_Descriptor,_and_Class_Files[Merging Table&#44;
+Descriptor&#44; and Class Files]
+
+link:#example_merging_projects[Merging Projects] and
+link:#example_merging_files[Merging Files] examples demonstrate a _merge
+out_ merging technique.
+
+==== Merging Project Files
+
+Project files contain references to the objects in the project.
+Generally, your project __`+.mwp+` contains the following elements:
+
+* Database information:
+** Database tables:
+* Descriptors:
+* Repository:
+** Classes:
+
+Changes in these parts of the `+.mwp+` file are usually caused by
+adding, deleting, or renaming project elements.
+
+To merge project files, you will generally need to merge a project file
+if another developer has added or removed a descriptor, table, or class,
+and checked in the project while you were adding or removing
+descriptors, tables, or classes from the same project. To merge the
+project’s `+.mwp+` file, use this procedure:
+
+[arabic]
+. Perform a file comparison between the __.`+mwp+` file in the
+repository and your local copy. The file comparison shows the addition
+or removal of a project element inside the owner (that is, , , or ).
+. Insert the XML script to, or delete from your local __.`+mwp+` file
+(inside the _corresponding owner element_). This brings your local code
+up-to-date to the current code in the code repository.
+. Retrieve any updated files, as indicated by your source control
+system.
+
+Your local source now matches the repository.
+
+[#example_merging_projects]## *’’Example: Merging Projects*’’ Another
+developer has added and checked in a new *Employee* class descriptor to
+the `+com.demo+` package while you were working with the same Workbench
+project. To merge your work with the newly changed project, follow these
+steps:
+
+[arabic]
+. Perform a file comparison on the __.`+mwp+` file to determine the
+differences between your local file and the file in the repository. Your
+SCM system may show the file in _merge_ status. The file comparison
+shows the addition of the tag and a element inside that tag:
++
+`+   +``+com.demo.Employee.ClassDescriptor+`
+. Insert this XML into your __.`+mwp+` file (inside the element) to
+bring it up to date with the current files in the source repository.
+. Retrieve any new or updated files from your source control system.
+This includes the newly added *Employee* class descriptor.
+. Check in files that you have modified.
+
+==== Merging Table, Descriptor, and Class Files
+
+Developers who concurrently modify the same existing table, descriptor,
+or class file will create a merge condition for the following files:
+
+* Table: __`+<tableName+`__>`+.xml+` (one for each table)
+* Descriptor: _`+<descriptorName.type>+`_`+.xml+` (one for each
+descriptor)
+* Class: __`+.xml+` (one for each class)
+
+Workbench changes these files when saving a project if you have changed
+any of the contents within them (such as adding a mapping to a
+descriptor, adding an attribute to a class, or a changing a field
+reference in a table).
+
+If another developer has changed an attribute in a table, descriptor, or
+class, while you were changing a different mapping on that same
+descriptor, you will need to merge your project. To merge your project,
+use this procedure:
+
+[arabic]
+. Perform a file comparison on the specific `+.xml+` files in merge
+status (that is, table, descriptor, or class). The file comparison shows
+the addition or removal of an XML element.
+. Insert the XML script to, or remove from your local `+.xml+` file to
+bring it up to date with the current files in the source repository.
+
+[#example_merging_files]## *’’Example: Merging Files*’’ Another
+developer has added and checked in the *firstName* mapping to the
+*Employee* class descriptor while you were changing a different mapping
+on that same descriptor. To merge your work with the newly changed
+project, use this procedure:
+
+[arabic]
+. Perform a file comparison on the
+`+com.demo.Employee.ClassDescriptor.xml+` file located in
+__`+/Descriptor/+` directory that is in merge status. The file
+comparison shows the addition of the tag and the elements inside that
+tag:
++
+[source,java]
+----
+ <mapping>
+    <uses-method-accessing>false</uses-method-accessing>
+    <inherited>false</inherited>
+    <read-only>false</read-only>
+    <instance-variable-name>firstName</instance-variable-name>
+    <default-field-names>
+        <default-field-name>direct field=</default-field-name>
+    </default-field-names>
+    <field-handle>
+        <field-handle>
+            <table>EMPLOYEE</table>
+            <field-name>F_NAME</field-name>
+        </field-handle>
+    </field-handle>
+ <mapping-class>MWDirectToFieldMapping </mapping-class>
+ </mapping>
+----
+. Insert this XML block into your local
+`+com.demo.Employee.ClassDescriptor.xml+` file (inside the existing
+element) to bring it up to date to the current files in the source
+repository.
+. Retrieve any new files noted as missing by your source control system.
+This includes any tables or descriptors that may be referenced by the
+new mapping.
+. Check in files that you have modified.
+
+=== How to Share Project Objects
+
+You can also share project objects by copying the table or descriptor
+files into the appropriate directories in the target project.
+
+After copying the files, insert a reference to the table, descriptor, or
+class in the appropriate place in the __`+.mwp+` file. All references
+contained within the project file must refer to an existing object in
+the project.
+
+=== How to Work with Locked Files
+
+When working in a team environment, your source control system may lock
+files when you retrieve them from the repository. If Workbench attempts
+to save a locked file, the Version Control Assistance dialog box
+appears, showing the locked files.’’’’’
+
+[#Figure 6-1]## *_Version Control Assistance Dialog Box_*
+
+.Version Control Assistance Dialog Box
+image::readonly.gif[Version Control Assistance Dialog
+Box,title="Version Control Assistance Dialog Box"]
+
+Select one of the following methods to save your project:
+
+* Use your source control system to unlock the files, and then click
+*Save*.
+* Click *Save As* to save the project to a new location.
+
+See link:Creating%20a%20Project%20(ELUG)#How_to_Save_Projects[How to
+Save Projects] for more information.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

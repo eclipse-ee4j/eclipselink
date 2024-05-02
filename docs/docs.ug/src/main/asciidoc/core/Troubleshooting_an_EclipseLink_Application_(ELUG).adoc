@@ -1,0 +1,18 @@
+Consider the following sections:
+
+* link:EclipseLink_Exception_Error_Reference_(ELUG)[EclipseLink
+Exception Error Reference] – lists exceptions that may occur at time of
+deployment of an EclipseLink application, as well as at run time.
+
+* link:EclipseLink_Workbench_Error_Reference_(ELUG)[EclipseLink
+Workbench Error Reference] – describes common problems and their
+solutions when using EclipseLink Workbench.
+
+*Special:Whatlinkshere_Troubleshooting_an_EclipseLink_Application_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

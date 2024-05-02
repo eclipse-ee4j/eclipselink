@@ -1,0 +1,341 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Using_the_Schema_Manager_(ELUG)[Related
+Topics]
+
+The `+SchemaManager+` and its related classes provide API that you can
+use from a Java application to specify database tables in a generic
+format, and then create and modify them in a specific relational
+database. This decouples your EclipseLink project from a particular
+database schema while giving you a programmatic means of creating a
+database schema based on your EclipseLink project. For example, you can
+use the schema manager to recreate a production database in a
+nonproduction environment. This lets you build models of your existing
+databases, and modify and test them during development.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can also create database tables manually during development
+using the Workbench (see
+link:Using%20Workbench%20(ELUG)#Creating_New_Tables[Creating New Tables]
+and
+link:Using%20Workbench%20(ELUG)#Generating_Tables_on_the_Database[Generating
+Tables on the Database]).
+|===
+
+== Introduction to the Schema Manager
+
+The following figure summarizes the important `+SchemaManager+` classes
+and the primary means of using them.
+
+[#Figure 5-1]## *_SchemaManager Usage_*
+
+.SchemaManager Usage
+image::scheman.gif[SchemaManager Usage,title="SchemaManager Usage"]
+
+Although you can use the `+SchemaManager+` API directly, we recommend
+that you create a `+TableCreator+` class and use its API (which, in
+turn, uses the `+SchemaManager+`).
+
+You can automatically generate a `+TableCreator+` using the following:
+
+* link:#How_to_Use_Workbench_During_Development[Workbench during
+development]
+* link:#How_to_Use_the_Default_Table_Generator_at_Run_Time[`+DefaultTableGenerator+`
+at run time]
+
+The `+TableCreator+` class owns one or more `+TableDefinition+` classes
+(one for each database table) and the `+TableDefinition+` class owns one
+or more `+FieldDefinition+` classes (one for each field).
+
+The `+TableDefinition+` class lets you specify a database table schema
+in a generic format. At run time, EclipseLink uses the session
+associated with your EclipseLink project to determine the specific
+database type, and uses the generic schema to create the appropriate
+tables and fields for that database.
+
+After creating a `+TableCreator+` class, you can use its API to create
+and drop tables (see link:#Creating_Tables_with_a_Table_Creator[Creating
+Tables with a Table Creator]). You can also configure EclipseLink to do
+this automatically (see
+link:#Creating_Database_Tables_Automatically[Creating Database Tables
+Automatically]).
+
+Because the schema manager uses Java types rather than database types,
+it is database-independent. However, because it does not account for
+database-specific optimizations, it is best-suited for development
+purposes rather than production. For more information on how the schema
+manager maps Java types to database types, see
+link:#How_to_Use_Schema_Manager_Java_and_Database_Type_Conversion[How to
+Use Schema Manager Java and Database Type Conversion].
+
+Although the schema manager can handle the sequencing configuration that
+you specify in your EclipseLink project, there are some sequencing
+restrictions you should be aware of (see link:#How_to_Use_Sequencing[How
+to Use Sequencing]).
+
+=== How to Use Schema Manager Java and Database Type Conversion
+
+The following table lists the Java type to database type conversions
+that the schema manager supports depending on the database platform your
+EclipseLink project uses. This list is specific to the schema manager
+and does not apply to mappings. EclipseLink automatically performs
+conversions between any database types within mappings.
+
+[#Table 5-1]## *_Java and Database Field Type Conversion_*
+
+[width="99%",cols="<30%,<13%,<12%,<16%,<13%,<16%",options="header",]
+|===
+|*Java Type* |*Oracle* |*DB2* |*Sybase* |*MySQL* |*MS Access*
+|`+java.lang.Boolean+` |NUMBER |SMALLINT |BIT default 0 |TINYINT(1)
+|SHORT
+
+|`+java.lang.Byte+` |NUMBER |SMALLINT |SMALLINT |TINYINT |SHORT
+
+|`+java.lang.Byte\'\'[]+` |LONG RAW |BLOB |IMAGE |BLOB |LONGBINARY
+
+|`+java.lang.Character+` |CHAR |CHAR |CHAR |CHAR |TEXT
+
+|`+java.lang.Character[]+` |LONG |CLOB |TEXT |TEXT |LONGTEXT
+
+|`+java.lang.Double+` |NUMBER |FLOAT |FLOAT(32) |DOUBLE |DOUBLE
+
+|`+java.lang.Float+` |NUMBER |FLOAT |FLOAT(16) |FLOAT |DOUBLE
+
+|`+java.lang.Integer+` |NUMBER |INTEGER |INTEGER |INTEGER |LONG
+
+|`+java.lang.Long+` |NUMBER |INTEGER |NUMERIC |BIGINT |DOUBLE
+
+|`+java.lang.Short+` |NUMBER |SMALLINT |SMALLINT |SMALLINT |SHORT
+
+|`+java.lang.String+` |VARCHAR2 |VARCHAR |VARCHAR |VARCHAR |TEXT
+
+|`+java.math.BigDecimal+` |NUMBER |DECIMAL |NUMERIC |DECIMAL |DOUBLE
+
+|`+java.math.BigInteger+` |NUMBER |DECIMAL |NUMERIC |BIGINT |DOUBLE
+
+|`+java.sql.Date+` |DATE |DATE |DATETIME |DATE |DATETIME
+
+|`+java.sql.Time+` |DATE |TIME |DATETIME |TIME |DATETIME
+
+|`+java.sql.Timestamp+` |DATE |TIMESTAMP |DATETIME |DATETIME |DATETIME
+|===
+
+For more information about database platforms that EclipseLink supports,
+see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Database_Platforms[Database
+Platforms].
+
+=== How to Use Sequencing
+
+If you generate a `+TableCreator+` class
+link:#How_to_Use_Workbench_During_Development[using the Workbench] or
+link:#How_to_Use_the_Default_Table_Generator_at_Run_Time[`+DefaultTableGenerator+`],
+then sequencing configuration is included in your `+TableCreator+`
+according to your EclipseLink project configuration. In this case, when
+you use `+TableCreator+` method `+createTables+`, it does the following:
+
+* Creates the sequence table as defined in the session
+`+DatabaseLogin+`.
+* Creates or inserts sequences for each sequence name for all registered
+descriptors in the session.
+* Creates the Oracle sequence object if you use Oracle native
+sequencing.
+
+You can use advanced API to handle special cases like Sybase or
+Microsoft SQL Server native sequencing (see
+link:#How_to_Use_Java_to_Create_a_Table_Creator[How to Use Java to
+Create a Table Creator]).
+
+For more information about sequencing, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Sequencing_in_Relational_Projects[Sequencing
+in Relational Projects].
+
+== Creating a Table Creator
+
+You can automatically generate a `+TableCreator+` using:
+
+* link:#How_to_Use_Workbench_During_Development2[Workbench during
+development]
+* link:#How_to_Use_the_Default_Table_Generator_at_Run_Time2[`+DefaultTableGenerator+`
+at run time]
+
+After creating a `+TableCreator+` class, you can use its API to create
+and drop tables (see link:#Creating_Tables_with_a_Table_Creator[Creating
+Tables with a Table Creator]).
+
+[#How to Use Workbench During Development2]##
+
+=== How to Use Workbench During Development
+
+To create a `+TableCreator+` class that you can use in a Java
+application to recreate a database schema using the `+SchemaManager+`,
+use this procedure:
+
+[arabic]
+. Right-click the project in the *Navigator* and choose *Export > Table
+Creator Java Source* from the context menu. The Table Creator dialog box
+appears. You can also select the table and choose *Selected* > *Export >
+Table Creator Java Source* from the menu.
+. Enter a name for the table creator class and click *OK*. The Save As
+dialog box appears.
+. Choose a location for your table creator class and click *OK*.
+Workbench exports the table creator Java class to the location you
+specify.
+
+[#How to Use the Default Table Generator at Run Time2]##
+
+=== How to Use the Default Table Generator at Run Time
+
+To create a `+TableCreator+` class in Java using the
+`+DefaultTableGenerator+`, use this procedure:
+
+[arabic]
+. Create an instance of `+DefaultTableGenerator+`, passing in an
+instance of your EclipseLink project:
+`+DefaultTableGenerator myDefTblGen = new DefaultTableGenerator(eclipselinkProject);+`
+. Create a `+TableCreator+` instance:
+* If you want a `+TableCreator+` that can support any session, use:
+`+TableCreator myTblCre = myDefTblGen.generateDefaultTableCreator();+`
+* If you want a `+TableCreator+` customized for a specific EclipseLink
+session, use:
+`+TableCreator myTblCre = myDefTblGen.generateFilteredDefaultTableCreator(eclipselinkSession);+`
+
+You can also configure EclipseLink to use the `+DefaultTableGenerator+`
+to automatically generate and execute a `+TableCreator+` at run time
+(see link:#Creating_Database_Tables_Automatically[Creating Database
+Tables Automatically]).
+
+=== How to Use Java to Create a Table Creator
+
+This section describes how to create a `+TableCreator+` class in Java,
+including the following:
+
+* link:#Creating_a_TableCreator_Class[Creating a TableCreator Class]
+* link:#Creating_a_TableDefinition_Class[Creating a TableDefinition
+Class]
+* link:#Adding_Fields_to_a_TableDefinition[Adding Fields to a
+TableDefinition]
+* link:#Defining_Sybase_and_Microsoft_SQL_Server_Native_Sequencing[Defining
+Sybase and Microsoft SQL Server Native Sequencing]
+
+==== Creating a TableCreator Class
+
+To create your own `+TableCreator+` instance, you should extend
+`+TableCreator+`, as the following example shows:
+
+[#Example 5-1]## *_Creating a TableCreator Class_*
+
+[source,java]
+----
+ public class MyTableCreator extends org.eclipse.persistence.schemaframework.TableCreator {
+
+     public M7TableCreator() {
+         setName("MyTableCreator");
+         addTableDefinition(buildADDRESSTable());
+     ...
+     }
+
+     public TableDefinition buildADDRESSTable() {
+         TableDefinition table = new TableDefinition();
+        ...
+        return table;
+     }
+ ...
+ }
+----
+
+==== Creating a TableDefinition Class
+
+The `+TableDefinition+` class includes all the information required to
+create a new table, including the names and properties of a table and
+all its fields.
+
+The `+TableDefinition+` class has the following methods:
+
+* `+setName+`
+* `+addField+`
+* `+addPrimaryKeyField+`
+* `+addIdentityField+`
+* `+addForeignKeyConstraint+`
+
+All table definitions must call the `+setName+` method to set the name
+of the table that is described by the `+TableDefinition+`.
+
+==== Adding Fields to a TableDefinition
+
+Use the `+addField+` method to add fields to the `+TableDefinition+`. To
+add the primary key field to the table, use the `+addPrimaryKeyField+`
+method rather than the `+addField+` method.
+
+To maintain compatibility among different databases, the type parameter
+requires a Java class rather than a database field type. EclipseLink
+translates the Java class to the appropriate database field type at run
+time. For example, the `+String+` class translates to the `+CHAR+` type
+for dBase databases. However, if you are connecting to Sybase, the
+`+String+` class translates to `+VARCHAR+`. For more information, see
+link:#How_to_Use_Schema_Manager_Java_and_Database_Type_Conversion[How to
+Use Schema Manager Java and Database Type Conversion].
+
+The `+addField+` method can also be called with the `+fieldSize+` or
+`+fieldSubSize+` parameters for column types that require size and
+subsize to be specified.
+
+Some databases require a subsize, but others do not. EclipseLink
+automatically provides the required information, as necessary.
+
+==== Defining Sybase and Microsoft SQL Server Native Sequencing
+
+Use `+FieldDefinition+` method `+addIdentityField+` to add fields
+representing a generated sequence number from Sybase or Microsoft SQL
+Server native sequencing. See
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_a_Non-Oracle_Database_Platform[Native
+Sequencing with a Non-Oracle Database Platform] for detailed information
+on using sequencing.
+
+== Creating Tables with a Table Creator
+
+After creating a `+TableCreator+` class (see
+link:#Creating_a_Table_Creator[Creating a Table Creator]), you can use
+its API to create and drop tables. The important `+TableCreator+`
+methods are the following (each method takes an instance of
+`+DatabaseSession+`):
+
+* `+createTables+`–this method creates tables, adds constraints, and
+creates sequence tables and sequences (if sequence tables already exist,
+this method drops them and recreates them).
+* `+dropTables+`–his method drops all constraints and drops all tables
+(except sequence tables) that the `+TableCreator+` defines.
+* `+createConstraints+`–this method creates constraints on all
+pre-existing tables that the `+TableCreator+` defines.
+* `+dropConstraints+`–this method drops constraints on all pre-existing
+tables that the `+TableCreator+` defines.
+* `+replaceTables+`–this method drops and then creates all tables that
+the `+TableCreator+` defines.
+
+== Creating Database Tables Automatically
+
+You can configure EclipseLink to create database tables automatically in
+JPA projects.
+
+=== Creating Database Tables Automatically in JPA Projects
+
+Using EclipseLink JPA persistence unit properties that you can define in
+a `+persistence.xml+` file, you can configure schema generation
+
+For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Extensions_for_Schema_Generation[Using
+EclipseLink JPA Extensions for Schema Generation].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_Task[Category: Task]

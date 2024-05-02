@@ -1,0 +1,838 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the types of relational mappings that you can configure
+and provides a cross-reference to the type-specific chapter that lists
+the configurable options supported by that type.
+
+[#Table 33-1]##
+
+[width="100%",cols="<47%,<53%",options="header",]
+|===
+|*If you are creating…* |*See…*
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-Field_Mapping[Direct-to-Field
+Mapping]
+|link:Configuring_a_Relational_Direct-to-Field_Mapping_(ELUG)[Configuring
+a Relational Direct-to-Field Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Transformation_Mapping[Transformation
+Mapping]
+|link:Configuring%20a%20Relational%20Transformation%20Mapping%20(ELUG)[Configuring
+a Relational Transformation Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-XMLType_Mapping[Direct-to-XMLType
+Mapping]
+|link:Configuring_a_Relational_Direct-to-XMLType_Mapping_(ELUG)[Configuring
+a Relational Direct-to-XMLType Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-One_Mapping[One-to-One
+Mapping]
+|link:Configuring%20a%20Relational%20One-to-One%20Mapping%20(ELUG)[Configuring
+a Relational One-to-One Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Variable_One-to-One_Mapping[Variable
+One-to-One Mapping]
+|link:Configuring%20a%20Relational%20Variable%20One-to-One%20Mapping%20(ELUG)[Configuring
+a Relational Variable One-to-One Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-Many_Mapping[One-to-Many
+Mapping]
+|link:Configuring_a_Relational_One-to-Many_Mapping_(ELUG)[Configuring a
+Relational One-to-Many Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Many-to-Many_Mapping[Many-to-Many
+Mapping]
+|link:Configuring_a_Relational_Many-to-Many_Mapping_(ELUG)[Configuring a
+Relational Many-to-Many Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Collection_Mapping[Aggregate
+Collection Mapping]
+|link:Configuring%20a%20Relational%20Aggregate%20Collection%20Mapping%20(ELUG)[Configuring
+a Relational Aggregate Collection Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Collection_Mapping[Direct
+Collection Mapping]
+|link:Configuring_a_Relational_Direct_Collection_Mapping_(ELUG)[Configuring
+a Relational Direct Collection Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Map_Mapping[Direct
+Map Mapping]
+|link:Configuring%20a%20Relational%20Direct%20Map%20Mapping%20(ELUG)[Configuring
+a Relational Direct Map Mapping]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Object_Mapping[Aggregate
+Object Mapping]
+|link:Configuring_a_Relational_Aggregate_Object_Mapping_(ELUG)[Configuring
+a Relational Aggregate Object Mapping]
+|===
+
+For more information, see the following:
+
+* link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings]
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)[Introduction
+to Relational Mappings]
+
+== Configuring Common Relational Mapping Options
+
+This table lists the configurable options shared by two or more
+relational mapping types.
+
+[#Table 33-2]##
+
+[width="100%",cols="<65%,<17%,<18%",options="header",]
+|===
+|*Option to Configure* |*Workbench* |*Java*
+|link:#Configuring_a_Database_Field[Database field]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Reference_Descriptor[Reference descriptor]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Container
+policy] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Method
+or direct field access] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Default_Null_Value_at_the_Mapping_Level[Default
+null value] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Read-only
+mapping] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Indirection_(Lazy_Loading)[Indirection
+(lazy loading)] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Private_or_Independent_Relationships[Private
+or Independent relationships]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Mapping
+comments] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Serialized_Object_Converter[Serialized
+object converter] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Type
+conversion converter] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_an_Object_Type_Converter[Object
+type conversion] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Bidirectional_Relationship[Bidirectional
+relationship] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Batch_Reading[Batch reading]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Query_Key_Order[Query key order]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Table_and_Field_References_(Foreign_and_Target_Foreign_Keys)[Table
+and field references] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Joining_at_the_Mapping_Level[Joining]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+== Configuring a Database Field
+
+You can associate an object attribute with a database field.
+
+This table summarizes which relational mappings support this option.
+
+[#Table 33-3]##
+
+[width="100%",cols="<48%,<36%,<16%",options="header",]
+|===
+|*Mapping*
+|*link:#How_to_Configure_a_Database_Field_Using_Workbench[Using the
+Workbench]* |*How to Use Java*
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-Field_Mapping[Direct-to-Field
+Mapping] |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-XMLType_Mapping[Direct-to-XMLType
+Mapping] |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+|===
+
+When choosing the database field, you must consider Java and database
+field type compatibility.
+
+EclipseLink supports the following Java types:
+
+* `+java.lang+`: `+Boolean+`, `+Float+`, `+Integer+`, `+String+`,
+`+Double+`, `+Long+`, `+Short+`, `+Byte+`, `+Byte[ ]+`, `+Character+`,
+`+Character[ ]+`; all the primitives associated with these classes
+* `+java.math+`: `+BigInteger+`, `+BigDecimal+`
+* `+java.sql+`: `+Date+`, `+Time+`, `+Timestamp+`
+* `+java.util+`: `+Date+`, `+Calendar+`
+
+While executing reads, the mappings in the link:#Table_33-6[Relational
+Mapping Support for Reference Descriptor] table perform the simple
+one-way data conversions that the link:#Table_33-4[Type Conversions
+Provided by Direct-to-Field Mappings] table describes. For two-way or
+more complex conversions, You must
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Converters_and_Transformers[use
+converters]).
+
+The mappings in this table also allow you to specify a null value. This
+may be required if primitive types are used in the object, and the
+database field allows `+null+` values. For more information, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Default_Null_Value_at_the_Mapping_Level[Configuring
+a Default Null Value at the Mapping Level].
+
+[#Table 33-4]## *_Type Conversions Provided by Direct-to-Field
+Mappings_*
+
+[width="100%",cols="<48%,<52%",options="header",]
+|===
+|*Java type* |*Database type*
+|`+Integer+`, `+Float+`, `+Double+`, `+Byte+`, `+Short+`,
+`+BigDecimal+`, `+BigInteger+`, `+int+`, `+float+`, `+double+`,
+`+byte+`, `+short+` |NUMBER, NUMERIC, DECIMAL, FLOAT, DOUBLE, INT,
+SMALLINT, BIT, BOOLEAN
+
+|`+Boolean+`, `+boolean+` |BOOLEAN, BIT, SMALLINT, NUMBER, NUMERIC,
+DECIMAL, FLOAT, DOUBLE, INT
+
+|`+String+` |VARCHAR, CHAR, VARCHAR2, CLOB, TEXT, LONG, LONG VARCHAR,
+MEMOThe following types apply only to Oracle9: NVARCHAR2, NCLOB, NCHAR
+
+|`+byte[ ]+` |BLOB, LONG RAW, IMAGE, RAW, VARBINARY, BINARY, LONG
+VARBINARY
+
+|`+Time+` |TIME
+
+|`+java.sql.Date+` |DATE
+
+|`+Timestamp+`, `+java.util.Date+`, `+Calendar+` |TIMESTAMP
+|===
+
+*Support for oracle.sql.TimeStamp*
+
+EclipseLink provides additional support for mapping Java date and time
+data types to Oracle Database `+DATE+`, `+TIMESTAMP+`, and
+`+TIMESTAMPTZ+` data types when you use the Oracle JDBC driver with
+Oracle9__i__ Database Server or later and the `+Oracle9Platform+` in
+EclipseLink.
+
+In a direct-to-field mapping, you are not required to specify the
+database type of the field value; EclipseLink determines the appropriate
+data type conversion.
+
+This table lists the supported direct-to-field mapping combinations.
+
+*_Supported Oracle Database Date and Time Direct-to-Field Mappings_*
+
+Java Type
+
+Database Type
+
+Description
+
+java.sql.Time
+
+TIMESTAMP
+
+Full bidirectional support.
+
+TIMESTAMPTZ
+
+Full bidirectional support.
+
+DATE
+
+Full bidirectional support.
+
+java.sql.Date
+
+TIMESTAMP
+
+Full bidirectional support.
+
+TIMESTAMPTZ
+
+Full bidirectional support.
+
+DATE
+
+Full bidirectional support.
+
+java.sql.Timestamp
+
+TIMESTAMP
+
+Full bidirectional support.
+
+TIMESTAMPTZ
+
+Full bidirectional support.
+
+DATE
+
+Nanoseconds are not stored in the database.
+
+java.util.Date
+
+TIMESTAMP
+
+Full bidirectional support.
+
+TIMESTAMPTZ
+
+Full bidirectional support.
+
+DATE
+
+Milliseconds are not stored in the database.
+
+java.util.Calendar
+
+TIMESTAMP
+
+Native SQL or binding gives Calendar timezone.
+
+Note: The TIMESTAMP database value has no timezone – the Calendar object
+provides the local timezone by default. If the database is not in this
+timezone, you must obtain the database timezone by some other means and
+update the Calendarobject accordingly. For this reason, TIMESTAMPTZ may
+be a better choice.
+
+TIMESTAMPTZ
+
+Native SQL or binding stores timezone; standard SQL is based on the
+local timezone.
+
+DATE
+
+Neither timezone nor milliseconds are stored in the database.
+
+Note that some of these mappings result in a loss of precision: avoid
+these combinations if you require this level of precision. For example,
+if you create a direct-to-field mapping between a `+java.sql.Date+`
+attribute and a `+TIMESTAMPTZ+` database field, there is no loss of
+precision. However, if you create a direct-to-field mapping between a
+`+java.sql.Timestamp+` attribute and a `+DATE+` database field, the
+nanoseconds or milliseconds of the attribute are not stored in the
+database.
+
+=== How to Configure a Database Field Using Workbench
+
+Use this procedure to select a specific database field for a direct
+mapping.
+
+[arabic]
+. Select the direct mapping attribute in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *General* tab. The General tab appears. *_Direct Mapping
+General Tab, Database Field Option_* image:mpdtfdfd.gif[Direct Mapping
+General Tab, Database Field
+Option,title="Direct Mapping General Tab, Database Field Option"]
+. Use the *Database Field* field to select a field for this direct
+mapping. You must have previously associated the descriptor with a
+database table as described in
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Associated_Tables[Configuring
+Associated Tables].
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: For direct-to-field mappings of an aggregate descriptor (see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)[Configuring a
+Relational Descriptor as a Class or Aggregate Type]), this field is for
+display only and cannot be changed.
+|===
+
+== Configuring Reference Descriptor
+
+In relational mappings that extend
+`+org.eclipse.persistence.mappings.ForeignReferenceMapping+`, attributes
+reference other EclipseLink descriptors–not the data source. You can
+select any descriptor in the project.
+
+This table summarizes which relational mappings support this option.
+
+[#Table 33-6]##
+
+[width="100%",cols="<47%,<37%,<16%",options="header",]
+|===
+|*Mapping*
+|*link:#How_to_Configure_a_Reference_Descriptor_Using_Workbench[Using
+the Workbench]* |*How to Use Java*
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-One_Mapping[One-to-one]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Variable_One-to-One_Mapping[Variable
+one-to-one] |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-Many_Mapping[One-to-many]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Many-to-Many_Mapping[Many-to-many]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Collection_Mapping[Aggregate
+collection] |image:unsupport.gif[Unsupported.,title="Unsupported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Object_Mapping[Aggregate
+object] |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+|===
+
+=== How to Configure a Reference Descriptor Using Workbench
+
+To specify a reference descriptor for a relational mapping, use this
+procedure.
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears. *_General Tab,
+Reference Descriptor Field_* image:mpgenref.gif[General Tab, Reference
+Descriptor Field,title="General Tab, Reference Descriptor Field"]
+. Use the *Reference Descriptor* field to select the descriptor
+referenced by this relationship mapping.
+
+Note: For aggregate mappings the Reference Descriptor must be an
+aggregate. See Configuring a Relational Descriptor as a Class or
+Aggregate Type for more information.
+
+For variable one-to-one mappings, the Reference Descriptor must be an
+interface. See Configuring a Relational Variable One-to-One Mapping for
+more information.
+
+You can specify a reference descriptor that is not in the current
+Workbench project. For example, to create a mapping to an `+Employee+`
+class that does not exist in the current project, do the following:
+
+[arabic]
+. Add the `+Employee+` class to your current project. See
+link:Creating%20a%20Project%20(ELUG)[Working with Projects].
+. Create the relationship mapping to the `+Employee+` descriptor.
+. Deactivate the `+Employee+` descriptor. See
+link:Using%20Workbench%20(ELUG)[Active and Inactive Descriptors].
+
+When you generate the deployment XML for your project, the _mapping_ to
+the `+Employee+` class will be included, but not the `+Employee+` class.
+
+See Also:
+
+link:#Configuring_Reference_Descriptor[Configuring Reference Descriptor]
+
+== Configuring Batch Reading
+
+Batch reading can be used in most of the relational mappings. This
+feature should be used only if it is known that the related objects are
+always required with the source object.
+
+This table summarizes which relational mappings support this option.
+
+[#Table 33-7]##
+
+[width="100%",cols="<41%,<32%,<27%",options="header",]
+|===
+|*Mapping* |*link:#How_to_Configure_Batch_Reading_Using_Workbench[Using
+the Workbench]* |*link:#How_to_Configure_Batch_Reading_Using_Java[Using
+Java]*
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-One_Mapping[One-to-one]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-Many_Mapping[One-to-many]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Many-to-Many_Mapping[Many-to-many]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Collection_Mapping[Direct
+collection] |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Map_Mapping[Direct
+map] |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Object_Mapping[Aggregate
+object] |image:unsupport.gif[Unsupported.,title="Unsupported."]
+|image:support.gif[Supported.,title="Supported."]
+|===
+
+=== How to Configure Batch Reading Using Workbench
+
+To use batch reading in a relationship mapping, use this procedure:
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears. *_General Tab, Batch
+Reading Option_* image:oogenbat.gif[General Tab, Batch Reading
+Option,title="General Tab, Batch Reading Option"]
+. To specify that this mapping using batch reading, select the *Batch
+Reading* option.
+
+=== How to Configure Batch Reading Using Java
+
+This example shows how to use a `+DescriptorCustomizer+` class to add
+batch reading to a mapping.
+
+[#Example 33-1]## *_Query Optimization Using Batching_*
+
+[source,java]
+----
+ public void customize(ClassDescriptor descriptor) {
+     OneToManyMapping phoneNumbersMapping = new OneToManyMapping();
+     phoneNumbersMapping = (OneToManyMapping)descriptor.getMappingForAttributeName("phones");
+     phoneNumbersMapping.useBatchReading();
+ }
+----
+
+== Configuring Query Key Order
+
+You can configure EclipseLink to maintain collections in order by query
+key.
+
+This table summarizes which relational mappings support this option.
+
+[#Table 33-8]##
+
+[width="100%",cols="<43%,<31%,<26%",options="header",]
+|===
+|*Mapping*
+|*link:#How_to_Configure_Query_Key_Order_Using_Workbench[Using the
+Workbench]* |*link:#How_to_Configure_Query_Key_Order_Using_Java[Using
+Java]*
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Many-to-Many_Mapping[Many-to-many]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-Many_Mapping[One-to-many]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Collection_Mapping[Aggregate
+collection] |image:unsupport.gif[Unsupported.,title="Unsupported."]
+|image:support.gif[Supported.,title="Supported."]
+|===
+
+=== How to Configure Query Key Order Using Workbench
+
+To specify the order of a mapping’s query keys, use this procedure:
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *Ordering* tab. The Ordering tab appears. *_Ordering Tab_*
+image:onetomany_coll_ord.gif[Ordering Tab,title="Ordering Tab"]
+. Complete the *Ordering* options on the tab.
+
+Field
+
+Description
+
+Query Key
+
+Specify the query key to order by.
+
+Click Add to add query keys to, or Remove to remove query keys from the
+ordering operation.
+
+Click Up or Down to change the sort order of selected query keys.
+
+Order
+
+Specify if EclipseLink orders the selected query key in Ascending or
+Descending (alphabetical) order.
+
+=== How to Configure Query Key Order Using Java
+
+This example shows how to use the `+DescriptorCustomizer+` class to add
+complex ordering to a mapping.
+
+[#'Example 33-2]## *_Configuring Query Key Order_*
+
+[source,java]
+----
+ public void customize(ClassDescriptor descriptor) {
+
+     OneToManyMapping phoneNumbersMapping = new OneToManyMapping();
+
+     phoneNumbersMapping = (OneToManyMapping)descriptor.getMappingForAttributeName("phones");
+
+     phoneNumbersMapping.addAscendingOrdering("areaCode");
+
+     ExpressionBuilder phone = phoneNumbersMapping.getSelectionQuery().getExpressionBuilder();
+
+     phoneNumbersMapping.getSelectionQuery().addOrdering(
+         phone.get("type").toUpperCase().ascending());
+ }
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can provide the same functionality by using a descriptor
+amendment method (see
+link:Customizing%20the%20EclipseLink%20Application%20(ELUG)#Using_the_Descriptor_Amendment_Methods[Using
+the Descriptor Amendment Methods]).
+|===
+
+== Configuring Table and Field References (Foreign and Target Foreign Keys)
+
+A foreign key is a combination of one or more database columns that
+reference a unique key, usually the primary key, in another table.
+Foreign keys can be any number of fields (similar to a primary key), all
+of which are treated as a unit. A foreign key and the parent key it
+references must have the same number and type of fields.
+
+Mappings that extend
+`+org.eclipse.persistence.mappings.ForeignReferenceMapping+` use foreign
+keys to find information in the database so that the target object(s)
+can be instantiated. For example, if every `+Employee+` has an attribute
+`+address+` that contains an instance of `+Address+` (which has its own
+descriptor and table) then, the one-to-one mapping for the `+address+`
+attribute would specify foreign key information to find an `+Address+`
+for a particular `+Employee+`.
+
+EclipseLink classifies foreign keys into two categories in
+mappings–*foreign keys* and *target foreign keys*:
+
+* In a _foreign key,_ the key is found in the table associated with the
+mapping’s own descriptor. For example, an `+Employee+` foreign key to
+`+ADDRESS+` would be in the `+EMPLOYEE+` table.
+* In a _target foreign key_, the reference is from the target object’s
+table back to the key from the mapping’s descriptor’s table. For
+example, the `+ADDRESS+` table would have a foreign key to `+EMPLOYEE+`.
+
+[width="100%",cols="<100%",]
+|===
+|*Caution*: Make sure you fully understand the distinction between
+_foreign key_ and _target foreign key_ before defining a mapping.
+|===
+
+The table reference is the database table that contains the foreign key
+references.
+
+This table summarizes which relational mappings support this option.
+
+[width="100%",cols="<32%,<36%,<32%",options="header",]
+|===
+|*Mapping*
+|*link:#How_to_Configure_Table_and_Field_References_(Foreign_and_Target_Foreign_Keys)_Using_Workbench[Using
+the Workbench]*
+|*link:#How_to_Configure_Table_and_Field_References_(Foreign_and_Target_Foreign_Keys)_Using_Java[Using
+Java]*
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-One_Mapping[One-to-one]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-Many_Mapping[One-to-many]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Many-to-Many_Mapping[Many-to-many]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Collection_Mapping[Aggregate
+collection] |image:unsupport.gif[Unsupported.,title="Unsupported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Collection_Mapping[Direct
+collection] |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Map_Mapping[Direct
+map] |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+|===
+
+Using Workbench, you can either import this table from your database or
+create it. If you import tables from the database (see
+link:Using%20Workbench%20(ELUG)[Importing Tables from a Database]),
+EclipseLink creates references that correspond to existing database
+constraints (if supported by the driver). You can also define references
+in EclipseLink without creating similar constraints on the database.
+
+=== How to Configure Table and Field References (Foreign and Target Foreign Keys) Using Workbench
+
+To specify a table for a mapping reference, use this procedure:
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *Table Reference* tab. The Reference tab appears. *_Table
+Reference Tab, Table Reference Field_* image:onetomany_tab_ref.gif[Table
+Reference Tab, Table Reference
+Field,title="Table Reference Tab, Table Reference Field"]
+. Complete the fields on the Table Reference tab.
+
+Use the following information to select the field references on the tab:
+
+[width="100%",cols="<16%,<84%",options="header",]
+|===
+|*Field* |*Description*
+|*Table Reference* |Select an existing table, or click *New* to create a
+new table reference.
+
+|*Source and Target Field* |Click *Add* to create new foreign key
+reference. To delete an existing key pair reference, select the *Source*
+and *Target* fields and click *Remove*.
+
+|*Source Field* |Select the database field from the _source_ table for
+this foreign key reference.
+
+|*Target Field* |Select the database field from the _target_ table for
+this foreign key reference.
+
+|*Target Foreign Key* |Specify whether or not the reference is from the
+target object’s table back to the key from the mapping’s descriptor’s
+table.
+|===
+
+See Also:
+
+link:#Configuring_Table_and_Field_References_(Foreign_and_Target_Foreign_Keys)[Configuring
+Table and Field References (Foreign and Target Foreign Keys)]
+
+=== How to Configure Table and Field References (Foreign and Target Foreign Keys) Using Java
+
+Use the `+addTargetForeignKeyFieldName+` method (and pass the name of
+the field name of the target foreign key and the source of the primary
+key in the source table) to specify foreign key information.
+
+For composite source primary keys, use the
+`+addTargetForeignKeyFieldName+` method for each of the fields that
+comprise the primary key.
+
+This esxample shows how to use the `+DescriptorCustomizer+` class to add
+complex join to a mapping.
+
+[#Example 33-3]## *_Adding Complex Join to a Mapping_*
+
+[source,java]
+----
+ public void customize(ClassDescriptor descriptor) {
+
+     OneToManyMapping phoneNumbersMapping = new OneToManyMapping();
+     phoneNumbersMapping = (OneToManyMapping)descriptor.getMappingForAttributeName("cellPhones");
+
+     ExpressionBuilder phone =  phoneNumbersMapping.getSelectionQuery().getExpressionBuilder();
+
+     phoneNumbersMapping.addTargetForeignKeyFieldName("PHONE.EMP_ID", "EMP.ID");
+
+     phoneNumbersMapping.getSelectionQuery(
+         phone.getField("PHONE.EMP_ID").equal(phone.getParameter("EMP.ID").
+         and(phone.getField("PHONE.TYPE').equal("CELL")));
+ }
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can provide the same functionality by using a descriptor
+amendment method (see
+link:Customizing%20the%20EclipseLink%20Application%20(ELUG)#Using_the_Descriptor_Amendment_Methods[Using
+the Descriptor Amendment Methods]).
+|===
+
+== Configuring Joining at the Mapping Level
+
+EclipseLink supports configuring an inner or outer join at the mapping
+level for a `+ForeignReferenceMapping+`. When a class that owns the
+mapping is read, the EclipseLink runtime will always get the class and
+the target of the reference mapping with one database hit.
+
+Use this feature only if the target object is _always_ required with the
+source object, or when indirection (lazy loading) is _not_ used. For
+more information, see
+link:Introduction%20to%20Mappings%20(ELUG)#Indirection_(Lazy_Loading)[Indirection
+(Lazy Loading)].
+
+You can also configure join reading at the query level. For more
+information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Join_Reading_and_Object-Level_Read_Queries[Join
+Reading and Object-Level Read Queries].
+
+For more information about joins, see
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Expressions
+for Joining and Complex Relationships].
+
+=== How to Configure Joining at the Mapping Level Using Workbench
+
+To use joining in a relationship mapping, use this procedure:
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears.
+[#'Figure 33-6]##*_General Tab, Use Joining Option_*
+image:oogenjoi.gif[General Tab, Use Joining
+Option,title="General Tab, Use Joining Option"]
+. To use joining with this relationship, select the *Use Joining*
+option.
+
+See Also:
+
+link:#Configuring_Joining_at_the_Mapping_Level[Configuring Joining at
+the Mapping Level]
+
+=== How to Configure Joining at the Mapping Level Using Java
+
+This example shows how to use the `+DescriptorCustomizer+` class to add
+complex join at the mapping level.
+
+[#Example 33-4]## *_Adding Join at the Mapping Level_*
+
+[source,java]
+----
+ public void customize(ClassDescriptor descriptor) {
+
+     OneToManyMapping addressMapping = new OneToManyMapping();
+     addressMapping = (OneToManyMapping)descriptor.getMappingForAttributeName("address");
+     addressMapping.useJoining();
+     ...
+ }
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can provide the same functionality by using a descriptor
+amendment method (see
+link:Customizing%20the%20EclipseLink%20Application%20(ELUG)#Using_the_Descriptor_Amendment_Methods[Using
+the Descriptor Amendment Methods]).
+|===
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

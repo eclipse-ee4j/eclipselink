@@ -1,0 +1,1039 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EclipseLink_Expressions_(ELUG)[Related
+Topics]
+
+Using the EclipseLink expressions framework, you can specify query
+search criteria based on your domain object model.
+
+== Expression Framework
+
+The EclipseLink expression framework provides methods through the
+following classes:
+
+* The `+Expression+` class provides most general functions, such as
+`+toUpperCase+`.
+* The `+ExpressionMath+` class supplies mathematical methods.
+
+This example illustrates how to use the `+Expression+` class.
+
+[#Example 106-1]## *_Using the Expression Class_*
+
+`+expressionBuilder.get("lastName").equal("Smith");+`
+
+This example illustrates how to use the `+ExpressionMath+` class.
+
+[#Example 106-2]## *_Using the ExpressionMath Class_*
+
+`+ExpressionMath.abs(ExpressionMath.subtract(emp.get("salary"),+`
+`+emp.get("spouse").get("salary")).greaterThan(10000)+`
+
+This division of functionality enables EclipseLink expressions to
+provide similar mathematical functionality to the `+java.lang.Math+`
+class, but keeps both the `+Expression+` and `+ExpressionMath+` classes
+from becoming unnecessarily complex.
+
+=== Expressions Compared to SQL
+
+Expressions offer the following advantages over SQL when you access a
+database:
+
+* Expressions are easier to maintain because the database is abstracted.
+* Changes to descriptors or database tables do not affect the querying
+structures in the application.
+* Expressions enhance readability by standardizing the `+Query+`
+interface so that it looks similar to traditional Java calling
+conventions. For example, the Java code required to get the street name
+from the `+Address+` object of the `+Employee+` class looks like this:
+
+`+emp.getAddress().getStreet().equals("Meadowlands");+`
+
+The expression to get the same information is similar:
+
+`+emp.get("address").get("street").equal("Meadowlands");+`
+
+* Expressions allow read queries to transparently query between two
+classes that share a relationship. If these classes are stored in
+multiple tables in the database, EclipseLink automatically generates the
+appropriate join statements to return information from both tables.
+* Expressions simplify complex operations. For example, the following
+Java code retrieves all employees that live on "`Meadowlands`" whose
+salary is greater than 10,000:
+
+`+ExpressionBuilder emp = new ExpressionBuilder();+`
+`+Expression exp = emp.get("address").get("street").equal("Meadowlands");+`
+`+Vector employees = session.readAllObjects(Employee.class,+`
+`+                   exp.and(emp.get("salary").greaterThan(10000)));+`
+
+EclipseLink automatically generates the appropriate SQL from that code:
+
+`+SELECT t0.VERSION, t0.ADDR_ID, t0.F_NAME, t0.EMP_ID, t0.L_NAME, t0.MANAGER_ID, t0.END_DATE, t0.START_DATE, t0.GENDER, t0.START_TIME, t0.END_TIME,t0.SALARY FROM EMPLOYEE t0, ADDRESS t1 WHERE (((t1.STREET = 'Meadowlands')AND (t0.SALARY > 10000)) AND (t1.ADDRESS_ID = t0.ADDR_ID))+`
+
+== Expression Components
+
+A simple expression usually consists of the following three parts:
+
+[arabic]
+. The _attribute_, which represents a mapped attribute or query key of
+the persistent class.
+. The _operator_, which is an expression method that implements boolean
+logic, such as `+GreaterThan+`, `+Equal+`, or `+Like+`.
+. The _constant_ or _comparison_, which refers to the value used to
+select the object.
+
+In the following code fragment:
+
+`+expressionBuilder.get("lastName").equal("Smith"); +`
+
+* The attribute is `+lastName+`.
+* The operator is `+equal+`.
+* The constant is the string "``+Smith+``".
+
+The `+expressionBuilder+` substitutes for the object or objects to be
+read from the database. In this example, `+expressionBuilder+`
+represents employees.
+
+You can use the following components when constructing an
+`+Expression+`:
+
+* link:#Boolean_Logic[Boolean Logic]
+* link:#Database_Functions_and_Operators[Database Functions and
+Operators]
+* link:#Mathematical_Functions[Mathematical Functions]
+* link:#XMLType_Functions[XMLType Functions]
+* link:#Platform_and_User-Defined_Functions[Platform and User-Defined
+Functions]
+* link:#Expressions_for_One-to-One_and_Aggregate_Object_Relationships[Expressions
+for One-to-One and Aggregate Object Relationships]
+* link:#Expressions_for_Joining_and_Complex_Relationships[Expressions
+for Joining and Complex Relationships]
+
+=== Boolean Logic
+
+Expressions use standard boolean operators, such as `+AND+`, `+OR+`, and
+`+NOT+`, and you can combine multiple expressions to form more complex
+expressions. The link:#Example_106-3[Using Boolean Logic in an
+Expression] example illustrates a code fragment that queries for
+projects managed by a selected person, and that have a budget greater
+than or equal to 1,000,000.
+
+[#Example 106-3]## *_Using Boolean Logic in an Expression_*
+
+`+ExpressionBuilder project = new ExpressionBuilder();+`
+`+Expression hasRightLeader, bigBudget, complex;+`
+`+Employee selectedEmp = someWindow.getSelectedEmployee();+`
+`+hasRightLeader = project.get("teamLeader").equal(selectedEmp);+`
+`+bigBudget = project.get("budget").greaterThanEqual(1000000);+`
+`+complex = hasRightLeader.and(bigBudget);+`
+`+Vector projects = session.readAllObjects(Project.class, complex);+`
+
+=== Database Functions and Operators
+
+*Functions*
+
+EclipseLink expressions support a variety of database functions,
+including, but not limited to, the following:
+
+* `+toUpperCase+`
+* `+toLowerCase+`
+* `+toDate+`
+* `+decode+`
+* `+locate+`
+* `+monthsBetween+`
+* `+nextDay+`
+* `+replace+`
+* `+reverse+`
+* `+substring+`
+* `+translate+`
+
+[cols="<",]
+|===
+|*Note:* Some functions may be database platform-specific.
+|===
+
+Database functions let you define more flexible queries. You can use
+these functions in either a report query items using a `+SELECT+`
+clause, or with comparisons in a query’s selection criteria using a
+`+WHERE+` clause. The following example illustrates a code fragment that
+matches several last names, including "`SMART`", "`Smith`", and
+"`Smothers`":
+
+[#Example 106-4]## *_Using a Database Function Supported by the
+Expression API_*
+
+`+emp.get("lastName").toUpperCase().like("SM%")+`
+
+You access most functions using `+Expression+` methods such as
+`+toUpperCase+`.
+
+Some functions have very specific purpose: you can use `+ascending+` and
+`+descending+` functions only within an ordering expression to place the
+result in ascending or descending order, as this example shows:
+
+[#Example 106-5]## *_Using an Ordering Database Function_*
+
+`+readAllQuery.addOrderBy(expBuilder.get("address").get("city").ascending())+`
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Ordering is not supported for in-memory queries (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[How to Use
+In-Memory Queries]).
+|===
+
+You can use aggregate functions, such as `+average+`, `+minimum+`,
+`+maximum+`, `+sum+` and so forth, with the `+ReportQuery+` (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Report Query]).
+
+*Operators*
+
+Operators are relation operations that compare two values. EclipseLink
+expressions support the following operators:
+
+* `+like+`
+* `+notLike+`
+* `+equal+`
+* `+notEqual+`
+* `+lessThan+`
+* `+lessThanEqual+`
+* `+equalsIgnoreCase+`
+* `+greaterThan+`
+* `+greaterThanEqual+`
+* `+in+`
+* `+notIn+`
+* `+between+`
+* `+notBetween+`
+
+The link:#Example_106-4[Using a Database Function Supported by the
+Expression API’] example demonstrates the use of the like operator.
+
+=== Mathematical Functions
+
+Mathematical functions are available through the `+ExpressionMath+`
+class. Mathematical function support in expressions is similar to the
+support provided by the Java class `+java.lang.Math+`. This example
+illustrates using the `+abs+` and `+subtract+` methods.
+
+[#'Example 106-6]## *_Using Mathematical Functions in an Expression_*
+
+`+ExpressionMath.abs(ExpressionMath.subtract(emp.get("salary"),+`
+`+                   emp.get("spouse").get("salary")).greaterThan(10000)+`
+
+=== XMLType Functions
+
+You can use the following operators when constructing queries against
+data mapped to an Oracle Database XMLType column:
+
+* `+extract+`: Takes an XPath string and returns an XMLType which
+corresponds to the part of the original document that matches the XPath.
+* `+extractValue+`: Takes an Xpath string and returns either a numerical
+or string value based on the contents of the node pointed to by the
+XPath.
+* `+existsNode+`: Takes an Xpath expression and returns the number of
+nodes that match the Xpath.
+* `+getStringVal+`: Gets the string representation of an XMLType object.
+* `+getNumberVal+`: Gets the numerical representation of an XMLType
+object.
+* `+isFragment+`: Evaluates to 0 if the XML is a well formed document.
+Evaluates to 1 if the document is a fragment.
+
+This example illustrates how to use the extract operator in a query:
+
+[#Example 106-7]## *_Using the XMLType Extract Operator_*
+
+`+Expression criteria = builder.get("resume").extract("//education/degree/text()").getStringVal().equal("BCS");+`
+`+Vector employees = session.readAllObject(Employee.class, criteria); +`
+
+=== Platform and User-Defined Functions
+
+You can use the `+Expression+` method `+getFunction+` to access database
+functions that EclipseLink does not support directly. The following
+example illustrates how to access a database function named
+`+VacationCredit+` from within an expression, even though there is no
+support for such a function in the `+Expression+` API.
+
+[#Example 106-8]## *_Using a Database Function Not Supported by the
+Expression API_*
+
+`+emp.get("lastName").getFunction("VacationCredit").greaterThan(42)+`
+
+This expression produces the following SQL:
+
+`+SELECT . . . WHERE VacationCredit(EMP.LASTNAME) > 42+`
+
+The `+Expression+` API includes additional forms of the `+getFunction+`
+method that allow you to specify arguments. For more information, see
+_EclipseLink API Reference_.
+
+You can also access a custom function that you create. For more
+information on creating a custom function in EclipseLink, see
+link:#Creating_and_Using_a_User-Defined_Function[Creating and Using a
+User-Defined Function].
+
+=== Expressions for One-to-One and Aggregate Object Relationships
+
+Expressions can include an attribute that has a one-to-one relationship
+with another persistent class. A one-to-one relationship translates
+naturally into a SQL join that returns a single row.
+
+This example illustrates a code fragment that accesses fields from an
+employee’s address.
+
+[#Example 106-9]## *_Using an Expression with a One-to-One
+Relationship_*
+
+`+emp.get("address").get("country").like("S%")+`
+
+The preceding example corresponds to joining the `+EMPLOYEE+` table to
+the `+ADDRESS+` table, based on the `+address+` foreign key, and
+checking for the country name.
+
+You can nest these relationships infinitely, so it is possible to ask
+for complex information, as follows:
+
+`+project.get("teamLeader").get("manager").get("manager").get("address").get("street")+`
+
+=== Expressions for Joining and Complex Relationships
+
+You can query against complex relationships, such as one-to-many,
+many-to-many, direct collection, and aggregate collection relationships.
+Expressions for these types of relationships are more complex to build,
+because the relationships do not map directly to joins that yield a
+single row per object.
+
+This section describes the following:
+
+* link:#What_You_May_Need_to_Know_About_Joins[What You May Need to Know
+About Joins]
+* link:#Using_EclipseLink_Expression_API_for_Joins[Using EclipseLink
+Expression API for Joins]
+
+==== What You May Need to Know About Joins
+
+A *join* is a relational database query that combines rows from two or
+more tables. Relational databases perform a join whenever multiple
+tables appear in the query’s `+FROM+` clause. The query’s select list
+can select any columns from any of these tables.
+
+An inner join (sometimes called a "`simple join`") is a join of two or
+more tables that returns only those rows that satisfy the join
+condition.
+
+An outer join extends the result of an inner join. An outer join returns
+all rows that satisfy the join condition and also returns some or all of
+those rows from one table for which no rows from the other satisfy the
+join condition. Outer joins can be categorized as left or right:
+
+* A query that performs a left outer join of tables A and B returns all
+rows from A. For all rows in A that have no matching rows in B, the
+database returns null for any select list expressions containing columns
+of B.
+* A query that performs a right outer join of tables A and B returns all
+rows from B. For all rows in B that have no matching rows in A, the
+database returns null for any select list expressions containing columns
+of A.
+
+When you query with a join expression, EclipseLink can use joins to
+check values from other objects or other tables that represent parts of
+the same object. Although this works well under most circumstances, it
+can cause problems when you query against a one-to-one relationship, in
+which one side of the relationship is not present.
+
+For example, `+Employee+` objects may have an `+Address+` object, but if
+the `+Address+` is unknown, it is `+null+` at the object level and has a
+null foreign key at the database level. When you attempt a read that
+traverses the relationship, missing objects cause the query to return
+unexpected results. Consider the following expression:
+
+`+(emp.get("firstName").equal("Steve")).or(emp.get("address"). get("city").equal("Ottawa"))+`
+
+In this case, employees with no address do not appear in the result set,
+regardless of their first name. Although not obvious at the object
+level, this behavior is fundamental to the nature of relational
+databases.
+
+Outer joins rectify this problem in the databases that support them. In
+this example, the use of an outer join provides the expected result: all
+employees named Steve appear in the result set, even if their address is
+unknown.
+
+To implement an outer join, use `+Expression+` method
+`+getAllowingNull+`, rather than `+get+`, and `+Expression+` method
+`+anyOfAllowingNone+`, rather than `+anyOf+`.
+
+For example:
+
+`+(emp.get("firstName").equal("Steve")).or(+`
+`+emp.getAllowingNull("address").get("city").equal("Ottawa"))+`
+
+Support and syntax for outer joins vary widely between databases and
+database drivers. EclipseLink supports outer joins for most databases.
+
+==== Using EclipseLink Expression API for Joins
+
+You can use joins anywhere expressions are used, including:
+selection-criteria, ordering (see
+link:Using%20Basic%20Query%20API%20(ELUG)[Specifying Read Ordering]),
+report queries (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Report Query]),
+partial objects (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Partial Object
+Queries]), one-to-one relational mappings (see
+link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring Joining
+at the Mapping Level]), and join reading (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Join Reading and
+Object-Level Read Queries]).
+
+Use the expression API shown in this table to configure inner and outer
+join expressions.
+
+[#Table 106-1]## *_Expression API for Joins_*
+
+[cols="<,<,<",options="header",]
+|===
+|*Expression API* |*Type of Join* |*Type of Mapping*
+|`+get+` |inner |one-to-one
+|`+getAllowingNull+` |outer |one-to-one
+|`+anyOf+` |inner |one-to-many, many-to-many
+|`+anyOfAllowingNone+` |outer |one-to-many, many-to-many
+|===
+
+To query across a one-to-many or many-to-many relationship, use the
+`+anyOf+` operation. As its name suggests, this operation supports
+queries that return all items on the "`many`" side of the relationship
+that satisfy the query criteria.
+
+The following example illustrates an expression that returns employees
+who manage at least one employee (through a one-to-many relationship)
+with a salary less than $10,000.
+
+[#Example 106-10]## *_Using an Expression with a One-to-Many
+Relationship_*
+
+`+emp.anyOf("managedEmployees").get("salary").lessThan(10000);+`
+
+The following example illustrates how to query across a many-to-many
+relationship using a similar strategy:
+
+[#Example 106-11]## *_Using an Expression with a Many-to-Many
+Relationship_*
+
+`+emp.anyOf("projects").equal(someProject)+`
+
+EclipseLink translates these queries into SQL that joins the relevant
+tables using a `+DISTINCT+` clause to remove duplicates. EclipseLink
+translates the link:#Example_106-10[Using an Expression with a
+One-to-Many Relationship] example into the following SQL:
+
+`+SELECT DISTINCT . . . FROM EMP t1, EMP t2 WHERE+`
+`+t2.MANAGER_ID = t1.EMP_ID AND t2.SALARY < 10000+`
+
+You can use one-to-one and one-to-many join expressions in an
+`+ObjectLevelReadyQuery+` to configure joins on a per-query basis (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Join Reading and
+Object-Level Read Queries]).
+
+You can also configure joins at the mapping level (see
+link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring Joining
+at the Mapping Level]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Calling `+anyOf+` once would result in a different outcome than
+if you call it twice. For example, if you query for an employee with a
+telephone area code of 613 and a number of 123-4599, you would use a
+single `+anyOf+` and a temporary variable. If you query for an employee,
+who has a telephone with an area code of 613, and who has a telephone
+with a number of 123-4599, you would call `+anyOf+` twice.
+|===
+
+== Parameterized Expressions
+
+A relationship mapping differs from a regular query because it retrieves
+data for many different objects. To be able to specify these queries,
+supply arguments when you execute the query. Use the `+getParameter+`
+and `+getField+` methods to acquire values for the arguments.
+
+A parameterized expression executes searches and comparisons based on
+variables instead of constants. This approach lets you build expressions
+that retrieve context-sensitive information. This technique is useful
+when you define EJB finders (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[EJB Finders]).
+
+Parameterized expressions require that the relationship mapping know how
+to retrieve an object or collection of objects based on its current
+context. For example, a one-to-one mapping from `+Employee+` to
+`+Address+` must query the database for an address based on foreign key
+information from the `+Employee+` table. Each mapping contains a query
+that EclipseLink constructs automatically based on the information
+provided in the mapping. To specify expressions yourself, use the
+mapping customization mechanisms.
+
+You can use parameterized expressions to create reusable queries (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Named Queries]).
+
+=== Expression Method getParameter
+
+The `+Expression+` method `+getParameter+` returns an expression that
+becomes a parameter in the query. This lets you create a query that
+includes user input in the search criteria. The parameter must be either
+the fully qualified name of the field from a descriptor’s row, or a
+generic name for the argument.
+
+Parameters you construct this way are global to the current query, so
+you can send this message to any expression object.
+
+The following example illustrates how to use a custom query to find an
+employee by first name.
+
+[#Example 106-12]## *_Using a Parameterized Expression in a Custom
+Query_*
+
+`+Expression firstNameExpression;+`
+
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+`+ExpressionBuilder emp = query.getExpressionBuilder();+`
+`+firstNameExpression = emp.get("firstName").equal(emp.getParameter("firstName"));+`
+`+query.setSelectionCriteria(firstNameExpression);+`
+`+query.addArgument("firstName");+` `+List args = new ArrayList();+`
+`+args.addElement("Sarah");+`
+`+Employee e = (Employee) session.executeQuery(query, args);+`
+
+The following example illustrates how to use a custom query to find all
+employees that live in the same city as a given employee.
+
+[#Example 106-13]## *_Using Nested Parameterized Expressions_*
+
+`+Expression addressExpression;+`
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+`+ExpressionBuilder emp = query.getExpressionBuilder();+`
+`+addressExpression = +` `+    emp.get("address").get("city").equal(+`
+`+    emp.getParameter("employee").get("address").get("city"));+`
+`+query.setName("findByCity");+`
+`+query.setSelectionCriteria(addressExpression);+`
+`+query.addArgument("employee");+` `+List args = new ArrayList();+`
+`+args.addElement(employee);+`
+`+Employee e = (Employee) session.executeQuery(query, args);+`
+
+The following example illustrates how to obtain a simple one-to-many
+mapping from class `+PolicyHolder+` to `+Policy+` using a nondefault
+selection criteria. The `+SSN+` field of the `+POLICY+` table is a
+foreign key to the `+SSN+` field of the `+HOLDER+` table.
+
+[#Example 106-14]## *_Using a Parameterized Expression in a Mapping_*
+
+`+OneToManyMapping mapping = new OneToManyMapping();+`
+`+mapping.setAttributeName("policies");+`
+`+mapping.setGetMethodName("getPolicies");+`
+`+mapping.setSetMethodName("setPolicies");+`
+`+mapping.setReferenceClass(Policy.class);+`
+
+*`+//\'\' \'\'Build\'\' \'\'a\'\' \'\'custom\'\' \'\'expression\'\' \'\'here\'\' \'\'rather\'\' \'\'than\'\' \'\'using\'\' \'\'the\'\' \'\'defaults+`*
+`+ExpressionBuilder policy = new ExpressionBuilder();+`
+`+mapping.setSelectionCriteria(policy.getField("POLICY.SSN")).equal(policy.getParameter("HOLDER.SSN")));+`
+
+=== Expression Method getField
+
+The `+Expression+` method `+getField+` returns an expression that
+represents a database field with the given name. Use this method to
+construct the selection criteria for a mapping. The argument is the
+fully qualified name of the required field. Because fields are not
+global to the current query, you must send this method to an expression
+that represents the table from which this field is derived. See also
+link:#Data_Queries_and_Expressions[Data Queries and Expressions].
+
+The following example illustrates how to use the `+Expression+` method
+`+getField+`.
+
+[#Example 106-15]## *_Using Expression Method getParameter_*
+
+`+ExpressionBuilder address = new ExpressionBuilder();+`
+`+Expression exp = address.getField("ADDRESS.EMP_ID").equal(address.getParameter("EMPLOYEE.EMP_ID"));+`
+`+exp = exp.and(address.getField("ADDRESS.TYPE").equal(null));+`
+
+== Query Keys and Expressions
+
+A query key is a schema-independent alias for a database field name.
+
+Query keys are supported in relational database projects only.
+
+Query keys are generated automatically for all direct and relationship
+mappings. The name of the query key is the class attribute name.
+
+For more information on how query keys are created and modified, see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Query Keys].
+
+The following example illustrates how to use the query key `+firstName+`
+for the corresponding directly mapped `+Employee+` attribute.
+
+[#Example 106-16]## *_Using an Automatically Generated Query Key in an
+Expression_*
+
+`+Vector employees = session.readAllObjects(Employee.class,+`
+`+  new ExpressionBuilder().get("firstName").equal("Bob"));+`
+
+The following example illustrates how to use a one-to-one query key
+within the EclipseLink expression framework.
+
+[#Example 106-17]## *_Using a One-to-One Query Key in an Expression_*
+
+`+ExpressionBuilder employee = new ExpressionBuilder();+`
+`+Vector employees = session.readAllObjects(Employee.class,+`
+`+                   employee.get("address").get("city").equal("Ottawa"));+`
+
+To access one-to-many and many-to-many query keys that define a distinct
+join across a collection relationship, use `+Expression+` method
+`+anyOf+`.
+
+== Multiple Expressions
+
+Expressions support subqueries (SQL subselects) and parallel selects. To
+create a subquery, use a single expression builder. With parallel
+selects, use multiple expression builders when you define a single
+query. This lets you specify joins for unrelated objects at the object
+level.
+
+=== How to Use Subselects and Subqueries
+
+Some queries compare the results of other, contained queries (or
+subqueries). SQL supports this comparison through subselects.
+EclipseLink expressions provide subqueries to support subselects.
+
+Subqueries lets you define complex expressions that query on aggregated
+values (`+counts+`, `+min+`, `+max+`) and unrelated objects (`+exists+`,
+`+in+`, `+comparisons+`). To obtain a subquery, pass an instance of a
+report query to any expression comparison operation, or use the
+`+subQuery+` operation on an expression builder. The subquery is not
+required to have the same reference class as the parent query, and it
+must use its own expression builder.
+
+You can nest subqueries, or use them in parallel. Subqueries can also
+make use of custom SQL.
+
+For expression comparison operations that accept a single value
+(`+equal+`, `+greaterThan+`, `+lessThan+`), the subquery result must
+return a single value. For expression comparison operations that accept
+a set of values (`+in+`, `+exists+`), the subquery result must return a
+set of values.
+
+The following example illustrates how to create an expression that
+matches all employees with more than five managed employees.
+
+[#Example 106-18]## *_A Subquery Expression Using a Comparison and Count
+Operation_*
+
+`+ExpressionBuilder emp = new ExpressionBuilder();+`
+`+ExpressionBuilder managedEmp = new ExpressionBuilder();+`
+`+ReportQuery subQuery = new ReportQuery(Employee.class, managedEmp);+`
+`+subQuery.addCount();+`
+`+subQuery.setSelectionCriteria(managedEmp.get("manager").equal(emp));+`
+`+Expression exp = emp.subQuery(subQuery).greaterThan(5);+`
+
+The following example illustrates how to create an expression that
+matches the employee with the highest salary in the city of Ottawa.
+
+[#Example 106-19]## *_A Subquery Expression Using a Comparison and Max
+Operation_*
+
+`+ExpressionBuilder emp = new ExpressionBuilder();+`
+`+ExpressionBuilder ottawaEmp = new ExpressionBuilder();+`
+`+ReportQuery subQuery = new ReportQuery(Employee.class, ottawaEmp);+`
+`+subQuery.addMax("salary");+`
+`+subQuery.setSelectionCriteria(ottawaEmp.get("address").get("city").equal("Ottawa"));+`
+`+Expression exp =   emp.get("salary").equal(subQuery).and(emp.get("address").get("city").equal("Ottawa"));+`
+
+The following example illustrates how to create an expression that
+matches all employees that have no projects.
+
+[#Example 106-20]## *_A Subquery Expression Using a Not Exists
+Operation_*
+
+`+ExpressionBuilder emp = new ExpressionBuilder();+`
+`+ExpressionBuilder proj = new ExpressionBuilder();+`
+`+ReportQuery subQuery = new ReportQuery(Project.class, proj);+`
+`+subQuery.addAttribute("id");+`
+`+subQuery.setSelectionCriteria(proj.equal(emp.anyOf("projects"));+`
+`+Expression exp = emp.notExists(subQuery);+`
+
+=== How to Use Parallel Expressions
+
+Parallel expressions enable you to compare unrelated objects. Parallel
+expressions require multiple expression builders, but do not require the
+use of report queries. Each expression must have its own expression
+builder, and you must use the constructor for expression builder that
+takes a `+class+` as an argument. The class does not have to be the same
+for the parallel expressions, and you can create multiple parallel
+expressions in a single query.
+
+Only one of the expression builders is considered the primary expression
+builder for the query. This primary builder makes use of the zero
+argument expression constructor, and EclipseLink obtains its class from
+the query.
+
+The following example illustrates how to create an expression that
+matches all employees with the same last name as another employee of
+different gender, and accounts for the possibility that returned results
+could be a spouse.
+
+[#Example 106-21]## *_A Parallel Expression on Two Independent
+Employees_*
+
+`+ExpressionBuilder emp = new ExpressionBuilder();+`
+`+ExpressionBuilder spouse = new ExpressionBuilder(Employee.class);+`
+`+Expression exp = emp.get("lastName").equal(spouse.get("lastName"))+`
+`+                 .and(emp.get("gender").notEqual(spouse.get("gender"));+`
+
+== Data Queries and Expressions
+
+You can use expressions to retrieve data rather than objects. This is a
+common approach when you work with unmapped information in the database,
+such as foreign keys and version fields.
+
+Expressions that query for objects generally refer to object attributes,
+which may in turn refer to other objects. Data expressions refer to
+tables and their fields. You can combine data expressions and object
+expressions within a single query. EclipseLink provides two main methods
+for expressions that query for data: `+getField+` and `+getTable+`.
+
+=== How to Use the getField Method
+
+The `+getField+` method lets you retrieve data from either an unmapped
+table or an unmapped field from an object. In either case, the field
+must be part of a table represented by that object’s class; otherwise,
+EclipseLink raises an exception when you execute the query.
+
+You can also use the `+getField+` method to retrieve the foreign key
+information for an object.
+
+This example illustrates how to use the data expression method
+(operator) `+getField+` with an object.
+
+[#'Example 106-22]## *_Using getField with an Object_*
+
+`+builder.getField("+`_`+[FIELD_NAME]+`_`+").greaterThan("+`_`+[ARGUMENT]+`_`+");+`
+
+=== How to Use the getTable Method
+
+The `+getTable+` method returns an expression that represents an
+unmapped table in the database. This expression provides a context from
+which to retrieve an unmapped field when you use the `+getField+`
+method.
+
+The following example illustrates how to combine both `+getField+` and
+`+getTable+` in the same expression.
+
+[#Example 106-23]## *_Using getTable and getField Together_*
+
+`+builder.getTable("+`_`+[TABLE_NAME]+`_`+").getField("+`_`+[FIELD_NAME]+`_`+").equal("+`_`+[ARGUMENT]+`_`+");+`
+
+A common use for the `+getTable+` and `+getField+` methods is to
+retrieve information from a link table (or reference table) that
+supports a many-to-many relationship.
+
+The following example reads a many-to-many relationship that uses a link
+table and also checks an additional field in the link table. This code
+combines an object query with a data query, using the employee’s manager
+as the basis for the data query. It also features parameterization for
+the project ID.
+
+[#Example 106-24]## *_Using a Data Query Against a Link Table_*
+
+`+ExpressionBuilder emp = new ExpressionBuilder();+`
+`+Expression manager = emp.get("manager"); +`
+`+Expression linkTable = manager.getTable("PROJ_EMP");+`
+`+Expression empToLink = emp.getField("EMPLOYEE   .EMP_ID").equal(linkTable.getField("PROJ_EMP.EMP_ID");+`
+`+Expression projToLink = linkTable.getField("PROJ_EMP.PROJ_ID").equal(emp.getParameter("PROJECT.PROJ_ID"));+`
+`+Expression extra = linkTable.getField("PROJ_EMP.TYPE").equal("W");+`
+`+query.setSelectionCriteria((empToLink.and(projToLink)).and(extra));+`
+
+== Creating an Expression
+
+You can create an expression using the Workbench or Java.
+
+Use the Workbench for creating basic expressions for use in named
+queries (see link:#How_to_Create_an_Expression_Using_Workbench[How to
+Create an Expression Using Workbench]).
+
+Use Java code to create more complex expressions and to take full
+advantage of the features in the expressions API (see
+link:#How_to_Create_an_Expression_Using_Java[How to Create an Expression
+Using Java]).
+
+=== How to Create an Expression Using Workbench
+
+To create EclipseLink expressions for named queries, use this procedure:
+
+[arabic]
+. From the *Named Queries Format* tab, click *Edit* (or double-click a
+query string). The Expression Builder dialog box appears. See
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Named Queries]
+for more information. [#Figure 106-1]## *_Expression Builder Dialog_*
+image:expbld.gif[Expression Builder
+Dialog,title="Expression Builder Dialog"]
+
+The numbered callouts identify the following user-interface components:
+
+[arabic]
+. {blank}
+[arabic]
+.. Expression tree
+.. Arguments
+. Click *Add* or *Add Nested* to create a new expression. EclipseLink
+assigns a sequence number to each node and nested node. Click *Remove*
+to remove an existing expression.
+. Select the node and use the *Logical Operator* list to specify the
+operator for the node (*AND*, *OR*, *Not AND*, or *Not OR*).
+. Choose the expression and complete the fields on the Expression
+Builder dialog.
+
+Use this table to complete the argument fields for each expression:
+
+Field
+
+Description
+
+First Argument
+
+Click Edit and select the query key for the first argument. The Choose
+Query Key dialog box appears.
+
+Continue with Adding Arguments.
+
+Operator
+
+Specify how EclipseLink should evaluate the expression.
+
+Valid operators include: Equal, Not Equal, Equal Ignore Case, Greater
+Than, Greater Than Equal, Less Than, Less Than Equal, Like, Not Like,
+Like Ignore Case, Is Null, and Not Null.
+
+Second Argument
+
+Specify the second argument:
+
+Literal–Select the Type and enter a literal value for Value.
+
+Query Key–Click Edit and select the query key.
+
+Parameter–Click Add to add a new parameter and then select from the
+list.
+
+Continue with Adding Arguments
+
+Click *OK*. Workbench adds the expression to the *Named Queries* tab.
+
+==== Adding Arguments
+
+Each expression contains elements (_arguments_) to evaluate. Expressions
+using the Is Null or Not Null operators require only a single argument.
+
+To add new arguments, use this procedure:
+
+[arabic]
+. Select an existing expression or click *Add* (or *Add Nested*) to add
+a new expression to the named query.
+. For the *First Argument*, click *Edit*. The Choose Query Key dialog
+box appears. [#Figure 106-2]## *_Choose Query Key_*
+image:choseqk.gif[Choose Query Key,title="Choose Query Key"]
+. Select the attribute, specify if the query allows a null value, and
+click *OK*. Use the *Allows Null* and *Allows None* options to define an
+expression with an outer join. Check the *Allows Null* option to use the
+`+ExpressionBuilder+` method `+getAllowingNull+`. Check the *Allows
+None* option to use the `+ExpressionBuilder+` method
+`+anyOfAllowingNone+`. For more information, see
+link:#Using_EclipseLink_Expression_API_for_Joins[Using EclipseLink
+Expression API for Joins].
+. Use the *Operator* list to specify how EclipseLink should evaluate the
+expression.
+. For the *Second Argument*, select *Literal*, *Query Key*, or
+*Parameter*:
+* For *Literal* arguments, choose the literal type (such as *String* or
+*Integer*) and enter the literal value.
+* For *Query Key* arguments, click *Edit*. The Choose Query Key dialog
+box appears (see step #3 and link:#Figure_106-2[Choose Query Key]
+dialog).
+* For *Parameter* arguments, click *Add* to add a parameter and then use
+the list to select it.
+
+Repeat this procedure for each expression or subexpression.
+
+[#Example 106-25]## *_Sample Expression_*
+
+The following expression will find employees who:
+
+* have a manager with the last name Jones or have no manager, and
+* work on projects with the name Beta or project ID 4, and
+* live in Canada and have a salary of more than 25,000, or live in the
+United States and have a salary of more than 37,500
+
+`+AND+` `+  1.manager(Allows Null).lastName EQUAL "Jones"+` `+  2.OR+`
+`+    2.1.projects.name LIKE "BETA"+` `+    2.2.projects.id EQUAL "4"+`
+`+  3.OR+` `+    3.1.AND+`
+`+      3.1.1.address.country EQUAL "Canada"+`
+`+      3.1.2.salary GREATER THAN "25000"+` `+    3.2.AND+`
+`+      3.1.1.address.country EQUAL "United States"+`
+`+      3.1.2.salary GREATER THAN "37500"+`
+
+=== How to Create an Expression Using Java
+
+To create an expression in Java code, use the `+Expression+` class or
+`+ExpressionBuilder+` method `+get+`.
+
+The `+ExpressionBuilder+` acts as a substitute for the objects that you
+query. To construct a query, call methods on the `+ExpressionBuilder+`
+that correspond to the attributes of the objects. We recommend that you
+name `+ExpressionBuilder+` objects according to the type of objects
+against which you do a query.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* An instance of `+ExpressionBuilder+` is specific to a
+particular query. Do not attempt to build another query using an
+existing builder, because it still contains information related to the
+first query.
+|===
+
+This example illustrates how to use the query key `+lastName+` to
+reference the field name `+L_NAME+`.
+
+[#Example 106-26]## *_Using ExpressionBuilder to Build a Simple
+Expression_*
+
+`+Expression expression = new ExpressionBuilder().get("lastName").equal("Young");+`
+
+This example illustrates how to create a complex expression by combining
+two smaller expressions with a logical `+and+` operator.
+
+[#Example 106-27]## *_Combining Two Expressions with a Logical AND
+Operator_*
+
+`+ExpressionBuilder emp = new ExpressionBuilder();+`
+`+Expression exp1, exp2;+` `+exp1 = emp.get("firstName").equal("Ken");+`
+`+exp2 = emp.get("lastName").equal("Young");+`
+`+return exp1.and(exp2);+`
+
+This example illustrates how to create an expression using the
+`+notLike+` operator.
+
+[#Example 106-28]## *_Using Database Function notLike in an Expression_*
+
+`+Expression expression = new ExpressionBuilder().get("lastName").notLike("%ung");+`
+
+== Creating and Using a User-Defined Function
+
+Different databases sometimes implement the same functions in different
+ways. For example, an argument that specifies that data returns in
+ascending order might be `+ASC+` or `+ASCENDING+`. To manage
+differences, EclipseLink recognizes functions and other operators that
+vary according to the relational database.
+
+Although most platform-specific operators exist in EclipseLink, if
+necessary, you can create your own operators.
+
+To create a user-defined function, use the `+ExpressionOperator+` class.
+
+An `+ExpressionOperator+` has a selector and a `+Vector+` of strings:
+
+* The selector is the identifier (_id_) by which users refer to the
+function.
+* The strings are the constant strings used in printing the function.
+When printed, the strings alternate with the function arguments.
+
+You can also specify whether the operator is prefix or postfix. In a
+prefix operator, the first constant string prints before the first
+argument; in a postfix, it prints afterwards.
+
+Where you create a user-defined function and how you add it to the
+EclipseLink expression framework depends on whether you want the new
+function available to all database platforms or to only a specific
+database platform.
+
+This section describes the following:
+
+* link:#How_to_Make_a_User-Defined_Function_Available_to_a_Specific_Platform[How
+to Make a User-Defined Function Available to a Specific Platform]
+* link:#How_to_Make_a_User-Defined_Function_Available_to_All_Platforms[How
+to Make a User-Defined Function Available to All Platforms]
+
+=== How to Make a User-Defined Function Available to a Specific Platform
+
+To make the function that overrides a specific operation on your own
+platform, use the following procedure:
+
+[arabic]
+. Create a subclass of the desired
+`+org.eclipse.persistence.platform.database.DatabasePlatform+` that
+provides a public method that calls the protected superclass method
+`+addOperator+`:
++
+`+...+` `+public class MyDatabasePlatform extends DatabasePlatform {+`
+
+`+    protected void initializePlatformOperators() {+`
+`+        super.initializePlatformOperators();+`
+`+        +`*`+//\'\' \'\'Create\'\' \'\'user-defined\'\' \'\'function+`*
+
+`+        ExpressionOperator toUpper = new ExpressionOperator();+`
+`+        toUpper.setSelector(ExpressionOperator.ToUpperCase);+`
+`+        List args = new ArrayList();+`
+`+        args.addElement("UPPERCASE(");+`
+`+        args.addElement(")");+` `+        toUpper.printAs(args);+`
+`+        toUpper.bePrefix();+`
+`+        toUpper.setNodeClass(FunctionExpression.class);+`
+
+`+        +`*`+//\'\' \'\'Make\'\' \'\'it\'\' \'\'available\'\' \'\'to\'\' \'\'this\'\' \'\'platform\'\' \'\'only+`*
+`+        addOperator(toUpper);+` `+    }+` `+}+`
+. Configure your session to use your platform subclass (see
+link:Configuring%20a%20Relational%20Project%20(ELUG)[Configuring
+Relational Database Platform at the Project Level] or
+link:Configuring%20a%20Database%20Login%20(ELUG)[Configuring a
+Relational Database Platform at the Session Level]).
+
+=== How to Make a User-Defined Function Available to All Platforms
+
+To make the function available to all platforms, use
+`+ExpressionOperator+` method `+addOperator+`, as this example shows.
+
+[#Example 106-29]## *_Adding a toUpper Function for All Platforms_*
+
+`+ExpressionOperator toUpper = new ExpressionOperator();+`
+`+toUpper.setSelector(600);+` `+List args = new ArrayList();+`
+`+args.addElement("NUPPER(");+` `+args.addElement(")");+`
+`+toUpper.printAs(args);+` `+toUpper.bePrefix();+`
+`+toUpper.setNodeClass(FunctionExpression.class);+`
+
+`+ExpressionOperator.addOperator(toUpper);+`
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Represent the number in the `+setSelector+` method by a
+constant value. Ensure that this number is greater than 500 (numbers
+below 500 are reserved in EclipseLink).
+|===
+
+==== Using a User-Defined Function
+
+Regardless of whether you added the function for all platforms or for a
+specific platform, the following example illustrates how to use the
+`+Expression+` method `+getFunction+` to access the user-defined
+expression operator represented by a constant with the value 600.
+
+[#Example 106-30]## *_Accessing a User-Defined Function_*
+
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+`+ExpressionBuilder builder = query.getExpressionBuilder();+`
+`+Expression functionExpression = builder.get("firstName").getFunction(600).equal("BOB");+`
+`+query.setSelectionCriteria(functionExpression);+`
+`+session.executeQuery(query);+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

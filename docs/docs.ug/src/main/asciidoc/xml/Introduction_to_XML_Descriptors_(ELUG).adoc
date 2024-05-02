@@ -1,0 +1,70 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_XML_Descriptors_(ELUG)[Related
+Topics]
+
+This section introduces options specific to an XML descriptor.
+
+For information on descriptor concepts and features common to more than
+one type of EclipseLink descriptors, see
+link:Introduction%20to%20Descriptors%20(ELUG)[Introduction to
+Descriptors].
+
+== XML Descriptor Concepts
+
+XML descriptors describe Java objects that you map to simple and complex
+types defined by an XML schema document (XSD).
+
+Using XML descriptors in an XML project, you can configure XML mappings
+(see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Mapping_Types[XML
+Mapping Types]), in memory, to XML elements defined by an XSD.
+
+For more information, see the following:
+
+* link:Creating%20an%20XML%20Descriptor%20(ELUG)[Creating an XML
+Descriptor]
+* link:Configuring%20an%20XML%20Descriptor%20(ELUG)[Configuring an XML
+Descriptor]
+
+=== XML Descriptors and Aggregation
+
+When working with descriptors for a parent (source) and a child (target)
+objects, you have to accomplish the following:
+
+* if the source object exists, then you must ensure that the target
+object also exists;
+* if the source object is destroyed, then you must ensure that the
+target object is also destroyed.
+
+For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Aggregation[Descriptors
+and Aggregation].
+
+In your XML project, designate the descriptors for the source and target
+objects to reflect this relationship as
+link:#Composite_Descriptors_in_XML_Projects[Composite Descriptors in XML
+Projects].
+
+==== Composite Descriptors in XML Projects
+
+In an XML project, descriptors are always composites.
+
+Because XML descriptors are always composites, you can configure
+inheritance for an XML descriptor without considering its type (see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance]).
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_XML[Category: XML]

@@ -1,0 +1,26 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+== Creating and Configuring XML Projects
+
+The following sections contain general information about XML projects,
+as well as detailed information on how to create and configure these
+projects:
+
+* link:Introduction_to_XML_Projects_(ELUG)[Introduction to XML Projects]
+
+* link:Creating_an_XML_Project_(ELUG)[Creating an XML Project]
+
+* link:Configuring_an_XML_Project_(ELUG)[Configuring an XML Project]
+
+*Special:Whatlinkshere_XML_Projects_(ELUG)[Related Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

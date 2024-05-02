@@ -1,0 +1,51 @@
+*'`image:Elug_draft_icon.png[Warning,title="Warning"] This page is
+obsolete. Please see the
+http://www.eclipse.org/eclipselink/documentation/[EclipseLink
+Documentation Center]* for current information.`'’’
+
+*NOTOC*
+
+[width="100%",cols="25%,75%",]
+|===
+|image:Eclipselink_jpa.png‎[Image:Eclipselink
+jpa.png‎,title="Image:Eclipselink jpa.png‎"] |This page lists all sections
+in the _link:EclipseLink_UserGuide[EclipseLink User’s Guide 1.x]_ for
+*JPA* (Java Persistence API) projects. You can also use
+:Category:ORM[EclipseLink’s Native ORM support] to extend JPA.
+|===
+
+== Developing Applications using EclipseLink JPA
+
+== Step 1
+
+Define your persistence units in `+persistence.xml+`.
+
+* link:Introduction_to_Java_Persistence_API_(ELUG)#persistence.xml_File[About
+the persistence.xml file]
+* link:Packaging_and_Deploying_EclipseLink_JPA_Applications_(ELUG)#How_to_Specify_the_Persistence_Unit_Name[Specifying
+the persistence unit]
+
+== Step 2
+
+Annotate classes with @Entity, @Embeddable, and @MappedSuperClass and/or
+define classes in your mapping file (orm.xml).
+
+* link:Introduction_to_EclipseLink_JPA_%28ELUG%29#Configuring_an_Entity[Configuring
+an entity]
+* link:Using_EclipseLink_JPA_Extensions_%28ELUG%29[EclipseLink
+extensions]
+
+== Step 3
+
+Configure your application with:
+
+* javax.persistence.transactionType
+* javax.persistence.jtaDataSource
+* javax.persistence.nonJtaDataSource
+
+* link:Developing_Applications_Using_EclipseLink_JPA_%28ELUG%29[Application
+development]
+* link:Packaging_and_Deploying_EclipseLink_JPA_Applications_%28ELUG%29[Packaging
+and deployment]
+
+Category:EclipseLink_User's_Guide[Category:EclipseLink User’s Guide]

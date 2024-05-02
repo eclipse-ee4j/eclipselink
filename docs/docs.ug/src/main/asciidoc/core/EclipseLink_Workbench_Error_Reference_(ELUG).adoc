@@ -1,0 +1,1769 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_EclipseLink_Workbench_Error_Reference_(ELUG)[Related
+topics]
+
+EclipseLink checks each project, descriptor, and mapping to ensure that
+you have properly defined the required settings. Errors and warnings are
+displayed in the
+link:Using_Workbench_(ELUG)#How_to_Use_the_Problems_Window[Problems
+window] of the EclipseLink Workbench.
+
+You can also create a
+link:Creating_a_Project_(ELUG)#How_to_Generate_the_Project_Status_Report[project
+status report] that contains all errors in a specific project.
+
+This section also includes information on the following:
+
+* link:#Common_Classpath_Problems[Common Classpath Problems]
+* link:#Database_Connection_Problems[Database Connection Problems]
+
+== Miscellaneous Errors (1 – 89, 106 – 133)
+
+This section lists EclipseLink Workbench error codes, information about
+the likely cause of the problem, and a possible corrective action.
+
+13: No class indicator field should be defined for the abstract class
+[class]. *Cause*: Abstract classes should not be included or contain an
+*Indicator Value* on a descriptor’s *Inheritance* tab.
+
+*Action*: You must either remove the *Include* option for the class on
+the *Inheritance* tab, or remove the *abstract modifier* option on the
+descriptor’s *Class Info – Class* tab. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance] and
+link:Configuring_a_Descriptor_(ELUG)#Configuring_a_Descriptor[Configuring
+a Descriptor].
+
+54: No class indicator field is selected for this root class. *Cause*:
+You selected the *Use Class Indicator Field* option for the root
+descriptor in the inheritance hierarchy, but did not specify an
+indicator field for the root and its children.
+
+*Action*: Use the *Field Selection* list on the *Inheritance* tab for
+the root class. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance] and
+link:Configuring_a_Descriptor_(ELUG)#Configuring_a_Descriptor[Configuring
+a Descriptor].
+
+55: No class indicator value is defined for this included descriptor
+[class] *Cause*: You selected the *Use Class Indicator Dictionary*
+option for the root descriptor in the inheritance hierarchy, but did not
+specify an indicator value for the root and its children.
+
+*Action*: Use the *Indicator Type* list on the **Inheritance**tab for
+the root class. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance] and
+link:Configuring_a_Descriptor_(ELUG)#Configuring_a_Descriptor[Configuring
+a Descriptor].
+
+89: Root class does not include an indicator mapping for this
+descriptor. *Cause*: The root class in the inheritance hierarchy is set
+to the *Use Class Indicator Dictionary* option. The dictionary does not
+contain an indicator value for this child class.
+
+*Action*: Select an *Indicator Type* on the **Inheritance**tab of the
+root class that includes the child types. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance] and
+link:Configuring_a_Descriptor_(ELUG)#Configuring_a_Descriptor[Configuring
+a Descriptor].
+
+106: Mulitple mapping [mappings] write to the database field [db field]
+. *Cause*: One database field is populated by more than one mapping
+
+*Action*: Ensure the "`one mapping per field`" ratio for write
+operations.
+
+118: The selected parent descriptor for this descriptor’s inheritance
+policy does not have an associated inheritance policy. *Cause*: Missing
+descriptor’s inheritance policy.
+
+*Action*: Ensure that the descriptor you are using has a valid
+associated inheritance policy (`+InheritancePolicy+`). See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance] and
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Inheritance_for_a_Parent_(Root)_Descriptor[Configuring
+Inheritance for a Parent (Root) Descriptor].
+
+123: This root class has no class indicator mappings for its hierarchy.
+*Cause*: You created an inheritance policy with the **Use Class
+Indicator Dictionary**option but did not specify the indicator values
+for all subclasses.
+
+*Action*: Specify the indicator values for all subclasses on the
+descriptor’s **Inheritance**tab. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance] and
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Inheritance_for_a_Child_(Branch_or_Leaf)_Class_Descriptor[Configuring
+Inheritance for a Child (Branch or Leaf) Class Descriptor].
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: EclipseLink displays a list of each subclass and indicator
+value if you have identified the subclasses’ parent descriptor.
+|===
+
+126: Writable mappings defined for the class indicator field [field
+name]. *Cause*: You selected the **Use Class Indicator Field**option for
+the root descriptor in the inheritance hierarchy, but the mappings for
+this field are writable.
+
+*Action*: Select a **Use Class Indicator Field**on the descriptor’s
+**Inheritance**tab that does not contain any writable mappings. See the
+following:
+
+* link:Introduction_to_Descriptors_(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance]
+* link:Configuring_a_Descriptor_(ELUG)#Configuring_a_Descriptor[Configuring
+a Descriptor]
+* link:Configuring_a_Descriptor_(ELUG)#Configuring_Inheritance_for_a_Child_(Branch_or_Leaf)_Class_Descriptor[Configuring
+Inheritance for a Child (Branch or Leaf) Class Descriptor]
+* link:Configuring_a_Descriptor_(ELUG)#Configuring_Inherited_Attribute_Mapping_in_a_Subclass[Configuring
+Inherited Attribute Mapping in a Subclass]
+
+132: The implemented interface [interface] is not an interface. *Cause*:
+You selected a noninterface (a class) as an implemented interface.
+
+*Action*: Ensure that you select an interface. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance] and
+link:Configuring_a_Descriptor_(ELUG)#Configuring_a_Descriptor[Configuring
+a Descriptor].
+
+133: The superclass for [class] is an interface, classes cannot extend
+interfaces. *Cause*: You selected an interface instead of a class as a
+parent for your child class.
+
+*Action*: Use the **Inheritance**tab for the root class. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance] and
+link:Configuring_a_Descriptor_(ELUG)#Configuring_a_Descriptor[Configuring
+a Descriptor].
+
+== Project Errors (100 – 102)
+
+This section lists EclipseLink Workbench project errors.
+
+100: The project caches all statments by default for queries, but does
+not bind all parameters. *Cause*: A named query that caches statements
+must also bind parameters.
+
+*Action*: On the **Named Queries – Options**tab, change the **Cache
+Statement**field to *False*, or change the **Bind Parameters**field to
+*True*. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Options[Configuring
+Named Query Options].
+
+101: The project uses a custom sequence table, but the counter field is
+not specified. *Cause*: On the project’s **Sequencing**tab, you selected
+*Use Custom Sequence Table*, but did not complete the **Counter
+Field**field.
+
+*Action*: Select the field to use as the Counter Field for this sequence
+table. See
+link:Configuring_a_Relational_Project_(ELUG)#Configuring_Sequencing_at_the_Project_Level[Configuring
+Sequencing at the Project Level] for details.
+
+102: The project uses a custom sequence table, but the name field is not
+specified. *Cause*: On the project’s **Sequencing**tab, you selected
+*Use Custom Sequence Table*, but did not complete the **Name
+Field**field.
+
+*Action*: Select the field to use as the **Name Field**for this sequence
+table. See
+link:Configuring_a_Relational_Project_(ELUG)#Configuring_Sequencing_at_the_Project_Level[Configuring
+Sequencing at the Project Level] for details.
+
+== Descriptor Errors (200 – 399)
+
+This section lists EclipseLink Workbench descriptor errors.
+
+200: The descriptor’s class is not public. *Cause*: The descriptor must
+use a public access modifier.
+
+*Action*: On the descriptor’s **Class Info – Class**tab, change the
+**Access Modifier**option to *Public*. See
+link:Using_Workbench_(ELUG)#How_to_Configure_Classes[How to Configure
+Classes] and
+link:Using_Workbench_(ELUG)#Configuring_Class_Modifiers[Configuring
+Class Modifiers].
+
+201: This class is a subclass of a final class. *Cause*: If you select
+the **Final**option on the descriptor’s **Class Info – Class**tab for a
+class, then the class cannot contain subclasses.
+
+*Action*: See link:Using_Workbench_(ELUG)#How_to_Configure_Classes[How
+to Configure Classes] and
+link:Using_Workbench_(ELUG)#Configuring_Class_Information[Configuring
+Class Information].
+
+210: Two methods [method name1] [method name2] cannot have the same
+signature. *Cause*: You created methods with identical signatures.
+
+*Action*: On the **Class Info – Methods**tab, change the information for
+one of the methods. See
+link:Using_Workbench_(ELUG)#How_to_Configure_Classes[How to Configure
+Classes] and link:Using_Workbench_(ELUG)#Adding_Methods[Adding Methods].
+
+211: The format for [date] must be in the format HH-MM-SS or HH:MM:SS.
+Literal argument of expression [line number] on query [query name] is
+invalid. *Cause*: You attempted to use an invalid argument on a query.
+
+*Action*: Use HH-MM-SS or HH:MM:SS format. See
+link:Introduction_to_Mappings_(ELUG)#Type_Conversion_Converter[Type
+Conversion Converter] and
+link:Configuring_a_Mapping_(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter].
+
+212: The format for [date] must be in the format YYYY/MM/DD HH:MM:SS or
+YYYY-MM-DD HH:MM:SS. Literal argument of expression [line number] on
+query [query name] is invalid. *Cause*: You attempted to use an invalid
+argument on a query.
+
+*Action*: Use YYYY/MM/DD HH:MM:SS or YYYY-MM-DD HH:MM:SS format. See
+link:Introduction_to_Mappings_(ELUG)#Type_Conversion_Converter[Type
+Conversion Converter] and
+link:Configuring_a_Mapping_(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter].
+
+213: The format for [date] must be in the format YYYY/MM/DD or
+YYYY-MM-DD. Literal argument of expression [line number] on query [query
+name] is invalid. *Cause*: You attempted to use an invalid argument on a
+query.
+
+*Action*: Use YYYY/MM/DD or YYYY-MM-DD format. See
+link:Introduction_to_Mappings_(ELUG)#Type_Conversion_Converter[Type
+Conversion Converter] and
+link:Configuring_a_Mapping_(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter].
+
+214: The format for [date] must be in the format YYYY/MM/DD HH:MM:SS,
+YYYY/MM/DD, or YYYY-MM-DD. Literal argument of expression [line number]
+on query [query name] is invalid. *Cause*: You attempted to use an
+invalid argument on a query.
+
+*Action*: Use YYYY/MM/DD HH:MM:SS, YYYY/MM/DD, or YYYY-MM-DD format. See
+link:Introduction_to_Mappings_(ELUG)#Type_Conversion_Converter[Type
+Conversion Converter] and
+link:Configuring_a_Mapping_(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter].
+
+215: The format for [argument] must be an even length HEX string.
+Literal argument of expression [line number] on query [query name] is
+invalid. *Cause*: You attempted to use an invalid argument on a query.
+
+*Action*: Use HEX format. See
+link:Introduction_to_Mappings_(ELUG)#Type_Conversion_Converter[Type
+Conversion Converter].
+
+216: The format for [argument] must be a string. Literal argument of
+expression [line number] on query [query name] is invalid. *Cause*: You
+attempted to use an invalid argument on a query.
+
+*Action*: Use a `+String+`. See
+link:Introduction_to_Mappings_(ELUG)#Type_Conversion_Converter[Type
+Conversion Converter].
+
+217: Literal argument of expression [line number] on query [query name]
+is invalid. The format is illegal. *Cause*: You attempted to use an
+invalid argument on a query.
+
+*Action*: Use a valid format.
+
+220: An aggregate shared by multiple source descriptors cannot have
+one-to-many or many-to-many mappings. *Cause*: You attempted to create
+multiple one-to-many and many-to-many, or one-to-one mappings in which
+the target is the aggregate. Aggregate descriptors that are shared by
+multiple source descriptors cannot have mappings that contain a target
+object that references the descriptor.
+
+*Action*: For aggregate descriptors that are shared by multiple source
+descriptors, remove mappings that contain a target object that
+references the descriptor. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors[Descriptors] and
+link:Creating_a_Relational_Descriptor_(ELUG)#Creating_Relational_Aggregate_Descriptors[Creating
+Relational Aggregate Descriptors].
+
+221: Classes cannot reference an aggregate target with one-to-one,
+one-to-many, or many-to-many mappings. *Cause*: You tried to select an
+aggregate descriptor as a reference.
+
+*Action*: Do not select an aggregate descriptor as the **Reference
+Descriptor**for a one-to-one, one-to-many, or many-to-many mapping. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors[Descriptors] and
+link:Creating_a_Relational_Descriptor_(ELUG)#Creating_Relational_Aggregate_Descriptors[Creating
+Relational Aggregate Descriptors].
+
+225: The implementor [implementor name] no longer implements this
+interface. *Cause*: One descriptor listed as an implementation method
+for this interface descriptor no longer implements this descriptor’s
+interface.
+
+*Action*: Either remove the descriptor from the list of implementation
+methods or alter the descriptor’s class so that it implements this
+descriptor’s interface. See
+link:Introduction_to_Descriptors_(ELUG)#Descriptors[Descriptors] and
+link:Creating_a_Relational_Descriptor_(ELUG)#Creating_Relational_Interface_Descriptors[Creating
+Relational Interface Descriptors].
+
+230: No primary table is specified. *Cause*: The descriptor is not
+associated with a database table.
+
+*Action*: On the descriptor’s **Descriptor Info**tab, use the
+**Associated Table**field to select a primary table. See
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Associated_Tables[Configuring
+Associated Tables].
+
+231: No primary key(s) specified in [table name] table. *Cause*: You did
+not specify a primary key for each database table. When importing tables
+from a database into EclipseLink Workbench, the primary key information
+will be retained only if the JDBC driver supports the `+getPrimaryKeys+`
+method.
+
+*Action*: Ensure that a primary key is specified for each descriptor on
+the **Descriptor Info**tab. See
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Associated_Tables[Configuring
+Associated Tables].
+
+232: The following primary key field is unmapped [field name]. *Cause*:
+The primary key field does not have a writable mapping.
+
+*Action*: Ensure that the primary key(s) are mapped. See
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Associated_Tables[Configuring
+Associated Tables].
+
+233: The number of primary keys does not match the number of primary
+keys on the parent. *Cause*: In an inheritance hierarchy, the child
+class does not have the same number of primary keys as the parent class.
+
+*Action*: Ensure that the parent and child class have the same number of
+primary keys on the descriptor’s **Descriptor Info**tab. See
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Associated_Tables[Configuring
+Associated Tables].
+
+234: The primary keys do not match parent’s primary keys. *Cause*: In an
+inheritance hierarchy, the child’s primary key(s) does not match the
+root’s primary key(s).
+
+*Action*: Ensure that each child’s **Primary Key**on the **Descriptor
+Info**tab matches the parent’s primary key. Ensure that the parent and
+child class have the same primary keys on the descriptor’s **Descriptor
+Info**tab. See
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Associated_Tables[Configuring
+Associated Tables].
+
+235: The following primary field field does not have writable mappings:
+[field name]. *Cause*: You attempted to have multiple mappings write to
+the same database field.
+
+*Action*: Ensure that each database field has a single, writable
+mapping. See link:Configuring_a_Relational_Descriptor_(ELUG)[Configuring
+a Relational Descriptor].
+
+236: No sequence field is selected. *Cause*: You selected **Use
+Sequencing**on a descriptor’s **Descriptor Info**tab, but did not
+specify the sequence information.
+
+*Action*: Specify a *Name*, *Table*, and *Field*. See
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[Configuring
+Sequencing at the Descriptor Level].
+
+237: No sequence name is selected. *Cause*: You selected Use Sequencing
+on a descriptor’s Descriptor Info tab but did not specify the sequence
+information.
+
+*Action*: Specify a Name, Table, and Field. See
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[Configuring
+Sequencing at the Descriptor Level].
+
+238: No sequence table is selected. *Cause*: You selected Use Sequencing
+on a descriptor’s Descriptor Info tab but did not specify the sequence
+information.
+
+*Action*: Specify a Name, Table, and Field. See
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[Configuring
+Sequencing at the Descriptor Level].
+
+239: The selected sequence table is not one of the descriptor’s
+associated tables. *Cause*: The tabled used for sequencing is not
+associated with the descriptor.
+
+*Action*: You must either associate the sequencing table with the
+descriptor, or select a table that is already associated with the
+descriptor.
+Seelink:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[Configuring
+Sequencing at the Descriptor Level] and
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Associated_Tables[Configuring
+Associated Tables].
+
+240: Two queries [query name1] [query name2] cannot have the same
+signature. *Cause*: Two queries for this descriptor share the same
+signature (query name + parameter names). This is not allowed.
+
+*Action*: You must either remove one of the queries, rename one of the
+queries, or change the parameters so that the signatures no longer
+match.
+
+241: The query [query name] has Cache Statement set to true, but does
+not bind parameters. *Cause*: A named query that caches statements does
+not bind parameters. It must do so.
+
+*Action*: On the Named Queries – Options tab, either change the Cache
+Statements field to False, or change the Bind Parameters field to True.
+See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Options[Configuring
+Named Query Options].
+
+242: The query [query name] does not maintain cache but does refresh the
+remote identity map results. *Cause*: The query has Refresh Remote
+Identity Map selected, but does not have Maintain Cache selected.
+
+*Action*: You must either select Maintain Cache for the descriptor, or
+deselect Refresh Remote Identity Map. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Options[Configuring
+Named Query Options].
+
+243: The query [query name] does not maintain cache but does refresh the
+identity map results. *Cause*: The query has Refresh Identity Map
+selected but does not have Maintain Cache selected.
+
+*Action*: You must either select Maintain Cache for the descriptor, or
+deselect Refresh Identity Map. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Options[Configuring
+Named Query Options].
+
+245: The query [query name] refreshes identity map results but does not
+refresh remote identity map results. *Cause*: Refresh Identity Map
+Results is selected for the query, but Refresh Remote Identity Map
+Results is not.
+
+*Action*: You must either select Refresh Remote Identity Maps or
+deselect Refresh Identity Maps. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Options[Configuring
+Named Query Options].
+
+246: The query key [query key] does not have an associated database
+field. *Cause*: The query key is missing an associated database field.
+Each query key must be associated with a database field.
+
+*Action*: On the Query Keys tab, use the Field option to select a
+database field for the query key. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Query_Keys[Configuring
+Query Keys].
+
+247: The database field selected for query key [query key] does not
+exist on this descriptor’s associated tables. *Cause*: The database
+field selected for this query key does not exist on this descriptor’s
+associated tables. Each database field associated with a query key must
+exist on database table associated with the query key’s descriptor.
+
+*Action*: You must either change the database field associated with the
+query key, or associate the descriptor with a database table that
+includes the database field associated with the query key. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Query_Keys[Configuring
+Query Keys].
+
+248: The expression [line number] on query [query name] is invalid
+because a parameter has not been specified. *Cause*: One of the
+arguments in the query expression is missing or invalid.
+
+*Action*: Edit the query and ensure that all query keys and parameters
+have been specified. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Query_Keys[Configuring
+Query Keys].
+
+249: The expression [line number] on query [query name] is invalid
+because a query key has not been specified. *Cause*: One of the
+arguments in the query expression is missing or invalid.
+
+*Action*: Edit the query and ensure that all query keys and parameters
+have been specified. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Query_Keys[Configuring
+Query Keys].
+
+250: The expression [line number] on query [query name] is invalid
+because the chosen query key is not a valid mapping type in an
+expression. *Cause*: One of the arguments in the query expression is
+invalid.
+
+*Action*: Edit the query and ensure that all query keys and parameters
+have been specified. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Query_Keys[Configuring
+Query Keys].
+
+251: The expression [line number] on query [query name] is invalid. When
+querying on a reference mapping, only unary operators (Is Null, Not
+Null) are supported. *Cause*: You created an expression node that
+includes a reference mapping with an invalid operator.
+
+*Action*: On the Expression Builder dialog box, select the node and
+change the Operator field to IS NULL or NOT NULL.
+
+252: The query [query name] has no attribute chosen for the ordering
+attribute at index [index]. *Cause*: The ordering attribute is missing
+from the query.
+
+*Action*: Edit the query and add an ordering attribute. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Read_All_Query_Order[Configuring
+Read All Query Order].
+
+253: The ordering attribute \{0} for query \{1} is not valid.
+ReadAllQuery ordering items must be either query keys or direct-to-field
+mappings. *Cause*: The ordering attribute is invalid.
+
+*Action*: Edit the query and ensure that ordering attribue is a query
+key or has a direct-to-field mapping. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Read_All_Query_Order[Configuring
+Read All Query Order].
+
+254: The query \{0} has no attribute chosen for the joined attribute at
+index \{1}. *Cause*: The joined attribute is missing from the query.
+
+*Action*: Edit the query and add a joined attribute. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Optimization[Configuring
+Named Query Optimization].
+
+255: The joined attribute \{0} for query \{1} is not valid. Joined
+attributes must be 1-1, 1-m, m-m, direct collection, or aggregate
+collection mappings. *Cause*: The joined attribute is invalid.
+
+*Action*: Edit the query and ensure that joined attribute has a
+one-to-one, one-to-many, many-to-many, direct collection, or aggregate
+collection mapping. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Optimization[Configuring
+Named Query Optimization].
+
+256: The query \{0} has no attribute chosen for the batch read attribute
+at index \{1}. *Cause*: The batch read attribute is missing from the
+query.
+
+*Action*: Edit the query and add a batch read attribute. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Optimization[Configuring
+Named Query Optimization].
+
+257: The batch read attribute \{0} for query \{1} is not valid. Batch
+read attributes must be 1-1, 1-m, m-m, direct collection, aggregate
+collection, or direct-to-field mappings. *Cause*: The batch read
+attribute is invalid.
+
+*Action*: Edit the query and ensure that batch attribute has a
+one-to-one, one-to-many, many-to-many, direct collection, aggregate
+collection, or direct-to-field mapping. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Optimization[Configuring
+Named Query Optimization].
+
+258: The query \{0} has no attribute chosen for the grouping attribute
+at index \{1}. *Cause*: The grouping attribute is missing from the
+query.
+
+*Action*: Edit the query and add a grouping attribute. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Group_Order_Options[Configuring
+Named Query Group/Order Options].
+
+259: The query \{0} has no attribute chosen for the report attribute
+\{1}. *Cause*: The report query attribute is missing from the query.
+
+*Action*: Edit the query and add a report query attribute. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Group_Order_Options[Configuring
+Named Query Group/Order Options].
+
+260: The report attribute \{0} for query \{1} is not valid. Report query
+attributes must be either query keys or direct mappings. *Cause*: The
+report attribute is invalid.
+
+*Action*: Edit the query and ensure that report attribute is a query key
+or has a direct-to-field mapping. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Named_Query_Group_Order_Options[Configuring
+Named Query Group/Order Options].
+
+262: The format for \{2} must be between 0 and 127 inclusive. Literal
+argument of expression (line \{0}) on query \{1} is invalid. *Cause*:
+The literal value of the expression is invalid.
+
+*Action*: Edit the literal value of second argument in Expression
+Builder. The literal value of a Byte type must be between 1 and 127. See
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Creating_an_Expression[Creating
+an Expression].
+
+263: The format for \{2} must be either '`true`' or '`false`'. Literal
+argument of expression (line \{0}) on query \{1} is invalid. *Cause*:
+The literal value of the expression is invalid.
+
+*Action*: Edit the literal value of Second Argument in Expression
+Builder. The literal value of a Boolean type must be `+true+` or
+`+false+`. See
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Creating_an_Expression[Creating
+an Expression].
+
+264: The format for \{2} must be a single character. Literal argument of
+expression (line \{0}) on query \{1} is invalid. *Cause*: The literal
+value of the expression is invalid.
+
+*Action*: Edit the literal value of second argument in Expression
+Builder. The literal value of a Character type must be a single
+character. See
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Creating_an_Expression[Creating
+an Expression].
+
+265: The format for \{2} must be between \{3} and \{4}. Literal argument
+of expression (line \{0}) on query \{1} is invalid. *Cause*: The literal
+value of the expression is invalid.
+
+*Action*: Edit the literal value of second argument in Expression
+Builder. The literal value must be between 3 and 4. See
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Creating_an_Expression[Creating
+an Expression].
+
+266: The format for \{2} must be a string. Literal argument of
+expression (line \{0}) on query \{1} is invalid. *Cause*: The literal
+value of the expression is invalid.
+
+*Action*: Edit the literal value of second argument in Expression
+Builder. The literal value of a String type must be a string. See
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Creating_an_Expression[Creating
+an Expression].
+
+267: The format for \{2} must contain only digits, '`-`', and '`.`'.
+Literal argument of expression (line \{0}) on query \{1} is invalid.
+*Cause*: The literal value of the expression is invalid..
+
+*Action*: Edit the literal value of second argument in Expression
+Builder. The literal value of a Double or Float type must contain
+digits, ’ - '`, and`' . ’. See
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Creating_an_Expression[Creating
+an Expression].
+
+268: The format for \{2} must contain only digits, '`-`', and '`.`'.
+Literal argument of expression (line \{0}) on query \{1} is invalid.
+*Cause*: The literal value of the expression is invalid.
+
+*Action*: Edit the literal value of second argument in Expression
+Builder. The literal value of a Double or Float type must contain
+digits, ’ - '`, and`' . ’. See
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Creating_an_Expression[Creating
+an Expression].
+
+269: The format for \{2} must be in the format YYYY/MM/DD or YYYY-MM-DD.
+Literal argument of expression (line \{0}) on query \{1} is invalid.
+*Cause*: The literal value of the expression is invalid.
+
+*Action*: Edit the literal value of second argument in Expression
+Builder. The literal value of a Date type must be in YYYY/MM/DD or
+YYYY-MM-DD format. See
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Creating_an_Expression[Creating
+an Expression].
+
+270: No schema context is specified. *Cause*: Each descriptor in an XML
+or EIS project must be associated with an XML schema context.
+
+*Action*: Select the EIS or XML descriptor in the Navigator and complete
+the Schema Context field on the Descriptor Info tab.
+
+271: The descriptor represents a document root object, but no default
+root element is chosen. *Cause*: Each root descriptor must have a
+default root element.
+
+*Action*: On the descriptor’s Descriptor Info tab, complete the Default
+Root Element field.
+
+280: A descriptor that represents \"`anyType\`" cannot support
+inheritance. *Cause*: The descriptor was supporting inheritance.
+
+*Action*: Edit the descriptor properties and remove the inheritance
+support.
+
+281: A descriptor that represents \"`anyType\`" may contain only a
+single Any (Object or Collection) mapping. *Cause*: The descriptor was
+supporting more than one Any (Object or Collection) mapping.
+
+*Action*: Edit the descriptor properties and ensure that descriptor
+supports only one Any (Object or Collection) mapping.
+
+282: A default root element type has been selected and the default root
+element is not. Either select a default root element or clear the
+default root element type *Cause*: The default root element was not
+selected.
+
+*Action*: Select the default root element or clear the default root
+element type. See
+link:Configuring%20an%20XML%20Descriptor%20(ELUG)#Configuring_Default_Root_Element[Configuring
+Default Root Element].
+
+290: No primary keys specified. *Cause*: Although you have associated
+the descriptor with a database table, you have not identified the
+primary keys.
+
+*Action*: Use the Primary Keys area of the descriptor’s Descriptor Info
+tab to select the primary keys for the descriptor.
+
+291–304: The event policy’s [method type] method is no longer a visible
+member of this descriptor’s associated class. *Cause*: You changed the
+class hierarchy within the project, causing the method to no longer be
+visible to the class.
+
+*Action*: Ensure that the selected method is visible to the class.
+
+305: The write-lock field is stored in an object, but there is not a
+writable mapping to the field. *Cause*: If the write lock field is
+stored in object, there must be a non-read-only mapping to it.
+
+*Action*: On the mapping’s General tab, ensure that Read-Only is not
+selected.
+
+306: Database fields specified for Selected Fields type Locking Policy
+must be mapped: [field name] *Cause*: You selected an unmapped database
+field for a descriptor’s locking policy.
+
+*Action*: On the descriptor’s Locking tab, ensure that you have selected
+a mapped database field as the Selected Field. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+
+307: Database fields specified for Selected Fields type Locking Policy
+must not be primary key fields: [field name] *Cause*: The database
+fields you selected for the optimistic locking policy (by fields)
+contains the primary keys for the database table.
+
+*Action*: In the By Fields area of the descriptor’s Locking tab, select
+different fields. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+
+308: Version locking is chosen as the Locking Policy, but the field is
+not specified. *Cause*: If you select to use version locking with an
+optimistic locking policy, you must identify which database field to use
+for version control.
+
+*Action*: Use the Database Field field on the descriptor’s Locking tab
+to select a field to use for version control. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+
+309: The Version Locking database field selected does not exist on this
+descriptor’s associated tables. *Cause*: The database field you selected
+for optimistic version locking does not exist on the descriptor’s
+associated table.
+
+*Action*: You must either select a different database field on the
+descriptor’s Locking tab, or associate the descriptor with a different
+database table. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+
+310: Database fields specified for Selected Fields type Locking Policy
+do not exist on this descriptor’s associated tables: [field name]
+*Cause*: The database fields you selected for the optimistic locking
+policy (by fields) do not exist on the descriptor’s associated table.
+
+*Action*: You must either select a different database field on the
+descriptor’s Locking tab, or associate the descriptor with a different
+database table. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+
+311: The method you have specified for the instantiation policy’s method
+on this descriptor is no longer a visible member of this class. *Cause*:
+The method selected as the instantiation method has either been removed,
+or its visibility has been reduced so that it is no longer publicly
+visible.
+
+*Action*: Deselect this method as the instantiation method. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+
+312: The method you have specified for the instantiation policy’s
+factory instantiation method on this descriptor is no longer a visible
+member of this class. *Cause*: The method selected as the factory
+instantiation method has either been removed, or its visibility reduced
+so that it is no longer publicly visible.
+
+*Action*: Deselect this method as the factory instantiation method. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Instantiation_Policy[Configuring
+Instantiation Policy].
+
+313: The method you have specified for the instantiation policy’s
+factory method on this descriptor is no longer a visible member of this
+class. *Cause*: The method selected as the factory method has either
+been removed, or its visibility reduced so that it is no longer publicly
+visible.
+
+*Action*: Deselect this method as the factory method. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Instantiation_Policy[Configuring
+Instantiation Policy].
+
+314: "`Use factory`" is specified for the Instantiation policy, but all
+required information is not specified. *Cause*: You selected the Use
+Factory option on the descriptor’s Instantiation Policy tab, but did not
+specify the Factory Class, Factory Method, or Instantiation Method
+fields.
+
+*Action*: Complete the Factory Class, Factory Method, or Instantiation
+Method fields on the descriptor’s Instantiation tab. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Instantiation_Policy[Configuring
+Instantiation Policy].
+
+315: "`Use method`" is selected for the Instantiation policy, but no
+method is selected. *Cause*: You selected the Use Method option on the
+descriptor’s Instantiation Policy tab, but did not specify the field.
+
+*Action*: Select the Method on the descriptor’s Instantiation tab. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Instantiation_Policy[Configuring
+Instantiation Policy].
+
+316: The class does not have an accessible zero argument constructor.
+*Cause*: No accessible zero argument constructor exists for the class
+associated with this descriptor.
+
+*Action*: Make the zero argument constructor accessible if it exists, or
+create a accessible zero argument constructor if it doesn’t exist.
+
+317: No method was specified for the copying policy. *Cause*: You
+specified that the descriptor should use a specific clone method for
+copying, but you did not select a method.
+
+*Action*: Complete the Use Clone Method field on the descriptor’s
+Copying tab to select a method.
+
+318: The method specified for the copy policy on this descriptor is no
+longer a visible member of this class. *Cause*: You changed the class
+hierarchy within the project, causing the copy policy to no longer be
+visible to the class.
+
+*Action*: Ensure that the copy policy is visible to the class.
+
+319: Primary keys do not match across associated tables and no
+reference(s) specified in multiple table policy information. *Cause*:
+You attempted to associate multiple tables using a primary key.
+
+*Action*: Primary key field names must match across associated tables,
+or references must be defined from the base table to each derived table.
+
+320: The multiple table reference should be defined from the base table
+[table name] to the derived table. *Cause*: This descriptor has
+Inheritance and Multitable advanced properties defined on it.
+
+*Action*: The multiple table relationship that is defined between the
+base class’ table and this derived class’ table must be defined from
+base to derived.
+
+321: The multiple table reference should not be defined on the database.
+*Cause*: When using multitables with differently named primary keys, you
+must set a reference from the TOP table to the BOTTOM table. This
+reference must not be an actual constraint on the database.
+
+*Action*: Select the table in which this is defined, and deselect the On
+Database option.
+
+322: A class containing the desired after loading method should be
+specified. *Cause*: You added an after-load method to a descriptor, but
+you did not specify a class.
+
+*Action*: Complete the After Load tab. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Amendment_Methods[Configuring
+Amendment Methods].
+
+323: An after-load method must be specified. *Cause*: You added an
+after-load method to a descriptor, but did not select an amendment
+method.
+
+*Action*: Complete the After Load tab. See
+link:Configuring_a_Descriptor_(ELUG)#Configuring_Amendment_Methods[Configuring
+Amendment Methods].
+
+324: An interface class must be specified for the interface alias.
+*Cause*: You added an interface alias to a descriptor, but did not
+select an amendment method.
+
+*Action*: Complete the Interface Alias tab.
+
+325: The inheritance hierarchy originating in this descriptor cannot
+contain both aggregate and nonaggregate child descriptors. *Cause*:
+Aggregate and class descriptors cannot be in the same inheritance
+hierarchy.
+
+*Action*: Ensure that the inheritance hierarchy contains either
+aggregate or nonaggregate children, but not both.
+
+326: The inheritance hierarchy originating in this descriptor cannot
+contain both root and composite child descriptors. *Cause*: There is a
+mixture of root and composite descriptors among the descendents of this
+descriptor.
+
+*Action*: Make all descendents of this descriptor the same type by
+either making them all root, or making them all composite. You can do
+this by removing the differing descriptor from the hierarchy, or
+changing their type to be consistent with the other descriptors in the
+hierarchy.
+
+330: The returning policy insert fields do not exist on this
+descriptor’s associated tables: [field name] *Cause*: The field you
+selected on the descriptor’s Returning tab does not exist on the
+database table associated with the descriptor.
+
+*Action*: Select a different database table in the Insert area of the
+descriptor’s Returning tab.
+
+331: The returning policy update field [field name] does not exist on
+this descriptor’s associated tables. *Cause*: The field you selected on
+the descriptor’s Returning tab does not exist on the database table
+associated with the descriptor.
+
+*Action*: Select a different database table in the Update area of the
+descriptor’s Returning tab.
+
+350: Descriptors with Unknown Primary Keys must use sequencing. *Cause*:
+Unknown Primary Key Class is selected for this descriptor, but the
+descriptor does not use sequencing.
+
+*Action*: Change the descriptor so that it uses sequencing, or so that
+it no longer uses an unknown primary key class.
+
+== Mapping Errors (400 – 483)
+
+This section lists EclipseLink Workbench mapping errors.
+
+400: Method accessors have not been selected. *Cause*: You selected Use
+Method Accessing for a mapping, but you did not select a method.
+
+*Action*: You must select a Get and Set method on the mapping’s General
+tab. See
+link:Configuring_a_Mapping_(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Configuring
+Method or Direct Field Accessing at the Mapping Level].
+
+401, 402: The [get/set access method] method for this mapping’s method
+accessing field is no longer visible to this descriptor. *Cause*: You
+changed the class hierarchy within the project, causing the method
+access type (`+get+` or `+set+`) to no longer be visible to the class.
+
+*Action*: Ensure that the selected method is visible to the class.
+
+403: Mappings for EJB 2.0 CMP descriptors that use Value Holder
+Indirection must not use method accessing. *Cause*: You cannot use
+method accessing on mappings for EJB 2.0 CMP descriptors that use
+ValueHolder Indirection.
+
+*Action*: Because EJB attributes are code-generated, reference mappings
+should not be set to use method access. The attributes are
+code-generated to be of type ValueHolder but the abstract methods are
+defined to return the local interface type of the related bean.
+
+404: Mapping references a write-lock field, but it is not read-only.
+*Cause*: You specified a locking policy for a descriptor, but one of the
+attribute mappings is not read-only.
+
+*Action*: Select the Read Only option on the mapping’s General tab.
+
+410: No direct field is specified. *Cause*: For direct collection
+mappings, you must specify the direct collection information.
+
+*Action*: Select a Target Table and Direct Field that the direct
+collection specifies.
+
+415: No direct key field is specified. *Cause*: For direct map mappings,
+you must specify a direct key field in the reference table that stores
+the primitive data value of the map key.
+
+*Action*: On the direct map mapping’s General tab, select a Direct Key
+Field. See
+link:Configuring_a_Relational_Direct_Map_Mapping_(ELUG)#Configuring_Direct_Key_Field[Configuring
+Direct Key Field].
+
+420: No database field is selected. *Cause*: You created a
+direct-to-field or type conversion mapping without selecting a database
+field.
+
+*Action*: For attributes with direct-to-field mappings, you must specify
+a Database Field on the mapping’s General tab. For attributes with type
+conversion mappings, you must specify a Database Field on the mapping’s
+General tab.
+
+421: The selected database field does not exist on this descriptor’s
+associated tables. *Cause*: The database field mapped to an attribute is
+not included in the table associated with the attribute’s descriptor.
+
+*Action*: Ensure that the Database Field field on a mappings General tab
+is included in the table that you associated with the attribute’s
+descriptor. See
+link:Configuring_a_Relational_Descriptor_(ELUG)#Configuring_Associated_Tables[Configuring
+Associated Tables] and
+link:Configuring_a_Relational_Mapping_(ELUG)#Configuring_a_Database_Field[Configuring
+a Database Field].
+
+430, 431: No null value type has been selected. *Cause*: You selected to
+Use Default Value When Database Field is Null for a mapping, but did not
+specify the value.
+
+*Action*: Specify a default Type or Value, or both on the mapping’s
+General tab. See
+link:Configuring_a_Mapping_(ELUG)#Configuring_a_Default_Null_Value_at_the_Mapping_Level[Configuring
+a Default Null Value at the Mapping Level]. This message may also appear
+after using the Package Rename tool when upgrading an older EclipseLink
+Workbench project.
+
+440: XML type mappings are supported only on the Oracle9i Platform.
+*Cause*: You created a Direct to XML Type mapping in relational project
+that uses a non-Oracle9i database.
+
+*Action*: Select an Oracle9i platform as the database platform for the
+data source. See
+link:Configuring_a_Relational_Project_(ELUG)#Configuring_Relational_Database_Platform_at_the_Project_Level[Configuring
+Relational Database Platform at the Project Level].
+
+450: No reference descriptor is selected. *Cause*: You created a
+mapping, but did not specify the reference descriptor
+
+*Action*: You must select a **Reference Descriptor**for each
+relationship mapping on the mapping’s *General* tab.
+
+451: [descriptor name]references [descriptor name], which is not active.
+*Cause*: You tried to select an inactive descriptor as a Reference
+Descriptor on the mapping’s General tab.
+
+*Action*: You must either select a new Reference Descriptor, or make the
+descriptor active.
+
+460: No table reference is selected. *Cause*: You created a relationship
+mapping, but did not specify a reference table.
+
+*Action*: Select (or create) a table reference for each relationship
+mapping on the mapping’s Table Reference tab.
+
+461: Table reference is invalid. *Cause*: The table reference selected
+for this mapping is invalid.
+
+*Action*: Select a different table reference for this mapping.
+
+462: The reference [table reference] does not have any field
+associations. *Cause*: You selected a table reference for a mapping, but
+did not add a key pair.
+
+*Action*: You must specify source and target key pairs for the
+reference.
+
+463: A key pair has not been completely specified for a reference.
+*Cause*: You created a table reference without a key pair.
+
+*Action*: You must specify a foreign key reference for the database
+table. Use the database table’s Reference tab to add a key pair.
+
+464: No relationship partner is specified. *Cause*: You selected the
+Maintains Bidirectional Relationship option for a relationship mapping,
+but did not select a mapping to use as the relationship partner.
+
+*Action*: Select a mapped attribute (from the reference descriptor) for
+this relationship. See
+link:Configuring_a_Mapping_(ELUG)#Configuring_Bidirectional_Relationship[Configuring
+Bidirectional Relationship].
+
+465: The relationship partner must be a one-to-one, one-to-many, or
+many-to-many mapping. *Cause*: You selected an invalid attribute as the
+Relationship Partner in a bidirectional relationship.
+
+*Action*: In the Relationship Partner field, select a one-to-one,
+one-to-many, or many-to-many mapping. See
+link:Configuring_a_Mapping_(ELUG)#Configuring_Bidirectional_Relationship[Configuring
+Bidirectional Relationship].
+
+466: The specified relationship partner mapping does not specify this
+mapping as its own relationship partner. *Cause*: Maintains
+Bidirectional Relationship is selected for this mapping, but the mapping
+selected as the relationship partner does not have this mapping selected
+as its relationship partner.
+
+*Action*: You must either select a different mapping for this mappings
+relationship partner, which has this mapping selected as it
+bidirectional relationship partner, or select this mapping as the
+bidirectional relationship partner of the mapping selected as the
+bidirectional relationship partner for this mapping.
+
+467: The chosen reference descriptor is not a valid reference descriptor
+for this mapping. *Cause*: The descriptor selected as the reference
+descriptor for this mapping is not a valid reference descriptor.
+
+*Action*: Select a valid reference descriptor for this mapping.
+
+470: No container class is selected. *Cause*: No container class has
+been selected for this collection mapping.
+
+*Action*: Select a `+Container+` class for this `+Collection+` mapping.
+
+471: The container policy uses a Collection class, but the container
+class is not a Collection. *Cause*: The selected container class for
+this collection mapping is not a Collection, but Use Collection Class is
+selected.
+
+*Action*: Select a `+Container+` class that is a `+Collection+` for this
+mapping.
+
+472: The container policy uses a Map class, but the container class is
+not a Map. *Cause*: The selected `+Container+` class for this
+`+Collection+` mapping is not a `+Map+` class, but Use Map Class is
+selected.
+
+*Action*: Select a `+Container+` class that is a `+Map+` class.
+
+473: The container class must be instantiable. *Cause*: The selected
+`+Container+` class for this `+Collection+` mapping is not
+instantiatable.
+
+*Action*: Select a `+Container+` class this is instantiatable, (not an
+`+Interface+`, `+Abstract+` class, or `+Primitive+` class).
+
+474: The container class does not agree with the instance variable.
+*Cause*: The selected `+Container+` class for this `+Collection+`
+mapping, does not agree with the instance variable that is associated
+with the mapping. Either the variable is a `+Map+` class and the
+selected `+Container+` class is a `+Collection+` or vice versa.
+
+*Action*: You must either select a `+Container+` class that agrees with
+the type of instance variable with which it is associated, or change the
+instance variable to agree with the selected `+Container+` class.
+
+475: The container class is a Map, but the key method is not selected.
+*Cause*: Use Map Class is selected for the `+Container+` policy for this
+`+Collection+` mapping, but a key method has not been selected.
+
+*Action*: You must either select a key method for this `+Container+`
+policy, or change the `+Container+` policy to not use a map class.
+
+4 76: The key method specified for this mapping is no longer visible to
+the owning descriptor’s class. *Cause*: The selected key method for the
+`+Container+` policy for this `+Collection+` mapping policy is not
+visible to the descriptor’s class.
+
+*Action*: You must either select a different method that is visible to
+the descriptor’s class, or change the selected method so that it is
+visible.
+
+477: The key method specified for this mapping is not valid. *Cause*:
+The selected key method for the `+Container+` policy for this
+`+Collection+` mapping is invalid because it does not have the correct
+return type, or it does not accept more than zero parameters.
+
+*Action*: You must either select a different method that is valid, or
+change the selected method so that it will return the correct type and
+accept more than zero parameters.
+
+478: One-to-Many and Many-to-Many mappings in EJB 2.0 CMP descriptors
+may not use ValueHolder indirection. *Cause*: A one-to-many or
+many-to-many mapping in an EJB 2.0 CMP descriptor is using
+`+ValueHolder+` indirection.
+
+*Action*: You must either change the mapping to use no indirection or
+non-`+ValueHolder+` indirection.
+
+480: No relation table is selected. *Cause*: You created a many-to-many
+mapping, but did not specify a relation table. The relation table
+represents the relationship between the primary keys of the source table
+and target table.
+
+*Action*: Select or create a Relation Table on the mapping’s General
+tab.
+
+481: The relation table is not dedicated to single, writable
+many-to-many mapping. *Cause*: More than one many-to-many mapping in the
+project are using the same relation table.
+
+*Action*: Each relation table should be used in one and only one
+many-to-many mapping.
+
+482: No source reference is selected. *Cause*: You created a
+many-to-many mapping, but did not select (or create) a source table
+reference on the mapping’s Source Reference tab.
+
+*Action*: The source table reference must contain a Source field (from
+the mapping’s relation table) and a Target field (from one of the
+descriptor’s associated tables).
+
+483: No target reference is selected. *Cause*: You created a
+many-to-many mapping, but did not select (or create) a target table
+reference on the mapping’s Source Reference tab.
+
+*Action*: The target table reference must contain a Source field (from
+the mapping’s relation table) and a Target field (from one of the
+descriptor’s associated tables).
+
+== Table Errors (500 – 610)
+
+This section lists EclipseLink Workbench table errors.
+
+500: You cannot use joining because the source and target (reference)
+descriptors are the same type. *Cause*: You selected the Use Joining
+option on a one-to-one mapping in which the source and reference
+descriptors are the same.
+
+*Action*: You must either deselect the Use Joining option or select a
+difference Reference Descriptor on the One-to-One Mapping General tab.
+
+510: No query key associations have been defined. *Cause*: You created a
+variable one-to-one mapping, but did not define a key pair.
+
+*Action*: Create or select a key pair on the mapping’s Query Key
+Association tab.
+
+511: Not all query key associations have foreign key fields specified.
+*Cause*: You created a query key association without a foreign key.
+
+*Action*: You must specify a foreign key field for each query key
+association on the Query Key Association tab for variable one-to-one
+mapping.
+
+512: The following specified query key names are no longer valid: [query
+key] *Cause*: The query keys listed for this mapping no longer refer to
+the reference descriptor for this mapping. The query keys are now
+invalid.
+
+*Action*: You must either remove the invalid query keys, or change the
+reference descriptor so that it corresponds with the query keys.
+
+513: No indicator field is selected. *Cause*: You created a variable
+one-to-one mapping, but did not specify a database field in which to
+store indicator values.
+
+*Action*: Select the Class Indicator Field on the Class Indicator Info
+tab.
+
+514: No indicator values are specified. *Cause*: You created a variable
+one-to-one mapping, but did not specify indicator values for each object
+type.
+
+*Action*: Select the Indicator Type on the Class Indicator Info tab.
+
+515: [descriptor name] is not an implementor of the [descriptor name]
+interface, so it cannot have an indicator value. *Cause*: You included a
+descriptor on the Variable One-to-One Class Indicator Info tab that is
+an implementor.
+
+*Action*: Deselect the descriptor on the Variable One-to-One Class
+Indicator Info tab or add the descriptor to the Implementor tab.
+
+516: The chosen reference descriptor is not an interface descriptor.
+*Cause*: This variable one-to-one mapping has a reference descriptor
+selected which is not an interface descriptor. The reference descriptor
+for a variable one-to-one mapping must be an interface descriptor for
+the mapping to be valid.
+
+*Action*: You must either choose a reference descriptor that is an
+interface descriptor, or change the mapping to no longer be variable.
+
+520: No attribute transformer is specified. *Cause*: No attribute
+transformer is specified for this transformation mapping.
+
+*Action*: Select an attribute transformer for this transformation
+mapping.
+
+521: The attribute transformer class is missing. *Cause*: No class has
+been specified for the attribute transformer for this transformation
+mapping.
+
+*Action*: Select a class for the attribute transformer.
+
+522: The attribute transformer class [class name] is not a valid
+transformer class. *Cause*: The attribute transformer class that is
+selected is not a valid attribute transformer class.
+
+*Action*: Select a valid attribute transformer class for the
+transformation mapping.
+
+523: The attribute transformer method is missing. *Cause*: No method has
+been selected for the attribute transformer for the transformation
+mapping.
+
+*Action*: Select a method for the attribute transformer.
+
+524: The attribute transformer method [method name] is not visible to
+the parent descriptor’s class. *Cause*: The selected attribute
+transformer method is not visible to the descriptor class for this
+mapping.
+
+*Action*: You must either select a different method that is visible, or
+change the method in the class to make it visible.
+
+525: The attribute transformer method [method name] is not a valid
+transformer method. *Cause*: The selected attribute transformer method
+either has the wrong return type or accepts the wrong parameters to be a
+valid transformer method for this transformation mapping.
+
+*Action*: You must either select a method with the correct return type
+and parameters, or change the selected method so that it meets these
+criteria.
+
+526: No field transformer associations are specified. *Cause*: No field
+transformer association has been specified for this transformation
+mapping.
+
+*Action*: Specify at least one field transformer association.
+
+527: No transformer is specified for the field [field name]. *Cause*: No
+transformer specified for the given field.
+
+*Action*: Specify a transformer for this field.
+
+528: There is a missing field in the field transformer association.
+*Cause*: There is no field specified for a field transformer association
+for this transformation mapping.
+
+*Action*: Specify a field for all the field transformer associations for
+this transformation mapping.
+
+529: There is a missing transformer class for the field [field name].
+*Cause*: The `+Transformer+` class is specified for this field
+transformer association, but the `+Transformer+` class is unspecified.
+
+*Action*: Specify a `+Transformer+` class for the field transformer
+association for this field.
+
+530: The transformer class [class name] for the field [field name] is
+not a valid transformer class. *Cause*: The specified `+Transformer+`
+class for the field of this field transformer association is invalid.
+
+*Action*: Specify a valid `+Transformer+` class for the field
+transformer association for this transformation mapping.
+
+531: There is a missing transformer method for the field [field name].
+*Cause*: A transformer method is specified for this field transformer
+association, but the transformer method is unspecified.
+
+*Action*: Specify a transformer method for the field transformer
+association for this field.
+
+532: The transformer method [method name] for the field [field name] is
+not visible to the parent descriptor’s class. *Cause*: The specified
+transformer method for the field transformer association for this field
+is not visible to the descriptor or the class of this mapping.
+
+*Action*: You must either choose a method that is visible to the class,
+or change the method so that it is visible.
+
+533: The field transformer method [method name] for the field [field
+name] is not a valid transformer method. *Cause*: The specified method
+for the field transformer association for this field either has the
+incorrect return type, or accepts the wrong parameters.
+
+*Action*: You must either select a method that has the correct return
+type and parameters, or change the currently selected method so that is
+has the correct return type and parameters.
+
+540: No object type is selected. *Cause*: You created an object type
+mapping, but did not select the type.
+
+*Action*: You must select the Object Type and Database Type on the
+General tab of the mapping.
+
+542: No object-type mappings have been specified. *Cause*: You created
+an object type mapping, but did not create n object-to-database mapping.
+
+*Action*: You must specify at least one mapping (Database Value and
+Object Value) on the General tab of the mapping.
+
+545: NCharacter, NString, and NClob database types are currently
+supported only on the Oracle9i platform. *Cause*: You attempted to map a
+database type that is not supported by your database.
+
+*Action*: The database type for a type conversion mapping or
+direct-to-field mapping can be `+NCharacter+`, `+NString+`, or `+NCLOB+`
+only if you are using an Oracle9i database.
+
+550: Attribute is typed as a ValueHolderInterface, but the mapping does
+not use Value Holder Indirection. *Cause*: You did not specify
+indirection or transparent indirection for the mapping.
+
+*Action*: If the class attribute is of type `+ValueHolderInterface+`,
+you must use `+ValueHolder+` indirection for the mapping.
+
+551: Mapping uses ValueHolder Indirection, but its associated attribute
+is not a ValueHolderInterface. *Cause*: You selected indirection without
+a `+ValueHolderInterface+`.
+
+*Action*: If you select the Use Indirection (ValueHolder) option for a
+one-to-many, many-to-many, or direct collection mapping, the associated
+class attribute must be `+ValueHolderInterface+`.
+
+560: The container class for this mapping must implement
+org.eclipse.persistence.indirection.IndirectContainer. *Cause*: This
+mapping uses transparent indirection, but the `+Container+` class
+selected for its container policy is not an `+IndirectContainer+`.
+
+*Action*: You must either select a `+Container+` class that is an
+`+IndirectContainer+`, or remove transparent indirection from the
+mapping.
+
+570: The chosen reference descriptor is not an aggregate descriptor.
+*Cause*: This is an aggregate mapping, but the selected reference
+descriptor is not an aggregate descriptor.
+
+*Action*: You must either select a reference descriptor for this mapping
+that is an aggregate descriptor, or change this mapping to no longer be
+an aggregate mapping.
+
+571: Aggregate fields are not specified. *Cause*: You created an
+aggregate mapping without specifying specific fields.
+
+*Action*: Every Field Description on the Fields tab must contain a
+unique Field for aggregate mappings.
+
+572: Aggregate mapping fields must be unique. *Cause*: You created an
+aggregate mapping without specifying unique fields.
+
+*Action*: Every Field Description on the Fields tab must contain a
+unique Field for aggregate mappings.
+
+573: The selected field does not exist on this descriptor’s associated
+tables. *Cause*: The field selected for one of the
+aggregate-path-to-fields for this aggregate mapping does not exist on
+any of the descriptor’s associated tables.
+
+*Action*: You must either select a different field for the
+path-to-field, or add the field to the appropriate table.
+
+580: No XML field specified. *Cause*: You mapped an attribute in an XML
+or EIS descriptor, but did not select an XML field.
+
+*Action*: You must complete the XML Field field on the General tab of
+the mapping.
+
+581: The specified XPath is not valid within the current schema.
+*Cause*: The XPath specified for this mapping does not resolve in the
+schema.
+
+*Action*: You must either select a different XPath, or alter the schema
+so that this XPath will resolve.
+
+582: The specified XPath does not represent text data. *Cause*: The
+XPath specified for this direct mapping does not resolve to a direct
+field in the schema.
+
+*Action*: You must either select a different XPath, alter the schema so
+that this XPath will resolve to a direct field, or change the mapping
+type.
+
+583: The specified XPath does not represent a single xml field. *Cause*:
+The XPath specified for this mapping resolves to a field which is a
+collection, but this is not a collection mapping.
+
+*Action*: You must either select a different XPath, alter the schema so
+that this XPath will resolve to a singular field, or change the mapping
+type.
+
+590: The chosen reference descriptor is not a root eis descriptor.
+*Cause*: The reference descriptor selected for this EIS reference
+mapping is not a root descriptor. Reference mappings in EIS descriptors
+must be root descriptors.
+
+*Action*: You must either select a different reference descriptor for
+this mapping which is a `+root+` descriptor, or change the mapping type.
+
+591: No relationship partner is specified. *Cause*: This mapping has
+Maintains Bidirectional Relationship selected, but no relationship
+partner is specified.
+
+*Action*: You must either deselect Maintains Bidirectional Relationship,
+or select a relationship partner.
+
+592: The relationship partner must be an EIS One-to-One or EIS
+One-to-Many mapping. *Cause*: The relationship partner selected for this
+mapping is not of the type `+EIS+` one-to-one or EIS one-to-many.
+
+*Action*: You must select an `+EIS+` one-to-one or EIS one-to-many
+mapping as the relationship partner for this mapping, or deselect
+Maintains Bidirectional Relationship.
+
+593: The specified relationship partner mapping does not specify this
+mapping as its own relationship partner. *Cause*: The mapping selected
+as the relationship partner for this mapping does not have this mapping
+selected as its relationship partner. For these relationships to be
+bidirectional, you must select the relationship partner for both
+mappings.
+
+*Action*: You must either go to the mapping selected as the relationship
+partner for this mapping and select this mapping as its relationship
+partner, or select a different relationship partner mapping for this
+mapping to maintain this mapping as its relationship partner.
+
+594: There is a missing source XML field. *Cause*: No field has been
+specified as the source XML field for this mapping.
+
+*Action*: You must specify a source XML field.
+
+595: There is a missing target XML field. *Cause*: No field has been
+specified as the target XML field for this mapping.
+
+*Action*: You must specify a target XML field.
+
+600: A foreign key grouping element is required if there are multiple
+field pairs. *Cause*: No foreign key grouping element is specified for
+this mapping and multiple field pairs.
+
+*Action*: You must specify a foreign key grouping element.
+
+601: The foreign key grouping element does not contain all foreign keys
+fields. *Cause*: The specified foreign key grouping element does not
+contain all the foreign key fields.
+
+*Action*: You must either remove the foreign key fields not contained in
+this foreign key grouping element, or pick a foreign key grouping
+element that contains all the foreign key fields.
+
+602: A delete all interaction is specified, but the mapping is not
+private owned. *Cause*: A `+deleteall+` interaction is specified for
+this mapping, but the mapping is not private owned.
+
+*Action*: You must either make the mapping private owned, or remove the
+`+deleteall+` interaction.
+
+610: At least one field pair must be specified, unless the mapping has
+no selection interaction and is read-only. *Cause*: No field pairs are
+specified, and this mapping has a `+selection+` interaction specified
+and/or is not read-only.
+
+*Action*: You must either specify a field pair for the mapping, or make
+the mapping read-only and remove the `+selection+` interaction.
+
+== XML Schema Errors (700 – 706)
+
+This section lists EclipseLink Workbench XML schema errors.
+
+701: A database table can only have one IDENTITY column defined.
+*Cause*: You defined more than one identity column for this table.
+
+*Action*: On the database table’s Columns tab, leave only one identity
+(Identity) column. See
+link:Using_Workbench_(ELUG)#Working_with_Column_Properties[Working with
+Column Properties].
+
+702: A size is required for the column [column]. *Cause*: You did not
+specify any size for this column. The default size is 0.
+
+*Action*: On the database table’s Columns tab, specify the size (Size)
+for the column (field). See
+link:Using_Workbench_(ELUG)#Working_with_Column_Properties[Working with
+Column Properties].
+
+703: The reference [table reference] does not have any field pairs.
+*Cause*: You added a reference for a table, but the reference does not
+include a key pair.
+
+*Action*: On the database table’s References tab, specify source and
+target field pairs for the table reference. See
+link:Using_Workbench_(ELUG)#Creating_Table_References[Creating Table
+References].
+
+704: A key pair has not been completely specified for a reference.
+*Cause*: A reference table is missing a complete key pair (source and
+target fields).
+
+*Action*: You must specify a foreign key reference for the database
+table. On the database table’s References tab, add a complete key pair.
+link:Using_Workbench_(ELUG)#Creating_Table_References[Creating Table
+References].
+
+705: A development login has not been specified. *Cause*: You created a
+relational EclipseLink Workbench project, but did not specify a
+development login.
+
+*Action*: On the Database property sheet, select a Development Login
+from the available defined logins, or add a new login. See
+link:Configuring_a_Relational_Project_(ELUG)#Configuring_Development_and_Deployment_Logins[Configuring
+Development and Deployment Logins].
+
+706: A deployment login has not been specified. *Cause*: You created a
+relational EclipseLink Workbench project, but did not specify a
+deployment login.
+
+*Action*: On the Database property sheet, select a Deployment Login from
+the available defined logins, or add a new login. See
+link:Configuring_a_Relational_Project_(ELUG)#Configuring_Development_and_Deployment_Logins[Configuring
+Development and Deployment Logins].
+
+== Session Errors (800 – 812)
+
+This section lists the EclipseLink Workbench sessions XML errors.
+
+801: [session name] Login - The connection URL has to be specified.
+*Cause*: You have not specified a connection URL for the session (when
+using a database driver manager). Each session must have at least one
+login connection.
+
+*Action*: On the session’s Login – Connection tab, complete the Driver
+URL field. See
+link:Configuring_a_Session_(ELUG)#Configuring_a_Session_Login[Configuring
+a Session Login].
+
+802: [session name] Login - The driver class has to be specified.
+*Cause*: You have not specified a driver class for the session (when
+using a data source database driver).
+
+*Action*: On the session’s Login – Connection tab, complete the Driver
+Class field. See
+link:Configuring_a_Session_(ELUG)#Configuring_a_Session_Login[Configuring
+a Session Login].
+
+803: [session or connection pool name]Login - Login - The data source
+name has to be specified. *Cause*: You have not specified a driver class
+for the session login (when using a Java EE data source database
+driver).
+
+*Action*: On the session’s or connection pool’s Login – Connection tab,
+complete the Data Source field. See
+link:Configuring_a_Session_(ELUG)#Configuring_a_Session_Login[Configuring
+a Session Login].
+
+804: Login - Session Broker - It has to have at least one session,
+either a server or a database session. *Cause*: You created a session
+broker but did not add any sessions. Each session broker must contain a
+session.
+
+*Action*: On the session broker’s General – Sessions tab, select a
+session to add to this broker. See
+link:Configuring_Session_Broker_and_Client_Sessions_(ELUG)#Configuring_Session_Broker_and_Client_Sessions[Configuring
+Session Broker and Client Sessions].
+
+805: [session name] Database Session - It has to have at least one XML
+file or a class specified. *Cause*: Your database session does not have
+a primary project (an associated deployment XML file or Java class
+file).
+
+*Action*: On the session’s Project – General tab, complete the Primary
+Project field. See
+link:Configuring_a_Session_(ELUG)#Configuring_a_Primary_Mapping_Project[Configuring
+a Primary Mapping Project].
+
+806: Login - The transport class has to be specified. *Cause*: You
+selected a custom (user-defined) cache coordination type, but did not
+specify the transport class for cache coordination.
+
+*Action*: On the session’s Cache Coordination tab, complete the
+Transport Class field, or select a different cache coordination type.
+See
+link:Configuring_a_Coordinated_Cache_(ELUG)#Configuring_a_Coordinated_Cache[Configuring
+a Coordinated Cache].
+
+807: [session name] Login - The location of the log file has to be
+specified. *Cause*: You are using standard logging and selected to have
+the log saved to a file, but did not select a file name and location.
+
+*Action*: On the session’s Logging tab, complete the Log Location field.
+See link:Configuring_a_Session_(ELUG)#Configuring_Logging[Configuring
+Logging].
+
+811: [session or broker name] - An external transaction controller (JTA)
+has to be specified. *Cause*: You selected a custom server platform, but
+did not specify the JTA for the platform.
+
+*Action*: On the session or session broker’s General – Server Platform
+tab, complete the External Transaction Controller (JTA) field. See
+link:Configuring_a_Session_(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform].
+
+812: [session or broker name] - A server class has to be specified.
+*Cause*: You selected a custom server platform, but did not specify the
+server class for the platform.
+
+*Action*: On the session or session broker’s General – Server Platform
+tab, complete the Server Class field. See
+link:Configuring_a_Session_(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform].
+
+== Common Classpath Problems
+
+The following are some common EclipseLink Workbench error messages that
+may result from invalid classpath information. See
+link:Configuring_a_Project_(ELUG)#Configuring_Project_Classpath[Configuring
+Project Classpath] for more information.
+
+The EclipseLink Workbench does not display the class(es) to import.
+*Cause*: Your classes are not available for import on the Select Classes
+dialog box.
+
+*Action*: Ensure that the class is in your project’s classpath (on the
+project’s General properties tab). Ensure that the class is in the
+`+.zip+` or `+.jar+` file. You cannot import compressed classes.
+
+The EclipseLink Workbench generates an exception error when importing
+classes. *Cause*: EclipseLink class import utility did not start
+correctly. One of the classes includes a static initialization method,
+which may cause the import utility to fail.
+
+*Action*: Ensure that your project’s classpath points to the root
+directory of your package hierarchy. For example, to import the
+`+com.company.class+` package in the `+C:\classes\com\company+`
+directory, your project classpath should be `+C:\classes\+`.
+
+The EclipseLink Workbench fails to import the class, but does not
+generate an exception error. *Cause*: The classpath containing your JDBC
+drivers should still be on your system CLASSPATH. EclipseLink Workbench
+classpath is for domain classes only.
+
+*Action*: Ensure that you have properly indicated the directories that
+contain your domain class(es) to map on the project’s General tab.
+
+== Database Connection Problems
+
+This section describes common errors and problems you may encounter when
+communicating with or logging in to the database.
+
+The class [class] was not found. *Cause*: You attempted to log in to the
+database, but EclipseLink could not find the JDBC driver for the
+database.
+
+*Action*: Ensure that the `+JDBC_CLASSPATH+` in the `+setenv.cmd+` file
+points to your JDBC driver JAR files. Verify that your PATH includes all
+files (for example, native `+.dll+` files) required by the driver. If
+the path to your JDBC driver JAR files contains spaces, then the path
+must be enclosed in double-quotes in the `+setenv.cmd+` file. For
+example:
+
+`+set JDBC_CLASSPATH="C:\Program Files\some directory\driver.jar\"+`
+
+For more information, see
+link:Using_Workbench_(ELUG)#Configuring_the_EclipseLink_Workbench_Environment[Configuring
+the EclipseLink Workbench Environment].
+
+Username or password could be invalid. *Cause*: EclipseLink was unable
+to log in to the database.
+
+*Action*: Ensure that the Username and Password for the database are
+correct.Verify with your DBA that the database is set up and operating
+correctly.
+
+You must define a development login. *Cause*: You attempted to log in to
+the database from EclipseLink Workbench, but you did not define a
+development login.
+
+*Action*: On the database property sheet, select a Development Login, or
+create a new Defined Login. See
+link:Configuring_a_Relational_Project_(ELUG)#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level].
+
+No database driver has been specified. *Cause*: You attempted to log in
+to the database from EclipseLink Workbench, but you did not complete the
+login information.
+
+*Action*: Complete all the required fields on the database property
+sheet for the selected development login. See
+link:Configuring_a_Relational_Project_(ELUG)#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level].
+
+Invalid URL specified. *Cause*: You attempted to log in to the database
+from EclipseLink Workbench, but the URL is incorrect.
+
+*Action*: Complete the URL field on the database property sheet for the
+selected development login. See
+link:Configuring_a_Relational_Project_(ELUG)#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1]

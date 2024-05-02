@@ -1,0 +1,198 @@
+*TOC*
+Special:Whatlinkshere_Configuring_an_EIS_One-to-Many_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)#CBBHHHJC[Creating a Mapping].
+
+This table lists the configurable options for an EIS one-to-many
+mapping.
+
+[#Table 80-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Reference descriptors
+
+Foreign key pairs
+
+Bidirectional relationship
+
+Method or direct field access at the mapping level
+
+Read-only mappings
+
+Private or independent relationships
+
+Indirection (lazy loading)
+
+Container policy
+
+Mapping comments
+
+Selection interaction
+
+Delete all interactions
+
+For more information, see the following:
+
+* link:Introduction%20to%20EIS%20Mappings%20(ELUG)[EIS One-to-Many
+Mapping]
+* link:Configuring%20an%20EIS%20Mapping%20(ELUG)#CHDHFGAH[Configuring an
+EIS Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)#CEGFEFJG[Configuring a
+Mapping]
+
+== Configuring Foreign Key Pairs
+
+In a one-to-many EIS mapping, you relate a source object attribute to a
+target object attribute by specifying one or more pairs of source and
+target object fields.
+
+In a one-to-many EIS mapping with key on source (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_One-to-Many_Mappings_with_Key_on_Source[EIS
+One-to-Many Mappings with Key on Source]) using XML records, EclipseLink
+puts the target XML field value into the source object’s record as a
+simple value. By default, these values are not grouped, as this example
+shows.
+
+[#Example 80-1]## *_Source Object XML Record without Grouping_*
+
+`+    +``+Jane+` `+    +``+3+` `+    +``+4+`
+
+If you specify more than one source and target XML field pair, you must
+specify a grouping element, as this example shows.
+
+[#Example 80-2]## *_Source Object XML Record with Grouping_*
+
+`+    +``+Jane+`
+
+`+    +` `+        +``+3+` `+        +``+Project 3+` `+    +` `+    +`
+
+`+        +``+4+` `+        +``+Project 4+` `+    +`
+
+In a one-to-one EIS mapping with key on target (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_One-to-Many_Mappings_with_Key_on_Target[EIS
+One-to-Many Mappings with Key on Target]) using XML records, EclipseLink
+uses the source XML field value in the selection interaction to acquire
+the appropriate instances of target object.
+
+=== How to Configure Foreign Key Pairs Using Workbench
+
+To specify the source and target XML field pairs for a one-to-many EIS
+mapping, use this procedure:
+
+[arabic]
+. Select the one-to-one EIS mapping in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *General* tab. The General tab appears.
+[#Figure 80-1]##*_Foreign Keys Field on General Tab_*
+image:onemeisfk.gif[Foreign Keys Field on General
+Tab,title="Foreign Keys Field on General Tab"]
+. Complete the Foreign Keys fields on the General tab.
+
+Use the following information to complete the Foreign Keys fields on the
+*General* tab:
+
+Field
+
+Description
+
+Foreign Keys Located On Target
+
+Select if you are creating a one-to-many EIS mapping with key on target
+(see EIS One-to-Many Mappings with Key on Target).
+
+Foreign Keys Located On Source
+
+Select if you are creating a one-to-many EIS mapping with key on source
+(see EIS One-to-Many Mappings with Key on Source).
+
+Grouping Element
+
+Specify the element in which foreign key pairs are grouped in the source
+object’s EIS record. If you specify only one pair of source and target
+XML fields, this is optional.
+
+If you specify more than one pair of source and target XML fields, this
+is required.
+
+Field Pairs
+
+Click Add to add a pair of source and target XML fields. Specify Field
+Pair dialog box opens. Click Browse to add a foreign key for the Source
+XPath and Target XPath fields.
+
+== Configuring Delete All Interactions
+
+The EclipseLink query and expression framework supports delete all
+queries. If your JCA adapter provides access to an EIS Delete All
+function, you can configure a delete all interaction to support
+EclipseLink delete all queries.
+
+=== How to Configure Delete All Interactions Using Workbench
+
+To specify the DeleteAll interaction for an EIS one-to-many mapping, use
+this procedure:
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *Delete All Interaction* tab. The Delete All Interaction tab
+appears.[#Figure 80-2]## *_Delete All Interaction Tab_*
+image:deletealltab.gif[Delete All Interaction
+Tab,title="Delete All Interaction Tab"]
+. Complete the fields on the Delete All Interaction tab.
+
+Use the following information to enter data in each field on the Delete
+All Interaction tab:
+
+[width="100%",cols="<8%,<92%",options="header",]
+|===
+|*Field* |*Description*
+|*Function Name* |The name of the EIS function that this call type (Read
+Object or Read All) invokes on the EIS.
+
+|*Input Record Name* |The name passed to the JCA adapter when creating
+the input record.
+
+|*Input Root Element Name* |The root element name to use for the input
+DOM.
+
+|*Input Arguments* |The query argument name to map to the interaction
+field or XPath nodes in the argument record. For example, if you are
+using XML records, use this option to map input argument `+name+` to the
+XPath `+name/first-name+`.
+
+|*Output Arguments* |The result record field or XPath nodes to map to
+the correct nodes in the record used by the descriptor’s mappings. For
+example, if you are using XML records, use this option to map the output
+`+fname+` to `+name/first-name+`.Output arguments are not required if
+the interaction returns an XML result that matches the descriptor’s
+mappings.
+
+|*Input Result Path* |Use this option if the EIS interaction expects the
+interaction arguments to be nested in the XML record. For example,
+specify `+arguments+`, if the arguments were to be nested under the root
+element `+exec-find-order+`, then under an `+arguments+` element.
+
+|*Output Result Path* |The name of the EIS function that this call type
+(Read Object or Read All) invokes on the EIS.
+
+|*Properties* |Any properties required by your EIS platform. For
+example, property name `+operation+` (from
+`+AQPlatform.QUEUE_OPERATION+`) and property value `+enqueue+` (from
+`+AQPlatform.ENQUEUE+`).
+|===
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_EIS[Category: EIS]

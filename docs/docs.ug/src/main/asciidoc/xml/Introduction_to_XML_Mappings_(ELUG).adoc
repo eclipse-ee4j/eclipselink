@@ -1,0 +1,2099 @@
+*TOC* Special:Whatlinkshere_Introduction_to_XML_Mappings_(ELUG)[Related
+Topics]
+
+An XML mapping transforms object data members to the XML nodes of an XML
+document whose structure is defined by an XML schema document (XSD).
+
+For information on mapping concepts and features common to more than one
+type of EclipseLink mappings, see
+link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings].
+
+== XML Mapping Types
+
+EclipseLink supports the XML mappings listed in this table
+
+[#Table 58-1]##
+
+Mapping Type
+
+Description
+
+EclipseLink Workbench
+
+Java
+
+XML direct mapping
+
+Map a simple object attribute to an XML attribute or text node.
+
+XML composite direct collection mapping
+
+Map a collection of simple object attributes to XML attributes or text
+nodes.
+
+XML composite object mapping
+
+Map any attribute that contains a single object to an XML element. The
+EclipseLink runtime uses the descriptor for the referenced object to
+populate the contents of that element.
+
+XML composite collection mapping
+
+Map an attribute that contains a homogenous collection of objects to
+multiple XML elements. The EclipseLink runtime uses the descriptor for
+the referenced object to populate the contents of those elements.
+
+XML any object mapping
+
+The any object XML mapping is similar to the composite object XML
+mapping (see XML Composite Object Mapping), except that the reference
+object may be of different types (including String), not necessarily
+related to each other through inheritance or a common interface.
+
+XML any collection mapping
+
+The any collection XML mapping is similar to the composite collection
+XML mapping (see XML Composite Collection Mapping) except that the
+referenced objects may be of different types (including String), not
+necessarily related to each other through inheritance or a common
+interface.
+
+XML transformation mapping
+
+Create custom mappings where one or more XML nodes can be used to create
+the object to be stored in a Java class’s attribute.
+
+XML object reference mapping
+
+Map a given element in an XML document to another element in that same
+XML document using key(s). Use this mapping when several objects
+reference the same instance of another object.
+
+XML collection reference mapping
+
+This mapping is similar to the XML object reference mapping (see XML
+Object Reference mapping), except that it deals with collections instead
+of single objects. Use this mapping when several objects reference the
+same instance of another object.
+
+XML binary data mapping
+
+Handle binary data: this mapping maps binary data in the object model to
+XML. Use this mapping to enable writing of binary data directly as
+inline binary data (base64 BLOB), or passing through as a MtOM or SwaRef
+attachment.
+
+XML binary data collection mapping
+
+This mapping is similar to the XML binary data mapping (see XML Binary
+Data mapping), except that it maps a collection of binary data in the
+object model to XML.
+
+XML fragment mapping
+
+Keep a part of an XML tree as a node.
+
+XML fragment collection mapping
+
+This mapping is similar to the XML fragment mapping (see XML Fragment
+mapping), except that it allows you to keep a part of an XML tree as a
+collection of nodes.
+
+XML choice object mapping
+
+Map a single attribute to a number of different elements in an XML
+document. Use this mapping to map to single choices or substitution
+groups in an XML schema.
+
+XML choice collection mapping
+
+This mapping is similar to the XML choice object mapping (see XML Choice
+Object mapping), except that you use it to handle reading and writing of
+XML documents containing a collection of choice or substitution group
+elements.
+
+XML any attribute mapping
+
+Map to an attribute in an object to any XML attributes contained on a
+specific element in the XML document.
+
+== XML Mapping Concepts
+
+You can map the attributes of a Java object to a combination of XML
+simple and complex types using a wide variety of XML mapping types.
+
+EclipseLink stores XML mappings for each class in the class descriptor.
+EclipseLink uses the descriptor to instantiate objects mapped from an
+XML document and to store new or modified objects as an XML document.
+
+To configure XML mappings, we recommend that you use the Workbench to
+set the descriptor properties and configure the mappings.
+
+This section describes concepts unique to EclipseLink XML mappings,
+including the following:
+
+* link:#Mapping_to_Simple_and_Complex_Types[Mapping to Simple and
+Complex Types]
+* link:#Mapping_Order[Mapping Order]
+* link:#XPath_Support[Path Support]
+* #xsd:list_and_xsd:union_Support[xsd:list and xsd:union Support]
+* #xs:any_and_xs:anyType_Support[xs:any and xs:anyType Support]
+* #jaxb:class_Support[jaxb:class Support]
+* link:#Typesafe_Enumeration_Support[Typesafe Enumeration Support]
+* link:#Mapping_Extensions[Mapping Extensions]
+* link:#Substitution_Groups[Substitution Groups]
+* link:#Mixed_Content_Mapping[Mixed Content Mapping]
+* link:#Key_On_Source-Based_Mapping_Support[Key On Source-Based Mapping
+Support]
+* link:#XML_Adapter[XML Adapter]
+
+=== Mapping to Simple and Complex Types
+
+Consider the XML document shown in this example:
+
+[#Example 58-1]## *_XML Document_*
+
+`+    +``+Jane Doe+` `+    +`
+
+`+        +``+123 Any St.+` `+        +``+MyCity+` `+    +`
+
+In general, using EclipseLink XML mappings, you can map a Java class to
+a simple type (such as `+NAME+`) or to a complex type (such as
+`+ADDRESS+`).
+
+Specifically, you can map a Java object’s simple attributes to XML
+attributes (such as `+ID+`) and text nodes (such as `+NAME+`). You can
+also map a Java object’s relationships to XML elements (such as
+`+ADDRESS+`).
+
+This table summarizes the XML simple and complex types supported by each
+EclipseLink XML mapping.
+
+[#Table 58-2]## *_XML Mapping Support for XML Simple and Complex Types_*
+
+Mapping
+
+XML Attribute
+
+XML Text Node
+
+XML Element
+
+XML direct
+
+XML composite direct collection
+
+XML composite object
+
+XML composite collection
+
+XML any object
+
+XML any collection
+
+XML transformation
+
+XML object reference
+
+XML collection reference
+
+XML binary data
+
+XML binary data collection
+
+XML fragment collection
+
+XML fragment collection
+
+XML choice collection
+
+XML choice collection
+
+XML any attribute
+
+=== Mapping Order
+
+Unlike relational database mappings, the order in which mappings are
+persisted in XML is significant.
+
+The order in which you define XML mappings in EclipseLink (whether in
+the Workbench or in Java code) including the order in which you define
+mapping components such as `+Transformers+` (see
+link:#XML_Transformation_Mapping[XML Transformation Mapping]) is
+reflected in the order, in which EclipseLink persists data in an XML
+document.
+
+=== XPath Support
+
+EclipseLink uses XPath statements to efficiently map the attributes of a
+Java object to locations in an XML document.
+
+The following are main characteristics of XPath:
+
+* Each XPath statement is relative to the context node specified in the
+descriptor.
+* The XPath may contain node type, path, and positional information.
+* The XPath is specified on a mapping using the setXPath method.
+
+For more information about using XPath with XML mappings, see
+link:Introduction%20to%20Mappings%20(ELUG)#Mappings_and_XPath[Mappings
+and XPath].
+
+=== xsd:list and xsd:union Support
+
+You can use XML direct (see link:#XML_Direct_Mapping[XML Direct
+Mapping]) and composite direct collection (see
+link:#XML_Composite_Direct_Collection_Mapping[XML Composite Direct
+Collection Mapping]) mappings, as well as their subclasses, to map to
+`+xsd:list+` and `+xsd:union+` types in an XML document.
+
+For more information, see
+Introduction%20to%20Mappings%20(ELUG)#Mappings_and_xsd:list_and_xsd:union_Types[Mappings
+and xsd:list and xsd:union Types].
+
+=== xs:any and xs:anyType Support
+
+In an XML schema, you can define elements and complex types that
+correspond to any data type using `+xs:any+` and `+xs:anyType+`. You can
+map objects to such elements and complex types using XML mappings
+`+XMLAnyObjectMapping+` and `+XMLAnyCollectionMapping+`.
+
+This table lists the XML mappings to use with common applications of
+`+xs:any+` and `+xs:anyType+`. For more details, see the specified XML
+mapping type.
+
+[#Table 58-3]## *_XML Mappings and XML Schema xs:any and xs:anyType_*
+
+Use XML Mapping…
+
+To Map XML Schema Definition…
+
+XML Any Object Mapping
+
+Element with a single 1 unnamed complex type specified as xs:any.
+
+XML Any Collection Mapping
+
+Element with an unnamed sequence 2 of complex types specified as xs:any.
+
+Element with a named sequence 2 of complex types of type xs:anyType.Root
+element of type xs:anyType.
+
+1`+minOccurs+` and `+maxOccurs+` are both equal to 1. 2`+maxOccurs+` is
+greater than 1.
+
+=== jaxb:class Support
+
+You can configure an XML composite object mapping (see
+link:#XML_Composite_Object_Mapping[XML Composite Object Mapping]) and
+its subclasses to accommodate `+jaxb:class+` customizations with the
+following XSD structures:
+
+* `+all+`
+* `+sequence+`
+* `+choice+`
+* `+group+`
+
+For more information, see
+Introduction%20to%20Mappings%20(ELUG)#Mappings_and_the_jaxb:class_Customization[Mappings
+and the jaxb:class Customization].
+
+=== Typesafe Enumeration Support
+
+You can map a Java attribute to such a typesafe enumeration using the
+`+JAXBTypesafeEnumConverter+` with an `+XMLDirectMapping+`,
+`+XMLCompositeDirectCollectionMapping+` or their subclasses with XML
+documents.
+
+For more information, see
+link:Introduction%20to%20Mappings%20(ELUG)#Mappings_and_JAXB_Typesafe_Enumerations[Mappings
+and JAXB Typesafe Enumerations]
+
+=== Mapping Extensions
+
+If existing EclipseLink XML mappings do not meet your needs, you can
+create custom XML mappings using XML mapping extensions, including
+object type, serialized object, type conversion converters, and a simple
+type translator. For more information, see
+link:Introduction%20to%20Mappings%20(ELUG)#Mapping_Converters_and_Transformers[Mapping
+Converters and Transformers].
+
+=== Key On Source-Based Mapping Support
+
+EclipseLink XML support for key on source-based mapping lets you use
+one-to-one and one-to-many mappings to map a given element in an XML
+document to another element in that same XML document using key(s).
+
+You use this mapping when several objects reference the same instance of
+another object.
+
+Use the
+link:#XML_Object_Reference_Mapping[`+org.eclipselink.persistence.ox.mappings.XMLObjectReferenceMapping+`]
+and
+link:#XML_Collection_Reference_Mapping[`+XMLCollectionReferenceMapping+`]
+for the key on source.
+
+You configure this mappings using the deployment XML and a project
+class.
+
+=== Substitution Groups
+
+Substitution groups is a mechanism provided by the XML schema. Using
+substitution groups, you can substitute elements for other elements. For
+more information, see _XML Schema Primer_ at
+http://www.w3.org/TR/2001/REC-xmlschema-0-20010502/#SubsGroups.
+
+Use EclipseLink
+link:#XML_Choice_Object_Mapping[`+XMLChoiceObjectMapping+`] and
+link:#XML_Choice_Collection_Mapping[`+XMLChoiceCollectionMapping+`] to
+handle substitution groups.
+
+JAXB handles substitution groups with the following annotations, for
+which EclipseLink provides support:
+
+* `+XmlElementRef+` - the use of this annotation has a number of
+constrains. For more information, see _JAXB 2.0 API Reference_ at
+https://jaxb.dev.java.net/nonav/jaxb20-pfd/api/index.html
+* `+XmlElementRefs+` - this annotation contains one of more
+`+XmlElementRef+` annotations.
+
+Through the use of the
+`+org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter+`,
+EclipseLink enables the
+link:Introduction%20to%20XML%20Projects%20(ELUG)#How_to_Use_JAXBElement[`+JAXBElement+`]
+and the `+org.eclipse.persistence.oxm.XMLRoot+` to act not only like
+root-level elements, but child elements.
+
+=== Mixed Content Mapping
+
+To handle mixed content, such as reading in text nodes as strings, use
+EclipseLink
+link:#XML_Any_Collection_Mapping[`+XMLAnyCollectionMapping+`]. Enable
+this functionality through the `+setMixedContent+` method.
+
+=== XML Adapter
+
+EclipseLink supports the use of the
+`+javax.xml.bind.annotation.adapters.XmlAdapter<ValueType,BoundType>+`
+and its subclasses, which allow for arbitrary Java classes to be used
+with JAXB.
+
+The `+XmlAdapter+` enables adaptation of a Java type for custom
+marshaling through its `+marshal+` and `+unmarshal+` methods.
+
+For more information, refer to JAXB 2.0 Specification at
+https://jaxb.dev.java.net/nonav/jaxb20-pfd/api/index.html
+
+== XML Direct Mapping
+
+XML direct mappings map a Java attribute directly to XML text nodes. You
+can use an XML direct mapping in the following scenarios:
+
+* link:#Mapping_to_a_Text_Node[Mapping to a Text Node]
+* link:#Mapping_to_an_Attribute[Mapping to an Attribute]
+* link:#Mapping_to_a_Specified_Schema_Type[Mapping to a Specified Schema
+Type]
+* link:#Mapping_to_a_List_Field_with_an_XML_Direct_Mapping[Mapping to a
+List Field with an XML Direct Mapping]
+* link:#Mapping_to_a_Union_Field_with_an_XML_Direct_Mapping[Mapping to a
+Union Field with an XML Direct Mapping]
+* link:#Mapping_to_a_Union_of_Lists_with_an_XML_Direct_Mapping[Mapping
+to a Union of Lists with an XML Direct Mapping]
+* link:#Mapping_to_a_Union_of_Unions_with_an_XML_Direct_Mapping[Mapping
+to a Union of Unions with an XML Direct Mapping]
+* link:#Mapping_with_a_Simple_Type_Translator[Mapping with a Simple Type
+Translator]
+
+See link:Configuring%20an%20XML%20Direct%20Mapping%20(ELUG)[Configuring
+an XML Direct Mapping] for more information.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Do not confuse an XML direct mapping with a relational
+direct-to-`+XMLType+` mapping (see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-XMLType_Mapping[Direct-to-XMLType
+Mapping]).
+|===
+
+=== Mapping to a Text Node
+
+This section describes using an XML direct mapping when doing the
+following:
+
+* link:#Mapping_to_a_Simple_Text_Node[Mapping to a Simple Text Node]
+* link:#Mapping_to_a_Text_Node_in_a_Simple_Sequence[Mapping to a Text
+Node in a Simple Sequence]
+* link:#Mapping_to_a_Text_Node_in_a_Subelement[Mapping to a Text Node in
+a Subelement]
+* link:#Mapping_to_a_Text_Node_by_Position[Mapping to a Text Node by
+Position]
+
+==== Mapping to a Simple Text Node
+
+Given the XML schema in the link:#Example_58-2[Schema for XML Direct
+Mapping to Simple Text Node] example, the link:#Figure_58-1[XML Direct
+Mapping to Simple Text Node] figure illustrates an XML direct mapping to
+a simple text node in a corresponding XML document. The
+link:#Example_58-3[Java for XML Direct Mapping to Simple Text Node]
+example shows how to configure this mapping in Java.
+
+[#Example 58-2]## *_Schema for XML Direct Mapping to Simple Text Node_*
+
+`+    +`
+
+[#Figure 58-1]## *_XML Direct Mapping to Simple Text Node_*
+
+.XML Direct Mapping to Simple Text Node
+image::dxmstn.gif[XML Direct Mapping to Simple Text
+Node,title="XML Direct Mapping to Simple Text Node"]
+
+[#Example 58-3]## *_Java for XML Direct Mapping to Simple Text Node_*
+
+`+XMLDirectMapping numberMapping = new XMLDirectMapping();+`
+`+numberMapping.setAttributeName("number");+`
+`+numberMapping.setXPath("text()");+`
+
+==== Mapping to a Text Node in a Simple Sequence
+
+Given the XML schema in the link:#Example_58-4[Schema for XML Direct
+Mapping to a Text Node in a Simple Sequence] example, the
+link:#Figure_58-2[XML Direct Mapping to a Text Node in a Simple
+Sequence] figure illustrates an XML direct mapping to individual text
+nodes in a sequence in a corresponding XML document. The
+link:#Example_58-5[Java for XML Direct Mapping to a Text Node in a
+Simple Sequence] example shows how to configure this mapping in Java.
+
+[#''Example 58-4]## *Schema for XML Direct Mapping to a Text Node in a
+Simple Sequence*’’
+
+`+    +` `+    +` `+        +` `+            +` `+            +`
+`+        +`
+
+`+    +`
+
+[#Figure 58-2]## *_XML Direct Mapping to a Text Node in a Simple
+Sequence_*
+
+.XML Direct Mapping to a Text Node in a Simple Sequence
+image::dxmss.gif[XML Direct Mapping to a Text Node in a Simple
+Sequence,title="XML Direct Mapping to a Text Node in a Simple Sequence"]
+
+[#Example 58-5]## *_Java for XML Direct Mapping to a Text Node in a
+Simple Sequence_*
+
+`+XMLDirectMapping firstNameMapping = new XMLDirectMapping();+`
+`+firstNameMapping.setAttributeName("firstName");+`
+`+firstNameMapping.setXPath("first-name/text()");+`
+
+`+XMLDirectMapping lastNameMapping = new XMLDirectMapping();+`
+`+lastNameMapping.setAttributeName("lastName");+`
+`+lastNameMapping.setXPath("last-name/text()");+`
+
+==== Mapping to a Text Node in a Subelement
+
+Given the XML schema in the link:#Example_58-6[Schema for XML Direct
+Mapping to a Text Node in a Subelement] example, the
+link:#Figure_58-3[XML Direct Mapping to a Text Node in a Subelement]
+figure illustrates an XML direct mapping to a text node in a subelement
+in a corresponding XML document. The link:#Example_58-7[Java for XML
+Direct Mapping to a Text Node in a Subelemen] example shows how to
+configure this mapping in Java.
+
+[#Example 58-6]## *_Schema for XML Direct Mapping to a Text Node in a
+Subelement_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+                +` `+                    +`
+`+                        +` `+                        +`
+`+                    +`
+
+`+                +` `+            +` `+        +` `+    +`
+
+[#Figure 58-3]## *_XML Direct Mapping to a Text Node in a Subelement_*
+
+.XML Direct Mapping to a Text Node in a Subelement
+image::dxmse.gif[XML Direct Mapping to a Text Node in a
+Subelement,title="XML Direct Mapping to a Text Node in a Subelement"]
+
+[#Example 58-7]## *_Java for XML Direct Mapping to a Text Node in a
+Subelement_*
+
+`+XMLDirectMapping firstNameMapping = new XMLDirectMapping();+`
+`+firstNameMapping.setAttributeName("firstName");+`
+`+firstNameMapping.setXPath("personal-info/first-name/text()");+`
+
+`+XMLDirectMapping lastNameMapping = new XMLDirectMapping();+`
+`+lastNameMapping.setAttributeName("lastName");+`
+`+lastNameMapping.setXPath("personal-info/last-name/text()");+`
+
+==== Mapping to a Text Node by Position
+
+Given the XML schema in the link:#Example_58-8[Schema for XML Direct
+Mapping to Text Node by Position] exampple, the link:#Figure_58-4[XML
+Direct Mapping to Text Node by Position] figure illustrates an XML
+direct mapping to a text node by position in a corresponding XML
+document. The link:#Example_58-9[Java for XML Direct Mapping to Text
+Node by Position] example shows how to configure this mapping in Java.
+
+[#Example 58-8]## *’ Schema for XML Direct Mapping to Text Node by
+Position*’’
+
+`+    +` `+    +` `+        +` `+            +` `+        +`
+
+`+    +`
+
+[#Figure 58-4]## *_XML Direct Mapping to Text Node by Position_*
+
+.XML Direct Mapping to Text Node by Position
+image::dxmpos.gif[XML Direct Mapping to Text Node by
+Position,title="XML Direct Mapping to Text Node by Position"]
+
+[#Example 58-9]## *’ Java for XML Direct Mapping to Text Node by
+Position*’’
+
+`+XMLDirectMapping firstNameMapping = new XMLDirectMapping();+`
+`+firstNameMapping.setAttributeName("firstName");+`
+`+firstNameMapping.setXPath("name[1]/text()");+`
+
+`+XMLDirectMapping lastNameMapping = new XMLDirectMapping();+`
+`+lastNameMapping.setAttributeName("lastName");+`
+`+lastNameMapping.setXPath("name[2]/text()");+`
+
+=== Mapping to an Attribute
+
+Given the XML schema in this example, the link:#Figure_58-5[XML Direct
+Mapping to an Attribute] figure illustrates an XML direct mapping to a
+text node by position in a corresponding XML document. The
+link:#Example_58-11[Java for XML Direct Mapping to an Attribute]
+exampple shows how to configure this mapping in Java.
+
+*_Schema for XML Direct Mapping to an Attribute_*
+
+`+    +` `+    +` `+        +` `+    +`
+
+[#Figure 58-5]## *_XML Direct Mapping to an Attribute_*
+
+.XML Direct Mapping to an Attribute
+image::dxmatt.gif[XML Direct Mapping to an
+Attribute,title="XML Direct Mapping to an Attribute"]
+
+[#Example 58-11]## *_Java for XML Direct Mapping to an Attribute_*
+
+`+XMLDirectMapping idMapping = new XMLDirectMapping();+`
+`+idMapping.setAttributeName("id");+` `+idMapping.setXPath("@id");+`
+
+=== Mapping to a Specified Schema Type
+
+In most cases, EclipseLink can determine the target format in the XML
+document. However, there are cases where you must specify which one of a
+number of possible targets EclipseLink should use. For example, a
+`+java.util.Calendar+` could be marshalled to a schema `+date+`,
+`+time+`, or `+dateTime+` node, or a `+byte[]+` could be marshalled to a
+schema `+hexBinary+` or `+base64Binary+` node.
+
+Given the XML schema in this exmaple, the link:#Figure_58-6[XML Direct
+Mapping to a Specified Schema Type] figure illustrates an XML direct
+mapping to a text node by position in a corresponding XML document. The
+link:#Example_58-13[Java for XML Direct Mapping to a Specified Schema
+Type] example shows how to configure this mapping in Java.
+
+[#Example 58-12]## *_Schema for XML Direct Mapping to a Specified Schema
+Type_*
+
+`+    +` `+    +` `+        +` `+            +` `+            +`
+`+        +`
+
+`+    +`
+
+[#Figure 58-6]## *_XML Direct Mapping to a Specified Schema Type_*
+
+.XML Direct Mapping to a Specified Schema Type
+image::dxmscht.gif[XML Direct Mapping to a Specified Schema
+Type,title="XML Direct Mapping to a Specified Schema Type"]
+
+[#Example 58-13]## *_Java for XML Direct Mapping to a Specified Schema
+Type_*
+
+`+XMLDirectMapping pictureMapping = new XMLDirectMapping();+`
+`+pictureMapping.setAttributeName("picture");+`
+`+pictureMapping.setXPath("picture/text()");+`
+`+XMLField pictureField = (XMLField) pictureMapping.getField();+`
+`+pictureField.setSchemaType(XMLConstants.HEX_BINARY_QNAME);+`
+
+`+XMLDirectMapping resumeMapping = new XMLDirectMapping();+`
+`+resumeMapping.setAttributeName("resume");+`
+`+resumeMapping.setXPath("resume/text()");+`
+`+XMLField resumeField = (XMLField) resumeMapping.getField();+`
+`+resumeField.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);+`
+
+=== Mapping to a List Field with an XML Direct Mapping
+
+Given the XML schema in this exmaple, the link:#Figure_58-7[XMLDirect
+Mapping to a List Field] figure illustrates an XML direct mapping to an
+`+xsd:list+` type in a corresponding XML document when you represent the
+list in your object model as a `+String+` of white space delimited
+tokens. The link:#Example_58-15[Java for XML Direct Mapping to a List
+Field Node] example shows how to configure this mapping in Java.
+
+[#Example 58-14]## *_Schema for XML Direct Mapping to a List Field_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+        +` `+    +` `+    +` `+        +` `+    +`
+
+[#Figure 58-7]## *_XMLDirect Mapping to a List Field_*
+
+.XMLDirect Mapping to a List Field
+image::dcxmstn.gif[XMLDirect Mapping to a List
+Field,title="XMLDirect Mapping to a List Field"]
+
+[#Example 58-15]## *_Java for XML Direct Mapping to a List Field Node_*
+
+`+XMLDirectMapping tasksMapping = new XMLDirectMapping();+`
+`+tasksMapping.setAttributeName("tasks");+`
+`+XMLField myField = new XMLField("tasks/text()"); +`*`+//\'\' \'\'pass\'\' \'\'in\'\' \'\'the\'\' \'\'XPath+`*
+
+`+myField.setUsesSingleNode(true);+` `+tasksMapping.setField(myField);+`
+
+=== Mapping to a Union Field with an XML Direct Mapping
+
+Given the XML schema in the link:#Example_58-16[Schema for XML Direct
+Mapping to a Union Field] example, the link:#Figure_58-8[Java Class for
+XML Direct Mapping to a Union Field] figure illustrates a Java class
+that can be mapped to a corresponding XML document. Note the
+`+shoeSize+` attribute in this class: when using a union field, the
+corresponding attribute must be able to store all possible values.
+
+[#Example 58-16]## *_Schema for XML Direct Mapping to a Union Field_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+        +` `+    +` `+    +` `+        +` `+    +`
+
+[#Figure 58-8]## *_Java Class for XML Direct Mapping to a Union Field_*
+
+.Java Class for XML Direct Mapping to a Union Field
+image::dxmuc.gif[Java Class for XML Direct Mapping to a Union
+Field,title="Java Class for XML Direct Mapping to a Union Field"]
+
+The link:#Figure_58-9[XML Direct Mapping to the First Valid Union Type]
+figure illustrates an XML direct mapping to a union field in an XML
+document that conforms to the schema in the link:#Example_58-16[Schema
+for XML Direct Mapping to a Union Field] example. When EclipseLink
+unmarshalls the XML document, it tries each of the union types until it
+can make a successful conversion. The first schema type in the union is
+`+xsd:decimal+`. Because "`10.5`" is a valid decimal, EclipseLink
+converts the value to the appropriate type. If the `+Object+` attribute
+is specific enough to trigger an appropriate value, EclipseLink will use
+that type instead. Otherwise, EclipseLink uses a default (in this case
+`+BigDecimal+`). You can override this behavior in Java code.
+
+[#Figure 58-9]## *_XML Direct Mapping to the First Valid Union Type_*
+
+.XML Direct Mapping to the First Valid Union Type
+image::dxmuv.gif[XML Direct Mapping to the First Valid Union
+Type,title="XML Direct Mapping to the First Valid Union Type"]
+
+The link:#Figure_58-10[XML Direct Mapping to Another Valid Union Type]
+figure illustrates an XML direct mapping to union field in another XML
+document that conforms to the schema in link:#Example_58-16[Schema for
+XML Direct Mapping to a Union Field]. In this document, the value "`M`"
+is not a valid `+xsd:decimal+` type so the next union type is tried. The
+next union type is `+xsd:string+` and a conversion can be done.
+
+[#Figure 58-10]## *_XML Direct Mapping to Another Valid Union Type_*
+
+.XML Direct Mapping to Another Valid Union Type
+image::dxmuvs.gif[XML Direct Mapping to Another Valid Union
+Type,title="XML Direct Mapping to Another Valid Union Type"]
+
+This example shows how to configure this mapping in Java.
+
+[#Example 58-17]## *_Java for XML Direct Mapping to a Union Type_*
+
+`+XMLDirectMapping shoeSizeMapping = new XMLDirectMapping();+`
+`+shoeSizeMapping.setAttributeName("shoeSize");+`
+`+XMLUnionField shoeSizeField = new XMLUnionField();+`
+`+shoeSizeField.setXPath("shoe-size/text()");+`
+`+shoeSizeField.addSchemaType(XMLConstants.DECIMAL_QNAME);+`
+`+shoeSizeField.addSchemaType(XMLConstants.STRING_QNAME);+`
+`+shoeSizeMapping.setField(shoeSizeField);+`
+
+To override the default conversion, use the `+XMLUnionField+` method
+`+addConversion+`:
+
+`+shoeSizeField.addConversion(XMLConstants.DECIMAL_QNAME, Float.class);+`
+
+=== Mapping to a Union of Lists with an XML Direct Mapping
+
+Given the XML schema in link:#Example_58-18[Schema for XML Direct
+Mapping to Union of Lists], the link:#Figure_58-11[XML Direct Mapping to
+Union of Lists] figure illustrates an XML direct mapping to a union of
+lists in a corresponding XML document. The link:#Example_58-19[Java for
+XML Direct Mapping to Union of Lists] example shows how to configure
+this mapping in Java.
+
+[#Example 58-18]## *_Schema for XML Direct Mapping to Union of Lists_*
+
+`+    +` `+    +` `+        +` `+            +` `+                +`
+`+            +`
+
+`+            +` `+                +` `+            +` `+        +`
+`+    +`
+
+[#'Figure 58-11]## *_XML Direct Mapping to Union of Lists_*
+
+.XML Direct Mapping to Union of Lists
+image::dxuofl.gif[XML Direct Mapping to Union of
+Lists,title="XML Direct Mapping to Union of Lists"]
+
+Note that in this example, valid XML documents contain either all
+`+xsd:double+`, all `+xsd:date+`, or all `+xsd:integer+` values.
+
+[#Example 58-19]## *_Java for XML Direct Mapping to Union of Lists_*
+
+`+XMLDirectMapping mapping = new XMLDirectMapping();+`
+`+mapping.setAttributeName("vacation");+`
+`+mapping.setXPath("UnionOfLists/text()");+`
+
+=== Mapping to a Union of Unions with an XML Direct Mapping
+
+Given the XML schema in the link:#Example_58-20[Schema for XML Direct
+Mapping to a Union of Unions] example, the link:#Figure_58-12[Java Class
+for XML Direct Mapping to a Union of Unions] figure illustrates a Java
+class that can be mapped to a corresponding XML document. The
+link:#Example_58-21[Java for XML Direct Mapping to a Union of Unions]
+example shows how to configure this mapping in Java.
+
+[#Example 58-20]## *_Schema for XML Direct Mapping to a Union of
+Unions_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+                +` `+                    +`
+`+                        +` `+                    +`
+`+                    +`
+
+`+                        +` `+                    +`
+`+                +` `+            +` `+            +`
+`+                +`
+
+`+                    +` `+                        +`
+`+                    +` `+                    +`
+`+                        +` `+                    +`
+
+`+                +` `+            +` `+        +` `+    +`
+
+[#Figure 58-12]## *_Java Class for XML Direct Mapping to a Union of
+Unions_*
+
+.Java Class for XML Direct Mapping to a Union of Unions
+image::dxuofu.gif[Java Class for XML Direct Mapping to a Union of
+Unions,title="Java Class for XML Direct Mapping to a Union of Unions"]
+
+[#Example 58-21]## *_Java for XML Direct Mapping to a Union of Unions_*
+
+`+XMLDirectMapping vacationMapping = new XMLDirectMapping();+`
+`+vacationMapping.setAttributeName("vacation");+`
+`+XMLUnionField vacationField = new XMLUnionField();+`
+`+vacationField.setXPath("vacation/text()");+`
+`+vacationField.addSchemaType(XMLConstants.DATE_QNAME);+`
+`+vacationField.addSchemaType(XMLConstants.INTEGER_QNAME);+`
+`+vacationField.addSchemaType(XMLConstants.STRING_QNAME);+`
+`+vacationField.addSchemaType(XMLConstants.FLOAT_QNAME);+`
+`+vacationMapping.setField(vacationField);+`
+
+=== Mapping with a Simple Type Translator
+
+If the type of a node is not defined in your XML schema, you can
+configure an XML direct mapping to use the `+xsi:type+` attribute to
+provide type information.
+
+Given the XML schema fragment in the link:#Example_58-22[Schema for XML
+Direct Mapping with Simple Type Translator] example, the
+link:#Figure_58-13[Java Class for XML Direct Mapping with Simple Type
+Translator] figure illustrates a Java class that can be mapped to a
+corresponding XML document.
+
+[#Example 58-22]## *_Schema for XML Direct Mapping with Simple Type
+Translator_*
+
+`+...+` `+    +` `+    +` `+...+`
+
+[#Figure 58-13]## *_Java Class for XML Direct Mapping with Simple Type
+Translator_*
+
+.Java Class for XML Direct Mapping with Simple Type Translator
+image::dxmsttc.gif[Java Class for XML Direct Mapping with Simple Type
+Translator,title="Java Class for XML Direct Mapping with Simple Type Translator"]
+
+The following figure illustrates an XML direct mapping with a simple
+type translator in an XML document that conforms to the schema in the
+link:#Example_58-22[Schema for XML Direct Mapping with Simple Type
+Translator] example.
+
+[#Figure 58-14]## *_XML Direct Mapping with a Simple Type Translator_*
+
+.XML Direct Mapping with a Simple Type Translator
+image::dxmsttm.gif[XML Direct Mapping with a Simple Type
+Translator,title="XML Direct Mapping with a Simple Type Translator"]
+
+This example shows how to configure this mapping in Java.
+
+[#Example 58-23]## *_Java for XML Direct Mapping with Simple Type
+Translator_*
+
+`+XMLDirectMapping numberMapping = new XMLDirectMapping();+`
+`+numberMapping.setAttributeName("number");+`
+`+numberMapping.setXPath("number/text()");+`
+`+XMLField numberField = (XMLField) numberMapping.getField();+`
+`+numberField.setIsTypedTextField(true);+`
+
+For more information, see
+link:Introduction%20to%20Mappings%20(ELUG)#Simple_Type_Translator[Simple
+Type Translator].
+
+== XML Composite Direct Collection Mapping
+
+XML composite direct collection mappings map a Java collection of simple
+object attributes to XML attributes and text nodes. Use multiplicity
+settings to specify an element as a collection. The XML schema allows
+you to define minimum and maximum occurrences. You can use a composite
+direct collection XML mapping in the following scenarios:
+
+* link:#Mapping_to_Multiple_Text_Nodes[Mapping to Multiple Text Nodes]
+* link:#Mapping_to_Multiple_Attributes[Mapping to Multiple Attributes]
+* link:#Mapping_to_a_Single_Text_Node_with_an_XML_Composite_Direct_Collection_Mapping[Mapping
+to a Single Text Node with an XML Composite Direct Collection Mapping]
+* link:#Mapping_to_a_Single_Attribute_with_an_XML_Composite_Direct_Collection_Mapping[Mapping
+to a Single Attribute with an XML Composite Direct Collection Mapping]
+* link:#Mapping_to_a_List_of_Unions_with_an_XML_Composite_Direct_Collection_Mapping[Mapping
+to a List of Unions with an XML Composite Direct Collection Mapping]
+* link:#Mapping_to_a_Union_of_Lists_with_an_XML_Composite_Direct_Collection_Mapping[Mapping
+to a Union of Lists with an XML Composite Direct Collection Mapping]
+* link:#Specifying_the_Content_Type_of_a_Collection_with_an_XML_Composite_Direct_Collection_Mapping[Specifying
+the Content Type of a Collection with an XML Composite Direct Collection
+Mapping]
+
+See
+link:Configuring%20an%20XML%20Composite%20Direct%20Collection%20Mapping%20(ELUG)[Configuring
+an XML Composite Direct Collection Mapping] for more information.
+
+=== Mapping to Multiple Text Nodes
+
+This section describes using a composite direct collection XML mapping
+when:
+
+* link:#Mapping_to_a_Simple_Sequence[Mapping to a Simple Sequence]
+* link:#Mapping_to_a_Sequence_in_a_Subelement[Mapping to a Sequence in a
+Subelement]
+
+==== Mapping to a Simple Sequence
+
+Given the XML schema in the link:#Example_58-24[Schema for Composite
+Direct Collection XML Mapping to a Simple Sequence] example, the
+link:#Figure_58-15[Composite Direct Collection XML Mapping to a Simple
+Sequence] figure illustrates a composite direct collection XML mapping
+to a simple sequence of text nodes in a corresponding XML document.
+link:#Example_58-25[Java for Composite Direct Collection XML Mapping to
+a Simple Sequence] shows how to configure this mapping in Java.
+
+[#Example 58-24]## *_Schema for Composite Direct Collection XML Mapping
+to a Simple Sequence_*
+
+`+    +` `+    +` `+        +` `+            +` `+        +`
+
+`+    +`
+
+[#Figure 58-15]## *_Composite Direct Collection XML Mapping to a Simple
+Sequence_*
+
+.Composite Direct Collection XML Mapping to a Simple Sequence
+image::dcxmss.gif[Composite Direct Collection XML Mapping to a Simple
+Sequence,title="Composite Direct Collection XML Mapping to a Simple Sequence"]
+
+[#Example 58-25]## *_Java for Composite Direct Collection XML Mapping to
+a Simple Sequence_*
+
+`+XMLCompositeDirectCollectionMapping tasksMapping = new XMLCompositeDirectCollectionMapping();+`
+`+tasksMapping.setAttributeName("tasks");+`
+`+tasksMapping.setXPath("task/text()");+`
+
+==== Mapping to a Sequence in a Subelement
+
+Given the XML schema in this example, the link:#Figure_58-16[Composite
+Direct Collection XML Mapping to a Subelement Sequence] figure
+illustrates a composite direct collection XML mapping to a sequence of
+text nodes in a subelement in a corresponding XML document. The
+link:#Example_58-27[Java for Composite Direct Collection XML Mapping to
+a Subelement Sequence] shows how to configure this mapping in Java.
+
+[#Example 58-26]## *_Schema for Composite Direct Collection XML Mapping
+to a Subelement Sequence_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+                +` `+                    +`
+`+                        +` `+                    +`
+`+                +`
+
+`+            +` `+        +` `+    +`
+
+[#Figure 58-16]## *_Composite Direct Collection XML Mapping to a
+Subelement Sequence_*
+
+.Composite Direct Collection XML Mapping to a Subelement Sequence
+image::dcxmsub.gif[Composite Direct Collection XML Mapping to a
+Subelement
+Sequence,title="Composite Direct Collection XML Mapping to a Subelement Sequence"]
+
+[#Example 58-27]## *_Java for Composite Direct Collection XML Mapping to
+a Subelement Sequence_*
+
+`+XMLCompositeDirectCollectionMapping tasksMapping = new XMLCompositeDirectCollectionMapping();+`
+`+tasksMapping.setAttributeName("tasks");+`
+`+tasksMapping.setXPath("tasks/task/text()");+`
+
+=== Mapping to Multiple Attributes
+
+Given the XML schema in the following example, the
+link:#Figure_58-17[Composite Direct Collection XML Mapping to Multiple
+Attributes] figure illustrates a composite direct collection XML mapping
+to a sequence of text nodes in a subelement in a corresponding XML
+document. The link:#Example_58-29[Java for Composite Direct Collection
+XML Mapping to Multiple Attributes] exampleshows how to configure this
+mapping in Java.
+
+[#Example 58-28]## *_Schema for Composite Direct Collection XML Mapping
+to Multiple Attributes_*
+
+`+    +` `+    +` `+        +` `+            +` `+                +`
+`+                    +`
+
+`+                +` `+            +` `+        +` `+    +`
+
+[#Figure 58-17]## *_Composite Direct Collection XML Mapping to Multiple
+Attributes_*
+
+image:dcxmma.gif[Description of Figure 58-17
+follows,title="Description of Figure 58-17 follows"]
+[img_text/dcxmma.htm Description of "`Figure 58-17 Composite Direct
+Collection XML Mapping to Multiple Attributes`"]
+
+[#Example 58-29]## *_Java for Composite Direct Collection XML Mapping to
+Multiple Attributes_*
+
+`+XMLCompositeDirectCollectionMapping tasksMapping = new XMLCompositeDirectCollectionMapping();+`
+`+tasksMapping.setAttributeName("tasks/@task");+`
+`+tasksMapping.setXPath("task/text()");+`
+
+=== Mapping to a Single Text Node with an XML Composite Direct Collection Mapping
+
+When you map a collection to a single node, the contents of the node is
+treated as a space-separated list.
+
+Given the XML schema in this example, the link:#Figure_58-18[XML
+Composite Direct Collection Mapping to a Single Text Node] figur
+eillustrates a composite direct collection XML mapping to a single text
+node in a corresponding XML document. The link:#Example_58-31[Java for
+XML Composite Direct Collection Mapping to a Single Text Node] example
+shows how to configure this mapping in Java.
+
+[#Example 58-30]## *_Schema for XML Composite Direct Collection Mapping
+to a Single Text Node_*
+
+`+    +` `+    +` `+        +` `+            +`
+
+`+        +` `+    +` `+    +` `+        +` `+    +`
+
+[#Figure 58-18]## *_XML Composite Direct Collection Mapping to a Single
+Text Node_*
+
+.XML Composite Direct Collection Mapping to a Single Text Node
+image::dcxmstn.gif[XML Composite Direct Collection Mapping to a Single
+Text
+Node,title="XML Composite Direct Collection Mapping to a Single Text Node"]
+
+[#Example 58-31]## *_Java for XML Composite Direct Collection Mapping to
+a Single Text Node_*
+
+`+XMLCompositeDirectCollectionMapping tasksMapping = new XMLCompositeDirectCollectionMapping();+`
+`+tasksMapping.setAttributeName("tasks");+`
+`+tasksMapping.setXPath("tasks/text()");+`
+`+tasksMapping.setUsesSingleNode(true);+`
+
+=== Mapping to a Single Attribute with an XML Composite Direct Collection Mapping
+
+Given the XML schema in this example, the link:#Figure_58-19[XML
+Composite Direct Collection Mapping to a Single Attribute] figure
+illustrates a composite direct collection XML mapping to a single
+attribute in a corresponding XML document. The link:#Example_58-33[Java
+for XML Composite Direct Collection Mapping to a Single Attribute]
+example shows how to configure this mapping in Java.
+
+[#Example 58-32]## *_Schema for XML Composite Direct Collection Mapping
+to a Single Attribute_*
+
+`+    +` `+    +` `+        +` `+    +`
+
+`+    +` `+        +` `+    +`
+
+[#Figure 58-19]## *_XML Composite Direct Collection Mapping to a Single
+Attribute_*
+
+.XML Composite Direct Collection Mapping to a Single Attribute
+image::dcxmsat.gif[XML Composite Direct Collection Mapping to a Single
+Attribute,title="XML Composite Direct Collection Mapping to a Single Attribute"]
+
+[#Example 58-33]## *_Java for XML Composite Direct Collection Mapping to
+a Single Attribute_*
+
+`+XMLCompositeDirectCollectionMapping tasksMapping = new XMLCompositeDirectCollectionMapping();+`
+`+tasksMapping.setAttributeName("tasks");+`
+`+tasksMapping.setXPath("@tasks");+`
+`+tasksMapping.setUsesSingleNode(true);+`
+
+=== Mapping to a List of Unions with an XML Composite Direct Collection Mapping
+
+Given the XML schema in this example, the link:#Figure_58-20[Composite
+XML Direct Collection Mapping to List of Unions] figure illustrates a
+composite direct collection XML mapping to a list of unions in a
+corresponding XML document. The link:#Example_58-35[Java for XML
+Composite Direct Collection Mapping to List of Unions] example shows how
+to configure this mapping in Java.
+
+[#Example 58-34]## *_Schema for XML Composite Direct Collection Mapping
+to List of Unions_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+                +` `+            +` `+        +`
+`+    +`
+
+[#Figure 58-20]## *_Composite XML Direct Collection Mapping to List of
+Unions_*
+
+.Composite XML Direct Collection Mapping to List of Unions
+image::cdxlofu.gif[Composite XML Direct Collection Mapping to List of
+Unions,title="Composite XML Direct Collection Mapping to List of Unions"]
+
+[#Example 58-35]## *_Java for XML Composite Direct Collection Mapping to
+List of Unions_*
+
+`+XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();+`
+`+mapping.setAttributeName("myattribute");+`
+`+XMLUnionField field = new XMLUnionField("listOfUnions/text()");+`
+`+mapping.addSchemaType(new Qname(url,"int"));+`
+`+mapping.addSchemaType(new Qname(url,"date"));+`
+`+mapping.setField(field);+` `+mapping.useSingleElement(false);+`
+
+=== Mapping to a Union of Lists with an XML Composite Direct Collection Mapping
+
+Given the XML schema in this example, the link:#Figure_58-21[XML
+Composite Direct Collection Mapping to a Union of Lists] figure
+illustrates an XML composite direct collection mapping to a union of
+lists in a corresponding XML document. The link:#Example_58-37[Java for
+XML Composite Direct Collection Mapping to a Union of Lists] example
+shows how to configure this mapping in Java.
+
+[#Example 58-36]## *_Schema for XML Composite Direct Collection Mapping
+to a Union of Lists_*
+
+`+    +` `+    +` `+        +` `+            +`
+
+`+                +` `+            +` `+            +`
+`+                +` `+            +` `+        +`
+
+`+    +`
+
+[#Figure 58-21]## *_XML Composite Direct Collection Mapping to a Union
+of Lists_*
+
+.XML Composite Direct Collection Mapping to a Union of Lists
+image::cdxuofl.gif[XML Composite Direct Collection Mapping to a Union of
+Lists,title="XML Composite Direct Collection Mapping to a Union of Lists"]
+
+Note that in this example, valid XML documents contain either all
+`+xsd:double+`, all `+xsd:date+`, or all `+xsd:integer+` values.
+
+[#Example 58-37]## *_Java for XML Composite Direct Collection Mapping to
+a Union of Lists_*
+
+`+XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();+`
+`+mapping.setAttributeName("myattribute");+`
+`+mapping.useSingleElement(false);+`
+`+XMLUnionField unionField = new XMLUnionField("UnionOfLists/text()");+`
+`+field.addSchemaType(new Qname(url," integer"))+`
+`+field.addSchemaType (new Qname(url," date"))+`
+`+field.addSchemaType (new Qname(url," double"))+`
+`+field.setUsesSingleNode(false);+`
+
+=== Specifying the Content Type of a Collection with an XML Composite Direct Collection Mapping
+
+By default, EclipseLink will treat the node values read by a composite
+direct collection XML mapping as objects of type `+String+`. You can
+override this behavior by specifying the type of the collection’s
+contents.
+
+Given the XML schema in this example, the link:#Figure_58-22[XML
+Composite Direct Collection Mapping with Specified Content Type] figure
+illustrates an XML composite direct collection mapping to a simple
+sequence in a corresponding XML document. The mapping is configured to
+specify the content type of the collection as `+Calendar+`. The
+link:#Example_58-39[Java for XML Composite Direct Collection Mapping
+with Specified Content Type] example shows how to configure this mapping
+in Java.
+
+[#Example 58-38]## *_Schema for XML Composite Direct Collection Mapping
+with Specified Content Type_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+        +` `+    +`
+
+[#Figure 58-22]## *_XML Composite Direct Collection Mapping with
+Specified Content Type_*
+
+.XML Composite Direct Collection Mapping with Specified Content Type
+image::dcxmct.gif[XML Composite Direct Collection Mapping with Specified
+Content
+Type,title="XML Composite Direct Collection Mapping with Specified Content Type"]
+
+[#Example 58-39]## *_Java for XML Composite Direct Collection Mapping
+with Specified Content Type_*
+
+`+XMLCompositeDirectCollectionMapping tasksMapping = new XMLCompositeDirectCollectionMapping();+`
+`+tasksMapping.setAttributeName("vacationDays");+`
+`+tasksMapping.setXPath("vacation/text()");+`
+`+tasksMapping.setAttributeElementClass(Calendar.class);+`
+
+== XML Composite Object Mapping
+
+XML composite object mappings represent a relationship between two
+classes. In XML, the "`owned`" class may be nested with the element tag
+representing the "`owning`" class. You can use a composite object XML
+mapping in the following scenarios:
+
+* link:#Mapping_into_the_Parent_Record[Mapping into the Parent Record]
+* link:#Mapping_to_an_Element[Mapping to an Element]
+* link:#Mapping_to_Different_Elements_by_Element_Name[Mapping to
+Different Elements by Element Name]
+* link:#Mapping_to_Different_Elements_by_Element_Position[Mapping to
+Different Elements by Element Position]
+
+See
+link:Configuring%20an%20XML%20Composite%20Object%20Mapping%20(ELUG)[Configuring
+an XML Composite Object Mapping] for more information.
+
+=== Mapping into the Parent Record
+
+The composite object may be mapped to the same record as the parent.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* The nodes mapped to by the composite object must be sequential.
+|===
+
+Given the XML schema in this exmaple, the link:#Figure_58-23[XML
+Composite Object Mapping into the Parent Record] figure illustrates an
+XML composite object mapping into the parent record in a corresponding
+XML document. The link:#Example_58-41[Java for XML Composite Object
+Mapping into the Parent Record] example shows how to configure this
+mapping in Java.
+
+[#Example 58-40]## *_Schema for XML Composite Object Mapping into the
+Parent Record_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+            +` `+            +` `+            +`
+`+        +` `+    +`
+
+[#Figure 58-23]##*_XML Composite Object Mapping into the Parent Record_*
+
+.XML Composite Object Mapping into the Parent Record
+image::coxmpr.gif[XML Composite Object Mapping into the Parent
+Record,title="XML Composite Object Mapping into the Parent Record"]
+
+[#Example 58-41]## *_Java for XML Composite Object Mapping into the
+Parent Record_*
+
+`+XMLCompositeObjectMapping addressMapping = new XMLCompositeObjectMapping();+`
+`+addressMapping.setAttributeName("address");+`
+`+addressMapping.setXPath(".");+`
+`+addressMapping.setReferenceClass(Address.class);+`
+
+=== Mapping to an Element
+
+Given the XML schema in this example, thelink:#Figure_58-24[XML
+Composite Object Mapping to an Element] figure illustrates an XML
+composite object mapping to an element in a corresponding XML document.
+The link:#Example_58-43[Java for XML Composite Object Mapping to an
+Element] example shows how to configure this mapping in Java.
+
+[#Example 58-42]## *_Schema for XML Composite Object Mapping to an
+Element_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+            +` `+            +` `+                +`
+`+                    +` `+                        +`
+
+`+                        +` `+                    +`
+`+                +` `+            +` `+        +` `+    +`
+
+[#Figure 58-24]## *_XML Composite Object Mapping to an Element_*
+
+.XML Composite Object Mapping to an Element
+image::coxme.gif[XML Composite Object Mapping to an
+Element,title="XML Composite Object Mapping to an Element"]
+
+[#Example 58-43]## *_Java for XML Composite Object Mapping to an
+Element_*
+
+`+XMLCompositeObjectMapping addressMapping = new XMLCompositeObjectMapping();+`
+`+addressMapping.setAttributeName("address");+`
+`+addressMapping.setXPath("address");+`
+`+addressMapping.setReferenceClass(Address.class);+`
+
+=== Mapping to Different Elements by Element Name
+
+An object may have multiple composite object mappings to the same
+reference class. Each composite object mapping must have a unique XPath.
+This example uses unique XPaths by name.
+
+Given the XML schema in this example, the link:#Figure_58-25[XML
+Composite Object Mapping to Elements by Name] figure illustrates an XML
+composite object mapping to different elements by name in a
+corresponding XML document. The link:#Example_58-45[Java for XML
+Composite Object Mapping to Elements by Name] example shows how to
+configure this mapping in Java.
+
+[#Example 58-44]## *_Schema for XML Composite Object Mapping to Elements
+by Name_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+            +` `+            +` `+            +`
+`+        +` `+    +`
+
+`+    +` `+        +` `+            +` `+            +` `+        +`
+`+    +`
+
+[#Figure 58-25]## *_XML Composite Object Mapping to Elements by Name_*
+
+.XML Composite Object Mapping to Elements by Name
+image::coxmden.gif[XML Composite Object Mapping to Elements by
+Name,title="XML Composite Object Mapping to Elements by Name"]
+
+[#Example 58-45]## *_Java for XML Composite Object Mapping to Elements
+by Name_*
+
+`+XMLCompositeObjectMapping billingAddressMapping = new XMLCompositeObjectMapping();+`
+`+billingAddressMapping.setAttributeName("billingAddress");+`
+`+billingAddressMapping.setXPath("billing-address");+`
+`+billingAddressMapping.setReferenceClass(Address.class);+`
+
+`+XMLCompositeObjectMapping shippingAddressMapping = new XMLCompositeObjectMapping();+`
+`+shippingAddressMapping.setAttributeName("shippingAddress");+`
+`+shippingAddressMapping.setXPath("shipping-address");+`
+`+shippingAddressMapping.setReferenceClass(Address.class);+`
+
+=== Mapping to Different Elements by Element Position
+
+An object may have multiple composite object mappings to the same
+reference class. Each composite object mapping must have a unique XPath.
+This example uses unique XPaths by position.
+
+Given the XML schema in this example, the link:#Figure_58-26[XML
+Composite Object Mapping to Elements by Position] figure illustrates an
+XML composite object mapping to different elements by position in a
+corresponding XML document. The link:#Example_58-47[Java for XML
+Composite Object Mapping to Elements by Position] example shows how to
+configure this mapping in Java.
+
+[#Example 58-46]## *_Schema for XML Composite Object Mapping to Elements
+by Position_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+            +` `+            +` `+                +`
+`+                    +` `+                        +`
+
+`+                        +` `+                    +`
+`+                +` `+            +` `+        +` `+    +`
+
+[#Figure 58-26]## *_XML Composite Object Mapping to Elements by
+Position_*
+
+.XML Composite Object Mapping to Elements by Position
+image::coxmdep.gif[XML Composite Object Mapping to Elements by
+Position,title="XML Composite Object Mapping to Elements by Position"]
+
+[#Example 58-47]## *_Java for XML Composite Object Mapping to Elements
+by Position_*
+
+`+XMLCompositeObjectMapping billingAddressMapping = new XMLCompositeObjectMapping();+`
+`+billinAddressMapping.setAttributeName("billingAddress");+`
+`+billinAddressMapping.setXPath("address[1]");+`
+`+billinAddressMapping.setReferenceClass(Address.class);+`
+
+`+XMLCompositeObjectMapping shippingAddressMapping = new XMLCompositeObjectMapping();+`
+`+shippingAddressMapping.setAttributeName("shippingAddress");+`
+`+shippingAddressMapping.setXPath("address[2]");+`
+`+shippingAddressMapping.setReferenceClass(Address.class);+`
+
+== XML Composite Collection Mapping
+
+Use XML composite collection mappings to represent one-to-many
+relationships. Composite collection XML mappings can reference any class
+that has an EclipseLink descriptor. The attribute in the object mapped
+must implement either the Java `+Collection+` interface (for example,
+`+Vector+` or `+HashSet+`) or `+Map+` interface (for example,
+`+Hashtable+` or `+TreeMap+`). The `+CompositeCollectionMapping+` class
+allows a reference to the mapped class and the indexing type for that
+class.
+
+Given the XML schema in this example, link:#Figure_58-27[XML Composite
+Collection Mapping] illustrates an XML composite collection mapping to
+different elements by position in a corresponding XML document.
+link:#Example_58-49[Java for XML Composite Collection Mapping for a
+Collection Attribute] shows how to configure this mapping in Java for a
+`+Collection+` attribute and link:#Example_58-50[Java for XML Composite
+Collection Mapping for a Map Attribute] shows how to configure this
+mapping in Java for a `+Map+` attribute.
+
+*_Schema for XML Composite Collection Mapping_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+            +` `+            +` `+                +`
+`+                    +` `+                        +`
+
+`+                    +` `+                    +` `+                +`
+`+            +` `+        +` `+    +`
+
+[#Figure 58-27]## *_XML Composite Collection Mapping_*
+
+.XML Composite Collection Mapping
+image::ccxm.gif[XML Composite Collection
+Mapping,title="XML Composite Collection Mapping"]
+
+[#Example 58-49]## *_Java for XML Composite Collection Mapping for a
+Collection Attribute_*
+
+`+XMLCompositeCollectionMapping phoneNumbersMapping = new XMLCompositeCollectionMapping();+`
+`+phoneNumbersMapping.setAttributeName("phoneNumbers");+`
+`+phoneNumbersMapping.setXPath("phone-number");+`
+`+phoneNumbersMapping.setReferenceClass(PhoneNumber.class);+`
+
+[#Example 58-50]## *_Java for XML Composite Collection Mapping for a Map
+Attribute_*
+
+`+XMLCompositeCollectionMapping phoneNumbersMapping = new XMLCompositeCollectionMapping();+`
+`+phoneNumbersMapping.setAttributeName("phoneNumbers");           +`
+`+phoneNumbersMapping.setXPath("phone-number");+`
+`+phoneNumbersMapping.setReferenceClass(PhoneNumber.class);+`
+`+phoneNumbersMapping.useMapClass(HashMap.class, "getType");+`
+
+See
+link:Configuring%20an%20XML%20Composite%20Collection%20Mapping%20(ELUG)[Configuring
+an XML Composite Collection Mapping] for more information.
+
+== XML Any Object Mapping
+
+The XML any object mapping is similar to the composite object XML
+mapping (see link:#XML_Composite_Object_Mapping[XML Composite Object
+Mapping]) except that the reference object may be of any type (including
+`+String+`). This type does not need to be related to any other
+particular type through inheritance or a common interface.
+
+The corresponding object attribute value can be an instance of any
+object with a `+Descriptor+`, a `+java.lang.Object+`, a
+`+java.lang.String+`, a primitive object (such as
+`+java.lang.Integer+`), or a user defined type generic enough for all
+possible application values.
+
+This mapping is useful with the following XML schema constructs:
+
+* any
+* choice
+* substitution groups
+
+Referenced objects can specify a default root element on their
+descriptor (see
+link:Introduction%20to%20Descriptors%20(ELUG)#Default_Root_Element[Default
+Root Element]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* The undefined document root element of a referenced object is
+ignored during marshalling with an any collection mapping and object
+mapping.
+|===
+
+Given the XML schema in link:#Example_58-51[Schema for XML Any Object
+Mapping], link:#Figure_58-28[Java Classes for XML Any Object Mapping]
+illustrates the Java classes used in this example. A single XML any
+object mapping is used to map `+Customer+` attribute `+contactMethod+`.
+This attribute must be generic enough to reference all possible values:
+in this example, instances of `+Address+`, `+PhoneNumber+`, and
+`+String+`.
+
+[#Example 58-51]## *_Schema for XML Any Object Mapping_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+        +` `+    +` `+    +` `+        +`
+`+            +`
+
+`+                +` `+                +` `+            +` `+        +`
+`+    +` `+    +`
+
+[#Figure 58-28]## *_Java Classes for XML Any Object Mapping_*
+
+.Java Classes for XML Any Object Mapping
+image::aoxmc.gif[Java Classes for XML Any Object
+Mapping,title="Java Classes for XML Any Object Mapping"]
+
+link:#Figure_58-29[XML Any Object Mapping to Address Type],
+link:#Figure_58-30[XML Any Object Mapping to PhoneNumber Type], and
+link:#Figure_58-31[XML Any Object Mapping to String Type] illustrate how
+the XML any object mapping maps to an `+Address+`, `+PhoneNumber+`, and
+`+String+` (respectively) in XML documents that conform to the schema in
+link:#Example_58-51[Schema for XML Any Object Mapping].
+
+[#Figure 58-29]## *_XML Any Object Mapping to Address Type_*
+
+.XML Any Object Mapping to Address Type
+image::aoxmadd.gif[XML Any Object Mapping to Address
+Type,title="XML Any Object Mapping to Address Type"]
+
+[#Figure 58-30]## *_XML Any Object Mapping to PhoneNumber Type_*
+
+.XML Any Object Mapping to PhoneNumber Type
+image::aoxmpho.gif[XML Any Object Mapping to PhoneNumber
+Type,title="XML Any Object Mapping to PhoneNumber Type"]
+
+[#Figure 58-31]## *_XML Any Object Mapping to String Type_*
+
+.XML Any Object Mapping to String Type
+image::aoxmstr.gif[XML Any Object Mapping to String
+Type,title="XML Any Object Mapping to String Type"]
+
+This example shows how to configure this mapping in Java.
+
+[#Example 58-52]## *_Java for XML Any Object Mapping_*
+
+`+XMLAnyObjectMapping contactMethodMapping = new XMLAnyObjectMapping();+`
+`+contactMethodMapping.setAttributeName("contactMethod");+`
+`+contactMethodMapping.setXPath("contact-method");+`
+
+For more information about EclipseLink XML mapping support for
+`+xs:any+` and `+xs:anyType+`, see #xs:any_and_xs:anyType_Support[xs:any
+and xs:anyType Support].
+
+See
+link:Configuring%20an%20XML%20Any%20Object%20Mapping%20(ELUG)[Configuring
+an XML Any Object Mapping] for more information.
+
+== XML Any Collection Mapping
+
+The XML any collection mapping is similar to the composite collection
+XML mapping (see link:#XML_Composite_Collection_Mapping[XML Composite
+Collection Mapping]), except that the referenced objects may be of
+different types (including `+String+`). These types need not be related
+to each other through inheritance or a common interface.
+
+The corresponding object attribute value can be an instance of any
+object with a `+Descriptor+`, a `+java.lang.Object+`, a
+`+java.lang.String+`, a primitive object (such as
+`+java.lang.Integer+`), or a user defined type generic enough for all
+possible application values.
+
+This mapping is useful with the following XML schema constructs:
+
+* any
+* choice
+* substitution groups
+
+Each of the referenced objects (except `+String+`) must specify a
+default root element on their descriptor (see
+link:Introduction%20to%20Descriptors%20(ELUG)#Default_Root_Element[Default
+Root Element]).
+
+Given the XML schema in link:#Example_58-53[Schema for XML Any
+Collection Mapping], link:#Figure_58-32[Java Classes for XML Any
+Collection Mapping] illustrates the Java classes used in this example. A
+single XML any collection mapping is used to map `+Customer+` attribute
+`+contactMethods+`. This attribute must be generic enough to reference
+all possible values: in this example, instances of `+Address+`,
+`+PhoneNumber+`, and `+String+`.
+
+[#Example 58-53]## *_Schema for XML Any Collection Mapping_*
+
+`+    +` `+    +` `+        +`
+
+`+            +` `+        +` `+    +` `+    +` `+        +`
+`+            +`
+
+`+                +` `+                +` `+            +` `+        +`
+`+    +` `+    +`
+
+[#Figure 58-32]## *_Java Classes for XML Any Collection Mapping_*
+
+.Java Classes for XML Any Collection Mapping
+image::aoxmc.gif[Java Classes for XML Any Collection
+Mapping,title="Java Classes for XML Any Collection Mapping"]
+
+link:#Figure_58-33[XML Any Collection Mapping] illustrate how the XML
+any collection mapping maps to a collection of `+Address+`,
+`+PhoneNumber+`, and `+String+` objects in an XML document that conforms
+to the schema in link:#Example_58-53[Schema for XML Any Collection
+Mapping].
+
+[#Figure 58-33]## *_XML Any Collection Mapping_*
+
+.XML Any Collection Mapping
+image::acxm.gif[XML Any Collection
+Mapping,title="XML Any Collection Mapping"]
+
+This example shows how to configure this mapping in Java.
+
+[#Example 58-54]## *_Java for XML Any Collection Mapping_*
+
+`+XMLAnyCollectionMapping contactMethodsMapping = new XMLAnyCollectionMapping();+`
+`+contactMethodsMapping.setAttributeName("contactMethods");+`
+`+contactMethodsMapping.setXPath("contact-methods");+`
+
+For more information about EclipseLink XML mapping support for
+`+xs:any+` and `+xs:anyType+`, see #xs:any_and_xs:anyType_Support[xs:any
+and xs:anyType Support].
+
+See
+link:Configuring%20an%20XML%20Any%20Collection%20Mapping%20(ELUG)[Configuring
+an XML Any Collection Mapping] for more information.
+
+== XML Transformation Mapping
+
+You can use an XML transformation mapping to create a custom mapping
+where one or more XML nodes can be used to create the object to be
+stored in a Java class’s attribute. To handle the custom requirements at
+marshall (write) and unmarshall (read) time, a transformation mapping
+takes instances of `+org.eclipse.persistence.mappings.transformers+`
+(such as `+AttributeTransformer+` and `+FieldTransformer+`) that you
+provide. This provides a nonintrusive solution that avoids the need for
+your domain objects to implement special interfaces for this purpose.
+
+As link:#Figure_58-34[XML Transformation Mappings] illustrates, you
+configure the transformation mapping with an
+`+org.eclipse.persistence.mappings.transformers.AttributeTransformer+`
+instance to perform the XML instance-to-Java attribute transformation at
+unmarshall time. In this example, the `+AttributeTransformer+` combines
+two XML text nodes into a single Java object.
+
+Similarly, you also configure the transformation mapping with one or
+more `+org.eclipse.persistence.mappings.transformers.FieldTransformer+`
+instances to perform the Java attribute-to-XML instance transformation
+at marshall time. In this example, each `+FieldTransformer+` is
+responsible for mapping one of the Java object values to an XML text
+node.
+
+[#Figure 58-34]## *_XML Transformation Mappings_*
+
+.XML Transformation Mappings
+image::transfig.gif[XML Transformation
+Mappings,title="XML Transformation Mappings"]
+
+See
+link:Configuring%20an%20XML%20Transformation%20Mapping_(ELUG)[Configuring
+an XML Transformation Mapping] for more information.
+
+== XML Object Reference Mapping
+
+The `+org.eclipse.persistence.ox.mappings.XMLObjectReferenceMapping+` is
+a key on source-based aggregate mapping. It allows you to use one-to-one
+mappings to map a given element in an XML document to another element in
+that same XML document using one or more keys.
+
+Use this mapping when several objects reference the same instance of
+another object. In this case, one and only one of the mappings is to be
+a composite–the remaining mappings must be reference mappings. These
+references will be created based on one or more key values.
+
+XML object reference mapping is fully supported in the deployment XML.
+
+With this mapping, EclipseLink provides support for composite keys, as
+well as for foreign key grouping elements.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You should group together elements mapped to keys. Also,
+EclipseLink supports grouping elements that wrap all of the keys (not
+the ones that wrap each individual key).
+|===
+
+The `+XMLObjectReferenceMapping+` captures the following information:
+
+* Attribute name.
+* Reference class.
+* Map of source and target key pairs, such as XPath values (see
+link:#XPath_Support[XPath Support]) in the following format:
+
+`+["project-id/text()","@id"]+`
+
+Use the `+addSourceToTargetKeyFieldAssociation+` method to add a source
+and target Xpath pair to the map.
+
+* List of source keys to maintain order.
+
+For more information, see
+link:Configuring%20an%20XML%20Object%20Reference%20Mapping%20(ELUG)[Configuring
+an XML Object Reference Mapping].
+
+=== Mapping Using a Single Key
+
+The following class diagram, as well as the following three examples,
+demonstrate how to map one element to another using a single key.
+
+[#Figure 58-35]## *_Class Diagram_*
+
+.Class Diagram
+image::xmlobrefmap.gif[Class Diagram,title="Class Diagram"]
+
+[#Example 58-55]## *_Using Single Key - Instance Document_*
+
+`+...+` `+    +``+Joe Brown+` `+    +`*`+99+`*
+`+<project +`*`+id="99"+`*`+>+` `+    +``+Big Project+`
+`+    +``+100,000+` `+...+`
+
+This example shows how to create an `+XMLObjectReferenceMapping+`, set a
+single key on source, and then add the mapping to the descriptor.
+
+[#Example 58-56]## *_Using Single Key - Project Class - Employee
+Descriptor_*
+
+`+...+`
+`+XMLObjectReferenceMapping emp = new XMLObjectReferenceMapping();+`
+`+emp.setAttributeName("project");+`
+`+emp.setReferenceClass(Project.class);+`
+*`+emp.addSourceToTargetKeyFieldAssociation("project-id/text()","@id");+`*`+   +`
+`+empDescriptor.addMapping(emp);+` `+...+`
+
+This example shows how to define the primary key field on the
+descriptor.
+
+[#Example 58-57]## *_Using Single Key - Project Class - Project
+Descriptor_*
+
+`+...+` `+XMLDescriptor prjDescriptor = new XMLDescriptor();+`
+`+prjDescriptor.setJavaClass(Project.class);+`
+*`+prjDescriptor.addPrimaryKeyField("@id");+`* `+...+`
+
+=== Mapping Using a Composite Key
+
+The link:#Figure_58-35[Class Diagram] figure, as well as the following
+three examples, demonstrate how to map one element to another using a
+composite key.
+
+[#Example 58-58]## *_Using Composite Key - Instance Document_*
+
+`+...+` `+    +``+Joe Brown+` `+    +`*`+Big\'\' \'\'Project+`*
+`+    +`*`+100,000+`* `+    +``+Big Project+` `+    +`*`+100,000+`*
+`+...+`
+
+This example shows how to create an `+XMLObjectReferenceMapping+`, set a
+composite key on source, and then add the mapping to the descriptor.
+
+[#Example 58-59]## *_Using Composite Key - Project Class - Employee
+Descriptor_*
+
+`+...+`
+`+XMLObjectReferenceMapping emp = new XMLObjectReferenceMapping();+`
+`+emp.setAttributeName("project");+`
+`+emp.setReferenceClass(Project.class);+`
+*`+emp.addSourceToTargetKeyFieldAssociation("prj-name/text()","name/text()");+`*
+*`+emp.addSourceToTargetKeyFieldAssociation("prj-budget/text()","budget/text()");+`*
+`+empDescriptor.addMapping(emp);+` `+...+`
+
+The following example shows how to define a composite primary key field
+on the descriptor.
+
+[#Example 58-60]## *_Using Composite Key - Project Class - Project
+Descriptor_*
+
+`+...+` `+XMLDescriptor prjDescriptor = new XMLDescriptor();+`
+`+prjDescriptor.setJavaClass(Project.class);+`
+*`+prjDescriptor.addPrimaryKeyField("name");+`*
+*`+prjDescriptor.addPrimaryKeyField("budget");+`* `+...+`
+
+=== Mapping Using JAXB
+
+The JAXB generator generates a deployment descriptor based on
+annotations and default values.
+
+Note: The JAXB 2.0 specification states that for the @XmlID annotation,
+the following restrictions apply:
+
+The field type must be String.
+
+The use of composite keys is not allowed.
+
+The link:#Figure_58-35[Class Diagram] figure, as well as the following
+four examples, demonstrate how to map one XML element to another using
+JAXB annotations.
+
+[#Example 58-61]## *_Using JAXB - Object Model_*
+
+`+public class Employee {+`
+
+`+    @XmlAttribute(name="id")+` `+    public String id;+`
+`+    public String name;+`
+
+`+    +`*`+@XmlElement(name="project-id")+`* `+    +`*`+@XmlIDREF+`*
+`+    +`*`+public\'\' \'\'Project\'\' \'\'project;+`* `+    ...+` `+}+`
+
+`+public class Project {+`
+
+`+    +`*`+@XmlElement(name="project-id")+`* `+    +`*`+@XmlID+`*
+`+    +`*`+public\'\' \'\'String\'\' \'\'id;+`*
+
+`+    public String name;+` `+    public String budget;+` `+    ...+`
+`+}+`
+
+[#Example 58-62]## *_Using JAXB - Instance Document_*
+
+`+...+` `+    +``+Joe Brown+` `+    +`*`+99+`*
+`+<project +`*`+project-id="99"+`*`+>+` `+    +``+Big Project+`
+`+    +``+100,000+` `+...+`
+
+The following example shows how to create an
+`+XMLObjectReferenceMapping+`, set a key on source, and then add the
+mapping to the descriptor.
+
+[#Example 58-63]## *_Using JAXB - Project Class - Employee Descriptor_*
+
+`+...+`
+`+XMLObjectReferenceMapping emp = new XMLObjectReferenceMapping();+`
+`+emp.setAttributeName("project");+`
+`+emp.setReferenceClass(Project.class);+`
+*`+emp.addSourceToTargetKeyFieldAssociation("project-id/text()","@pid");+`*
+`+empDescriptor.addMapping(emp);+` `+...+`
+
+This example shows how to define the primary key field on the
+descriptor.
+
+[#Example 58-64]## *_Using JAXB - Project Class - Project Descriptor_*
+
+`+...+` `+XMLDescriptor prjDescriptor = new XMLDescriptor();+`
+`+prjDescriptor.setJavaClass(Project.class);+`
+*`+prjDescriptor.addPrimaryKeyField("@pid");+`* `+...+`
+
+For more information, see the following:
+
+* JAXB 2.0 Specification at
+http://jcp.org/aboutJava/communityprocess/pfd/jsr222/index.html
+* link:Introduction%20to%20XML%20Projects%20(ELUG)[Introduction to XML
+Projects]
+
+== XML Collection Reference Mapping
+
+The
+`+org.eclipse.persistence.ox.mappings.XMLCollectionReferenceMapping+` is
+a key on source-based aggregate mapping. It allows you to use
+one-to-many mappings to map a given element in an XML document to
+another element in that same XML document using one or more keys.
+
+With this mapping, EclipseLink provides support for foreign key grouping
+elements.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You should group together elements mapped to keys. Also,
+EclipseLink supports grouping elements that wrap all of the keys (not
+the ones that wrap each individual key).
+|===
+
+The `+XMLCollectionReferenceMapping+` captures the following
+information:
+
+* Attribute name.
+* Reference class.
+* Map of source and target key pairs, such as XPath values (see
+link:#XPath_Support[XPath Support]) in the following format:
+
+`+["project-id/text()","@id"]+`
+
+Use the `+addSourceToTargetKeyFieldAssociation+` method to add a source
+and target XPath pair to the map.
+
+* List of source keys to maintain order.
+
+The following class diagram, as well as the following three examples,
+demonstrate how to map one element to another using a single key.
+
+[#Figure 58-36]## *_Class Diagram_*
+
+.Class Diagram
+image::xmlcollrefmap.gif[Class Diagram,title="Class Diagram"]
+
+[#Example 58-65]## *_Using a Single Key - Instance Document_*
+
+`+...+` `+    +``+Joe Brown+` `+    +`*`+99+`* `+    +`*`+199+`*
+`+<project +`*`+id="99"+`*`+>+` `+    +``+Big Project+`
+`+    +``+100,000+` `+<project +`*`+id="199"+`*`+>+`
+`+    +``+Bigger Project+` `+    +``+100,000,000+` `+...+`
+
+This example shows how to create an `+XMLCollectionReferenceMapping+`,
+set a single key on source, and then add the mapping to the descriptor.
+
+[#Example 58-66]## *_Using a Single Key - Project Class - Employee
+Descriptor_*
+
+`+...+`
+`+XMLCollectionReferenceMapping prj = new XMLCollectionReferenceMapping();+`
+`+prj.useCollectionClass(ArrayList.class);+`
+`+prj.setAttributeName("projects");+`
+`+prj.setReferenceClass(Project.class);+`
+*`+prj.addSourceToTargetKeyFieldAssociation("project-id/text()","@id");+`*
+`+empDescriptor.addMapping(prj);+` `+...+`
+
+The following example shows how to define the primary key field on the
+descriptor.
+
+[#Example 58-67]## *_Using a Single Key - Project Class - Project
+Descriptor_*
+
+`+...+` `+XMLDescriptor prjDescriptor = new XMLDescriptor();+`
+`+prjDescriptor.setJavaClass(Project.class);+`
+*`+prjDescriptor.addPrimaryKeyField("@id");+`* `+...+`
+
+The link:#Figure_58-36[Class Diagram] figure, as well as the following
+three examples, demonstrate how to map one element to another using a
+single key as a space-separated list.
+
+[#Example 58-68]## *_Using a Single Key as Space-Separated List -
+Instance Document_*
+
+`+...+` `+<employee id="12" +`*`+project-ids="99\'\' \'\'199"+`*`+>+`
+`+    +``+Joe Brown+` `+<project +`*`+id="99"+`*`+>+`
+`+    +``+Big Project+` `+    +``+100,000+`
+`+<project +`*`+id="199"+`*`+>+` `+    +``+Bigger Project+`
+`+    +``+100,000,000+` `+...+`
+
+The following example shows how to create an
+`+XMLCollectionReferenceMapping+`, set a single key on source as a
+space-separated list, and then add the mapping to the descriptor.
+
+[#Example 58-69]## *_Using a Single Key as Space-Separated List -
+Project Class - Employee Descriptor_*
+
+`+...+`
+`+XMLCollectionReferenceMapping prj = new XMLCollectionReferenceMapping();+`
+`+prj.useCollectionClass(ArrayList.class);+`
+`+prj.setAttributeName("projects");+`
+`+prj.setReferenceClass(Project.class);+`
+*`+prj.addSourceToTargetKeyFieldAssociation("project-ids","@id");+`*
+`+empDescriptor.addMapping(prj);+` `+...+`
+
+This example shows how to define the primary key field on the
+descriptor.
+
+[#Example 58-70]## *_Using a Single Key as Space-Separated List -
+Project Class - Project Descriptor_*
+
+`+...+` `+XMLDescriptor prjDescriptor = new XMLDescriptor();+`
+`+prjDescriptor.setJavaClass(Project.class);+`
+*`+prjDescriptor.addPrimaryKeyField("@id");+`* `+...+`
+
+For more information, see
+link:Configuring%20an%20XML%20Collection%20Reference%20Mapping%20(ELUG)[Configuring
+an XML Collection Reference Mapping].
+
+== XML Binary Data Mapping
+
+The `+org.eclipse.persistence.ox.mappings.XMLBinaryDataMapping+` is a
+direct mapping (see link:#XML_Direct_Mapping[XML Direct Mapping]) that
+you use for handling binary data: it maps binary data in the object
+model to XML. This allows you to enable writing of binary data directly
+as inline binary data (base64 BLOB), or passing through as a MtOM or
+SwaRef attachment. For more information, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#Optimizing_Storage_and_Retrieval_of_Binary_Data_in_XML[Optimizing
+Storage and Retrieval of Binary Data in XML].
+
+The `+XMLBinaryDataMapping+` also lets you make callbacks to an
+attachment marshaller and unmarshaller (see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#How_to_Use_an_Attachment_Marshaller_and_Unmarshaller[How
+to Use an Attachment Marshaller and Unmarshaller]), as well as set XPath
+(see link:#XPath_Support[XPath Support]).
+
+The following example shows how to create an `+XMLBinaryDataMapping+`,
+set some of its properties, and then add the mapping to a descriptor.
+
+`+XMLBinaryDataMapping addressMapping = new XMLBinaryDataMapping();+`
+`+addressMapping.setXPath("address");+`
+`+addressMapping.setShouldInlineBinaryData(true);+`
+`+descriptor.addMapping(addressMapping);+` `+...+`
+
+See
+link:Configuring%20an%20XML%20Binary%20Data%20Mapping%20(ELUG)[Configuring
+an XML Binary Data Mapping] for more information.
+
+== XML Binary Data Collection Mapping
+
+The
+`+org.eclipse.persistence.ox.mappings.XMLBinaryDataCollectionMapping+`
+is very similar to the `+XMLBinaryDataMapping+` (see
+link:#XML_Binary_Data_Mapping[XML Binary Data Mapping]), except that it
+maps a collection of binary data in the object model to XML.
+
+For more information, see the following:
+
+* link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#Optimizing_Storage_and_Retrieval_of_Binary_Data_in_XML[Optimizing
+Storage and Retrieval of Binary Data in XML]
+* link:#XML_Binary_Data_Mapping[XML Binary Data Mapping]
+
+The following example shows how to create an
+`+XMLBinaryDataCollectionMapping+`, set some of its properties, and then
+add the mapping to a descriptor.
+
+`+XMLBinaryDataCollectionMapping addressMapping = new XMLBinaryDataCollectionMapping();+`
+`+addressMapping.setCollectionContentType(type);+`
+`+addressMapping.setXPath("address");+`
+`+addressMapping.setShouldInlineBinaryData(true);+`
+`+descriptor.addMapping(addressMapping);+` `+...+`
+
+For more information, see the following:
+
+* link:Configuring%20an%20XML%20Binary%20Data%20Collection%20Mapping%20(ELUG)[Configuring
+an XML Binary Data Collection Mapping]
+* link:#XML_Composite_Direct_Collection_Mapping[XML Composite Direct
+Collection Mapping]
+
+== XML Fragment Mapping
+
+The `+org.eclipse.persistence.ox.mappings.XMLFragmentMapping+` is a
+direct mapping (see link:#XML_Direct_Mapping[XML Direct Mapping]) that
+provides you with a means to keep a part of an XML tree as a node.
+
+This mapping also lets you set the XPath (see link:#XPath_Support[XPath
+Support]).
+
+The following example shows how to create an `+XMLFragmentMapping+`, set
+some of its properties, and then add the mapping to a descriptor.
+
+`+XMLFragmentMapping addressMapping = new XMLFragmentMapping();+`
+`+addressMapping.setXPath("address");+`
+`+descriptor.addMapping(addressMapping);+` `+...+`
+
+See
+link:Configuring%20an%20XML%20Fragment%20Mapping%20(ELUG)[Configuring an
+XML Fragment Mapping] for more information.
+
+== XML Fragment Collection Mapping
+
+The `+org.eclipse.persistence.ox.mappings.XMLFragmentCollectionMapping+`
+is similar to the XMLFragmentMapping (see link:#XML_Fragment_Mapping[XML
+Fragment Mapping]), except that it allows you to keep a part of an XML
+tree as a collection of nodes.
+
+The following example shows how to create an `+XMLFragmentMapping+`, set
+the XPath (see link:#XPath_Support[XPath Support]), and then add the
+mapping to a descriptor.
+
+`+XMLFragmentCollectionMapping addressMapping = new XMLFragmentCollectionMapping();+`
+`+addressMapping.setXPath("address");+`
+`+descriptor.addMapping(addressMapping);+` `+...+`
+
+See
+link:Configuring%20an%20XML%20Fragment%20Collection%20Mapping%20(ELUG)[Configuring
+an XML Fragment Collection Mapping] for more information.
+
+== XML Choice Object Mapping
+
+The `+org.eclipse.persistence.ox.mappings.XMLChoiceObjectMapping+` lets
+you map a single attribute to a number of different elements in an XML
+document.
+
+Unlike other EclipseLink XML mappings, instead of setting a single
+XPath, you use the `+addChoiceElement+` method to specify an XPath (see
+link:#XPath_Support[XPath Support]), as well as the type associated with
+this XPath, as follows:
+
+* `+xmlChoiceObjectMapping.addChoiceElement("mystring/text()", String.class);+`
+* `+xmlChoiceObjectMapping.addChoiceElement("myaddress", Address.class);+`
+
+When any of these elements are encountered in the XML document, they are
+read in and set in the object as correct types.
+
+Use this mapping to map to single choices or
+link:#Substitution_Groups[substitution groups] in an XML schema.
+
+The following example shows how to create an `+XMLChoiceObjectMapping+`,
+set the XPath, and then add the mapping to a descriptor.
+
+`+XMLChoiceObjectMapping addressMapping = new XMLChoiceObjectMapping();+`
+`+addressMapping.setXPath("address", Address.class);+`
+`+descriptor.addMapping(addressMapping);+` `+...+`
+
+See
+link:Configuring%20an%20XML%20Choice%20Object%20Mapping%20(ELUG)[Configuring
+an XML Choice Object Mapping] for more information.
+
+== XML Choice Collection Mapping
+
+The `+org.eclipse.persistence.ox.mappings.XMLChoiceCollectionMapping+`
+is similar to the `+XMLChoiceObjectMapping+` (see
+link:#XML_Choice_Object_Mapping[XML Choice Object Mapping]), except that
+you use it to handle reading and writing of XML documents containing a
+collection of choice or link:#Substitution_Groups[substitution group]
+elements.
+
+The following example shows how to create an
+`+XMLChoiceCollectionMapping+`, set the XPath (see
+link:#XPath_Support[XPath Support]), and then add the mapping to a
+descriptor.
+
+`+XMLChoiceCollectionMapping addressMapping = new XMLChoiceCollectionMapping();+`
+`+addressMapping.setXPath("address", Address.class);+`
+`+descriptor.addMapping(addressMapping);+` `+...+`
+
+See
+link:Configuring%20an%20XML%20Choice%20Collection%20Mapping%20(ELUG)[Configuring
+an XML Choice Collection Mapping] for more information.
+
+== XML Any Attribute Mapping
+
+The `+org.eclipse.persistence.ox.mappings.XMLAnyAttributeMapping+` is a
+database mapping that you can use to map to an attribute in an object to
+any XML attributes contained on a specific element in the XML document.
+The attribute in the object will contain a map of attribute values keyed
+on a qualified name (`+javax.xml.namespace.QName+`). If one or more of
+the attributes found on the specified element is already mapped to
+another attribute in the object, EclipseLink will ignored that attribute
+during the unmarshall operation.
+
+The `+XMLAnyAttributeMapping+` lets you set the XPath (see
+link:#XPath_Support[XPath Support]), however, this operation is optional
+for this type of mapping: if you do not set the XPath, the mapping will
+look for any attribute children directly owned by the current element.
+
+The following example shows how to create an `+XMLAnyAttributeMapping+`,
+set the XPath, and then add the mapping to a descriptor.
+
+`+XMLAnyAttributeMapping addressMapping = new XMLAnyAttributeMapping();+`
+`+addressMapping.setXPath("address", Address.class);+`
+`+descriptor.addMapping(addressMapping);+` `+...+`
+
+See
+link:Configuring%20an%20XML%20Any%20Attribute%20Mapping%20(ELUG)[Configuring
+an XML Any Attribute Mapping] for more information.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_XML[Category: XML]

@@ -1,0 +1,81 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Configuring_Historical_Sessions_(ELUG)[Related
+Topics]
+
+For information on configuring a historical session using an Oracle
+Database platform, see
+link:#How_to_Configure_Historical_Sessions_Using_an_Oracle_Platform[How
+to Configure Historical Sessions Using an Oracle Platform].
+
+For information on configuring a historical session using any supported
+database platform and a EclipseLink `+HistoryPolicy+`, see
+link:#How_to_Configure_Historical_Sessions_Using_a_EclipseLink_HistoryPolicy[How
+to Configure Historical Sessions Using a EclipseLink HistoryPolicy].
+
+For more information about historical sessions, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Historical_Sessions[Historical
+Sessions].
+
+== Introduction to Historical Session Configuration
+
+There are two following ways to configure EclipseLink to access the
+historical versions of objects maintained by your data source:
+
+* using an Oracle platform (see
+link:#How_to_Configure_Historical_Sessions_Using_an_Oracle_Platform[How
+to Configure Historical Sessions Using an Oracle Platform])
+* using EclipseLink `+HistoryPolicy+` (see
+link:#How_to_Configure_Historical_Sessions_Using_a_EclipseLink_HistoryPolicy[How
+to Configure Historical Sessions Using a EclipseLink HistoryPolicy])
+
+=== How to Configure Historical Sessions Using an Oracle Platform
+
+Oracle9__i__ Database Server (or later) automatically maintains
+historical versions of objects and extends SQL with an `+AS_OF+` clause
+used to query this historical data. Oracle refers to these as flashback
+queries.
+
+If you configure your `+Session+` with an `+OraclePlatform+` (see
+link:Configuring%20a%20Database%20Login%20(ELUG)[Configuring a
+Relational Database Platform at the Session Level]) for Oracle9__i__
+Database Server (or later), you can query the historical versions of
+objects automatically maintained by Oracle Database.
+
+No further session configuration is required.
+
+For more information, see the following:
+
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Acquiring_a_Historical_Session[Acquiring
+a Historical Session]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Historical_Queries[Historical
+Queries].
+
+=== How to Configure Historical Sessions Using a EclipseLink HistoryPolicy
+
+If you use a schema that you designed to maintain historical versions of
+objects and if that schema can be described by EclipseLink
+`+HistoryPolicy+`, you can query the historical versions of objects
+maintained by your database in accordance with your schema.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_a_History_Policy[Configuring
+a History Policy]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Acquiring_a_Historical_Session[Acquiring
+a Historical Session]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Historical_Queries[Historical
+Queries].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

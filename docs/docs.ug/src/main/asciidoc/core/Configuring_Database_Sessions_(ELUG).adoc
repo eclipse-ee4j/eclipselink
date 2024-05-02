@@ -1,0 +1,75 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Configuring_Database_Sessions_(ELUG)[Related
+Topics]
+
+This table lists the configurable options for database sessions.
+
+[#Table 91-1]##
+
+Option
+
+Workbench
+
+Java
+
+Configuring External Connection Pools
+
+Configuring a Primary Mapping Project
+
+Configuring a Session Login
+
+Configuring Logging
+
+Configuring Multiple Mapping Projects
+
+Configuring a Performance Profiler
+
+Configuring an Exception Handler
+
+Configuring a Session Customizer Class
+
+Configuring the Server Platform
+
+Configuring Session Event Listeners
+
+Configuring a Coordinated Cache
+
+Configuring the Integrity Checker
+
+Configuring Named Queries at the Session Level
+
+== Configuring External Connection Pools
+
+Unlike a server session, a database session does not provide internal
+connection pools. A database session only has a single database
+connection that it uses for its life cycle.
+
+We recommend that you use a server and client session in a three-tier
+environment. Alternatively, you can use a database session with an
+external connection pool (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[Configuring
+External Connection Pooling]): in this case, you should allocate a new
+database session per user/thread or request.
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Do not allow the concurrent use of a database session by
+multiple users/threads.’’’
+|===
+
+The usage of an external connection pool reduces the number of the
+database session login and logout attempts to acquire the database
+connection.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

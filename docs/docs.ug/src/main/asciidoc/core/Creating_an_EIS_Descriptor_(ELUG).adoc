@@ -1,0 +1,103 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Creating_an_EIS_Descriptor_(ELUG)[Related
+Topics]
+
+This section explains how to create descriptor options specific to an
+EIS descriptor.
+
+After you create a descriptor, you must configure its various options
+(see link:Configuring%20an%20EIS%20Descriptor%20(ELUG)[Configuring an
+EIS Descriptor]) and use it to define mappings.
+
+For information on the various types of mapping that EclipseLink
+supports, see link:Introduction%20to%20Mappings%20(ELUG)[Introduction to
+Mappings] and link:Creating%20a%20Mapping%20(ELUG)#CBBHHHJC[Creating a
+Mapping].
+
+For information on the various types of descriptor that EclipseLink
+supports, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptor_Types[Descriptor
+Types].
+
+For more information, see the following:
+
+* link:Introduction%20to%20Descriptors%20(ELUG)#CHECEAAE[Introduction to
+Descriptors]
+* link:Introduction%20to%20EIS%20Descriptors%20(ELUG)[Introduction to
+EIS Descriptors]
+
+== Creating an EIS Descriptor
+
+You can create an EIS descriptor using
+link:#How_to_Create_an_EIS_Descriptor_Using_Workbench[the Workbench] or
+link:#How_to_Create_an_EIS_Descriptor_Using_Java[Java code]. We
+recommend that you use the Workbench to create and manage your EIS
+descriptors.
+
+=== How to Create an EIS Descriptor Using Workbench
+
+Using Workbench, you can create the following types of EIS descriptor in
+an EIS project:
+
+* link:#EIS_Root_Descriptors[EIS Root Descriptors]
+* link:#EIS_Composite_Descriptors[EIS Composite Descriptors]
+
+==== EIS Root Descriptors
+
+image:eisdesin.gif[EIS root descriptor
+button,title="EIS root descriptor button"] You can modify an EIS
+descriptor’s behavior by configuring it as a root EIS descriptor (see
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type]). When you designate an
+EIS descriptor as a root, you tell the EclipseLink runtime that the EIS
+descriptor’s reference class is a parent class: no other class will
+reference it by way of a composite object mapping or composite
+collection mapping. Using an EIS root descriptor, you can configure all
+supported mappings. You can also configure an EIS root descriptor with
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_EIS_Interactions[EIS
+Interactions]. However, if you configure the EIS root descriptor with a
+composite object mapping or composite collection mapping, the reference
+descriptor you define must be an EIS composite descriptor; it cannot be
+another EIS root descriptor.
+
+==== EIS Composite Descriptors
+
+image:eisdescompicon.gif[EIS composite descriptor
+button,title="EIS composite descriptor button"] By default, when you add
+a class to an EIS project (see
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configuring
+Project Classpath]), Workbench creates an EIS descriptor for the class,
+and designates the EIS descriptor as a composite. When you designate an
+EIS descriptor as a composite, you tell the EclipseLink runtime that the
+EIS descriptor’s reference class may be referenced by a composite object
+mapping or composite collection mapping. Using an EIS composite
+descriptor, you can configure all supported mappings. However, you
+cannot configure an EIS composite descriptor with EIS interactions: for
+this, you need an link:#EIS_Root_Descriptors[EIS Root Descriptor].
+
+=== How to Create an EIS Descriptor Using Java
+
+This example shows how to create a relational descriptor using Java
+code.
+
+[#Example 71-1]## *_Creating an EIS Descriptor in Java_*
+
+`+EISDescriptor descriptor = new EISDescriptor();+`
+`+descriptor.setJavaClass(YourClass.class);+`
+
+To designate an EIS descriptor as a composite, use `+ClassDescriptor+`
+method `+descriptorIsAggregate+`.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_EIS[Category: EIS]

@@ -1,0 +1,84 @@
+*TOC*
+Special:Whatlinkshere_Configuring_an_Object-Relational_Data_Type_Array_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* To map a collection of aggregate structures, use an
+object-relational data type object array mapping (see
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Mappings%20(ELUG)#Object-Relational_Data_Type_Object_Array_Mapping[Object-Relational
+Data Type Object Array Mapping]). To store information in a separate
+table from the parent structure’s table, use an object-relational data
+type nested table mapping (see
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Mappings%20(ELUG)#Object-Relational_Data_Type_Nested_Table_Mapping[Object-Relational
+Data Type Nested Table Mapping]).
+|===
+
+This table lists the configurable options for an object-relational data
+type array mapping.
+
+[#Table 48-1]##
+
+[width="100%",cols="<70%,<16%,<14%",options="header",]
+|===
+|*Option to Configure* |*Workbench* |*Java*
+|link:Configuring%20an%20Object-Relational%20Data%20Type%20Mapping_(ELUG)#Configuring_Attribute_Name[Configuring
+Attribute Name] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20an%20Object-Relational%20Data%20Type%20Mapping_(ELUG)#Configuring_Field_Name[Configuring
+Field Name] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20an%20Object-Relational%20Data%20Type%20Mapping_(ELUG)#Configuring_Structure_Name[Configuring
+Structure Name] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Configuring
+Read-Only Mappings]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Configuring
+Method or Direct Field Accessing at the Mapping Level]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Serialized_Object_Converter[Configuring
+a Serialized Object Converter]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Type_Conversion_Converter[Configuring
+a Type Conversion Converter]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_an_Object_Type_Converter[Configuring
+an Object Type Converter]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Configuring
+Container Policy] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+For more information, see the following:
+
+* link:Introduction%20to%20Object-Relational%20Data%20Type%20Mappings%20(ELUG)#Object-Relational_Data_Type_Array_Mapping[Object-Relational
+Data Type Array Mapping]
+* link:Configuring%20an%20Object-Relational%20Data%20Type%20Mapping_(ELUG)[Configuring
+an Object-Relational Data Type Mapping]
+* link:Configuring%20a%20Mapping_(ELUG)[Configuring a Mapping]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

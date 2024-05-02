@@ -1,0 +1,117 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Deploying_an_EclipseLink_Application_(ELUG)[Related
+Topics]
+
+For more information, see the following:
+
+* link:Integrating%20EclipseLink%20with%20an%20Application%20Server%20(ELUG)[Integrating
+EclipseLink with an Application Server]
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)[Creating
+EclipseLink Files for Deployment]
+* link:Packaging%20a%20EclipseLink%20Application%20(ELUG)[Packaging an
+EclipseLink Application]
+
+== Deploying Java Applications
+
+Build the JAR file (see
+link:Packaging%20a%20EclipseLink%20Application%20(ELUG)[Packaging Java
+Applications]) and place it on the classpath.
+
+For more information on accessing EclipseLink from your client
+application, see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)[Acquiring
+and Using Sessions at Run Time].
+
+== Deploying JavaServer Pages and Servlets
+
+After you build the WAR and JAR files (see
+link:Packaging%20a%20EclipseLink%20Application%20(ELUG)[Packaging
+JavaServer Pages and Servlet Applications]), build them into an EAR file
+for deployment. To deploy the EAR to your JSP servlet server, copy the
+EAR to a commonly used directory. You may also need to use
+server-specific deployment tools. For more information, see the server
+documentation.
+
+For more information on accessing EclipseLink from your client
+application, see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)[How
+to Load a Session from sessions.xml with an Alternative Class Loader].
+
+== Deploying Session Bean Applications
+
+After you build the WAR and JAR files (see
+link:Packaging%20a%20EclipseLink%20Application%20(ELUG)[Packaging
+Session Bean Applications]), build them into an EAR file for deployment.
+To deploy the EAR file to your Java EE server, copy the EAR to a
+commonly used directory. You may also need to use server-specific
+deployment tools. For more information, see the server documentation.
+
+For more information on accessing EclipseLink from your client
+application, see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)[How
+to Load a Session from sessions.xml with an Alternative Class Loader].
+
+Optionally, you may also consider
+link:#Performing_Hot_Deployment_of_EJB[Performing Hot Deployment of
+EJB].
+
+== Deploying JPA Applications
+
+After you packaged your JPA application, deploy it to an application
+server of your choice.
+
+For more information, see
+link:Packaging_and_Deploying_EclipseLink_JPA_Applications_(ELUG)[Deploying
+an EclipseLink JPA Application].
+
+== Performing Hot Deployment of EJB
+
+Many Java EE containers support _hot deployment_, a feature that enables
+you to deploy EJB on a running server. Hot deployment allows you to do
+the following:
+
+* Deploy newly developed EJB to a running production system.
+* Remove (undeploy) deployed EJB from a running server.
+* Modify (redeploy) the behavior of deployed EJB by updating the bean
+class definition.
+
+The client receives deployment exceptions when attempting to access
+undeployed or re-deployed bean instances. The client application must
+catch and handle the exceptions.
+
+How you configure hot deployment of EJB depends on the type of Java EE
+application you are deploying:
+
+* POJO application (see
+link:#How_to_Perform_Hot_Deployment_in_a_POJO_Application[How to Perform
+Hot Deployment in a POJO Application]).
+
+For more information about hot deployment, see the Java EE container
+documentation.
+
+=== How to Perform Hot Deployment in a POJO Application
+
+When you take advantage of hot deployment in a POJO application, you
+must refresh the EclipseLink session using the `+SessionManager+` method
+`+getSession+` with the appropriate arguments (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)[How
+to Refresh a Session when the Class Loader Changes].
+
+If you do not use this `+SessionManager+` method, then your application
+is responsible for destroying or refreshing the session when a hot
+deployment (or hot redeployment) occurs.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

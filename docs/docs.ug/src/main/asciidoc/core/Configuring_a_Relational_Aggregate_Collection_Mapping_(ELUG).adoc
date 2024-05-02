@@ -1,0 +1,94 @@
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_Aggregate_Collection_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: To use a relational aggregate collection mapping with
+Workbench, you must use
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Amendment_Methods[an
+amendment method].
+|===
+
+This table lists the configurable options for a relational aggregate
+collection mapping.
+
+[#Table 40-1]##
+
+[width="100%",cols="<70%,<16%,<14%",options="header",]
+|===
+|*Option* |*Workbench* |*Java*
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_a_Database_Field[Database
+field] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Reference_Descriptor[Reference
+descriptor] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Container
+policy] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Method
+or direct field access]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Read-only
+mapping] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Batch_Reading[Batch
+reading] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Bidirectional_Relationship[Bidirectional
+relationship] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Query_Key_Order[Query
+key order] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Table_and_Field_References_(Foreign_and_Target_Foreign_Keys)[Configuring
+Configuring Table and Field References]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+This example shows how to create a aggregate collection mapping and add
+it to a descriptor using Java code.
+
+[#Example 42-1]## *_Aggregate Collection Mapping_*
+
+....
+public void customize(ClassDescriptor descriptor) {
+    AggregateCollectionMapping mapping = new AggregateCollectionMapping();
+
+    // configure mapping
+    ...
+
+    // add mapping to descriptor
+    descriptor.addMapping(mapping);
+}
+....
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Collection_Mapping[Aggregate
+Collection Mapping]
+* link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring a
+Relational Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

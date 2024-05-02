@@ -1,0 +1,2091 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EclipseLink_Sessions_(ELUG)[Related
+Topics]
+
+An EclipseLink session provides the primary access to the EclipseLink
+runtime. It is the means by which your application performs all
+persistence operations with the data source that contains persistent
+objects.
+
+A session associates data source platform information, data source login
+information, and mapping metadata for a particular application. You can
+reuse mapping metadata in different applications by defining different
+sessions.
+
+EclipseLink provides different session types, each optimized for
+different design requirements and data access strategies. You can
+combine different session types in the same application.
+
+== Session Types
+
+This table lists the session types that you can use in a POJO
+EclipseLink application.
+
+[#Table 83-1]##
+
+Session Type
+
+Description
+
+Workbench
+
+Java
+
+Server and Client Sessions
+
+Server sessions provide session management to a single data source
+(including shared object cache and connection pools) for multiple
+clients in a three-tier architecture using database or EIS platforms.
+This is the most flexible, scalable, and commonly used session.
+
+You acquire a client session from a server session at run time to
+provide access to a single data source for each client.
+
+Unit of Work Sessions
+
+Acquired from any session type (directly, or by way of an external
+transaction controller) to transactionally modify objects.
+
+Isolated Client Session
+
+A special type of client session that uses a session cache isolated from
+the shared object cache of its parent server session.
+
+Historical Sessions
+
+A special type of client session that provides a read-only snapshot of
+object versions as of a specified time and uses a session cache isolated
+from the shared object cache of its parent server session.
+
+Session Broker and Client Sessions
+
+Provides session management to multiple data sources for multiple
+clients by aggregating two or more server sessions (can also be used
+with database sessions).
+
+You acquire a client session from a session broker at run-time to
+provide access to all the data sources managed by the session broker for
+each client.
+
+Database Sessions
+
+Provides session management to a single database for a single client
+suitable for simple or two-tiered applications. We do not recommend this
+session type in three-tiered applications because it does not offer the
+same flexibility and scalability as the server session.
+
+Remote Sessions
+
+A client-side session that communicates over RMI with a corresponding
+dedicated client session and shared server session. Remote sessions
+handle object identity and marshalling and unmarshalling between
+client-side and server-side.
+
+For more information, see the following:
+
+* link:Creating%20a%20Session%20(ELUG)[Creating a Session]
+* link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Session[Configuring
+a Session]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Acquiring_and_Using_Sessions_at_Run_Time[Acquiring
+and Using Sessions at Run Time]
+
+== Session Concepts
+
+This section describes concepts unique to EclipseLink sessions,
+including the following:
+
+* link:#Session_Architecture[Session Architecture]
+* link:#Session_Configuration_and_the_sessions.xml_File[Session
+Configuration and the sessions.xml File]
+* link:#Session_Customization[Session Customization]
+* link:#Acquiring_a_Session_at_Run_Time_with_the_Session_Manager[Acquiring
+a Session at Run Time with the Session Manager]
+* link:#Managing_Session_Events_with_the_Session_Event_Manager[Managing
+Session Events with the Session Event Manager]
+* link:#Logging[Logging]
+* link:#Profiler[Profiler]
+* link:#Integrity_Checker[Integrity Checker]
+* link:#Exception_Handlers[Exception Handlers]
+* link:#Registering_Descriptors[Registering Descriptors]
+* link:#Sessions_and_Sequencing[Sessions and Sequencing]
+
+=== Session Architecture
+
+As the link:#Figure_83-1[Simple EclipseLink Session Architecture] figure
+illustrates, a session instance is composed of the following components:
+
+* link:#Object_Cache[Object Cache]
+* link:#Connection_Pools[Connection Pools]
+* link:#Query_Mechanism[Query Mechanism]
+* link:#Java_Object_Builder[Java Object Builder]
+
+[#Figure 83-1]## *_Simple EclipseLink Session Architecture_*
+
+.Simple EclipseLink Session Architecture
+image::sessarch.gif[Simple EclipseLink Session
+Architecture,title="Simple EclipseLink Session Architecture"]
+
+How these session components are implemented and how they interact
+depends on the type of session. For example, for server and client
+sessions, the server session provides a connection pool and shared
+object cache on behalf of all client sessions acquired from it.
+
+==== Object Cache
+
+EclipseLink sessions provide an object cache. This cache, known as the
+*session cache*, retains information about objects that are read from or
+written to the database, and is a key element for improving the
+performance of an EclipseLink application.
+
+Typically, a server session’s object cache is shared by all client
+sessions acquired from it. That is, for a Server session
+`+myServerSession+`, each client session acquired by calling server
+session method `+acquireClientSession+` shares the same object cache as
+`+myServerSession+`.
+
+Isolated and historical sessions provide their own session cache
+isolated from the shared object cache of their parent server session.
+For more information, see link:#Isolated_Client_Sessions[Isolated Client
+Sessions] and link:#Historical_Sessions[Historical Sessions].
+
+You can easily manage concurrent access to this shared cache by using a
+unit of work session acquired from any session. For more information,
+see link:#Unit_of_Work_Sessions[Unit of Work Sessions].
+
+For more information, see link:#Sessions_and_the_Cache[Sessions and the
+Cache].
+
+==== Connection Pools
+
+A *connection pool* is a collection of reusable connections to a single
+data source.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: To simultaneously access multiple databases from within a
+single session, use a session broker. For more information, see
+link:#Session_Broker_and_Client_Sessions[Session Broker and Client
+Sessions].
+|===
+
+Because creating a data source connection is usually expensive, a
+properly configured connection pool significantly improves performance.
+
+You can configure your session to use internal connection pools provided
+by EclipseLink or external connection pools provided by a JDBC driver or
+Java EE container. By default, EclipseLink uses internal connection
+pools.
+
+Internal connection pools are usually used in non-EJB applications, or
+when an external transaction controller (JTA) is not used. If you
+configure your session to use internal connection pools, you can
+configure its default read and write connection pools. You can create
+special purpose connection pools for application-specific purposes
+(named connection pools) or exclusively for sequencing (sequence
+connection pool). For more information, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Connection_Pools[Internal
+Connection Pools].
+
+External connection pools are usually used in EJB applications and when
+an external transaction controller (JTA) is used. For more information,
+see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Connection_Pools[External
+Connection Pools].
+
+For more information about data access configuration in general, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#CHDJBDEA[Introduction to
+Data Access].
+
+==== Query Mechanism
+
+At run time, your application uses a session to perform all persistence
+operations: creating, reading, updating, and deleting objects. You
+perform these operations using EclipseLink queries and expressions with
+the session query API.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#CACJAFJD[Introduction
+to EclipseLink Queries].
+
+==== Java Object Builder
+
+When you use object-level read queries, EclipseLink automatically builds
+Java objects from the data retrieved. When you use object-level write
+queries, EclipseLink automatically converts the affected Java objects
+into the appropriate data native to your data source.
+
+=== Session Configuration and the sessions.xml File
+
+EclipseLink provides two ways to configure your sessions: through Java
+code using the `+Session+` API, or using Workbench to build a session
+configuration file, the `+sessions.xml+` file.
+
+In most cases, you configure sessions for the application using the
+`+sessions.xml+` file. This file is an Extensible Markup Language (XML)
+file that contains all sessions that are associated with the
+application. The `+sessions.xml+` file can contain any number of
+sessions and session types.
+
+We recommend that you use the `+sessions.xml+` file to deploy an
+EclipseLink application, because it provides the following advantages:
+
+* It is easy to create and maintain in Workbench.
+* It is easy to troubleshoot.
+* It provides access to most session configuration options.
+* It offers excellent flexibility, including the ability to modify
+deployed applications without recompiling.
+
+For more information on creating a session in the `+sessions.xml+` file,
+see
+link:Creating%20a%20Session%20(ELUG)#Introduction_to_the_Session_Creation[Introduction
+to the Session Creation].
+
+=== Session Customization
+
+You can customize a session at run time by specifying a session
+customizer–a Java class that implements the
+`+org.eclipse.persistence.config.SessionCustomizer+` interface and
+provides a default (zero-argument) constructor.
+
+You use a session customizer to customize a session at run time through
+code API similar to how you use an
+link:Introduction%20to%20Descriptors%20(ELUG)#Amendment_and_After-Load_Methods[amendment
+method] to customize a descriptor.
+
+For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Session_Customizer_Class[Configuring
+a Session Customizer Class].
+
+=== Acquiring a Session at Run Time with the Session Manager
+
+The EclipseLink session manager lets you build a series of sessions that
+are maintained under a singleton object called the session manager.
+
+The session manager is a static utility class that loads EclipseLink
+sessions from the
+link:#Session_Configuration_and_the_sessions.xml_File[`+sessions.xml+`]
+file, caches the sessions by name in memory, and provides a single
+access point for EclipseLink sessions.
+
+At run time, EclipseLink will attempt to load the `+sessions.xml+` file
+from the two following default resource names: `+sessions.xml+` and
+`+META-INF/sessions.xml+`. Refer to
+link:Packaging%20a%20EclipseLink%20Application%20(ELUG)[Packaging an
+EclipseLink Application] for additional information.
+
+The session manager supports the following session types:
+
+* link:#Server_and_Client_Sessions[`+ServerSession+`]
+* link:#Session_Broker_and_Client_Sessions[`+SessionBroker+`]
+* link:#Database_Sessions[`+DatabaseSession+`]
+
+The session manager has two main functions: it creates instances of
+these sessions and it ensures that only a single instance of each named
+session exists for any instance of a session manager.
+
+The session manager instantiates sessions as follows:
+
+[arabic]
+. The client application requests a session by name.
+. The session manager looks up the session name in the `+sessions.xml+`
+file. If the session name exists, the session manager instantiates the
+specified session; otherwise, it raises an exception.
+. After instantiation, the session remains viable until you shut down
+the application.
+
+Once you have a session instance, you can use it to acquire additional
+types of sessions for special tasks. For example, you can acquire a unit
+of work from any session to perform transactional operations. You can
+acquire a client session from a server session to perform client
+operations in a three-tier architecture.
+
+For more information, see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)[Acquiring
+and Using Sessions at Run Time].
+
+=== Managing Session Events with the Session Event Manager
+
+Sessions raise *session events* for most session operations. Session
+events help you debug or coordinate the actions of multiple sessions.
+
+The session event manager handles information about session events.
+Applications register session event listeners with the session event
+manager to receive session events.
+
+For example, session event listeners play an important role in the
+configuration of isolated sessions (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)[Configuring
+Exclusive Isolated Client Sessions for Virtual Private Database]). In an
+isolated session, if the EclipseLink runtime raises a
+`+SessionEvent.NoRowsModified+` event, it is handled by your
+`+SessionEventListener+` (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_NoRowsModifiedSessionEvent_Event_Handler[Using
+NoRowsModifiedSessionEvent Event Handler]). This event listener is your
+opportunity to determine whether the update failure was due to a
+security violation (in which case you should not retry the operation) or
+due to an optimistic lock issue (in which case a retry may be
+appropriate). See link:#Logging[Logging] for information on adding
+logging to your event listeners.
+
+Another example is the use of session event listeners to configure proxy
+authentication in an Oracle Database. (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Oracle_Database_Proxy_Authentication[Configuring
+Oracle Database Proxy Authentication]).
+
+This section explains how to use session events, including the
+following:
+
+* link:#Session_Event_Manager_Events[Session Event Manager Events]
+* link:#Session_Event_Listeners[Session Event Listeners]
+
+==== Session Event Manager Events
+
+The session event manager supports the session events listed in the
+following tables:
+
+* link:#Table_83-2[Session Events]
+* link:#Table_83-3[Unit of Work Events]
+
+[#Table 83-2]## *_Session Events_*
+
+[width="100%",cols="<16%,<84%",options="header",]
+|===
+|*Event* |*Description*
+|MissingDescriptor |Raised if a descriptor is missing for a class being
+persisted. You can use this event to lazy register the descriptor or set
+of descriptors.
+
+|MoreRowsDetected |Raised when a `+ReadObjectQuery+` detects more than
+one row returned from the database. This event can indicate a possible
+error condition in your application.
+
+|NoRowsModified |Raised after update or delete SQL has been sent to the
+database and a row count of zero is returned.
+
+|OutputParametersDetected |Raised after a stored procedure call with
+output parameters executes. This event enables you to retrieve a result
+set and output parameters from a single stored procedure.
+
+|PostAcquireClientSession |Raised after a client Session is acquired.
+
+|PostAcquireConnection |Raised after acquiring a connection.
+
+|PostAcquireExclusiveConnection |Raised when a client session, with
+isolated data, acquires an exclusive connection.
+
+|PostBeginTransaction |Raised after a database transaction starts.
+
+|PostCommitTransaction |Raised after a database transaction commits.
+
+|PostConnect |Raised after connecting to the database.
+
+|PostExecuteQuery |Raised after the execution of every query on the
+session.
+
+|PostLogin |Raised after the session initializes and acquires
+connections.
+
+|PostReleaseClientSession |Raised after releasing a client session.
+
+|PostRollbackTransaction |Raised after a database transaction rolls
+back.
+
+|PreBeginTransaction |Raised before a database transaction starts.
+
+|PreCommitTransaction |Raised before a database transaction commits.
+
+|PreExecuteQuery |Raised before the execution of every query on the
+session.
+
+|PreLogin |Raised before the session initializes and acquires
+connections.
+
+|PreReleaseClientSession |Raised before releasing a client session.
+
+|PreReleaseConnection |Raised before releasing a connection.
+
+|PreReleaseExclusiveConnection |Raised before a client session, with
+isolated data, releases its exclusive connection.
+
+|PreRollbackTransaction |Raised before a database transaction rolls
+back.
+|===
+
+[#Table 83-3]## *_Unit of Work Events_*
+
+[width="100%",cols="<12%,<88%",options="header",]
+|===
+|*Event* |*Description*
+|PostAcquireUnitOfWork |Raised after a `+UnitOfWork+` is acquired
+
+|PostCalculateUnitOfWorkChangeSet |Raised after the commit has begun on
+the `+UnitOfWork+` and after the changes are calculated. The
+`+UnitOfWorkChangeSet+`, at this point, will contain change sets without
+the version fields updated and without identity field type primary keys.
+These will be updated after the insert, or update, of the object.
+
+|PostCommitUnitOfWork |Raised after a `+UnitOfWork+` commits
+
+|PostDistributedMergeUnitOfWorkChangeSet |Raised after a `+UnitOfWork+`
+change set has been merged when that change set has been received from a
+distributed session.
+
+|PostMergeUnitOfWorkChangeSet |Raised after a `+UnitOfWork+` change set
+has been merged.
+
+|PostReleaseUnitOfWork |Raised on a `+UnitOfWork+` after it is released.
+
+|PostResumeUnitOfWork |Raised on a `+UnitOfWork+` after it resumes.
+
+|PreCalculateUnitOfWorkChangeSet |Raised after the commit has begun on
+the `+UnitOfWork+` but before the changes are calculated.
+
+|PreCommitUnitOfWork |Raised before a `+UnitOfWork+` commits.
+
+|PreDistributedMergeUnitOfWorkChangeSet |Raised before a `+UnitOfWork+`
+change set has been merged when that change set has been received from a
+distributed session.
+
+|PreMergeUnitOfWorkChangeSet |Raised before a `+UnitOfWork+` change set
+has been merged.
+
+|PrepareUnitOfWork |Raised after the a `+UnitOfWork+` flushes its SQL,
+but before it commits its transaction.
+
+|PreReleaseUnitOfWork |Raised on a `+UnitOfWork+` before it is released.
+|===
+
+==== Session Event Listeners
+
+You can create session event listeners in two ways: either by
+implementing the `+SessionEventListener+` interface, or by extending the
+`+SessionEventAdapter+` class.
+
+To register a `+SessionEventListener+` for session events, register it
+with a session using the `+SessionEventManager+` method `+addListener+`.
+
+For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners].
+
+=== Logging
+
+You can configure a session to write run-time information to an
+EclipseLink log. This information includes status, diagnostic, SQL, and,
+when profiling is enabled, performance data (see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#Measuring_EclipseLink_Performance_with_the_EclipseLink_Profiler[Measuring
+EclipseLink Performance with the EclipseLink Profiler]).
+
+Logging options are configurable at the session level (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Logging[Configuring
+Logging]).
+
+Note: To facilitate debugging, you can add logging to your listeners to
+only log the events that are of the interest to your application. Within
+the session context, use the following logging utility:
+
+Session.getSessionLog().log(int level, String message) 
+
+Without the session context, use the following logging utility:
+
+AbstractSessionLog.getLog().log(int level, String message)
+
+Both the getSessionLog and getLog methods return a session log (an
+instance of a SessionLog interface) loaded with an accessor’s log
+messages and SQL. Then the session log performs logging at the level
+that you specify. For more information on session event listeners, see
+Session Event Listeners.
+
+For information on using the third-party logging utilities in your
+EclipseLink application, see
+http://wiki.eclipse.org/EclipseLink/Foundation/Logging
+
+This section describes session log options, including the following:
+
+* link:#Log_Types[Log Types]
+* link:#Log_Output[Log Output]
+* link:#Log_Level[Log Level]
+* link:#Logging_SQL[Logging SQL]
+* link:#Logging_Chained_Exceptions[Logging Chained Exceptions]
+* link:#Logging_Inside_Oracle_Application_Server[Logging Inside Oracle
+Application Server]
+* link:#Logging_Inside_a_non-Oracle_Java_EE_Container[Logging Inside a
+non-Oracle Java EE Container]
+* link:#Logging_Outside_of_a_Java_EE_Container[Logging Outside of a Java
+EE Container]
+
+==== Log Types
+
+EclipseLink supports the following types of logging:
+
+* link:#EclipseLink_Native_Logging[EclipseLink Native Logging]
+* link:#java.util_Logging[java.util Logging]
+* link:#Server_Logging[Server Logging]
+
+===== EclipseLink Native Logging
+
+EclipseLink native logging is the default session log type. It is
+provided by `+org.eclipse.persistence.logging.DefaultSessionLog+`. The
+link:#Example_83-1[Sample EclipseLink Log Message] example shows a
+typical EclipseLink native log message.
+
+You can configure EclipseLink native logging options using Workbench
+(see
+link:Configuring%20a%20Session%20(ELUG)#How_to_Configure_Logging_Using_Workbench[How
+to Configure Logging Using Workbench]).
+
+[#Example 83-1]## *_Sample EclipseLink Log Message_*
+
+`+[EclipseLink Info]: +`_`+DATE+`_
+
+_`+TIME+`_`+-DatabaseSession(12345)-Thread(12345)-EclipseLink, version: EclipseLink+`
+`+[EclipseLink Config]: DATE+`
+`+TIME-DatabaseSession(12345)-Thread(12345)-Connection(12345)-+`
+`+  connecting(DatabaseLogin(+`
+`+             platform=>Oracle9Platform+`
+`+             user name=> "+`_`+username+`_`+"+`
+`+             datasource URL=> "jdbc:oracle:thin:@144.23.214.115:1521:eclipselink"+`
+`+))+` `+[EclipseLink Config]: DATE +`
+`+TIME-DatabaseSession(12345)-Thread(12345)-Connection(12345)-+`
+`+  Connected: jdbc:oracle:thin:@144.23.214.115:1521:eclipselink+`
+`+  User: +`_`+USERNAME+`_
+`+  Database: Oracle Version: Oracle9i Enterprise Edition - Production+`
+`+With the Partitioning, OLAP and Oracle Data Mining options+`
+`+JServer Release 9.2.0.3.0 - Production+`
+`+  Driver: Oracle JDBC driver Version: 9.2.0.3.0+`
+`+[EclipseLink Info]: +`_`+DATE+`_
+`+TIME-DatabaseSession(12345)-Thread(12345)-loggingTestSession login+`
+`+successful+`
+
+===== java.util Logging
+
+This type of logging makes EclipseLink conform to the
+`+java.util.logging+` package. It is provided by
+`+org.eclipse.persistence.logging.JavaLog+`. Logging options are
+configured in the __`+/lib/logging.properties+` file. Messages are
+written to any number of destinations based on this configuration. The
+link:#Example_83-2[Sample java.util.logging Log Messages] example shows
+a typical `+java.util.logging+` log message.
+
+For more information on using `+java.util.logging+` package, see
+link:Configuring%20a%20Session%20(ELUG)#How_to_Configure_a_Session_to_use_the_java.util.logging_Package[ow
+to Configure a Session to use the java.util.logging Package].
+
+[#Example 83-2]## *_Sample java.util.logging Log Messages_*
+
+`+Dec 9, 2003 2:05:05 PM org.eclipse.persistence.loggingTestSession DatabaseSession(32603767) Thread(10)+`
+`+INFO: EclipseLink, version: EclipseLink +`
+`+Dec 9, 2003 2:05:07 PM org.eclipse.persistence.loggingTestSession.connection DatabaseSession(32603767) Connection(927929) Thread(10)+`
+`+CONFIG: connecting(DatabaseLogin(+` `+    platform=>Oracle9Platform+`
+`+    user name=> "coredev8"+`
+`+    datasource URL=> "jdbc:oracle:thin:@144.23.214.115:1521:eclipselink"+`
+`+))Dec 9, 2003 2:05:08 PM org.eclipse.persistence.loggingTestSession.connection DatabaseSession(32603767) Connection(927929) Thread(10)+`
+`+CONFIG: Connected: jdbc:oracle:thin:@144.23.214.115:1521:eclipselink+`
+`+    User: COREDEV8+`
+`+    Database: Oracle  Version: Oracle9i Enterprise Edition Release 9.2.0.3.0 - Production+`
+`+With the Partitioning, OLAP and Oracle Data Mining options+`
+`+JServer Release 9.2.0.3.0 - Production+`
+`+    Driver: Oracle JDBC driver  Version: 9.2.0.3.0+`
+`+Dec 9, 2003 2:05:08 PM org.eclipse.persistence.loggingTestSession DatabaseSession(32603767) Thread(10)+`
+`+INFO: loggingTestSession login successful+`
+
+===== Server Logging
+
+Server logging is used to integrate EclipseLink logging with an
+application server log.
+
+The EclipseLink runtime determines the server log type to use given the
+server platform you configure when you create your project
+(link:Creating%20a%20Project%20(ELUG)#Introduction_to_the_Project_Creation[Introduction
+to the Project Creation]).
+
+For example, if your project uses the WebLogic platform, EclipseLink
+uses the `+org.eclipse.persistence.platform.server.wls.WlsLog+`; if your
+project uses the OC4J platform, EclipseLink uses the
+`+org.eclipse.persistence.platform.server.oc4j.OjdlLog+`.
+
+==== Log Output
+
+If you are using EclipseLink native logging, you can configure
+EclipseLink to write log messages to a file or to the console (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Logging[Configuring
+Logging]).
+
+If you are using `+java.util.logging+`, EclipseLink writes log messages
+to the destinations you configure in the __`+/lib/logging.properties+`
+file (see
+link:Configuring%20a%20Session%20(ELUG)#How_to_Configure_a_Session_to_use_the_java.util.logging_Package[How
+to Configure a Session to use the java.util.logging Package]).
+
+If you are using server logging, EclipseLink writes log messages to the
+application server’s log file (there is no separate EclipseLink log file
+in this case).
+
+==== Log Level
+
+You can control the amount and detail of log output by configuring the
+log level (in ascending order of information) in the following way:
+
+* `+OFF+`–Logs nothing.
+* `+SEVERE+`–Logs exceptions indicating EclipseLink cannot continue, as
+well as any exceptions generated during login. This includes a stack
+trace.
+* `+WARNING+`–Logs exceptions that do not force EclipseLink to stop,
+including all exceptions not logged with severe level. This does not
+include a stack trace.
+* `+INFO+` (default)–Logs the login/logout per server session, including
+the user name. After acquiring the session, detailed information is
+logged.
+* `+CONFIG+`–Logs only login, JDBC connection, and database information.
+* `+FINE+`–Logs SQL (including thread information).
+* `+FINER+`–Similar to warning. Includes stack trace.
+* `+FINEST+`–Includes additional low level information
+* `+ALL+`–Logs everything.
+
+By default, EclipseLink logs at the
+`+org.eclipse.persistence.logging.SessionLog.INFO+` level so that some
+information is logged by default.
+
+At run time, set the log level using `+Session+` method `+setLogLevel+`,
+passing in one of the log level constants provided by
+`+org.eclipse.persistence.logging.SessionLog+`.
+
+==== Logging SQL
+
+In a relational project, EclipseLink accesses the database using SQL
+strings that it generates internally. This feature enables applications
+to use the session methods or query objects without having to perform
+their own SQL translation.
+
+If, for debugging purposes, you want to review a record of the SQL that
+is sent to the database, set the session log level to
+`+org.eclipse.persistence.logging.SessionLog.FINE+`–the session will log
+all executed SQL to the session log.
+
+This example shows how to configure the log destination using the
+`+setLog()+` method on the session.
+
+[#Example 83-3]## *_Configuring the Log Destination_*
+
+[source,java]
+----
+ private static SessionEventListener buildListener() {
+     return new SessionEventAdapter() {
+         public void preLogin(SessionEvent event) {
+             File file = new
+             File("C:\\eclipse\eclipselink\\examples\\2-TierEmployee\\eclipselink.log");
+             try {
+                 System.out.println("FILE: " + file.getAbsolutePath());
+                 FileWriter writer = new FileWriter(file);
+                 event.getSession().setLog(writer);
+             }
+             catch (IOException ioe) {
+                 ioe.printStackTrace();
+                 throw new RuntimeException("Failed to setup logging to: "
+                                            + file.getAbsolutePath());
+             }
+         }
+     };
+ }
+----
+
+==== Logging Chained Exceptions
+
+The logging chained exception facility enables you to log causality when
+one exception causes another as part of the standard stack back-trace.
+Causal chains appear automatically in your logs.
+
+==== Logging Inside Oracle Application Server
+
+When you deploy an EclipseLink-enabled application to Oracle Application
+Server, EclipseLink JPA defaults to `+ServerLog+` with no log level so
+that EclipseLink uses the configuration in `+j2ee-logging.xml+`.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Session%20(ELUG)#Configuring_Logging[Configuring
+Logging]
+* _http://download.oracle.com/docs/cd/E12524_01/core.1013/e10403/toc.htm[Oracle
+Fusion Middleware Administrator’s Guide]_
+
+==== Logging Inside a non-Oracle Java EE Container
+
+When you deploy an EclipseLink-enabled application to a non-Oracle
+application server or EJB container, JPA defaults to `+ServerLog+` with
+no log level so that EclipseLink uses the configuration in
+`+j2ee-logging.xml+`.
+
+==== Logging Outside of a Java EE Container
+
+When you deploy an EclipseLink-enabled application outside of an EJB
+container, the logging defaults revert to `+DefaultSessionLog+` and
+`+INFO+` log level.
+
+If you are using EclipseLink native logging (to a file) or the
+`+java.util.logging+` package outside of a Java EE container, you
+control logging using the
+`+<+`_`+JRE_HOME+`_`+>/lib/logging.properties+` file.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Session%20(ELUG)#Configuring_Logging[Configuring
+Logging]
+* link:Configuring%20a%20Session%20(ELUG)#How_to_Configure_a_Session_to_use_the_java.util.logging_Package[How
+to Configure a Session to use the java.util.logging Package]
+
+=== Profiler
+
+The EclipseLink session provides profiling API that lets you identify
+performance bottlenecks in your application (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Performance_Profiler[Configuring
+a Performance Profiler]). When enabled, the profiler logs a summary of
+the performance statistics for every query that the application
+executes.
+
+EclipseLink allows you to measure application performance using the
+following tools:
+
+* link:#EclipseLink_Profiler[EclipseLink Profiler]
+
+==== EclipseLink Profiler
+
+The EclipseLink profiler is a high-level logging service. Instead of
+logging SQL statements, the profiler logs a summary of each query you
+execute. The summary includes a performance breakdown of the query that
+lets you identify performance bottlenecks. The profiler also provides a
+report summarizing the query performance for an entire session.
+
+For more information, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#Measuring_EclipseLink_Performance_with_the_EclipseLink_Profiler[Measuring
+EclipseLink Performance with the EclipseLink Profiler].
+
+=== Integrity Checker
+
+When you log into a session, EclipseLink initializes and validates the
+descriptors you registered with it. By configuring the integrity
+checker, you can customize this validation process.
+
+For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Integrity_Checker[Configuring
+the Integrity Checker].
+
+=== Exception Handlers
+
+Exception handlers allow any exception that occurs in a session to be
+caught and processed. Exception handlers can be used for debugging
+purposes, or to resolve database timeouts or failures.
+
+To use exception handlers, register an implementor of the
+`+org.eclipse.persistence.exceptions.ExceptionHandler+` interface with
+the session (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_an_Exception_Handler[Configuring
+an Exception Handler]).
+
+If an exception occurs during a session operation, such as executing a
+query, the exception is passed to the exception handler. The exception
+handler can either rethrow the exception, or handle the exception and
+retry the operation. When handling exceptions, ensure that the following
+conditions are met:
+
+* If you are performing a write query and you are within a transaction,
+you should not retry the operation.
+* If you are performing a read query, you may retry the operation, and,
+if successful, return the query result.
+
+If your exception handler cannot proceed, you should throw an
+appropriate application-specific exception.
+
+=== Registering Descriptors
+
+You use a session to perform persistence operations on the objects
+described by EclipseLink mapping metadata represented as an EclipseLink
+project (see link:Introduction%20to%20Projects_(ELUG)[Introduction to
+Projects]). Each session must therefor be associated with the
+descriptors of at least one EclipseLink project. You associate
+descriptors with a session by registering them with the session.
+
+The preferred way to register descriptors with a session is to use the
+Workbench to configure the session with a mapping project (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Primary_Mapping_Project[Configuring
+a Primary Mapping Project] and
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Multiple_Mapping_Projects[Configuring
+Multiple Mapping Projects]).
+
+=== Sessions and Sequencing
+
+An essential part of maintaining object identity is managing the
+assignment of unique values to distinguish one instance from another.
+For more information, see
+link:Introduction%20to%20Projects_(ELUG)#Projects_and_Sequencing[Projects
+and Sequencing].
+
+Sequencing options you configure in a `+sessions.xml+` (or
+`+project.xml+`) file determine the type of sequencing that EclipseLink
+uses.
+
+In a POJO project, you can use session-level sequence configuration to
+override project-level sequence configuration, on a session-by-session
+basis, if required (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Sequencing_at_the_Session_Level[Configuring
+Sequencing at the Session Level]).
+
+After configuring the sequence type at the session (or project) level,
+for each descriptor you must also configure sequencing options for that
+descriptor to use sequencing (see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Sequencing[Descriptors
+and Sequencing]).
+
+== Server and Client Sessions
+
+A server session manages the server side of client/server
+communications, providing shared resources, including a shared object
+cache and connection pools to a single data source.
+
+A client session is a server-side communications mechanism that works
+together with the server session to provide the client/server
+connection. You acquire client sessions from a server session at run
+time as required. By default, a client session shares the session cache
+of its parent server session. Each client session serves one client. A
+client session communicates with the server session on behalf of the
+client application.
+
+Each client session can have only one associated server session, but a
+server session can support any number of client sessions.
+
+As the link:#Figure_83-2[Typical EclipseLink Server Session with Client
+Session Architecture] figure illustrates, together, the client session
+and server session provide a three-tier architecture that you can scale
+easily, by adding more client sessions. A server session is the most
+common EclipseLink session type because it supports this three-tier
+architecture that is common in enterprise applications. Because of this
+scalability, we recommend that you use the three-tier architecture to
+build your EclipseLink applications.
+
+[#Figure 83-2]## *_Typical EclipseLink Server Session with Client
+Session Architecture_*
+
+.Typical EclipseLink Server Session with Client Session Architecture
+image::Sessclie.gif[Typical EclipseLink Server Session with Client
+Session
+Architecture,title="Typical EclipseLink Server Session with Client Session Architecture"]
+
+This section explains the advantages of using server sessions and client
+sessions in your EclipseLink application, including the following:
+
+* link:#Three-Tier_Architecture_Overview[Three-Tier Architecture
+Overview]
+* link:#Advantages_of_the_EclipseLink_Three-Tier_Architecture[Advantages
+of the EclipseLink Three-Tier Architecture]
+
+For more information, see the following:
+
+* link:Creating%20a%20Session%20(ELUG)#Creating_a_Server_Session[Creating
+a Server Session]
+* link:Configuring%20Server%20Sessions%20(ELUG)[Configuring Server
+Sessions]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Acquiring_a_Session_from_the_Session_Manager[Acquiring
+a Session from the Session Manager]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Acquiring_a_Client_Session[Acquiring
+a Client Session]
+
+=== Three-Tier Architecture Overview
+
+In an EclipseLink three-tier architecture, client sessions and server
+sessions both reside on the server. Client applications access the
+EclipseLink application through a client session, and the client session
+communicates with the database using the server session.
+
+[#Figure 83-3]## *_Server Session and Client Session Usage_*
+
+.Server Session and Client Session Usage
+image::cliserv.gif[Server Session and Client Session
+Usage,title="Server Session and Client Session Usage"]
+
+=== Advantages of the EclipseLink Three-Tier Architecture
+
+Although the server session and the client session are two different
+session types, you can treat them as a single unit in most cases,
+because they are both required to provide three-tier functionality to
+the application. The server session provides the client session to
+client applications, and also supplies the majority of the session
+functionality.
+
+This section discusses some of the advantages and general concepts
+associated with the EclipseLink three-tier design, including the
+following:
+
+* link:#Shared_Resources[Shared Resources]
+* link:#Providing_Read_Access[Providing Read Access]
+* link:#Providing_Write_Access[Providing Write Access]
+* link:#Security_and_User_Privileges[Security and User Privileges]
+* link:#Concurrency[Concurrency]
+* link:#Connection_Allocation[Connection Allocation]
+
+==== Shared Resources
+
+The three-tier design enables multiple clients to share persistent
+resources. The server session provides its client sessions with a shared
+live object cache, read and write connection pooling, and parameterized
+named queries. Client sessions also share descriptor metadata.
+
+You can use client sessions and server sessions in any application
+server architecture that allows for shared memory and supports multiple
+clients. These architectures can include HyperText Markup Language
+(HTML), Servlet, JavaServer Pages (JSP), Remote Method Invocation (RMI),
+Common Object Request Broker Architecture (CORBA), web services, and
+EJB.
+
+To support a shared object cache, client sessions must do the following:
+
+* Implement any changes to the database with the EclipseLink unit of
+work.
+* Share a common database login for reading (you can implement separate
+logins for writing).
+
+==== Providing Read Access
+
+To read objects from the database, the client must first acquire a
+client session from the server session. Acquiring a client session gives
+the client access to the session cache and the database through the
+server session. The server session behaves as follows:
+
+* If the object or data is in the session cache, then the server session
+returns the information back to the client.
+* If the object or data is not in the cache, then the server session
+reads the information from the database and stores the object in the
+session cache. The objects are then available for retrieval from the
+cache.
+
+Because a server session processes each client request in a separate
+thread, this enables multiple clients to access the database connection
+pool concurrently.
+
+This figure illustrates how multiple clients read from the database
+using the server session.
+
+[#Figure 83-4]## *_Multiple Client Sessions Reading the Database Using
+the Server Session_*
+
+.Multiple Client Sessions Reading the Database Using the Server Session
+image::multiread.gif[Multiple Client Sessions Reading the Database Using
+the Server
+Session,title="Multiple Client Sessions Reading the Database Using the Server Session"]
+
+To read objects from the database using a client session, do the
+following:
+
+[arabic]
+. Acquire a `+Session+` from the `+Server+`:
++
+`+Server server = (Server)SessionManager.getManager().getSession(+`
+`+                sessionName, MyServerSession.class.getClassLoader());+`
+`+Session clientSession = (Session) server.acquireClientSession();+`
++
+For more information, see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)[Acquiring
+and Using Sessions at Run Time].
+. Use the `+Session+` object to perform read operations (for more
+information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Introduction to
+EclipseLink Queries] and
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Introduction
+to EclipseLink Expressions]).
++
+\{| class="`Note oac_no_warn`" width="`80%`" border="`1`"
+frame="`hsides`" rules="`groups`" cellpadding="`3`" frame="`hsides`"
+rules="`groups`" | align="`left`" | *Note*: We recommend that you do not
+use the server session object directly to read objects from the
+database. |}
+
+==== Providing Write Access
+
+Because the client session disables all database modification methods, a
+client session cannot create, change, or delete objects directly.
+Instead, the client must obtain a unit of work from the client session
+to perform database modification methods.
+
+To write to the database, the client acquires a client session from the
+server session and then acquires a unit of work within that client
+session. The unit of work acts as an exclusive transactional object
+space, and also ensures that any changes that are committed to the
+database also occur in the session cache.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Although client sessions are thread-safe, do not use them to
+write across multiple threads. Multithread write operations from the
+same client session can result in errors and a loss of data. For more
+information, see link:#Concurrency[Concurrency].
+|===
+
+This figure illustrates how to write to the database using a client
+session acquired from a server session.
+
+[#Figure 83-5]## *_Writing with Client Sessions and Server Sessions_*
+
+.Writing with Client Sessions and Server Sessions
+image::uowwrite.gif[Writing with Client Sessions and Server
+Sessions,title="Writing with Client Sessions and Server Sessions"]
+
+To write to the database using a unit of work, use this procedure:
+
+[arabic]
+. Acquire a session from the server session:
++
+`+Server server = (Server)SessionManager.getManager().getSession(+`
+`+                sessionName, MyServerSession.class.getClassLoader());+`
+`+Session clientSession = (Session) server.acquireClientSession();+`
++
+For more information, see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)[Acquiring
+and Using Sessions at Run Time].
+. Acquire a `+UnitOfWork+` object from the `+Session+` object.
++
+`+UnitOfWork uow = clientSession.acquireUnitOfWork();+`
++
+For more information, see link:#Unit_of_Work_Sessions[Unit of Work
+Sessions].
+. Use the unit of work to perform the required updates and then commit
+the `+UnitOfWork+`.
++
+For more information, see the following:
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#CACJAFJD[Introduction
+to EclipseLink Queries]
+* link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Introduction
+to EclipseLink Expressions]
+* link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions]
+
+==== Security and User Privileges
+
+You can define several different server sessions in your application to
+support users with different data access rights. For example, your
+application may serve a group called "`Managers,`" who has access rights
+to salary information, and a group called "`Employees,`" who do not.
+Because each session you define in the `+sessions.xml+` file has its own
+login information, you can create multiple sessions, each with its own
+login credentials, to meet the needs of both of these groups.
+
+When you use internal EclipseLink connection pools (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Connection_Pools[Connection
+Pools]), each server session provides a read connection pool and a write
+connection pool. All read queries use connections from the read
+connection pool and all queries that write changes to the data store use
+connections from the write connection pool. This ensures that
+connections for one session are kept separate from the connections used
+in another.
+
+To further isolate users from one another, you can use an isolated
+session: a special type of client session that provides its own session
+cache isolated from the shared object cache of its parent server session
+to provide improved user-based security, or to avoid caching highly
+volatile data. For more information, see
+link:#Isolated_Client_Sessions[Isolated Client Sessions].
+
+==== Concurrency
+
+The server session supports concurrent clients by providing each client
+with a dedicated thread of execution. Dedicated threads enable clients
+to operate asynchronously–that is, client processes execute as they are
+called and do not wait for other client processes to complete.
+
+EclipseLink safeguards thread safety with a concurrency manager. The
+concurrency manager ensures that no two threads interfere with each
+other when performing operations such as creating new objects, executing
+a transaction on the database, or accessing value holders.
+
+For more information about handling concurrency issues, see
+link:Introduction%20to%20Cache%20(ELUG)#Handling_Stale_Data[Handling
+Stale Data].
+
+==== Connection Allocation
+
+When you instantiate the server session, it creates a pool of data
+source connections. The session then manages the connection pool based
+on your session configuration, and shares the connections among its
+client sessions. When the client session releases the connection, the
+server session recovers the connection and makes it available to other
+client processes. Reusing connections reduces the number of connections
+required by the application and allows a server session to support a
+larger number of clients.
+
+The server session provides connections to client sessions as needed. By
+default, the server session does not allocate a data source connection
+for a client session until a transaction starts (a lazy data source
+connection). Alternatively, you can acquire a client session that
+allocates a connection immediately (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_a_Client_Session_that_Does_Not_Use_Lazy_Connection_Allocation[How
+to Acquire a Client Session that Does Not Use Lazy Connection
+Allocation]).
+
+The server session allocates read connections from its read connection
+pool to all client sessions. If your application requires multiple read
+security levels then you must use multiple server sessions or
+EclipseLink isolated sessions (see
+link:#Isolated_Client_Sessions[Isolated Client Sessions]).
+
+The server session also supports multiple write connection pools and
+nonpooled connections. Be default, all client sessions use the default
+write connection pool. However, if your application requires multiple
+security levels or user logins for write access, then you can use
+multiple write connection pools. You can configure a client session to
+use a specific write connection pool or nonpooled connection when it is
+acquired (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_a_Client_Session_that_Uses_a_Named_Connection_Pool[How
+to Acquire a Client Session that Uses a Named Connection Pool]). This
+connection is only used for writes, not reads (reads still go through
+the server session read connection pool).
+
+For more information, see the following:
+
+* link:Introduction%20to%20Data%20Access%20(ELUG)#Internal_Connection_Pools[Internal
+Connection Pools]
+* link:Introduction%20to%20Data%20Access%20(ELUG)#External_Connection_Pools[External
+Connection Pools]
+
+== Unit of Work Sessions
+
+The unit of work ensures that the client edits objects in a separate
+object transaction space. This feature lets clients perform object
+transactions in parallel. When transactions are committed, the unit of
+work makes any required changes in the database, and then merges the
+changes into the shared EclipseLink session cache. The modified objects
+are then available to all other users.
+
+For information on creating, configuring, and using a unit of work, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions].
+
+== Isolated Client Sessions
+
+An isolated client session is a special type of client session that
+provides its own session cache. This session cache is isolated from the
+shared session cache of its parent server session.
+
+If in your EclipseLink project you configure all classes as isolated
+(see
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Cache_Isolation_at_the_Project_Level[Configuring
+Cache Isolation at the Project Level]), or one or more classes as
+isolated (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Isolation_at_the_Descriptor_Level[Configuring
+Cache Isolation at the Descriptor Level]), then all client sessions that
+you acquire from a parent server session will be isolated client
+sessions.
+
+This figure illustrates the relationship between a parent server
+session’s shared session cache and its child isolated client sessions.
+
+[#Figure 83-6]## *_Isolated Client Sessions_*
+
+.Isolated Client Sessions
+image::isolses.gif[Isolated Client
+Sessions,title="Isolated Client Sessions"]
+
+Each isolated client session owns an initially empty cache and identity
+maps used exclusively for isolated objects that the isolated client
+session accesses while it is active. The isolated client session’s
+isolated session cache is discarded when the isolated client session is
+released.
+
+When you use an isolated client session to read an isolated class, the
+client session reads the isolated object directly from the database and
+stores it in that client session’s isolated session cache. When you use
+the client session to read a shared class, the client session reads the
+shared object from the parent server session’s shared session cache. If
+the shared object is not in the parent server session’s shared session
+cache, it will read it from the database and store it in the parent
+server session’s shared session cache.
+
+Isolated objects in an isolated client session’s isolated session cache
+may reference shared objects in the parent server session’s shared
+session cache, but shared objects in the parent server session’s shared
+session cache cannot reference isolated objects in an isolated client
+session’s isolated session cache.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: You cannot define mappings from shared classes to isolated
+classes.
+|===
+
+Client sessions can access the data source using a connection pool, or
+an exclusive connection. To use an exclusive connection, acquire the
+isolated client session using a `+ConnectionPolicy+` (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_a_Client_Session_that_Uses_Exclusive_Connections[How
+to Acquire a Client Session that Uses Exclusive Connections]). Using an
+exclusive connection provides improved user-based security for reads and
+writes. Named queries can also use an exclusive connection (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Query_Advanced_Options[Configuring
+Named Query Advanced Options]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If an isolated session contains an exclusive connection, you
+must release the session when you are finished using it. We do not
+recommend relying on the finalizer to release the connection when the
+session is garbage-collected. If you are using an active unit of work in
+a JTA transaction, you do not need to release the client session–-the
+unit of work will release it after the JTA transaction completes.
+|===
+
+Use isolated client sessions to do the following:
+
+* avoid caching highly volatile data in the shared session cache;
+* achieve serializable transaction isolation (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Isolated_Client_Session_Cache[Isolated
+Client Session Cache]);
+* use the Oracle Virtual Private Database (VPD) feature in your
+EclipseLink-enabled application (see
+link:#Isolated_Client_Sessions_and_Oracle_Virtual_Private_Database_(VPD)[Isolated
+Client Sessions and Oracle Virtual Private Database (VPD)]).
+
+For more information, see the following:
+
+* link:#Isolated_Client_Session_Limitations[Isolated Client Session
+Limitations]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_an_Isolated_Client_Session[How
+to Acquire an Isolated Client Session]
+* link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)[Configuring
+Exclusive Isolated Client Sessions for Virtual Private Database]
+
+=== Isolated Client Sessions and Oracle Virtual Private Database (VPD)
+
+Oracle9__i__ Database Server (and later) provides a server-enforced,
+fine-grained access control mechanism called Virtual Private Database
+(VPD). VPD ties a security policy to a table by dynamically appending
+SQL statements with a predicate to limit data access at the row level.
+You can create your own security policies, or use Oracle’s custom
+implementation of VPD called Oracle Label Security (OLS). For more
+information on VPD and OLS, see the following:
+
+http://www.oracle.com/technology/deploy/security/index.html[`+http://www.oracle.com/technology/deploy/security/index.html+`].
+
+To use the Oracle Database VPD feature in your EclipseLink-enabled
+application, use isolated client sessions.
+
+Any class that maps to a table that uses VPD must have the descriptor
+configured as isolated (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Isolation_at_the_Descriptor_Level[Configuring
+Cache Isolation at the Descriptor Level]).
+
+When you use isolated client sessions with VPD, you typically use
+exclusive connections (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_a_Client_Session_that_Uses_Exclusive_Connections[How
+to Acquire a Client Session that Uses Exclusive Connections]).
+
+To support VPD, you are responsible for implementing session event
+handlers that the EclipseLink runtime invokes during the isolated client
+session life cycle (see
+link:#Isolated_Client_Session_Life_Cycle[Isolated Client Session Life
+Cycle]). The session event handler you must implement depends on whether
+or not you are using Oracle Database proxy authentication (see
+link:#VPD_with_Oracle_Database_Proxy_Authentication[VPD with Oracle
+Database Proxy Authentication] and
+link:#VPD_Without_Oracle_Database_Proxy_Authentication[VPD Without
+Oracle Database Proxy Authentication]).
+
+For information, see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)[Configuring
+Exclusive Isolated Client Sessions for Virtual Private Database].
+
+==== VPD with Oracle Database Proxy Authentication
+
+If you are using Oracle Database proxy authentication (
+link:Introduction%20to%20Data%20Access%20(ELUG)#Oracle_Database_Proxy_Authentication[Oracle
+Database Proxy Authentication]), you must implement a session event
+handler for the following session events:
+
+* `+noRowsModifiedSessionEvent+` (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_NoRowsModifiedSessionEvent_Event_Handler[Using
+NoRowsModifiedSessionEvent Event Handler])
+
+By using Oracle Database proxy authentication, you can set up VPD
+support entirely in the database. That is, rather than making the
+isolated client session execute SQL (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PostAcquireExclusiveConnection_Event_Handler[Using
+PostAcquireExclusiveConnection Event Handler] and
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PreReleaseExclusiveConnection_Event_Handler[Using
+PreReleaseExclusiveConnection Event Handler]), the database performs the
+required setup in an after login trigger using the proxy
+`+session_user+`.
+
+==== VPD Without Oracle Database Proxy Authentication
+
+If you are not using Oracle Database proxy authentication, you must
+implement session event handlers for the following session events:
+
+* `+postAcquireExclusiveConnection+` (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PostAcquireExclusiveConnection_Event_Handler[Using
+PostAcquireExclusiveConnection Event Handler]): used to perform VPD
+setup at the time EclipseLink allocates a dedicated connection to an
+isolated session and before the isolated session user uses the
+connection to interact with the database.
+* `+preReleaseExclusiveConnection+` (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PreReleaseExclusiveConnection_Event_Handler[Using
+PreReleaseExclusiveConnection Event Handler]): used to perform VPD
+cleanup at the time the isolated session is released and after the user
+is finished interacting with the database.
+* `+noRowsModifiedSessionEvent+` (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_NoRowsModifiedSessionEvent_Event_Handler[Using
+NoRowsModifiedSessionEvent Event Handler])
+
+In your implementation of these handlers, you obtain the required user
+credentials from the `+ConnectionPolicy+` associated with the session
+(see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_a_Client_Session_that_Uses_Connection_Properties[How
+to Acquire a Client Session that Uses Connection Properties]).
+
+==== Isolated Client Session Life Cycle
+
+This section provides an overview of the key phases in the life cycle of
+an isolated session, including the following:
+
+* Setup required before using an isolated session
+* Interaction among isolated session objects
+* Clean-up required after using an isolated session
+
+To enable the life cycle of an isolated session, use this procedure:
+
+[arabic]
+. Prepare VPD configuration in the database.
+. Configure your project and session:
+* Designate descriptors as isolated (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Isolation_at_the_Descriptor_Level[Configuring
+Cache Isolation at the Descriptor Level]).
+* Configure your server session to allocate exclusive connections (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Connection_Policy[onfiguring
+Connection Policy]).
+* Implement session event listeners for the required connection events:
+** If you are using
+link:Introduction%20to%20Data%20Access%20(ELUG)#Oracle_Database_Proxy_Authentication[Oracle
+Database proxy authentication], see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_NoRowsModifiedSessionEvent_Event_Handler[Using
+NoRowsModifiedSessionEvent Event Handler].
+** If you are not using Oracle Database proxy authentication, see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PostAcquireExclusiveConnection_Event_Handler[Using
+PostAcquireExclusiveConnection Event Handler],
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PreReleaseExclusiveConnection_Event_Handler[Using
+PreReleaseExclusiveConnection Event Handler], and
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_NoRowsModifiedSessionEvent_Event_Handler[Using
+NoRowsModifiedSessionEvent Event Handler]
++
++
++
++
+*Note:* You must add these session event listeners to the server session
+from which you acquire your isolated client session. You cannot add them
+to the isolated client session itself. For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners]
++
++
++
+* Implement exception handlers for the appropriate exceptions (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_ValidationException_Handler[Using
+ValidationException Handler]).
+. Acquire an isolated session:
+* If you are using
+link:Introduction%20to%20Data%20Access%20(ELUG)#Oracle_Database_Proxy_Authentication[Oracle
+Database proxy authentication]:
++
+`+Session myIsolatedClientSession = +`
+`+server.acquireClientSession();+`
++
+Because you configured one or more descriptors as isolated,
+`+myIsolatedClientSession+` is an isolated session with an exclusive
+connection.
+* If you are not using Oracle Database proxy authentication:
++
+`+ConnectionPolicy myConnPolicy = (ConnectionPolicy)server.getDefaultConnectionPolicy().clone();+`
+`+myConnectionPolicy.setProperty("credentials", myUserCredentials);+`
+`+Session myIsolatedClientSession = server.acquireClientSession(myConnectionPolicy);+`
++
+Set the user’s credentials as appropriate properties on
+`+myConnectionPolicy+`. Because you configured one or more descriptors
+as isolated, `+myIsolatedClientSession+` is an isolated session with an
+exclusive connection. The EclipseLink runtime raises a
+`+SessionEvent.PostAcquireExclusiveConnection+` event handled by your
+`+SessionEventListener+` (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#CIHJFGFD[Using
+PostAcquireExclusiveConnection Event Handler]).
+. Use `+myIsolatedClientSession+` to interact with the database. If the
+EclipseLink runtime raises a `+SessionEvent.NoRowsModified+` event, it
+is handled by your `+SessionEventListener+` (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#CIHHJCDG[Using
+NoRowsModifiedSessionEvent Event Handler]).
+. When you are finished using `+myIsolatedClientSession+`, release the
+isolated session:
++
+`+myIsolatedClientSession.release();+`
++
+The EclipseLink runtime prepares to destroy the isolated cache and to
+close the exclusive connection associated with this isolated session.
+The EclipseLink runtime raises a
+`+SessionEvent.PreReleaseExclusiveConnection+` event handled by your
+`+SessionEventListener+` (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#CIHEEIEF[Using
+PreReleaseExclusiveConnection Event Handler]).
+. Repeat steps #3 to #5 (as required) until the application exits.
+
+=== Isolated Client Session Limitations
+
+For the purposes of security as well as efficiency, observe the
+limitations described in the following section, when you use isolated
+client sessions in your EclipseLink three-tier application:
+
+* link:#Mapping[Mapping]
+* link:#Inheritance[Inheritance]
+* link:#Caching_and_Cache_Coordination[Caching and Cache Coordination]
+* link:#Sequencing[Sequencing]
+* link:#Transactions_and_JTA[Transactions and JTA]
+
+==== *Mapping*
+
+Consider the following mapping and relationship restrictions when using
+isolated sessions with your relational model:
+
+* Isolated objects may be related to shared objects, but shared objects
+cannot have any relationships with isolated objects.
+* If a table has a VPD security policy associated with it, then the
+class mapped to that table must be isolated.
+* If one of the tables in a multiple table mapping is isolated, then the
+main class must also be isolated.
+
+The EclipseLink runtime enforces these restrictions during descriptor
+initialization.
+
+==== *Inheritance*
+
+Aggregates and aggregate mappings inherit the isolated configuration of
+their parents.
+
+If a class is isolated, then all inheriting classes should be isolated.
+Otherwise, if you relate a shared class to a shared superclass with
+isolated subclasses, it is possible that some of the isolated subclasses
+will lose object identity when the isolated session is released.
+
+To give you the flexibility to mix shared and isolated classes, the
+EclipseLink runtime does not enforce these restrictions during
+descriptor initialization. If you wish to mix shared and isolated
+classes in your inheritance hierarchy, then you must be prepared to deal
+with this possible loss of object identity.
+
+==== *Caching and Cache Coordination*
+
+Isolated classes are never loaded into the shared cache of a parent
+server session. Isolated classes cannot be used with cache coordination.
+
+==== *Sequencing*
+
+We recommend that you do not configure a sequencing object or sequence
+table using VPD security. EclipseLink does not access sequencing objects
+using the isolated session’s dedicated connection, and so VPD restricted
+sequence values are not available to the isolated session. Sequence
+objects not using VPD security are fine.
+
+==== *Transactions and JTA*
+
+We recommend that you explicitly release an isolated session when you
+are finished using it, rather than wait for the Java garbage collector
+to invoke the finalizer. The finalizer is provided as a last resort:
+waiting for the garbage collector may cause errors when dealing with a
+JTA transaction.
+
+== Historical Sessions
+
+By default, a session represents a view of the most current version of
+objects, and when you execute a query in that session, it returns the
+most current version of selected objects.
+
+If your data source maintains past versions of objects, you can
+configure EclipseLink to access this historical data so that you can
+express read queries conditional on how your objects are changing over
+time. You can also do the following:
+
+* Make series of queries relative to any point in time–not just the time
+of the first query.
+* Provide read consistency so that a series of read operations or report
+queries all execute as if at the same time.
+* Use the `+mergeClone+` method to provide deep recovery of an object by
+passing in a past version of it.
+
+In addition, you can express query selection criteria as either of the
+following:
+
+* A condition at a past time: for example, "`employees who used to…`".
+* A change over time: for example, "`employees who recently…`".
+
+For more information, see the following:
+
+* link:#Historical_Session_Limitations[Historical Session Limitation]
+* link:Configuring%20Historical%20Sessions%20(ELUG)#CIHCCEFA[Configuring
+Historical Sessions]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Acquiring_a_Historical_Session[Acquiring
+a Historical Session]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Historical_Queries[Historical
+Queries].
+
+=== Historical Session Limitations
+
+The `+HistoryPolicy+` provides a very flexible means of accommodating a
+wide variety of historical schemas. However, be aware of the following
+restrictions:
+
+* You cannot use the `+HistoryPolicy+`, if your design combines both
+current and historical data in a single schema.
+* EclipseLink assumes that the current version of an object corresponds
+to the row in the historical table whose row end field is `+NULL+`.
+* You cannot directly map the start and end fields of a history table
+because they do not exist in the regular schema.
+* You cannot query on ranges of historical objects, only as of a
+specific point in time.
+
+== Session Broker and Client Sessions
+
+The *EclipseLink session broker* is a mechanism that enables client
+applications to transparently access multiple databases through a single
+EclipseLink session.
+
+The EclipseLink session broker enables client applications to access two
+or more databases through a single session. If your application stores
+objects in multiple databases, the session broker, which provides
+seamless communication for client applications, enables the client to
+view multiple databases as if they were a single database.
+
+When a three-tier session broker application uses server sessions to
+communicate with the database, clients require a client session to
+access the database. Similarly, when you implement a session broker, the
+client requires a _client session broker_ to access the database.
+
+A *client session broker* is a collection of client sessions, one from
+each server session associated with the session broker. When a client
+acquires a client session broker, the session broker collects one client
+session from each associated server session, and wraps the client
+sessions so that they appear to be a single client session to the client
+application.
+
+As this illustrates, a session broker connects to the databases through
+two or more server sessions or database sessions.
+
+[#Figure 83-7]## *_EclipseLink Session Broker with Server Session
+Architecture_*
+
+.EclipseLink Session Broker with Server Session Architecture
+image::sesbrokfig.gif[EclipseLink Session Broker with Server Session
+Architecture,title="EclipseLink Session Broker with Server Session Architecture"]
+
+This section explains the following:
+
+* link:#Session_Broker_Architecture[Session Broker Architecture]
+* link:#Committing_a_Transaction_with_a_Session_Broker[Committing a
+Transaction with a Session Broker]
+* link:#Session_Broker_Session_Limitations[Session Broker Session
+Limitations]
+* link:#Session_Broker_Alternatives[Session Broker Alternatives]
+
+For information, see the following:
+
+* link:Creating%20a%20Session%20(ELUG)#Creating_Session_Broker_and_Client_Sessions[Creating
+Session Broker and Client Sessions]
+* link:Configuring%20Session%20Broker%20and%20Client%20Sessions%20(ELUG)#CHDEDEDA[Configuring
+Session Broker and Client Sessions]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#i1121932[Acquiring
+a Session from the Session Manager]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#CFAJJJGB[Acquiring
+a Client Session]
+
+=== Session Broker Architecture
+
+As the link:#Figure_83-7[EclipseLink Session Broker with Server Session
+Architecture] figure illustrates, a session broker contains a broker
+object that acts as an intermediary between the application and the
+multiple sessions added to the session broker.
+
+To construct a session broker, use Workbench to modify your
+`+sessions.xml+` file as follows:
+
+[arabic]
+. Define two or more sessions (of the same type, either server sessions
+or database sessions).
+. Define a session broker.
+. Add the sessions to the session broker.
+
+When you use `+SessionManager+` method `+getSession(sessionBrokerName)+`
+where `+sessionBrokerName+` is the name of the session broker you
+defined, the session manager returns the corresponding session broker
+session (call it `+mySessionBroker+`) that contains an instance of each
+of the sessions you added to it. When you use `+mySessionBroker+` method
+`+login+`, it logs into each defined session. Thereafter, you use
+`+mySessionBroker+` as you would any other session: EclipseLink
+transparently handles access to the multiple databases.
+
+In the case of a three-tier architecture where the session broker
+contains two or more server sessions, you use session broker method
+`+acquireClientSessionBroker+` to acquire a single client session that
+lets you query across all the data sources managed by the various server
+sessions. You use this client session as you would any other client
+session.
+
+=== Committing a Transaction with a Session Broker
+
+By default, when you commit a transaction with a session broker session,
+a two-stage commit is performed.
+
+Ideally, you should incorporate a JTA external transaction controller in
+order to benefit from its two-phase commit.
+
+==== Committing a Session with a JTA Driver: Two-Phase Commits
+
+If you use a session broker, incorporate a JTA external transaction
+controller wherever possible. The external transaction controller
+provides a _two-phase commit_, which passes the SQL statements that are
+required to commit the transaction to the JTA driver. The JTA driver
+handles the entire commit process.
+
+JTA guarantees that the transaction commits or rolls back completely,
+even if the transaction involves more than one database. If the commit
+operation to any one database fails, then all database transactions roll
+back. The two-phase commit operation is the safest method available to
+commit a transaction to the database.
+
+Two-phase commit support requires integration with a compliant JTA
+driver.
+
+==== Committing a Session Without a JTA Driver: Two-Stage Commits
+
+If there is no JTA driver available, then the session broker provides a
+_two-stage commit_ algorithm. A two-stage commit differs from a
+two-phase commit in that it guarantees data integrity only up to the
+point of the final commit of the transaction. If the SQL script executes
+successfully on all databases, but the commit operation then fails on
+one database, only the database that experiences the commit failure
+rolls back.
+
+Although unlikely, this scenario is possible. As a result, if your
+system does not include a JTA driver and you use a two-stage commit,
+build a mechanism into your application to deal with this type of
+potential problem.
+
+=== Session Broker Session Limitations
+
+Although the session broker is a powerful tool that lets you use data
+that is distributed across multiple databases from a single application,
+it has some limitations including the following:
+
+* It may not meet the needs of your particular distributed data
+application (see link:#Session_Broker_Alternatives[Session Broker
+Alternatives]).
+* You cannot split multiple table descriptors across databases.
+* Each class must reside on only one database.
+* You cannot use joins through expressions across databases.
+* Many-to-many join tables must reside on the same database as the
+target object (See
+link:#Many-to-Many_Join_Tables_and_Direct_Collection_Table[Many-to-Many
+Join Tables and Direct Collection Tables] for a work-around for this
+limitation).
+
+==== Many-to-Many Join Tables and Direct Collection Tables
+
+By default, EclipseLink assumes that many-to-many and direct collection
+tables are on the same database as the source object. If they are on a
+different database, then you must configure the mapping’s session name
+using `+ManyToManyMapping+` or `+DirectCollectionMapping+` method
+`+setSessionName+`, as this example illustrates. Note that a
+many-to-many join table must still reside on the same database as the
+target object.
+
+[#Example 83-4]## *_Using Mapping setSessionName in a Descriptor
+Amendment Method_*
+
+[source,java]
+----
+ public void addToDescriptor(ClassDescriptor descriptor) {
+     descriptor.getMappingForAttributeName("projects").setSessionName("branch-database");
+ }
+----
+
+To work around this problem for data-level queries, use the
+`+DatabaseQuery+` method `+setSessionName+`.
+
+=== Session Broker Alternatives
+
+When evaluating whether or not to use a session broker in your
+application, consider the following alternatives:
+
+* link:#Database_Linking[Database Linking]
+* link:#Multiple_Sessions[Multiple Sessions]
+
+==== Database Linking
+
+Most enterprise databases, such as the Oracle Database, support linking
+other databases on the database server. This allows querying and
+two-phase commit across linked databases. Using the session broker is
+not the same as linking databases. If your database allows linking, we
+recommend that you use that functionality to provide multiple database
+access instead of using a session broker.
+
+==== Multiple Sessions
+
+An alternative to the session broker is to use multiple sessions to work
+with multiple databases, as follows:
+
+* If the data on each database is unrelated to data on the other
+databases, and relationships do not cross database boundaries, then you
+can create a separate session for each database. For example, you might
+have individual databases and associated sessions dedicated to each
+department. This arrangement requires that you to manage each session
+manually and ensure that the class descriptors for your project reside
+in the correct session.
+* You can use additional sessions to house a standard batch job. In this
+case, you can create two or more sessions on the same database. In
+addition to the main session that supports client queries, you create
+other sessions that support batch inserts at low-traffic times in your
+system. This lets you maintain the client cache.
+
+== Database Sessions
+
+A *database session* provides a client application with a single data
+source connection, for simple, standalone applications in which a single
+connection services all data source requests for one user.
+
+[#Figure 83-8]## *_EclipseLink Database Session Architecture_*
+
+.EclipseLink Database Session Architecture
+image::Dbsess.gif[EclipseLink Database Session
+Architecture,title="EclipseLink Database Session Architecture"]
+
+A database session is the simplest session EclipseLink offers. It
+provides both client and server communications and supports only a
+single client and a single database connection. It is suitable for
+simple applications or 2-tier applications.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*:We do not recommend using this session type in a 3-tier
+application because it is not as flexible or scalable as a server and
+client session. We recommend that you use server sessions and client
+sessions (see link:#Server_and_Client_Sessions[Server and Client
+Sessions]). Applications that are built using database sessions may be
+difficult to migrate to a scalable architecture in the future.
+|===
+
+A database session contains and manages the following information:
+
+* An instance of `+Project+` and `+DatabaseLogin+`, which store database
+login and configuration information
+* The JDBC connection and the database access
+* The descriptors for each of the application persistent classes
+* Identity maps that maintain object identity and act as a cache
+
+For more information, see the following:
+
+* link:Creating%20a%20Session%20(ELUG)#Creating_Database_Sessions[Creating
+Database Sessions]
+* link:Configuring%20Database%20Sessions%20(ELUG)#CHDGHACC[Configuring
+Database Sessions]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Acquiring_a_Session_from_the_Session_Manager[Acquiring
+a Session from the Session Manager]
+
+== Remote Sessions
+
+A *remote session* is a client-side session that communicates over RMI
+with a corresponding client session and server session on the
+server-side. Remote sessions handle object identity and marshalling and
+unmarshalling between client-side and server-side.
+
+A remote session resides on the client rather than the EclipseLink
+server. The remote session does not replace the client session; rather,
+a remote session requires a client session to communicate with the
+server session.
+
+[#Figure 83-9]## *_Typical EclipseLink Server Session with Remote
+Session Architecture_*
+
+.Typical EclipseLink Server Session with Remote Session Architecture
+image::Remtsess.gif[Typical EclipseLink Server Session with Remote
+Session
+Architecture,title="Typical EclipseLink Server Session with Remote Session Architecture"]
+
+The remote session provides a full EclipseLink session, complete with a
+session cache, on the client system. EclipseLink manages the remote
+session cache and enables client applications to execute operations on
+the server.
+
+A remote session offers database access to clients that do not reside on
+the server. The remote session resides on the client and connects by way
+of RMI to a corresponding client session, which, in turn, connects to
+its server session on the server.
+
+This section describes the following:
+
+* link:#Architectural_Overview[Architectural Overview]
+* link:#Remote_Session_Concepts[Remote Session Concepts]
+
+For more information, see
+link:Creating%20a%20Session%20(ELUG)#Creating_Remote_Sessions[Creating
+Remote Sessions].
+
+=== Architectural Overview
+
+As the link:#Figure_83-10[An Architectural Overview of the Remote
+Session] figure illustrates, the remote session model consists of the
+following layers:
+
+* The application layer–a client-side application talking to a remote
+session
+* The transport layer–a communication layer, RMI or RMI-IIOP
+* The server layer–an EclipseLink session communicating with a database
+
+The request from the client application to the server travels down
+through the layers of a distributed system. A client that makes a
+request to the server session uses the remote session as a conduit to
+the server session. The client references the remote session, and the
+remote session forwards a request to the server session through the
+transport layer.
+
+At run time, the remote session builds its knowledge base by reading
+descriptors and mappings from the server side as they are needed. These
+descriptors and mappings are lightweight, because not all information is
+passed on to the remote session. The information needed to traverse an
+object tree and to extract primary keys from the given object is passed
+with the mappings and descriptors.
+
+[#Figure 83-10]## *_An Architectural Overview of the Remote Session_*
+
+.An Architectural Overview of the Remote Session
+image::remarch.gif[An Architectural Overview of the Remote
+Session,title="An Architectural Overview of the Remote Session"]
+
+==== Application Layer
+
+The application layer includes the application client and the remote
+session. The remote session is a subclass of `+Session+` and maintains
+all the public protocols of the session, giving the appearance of
+working with the corresponding client session.
+
+The remote session maintains its own identity map and a project of all
+the descriptors read from the server. If the remote session can handle a
+request by itself, the request is not passed to the server. For example,
+a request for an object that is in the remote session cache is processed
+by the remote session. However, if the object is not in the remote
+session cache, the request passes to the server session.
+
+==== Transport Layer
+
+The transport layer is responsible for carrying the semantics of the
+invocation. It is a layer that hides all the protocol dependencies from
+the application and server layers.
+
+The transport layer includes a remote connection that is an abstract
+entity, through which all requests to the server are forwarded. Each
+remote session maintains a single remote connection that marshals and
+unmarshals all requests and responses on the client side.
+
+The remote session supports communications over RMI.
+
+==== Server Layer
+
+The server layer includes a remote session controller dispatcher and an
+EclipseLink sessions: link:#Figure_83-10[An Architectural Overview of
+the Remote Session] illustrates a three-tier server and its client
+sessions. The remote session controller dispatcher is an interface
+between the session and transport layers: it marshals and unmarshals all
+responses and requests between the sessions on the server and their
+corresponding remote sessions on the client.
+
+=== Remote Session Concepts
+
+When using remote sessions, consider the following:
+
+* link:#Securing_Remote_Session_Access[Securing Remote Session Access]
+* link:#Queries[Queries]
+* link:#Refreshing[Refreshing]
+* link:#Indirection[Indirection]
+* link:#Cursored_Streams[Cursored Streams]
+* link:#Unit_of_Work[Unit of Work]
+
+==== Securing Remote Session Access
+
+The remote session represents a potential security risk because it
+requires you to register a remote session controller dispatcher as a
+service that anyone can access. This can expose the entire database to
+nonprivileged access.
+
+To reduce this threat, run a server manager as a service to hold the
+remote session controller dispatcher. All the clients must then
+communicate through the server manager, which implements the security
+model for accessing the remote session controller dispatcher.
+
+On the client side, the user requests the remote session controller
+dispatcher. The manager returns a remote session controller dispatcher
+only if the user has access rights according to the security model built
+into the server manager.
+
+To access the system, the remote session controller dispatcher on the
+client side creates a remote connection, and acquires a remote session
+from the remote connection. The API for the remote session is the same
+as for the session, and there is no user-visible difference between
+working on a session or a remote session.
+
+==== Queries
+
+Read queries are publicly available on the client side, but queries that
+modify objects must be performed using the unit of work.
+
+==== Refreshing
+
+Calling refresh methods on the remote session causes database read
+operations, and may also cause cache updates if the data being refreshed
+is modified in the database. This can lead to poor performance.
+
+To improve performance, configure refresh methods to run against the
+server session cache, by configuring the descriptor to always remotely
+refresh the objects in the cache on all queries. This technique ensures
+that all queries against the remote session refresh the objects from the
+server session cache, without the database access.
+
+Cache hits on remote sessions still occur on read object queries based
+on the primary keys. To avoid this, disable the remote session cache
+hits on read object queries based on the primary key.
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Refreshing[Configuring
+Cache Refreshing].
+
+==== Indirection
+
+The remote session supports indirection (lazily loaded) objects. An
+indirection object is a value holder that can be invoked remotely on the
+client side. When invoked, the value holder first checks to see if the
+requested object exists on the remote session. If not, then the
+associated value holder on the server is instantiated to get the value
+that is then passed back to the client. Remote value holders are used
+automatically; the application’s code does not change.
+
+==== Cursored Streams
+
+A remote session supports both cursored streams and scrollable cursors.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Stream_and_Cursor_Query_Results[Stream
+and Cursor Query Results].
+
+==== Unit of Work
+
+Use a unit of work acquired from the remote session to modify objects on
+the database. A unit of work acquired from the remote session offers the
+user the same functionality as a unit of work acquired from the client
+session or the database session.
+
+== Sessions and the Cache
+
+Server, database, isolated, and historical sessions include an identity
+map that maintains object identity, and acts as a cache.
+
+This section explains how the cache differs between the following
+sessions:
+
+* link:#Server_and_Database_Session_Cache[Server and Database Session
+Cache]
+* link:#Isolated_Session_Cache[Isolated Session Cache]
+* link:#Historical_Session_Cache[Historical Session Cache]
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#CHEJAEBH[Introduction to Cache].
+
+=== Server and Database Session Cache
+
+When a server or database session reads objects from the database, it
+instantiates them and stores them in its identity map (cache). When the
+application subsequently queries for the same object, EclipseLink
+returns the object in the cache, rather than read the object from the
+database again.
+
+This cache plays an important role in the performance of your
+application.
+
+In the case of a server session, all client sessions acquired from it
+share the server session’s cache.
+
+To define how the cache manages objects, specify a strategy for cache
+management in Workbench.
+
+=== Isolated Session Cache
+
+When an isolated session reads an object, whose descriptor is configured
+as isolated, that object is instantiated and stored in the isolated
+session’s cache only–it is not stored in the parent server session’s
+shared object cache. Objects in the isolated session’s cache may
+reference objects in the parent server session’s shared object cache,
+but objects in the parent server session’s shared object cache can never
+reference objects in the isolated session’s cache.
+
+=== Historical Session Cache
+
+When a historical session reads objects, it does so only from its
+static, read-only cache, which is populated with all objects as of a
+specified time.
+
+== Session API
+
+The session API is defined by the following interfaces:
+
+* `+org.eclipse.persistence.sessions.Session+`
+* `+org.eclipse.persistence.sessions.DatabaseSession+`
+* `+org.eclipse.persistence.sessions.UnitOfWork+`
+* `+org.eclipse.persistence.sessions.server.Server+`
+
+These APIs are used at run time to access objects and the data source.
+Always use the session public interfaces, not the corresponding
+implementation classes.
+
+You should use the `+Session+` interface when reading and querying with
+any of client sessions, session brokers, isolated client sessions,
+historical sessions, remote sessions, and database sessions.
+
+You should use the `+UnitOfWork+` interface for all units of work
+acquired from any type of session.
+
+You should use the `+Server+` interface to configure and acquire a
+client session from a `+Server+` session.
+
+The `+DatabaseSession+` interface can be used for a database
+session.Typically, you define server sessions, database sessions, and
+session broker sessions in a `+sessions.xml+` file and acquire them at
+run time using the `+SessionManager+`. You can also acquire a server
+session or database session from a `+Project+`. The only session that
+should ever be instantiated directly is the `+SessionBroker+`, and only
+when not using the `+SessionManager+`.
+
+You acquire a client session from a server session.
+
+You can also acquire a client session broker from a session broker
+composed of server sessions.
+
+You acquire a unit of work from any session instance, client session
+broker, or session broker which contains `+DatabaseSession+` instances.
+
+This example illustrates the session interfaces that derive from
+`+org.eclipse.persistence.sessions.Session+` interface.
+
+[#Example 83-5]## *_Session Interface Inheritance Hierarchy_*
+
+`+org.eclipse.persistence.sessions.Session+`
+`+    org.eclipse.persistence.sessions.DatabaseSession+`
+`+        org.eclipse.persistence.sessions.server.Server+`
+`+    org.eclipse.persistence.sessions.UnitOfWork+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

@@ -1,0 +1,57 @@
+*TOC*
+Special:Whatlinkshere_Configuring_an_XML_Composite_Direct_Collection_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for an XML direct collection
+mapping.
+
+[#Table 61-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Configuring XPath
+
+Configuring a Simple Type Translator
+
+Configuring the Use of a Single Node
+
+Configuring the Use of CDATA
+
+Configuring Method or Direct Field Accessing at the Mapping Level
+
+Configuring Read-Only Mappings
+
+Configuring Container Policy
+
+Configuring Mapping Comments
+
+Configuring a Serialized Object Converter
+
+Configuring a Type Conversion Converter
+
+Configuring an Object Type Converter
+
+Configuring a JAXB Typesafe Enumeration Converter
+
+For more information, see the following:
+
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Direct_Collection_Mapping[XML
+Composite Direct Collection Mapping]
+* link:Configuring%20an%20XML%20Mapping%20(ELUG)[Configuring an XML
+Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_XML[Category: XML]

@@ -1,0 +1,921 @@
+*TOC* Special:Whatlinkshere_Configuring_a_Database_Login_(ELUG)[Related
+Topics]
+
+In a relational database project, EclipseLink retrieves the table
+information from the database, for each descriptor. Each Workbench
+project contains an associated database. You can create multiple logins
+for each database.
+
+The following table lists the configurable options for a database login.
+
+[#Table 94-1]##
+
+[width="100%",cols="<62%,<20%,<18%",options="header",]
+|===
+|*Option to Configure* |*Workbench* |*Java*
+|link:#Configuring_a_Relational_Database_Platform_at_the_Session_Level[Relational
+database platform at the session level]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Database_Login_Connection_Options[Database login
+connection options] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Sequencing_at_the_Session_Level[Sequencing at the
+session level] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_JDBC_Options[JDBC options]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_User_Name_and_Password[User
+name and password] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_a_Table_Qualifier[Table qualifier]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Advanced_Options[Advanced options]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Password_Encryption[Password
+encryption] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[External
+connection pooling] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Properties[Properties]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Oracle_Database_Proxy_Authentication[Oracle Database
+proxy authentication]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+== Configuring a Relational Database Platform at the Session Level
+
+For each database session, you must specify the database platform (such
+as Oracle9__i__ Database Server). This platform configuration overrides
+the platform at the project level, if configured.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Relational_Database_Platform_at_the_Project_Level[Configuring
+Relational Database Platform at the Project Level]
+* link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Platform_Types[Data
+Source Platform Types]
+
+=== How to Configure a Relational Database Platform at the Session Level Using Workbench
+
+To specify the database platform options for a relational server (or
+database) session login, use this procedure:
+
+[arabic]
+. Select a relational server (or database) session in the *Navigator*.
+Its properties appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Connection* subtab. The Connection subtab appears.
+[#Figure 94-1]##*_Login Tab, Connection Subtab, Database Platform
+Option_* image:dplalog.gif[Login Tab, Connection Subtab, Database
+Platform
+Option,title="Login Tab, Connection Subtab, Database Platform Option"]
+. Select the database platform from the menu of options. This menu
+includes all instances of `+DatabasePlatform+` in the EclipseLink
+classpath.
+
+== Configuring Database Login Connection Options
+
+You configure connection information at the session level for your
+EclipseLink application. This information is stored in the
+`+sessions.xml+` file. The EclipseLink runtime uses this information
+whenever you perform a persistence operation using the session in your
+application.
+
+This connection configuration overrides the connection information at
+the project level, if configured. For more information about
+project-level configuration, see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Development_and_Deployment_Logins[Configuring
+Development and Deployment Logins].
+
+This connection configuration is overridden by the connection
+information at the connection pool level. For more information, see
+link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)#Configuring_Connection_Pool_Connection_Options[Configuring
+Connection Pool Connection Options].
+
+=== How to Configure Database Login Connection Options Using Workbench
+
+To specify the connection options for a relational server (or database)
+session login, use this procedure:
+
+[arabic]
+. Select a relational server (or database) session in the *Navigator*.
+Its properties appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Connection* subtab. The Connection subtab appears. *_Login
+Tab, Connection Subtab, Database Driver_* image:dbconn.gif[Login Tab,
+Connection Subtab, Database
+Driver,title="Login Tab, Connection Subtab, Database Driver"] *_Login
+Tab, Connection Subtab_* image:j2cconn.gif[Login Tab, Connection
+Subtab,title="Login Tab, Connection Subtab"]
+. Complete each field on the Connection subtab.
+
+Use the following information to enter data in the driver fields on the
+tab:
+
+Field
+
+Description
+
+Database Driver
+
+Specify the appropriate database driver:
+
+Driver Manager: specify this option to configure the driver class and
+URL used to connect to the database. In this case, you must configure
+the Driver Class and Driver URL fields.
+
+J2EE Data Source: specify this option to use a Java EE data source
+already configured on your target application server. In this case, you
+must configure the Datasource Name field.
+
+Note: If you select J2EE Datasource, you must use external connection
+pooling. You cannot use internal connection pools with this Database
+Driver option (for more information, see Configuring External Connection
+Pooling).
+
+Driver Class 1
+
+Configure this field when Database Driver is set to Driver Manager.
+Select from the menu of options. This menu includes all JDBC drivers in
+the EclipseLink classpath.
+
+Driver URL 1
+
+Configure this field when Database Driver is set to Driver Manager.
+Select from the menu of options relevant to the selected Driver Class,
+and edit the URL to suit your data source.
+
+Data Source Name 2
+
+Configure this field when Database Driver is set to J2EE Datasource.
+Specify any valid JNDI name that identifies the Java EE data source
+preconfigured on your target application server (example:
+jdbc/EmployeeDB).
+
+By convention, all such names should resolve to the JDBC subcontext
+(relative to the standard java:comp/env naming context that is the root
+of all provided resource factories).
+
+Lookup Type2
+
+Configure this field when Database Driver is set to J2EE Datasource.
+Specify the lookup method for determining the JNDI name:
+
+Composite Name
+
+Compound Name
+
+String
+
+1Applicable only when *Database Driver* is set to *Driver Manager*.
+2Applicable only when *Database Driver* is set to *J2EE Datasource*.
+
+== Configuring Sequencing at the Session Level
+
+You configure EclipseLink sequencing at the session or project level to
+tell EclipseLink how to obtain sequence values: that is, what type of
+sequences to use.
+
+You can configure a session directly by using a session-level sequence
+configuration to override project-level sequence configuration, on a
+session-by-session basis, if required.
+
+Using Workbench (see
+link:#How_to_Configure_Sequencing_at_the_Session_Level_Using_Workbench[How
+to Configure Sequencing at the Session Level Using Workbench]), you can
+configure table sequencing (see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Table_Sequencing[Table
+Sequencing]) and native sequencing
+(link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_an_Oracle_Database_Platform[Native
+Sequencing with an Oracle Database Platform] and
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_a_Non-Oracle_Database_Platform[Native
+Sequencing with a Non-Oracle Database Platform]), and you can configure
+a preallocation size that applies to all sequences (see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Sequencing_and_Preallocation_Size[Sequencing
+and Preallocation Size]).
+
+Using Java (see
+link:#How_to_Configure_Sequencing_at_the_Session_Level_Using_Java[How to
+Configure Sequencing at the Session Level Using Java]), you can
+configure any sequence type that EclipseLink supports (
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Sequencing_Types[Sequencing
+Types]). You can create any number and combination of sequences. You can
+create a sequence object explicitly or use the default sequence that the
+platform creates. You can associate the same sequence with more than one
+descriptor and you can configure a separate preallocation size for each
+descriptor’s sequence.
+
+If you are migrating a WebLogic CMP application to OC4J and EclipseLink
+persistence, after migration, you must manually configure your project
+to use EclipseLink unary sequence tables if your application originally
+used single-column sequence tables in WebLogic.
+
+After configuring the sequence type at the session (or project) level,
+to enable sequencing, you must configure a descriptor with a sequence
+field and a sequence name (see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[Configuring
+Sequencing at the Descriptor Level]).
+
+For more information about sequencing, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Sequencing_in_Relational_Projects[Sequencing
+in Relational Projects].
+
+=== How to Configure Sequencing at the Session Level Using Workbench
+
+To specify the sequencing information for a relational server (or
+database) session, use this procedure:
+
+[arabic]
+. Select the session object in the *Navigator*.
+. Click the *Login* tab in the *Editor*.
+. Click the *Sequencing* subtab. The Sequencing subtab appears.
+[#Figure 94-4]##*_Login Tab, Sequencing Subtab_*
+image:sequence.gif[Login Tab, Sequencing
+Subtab,title="Login Tab, Sequencing Subtab"]
+. Complete each field on Login–Sequencing subtab.
+
+Use the following information to enter data in each field of the
+Sequencing subtab to configure the persistence type:
+
+[width="100%",cols="<5%,<95%",options="header",]
+|===
+|*Field* |*Description*
+|*Preallocation Size* |Select the
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Sequencing_and_Preallocation_Size[default
+preallocation size]. Default is *50*. The preallocation size you
+configure applies to all sequences.
+
+|*Default Sequence Table* |Select this option to use
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Table_Sequencing[table
+sequencing] with default sequence table name `+SEQUENCE+`, default
+sequence name field `+SEQ_NAME+`, and default sequence count field
+`+SEQ_COUNT+`.
+
+|*Native Sequencing* |Select this option to use a sequencing object (see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_an_Oracle_Database_Platform[Native
+Sequencing with an Oracle Database Platform] or
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_a_Non-Oracle_Database_Platform[Native
+Sequencing with a Non-Oracle Database Platform]) created by the database
+platform. This option applies to supported database platforms (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Database_Platforms[Database
+Platforms]).
+
+|*Custom Sequence Table* |Select this option to use
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Table_Sequencing[table
+sequencing] with a sequence table name, sequence name field, and
+sequence count field name that you specify.
+
+|*Name* |Select the name of the sequence table.
+
+|*Name Field* |Select the name of the column used to store the sequence
+name.
+
+|*Counter Field* |Select the name of the column used to store the
+sequence count.
+|===
+
+=== How to Configure Sequencing at the Session Level Using Java
+
+Using Java, you can perform the following sequence configurations:
+
+* link:#Using_the_Platform_Default_Sequence[Platform Default Sequence]
+* link:#Configuring_Multiple_Sequences[Multiple Sequences]
+* link:#Configuring_Query_Sequencing[Query Sequencing]
+
+==== Using the Platform Default Sequence
+
+After you configure your login with a platform (see
+link:#Configuring_a_Relational_Database_Platform_at_the_Session_Level[Configuring
+a Relational Database Platform at the Session Level]), you can use the
+default sequence that the platform provides.
+
+If you associate a descriptor with an unspecified sequence, the
+EclipseLink runtime will create an instance of `+DefaultSequence+` to
+provide sequencing for that descriptor. For more information, see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_the_Platform_Default_Sequence[Configuring
+the Platform Default Sequence].
+
+You can access the default platform sequence directly as the
+link:#Example_94-1[Accessing the Platform Default Sequence] example
+shows. For example, by default, a `+DatabasePlatform+` creates a table
+sequence using the default table and column names (see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Table_Sequencing[Table
+Sequencing]).
+
+[#Example 94-1]## *_Accessing the Platform Default Sequence_*
+
+*`+//\'\' \'\'assume\'\' \'\'that\'\' \'\'dbLogin\'\' \'\'owns\'\' \'\'a\'\' \'\'DatabasePlatform+`*
+`+TableSequence tableSeq2 = ((TableSequence)dbLogin.getDefaultSequence()).clone();+`
+`+tableSeq2.setName("EMP_SEQ");+`
+`+tableSeq2.setPreallocationSize(75);+`
+`+dbLogin.addSequence(tableSeq2);+`
+
+To avoid having to clone the platform default sequence, you can use the
+`+DefaultSequence+` class– a wrapper for the platform default
+sequence–-as the following example shows. The new sequence named
+`+EMP_SEQ+` will be of the same type as the platform default sequence.
+
+[#Example 94-2]## *_Using the DefaultSequence Class_*
+
+`+login.addSequence(new DefaultSequence("EMP_SEQ", 75));+`
+
+You can override the default platform sequence, as the
+link:#Example_94-3[Overriding the Platform Default Sequence] example
+shows. In this example, `+dbLogin+` owns a `+DatabasePlatform+` that
+provides a default sequence of type `+TableSequence+`. After setting the
+default sequence to type `+UnaryTableSequence+`, when you use the
+`+DefaultSequence+` class, it will access the new default sequence type.
+In this example, the sequence named `+EMP_SEQ+` will be of type
+`+UnaryTableSequence+` and have a preallocation size of 75.
+
+[#Example 94-3]## *_Overriding the Platform Default Sequence_*
+
+*`+//\'\' \'\'assume\'\' \'\'that\'\' \'\'dbLogin\'\' \'\'owns\'\' \'\'a\'\' \'\'DatabasePlatform+`*
+`+Sequence unaryTableSequence = new UnaryTableSequence();+`
+`+unaryTableSequence.setPreallocationSize(40);+`
+`+dbLogin.setDefaultSequence(unaryTableSequence);+`
+`+dbLogin.addSequence(+`
+`+    new DefaultSequence("EMP_SEQ", 75) +`*`+//\'\' \'\'UnaryTableSequence+`*
+`+);+`
+
+==== Configuring Multiple Sequences
+
+In addition to using the platform default sequence (see
+link:#Using_the_Platform_Default_Sequence[Using the Platform Default
+Sequence]), you can explicitly create sequence instances and configure a
+`+Login+` with any combination of sequence types, each with their own
+preallocation size, as the link:#Example_94-4[Configuring Multiple
+Sequences Explicitly] example shows. In this example, the sequence named
+`+EMP_SEQ+` will provide sequence values exclusively for instances of
+the `+Employee+` class and `+ADD_SEQ+` will provide sequence values
+exclusively for instances of the `+Address+` class. The sequence named
+`+PHONE_SEQ+` will use the platform default sequence with a
+preallocation size of 30 to provide sequence values for the `+Phone+`
+class.
+
+[#Example 94-4]## *_Configuring Multiple Sequences Explicitly_*
+
+`+login.addSequence(new TableSequence("EMP_SEQ", 25));+`
+`+login.addSequence(new DefaultSequence("PHONE_SEQ", 30));+`
+`+login.addSequence(new UnaryTableSequence("ADD_SEQ", 55));+`
+`+login.addSequence(new NativeSequence("NAT_SEQ", 10));+`
+
+If login owned a `+DatabasePlatform+` (whose default sequence type is
+`+TableSequence+`), you could configure your sequences using the
+platform default sequence type, as the link:#Example_94-5[Configuring
+Multiple Sequences Using the Default Sequence Type] example shows. In
+this example, sequences `+EMP_SEQ+` and `+PHONE_SEQ+` share the same
+`+TableSequence+` table: `+EMP_SEQ+` and `+PHONE_SEQ+` represent rows in
+this table.
+
+[#Example 94-5]## *_Configuring Multiple Sequences Using the Default
+Sequence Type_*
+
+`+login.addSequence(new DefaultSequence("EMP_SEQ", 25));+`
+`+login.addSequence(new DefaultSequence("PHONE_SEQ", 30));+`
+`+login.addSequence(new UnaryTableSequence("ADD_SEQ", 55));+`
+`+login.addSequence(new NativeSequence("NAT_SEQ", 10));+`
+
+==== Configuring Query Sequencing
+
+You can configure the query that EclipseLink uses to update or read a
+sequence value for any sequence type that extends `+QuerySequence+`.
+
+In most applications, the queries that EclipseLink automatically uses
+are sufficient. However, if your application has special sequencing
+needs–-for example, if you want to use stored procedures for
+sequencing–-then you can configure the update and read queries that the
+EclipseLink sequence uses.
+
+The following example illustrates how to specify a stored procedure that
+updates a sequence and returns the new sequence value with a single SQL
+select query. In this example, the stored procedure is named
+`+UPDATE_SEQ+`. It contains one input argument–-the name of the sequence
+to update (`+SEQ_NAME+`), and one output argument–-the value of the
+sequence after the updated (`+SEQ_COUNT+`). The stored procedure
+increments the sequence value associated with the sequence named
+`+SEQ_NAME+` and returns the new sequence value in the output argument
+named `+SEQ_COUNT+`.
+
+[#Example 94-6]## *_Using a Stored Procedure for both Sequence Update
+and Select_*
+
+`+ValueReadQuery seqReadQuery = new ValueReadQuery();+`
+`+StoredProcedureCall spCall = new StoredProcedureCall();+`
+`+spCall.setProcedureName("UPDATE_SEQ");+`
+`+seqReadQuery.addNamedArgument("SEQ_NAME");+`
+`+seqReadQuery.addNamedOutputArgument("SEQ_COUNT");+`
+`+seqReadQuery.setCall(spCall);+`
+`+((QuerySequence)login.getDefaultSequence()).setSelectQuery(seqReadQuery);+`
+
+link:#Example_94-7[Using a Stored Procedure for Sequence Updates Only]
+and link:#Example_94-8[Using a Stored Procedure for Sequence Selects
+Only] examples illustrate how to specify separate stored procedures for
+sequence update and select actions.
+
+In the link:#Example_94-7[Using a Stored Procedure for Sequence Updates
+Only] example, the stored procedure is named UPDATE_SEQ, and it contains
+one input argument–the name of the sequence to update (`+SEQ_NAME+`).
+The stored procedure increments the sequence value associated with the
+sequence named `+SEQ_NAME+`.
+
+[#Example 94-7]## *_Using a Stored Procedure for Sequence Updates Only_*
+
+`+DataModifyQuery seqUpdateQuery = new DataModifyQuery();+`
+`+StoredProcedureCall spCall = new StoredProcedureCall();+`
+`+spCall.setProcedureName("UPDATE_SEQ");+`
+`+seqUpdateQuery.addNamedArgument("SEQ_NAME");+`
+`+seqUpdateQuery.setCall(spCall);+`
+`+((QuerySequence)login.getDefaultSequence()).setUpdateQuery(seqUpdateQuery);+`
+
+In the link:#Example_94-8[Using a Stored Procedure for Sequence Selects
+Only] example, the stored procedure is named `+SELECT_SEQ+` and it takes
+one argument: the name of the sequence to select from (`+SEQ_NAME+`).
+The stored procedure reads one data value: the current sequence value
+associated with the sequence name `+SEQ_NAME+`.
+
+[#Example 94-8]## *_Using a Stored Procedure for Sequence Selects Only_*
+
+`+ValueReadQuery seqReadQuery = new ValueReadQuery();+`
+`+StoredProcedureCall spCall = new StoredProcedureCall();+`
+`+spCall.setProcedureName("SELECT_SEQ");+`
+`+seqReadQuery.addArgument("SEQ_NAME");+`
+`+seqReadQuery.setCall(spCall);+`
+`+login.((QuerySequence)getDefaultSequence()).setSelectQuery(seqReadQuery)+`
+
+You can also create a `+QuerySequence+` directly and add it to your
+login, as this example shows.
+
+[#Example 94-9]## *_Using the QuerySequence Class_*
+
+*`+//\'\' \'\'Use\'\' \'\'the\'\' \'\'two-argument\'\' \'\'constructor:\'\' \'\'pass\'\' \'\'in\'\' \'\'sequence\'\' \'\'name\'\' \'\'and\'\' \'\'preallocation\'\' \'\'size.+`*
+*`+//\'\' \'\'Alternatively,\'\' \'\'you\'\' \'\'can\'\' \'\'use\'\' \'\'zero-\'\' \'\'or\'\' \'\'one-argument\'\' \'\'(sequence\'\' \'\'name)\'\' \'\'constructor+`*
+`+login.addSequence(new QuerySequence("SEQ1", 75));+`
+
+== Configuring a Table Qualifier
+
+Some databases (such as Oracle Database and DB2) require that all tables
+be qualified by an identifier. This can be the creator of the table or
+database name on which the table exists. When you specify a table
+qualifier, EclipseLink uses this qualifier for all of the tables it
+references. Specify a table qualifier only if required and only if all
+of the tables have the same qualifier.
+
+=== How to Configure a Table Qualifier Using Workbench
+
+To specify a table qualifier, use this procedure:
+
+[arabic]
+. Select a relational server (or database) session in the *Navigator*.
+Its properties appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Options* subtab. The Options subtab
+appears.[#Figure 94-5]## *_Login Tab, Options Subtab, Table Qualifier
+Field_* image:sesopttc.gif[Login Tab, Options Subtab, Table Qualifier
+Field,title="Login Tab, Options Subtab, Table Qualifier Field"]
+
+In the *Table Qualifier* field enter the identifier used to qualify
+references to all tables in this database.
+
+=== How to Configure a Table Qualifier Using Workbench
+
+To set the default qualifier for all tables, use the
+`+org.eclipse.persistence.sessions.DatabaseLogin+` method
+`+setTableQualifier+`.
+
+== Configuring JDBC Options
+
+Most JDBC drivers support the run-time configuration of various options
+to customize driver operation to meet user needs. EclipseLink provides
+direct support (in API and the Workbench) for many of the most important
+options, as this section describes, as well as more advanced options
+(see link:#Configuring_Advanced_Options[Configuring Advanced Options]).
+
+You can also configure additional options by specifying properties (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Properties[Configuring
+Properties]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Not all drivers support all JDBC options. Selecting a
+combination of options may result in different behavior from one driver
+to another. Before selecting JDBC options, consult your JDBC driver
+documentation.
+|===
+
+=== How to Configure JDBC Options Using Workbench
+
+To specify the JDBC options for a relational server (or database)
+session login, use this procedure:
+
+[arabic]
+. Select a relational server (or database) session in the *Navigator*.
+Its properties appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Options* subtab. The Options subtab appears.
+[#Figure 94-6]##*_Login Tab, Options Subtab, JDBC Options_*
+image:jdbcopt.gif[Login Tab, Options Subtab, JDBC
+Options,title="Login Tab, Options Subtab, JDBC Options"]
+. Complete the JDBC fields on the tab.
+
+Use this table to enter data in the fields on the Options subtab to
+select the JDBC options to use with this session login:
+
+Option
+
+Description
+
+Queries Should Bind All Parameters1
+
+By default, EclipseLink binds all of the query’s parameters.
+
+Deselect this option if you do not want EclipseLink to bind parameters.
+
+Cache All Statements1
+
+When selected, EclipseLink caches each prepared statement so that when
+reexecuted, you avoid the SQL preparation time which improves
+performance.
+
+Byte Array Binding1
+
+Select this option if you query binary large object (BLOB) data.
+
+Streams for Binding1
+
+Select this option if you use a JDBC driver that is more efficient at
+handling BLOB data using java.io.InputStream and java.io.OutputStream.
+
+Native SQL
+
+By default, EclipseLink generates SQL using JDBC SQL grammar. Select
+this option if you want EclipseLink to use database-specific SQL
+grammar, for example, if your database driver does not support the full
+JDBC SQL grammar.
+
+Batch Writing2
+
+Select this option if you use a JDBC driver that supports sending groups
+of INSERT, UPDATE, and DELETE statements to the database in a single
+transaction, rather than individually.
+
+Select JDBC to use the batch writing capabilities of your JDBC driver.
+
+Select EclipseLink to use the batch writing capabilities that
+EclipseLink provides. Select this option if your JDBC driver does not
+support batch writing.
+
+Note: if you are using Oracle 9 Database platform, and you want to use
+EclipseLink batch writing in combination with optimistic locking, then
+you must enable parameter binding.
+
+String Binding1
+
+Select this option if you query large java.lang.String objects.
+
+You can configure the maximum String length (default: 32000 characters).
+
+1For more information, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#How_to_Use_Parameterized_SQL_(Parameter_Binding)_and_Prepared_Statement_Caching_for_Optimization[How
+to Use Parameterized SQL (Parameter Binding) and Prepared Statement
+Caching for Optimization]. 2If you are using the `+MySQLPlatform+`
+database platform (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Platform_Types[Data
+Source Platform Types]), use *JDBC* batch writing (do not use
+*EclipseLink* batch writing). For more information, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#How_to_Use_Batch_Writing_for_Optimization[How
+to Use Batch Writing for Optimization].
+
+=== How to Configure JDBC Options Using Java
+
+To enable prepared statement caching for all queries, configure at the
+`+Login+` level, as the following example shows. For more information,
+see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#How_to_Use_Parameterized_SQL_(Parameter_Binding)_and_Prepared_Statement_Caching_for_Optimization[How
+to Use Parameterized SQL (Parameter Binding) and Prepared Statement
+Caching for Optimization].
+
+[#Example 94-10]## *_Prepared Statement Caching at the Login Level_*
+
+`+databaseLogin.cacheAllStatements();+`
+`+databaseLogin.setStatementCacheSize(100);+`
+
+Parameter binding is enabled by default in EclipseLink. To disable
+binding, configure at the `+Login+` level, as the following example
+shows. For more information, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#How_to_Use_Parameterized_SQL_(Parameter_Binding)_and_Prepared_Statement_Caching_for_Optimization[How
+to Use Parameterized SQL (Parameter Binding) and Prepared Statement
+Caching for Optimization].
+
+[#Example 94-11]## *_Disabling Parameter Binding at the Login Level_*
+
+`+databaseLogin.dontBindAllParameters();+`
+
+To enable JDBC batch writing, use `+Login+` method `+useBatchWriting+`,
+as this example shows:
+
+[#Example 94-12]## *_Using JDBC Batch Writing_*
+
+`+project.getLogin().useBatchWriting();+`
+`+project.getLogin().setMaxBatchWritingSize(100);+`
+
+== Configuring Advanced Options
+
+Most JDBC drivers support the run-time configuration of various options
+to customize driver operation to meet user needs. EclipseLink provides
+direct support (in API and Workbench) for many of the most important
+options (see link:#Configuring_JDBC_Options[Configuring JDBC Options]),
+as well as more advanced options, as this section describes.
+
+You can also configure additional options by specifying properties (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Properties[Configuring
+Properties]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Not all drivers support all JDBC options. Selecting a
+combination of options may result in different behavior from one driver
+to another. Before selecting JDBC options, consult your JDBC driver
+documentation.
+|===
+
+=== How to Configure Advanced Options Using Workbench
+
+To specify the advanced options for a relational server (or database)
+session login, use this procedure:
+
+[arabic]
+. Select a relational server (or database) session in the *Navigator*.
+Its properties appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Options* subtab. The Options subtab appears.
+[#Figure 94-7]##*_Login Tab, Options Subtab, Advanced Options_*
+image:sesadvopt.gif[Login Tab, Options Subtab, Advanced
+Options,title="Login Tab, Options Subtab, Advanced Options"]
+. Complete the Advanced Options fields on the tab.
+
+Use this table to enter data in the fields on the Options subtab to
+select the advanced options to use with this session login:
+
+[width="100%",cols="<12%,<88%",options="header",]
+|===
+|*Option* |*Description*
+|*Force Field Names to Uppercase* |By default, EclipseLink uses the case
+of field names as returned by the database. If your application expects
+field names to be uppercase but the database does not return consistent
+case (for example, if you accessing different databases), enable this
+option.
+
+|*Optimize Data Conversion* |By default, EclipseLink optimizes data
+access by accessing the data from JDBC in the format the application
+requires. If you are using an older JDBC driver that does not perform
+data conversion correctly and conflicts with this optimization, disable
+this optimization.
+
+|*Trim String* |By default, EclipseLink discards the trailing blanks
+from `+CHAR+` field values. To read and write `+CHAR+` field values
+literally (including any trailing blanks), disable this option.
+
+|*Properties* |Check this option to enable the use of properties for
+this `+DatabaseLogin+` (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Properties[Configuring
+Properties]).
+|===
+
+=== How to Configure Advanced Options Using Java
+
+Use the following methods of
+`+org.eclipse.persistence.sessions.DatabaseLogin+` to configure advanced
+options:
+
+* `+setShouldForceFieldNamesToUpperCase+`–By default, EclipseLink uses
+the case of field names as returned by the database. If your application
+expects field names to be uppercase but the database does not return
+consistent case (for example, if you accessing different databases), use
+this method.
+* `+setShouldOptimizeDataConversion+`–By default, EclipseLink optimizes
+data access by accessing the data from JDBC in the format the
+application requires. If you are using an older JDBC driver that does
+not perform data conversion correctly and conflicts with this
+optimization, set this to `+false+`.
+* `+setShouldTrimStrings+`–By default, EclipseLink discards the trailing
+blanks from `+CHAR+` field values. To read and write `+CHAR+` field
+values literally (including any trailing blanks), set this to `+false+`.
+* `+setProperties+`–Set this to true to enable the use of properties for
+this `+DatabaseLogin+` (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Properties[Configuring
+Properties]).
+
+== Configuring Oracle Database Proxy Authentication
+
+You can configure a session to use Oracle Database proxy authentication
+with an Oracle Database platform in JSE applications and JEE
+applications using Oracle JDBC driver release 10.1.0.2.0 or later. If an
+external connection pool is used, then it should either contain Oracle
+connections directly (`+OracleDataSource+`), or the application server
+should allow access to the underlying vendor-specific connection in the
+managed connection. To achieve the latter, the server platform class in
+Eclipselink needs to implement the `+java.sql.Connection+` method
+`+unwrapConnection(java.sql.Connection connection)+`.
+
+There is no Workbench support for this feature. To configure EclipseLink
+to use Oracle Database proxy authentication, you must use Java (see
+link:#How_to_Configure_Oracle_Database_Proxy_Authentication_Using_Java[How
+to Configure Oracle Database Proxy Authentication Using Java]).
+
+For more information, see
+link:Configuring%20a%20EclipseLink%20JPA%20%20Application%20(ELUG)#Oracle_Database_Proxy_Authentication[Oracle
+Database Proxy Authentication].
+
+For information on proxy authentication in JPA applications, see
+link:Configuring%20a%20EclipseLink%20JPA%20Application%20(ELUG)#Configuring_Oracle_Database_Proxy_Authentication_for_a_JPA_Application[Configuring
+Oracle Database Proxy Authentication for a JPA Application].
+
+You can use EclipseLink support for Oracle Database proxy authentication
+by doing the following:
+
+* link:#Providing_Authenticated_Reads_and_Writes_of_Secured_Data_Through_the_Use_of_an_Exclusive_Isolated_Client_Session[Providing
+Authenticated Reads and Writes of Secured Data Through the Use of an
+Exclusive Isolated Client Session]
+* link:#Providing_Authenticated_Writes_for_Database_Auditing_Purposes_with_a_Client_Session[Providing
+Authenticated Writes for Database Auditing Purposes with a Client
+Session]
+* link:#Providing_Authenticated_Reads_and_Writes_with_a_Database_Session[Providing
+Authenticated Reads and Writes with a Database Session]
+
+*Providing Authenticated Reads and Writes of Secured Data Through the
+Use of an Exclusive Isolated Client Session*
+
+In this configuration, the client session is an isolated client session
+(see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions[Isolated
+Client Sessions]) that uses an exclusive proxy connection. You must
+acquire the client session using properties that specify proxy
+authentication user credentials. Reads and writes of secured data are
+performed through the proxy-authenticated connection. Reads of
+nonsecured data occur through nonproxy-authenticated connections.
+
+If you are using Oracle Private Virtual Database (VPD) (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions_and_Oracle_Virtual_Private_Database_(VPD)[Isolated
+Client Sessions and Oracle Virtual Private Database (VPD)]), use this
+configuration to set up VPD support entirely in the database. That is,
+rather than making the isolated client session execute SQL (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PostAcquireExclusiveConnection_Event_Handler[Using
+PostAcquireExclusiveConnection Event Handler] and
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PreReleaseExclusiveConnection_Event_Handler[Using
+PreReleaseExclusiveConnection Event Handler]), the database performs the
+required set up in an after login trigger using the proxy
+`+session_user+`.
+
+*Providing Authenticated Writes for Database Auditing Purposes with a
+Client Session*
+
+In this configuration, isolated data or exclusive connections are not
+required. You must acquire the client session using properties that
+specify the proxy authentication user credentials.
+
+Writes are performed through the proxy-authenticated connection. Reads
+occur through nonproxy-authenticated connections. This enables the
+database auditing process to access the user that performed the write
+operations.
+
+*Providing Authenticated Reads and Writes with a Database Session*
+
+In this configuration, you use a `+DatabaseSession+` with proxy
+properties.
+
+Note: We recommend that you exclusively use server and client sessions
+in a three-tier environment.
+
+Do not use database sessions in a three-tier environment. Ensure that a
+database session is used by a single user and not accessed concurrently.
+
+=== How to Configure Oracle Database Proxy Authentication Using Java
+
+To configure EclipseLink to use Oracle Database proxy authentication, do
+the following:
+
+[arabic]
+. Decide on the proxy type you want to use and create appropriate users
+and roles.
+[arabic]
+.. User Name Authentication: To authenticate a proxy user `+sarah+` by
+user name only, create the user account on the Oracle Database using the
+following:
++
+`+alter user sarah grant connect through dbadminuser+`
+`+    with roles clerk, reports;+`
++
+In this case, you will need to set the proxy properties shown in this
+table. [#Table 94-2]##
++
+*_Proxy Properties for User Name Authentication_*
++
+[width="100%",cols="<50%,<50%",options="header",]
+|===
+|*Property Name* |*Property Value*
+|`+"eclipselink.oracle.proxy-type"+` |`+PROXYTYPE_USER_NAME+`
+|`+PROXY_USER_NAME+` |`+"sarah"+`
+|`+PROXY_ROLES+` |`+String[] {"role1", "role2", ...}+`
+|===
+.. User Name and Password Authentication: To authenticate a proxy user
+`+sarah+` by user name and password, create the user account on the
+Oracle Database using the following:
++
+`+alter user sarah grant connect through dbadminuser+`
+`+    authenticated using password+` `+    with roles clerk, reports;+`
++
+In this case, you will need to set the proxy properties shown in this
+table. [#Table 94-3]##
++
+*_Proxy Properties for User Name and Password Authentication_*
++
+[width="100%",cols="<50%,<50%",options="header",]
+|===
+|*Property Name* |*Property Value*
+|`+"eclipselink.oracle.proxy-type"+` |`+PROXYTYPE_USER_NAME+`
+|`+PROXY_USER_NAME+` |`+"sarah"+`
+|`+PROXY_PASSWORD+` |`+"passwordforsarah"+`
+|`+PROXY_ROLES+` |`+String[] {"role1", "role2", ...}+`
+|===
+.. Distinguished Name Authentication: To authenticate a proxy user
+`+sarah+` by globally unique distinguished name, create the user account
+on the Oracle Database using the following:
+`+create user sarah identified globally as+`
++
+`+    'CN=sarah,OU=americas,O=oracle,L=city,ST=ca,C=us';+`
+`+alter user sarah grant connect through dbadminuser+`
+`+    authenticated using distinguished name+`
+`+    with roles clerk, reports;+`
++
+In this case, you will need to set the proxy properties shown in this
+table. [#Table 94-4]##
++
+*_Proxy Properties for Distinguished Name Authentication_*
++
+[width="100%",cols="<40%,<60%",options="header",]
+|===
+|*Property Name* |*Property Value*
+|`+"eclipselink.oracle.proxy-type"+` |`+PROXYTYPE_DISTINGUISHED_NAME+`
+
+|`+PROXY_DISTINGUISHED_NAME+`
+|`+"CN=sarah,OU=americas,O=oracle,L=city,ST=ca,C=us"+`
+
+|`+PROXY_ROLES+` |`+String[] {"role1", "role2", ...}+`
+|===
+.. Certificate Authentication: To authenticate a proxy user `+sarah+` by
+encrypted distinguished name, create the user account on the Oracle
+Database using the following:
++
+`+alter user sarah grant connect through dbadminuser+`
+`+    authenticated using certificate+`
+`+    with roles clerk, reports;+`
++
+In this case, you will need to set the proxy properties shown in this
+table. [#Table 94-5]##
++
+*_Proxy Properties for User Name Authentication_*
++
+[width="100%",cols="<48%,<52%",options="header",]
+|===
+|*Property Name* |*Property Value*
+|`+"eclipselink.oracle.proxy-type"+` |`+PROXYTYPE_CERTIFICATE+`
+|`+PROXY_CERTIFICATE+` |`+byte[] {+`_`+EncryptedCertificate+`_`+}+`
+|`+PROXY_ROLES+` |`+String[] {"role1", "role2", ...}+`
+|===
+. [#SessionCustomizer-config]####Configure your session login using Java
+code. Do this through a `+SessionCustomizer+`.
++
+*`+//\'\' \'\'If\'\' \'\'using\'\' \'\'Oracle\'\' \'\'VPD\'\' \'\'support,set\'\' \'\'the\'\' \'\'connection\'\' \'\'policy\'\' \'\'to\'\' \'\'exclusive+`*`+ +`
+`+policy.setShouldUseExclusiveConnection(true);+`
+. Acquire a proxy-authenticated session using properties that specify
+the user credentials:
++
+`+Session session = server.acquireClientSession();+`
+`+session.setProperty("eclipselink.oracle.proxy-type", OracleConnection.PROXYTYPE_USER_NAME);+`
+`+session.setProperty(oracle.jdbc.OracleConnection.PROXY_USER_NAME, "sarah");+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
