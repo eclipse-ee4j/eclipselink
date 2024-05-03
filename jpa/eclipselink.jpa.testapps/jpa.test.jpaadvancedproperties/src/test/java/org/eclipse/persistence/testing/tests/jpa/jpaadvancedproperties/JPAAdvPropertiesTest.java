@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
         suite.addTest(new JPAAdvPropertiesTest("testBatchwritingProperty"));
         suite.addTest(new JPAAdvPropertiesTest("testCopyDescriptorNamedQueryToSessionProperty"));
         suite.addTest(new JPAAdvPropertiesTest("testLoggingTyperProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testLoginEncryptorProperty"));
 
         return suite;
     }
@@ -298,5 +299,30 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
         }
         assertNull("Error deleting Customer", em.find(Customer.class, customerId));
 
+    }
+
+    public void testLoginEncryptorProperty() {
+        EntityManager em = createEntityManager();
+        try {
+            //Create new customer
+            beginTransaction(em);
+            Customer customer = ModelExamples.customerExample1();
+            em.persist(customer);
+            em.flush();
+            Integer customerId = customer.getCustomerId();
+            commitTransaction(em);
+
+            customer = em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId);
+            //Purge it
+            beginTransaction(em);
+            em.remove(customer);
+            commitTransaction(em);
+
+            assertNotNull(customer);
+            assertTrue("CustomizedEncryptor.encryptPassword() method wasn't called.", CustomizedEncryptor.encryptPasswordCounter > 0);
+            assertTrue("CustomizedEncryptor.decryptPassword() method wasn't called.", CustomizedEncryptor.decryptPasswordCounter > 0);
+        } finally {
+            closeEntityManager(em);
+        }
     }
 }

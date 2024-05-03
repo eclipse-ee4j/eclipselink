@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,7 +112,7 @@ public class SecurableObjectHolder {
      * At runtime, no encryption will be made and the passwords will be assummed to
      * be clear text.
      */
-    private static final class PassThroughEncryptor implements Securable {
+    private static final class PassThroughEncryptor implements org.eclipse.persistence.security.Securable {
         @Override
         public String encryptPassword(String pswd) {
             return pswd;
