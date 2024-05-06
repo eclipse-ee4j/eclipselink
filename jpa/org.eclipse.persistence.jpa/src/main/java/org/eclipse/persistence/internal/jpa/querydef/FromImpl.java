@@ -18,7 +18,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,8 +77,8 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact) {
         super(parentPath, metamodel, javaClass, expressionNode, modelArtifact);
         this.managedType = managedType;
-        this.joins = new HashSet<>();
-        this.fetches = new HashSet<>();
+        this.joins = new LinkedHashSet<>();
+        this.fetches = new LinkedHashSet<>();
     }
 
     public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, FromImpl correlatedParent) {
