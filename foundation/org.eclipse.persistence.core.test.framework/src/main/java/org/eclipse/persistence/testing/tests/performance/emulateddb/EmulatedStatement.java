@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,6 +66,15 @@ public class EmulatedStatement implements PreparedStatement {
     protected List<DatabaseRecord> fetchRows() throws SQLException {
         List<DatabaseRecord> rows = this.connection.getRows(this.sql);
         if (rows == null) {
+            String sqlWithParams = null;
+            for (Object parameter: this.parameters) {
+                //There is not any different handling for numeric, character and date type like apostrophe wrapper
+                sqlWithParams = sql.replaceFirst("\\?", parameter.toString());
+            }
+            rows = this.connection.getRows(sqlWithParams);
+        }
+        //Second fallback to fetch from real database
+        if (rows == null) {
             Connection realConnection = this.connection.getRealConnection();
             PreparedStatement statement = realConnection.prepareStatement(this.sql);
             for (int index = 0; index < this.parameters.size(); index++) {
@@ -83,8 +92,8 @@ public class EmulatedStatement implements PreparedStatement {
             }
             result.close();
             statement.close();
+            this.connection.putRows(this.sql, rows);
         }
-        this.connection.putRows(this.sql, rows);
         return rows;
     }
 

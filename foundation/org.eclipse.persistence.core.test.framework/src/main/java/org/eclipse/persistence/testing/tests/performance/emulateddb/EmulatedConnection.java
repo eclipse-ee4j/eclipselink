@@ -45,6 +45,7 @@ import java.util.concurrent.Executor;
 public class EmulatedConnection implements Connection {
     protected Map<String, List<DatabaseRecord>> rows;
     protected Connection connection;
+    protected DatabaseMetaData databaseMetaData;
 
     public EmulatedConnection() {
         this.rows = new HashMap<>();
@@ -327,10 +328,10 @@ public class EmulatedConnection implements Connection {
      */
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        if (connection != null) {
-            return connection.getMetaData();
+        if (this.databaseMetaData == null) {
+            this.databaseMetaData = new EmulatedDatabaseMetaData();
         }
-        return null;
+        return this.databaseMetaData;
     }
 
     /**

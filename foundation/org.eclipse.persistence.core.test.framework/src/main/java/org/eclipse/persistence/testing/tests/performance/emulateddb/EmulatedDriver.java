@@ -27,7 +27,9 @@ public class EmulatedDriver implements Driver {
     static {
         try {
             DriverManager.registerDriver(new EmulatedDriver());
-        } catch (Exception ignore) {}
+        } catch (SQLException e) {
+            throw new ExceptionInInitializerError(e);
+        }
     }
 
     /** Allow toggling of emulation. */
@@ -66,7 +68,11 @@ public class EmulatedDriver implements Driver {
             return null;
         }
         if (connection == null) {
-            connection = new EmulatedConnection(DriverManager.getConnection(url.substring("emulate:".length()), info));
+            if ("jdbc:emulateddriver".equals(url)) {
+                connection = new EmulatedConnection();
+            } else {
+                connection = new EmulatedConnection(DriverManager.getConnection(url.substring("emulate:".length()), info));
+            }
         }
         return connection;
     }
@@ -84,7 +90,7 @@ public class EmulatedDriver implements Driver {
      */
     @Override
     public boolean acceptsURL(String url) throws SQLException {
-        return url.contains("emulate:");
+        return url.contains("emulate:") || url.contains("jdbc:emulateddriver");
     }
 
     /**
