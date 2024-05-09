@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticleOwner;
+import org.eclipse.persistence.jaxb.MOXySystemProperties;
 import org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMaxFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMinFacet;
@@ -154,7 +155,9 @@ public class SchemaGenerator {
         this.arrayClassesToGeneratedClasses = arrayClassesToGeneratedClasses;
 
         //sort input classes before schema name (like schema1.xsd, schema2.xsd....) is generated and assigned
-        typeInfoClasses.sort(new JavaClassCompareByNamespace(typeInfo));
+        if (MOXySystemProperties.moxySchemaGeneratorSort) {
+            typeInfoClasses.sort(new JavaClassCompareByNamespace(typeInfo));
+        }
         for (JavaClass javaClass : typeInfoClasses) {
             addSchemaComponents(javaClass);
         }

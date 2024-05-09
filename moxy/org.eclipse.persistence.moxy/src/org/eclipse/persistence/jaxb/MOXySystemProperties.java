@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,6 +78,14 @@ public final class MOXySystemProperties {
      */
     public static final String MOXY_LOG_PAYLOAD = "eclipselink.logging.payload.moxy";
 
+    /**
+     * Property to control disable/enable sorting of generated XML Schemas by MOXy SchemaGenerator.
+     *
+     * Usage: set to {@link Boolean#TRUE} to enable sorting by XML Namespace URI or {@link Boolean#FALSE} to disable it.
+     * By default it is enabled {@link Boolean#TRUE}.
+     *
+     */
+    public static final String MOXY_SCHEMA_GENERATOR_SORT = "org.eclipse.persistence.moxy.schema.generator.sort";
 
     public static final Boolean xmlIdExtension = getBoolean(XML_ID_EXTENSION);
 
@@ -90,6 +98,8 @@ public final class MOXySystemProperties {
     public static final String moxyLoggingLevel = PrivilegedAccessHelper.getSystemProperty(MOXY_LOGGING_LEVEL, String.valueOf(AbstractSessionLog.INFO_LABEL));
 
     public static final Boolean moxyLogPayload = PrivilegedAccessHelper.getSystemPropertyBoolean(MOXY_LOG_PAYLOAD, false);
+
+    public static final Boolean moxySchemaGeneratorSort = PrivilegedAccessHelper.getSystemPropertyBoolean(MOXY_SCHEMA_GENERATOR_SORT, true);
 
     /**
      * Returns value of system property.
