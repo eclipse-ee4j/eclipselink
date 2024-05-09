@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.SchemaCompareByNamespace;
+import org.eclipse.persistence.jaxb.MOXySystemProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -234,7 +235,7 @@ public class Generator {
 
         java.util.Collection<Schema> schemas = schemaGenerator.getAllSchemas();
         // make sure that schemas will be passed to the output in specified order
-        if (schemas instanceof List) {
+        if (schemas instanceof List && MOXySystemProperties.moxySchemaGeneratorSort) {
             ((List)schemas).sort(new SchemaCompareByNamespace());
         }
         for(Schema schema : schemas) {
