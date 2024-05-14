@@ -69,7 +69,7 @@ public class EmulatedDriver implements Driver {
         }
         if (connection == null) {
             if ("jdbc:emulateddriver".equals(url)) {
-                connection = new EmulatedConnection();
+                connection = new EmulatedConnection(url, info);
             } else {
                 connection = new EmulatedConnection(DriverManager.getConnection(url.substring("emulate:".length()), info));
             }

@@ -21,6 +21,13 @@ import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 
 public class EmulatedDatabaseMetaData implements DatabaseMetaData {
+
+    private EmulatedConnection connection;
+
+    public EmulatedDatabaseMetaData(EmulatedConnection emulatedConnection) {
+        this.connection = emulatedConnection;
+    }
+
     @Override
     public boolean allProceduresAreCallable() throws SQLException {
         return false;
@@ -33,11 +40,14 @@ public class EmulatedDatabaseMetaData implements DatabaseMetaData {
 
     @Override
     public String getURL() throws SQLException {
-        return null;
+        return connection.getURL();
     }
 
     @Override
     public String getUserName() throws SQLException {
+        if (connection.getInfo() != null) {
+            return connection.getInfo().getProperty("user");
+        }
         return null;
     }
 
@@ -68,7 +78,7 @@ public class EmulatedDatabaseMetaData implements DatabaseMetaData {
 
     @Override
     public String getDatabaseProductName() throws SQLException {
-        return "EclipseLink Emulated Driver";
+        return "EclipseLink Emulated Driver - DB";
     }
 
     @Override
@@ -78,17 +88,17 @@ public class EmulatedDatabaseMetaData implements DatabaseMetaData {
 
     @Override
     public String getDriverName() throws SQLException {
-        return null;
+        return "EclipseLink Emulated Driver";
     }
 
     @Override
     public String getDriverVersion() throws SQLException {
-        return null;
+        return "1.0";
     }
 
     @Override
     public int getDriverMajorVersion() {
-        return 0;
+        return 1;
     }
 
     @Override
