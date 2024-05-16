@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2362,8 +2362,7 @@ public class ExpressionOperator implements Serializable {
 
         int[] indices = getArgumentIndices(items.size());
         String[] dbStrings = getDatabaseStrings(items.size());
-        for (int i = 0; i < indices.length; i++) {
-            final int index = indices[i];
+        for (final int index : indices) {
             Expression item = items.get(index);
 
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
