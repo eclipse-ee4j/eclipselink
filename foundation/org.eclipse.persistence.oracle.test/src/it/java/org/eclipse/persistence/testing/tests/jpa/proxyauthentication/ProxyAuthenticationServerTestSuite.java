@@ -295,7 +295,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             empId = employee.getId();
             commitTransaction(em);
         } catch (Exception ex) {
-            if (ex.getMessage().indexOf("ORA-00942: table or view does not exist") == -1){
+            if (!(ex.getMessage().contains("java.sql.SQLSyntaxErrorException") && ex.getMessage().contains("ORA-00942"))) {
                 ex.printStackTrace();
                 fail("it's not the right exception");
             }
@@ -357,7 +357,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             em.persist(employee);
             em.flush();
         } catch (Exception ex) {
-            if (ex.getMessage().indexOf("ORA-00942: table or view does not exist") == -1){
+            if (!(ex.getMessage().contains("java.sql.SQLSyntaxErrorException") && ex.getMessage().contains("ORA-00942"))) {
                 ex.printStackTrace();
                 fail("it's not the right exception");
             }
