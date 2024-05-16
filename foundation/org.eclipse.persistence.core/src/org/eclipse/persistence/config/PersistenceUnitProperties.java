@@ -55,9 +55,11 @@ package org.eclipse.persistence.config;
 
 import java.io.File;
 import java.sql.DriverManager;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -3837,7 +3839,7 @@ public class PersistenceUnitProperties {
      * An NoSQL datasource is a non-relational datasource such as a legacy database, NoSQL database,
      * XML database, transactional and messaging systems, or ERP systems.
      *
-     * @see javax.resource.cci.ConnectionFactory
+     * {@code javax.resource.cci.ConnectionFactory}
      */
     public static final String NOSQL_CONNECTION_FACTORY = "eclipselink.nosql.connection-factory";
 
@@ -4050,6 +4052,48 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION  = "eclipselink.concurrency.manager.allow.interruptedexception";
+
+
+    /**
+     * This is the persistence.xml property that tells us how the
+     * org.eclipse.persistence.internal.sessions.AbstractSession.getCacheKeyFromTargetSessionForMergeScenarioMergeManagerNotNullAndCacheKeyOriginalStillNull(CacheKey, Object, ObjectBuilder, ClassDescriptor, MergeManager)
+     * should behave.
+     */
+    public static final String CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION  = "eclipselink.concurrency.manager.allow.abstractsession.getCacheKeyFromTargetSessionForMerge.modeofoperation";
+
+
+    //TODO RFELCMAN enum - begin?
+    /**
+     * This should be the worst possible option. This is the one that gives us the issue:
+     *  https://github.com/eclipse-ee4j/eclipselink/issues/2094.
+     */
+    public static final String CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION_OPTION_BACKWARDS_COMPATIBILITY  = "backwards-compatibility";
+    /**
+     * This is far from an ideal approach but already better than the old backwards-compatibility approach.
+     * In  this code path what will happen is that our merge manger thread will be doing a loop hoping for a cache key
+     * acquired by some other thread releases the cache key.
+     * If that never happens then our merge manager will blow up.
+     * The assumption being that it might be the holder of cache keys that are stopping the processes from going forward.
+     * That is what we saw in the issue  https://github.com/eclipse-ee4j/eclipselink/issues/2094
+     * where our merge manager thread was hold several write lock keys that were making it impossible for other threads doing object building
+     * to finish their work.
+     */
+    public static final String CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION_OPTION_WAIT_LOOP_WITH_TIME_LIMIT  = "wait-loop-with-time-limit";
+    //TODO RFELCMAN enum - end?
+
+
+    public static final String CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION_OPTION_DEFAULT  = CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION_OPTION_WAIT_LOOP_WITH_TIME_LIMIT;
+
+    /**
+     * As the supported options for the {@link org.eclipse.persistence.config.PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION}
+     * persistence unit property.
+     */
+    public static final List<String> CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION_LIST_OF_ALL_OPTIONS =  Collections.unmodifiableList( Arrays.asList(
+            PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION_OPTION_BACKWARDS_COMPATIBILITY
+            , PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION_OPTION_WAIT_LOOP_WITH_TIME_LIMIT
+            ));
+
+
 
     /**
      * <p>

@@ -18,7 +18,17 @@ package org.eclipse.persistence.internal.helper;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.security.AccessController;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -853,7 +863,7 @@ public class ConcurrencyManager implements Serializable {
      * @return Never null if the read lock manager does not yet exist for the current thread. otherwise its read log
      *         manager is returned.
      */
-    protected static ReadLockManager getReadLockManager(Thread thread) {
+    public static ReadLockManager getReadLockManager(Thread thread) {
         Map<Thread, ReadLockManager> readLockManagers = getReadLockManagers();
         return readLockManagers.get(thread);
     }
@@ -1106,5 +1116,32 @@ public class ConcurrencyManager implements Serializable {
 
     public Condition getInstanceLockCondition() {
         return this.instanceLockCondition;
+    }
+
+    /**
+     * We check if cache keys is currently being owned for writing and if that owning thread happens to be the current thread doing the check.
+     * @return FALSE means either the thread is currently not owned by anybody for writing purposes. Or otherwise if is owned by some thread
+     * but the thread is not the current thread. TRUE is returned if and only if the cache key is being owned by some thread
+     * and that thread is not the current thread, it is some other competing thread.
+     */
+    public synchronized boolean isAcquiredForWritingAndOwneddByADifferentThread() {
+        // (a) We start by using the traditional acquire implementation to check if cache key is acquired
+        // if the output says false we immediately return false
+        if(!this.isAcquired()) {
+            return false;
+        }
+
+        // (b) If the active thread is not set then the cache keys is not acquired for writing by anybody
+        if(this.activeThread == null) {
+            return false;
+        }
+
+
+
+        // (c) some thread is acquiring the cache key
+        // return need to check if it is a different thread than ours
+        Thread currentThread = Thread.currentThread();
+        return this.activeThread != currentThread;
+
     }
 }
