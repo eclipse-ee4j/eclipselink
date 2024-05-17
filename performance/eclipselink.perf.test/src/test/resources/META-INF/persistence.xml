@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,11 +51,8 @@
         <class>org.eclipse.persistence.testing.perf.jpa.model.basic.MasterEntity</class>
         <class>org.eclipse.persistence.testing.perf.jpa.model.basic.DetailEntity</class>
         <properties>
-            <property name="jakarta.persistence.jdbc.driver"      value="@driver@"/>
-            <property name="jakarta.persistence.jdbc.url"         value="@url@"/>
-            <property name="jakarta.persistence.jdbc.user"        value="@user@"/>
-            <property name="jakarta.persistence.jdbc.password"    value="@pwd@"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:emulateddriver"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="jpa-performance-read-no-cache">
@@ -63,14 +60,11 @@
         <class>org.eclipse.persistence.testing.perf.jpa.model.basic.MasterEntity</class>
         <class>org.eclipse.persistence.testing.perf.jpa.model.basic.DetailEntity</class>
         <properties>
-            <property name="jakarta.persistence.jdbc.driver"      value="@driver@"/>
-            <property name="jakarta.persistence.jdbc.url"         value="@url@"/>
-            <property name="jakarta.persistence.jdbc.user"        value="@user@"/>
-            <property name="jakarta.persistence.jdbc.password"    value="@pwd@"/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:emulateddriver"/>
             <property name="eclipselink.cache.shared.default" value="false"/>
             <property name="eclipselink.cache.size.default" value="0"/>
             <property name="eclipselink.query-results-cache" value="false"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
         </properties>
     </persistence-unit>
 </persistence>
