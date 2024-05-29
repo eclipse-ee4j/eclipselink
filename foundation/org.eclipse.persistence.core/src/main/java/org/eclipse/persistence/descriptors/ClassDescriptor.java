@@ -2125,7 +2125,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public CopyPolicy getCopyPolicy() {
         // Lazy initialize for XML deployment.
         if (copyPolicy == null) {
-            if (javaClass.isRecord()) {
+            if (javaClass != null && javaClass.isRecord()) {
                 setCopyPolicy(new RecordCopyPolicy());
             } else {
                 setCopyPolicy(new InstantiationCopyPolicy());
@@ -2314,7 +2314,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public InstantiationPolicy getInstantiationPolicy() {
         // Lazy initialize for XML deployment.
         if (instantiationPolicy == null) {
-            if (javaClass.isRecord()) {
+            if (javaClass != null && javaClass.isRecord()) {
                 setInstantiationPolicy(new RecordInstantiationPolicy());
             } else {
                 setInstantiationPolicy(new InstantiationPolicy());
@@ -4004,7 +4004,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
             if (!isMethodAccess) {
                 if (this.copyPolicy == null) {
-                    if (javaClass.isRecord()) {
+                    if (javaClass != null && javaClass.isRecord()) {
                         setCopyPolicy(new RecordCopyPolicy());
                     } else {
                         setCopyPolicy(new PersistenceEntityCopyPolicy());
@@ -4013,7 +4013,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 if (!isAbstract()) {
                     try {
                         if (this.instantiationPolicy == null) {
-                            if (javaClass.isRecord()) {
+                            if (javaClass != null && javaClass.isRecord()) {
                                 setInstantiationPolicy(new RecordInstantiationPolicy());
                             } else {
                                 setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().getConstructor().newInstance()));
