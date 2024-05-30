@@ -83,6 +83,7 @@ public class MySQLPlatform extends DatabasePlatform {
 
 
     private static final String LIMIT = " LIMIT ";
+    private static final String OFFSET = " OFFSET ";
 
     /** Support fractional seconds in time values since MySQL v. 5.6.4. */
     private boolean isFractionalTimeSupported;
@@ -908,9 +909,9 @@ public class MySQLPlatform extends DatabasePlatform {
         statement.setUseUniqueFieldAliases(true);
         call.setFields(statement.printSQL(printer));
         printer.printString(LIMIT);
-        printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-        printer.printString(", ");
         printer.printParameter(DatabaseCall.MAXROW_FIELD);
+        printer.printString(OFFSET);
+        printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         statement.appendForUpdateClause(printer);
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
