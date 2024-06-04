@@ -266,6 +266,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         tests.add("testIncorrectBatchQueryHint");
 // can't join different dbs tests.add("testFetchQueryHint");
         tests.add("testBatchQueryHint");
+        tests.add("testCopyFromQuery");
         tests.add("testQueryHints");
         tests.add("testParallelMultipleFactories");
         tests.add("testMultipleFactories");
@@ -4979,6 +4980,16 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         if(factory3.isOpen()) {
             fail("after factory3.close() factory3 is open");
         }
+    }
+
+    public void testCopyFromQuery() {
+        EntityManager em = (EntityManager)getEntityManagerFactory().createEntityManager().getDelegate();
+        Query query = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = 'testCopyFromQuery'");
+        query.setHint(QueryHints.QUERY_TIMEOUT_UNIT, "SECONDS");
+        ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((JpaQuery)query).getDatabaseQuery();
+        DataModifyQuery copyQuery = new DataModifyQuery();
+        copyQuery.copyFromQuery(olrQuery);
+        assertEquals("QUERY_TIMEOUT_UNIT is not matching.", copyQuery.getQueryTimeoutUnit(), olrQuery.getQueryTimeoutUnit());
     }
 
     // The class will be used to test QueryHints.RESULT_COLLECTION_TYPE
