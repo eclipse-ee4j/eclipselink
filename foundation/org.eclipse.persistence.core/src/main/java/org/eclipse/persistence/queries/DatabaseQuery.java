@@ -1898,6 +1898,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.argumentTypeNames = query.argumentTypeNames;
         this.argumentValues = query.argumentValues;
         this.queryTimeout = query.queryTimeout;
+        this.queryTimeoutUnit = query.queryTimeoutUnit;
         this.redirector = query.redirector;
         this.sessionName = query.sessionName;
         this.shouldBindAllParameters = query.shouldBindAllParameters;
