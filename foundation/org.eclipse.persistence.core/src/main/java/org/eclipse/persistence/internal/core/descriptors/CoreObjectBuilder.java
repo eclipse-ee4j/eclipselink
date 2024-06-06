@@ -19,6 +19,8 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
+import java.util.List;
+
 public abstract class CoreObjectBuilder<
     ABSTRACT_RECORD extends CoreAbstractRecord,
     ABSTRACT_SESSION extends CoreAbstractSession,
@@ -35,6 +37,12 @@ public abstract class CoreObjectBuilder<
      * Return a new instance of the receiver's javaClass.
      */
     public abstract Object buildNewInstance();
+
+    /**
+     * Return a new {@code java.lang.Record} instance.
+     * As this kind of class is immutable all values must be passed during creation as constructor parameters.
+     */
+    public abstract Object buildNewRecordInstance(Class<Record> clazz, List<MAPPING> mappings, ABSTRACT_RECORD databaseRow, ABSTRACT_SESSION session);
 
     /**
      * Create a new row/record for the object builder.

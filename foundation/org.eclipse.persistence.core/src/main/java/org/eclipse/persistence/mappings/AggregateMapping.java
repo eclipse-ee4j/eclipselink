@@ -157,6 +157,8 @@ public abstract class AggregateMapping extends DatabaseMapping {
     protected Object buildBackupClonePart(Object attributeValue, UnitOfWorkImpl unitOfWork) {
         if (attributeValue == null) {
             return null;
+        } else  if (attributeValue instanceof Record) {
+            return referenceDescriptor.getCopyPolicy().buildClone(attributeValue, unitOfWork);
         }
         return getObjectBuilder(attributeValue, unitOfWork).buildBackupClone(attributeValue, unitOfWork);
     }
@@ -223,7 +225,9 @@ public abstract class AggregateMapping extends DatabaseMapping {
 
         // bug 2612602 as we are building the working copy make sure that we call to correct clone method.
         Object clonedAttributeValue = aggregateObjectBuilder.instantiateWorkingCopyClone(attributeValue, cloningSession);
-        aggregateObjectBuilder.populateAttributesForClone(attributeValue, parentCacheKey, clonedAttributeValue, refreshCascade, cloningSession);
+        if (!(clonedAttributeValue instanceof Record)) {
+            aggregateObjectBuilder.populateAttributesForClone(attributeValue, parentCacheKey, clonedAttributeValue, refreshCascade, cloningSession);
+        }
         //also clone the fetch group reference if applied
         if (aggregateObjectBuilder.getDescriptor().hasFetchGroupManager()) {
             aggregateObjectBuilder.getDescriptor().getFetchGroupManager().copyAggregateFetchGroupInto(attributeValue, clonedAttributeValue, clone, cloningSession);
@@ -700,23 +704,29 @@ public abstract class AggregateMapping extends DatabaseMapping {
             return;
         }
 
-        Object targetAttributeValue = getAttributeValueFromObject(target);
-        boolean originalWasNull = targetAttributeValue == null;
-        if (targetAttributeValue == null || targetAttributeValue == sourceAttributeValue || !targetAttributeValue.getClass().equals(sourceAttributeValue.getClass())) {
-            // avoid null-pointer/nothing to merge to - create a new instance
-            // (a new clone cannot be used as all changes must be merged)
-            targetAttributeValue = buildNewMergeInstanceOf(sourceAttributeValue, mergeManager.getSession());
-            mergeAttributeValue(targetAttributeValue, true, sourceAttributeValue, mergeManager, targetSession);
-            // setting new instance so fire event as if set was called by user.
-            // this call will eventually get passed to updateChangeRecord which will
-            //ensure this new aggregates is fully initialized with listeners.
-            // If merge into the unit of work, must only merge and raise the event is the value changed.
-            if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())  && !mergeManager.isForRefresh()) {
-                this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), getAttributeValueFromObject(target), targetAttributeValue);
-            }
-
+        Object targetAttributeValue = null;
+        boolean originalWasNull = false;
+        if (sourceAttributeValue instanceof Record) {
+            targetAttributeValue = referenceDescriptor.getCopyPolicy().buildClone(sourceAttributeValue, targetSession);
         } else {
-            mergeAttributeValue(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager, targetSession);
+            targetAttributeValue = getAttributeValueFromObject(target);
+            originalWasNull = targetAttributeValue == null;
+            if (targetAttributeValue == null || targetAttributeValue == sourceAttributeValue || !targetAttributeValue.getClass().equals(sourceAttributeValue.getClass())) {
+                // avoid null-pointer/nothing to merge to - create a new instance
+                // (a new clone cannot be used as all changes must be merged)
+                targetAttributeValue = buildNewMergeInstanceOf(sourceAttributeValue, mergeManager.getSession());
+                mergeAttributeValue(targetAttributeValue, true, sourceAttributeValue, mergeManager, targetSession);
+                // setting new instance so fire event as if set was called by user.
+                // this call will eventually get passed to updateChangeRecord which will
+                //ensure this new aggregates is fully initialized with listeners.
+                // If merge into the unit of work, must only merge and raise the event is the value changed.
+                if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy()) && !mergeManager.isForRefresh()) {
+                    this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), getAttributeValueFromObject(target), targetAttributeValue);
+                }
+
+            } else {
+                mergeAttributeValue(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager, targetSession);
+            }
         }
         if(this.descriptor.hasFetchGroupManager()) {
             FetchGroup sourceFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(source);

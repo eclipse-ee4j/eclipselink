@@ -471,7 +471,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         // EL Bug 474956 - build a new aggregate if the the target object references an existing aggregate, and
         // the passed cacheKey is null from the invalidation of the target object in the IdentityMap.
         if (aggregate == null || (aggregate != null && cacheKey == null)) {
-            aggregate = descriptor.getObjectBuilder().buildNewInstance();
+            if (this.getReferenceClass().isRecord()) {
+                aggregate = descriptor.getObjectBuilder().buildNewRecordInstance((Class<Record>) this.getReferenceClass(), descriptor.getMappings(), databaseRow, executionSession);
+            } else {
+                aggregate = descriptor.getObjectBuilder().buildNewInstance();
+            }
             refreshing = false;
         }
 
@@ -489,7 +493,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         } else if (executionSession.isUnitOfWork()) {
             descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
         } else {
-            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, nestedQuery.getExecutionFetchGroup(descriptor), refreshing, executionSession);
+            if (!this.getReferenceClass().isRecord()) {
+                descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, nestedQuery.getExecutionFetchGroup(descriptor), refreshing, executionSession);
+            }
         }
         if ((targetFetchGroup != null) && descriptor.hasFetchGroupManager() && cacheKey != null
                 && !refreshing && sourceQuery.shouldMaintainCache() && !sourceQuery.shouldStoreBypassCache()) {

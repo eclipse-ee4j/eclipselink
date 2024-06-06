@@ -90,6 +90,7 @@ import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
@@ -115,6 +116,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 import java.io.Serializable;
+import java.lang.reflect.RecordComponent;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -124,11 +126,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p><b>Purpose</b>: Object builder is one of the behavior class attached to descriptor.
@@ -188,6 +193,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     private static final int SEMAPHORE_MAX_NUMBER_THREADS = ConcurrencyUtil.SINGLETON.getNoOfThreadsAllowedToObjectBuildInParallel();
     private static final Semaphore SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING = new Semaphore(SEMAPHORE_MAX_NUMBER_THREADS);
     private transient ConcurrencySemaphore objectBuilderSemaphore = new ConcurrencySemaphore(SEMAPHORE_THREAD_LOCAL_VAR, SEMAPHORE_MAX_NUMBER_THREADS, SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING, this, "object_builder_semaphore_acquired_01");
+    private final Lock instanceLock  = new ReentrantLock();
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -744,6 +750,57 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     @Override
     public Object buildNewInstance() {
         return this.descriptor.getInstantiationPolicy().buildNewInstance();
+    }
+
+    /**
+     * Return a new {@code java.lang.Record} instance.
+     * As this kind of class is immutable all values must be passed during creation as constructor parameters.
+     */
+    @Override
+    public Object buildNewRecordInstance(Class<Record> clazz, List<DatabaseMapping> mappings, AbstractRecord databaseRow, AbstractSession session) {
+        class TypeValue {
+            public TypeValue(Class<?> type) {
+                this.type = type;
+            }
+            Class<?> type;
+            Object value;
+        }
+        Map<String, TypeValue> typeValueMap = new LinkedHashMap<>();
+        ReadObjectQuery query = new ReadObjectQuery();
+        query.setSession(session);
+        for (RecordComponent component : clazz.getRecordComponents()) {
+            typeValueMap.put(component.getName(), new TypeValue(component.getType()));
+        }
+        for (DatabaseMapping mapping: mappings) {
+            Object value = null;
+            if (mapping instanceof DirectToFieldMapping) {
+                value = mapping.valueFromRow(databaseRow, null, query, true);
+            } if (mapping instanceof AggregateObjectMapping aggregateObjectMapping) {
+                ClassDescriptor descriptor = session.getClassDescriptor(aggregateObjectMapping.getReferenceClass());
+                //Handle nested records
+                if (aggregateObjectMapping.getReferenceClass().isRecord()) {
+                    value = descriptor.getObjectBuilder().buildNewRecordInstance((Class<Record>) aggregateObjectMapping.getReferenceClass(), descriptor.getMappings(), databaseRow, session);
+                } else {
+                    value = descriptor.getObjectBuilder().buildNewInstance();
+                }
+            }
+            TypeValue typeValue = typeValueMap.get(mapping.getAttributeName());
+            typeValue.value = value;
+        }
+        RecordInstantiationPolicy recordInstantiationPolicy = ((RecordInstantiationPolicy)this.descriptor.getInstantiationPolicy());
+        instanceLock.lock();
+        try {
+            List values = new ArrayList<>();
+            for (TypeValue typeValue: typeValueMap.values()) {
+                values.add(typeValue.value);
+            }
+            recordInstantiationPolicy.setValues(values);
+            return recordInstantiationPolicy.buildNewInstance();
+        } catch (Throwable t) {
+            throw t;
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**

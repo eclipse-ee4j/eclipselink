@@ -1286,146 +1286,149 @@ public class ClassWeaver extends ClassVisitor {
      */
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        boolean weaveCloneable = true;
-        // To prevent 'double' weaving: scan for PersistenceWeaved interface.
-        for (int index = 0; index < interfaces.length; index++) {
-            String existingInterface = interfaces[index];
-            if (PERSISTENCE_WEAVED_SHORT_SIGNATURE.equals(existingInterface)) {
-                this.alreadyWeaved = true;
-                super.visitSuper(version, access, name, signature, superName, interfaces);
-                return;
-            } else if (CT_SHORT_SIGNATURE.equals(existingInterface)) {
-                // Disable weaving of change tracking if already implemented
-                // (such as by user).
-                classDetails.setShouldWeaveChangeTracking(false);
-            } else if (CLONEABLE_SHORT_SIGNATURE.equals(existingInterface)) {
-                weaveCloneable = false;
+        //As Records are immutable weaving does not make sense.
+        if (!"java/lang/Record".equals(superName)) {
+            boolean weaveCloneable = true;
+            // To prevent 'double' weaving: scan for PersistenceWeaved interface.
+            for (int index = 0; index < interfaces.length; index++) {
+                String existingInterface = interfaces[index];
+                if (PERSISTENCE_WEAVED_SHORT_SIGNATURE.equals(existingInterface)) {
+                    this.alreadyWeaved = true;
+                    super.visitSuper(version, access, name, signature, superName, interfaces);
+                    return;
+                } else if (CT_SHORT_SIGNATURE.equals(existingInterface)) {
+                    // Disable weaving of change tracking if already implemented
+                    // (such as by user).
+                    classDetails.setShouldWeaveChangeTracking(false);
+                } else if (CLONEABLE_SHORT_SIGNATURE.equals(existingInterface)) {
+                    weaveCloneable = false;
+                }
             }
-        }
-        int newInterfacesLength = interfaces.length;
-        // Cloneable
-        int cloneableIndex = 0;
-        weaveCloneable = classDetails.shouldWeaveInternal() && weaveCloneable && (classDetails.getSuperClassDetails() == null);
-        if (weaveCloneable) {
-            cloneableIndex = newInterfacesLength;
-            newInterfacesLength++;
-        }
-        // PersistenceWeaved
-        int persistenceWeavedIndex = newInterfacesLength;
-        newInterfacesLength++;
-        // PersistenceEntity
-        int persistenceEntityIndex = 0;
-        boolean persistenceEntity = classDetails.shouldWeaveInternal() && (classDetails.getSuperClassDetails() == null) && (!classDetails.isEmbedable());
-        if (persistenceEntity) {
-            persistenceEntityIndex = newInterfacesLength;
-            newInterfacesLength++;
-        }
-        // PersistenceObject
-        int persistenceObjectIndex = 0;
-        boolean persistenceObject = classDetails.shouldWeaveInternal();
-        if (persistenceObject) {
-            persistenceObjectIndex = newInterfacesLength;
-            newInterfacesLength++;
-        }
-        // FetchGroupTracker
-        int fetchGroupTrackerIndex = 0;
-        boolean fetchGroupTracker = classDetails.shouldWeaveFetchGroups() && (classDetails.getSuperClassDetails() == null);
-        if (fetchGroupTracker) {
-            fetchGroupTrackerIndex = newInterfacesLength;
-            newInterfacesLength++;
-        }
-        int persistenceWeavedFetchGroupsIndex = 0;
-        if (classDetails.shouldWeaveFetchGroups()) {
-            persistenceWeavedFetchGroupsIndex = newInterfacesLength;
-            newInterfacesLength++;
-        }
-        // PersistenceWeavedLazy
-        int persistenceWeavedLazyIndex = 0;
-        if (classDetails.shouldWeaveValueHolders()) {
-            persistenceWeavedLazyIndex = newInterfacesLength;
-            newInterfacesLength++;
-        }
-
-        // ChangeTracker
-        boolean changeTracker = !classDetails.doesSuperclassWeaveChangeTracking() && classDetails.shouldWeaveChangeTracking();
-        int persistenceWeavedChangeTrackingIndex = 0;
-        int changeTrackerIndex = 0;
-        if (changeTracker) {
-            changeTrackerIndex = newInterfacesLength;
-            newInterfacesLength++;
-        }
-        if (classDetails.shouldWeaveChangeTracking()) {
-            persistenceWeavedChangeTrackingIndex = newInterfacesLength;
-            newInterfacesLength++;
-        }
-
-        int persistenceWeavedRestIndex = 0;
-        boolean weaveRest = classDetails.shouldWeaveREST() && classDetails.getSuperClassDetails() == null;
-        if (weaveRest) {
-            persistenceWeavedRestIndex = newInterfacesLength;
-            newInterfacesLength++;
-        }
-
-        String[] newInterfaces = new String[newInterfacesLength];
-        System.arraycopy(interfaces, 0, newInterfaces, 0, interfaces.length);
-        // Add 'marker'
-        // org.eclipse.persistence.internal.weaving.PersistenceWeaved interface.
-        newInterfaces[persistenceWeavedIndex] = PERSISTENCE_WEAVED_SHORT_SIGNATURE;
-        weaved = true;
-        // Add Cloneable interface.
-        if (weaveCloneable) {
-            newInterfaces[cloneableIndex] = CLONEABLE_SHORT_SIGNATURE;
-        }
-        // Add org.eclipse.persistence.internal.descriptors.PersistenceEntity
-        // interface.
-        if (persistenceEntity) {
-            newInterfaces[persistenceEntityIndex] = PERSISTENCE_ENTITY_SHORT_SIGNATURE;
-        }
-        // Add org.eclipse.persistence.internal.descriptors.PersistenceObject
-        // interface.
-        if (persistenceObject) {
-            newInterfaces[persistenceObjectIndex] = PERSISTENCE_OBJECT_SHORT_SIGNATURE;
-        }
-        // Add org.eclipse.persistence.queries.FetchGroupTracker interface.
-        if (fetchGroupTracker) {
-            newInterfaces[fetchGroupTrackerIndex] = FETCHGROUP_TRACKER_SHORT_SIGNATURE;
-        }
-        if (classDetails.shouldWeaveFetchGroups()) {
-            newInterfaces[persistenceWeavedFetchGroupsIndex] = WEAVED_FETCHGROUPS_SHORT_SIGNATURE;
-        }
-        // Add marker interface for LAZY.
-        if (classDetails.shouldWeaveValueHolders()) {
-            newInterfaces[persistenceWeavedLazyIndex] = TW_LAZY_SHORT_SIGNATURE;
-        }
-        // Add marker interface and change tracker interface for change
-        // tracking.
-        if (changeTracker) {
-            newInterfaces[changeTrackerIndex] = CT_SHORT_SIGNATURE;
-        }
-        if (classDetails.shouldWeaveChangeTracking()) {
-            newInterfaces[persistenceWeavedChangeTrackingIndex] = TW_CT_SHORT_SIGNATURE;
-        }
-
-        if (weaveRest) {
-            newInterfaces[persistenceWeavedRestIndex] = WEAVED_REST_LAZY_SHORT_SIGNATURE;
-        }
-
-        String newSignature = null;
-        // fix the signature to include any new methods we weave
-        if (signature != null) {
-            StringBuilder newSignatureBuf = new StringBuilder();
-            newSignatureBuf.append(signature);
-
-            for (int i = interfaces.length; i < newInterfaces.length; i++) {
-                newSignatureBuf.append("L" + newInterfaces[i] + ";");
+            int newInterfacesLength = interfaces.length;
+            // Cloneable
+            int cloneableIndex = 0;
+            weaveCloneable = classDetails.shouldWeaveInternal() && weaveCloneable && (classDetails.getSuperClassDetails() == null);
+            if (weaveCloneable) {
+                cloneableIndex = newInterfacesLength;
+                newInterfacesLength++;
             }
-            newSignature = newSignatureBuf.toString();
-        }
+            // PersistenceWeaved
+            int persistenceWeavedIndex = newInterfacesLength;
+            newInterfacesLength++;
+            // PersistenceEntity
+            int persistenceEntityIndex = 0;
+            boolean persistenceEntity = classDetails.shouldWeaveInternal() && (classDetails.getSuperClassDetails() == null) && (!classDetails.isEmbedable());
+            if (persistenceEntity) {
+                persistenceEntityIndex = newInterfacesLength;
+                newInterfacesLength++;
+            }
+            // PersistenceObject
+            int persistenceObjectIndex = 0;
+            boolean persistenceObject = classDetails.shouldWeaveInternal();
+            if (persistenceObject) {
+                persistenceObjectIndex = newInterfacesLength;
+                newInterfacesLength++;
+            }
+            // FetchGroupTracker
+            int fetchGroupTrackerIndex = 0;
+            boolean fetchGroupTracker = classDetails.shouldWeaveFetchGroups() && (classDetails.getSuperClassDetails() == null);
+            if (fetchGroupTracker) {
+                fetchGroupTrackerIndex = newInterfacesLength;
+                newInterfacesLength++;
+            }
+            int persistenceWeavedFetchGroupsIndex = 0;
+            if (classDetails.shouldWeaveFetchGroups()) {
+                persistenceWeavedFetchGroupsIndex = newInterfacesLength;
+                newInterfacesLength++;
+            }
+            // PersistenceWeavedLazy
+            int persistenceWeavedLazyIndex = 0;
+            if (classDetails.shouldWeaveValueHolders()) {
+                persistenceWeavedLazyIndex = newInterfacesLength;
+                newInterfacesLength++;
+            }
 
-        if (cw != null) {
-            cv = cw;
+            // ChangeTracker
+            boolean changeTracker = !classDetails.doesSuperclassWeaveChangeTracking() && classDetails.shouldWeaveChangeTracking();
+            int persistenceWeavedChangeTrackingIndex = 0;
+            int changeTrackerIndex = 0;
+            if (changeTracker) {
+                changeTrackerIndex = newInterfacesLength;
+                newInterfacesLength++;
+            }
+            if (classDetails.shouldWeaveChangeTracking()) {
+                persistenceWeavedChangeTrackingIndex = newInterfacesLength;
+                newInterfacesLength++;
+            }
+
+            int persistenceWeavedRestIndex = 0;
+            boolean weaveRest = classDetails.shouldWeaveREST() && classDetails.getSuperClassDetails() == null;
+            if (weaveRest) {
+                persistenceWeavedRestIndex = newInterfacesLength;
+                newInterfacesLength++;
+            }
+
+            String[] newInterfaces = new String[newInterfacesLength];
+            System.arraycopy(interfaces, 0, newInterfaces, 0, interfaces.length);
+            // Add 'marker'
+            // org.eclipse.persistence.internal.weaving.PersistenceWeaved interface.
+            newInterfaces[persistenceWeavedIndex] = PERSISTENCE_WEAVED_SHORT_SIGNATURE;
+            weaved = true;
+            // Add Cloneable interface.
+            if (weaveCloneable) {
+                newInterfaces[cloneableIndex] = CLONEABLE_SHORT_SIGNATURE;
+            }
+            // Add org.eclipse.persistence.internal.descriptors.PersistenceEntity
+            // interface.
+            if (persistenceEntity) {
+                newInterfaces[persistenceEntityIndex] = PERSISTENCE_ENTITY_SHORT_SIGNATURE;
+            }
+            // Add org.eclipse.persistence.internal.descriptors.PersistenceObject
+            // interface.
+            if (persistenceObject) {
+                newInterfaces[persistenceObjectIndex] = PERSISTENCE_OBJECT_SHORT_SIGNATURE;
+            }
+            // Add org.eclipse.persistence.queries.FetchGroupTracker interface.
+            if (fetchGroupTracker) {
+                newInterfaces[fetchGroupTrackerIndex] = FETCHGROUP_TRACKER_SHORT_SIGNATURE;
+            }
+            if (classDetails.shouldWeaveFetchGroups()) {
+                newInterfaces[persistenceWeavedFetchGroupsIndex] = WEAVED_FETCHGROUPS_SHORT_SIGNATURE;
+            }
+            // Add marker interface for LAZY.
+            if (classDetails.shouldWeaveValueHolders()) {
+                newInterfaces[persistenceWeavedLazyIndex] = TW_LAZY_SHORT_SIGNATURE;
+            }
+            // Add marker interface and change tracker interface for change
+            // tracking.
+            if (changeTracker) {
+                newInterfaces[changeTrackerIndex] = CT_SHORT_SIGNATURE;
+            }
+            if (classDetails.shouldWeaveChangeTracking()) {
+                newInterfaces[persistenceWeavedChangeTrackingIndex] = TW_CT_SHORT_SIGNATURE;
+            }
+
+            if (weaveRest) {
+                newInterfaces[persistenceWeavedRestIndex] = WEAVED_REST_LAZY_SHORT_SIGNATURE;
+            }
+
+            String newSignature = null;
+            // fix the signature to include any new methods we weave
+            if (signature != null) {
+                StringBuilder newSignatureBuf = new StringBuilder();
+                newSignatureBuf.append(signature);
+
+                for (int i = interfaces.length; i < newInterfaces.length; i++) {
+                    newSignatureBuf.append("L" + newInterfaces[i] + ";");
+                }
+                newSignature = newSignatureBuf.toString();
+            }
+
+            if (cw != null) {
+                cv = cw;
+            }
+            cv.visit(version, access, name, newSignature, superName, newInterfaces);
         }
-        cv.visit(version, access, name, newSignature, superName, newInterfaces);
     }
 
     /**
