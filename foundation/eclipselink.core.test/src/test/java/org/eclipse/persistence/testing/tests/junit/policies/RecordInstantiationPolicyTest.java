@@ -31,12 +31,12 @@ public class RecordInstantiationPolicyTest {
 
     @Test
     public void newRecordTest() {
-        Class clazz = NestedDetailRecord.class;
+        Class<NestedDetailRecord> clazz = NestedDetailRecord.class;
         //Values order is important. It must be same as order of Record attributes.
-        List values = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         values.add(FLOAT_ATTR);
         values.add(INSTANT_ATTR);
-        RecordInstantiationPolicy recordInstantiationPolicy = new RecordInstantiationPolicy(clazz);
+        RecordInstantiationPolicy<NestedDetailRecord> recordInstantiationPolicy = new RecordInstantiationPolicy<>(clazz);
         recordInstantiationPolicy.setValues(values);
         NestedDetailRecord nestedDetailRecord = (NestedDetailRecord) recordInstantiationPolicy.buildNewInstance();
         assertEquals(FLOAT_ATTR, nestedDetailRecord.floatAttribute(), 0);
@@ -45,12 +45,12 @@ public class RecordInstantiationPolicyTest {
 
     @Test
     public void newRecordWithNullTest() {
-        Class clazz = NestedDetailRecord.class;
+        Class<NestedDetailRecord> clazz = NestedDetailRecord.class;
         //Values order is important. It must be same as order of Record attributes.
-        List values = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         values.add(FLOAT_ATTR);
         values.add(null);
-        RecordInstantiationPolicy recordInstantiationPolicy = new RecordInstantiationPolicy(clazz);
+        RecordInstantiationPolicy<NestedDetailRecord> recordInstantiationPolicy = new RecordInstantiationPolicy<>(clazz);
         recordInstantiationPolicy.setValues(values);
         NestedDetailRecord nestedDetailRecord = (NestedDetailRecord) recordInstantiationPolicy.buildNewInstance();
         assertEquals(FLOAT_ATTR, nestedDetailRecord.floatAttribute(), 0);

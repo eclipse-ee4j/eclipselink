@@ -46,7 +46,7 @@ public class RecordCopyPolicy extends AbstractCopyPolicy {
     private <R extends Record> R cloneRecord(R template) {
         try {
             ArrayList<Class<?>> types = new ArrayList<>();
-            ArrayList values = new ArrayList<>();
+            ArrayList<Object> values = new ArrayList<>();
             for (RecordComponent component : template.getClass().getRecordComponents()) {
                 types.add(component.getType());
                 Object value = component.getAccessor().invoke(template);
@@ -56,6 +56,7 @@ public class RecordCopyPolicy extends AbstractCopyPolicy {
                 values.add(value);
             }
             Constructor<? extends Record> canonical = template.getClass().getDeclaredConstructor(types.toArray(Class[]::new));
+            @SuppressWarnings("unchecked")
             var result = (R) canonical.newInstance(values.toArray(Object[]::new));
             return result;
         } catch (ReflectiveOperationException e) {

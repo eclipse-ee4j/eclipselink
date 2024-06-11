@@ -756,7 +756,6 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Return a new {@code java.lang.Record} instance.
      * As this kind of class is immutable all values must be passed during creation as constructor parameters.
      */
-    @Override
     public Object buildNewRecordInstance(Class<Record> clazz, List<DatabaseMapping> mappings, AbstractRecord databaseRow, AbstractSession session) {
         class TypeValue {
             public TypeValue(Class<?> type) {

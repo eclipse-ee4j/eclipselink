@@ -24,17 +24,17 @@ import java.util.List;
 /**
  * <b>Purpose</b>: Allows customization of how an {@code java.lang.Record} is created/instantiated.<p>
  */
-public class RecordInstantiationPolicy extends InstantiationPolicy {
+public class RecordInstantiationPolicy<T extends Record> extends InstantiationPolicy {
 
     /**
      * Record class
      */
-    private Class clazz;
+    private Class<T> clazz;
 
     /**
      * Values passed to the record constructor
      */
-    private List values;
+    private List<?> values;
 
     /**
      * Default constructor
@@ -45,9 +45,10 @@ public class RecordInstantiationPolicy extends InstantiationPolicy {
 
     /**
      * Constructor
+     *
      * @param clazz Record class
      */
-    public RecordInstantiationPolicy(Class clazz) {
+    public RecordInstantiationPolicy(Class<T> clazz) {
         this();
         this.clazz = clazz;
     }
@@ -64,24 +65,26 @@ public class RecordInstantiationPolicy extends InstantiationPolicy {
             } else {
                 return newRecord(clazz, values);
             }
-        } catch (Throwable t) {
-            throw t;
-        }
-        finally {
+        } finally {
             values = null;
         }
     }
 
-    private <R extends Record> R newRecord(Class<R> clazz, List values) {
+    @Override
+    public void useFactoryInstantiationPolicy(String factoryClassName, String methodName) {
+        throw new UnsupportedOperationException();
+    }
+
+    private T newRecord(Class<T> clazz, List<?> values) {
         List<Class<?>> types = new ArrayList<>();
         RecordComponent[] recordComponents = clazz.getRecordComponents();
-        for (int i = 0; i < recordComponents.length; i++) {
-            RecordComponent component = recordComponents[i];
-            types.add(component.getType());
+        for (RecordComponent recordComponent: recordComponents) {
+            types.add(recordComponent.getType());
         }
         try {
             Constructor<? extends Record> canonical = clazz.getDeclaredConstructor(types.toArray(Class[]::new));
-            var result = (R) canonical.newInstance(values.toArray(Object[]::new));
+            @SuppressWarnings("unchecked")
+            var result = (T) canonical.newInstance(values.toArray(Object[]::new));
             return result;
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("New Record creation failed: " + e, e);
@@ -90,9 +93,10 @@ public class RecordInstantiationPolicy extends InstantiationPolicy {
 
     /**
      * Values passed to the record constructor
-     * @param values
+     *
+     * @param values values which are passed to the new record
      */
-    public void setValues(List values) {
+    public void setValues(List<?> values) {
         this.values = values;
     }
 

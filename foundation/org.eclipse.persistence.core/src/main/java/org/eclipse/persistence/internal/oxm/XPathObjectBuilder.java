@@ -164,11 +164,6 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
     }
 
     @Override
-    public Object buildNewRecordInstance(Class<Record> clazz, List<CoreMapping> coreMappings, CoreAbstractRecord databaseRow, CoreAbstractSession session) {
-        return null;
-    }
-
-    @Override
     public XMLRecord buildRow(XMLRecord record, Object object,
             CoreAbstractSession session, Marshaller marshaller,
             XPathFragment rootFragment) {

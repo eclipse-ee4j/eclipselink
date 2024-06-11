@@ -39,12 +39,6 @@ public abstract class CoreObjectBuilder<
     public abstract Object buildNewInstance();
 
     /**
-     * Return a new {@code java.lang.Record} instance.
-     * As this kind of class is immutable all values must be passed during creation as constructor parameters.
-     */
-    public abstract Object buildNewRecordInstance(Class<Record> clazz, List<MAPPING> mappings, ABSTRACT_RECORD databaseRow, ABSTRACT_SESSION session);
-
-    /**
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */
