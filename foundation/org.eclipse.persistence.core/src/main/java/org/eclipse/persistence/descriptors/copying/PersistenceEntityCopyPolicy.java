@@ -42,9 +42,4 @@ public class PersistenceEntityCopyPolicy extends AbstractCopyPolicy {
     public boolean buildsNewInstance() {
         return false;
     }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "()";
-    }
 }

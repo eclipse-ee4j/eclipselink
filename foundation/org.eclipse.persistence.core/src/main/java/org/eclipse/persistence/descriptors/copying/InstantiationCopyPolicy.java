@@ -37,9 +37,4 @@ public class InstantiationCopyPolicy extends AbstractCopyPolicy {
     public boolean buildsNewInstance() {
         return true;
     }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "()";
-    }
 }

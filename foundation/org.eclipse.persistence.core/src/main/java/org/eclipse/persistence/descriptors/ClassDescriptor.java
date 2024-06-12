@@ -54,6 +54,7 @@ import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.PersistenceEntityCopyPolicy;
+import org.eclipse.persistence.descriptors.copying.RecordCopyPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.NoExpiryCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
@@ -73,6 +74,7 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.PersistenceObject;
 import org.eclipse.persistence.internal.descriptors.PersistenceObjectAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.PersistenceObjectInstantiationPolicy;
+import org.eclipse.persistence.internal.descriptors.RecordInstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.SerializedObjectPolicyWrapper;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
@@ -2123,7 +2125,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public CopyPolicy getCopyPolicy() {
         // Lazy initialize for XML deployment.
         if (copyPolicy == null) {
-            setCopyPolicy(new InstantiationCopyPolicy());
+            if (javaClass != null && javaClass.isRecord()) {
+                setCopyPolicy(new RecordCopyPolicy());
+            } else {
+                setCopyPolicy(new InstantiationCopyPolicy());
+            }
         }
         return copyPolicy;
     }
@@ -2308,7 +2314,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public InstantiationPolicy getInstantiationPolicy() {
         // Lazy initialize for XML deployment.
         if (instantiationPolicy == null) {
-            setInstantiationPolicy(new InstantiationPolicy());
+            if (javaClass != null && javaClass.isRecord()) {
+                setInstantiationPolicy(new RecordInstantiationPolicy(javaClass));
+            } else {
+                setInstantiationPolicy(new InstantiationPolicy());
+            }
         }
         return instantiationPolicy;
     }
@@ -3994,12 +4004,20 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
             if (!isMethodAccess) {
                 if (this.copyPolicy == null) {
-                    setCopyPolicy(new PersistenceEntityCopyPolicy());
+                    if (javaClass != null && javaClass.isRecord()) {
+                        setCopyPolicy(new RecordCopyPolicy());
+                    } else {
+                        setCopyPolicy(new PersistenceEntityCopyPolicy());
+                    }
                 }
                 if (!isAbstract()) {
                     try {
                         if (this.instantiationPolicy == null) {
-                            setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().getConstructor().newInstance()));
+                            if (javaClass != null && javaClass.isRecord()) {
+                                setInstantiationPolicy(new RecordInstantiationPolicy(javaClass));
+                            } else {
+                                setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().getConstructor().newInstance()));
+                            }
                         }
                     } catch (Exception ignore) { }
                 }

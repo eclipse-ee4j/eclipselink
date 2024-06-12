@@ -19,6 +19,8 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
+import java.util.List;
+
 public abstract class CoreObjectBuilder<
     ABSTRACT_RECORD extends CoreAbstractRecord,
     ABSTRACT_SESSION extends CoreAbstractSession,

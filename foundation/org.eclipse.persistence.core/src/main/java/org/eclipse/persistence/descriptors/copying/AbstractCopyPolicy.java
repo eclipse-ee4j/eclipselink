@@ -91,4 +91,8 @@ public abstract class AbstractCopyPolicy implements CopyPolicy {
         this.descriptor = descriptor;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "()";
+    }
 }
