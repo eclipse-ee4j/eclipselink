@@ -14,15 +14,15 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.helper.type;
 
-import org.eclipse.persistence.internal.helper.ConcurrencyManager;
-import org.eclipse.persistence.internal.helper.DeferredLockManager;
-import org.eclipse.persistence.internal.helper.ReadLockManager;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
 
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Collections.unmodifiableMap;
-import static java.util.Collections.unmodifiableSet;
+import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.DeferredLockManager;
+import org.eclipse.persistence.internal.helper.ReadLockManager;
 
 public class ConcurrencyManagerState {
 
@@ -85,6 +85,17 @@ public class ConcurrencyManagerState {
     private final Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesClone;
 
     /**
+     * This field relates to the
+     * {@link org.eclipse.persistence.internal.sessions.AbstractSession#THREADS_INVOLVED_WITH_MERGE_MANAGER_WAITING_FOR_DEFERRED_CACHE_KEYS_TO_NO_LONGER_BE_ACQUIRED}
+     * and to the bug https://github.com/eclipse-ee4j/eclipselink/issues/2094 it allows us to keep an eye on threads
+     * that are at post-commit phase and are trying to merge their change set into the original objects in the cache.
+     * When this is taking place some of the cache keys that the merge manager is needing might be locked by other
+     * threads. This can lead to deadlocks, if our merge manager thread happens the be the owner of cache keys that
+     * matter to the owner of the cache keys the merge manager will need to acquire.
+     */
+    private Map<Thread, String> mapThreadsInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired;
+
+    /**
      * Create a new ConcurrencyManagerState.
      *
      * @param readLockManagerMapClone
@@ -97,6 +108,7 @@ public class ConcurrencyManagerState {
      * @param mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone
      * @param mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey
      * @param mapThreadToObjectIdWithWriteLockManagerChangesClone
+     * @param mapThreadsInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired
      */
     public ConcurrencyManagerState(
             Map<Thread, ReadLockManager> readLockManagerMapClone,
@@ -108,7 +120,8 @@ public class ConcurrencyManagerState {
             Set<Thread> setThreadWaitingToReleaseDeferredLocksClone,
             Map<Thread, String> mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone,
             Map<ConcurrencyManager, CacheKeyToThreadRelationships> mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey,
-            Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesClone) {
+            Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesClone,
+            Map<Thread, String> mapThreadsInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired) {
         super();
         this.readLockManagerMapClone = readLockManagerMapClone;
         this.deferredLockManagerMapClone = deferredLockManagerMapClone;
@@ -120,6 +133,7 @@ public class ConcurrencyManagerState {
         this.mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone = mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone;
         this.mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey = mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey;
         this.mapThreadToObjectIdWithWriteLockManagerChangesClone = mapThreadToObjectIdWithWriteLockManagerChangesClone;
+        this.mapThreadsInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired = mapThreadsInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired;
     }
 
     /** Getter for {@link #readLockManagerMapClone} */
@@ -171,4 +185,11 @@ public class ConcurrencyManagerState {
     public Map<Thread, String> getMapThreadToWaitOnAcquireReadLockCloneMethodName() {
         return unmodifiableMap(mapThreadToWaitOnAcquireReadLockCloneMethodName);
     }
+
+    /** Getter for {@link #mapThreadsInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired} */
+    public Map<Thread, String> getMapThreadsInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired() {
+        return unmodifiableMap(mapThreadsInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired);
+    }
+
+
 }
