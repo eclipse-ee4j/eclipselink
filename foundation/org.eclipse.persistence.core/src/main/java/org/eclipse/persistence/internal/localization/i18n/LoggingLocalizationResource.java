@@ -482,9 +482,8 @@ Current thread (id: {3} name: {4}) stack trace:
         { "dbws_no_wsdl_inline_schema", "The [{0}] WSDL inline schema could not be read."},
         // JPA 3.2
         { "unknown_property_type", "Unknown {0} type of {1} persistence property"},
-        { "error_queryTimeoutParse", "Could not parse jakarta.persistence.query.timeout property value {0}: {1}"},
+        { "error_queryTimeoutParse", "Cannot parse the {0} jakarta.persistence.query.timeout property value: {1}"},
         { "schema_default_truncate_tables_failed", "Failed to truncate tables in the default table schema: {0}"},
-
         { "schema_default_create_tables_failed", "Failed to create tables in the default table schema: {0}"},
         { "schema_default_drop_tables_failed", "Failed to drop tables in the default table schema: {0}"},
         { "schema_default_replace_tables_failed", "Failed to replace tables in the default table schema: {0}"},
@@ -496,8 +495,8 @@ Current thread (id: {3} name: {4}) stack trace:
         { "corrupt_object", "corrupt object: {0}" },
 
         { "encryptor_script_usage", "Usage is `passwordUpdate.sh|.cmd -ip <old encrypted password>`"},
-        { "encryptor_script_description", "This application internally decrypt old encrypted password used by some previous version EclipseLink and encrypt it by latest algorithm."},
-        { "encryptor_script_output", "Re-encrypted password is: {0}"}
+        { "encryptor_script_description", "This application has an old encrypted password that was used by a previous version of EclipseLink. Reencrypt it with the latest algorithm."},
+        { "encryptor_script_output", "The reencrypted password is: {0}"}
     };
 
     /**

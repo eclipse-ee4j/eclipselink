@@ -34,7 +34,7 @@ public final class OptimisticLockExceptionResource extends ListResourceBundle {
                                            { "5009", "The object of class [{1}] with primary key [{0}] cannot be unwrapped because it was deleted since it was last read." },
                                            { "5010", "The object [{0}] cannot be merged because it has changed or been deleted since it was last read. {2}Class> {1}" },
                                            { "5011", "One or more objects cannot be updated because it has changed or been deleted since it was last read" },
-                                           { "5012", "One or more objects of class {0} with parameters list {1} cannot be updated for SQL query {2} because it has changed or been deleted since it was last read" }
+                                           { "5012", "One or more objects of the {0} class with the {1} parameter list cannot be updated for the {2} SQL query because it changed or was deleted since it was last read" }
     };
 
     /**
