@@ -23,6 +23,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
 import java.io.Serializable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * DatabaseValueHolder wraps a database-stored object and implements
@@ -54,6 +56,8 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
      * Set internally in EclipseLink when the state of coordination between a weaved valueholder and the underlying property is known
      */
     protected boolean isCoordinatedWithProperty = false;
+
+    private final Lock instanceLock  = new ReentrantLock();
 
     /**
      * Default constructor.
@@ -95,7 +99,8 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
     public T getValue() {
         boolean instantiated = this.isInstantiated;
         if (!instantiated) {
-            synchronized (this) {
+            instanceLock.lock();
+            try {
                 instantiated = this.isInstantiated;
                 if (!instantiated) {
                     // The value must be set directly because the setValue can also cause instantiation under UOW.
@@ -104,6 +109,8 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
                     postInstantiate();
                     resetFields();
                 }
+            } finally {
+                instanceLock.unlock();
             }
         }
         return value;

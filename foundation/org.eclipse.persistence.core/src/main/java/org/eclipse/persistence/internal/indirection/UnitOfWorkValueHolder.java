@@ -25,6 +25,8 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 import java.rmi.server.ObjID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * A UnitOfWorkValueHolder is put in a clone object.
@@ -59,6 +61,8 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
     protected transient Object relationshipSourceObject;
     protected String sourceAttributeName;
     protected ObjID wrappedValueHolderRemoteID;
+
+    private final Lock wrappedValueHolderLock = new ReentrantLock();
 
     protected UnitOfWorkValueHolder() {
         super();
@@ -147,7 +151,8 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
         Object value;
         // Bug 3835202 - Ensure access to valueholders is thread safe.  Several of the methods
         // called below are not threadsafe alone.
-        synchronized (this.wrappedValueHolder) {
+        wrappedValueHolderLock.lock();
+        try {
             if (this.wrappedValueHolder instanceof DatabaseValueHolder<T> wrapped) {
                 UnitOfWorkImpl unitOfWork = getUnitOfWork();
                 if (!wrapped.isEasilyInstantiated()) {
@@ -174,6 +179,8 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
                 }
             }
             value = this.wrappedValueHolder.getValue();
+        } finally {
+            wrappedValueHolderLock.unlock();
         }
         return buildCloneFor(value);
     }

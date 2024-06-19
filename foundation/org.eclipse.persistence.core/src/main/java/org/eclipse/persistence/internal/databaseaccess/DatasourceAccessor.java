@@ -29,6 +29,8 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 
 import java.util.Vector;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * INTERNAL:
@@ -152,6 +154,8 @@ public abstract class DatasourceAccessor implements Accessor {
     protected ConnectionCustomizer customizer;
 
     protected ConnectionPool pool;
+
+    private final Lock instanceLock  = new ReentrantLock();
 
     /**
      *    Default Constructor.
@@ -290,19 +294,24 @@ public abstract class DatasourceAccessor implements Accessor {
      * Used for load balancing and external pooling.
      */
     @Override
-    public synchronized void decrementCallCount() {
-        int count = this.callCount;
-        // Avoid decrementing count if already zero, (failure before increment).
-        if (count <= 0) {
-            return;
-        }
-        this.callCount--;
-        if (this.usesExternalConnectionPooling && (!this.isInTransaction) && (currentSession == null || !currentSession.isExclusiveConnectionRequired()) && (count == 1)) {
-            try {
-                closeConnection();
-            } catch (DatabaseException ignore) {
-                // Don't allow for errors to be masked by disconnect.
+    public void decrementCallCount() {
+        instanceLock.lock();
+        try {
+            int count = this.callCount;
+            // Avoid decrementing count if already zero, (failure before increment).
+            if (count <= 0) {
+                return;
             }
+            this.callCount--;
+            if (this.usesExternalConnectionPooling && (!this.isInTransaction) && (currentSession == null || !currentSession.isExclusiveConnectionRequired()) && (count == 1)) {
+                try {
+                    closeConnection();
+                } catch (DatabaseException ignore) {
+                    // Don't allow for errors to be masked by disconnect.
+                }
+            }
+        } finally {
+            instanceLock.unlock();
         }
     }
 
@@ -310,34 +319,39 @@ public abstract class DatasourceAccessor implements Accessor {
      * Used for load balancing and external pooling.
      */
     @Override
-    public synchronized void incrementCallCount(AbstractSession session) {
-        this.callCount++;
+    public void incrementCallCount(AbstractSession session) {
+        instanceLock.lock();
+        try {
+            this.callCount++;
 
-        if (this.callCount == 1) {
-            // If the login is null, then this accessor has never been connected.
-            if (this.login == null) {
-                throw DatabaseException.databaseAccessorNotConnected();
-            }
-
-            // If the connection is no longer connected, it may have timed out.
-            if (this.datasourceConnection != null) {
-                if (shouldCheckConnection && !isConnected()) {
-                    if (this.isInTransaction) {
-                        throw DatabaseException.databaseAccessorNotConnected();
-                    } else {
-                        reconnect(session);
-                    }
-                }
-            } else {
-                // If ExternalConnectionPooling is used, the connection can be re-established.
-                if (this.usesExternalConnectionPooling) {
-                    reconnect(session);
-                    session.postAcquireConnection(this);
-                    currentSession = session;
-                } else {
+            if (this.callCount == 1) {
+                // If the login is null, then this accessor has never been connected.
+                if (this.login == null) {
                     throw DatabaseException.databaseAccessorNotConnected();
                 }
+
+                // If the connection is no longer connected, it may have timed out.
+                if (this.datasourceConnection != null) {
+                    if (shouldCheckConnection && !isConnected()) {
+                        if (this.isInTransaction) {
+                            throw DatabaseException.databaseAccessorNotConnected();
+                        } else {
+                            reconnect(session);
+                        }
+                    }
+                } else {
+                    // If ExternalConnectionPooling is used, the connection can be re-established.
+                    if (this.usesExternalConnectionPooling) {
+                        reconnect(session);
+                        session.postAcquireConnection(this);
+                        currentSession = session;
+                    } else {
+                        throw DatabaseException.databaseAccessorNotConnected();
+                    }
+                }
             }
+        } finally {
+            instanceLock.unlock();
         }
     }
 
