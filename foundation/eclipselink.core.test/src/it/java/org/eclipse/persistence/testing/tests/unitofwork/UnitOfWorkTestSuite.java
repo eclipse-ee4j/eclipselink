@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,6 +69,9 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addTest(buildRefreshDeletedObjectTest());
 
         addTest(new UnregisterUnitOfWorkTest());
+
+        // Issue 1950 - Duplicate objects in UnitOfWorkImpl.primaryKeyToNewObjects
+        addTest(new UOWPrimaryKeyToNewObjectsDuplicateObjectsTest());
 
         // EL Bug 252047 - Mutable attributes are not cloned when isMutable is enabled on a Direct Mapping
         addTest(new CloneAttributeIfMutableTest());
