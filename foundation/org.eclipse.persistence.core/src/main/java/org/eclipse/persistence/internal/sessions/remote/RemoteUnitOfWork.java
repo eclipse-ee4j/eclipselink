@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -210,6 +210,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
             return;
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.preFlushUnitOfWork();
+        }
 
         // PERF: If this is an empty unit of work, do nothing (but still may need to commit SQL changes).
         boolean hasChanges = (this.unitOfWorkChangeSet != null) || hasCloneMapping() || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries();
@@ -223,6 +226,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         }
         if (!hasChanges) {
             log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+            if(eventManager != null) {
+                eventManager.postFlushUnitOfWork();
+            }
             return;
         }
 
@@ -253,6 +259,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         remoteUnitOfWork.commitIntoRemoteUnitOfWork();
 
         log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.postFlushUnitOfWork();
+        }
 
         resumeUnitOfWork();
         log(SessionLog.FINER, SessionLog.TRANSACTION, "resume_unit_of_work");

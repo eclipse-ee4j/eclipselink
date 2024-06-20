@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -351,6 +351,23 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
 
     /**
      * INTERNAL:
+     * Post flush unit of work.
+     */
+    public void postFlushUnitOfWork() {
+        if (!hasListeners()) {
+            return;
+        }
+        startOperationProfile();
+        SessionEvent event = new SessionEvent(SessionEvent.PostFlushUnitOfWork, getSession());
+        List<SessionEventListener> listeners = this.listeners;
+        for (SessionEventListener listener : listeners) {
+            listener.postFlushUnitOfWork(event);
+        }
+        endOperationProfile();
+    }
+
+    /**
+     * INTERNAL:
      * Raised after connecting.
      */
     public void postConnect(Accessor accessor) {
@@ -605,6 +622,23 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
         int size = listeners.size();
         for (int index = 0; index < size; index++) {
             listeners.get(index).preCommitUnitOfWork(event);
+        }
+        endOperationProfile();
+    }
+
+    /**
+     * INTERNAL:
+     * Pre flush unit of work.
+     */
+    public void preFlushUnitOfWork() {
+        if (!hasListeners()) {
+            return;
+        }
+        startOperationProfile();
+        SessionEvent event = new SessionEvent(SessionEvent.PreFlushUnitOfWork, getSession());
+        List<SessionEventListener> listeners = this.listeners;
+        for (SessionEventListener listener : listeners) {
+            listener.preFlushUnitOfWork(event);
         }
         endOperationProfile();
     }
