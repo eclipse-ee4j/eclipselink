@@ -12,35 +12,35 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.jpa.spring;
+package org.eclipse.persistence.testing.tests.jpa.helidon;
 
 import jakarta.persistence.EntityManagerFactory;
+
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 /**
  * This class applies the basic Spring tests to a configuration that uses:
- * - Spring framework's LocalEntityManagerFactoryBean
+ * - Spring framework's LocalContainerEntityManagerFactoryBean
  * - direct instantiation of the EntityManagerFactory through bean
  * - a JPATransactionManager
  */
-public class TestLocalEMF extends SpringJunitTestCase {
+public class TestContainerEMF extends SpringJunitTestCase {
 
     private ClassPathXmlApplicationContext context;
     private EntityManagerFactory emf;
     private EntityManagerWrapper em;
 
-
     @Override
     public void setUp() {
-        context = new ClassPathXmlApplicationContext("appContext_LocalEMF.xml");
+        context = new ClassPathXmlApplicationContext("appContext_ContainerEMF.xml");
         emf = (EntityManagerFactory)context.getBean("entityManagerFactory");
         em  = new EntityManagerTransactionWrapper(emf);
         super.setEntityManager(em);
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown(){
         context.close();
     }
 
@@ -48,5 +48,4 @@ public class TestLocalEMF extends SpringJunitTestCase {
     public void testDataExceptionTranslation(){
         //Not tested in this class; direction instantiation of emf does not support exception translation
     }
-
 }

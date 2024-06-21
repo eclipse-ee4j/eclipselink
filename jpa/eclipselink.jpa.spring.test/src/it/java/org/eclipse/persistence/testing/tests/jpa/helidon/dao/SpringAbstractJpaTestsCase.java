@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.jpa.spring.dao;
+package org.eclipse.persistence.testing.tests.jpa.helidon.dao;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -33,7 +33,7 @@ import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
  * Base TestClass for Spring Framework tests that use Spring's AbstractJpaTests.
  * All test methods will be exercised by the different Spring configurations that extend this class;
  * they will all require and implementation of a dao.
- * @see org.eclipse.persistence.testing.tests.jpa.spring.dao.SpringDao
+ * @see org.eclipse.persistence.testing.tests.jpa.helidon.dao.SpringDao
  */
 
 @Transactional

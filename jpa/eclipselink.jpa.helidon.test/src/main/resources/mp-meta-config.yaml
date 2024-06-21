@@ -1,0 +1,29 @@
+
+
+
+sources:
+  - type: "idcs-config-provider"  # This should be the first data source listed in applications meta-config file
+    maxWaitTime: 2 # max time application retries in minutes
+    ordinal: 500
+  - type: "environment-variables"
+    ordinal: 400
+  - type: "system-properties"
+    ordinal: 300
+  - type: "properties"
+    path: "/etc/config/global-config.properties"
+    ordinal: 200
+    optional: true
+  - type: "properties"
+    path: "/etc/config/microprofile-config.properties"
+    ordinal: 150
+    optional: true
+  - type: "properties"
+    path: "./build/microprofile-config.properties"
+    ordinal: 130
+    optional: true
+  - type: "properties"
+    classpath: "META-INF/microprofile-config.properties"
+    ordinal: 120
+  - type: "yaml"
+    classpath: "application.yaml"
+    ordinal: 100

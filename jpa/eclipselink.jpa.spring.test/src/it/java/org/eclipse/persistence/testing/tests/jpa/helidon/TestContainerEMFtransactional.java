@@ -12,9 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.jpa.spring;
-
-import jakarta.persistence.EntityManagerFactory;
+package org.eclipse.persistence.testing.tests.jpa.helidon;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -22,20 +20,18 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 /**
  * This class applies the basic Spring tests to a configuration that uses:
  * - Spring framework's LocalContainerEntityManagerFactoryBean
- * - direct instantiation of the EntityManagerFactory through bean
+ * - injection of EntityManager; use of @Transactional annotation
  * - a JPATransactionManager
  */
-public class TestContainerEMF extends SpringJunitTestCase {
+public class TestContainerEMFtransactional extends SpringJunitTestCase {
 
     private ClassPathXmlApplicationContext context;
-    private EntityManagerFactory emf;
     private EntityManagerWrapper em;
 
     @Override
     public void setUp() {
-        context = new ClassPathXmlApplicationContext("appContext_ContainerEMF.xml");
-        emf = (EntityManagerFactory)context.getBean("entityManagerFactory");
-        em  = new EntityManagerTransactionWrapper(emf);
+        context = new ClassPathXmlApplicationContext("appContext_ContainerEMFtransactional.xml");
+        em = (EntityManagerWrapper) context.getBean("transactionalEM");
         super.setEntityManager(em);
     }
 
@@ -44,8 +40,4 @@ public class TestContainerEMF extends SpringJunitTestCase {
         context.close();
     }
 
-    @Override
-    public void testDataExceptionTranslation(){
-        //Not tested in this class; direction instantiation of emf does not support exception translation
-    }
 }

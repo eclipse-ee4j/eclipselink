@@ -24,7 +24,7 @@
         <property name="persistenceUnitName" value="SpringLocalPu" />
     </bean>
 
-    <bean id="transactionalEM" class="org.eclipse.persistence.testing.tests.jpa.spring.EntityManagerTransactionalWrapper" />
+    <bean id="transactionalEM" class="org.eclipse.persistence.testing.tests.jpa.helidon.EntityManagerTransactionalWrapper" />
 
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory" />

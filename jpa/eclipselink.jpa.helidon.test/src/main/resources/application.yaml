@@ -1,0 +1,114 @@
+rwd:
+  cors:
+    allow-methods: GET, POST, PUT, DELETE, OPTIONS
+    allow-headers: X-B1-TraceId, Content-Type
+    allow-credentials: false
+    max-age: 3600
+
+rest:
+  client:
+    connectTimeout: 5
+    readTimeout: 25
+sms:
+  baseUrl: "https://sms-intelligent-advisors-v2.beta.spectra.us-phoenix-1.ocs.oc-test.com/api/saas-messaging-qa"
+  control:
+    baseapi: "${sms.baseUrl}/mtsubsmgr"
+  data:
+    mux:
+      baseapi: "${sms.baseUrl}/mtdatamux"
+    demux:
+      baseapi: "${sms.baseUrl}/mtdatademux"
+  channel:
+       name: "interview-metrics"
+       partitions: 1
+       key-converter: bytes
+       value-converter  : bytes
+       read-bandwidth  : 0.2
+       write-bandwidth : 0.4
+  enabled : true
+  initial-delay: 5
+  poll-frequency-seconds: 5
+  tenantId: "sms"
+  customerId: "oia"
+  cache:
+    provider:
+      name: analyticsCacheProvider
+      idcs-key: idcsInfoCache
+
+  idcs:
+    url: "https://idcs-853e4b1447c34b0b9da77c68e132b508.identity.pint.oc9qadev.com:443"
+    token: "dXJuX29wY19yZXNvdXJjZV9mdXNpb25fZW5weV9zYWFzLW1lc3NhZ2luZ19BUFBJRDowOWNlZGMyZi1mMjM1LTRkNTMtODRjZi1kMmQwMzJhY2MyZTU"
+
+tracing:
+  service: "ia-analytics-ms"   # this is the service name which shows up in Jaeger query UI in Grafana
+  # DO NOT APPEND the namespace name or environment (stage) name
+  protocol: "http"
+  host: "spectra-jaeger-agent.spectra-platform"   # THIS JAEGER_AGENT ENDPOINT MUST BE USED FROM SP Version V2 - DO NOT CHANGE!
+  port: 14250                                        # THIS JAEGER_AGENT PORT MUST BE USED - DO NOT CHANGE!
+  paths:   # These are example paths enabled/disabled for hello-spectra
+    - path: "/"
+      enabled: "true"
+    - path: "/metrics"      # metrics endpoint should always be disabled
+      enabled: "false"
+    - path: "/health"       # health endpoint should always be disabled
+      enabled: "false"
+  propagation: "b3"         # JAEGER_PROPAGATION format must be "b3" - DO NOT CHANGE!
+  log-spans: false          # JAEGER_REPORTER_LOG_SPANS must be "false" except for approved exceptions - DO NOT CHANGE!
+  sampler-type: "const"    # sampler type must be "const" - DO NOT CHANGE!
+  sampler-manager: "spectra-jaeger-agent.spectra-platform:5778"   # sampler type must be set to this - DO NOT CHANGE!
+
+security:
+  providers:
+    - spectra-auth:
+        authorization:
+          authorize: false
+        authentication:
+          authenticate: true
+          getGrantedRoles: false
+  web-server:
+    defaults:
+      authenticate: true
+    paths:
+      - path: "/serviceHealth"
+        authenticate: true
+        authorize: false
+        spectra-auth:
+          authentication:
+            authenticate: true
+            validateToken: true
+          authorization:
+            authorize: false
+
+spectra-auth:
+  authentication:
+    allowAnonymousUser: false
+
+ia.dataSourceName: IAFusionDataSource
+
+oracle:
+  ucp:
+    jdbc:
+      PoolDataSource:
+        IAFusionDataSource:
+          connectionFactoryClassName: oracle.jdbc.pool.OracleDataSource
+          initialPoolSize: 1
+          minPoolSize: 1
+          maxPoolSize: 11
+          inactiveConnectionTimeout: 300
+          maxStatements: 20
+          abandonedConnectionTimeout: 60
+          connectionWaitTimeout: 10
+          timeoutCheckInterval: 30
+          validateConnectionOnBorrow: true
+          secondsToTrustIdleConnection: 30
+          connectionProperties: "{oracle.net.CONNECT_TIMEOUT: 60000,oracle.jdbc.ReadTimeout: 290000}"
+
+otel:
+  sdk:
+    disabled: false
+  traces:
+    exporter: jaeger
+  exporter:
+    jaeger:
+      endpoint: http://spectra-jaeger-agent.spectra-platform:14250
+  propagators: tracecontext,baggage,b3,b3multi

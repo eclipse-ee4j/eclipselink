@@ -70,6 +70,6 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <bean id="dao" class="org.eclipse.persistence.testing.tests.jpa.spring.dao.SpringDao"/>
+    <bean id="dao" class="org.eclipse.persistence.testing.tests.jpa.helidon.dao.SpringDao"/>
 
 </beans>

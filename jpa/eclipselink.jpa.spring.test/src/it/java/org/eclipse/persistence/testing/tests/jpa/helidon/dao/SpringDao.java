@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.jpa.spring.dao;
+package org.eclipse.persistence.testing.tests.jpa.helidon.dao;
 
 import java.util.List;
 

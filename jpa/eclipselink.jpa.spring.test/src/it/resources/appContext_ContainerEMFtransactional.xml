@@ -70,7 +70,7 @@
         <property name="entityManagerFactory" ref="entityManagerFactory" />
     </bean>
 
-    <bean id="transactionalEM" class="org.eclipse.persistence.testing.tests.jpa.spring.EntityManagerTransactionalWrapper" />
+    <bean id="transactionalEM" class="org.eclipse.persistence.testing.tests.jpa.helidon.EntityManagerTransactionalWrapper" />
 
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 

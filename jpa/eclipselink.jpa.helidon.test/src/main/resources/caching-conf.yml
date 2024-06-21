@@ -1,0 +1,13 @@
+cachingProviderConfigs:
+  - name: analyticsCacheProvider
+    cachingProviderClassName: oracle.spectra.cache.caffeine.CachingProviderImpl
+    defaultCacheConfig:
+      properties:
+        builderSpec: initialCapacity=10,maximumSize=100
+    cacheConfigs:
+      idcsInfoCache:
+        valueType: com.oracle.cx.ia.restclient.client.dto.IdcsResponse
+        expiryPolicy: AFTERWRITE
+        expiryDuration: 3000
+        properties:
+          builderSpec: initialCapacity=1,maximumSize=3

@@ -1,0 +1,32 @@
+<!--
+
+    Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd" version="3.0">
+
+    <persistence-unit name="HelidonPu" transaction-type="RESOURCE_LOCAL">
+        <class>org.eclipse.persistence.testing.helidon.models.MasterEntity</class>
+        <class>org.eclipse.persistence.testing.helidon.models.DetailEntity</class>
+        <properties>
+            <property name="jakarta.persistence.jdbc.driver" value="@driverClass@" />
+            <property name="jakarta.persistence.jdbc.url" value="@dbURL@" />
+            <property name="jakarta.persistence.jdbc.user" value="@dbUser@" />
+            <property name="jakarta.persistence.jdbc.password" value="@dbPassword@" />
+            <!--property name="eclipselink.logging.level" value="FINE"/-->
+<!--            <property name="eclipselink.ddl-generation" value="drop-and-create-tables" />-->
+            <property name="jakarta.persistence.sql-load-script-source" value="META-INF/sql/init.sql"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>

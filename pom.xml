@@ -2204,6 +2204,8 @@
                 <module>jpa/eclipselink.jpa.test</module>
                 <!--JPA JSE test module-->
                 <module>jpa/eclipselink.jpa.test.jse</module>
+                <!--JPA Helidon test module-->
+                <module>jpa/eclipselink.jpa.helidon.test</module>
                 <!--JPA Spring test module-->
                 <module>jpa/eclipselink.jpa.spring.test</module>
                 <!--JPA WDF test module-->

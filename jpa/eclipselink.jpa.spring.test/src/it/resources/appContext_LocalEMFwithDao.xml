@@ -28,7 +28,7 @@
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" />
 
-    <bean id="dao" class="org.eclipse.persistence.testing.tests.jpa.spring.dao.SpringDao"/>
+    <bean id="dao" class="org.eclipse.persistence.testing.tests.jpa.helidon.dao.SpringDao"/>
 
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 
