@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Spliterator;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -73,6 +75,8 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
 
     /** Store load factor for lazy init. */
     protected float loadFactor = 0.75f;
+
+    private final Lock instanceLock  = new ReentrantLock();
 
     /**
      * PUBLIC:
@@ -137,15 +141,20 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * @see java.util.Hashtable#clear()
      */
     @Override
-    public synchronized void clear() {
-        if (hasTrackedPropertyChangeListener()) {
-            Iterator<K> objects = this.keySet().iterator();
-            while (objects.hasNext()) {
-                K o = objects.next();
-                objects.remove();
+    public void clear() {
+        instanceLock.lock();
+        try {
+            if (hasTrackedPropertyChangeListener()) {
+                Iterator<K> objects = this.keySet().iterator();
+                while (objects.hasNext()) {
+                    K o = objects.next();
+                    objects.remove();
+                }
+            } else {
+                this.getDelegate().clear();
             }
-        } else {
-            this.getDelegate().clear();
+        } finally {
+            instanceLock.unlock();
         }
     }
 
@@ -176,29 +185,44 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
             before merging collections (again, "un-instantiated" collections are not merged).
     */
     @Override
-    public synchronized Object clone() {
-        IndirectMap<K, V> result = (IndirectMap<K, V>)super.clone();
-        result.delegate = (Hashtable<K, V>)this.getDelegate().clone();
-        result.valueHolder = new ValueHolder<>(result.delegate);
-        result.attributeName = null;
-        result.changeListener = null;
-        return result;
+    public Object clone() {
+        instanceLock.lock();
+        try {
+            IndirectMap<K, V> result = (IndirectMap<K, V>)super.clone();
+            result.delegate = (Hashtable<K, V>)this.getDelegate().clone();
+            result.valueHolder = new ValueHolder<>(result.delegate);
+            result.attributeName = null;
+            result.changeListener = null;
+            return result;
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
      * @see java.util.Hashtable#contains(java.lang.Object)
      */
     @Override
-    public synchronized boolean contains(Object value) {
-        return this.getDelegate().contains(value);
+    public boolean contains(Object value) {
+        instanceLock.lock();
+        try {
+            return this.getDelegate().contains(value);
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
      * @see java.util.Hashtable#containsKey(java.lang.Object)
      */
     @Override
-    public synchronized boolean containsKey(Object key) {
-        return this.getDelegate().containsKey(key);
+    public boolean containsKey(Object key) {
+        instanceLock.lock();
+        try {
+            return this.getDelegate().containsKey(key);
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -213,8 +237,13 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * @see java.util.Hashtable#elements()
      */
     @Override
-    public synchronized Enumeration<V> elements() {
-        return this.getDelegate().elements();
+    public Enumeration<V> elements() {
+        instanceLock.lock();
+        try {
+            return this.getDelegate().elements();
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -389,16 +418,26 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * @see java.util.Hashtable#equals(java.lang.Object)
      */
     @Override
-    public synchronized boolean equals(Object o) {
-        return this.getDelegate().equals(o);
+    public boolean equals(Object o) {
+        instanceLock.lock();
+        try {
+            return this.getDelegate().equals(o);
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
      * @see java.util.Hashtable#get(java.lang.Object)
      */
     @Override
-    public synchronized V get(Object key) {
-        return this.getDelegate().get(key);
+    public V get(Object key) {
+        instanceLock.lock();
+        try {
+            return this.getDelegate().get(key);
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -410,11 +449,14 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     protected Hashtable<K, V> getDelegate() {
         Hashtable<K, V> newDelegate = this.delegate;
         if (newDelegate == null) {
-            synchronized(this){
+            instanceLock.lock();
+            try {
                 newDelegate = this.delegate;
                 if (newDelegate == null) {
                     this.delegate = newDelegate = this.buildDelegate();
                 }
+            } finally {
+                instanceLock.unlock();
             }
         }
         return newDelegate;
@@ -457,11 +499,14 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
          ValueHolderInterface<Map<K, V>> vh = this.valueHolder;
          // PERF: lazy initialize value holder and vector as are normally set after creation.
          if (vh == null) {
-             synchronized(this){
+             instanceLock.lock();
+             try {
                 vh = this.valueHolder;
                  if (vh == null) {
                      this.valueHolder = vh = new ValueHolder<>(new Hashtable<>(initialCapacity, loadFactor));
                  }
+             } finally {
+                 instanceLock.unlock();
              }
          }
          return vh;
@@ -471,8 +516,13 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * @see java.util.Hashtable#hashCode()
      */
     @Override
-    public synchronized int hashCode() {
-        return this.getDelegate().hashCode();
+    public int hashCode() {
+        instanceLock.lock();
+        try {
+            return this.getDelegate().hashCode();
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -524,8 +574,13 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * @see java.util.Hashtable#keys()
      */
     @Override
-    public synchronized Enumeration<K> keys() {
-        return this.getDelegate().keys();
+    public Enumeration<K> keys() {
+        instanceLock.lock();
+        try {
+            return this.getDelegate().keys();
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -693,13 +748,18 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * @see java.util.Hashtable#put(java.lang.Object, java.lang.Object)
      */
     @Override
-    public synchronized V put(K key, V value) {
-        V oldValue = this.getDelegate().put(key, value);
-        if (oldValue != null){
-            raiseRemoveChangeEvent(key, oldValue);
+    public V put(K key, V value) {
+        instanceLock.lock();
+        try {
+            V oldValue = this.getDelegate().put(key, value);
+            if (oldValue != null){
+                raiseRemoveChangeEvent(key, oldValue);
+            }
+            raiseAddChangeEvent(key, value);
+            return oldValue;
+        } finally {
+            instanceLock.unlock();
         }
-        raiseAddChangeEvent(key, value);
-        return oldValue;
     }
 
 
@@ -707,172 +767,232 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * @see java.util.Hashtable#putAll(java.util.Map)
      */
     @Override
-    public synchronized void putAll(Map<? extends K,? extends V> t) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            t.entrySet().stream().forEach((newEntry) -> {
-                this.put(newEntry.getKey(), newEntry.getValue());
-            });
-        }else{
-            this.getDelegate().putAll(t);
-        }
-    }
-
-    @Override
-    public synchronized V compute(K key, BiFunction<? super K,? super V,? extends V> remappingFunction) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            V oldValue = get(key);
-            V newValue = remappingFunction.apply(key, oldValue);
-            if (oldValue != null ) {
-               if (newValue != null) {
-                  put(key, newValue);
-                  return newValue;
-               }
-               remove(key);
+    public void putAll(Map<? extends K,? extends V> t) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                t.entrySet().stream().forEach((newEntry) -> {
+                    this.put(newEntry.getKey(), newEntry.getValue());
+                });
             } else {
-               if (newValue != null) {
-                  put(key, newValue);
-                  return newValue;
-               }
+                this.getDelegate().putAll(t);
             }
-            return null;
+        } finally {
+            instanceLock.unlock();
         }
-        return getDelegate().compute(key, remappingFunction);
     }
 
     @Override
-    public synchronized V computeIfAbsent(K key, Function<? super K,? extends V> mappingFunction) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            V oldValue = get(key);
-            if (oldValue == null) {
-                V newValue = mappingFunction.apply(key);
-                if (newValue != null) {
+    public V compute(K key, BiFunction<? super K,? super V,? extends V> remappingFunction) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                V oldValue = get(key);
+                V newValue = remappingFunction.apply(key, oldValue);
+                if (oldValue != null ) {
+                    if (newValue != null) {
+                        put(key, newValue);
+                        return newValue;
+                    }
+                    remove(key);
+                } else {
+                    if (newValue != null) {
+                        put(key, newValue);
+                        return newValue;
+                    }
+                }
+                return null;
+            }
+            return getDelegate().compute(key, remappingFunction);
+        } finally {
+            instanceLock.unlock();
+        }
+    }
+
+    @Override
+    public V computeIfAbsent(K key, Function<? super K,? extends V> mappingFunction) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                V oldValue = get(key);
+                if (oldValue == null) {
+                    V newValue = mappingFunction.apply(key);
+                    if (newValue != null) {
+                        put(key, newValue);
+                    }
+                    return newValue;
+                }
+                return oldValue;
+            }
+            return getDelegate().computeIfAbsent(key, mappingFunction);
+        } finally {
+            instanceLock.unlock();
+        }
+    }
+
+    @Override
+    public V computeIfPresent(K key, BiFunction<? super K,? super V,? extends V> remappingFunction) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                if (get(key) != null) {
+                    V oldValue = get(key);
+                    V newValue = remappingFunction.apply(key, oldValue);
+                    if (newValue != null) {
+                        put(key, newValue);
+                        return newValue;
+                    }
+                    remove(key);
+                }
+                return null;
+            }
+            return getDelegate().computeIfPresent(key, remappingFunction);
+        } finally {
+            instanceLock.unlock();
+        }
+    }
+
+    @Override
+    public void forEach(BiConsumer<? super K,? super V> action) {
+        instanceLock.lock();
+        try {
+            getDelegate().forEach(action);
+        } finally {
+            instanceLock.unlock();
+        }
+    }
+
+    @Override
+    public V getOrDefault(Object key, V defaultValue) {
+        instanceLock.lock();
+        try {
+            return getDelegate().getOrDefault(key, defaultValue);
+        } finally {
+            instanceLock.unlock();
+        }
+    }
+
+    @Override
+    public V merge(K key, V value, BiFunction<? super V,? super V,? extends V> remappingFunction) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                V oldValue = get(key);
+                V newValue = (oldValue == null) ? value : remappingFunction.apply(oldValue, value);
+                if (newValue == null) {
+                    remove(key);
+                } else {
                     put(key, newValue);
                 }
                 return newValue;
             }
-            return oldValue;
+            return getDelegate().merge(key, value, remappingFunction);
+        } finally {
+            instanceLock.unlock();
         }
-        return getDelegate().computeIfAbsent(key, mappingFunction);
     }
 
     @Override
-    public synchronized V computeIfPresent(K key, BiFunction<? super K,? super V,? extends V> remappingFunction) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            if (get(key) != null) {
-                V oldValue = get(key);
-                V newValue = remappingFunction.apply(key, oldValue);
-                if (newValue != null) {
-                    put(key, newValue);
-                    return newValue;
+    public V putIfAbsent(K key, V value) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                V current = getDelegate().get(key);
+                if (current == null) {
+                    V v = getDelegate().put(key, value);
+                    raiseAddChangeEvent(key, value);
+                    return v;
                 }
-                remove(key);
+                return current;
             }
-            return null;
+            return getDelegate().putIfAbsent(key, value);
+        } finally {
+            instanceLock.unlock();
         }
-        return getDelegate().computeIfPresent(key, remappingFunction);
     }
 
     @Override
-    public synchronized void forEach(BiConsumer<? super K,? super V> action) {
-        getDelegate().forEach(action);
-    }
-
-    @Override
-    public synchronized V getOrDefault(Object key, V defaultValue) {
-        return getDelegate().getOrDefault(key, defaultValue);
-    }
-
-    @Override
-    public synchronized V merge(K key, V value, BiFunction<? super V,? super V,? extends V> remappingFunction) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            V oldValue = get(key);
-            V newValue = (oldValue == null) ? value : remappingFunction.apply(oldValue, value);
-            if (newValue == null) {
-                remove(key);
-            } else {
-                put(key, newValue);
+    public boolean remove(Object key, Object value) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                Map<K, V> del = getDelegate();
+                if (del.containsKey(key) && Objects.equals(del.get(key), value)) {
+                    del.remove(key);
+                    raiseRemoveChangeEvent(key, value);
+                    return true;
+                }
+                return false;
             }
-            return newValue;
+            return getDelegate().remove(key, value);
+        } finally {
+            instanceLock.unlock();
         }
-        return getDelegate().merge(key, value, remappingFunction);
     }
 
     @Override
-    public synchronized V putIfAbsent(K key, V value) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            V current = getDelegate().get(key);
-            if (current == null) {
-                V v = getDelegate().put(key, value);
-                raiseAddChangeEvent(key, value);
-                return v;
+    public V replace(K key, V value) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                Map<K, V> del = getDelegate();
+                if (del.containsKey(key)) {
+                    return put(key, value);
+                }
+                return null;
             }
-            return current;
+            return getDelegate().replace(key, value);
+        } finally {
+            instanceLock.unlock();
         }
-        return getDelegate().putIfAbsent(key, value);
     }
 
     @Override
-    public synchronized boolean remove(Object key, Object value) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            Map<K, V> del = getDelegate();
-            if (del.containsKey(key) && Objects.equals(del.get(key), value)) {
-                del.remove(key);
-                raiseRemoveChangeEvent(key, value);
-                return true;
+    public boolean replace(K key, V oldValue, V newValue) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                Map<K, V> del = getDelegate();
+                if (del.containsKey(key) && Objects.equals(del.get(key), oldValue)) {
+                    put(key, newValue);
+                    return true;
+                }
+                return false;
             }
-            return false;
+            return getDelegate().replace(key, oldValue, newValue);
+        } finally {
+            instanceLock.unlock();
         }
-        return getDelegate().remove(key, value);
     }
 
     @Override
-    public synchronized V replace(K key, V value) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            Map<K, V> del = getDelegate();
-            if (del.containsKey(key)) {
-                return put(key, value);
+    public void replaceAll(BiFunction<? super K,? super V,? extends V> function) {
+        instanceLock.lock();
+        try {
+            // Must trigger add events if tracked or uow.
+            if (hasTrackedPropertyChangeListener()) {
+                getDelegate().entrySet().stream().forEach((entry) -> {
+                    K key = entry.getKey();
+                    V oldValue = entry.getValue();
+                    entry.setValue(function.apply(key, entry.getValue()));
+                    raiseRemoveChangeEvent(key, oldValue);
+                    raiseAddChangeEvent(key, entry.getValue());
+                });
+                return;
             }
-            return null;
+            getDelegate().replaceAll(function);
+        } finally {
+            instanceLock.unlock();
         }
-        return getDelegate().replace(key, value);
-    }
-
-    @Override
-    public synchronized boolean replace(K key, V oldValue, V newValue) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            Map<K, V> del = getDelegate();
-            if (del.containsKey(key) && Objects.equals(del.get(key), oldValue)) {
-                put(key, newValue);
-                return true;
-            }
-            return false;
-        }
-        return getDelegate().replace(key, oldValue, newValue);
-    }
-
-    @Override
-    public synchronized void replaceAll(BiFunction<? super K,? super V,? extends V> function) {
-        // Must trigger add events if tracked or uow.
-        if (hasTrackedPropertyChangeListener()) {
-            getDelegate().entrySet().stream().forEach((entry) -> {
-                K key = entry.getKey();
-                V oldValue = entry.getValue();
-                entry.setValue(function.apply(key, entry.getValue()));
-                raiseRemoveChangeEvent(key, oldValue);
-                raiseAddChangeEvent(key, entry.getValue());
-            });
-            return;
-        }
-        getDelegate().replaceAll(function);
     }
 
     /**
@@ -907,12 +1027,17 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
      * @see java.util.Hashtable#remove(java.lang.Object)
      */
     @Override
-    public synchronized V remove(Object key) {
-        V value = this.getDelegate().remove(key);
-        if (value != null){
-            raiseRemoveChangeEvent(key, value);
+    public V remove(Object key) {
+        instanceLock.lock();
+        try {
+            V value = this.getDelegate().remove(key);
+            if (value != null){
+                raiseRemoveChangeEvent(key, value);
+            }
+            return value;
+        } finally {
+            instanceLock.unlock();
         }
-        return value;
     }
 
     /**

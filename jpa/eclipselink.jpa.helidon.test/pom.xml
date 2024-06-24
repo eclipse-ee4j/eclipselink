@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+    Contributors:
+        Oracle - initial API and implementation
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink JPA Helidon Test</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.jpa.helidon.test</artifactId>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.parent</artifactId>
+        <version>4.0.4-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <mainClass>org.eclipse.persistence.testing.helidon.Main</mainClass>
+        <!--Properties used for test resources filtering/replacement-->
+        <!--DB connection properties-->
+        <dbPlatform>${db.platform}</dbPlatform>
+        <dbUser>${db.user}</dbUser>
+        <dbPassword>${db.pwd}</dbPassword>
+        <driverClass>${db.driver}</driverClass>
+        <dbURL>${db.url}</dbURL>
+        <!--Log level-->
+        <loglevel>${logging.level}</loglevel>
+
+        <test-skip-jpa-helidon>${skipTests}</test-skip-jpa-helidon> <!-- Spring 4 is not supported with jakarta.persistence -->
+    </properties>
+
+    <dependencies>
+        <!--Other modules-->
+        <!--EclipseLink JPA-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+        </dependency>
+        <!--API dependencies-->
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+        </dependency>
+        <!--Other libraries dependencies-->
+        <dependency>
+            <groupId>io.helidon.microprofile.bundles</groupId>
+            <artifactId>helidon-microprofile</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.jersey</groupId>
+            <artifactId>helidon-jersey-client</artifactId>
+        </dependency>
+        <!--Test dependencies-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--JDBC driver (test dependency)-->
+        <dependency>
+            <groupId>${db.driver.groupId}</groupId>
+            <artifactId>${db.driver.artifactId}</artifactId>
+            <version>${db.driver.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!--Filtering enables generate/substitute test properties from Maven into *.xml files.-->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${integration.test.resources.directory}</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <workingDirectory>${project.build.directory}/test-run</workingDirectory>
+                    <!--Set system properties required for tests-->
+                    <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test-jpa-helidon</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${test-skip-jpa-helidon}</skipTests>
+                            <!--Analyze Virtual threads pinning issue
+                                <argLine>-Djdk.tracePinnedThreads=full</argLine>
+                                -->
+                            <reportNameSuffix>test-jpa-helidon</reportNameSuffix>
+                            <includes>
+                                <include>org.eclipse.persistence.testing.helidon.TestMaster</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify-integration-tests</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${integration.test.skip.verify}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.carlspring.maven</groupId>
+                <artifactId>derby-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-derby</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-derby</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>oracle</id>
+            <dependencies>
+                <!--db.platform=org.eclipse.persistence.platform.database.oracle.Oracle23Platform comes from there-->
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.oracle</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>test-jpa-helidon</id>
+            <properties>
+                <test-skip-jpa-helidon>false</test-skip-jpa-helidon>
+            </properties>
+        </profile>
+    </profiles>
+</project>

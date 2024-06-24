@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
@@ -152,6 +154,8 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /** Pointer to the EntityManagerFactoryImpl that created me */
     protected JpaEntityManagerFactory owner = null;
 
+    private final Lock instanceLock  = new ReentrantLock();
+
     /**
      * Will return an instance of the Factory. Should only be called by
      * EclipseLink.
@@ -208,7 +212,8 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public AbstractSession getAbstractSession() {
         if (this.session == null) {
             // PERF: Avoid synchronization.
-            synchronized (this) {
+            instanceLock.lock();
+            try {
                 // DCL ok as isLoggedIn is volatile boolean, set after login is
                 // complete.
                 if (this.session == null) {
@@ -230,6 +235,8 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                     processProperties(propertiesToProcess);
                     this.session = tempSession;
                 }
+            } finally {
+                instanceLock.unlock();
             }
         }
         return this.session;
@@ -274,18 +281,23 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * will return <code>false</code>.
      */
     @Override
-    public synchronized void close() {
-        verifyOpen();
-        isOpen = false;
-        // Do not invalidate the metaModel field
-        // (a reopened emf will re-populate the same metaModel)
-        // (a new persistence unit will generate a new metaModel)
-        if (setupImpl != null) {
-            // 260511 null check so that closing a EM
-            // created from the constructor no longer throws a NPE
-            setupImpl.undeploy();
+    public void close() {
+        instanceLock.lock();
+        try {
+            verifyOpen();
+            isOpen = false;
+            // Do not invalidate the metaModel field
+            // (a reopened emf will re-populate the same metaModel)
+            // (a new persistence unit will generate a new metaModel)
+            if (setupImpl != null) {
+                // 260511 null check so that closing a EM
+                // created from the constructor no longer throws a NPE
+                setupImpl.undeploy();
+            }
+            owner = null;
+        } finally {
+            instanceLock.unlock();
         }
-        owner = null;
     }
 
     /**
