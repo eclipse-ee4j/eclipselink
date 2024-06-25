@@ -813,7 +813,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (hasPrivateOwnedObjects()) {
             Collection<Set> values = getPrivateOwnedObjects().values();
             Map visitedObjects = new IdentityHashMap(values.stream().collect(Collectors.summingInt(Set::size)));
-            for (Set privateOwnedObjects : getPrivateOwnedObjects().values()) {
+            for (Set privateOwnedObjects : values) {
                 for (Object objectToRemove : privateOwnedObjects) {
                     performRemovePrivateOwnedObjectFromChangeSet(objectToRemove, visitedObjects);
                 }
