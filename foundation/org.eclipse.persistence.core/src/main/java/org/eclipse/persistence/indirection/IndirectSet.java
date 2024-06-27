@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Spliterator;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -117,6 +119,8 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * is committed.
      */
     private boolean useLazyInstantiation = false;
+
+    private final Lock instanceLock  = new ReentrantLock();
 
     /**
      * Construct an empty IndirectSet.
@@ -407,11 +411,14 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     protected Set<E> getDelegate() {
         Set<E> newDelegate = this.delegate;
         if (newDelegate == null) {
-            synchronized(this){
+            instanceLock.lock();
+            try {
                 newDelegate = this.delegate;
                 if (newDelegate == null) {
                     this.delegate = newDelegate = this.buildDelegate();
                 }
+            } finally {
+                instanceLock.unlock();
             }
         }
         return newDelegate;
@@ -437,11 +444,14 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         ValueHolderInterface<Set<E>> vh = this.valueHolder;
         // PERF: lazy initialize value holder and vector as are normally set after creation.
         if (vh == null) {
-            synchronized(this){
+            instanceLock.lock();
+            try {
                 vh = this.valueHolder;
                 if (vh == null) {
                     this.valueHolder = vh = new ValueHolder<>(new HashSet<>(initialCapacity, loadFactor));
                 }
+            } finally {
+                instanceLock.unlock();
             }
         }
         return vh;

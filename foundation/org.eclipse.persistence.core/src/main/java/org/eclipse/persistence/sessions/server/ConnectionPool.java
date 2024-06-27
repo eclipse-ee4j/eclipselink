@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.server;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
@@ -53,6 +62,8 @@ public class ConnectionPool {
     public static final int INITIAL_CONNECTIONS = 1;
     public static final int WAIT_TIMEOUT = 180000; // 3 minutes.
 
+    private final Lock instanceLock  = new ReentrantLock();
+    private final Condition instanceLockCondition = instanceLock.newCondition();
     /**
      * PUBLIC:
      * A connection pool is used to specify how connection should be pooled in a server session.
@@ -125,88 +136,93 @@ public class ConnectionPool {
      * INTERNAL:
      * Wait until a connection is available and allocate the connection for the client.
      */
-    public synchronized Accessor acquireConnection() throws ConcurrencyException {
-        // Check for dead database and fail-over.
-        if (this.isDead) {
-            return failover();
-        }
-        // PERF: Using direct variable access to minimize concurrency bottleneck.
-        while (this.connectionsAvailable.isEmpty()) {
-            if ((this.connectionsUsed.size() + this.connectionsAvailable.size()) < this.maxNumberOfConnections) {
-                Accessor connection = null;
-                try {
-                    connection = buildConnection();
-                } catch (RuntimeException failed) {
-                    if (!this.failoverConnectionPools.isEmpty()) {
-                        this.isDead = true;
-                        this.timeOfDeath = System.currentTimeMillis();
-                        this.owner.logThrowable(SessionLog.WARNING, SessionLog.SQL, failed);
-                        return acquireConnection();
-                    } else {
-                        throw failed;
-                    }
-                }
-                this.connectionsUsed.add(connection);
-                if (this.owner.isInProfile()) {
-                    this.owner.updateProfile(MONITOR_HEADER + this.name, this.connectionsUsed.size());
-                }
-                if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
-                    Object[] args = new Object[1];
-                    args[0] = this.name;
-                    this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "acquire_connection", args, connection);
-                }
-                return connection;
+    public Accessor acquireConnection() throws ConcurrencyException {
+        instanceLock.lock();
+        try {
+            // Check for dead database and fail-over.
+            if (this.isDead) {
+                return failover();
             }
-            try {
-                wait(this.waitTimeout);// Notify is called when connections are released.
-            } catch (InterruptedException exception) {
-                throw ConcurrencyException.waitFailureOnClientSession(exception);
-            }
-        }
-
-        int connectionSize = this.connectionsAvailable.size();
-        // Always used the last connection to avoid shift list and to use "hot" connection.
-        Accessor connection = this.connectionsAvailable.remove(connectionSize-1);
-        if (this.checkConnections) {
-            // EclipseLink has encountered a problem with a connection where the database no longer responded
-            // We need to now ensure that the failure was specific to that connection or we need to empty
-            // the pool of dead connections in the case of a database failover.
-            while (connectionSize >= 0) {
-                if (this.owner.getLogin().isConnectionHealthValidatedOnError() && this.owner.getServerPlatform().wasFailureCommunicationBased(null, connection, this.owner)) {
+            // PERF: Using direct variable access to minimize concurrency bottleneck.
+            while (this.connectionsAvailable.isEmpty()) {
+                if ((this.connectionsUsed.size() + this.connectionsAvailable.size()) < this.maxNumberOfConnections) {
+                    Accessor connection = null;
                     try {
-                        //connection failed connect test
-                        connection.closeConnection();
-                    } catch (Exception ex){
-                        //ignore
-                    } finally {
-                        connection.releaseCustomizer();
+                        connection = buildConnection();
+                    } catch (RuntimeException failed) {
+                        if (!this.failoverConnectionPools.isEmpty()) {
+                            this.isDead = true;
+                            this.timeOfDeath = System.currentTimeMillis();
+                            this.owner.logThrowable(SessionLog.WARNING, SessionLog.SQL, failed);
+                            return acquireConnection();
+                        } else {
+                            throw failed;
+                        }
                     }
-                    if (this.connectionsAvailable.isEmpty()) {
-                        this.checkConnections = false;
-                        //we have emptied out all connections so let's have the connection pool build more
-                        return acquireConnection();
-                    } else {
-                        //test next connection
-                        --connectionSize;
-                        connection = this.connectionsAvailable.remove(connectionSize-1);
+                    this.connectionsUsed.add(connection);
+                    if (this.owner.isInProfile()) {
+                        this.owner.updateProfile(MONITOR_HEADER + this.name, this.connectionsUsed.size());
                     }
-                } else {
-                    //connection was good use it.  And make sure we stop testing connections
-                    this.checkConnections = false;
-                    break;
+                    if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+                        Object[] args = new Object[1];
+                        args[0] = this.name;
+                        this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "acquire_connection", args, connection);
+                    }
+                    return connection;
+                }
+                try {
+                    instanceLockCondition.await(this.waitTimeout, TimeUnit.MILLISECONDS);// Notify is called when connections are released.
+                } catch (InterruptedException exception) {
+                    throw ConcurrencyException.waitFailureOnClientSession(exception);
                 }
             }
+
+            int connectionSize = this.connectionsAvailable.size();
+            // Always used the last connection to avoid shift list and to use "hot" connection.
+            Accessor connection = this.connectionsAvailable.remove(connectionSize-1);
+            if (this.checkConnections) {
+                // EclipseLink has encountered a problem with a connection where the database no longer responded
+                // We need to now ensure that the failure was specific to that connection or we need to empty
+                // the pool of dead connections in the case of a database failover.
+                while (connectionSize >= 0) {
+                    if (this.owner.getLogin().isConnectionHealthValidatedOnError() && this.owner.getServerPlatform().wasFailureCommunicationBased(null, connection, this.owner)) {
+                        try {
+                            //connection failed connect test
+                            connection.closeConnection();
+                        } catch (Exception ex){
+                            //ignore
+                        } finally {
+                            connection.releaseCustomizer();
+                        }
+                        if (this.connectionsAvailable.isEmpty()) {
+                            this.checkConnections = false;
+                            //we have emptied out all connections so let's have the connection pool build more
+                            return acquireConnection();
+                        } else {
+                            //test next connection
+                            --connectionSize;
+                            connection = this.connectionsAvailable.remove(connectionSize-1);
+                        }
+                    } else {
+                        //connection was good use it.  And make sure we stop testing connections
+                        this.checkConnections = false;
+                        break;
+                    }
+                }
+            }
+            this.connectionsUsed.add(connection);
+            if (this.owner.isInProfile()) {
+                this.owner.updateProfile(MONITOR_HEADER + this.name, this.connectionsUsed.size());
+            }
+            if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+                Object[] args = new Object[1];
+                args[0] = this.name;
+                this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "acquire_connection", args, connection);
+            }
+            return connection;
+        } finally {
+            instanceLock.unlock();
         }
-        this.connectionsUsed.add(connection);
-        if (this.owner.isInProfile()) {
-            this.owner.updateProfile(MONITOR_HEADER + this.name, this.connectionsUsed.size());
-        }
-        if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
-            Object[] args = new Object[1];
-            args[0] = this.name;
-            this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "acquire_connection", args, connection);
-        }
-        return connection;
     }
 
     /**
@@ -323,34 +339,39 @@ public class ConnectionPool {
      * INTERNAL:
      * Add the connection as single that a new connection is available.
      */
-    public synchronized void releaseConnection(Accessor connection) throws DatabaseException {
-        if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
-            Object[] args = new Object[1];
-            args[0] = this.name;
-            this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "release_connection", args, connection);
-        }
-        connection.reset();
-
-        this.connectionsUsed.remove(connection);
-
-        if (!connection.isValid()) {
-            this.checkConnections = true;
-            try {
-                connection.disconnect(this.owner);
-            } catch (DatabaseException ex) {
-                //this is an invalid connection so expect an exception.
+    public void releaseConnection(Accessor connection) throws DatabaseException {
+        instanceLock.lock();
+        try {
+            if (this.owner.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+                Object[] args = new Object[1];
+                args[0] = this.name;
+                this.owner.log(SessionLog.FINEST, SessionLog.CONNECTION, "release_connection", args, connection);
             }
-        } else {
-            if ((this.connectionsUsed.size() + this.connectionsAvailable.size()) < this.minNumberOfConnections) {
-                this.connectionsAvailable.add(connection);
+            connection.reset();
+
+            this.connectionsUsed.remove(connection);
+
+            if (!connection.isValid()) {
+                this.checkConnections = true;
+                try {
+                    connection.disconnect(this.owner);
+                } catch (DatabaseException ex) {
+                    //this is an invalid connection so expect an exception.
+                }
             } else {
-                connection.disconnect(getOwner());
+                if ((this.connectionsUsed.size() + this.connectionsAvailable.size()) < this.minNumberOfConnections) {
+                    this.connectionsAvailable.add(connection);
+                } else {
+                    connection.disconnect(getOwner());
+                }
             }
+            if (this.owner.isInProfile()) {
+                this.owner.updateProfile(MONITOR_HEADER + this.name, this.connectionsUsed.size());
+            }
+            instanceLockCondition.signal();
+        } finally {
+            instanceLock.unlock();
         }
-        if (this.owner.isInProfile()) {
-            this.owner.updateProfile(MONITOR_HEADER + this.name, this.connectionsUsed.size());
-        }
-        notify();
     }
 
     /**
@@ -471,40 +492,50 @@ public class ConnectionPool {
      * INTERNAL:
      * Disconnect all connections.
      */
-    public synchronized void shutDown() {
-        setIsConnected(false);
+    public void shutDown() {
+        instanceLock.lock();
+        try {
+            setIsConnected(false);
 
-        for (Iterator<Accessor> iterator = getConnectionsAvailable().iterator(); iterator.hasNext();) {
-            try {
-                iterator.next().disconnect(getOwner());
-            } catch (DatabaseException exception) {
-                // Ignore.
+            for (Iterator<Accessor> iterator = getConnectionsAvailable().iterator(); iterator.hasNext();) {
+                try {
+                    iterator.next().disconnect(getOwner());
+                } catch (DatabaseException exception) {
+                    // Ignore.
+                }
             }
-        }
 
-        for (Iterator<Accessor> iterator = getConnectionsUsed().iterator(); iterator.hasNext();) {
-            try {
-                iterator.next().disconnect(getOwner());
-            } catch (DatabaseException exception) {
-                // Ignore.
+            for (Iterator<Accessor> iterator = getConnectionsUsed().iterator(); iterator.hasNext();) {
+                try {
+                    iterator.next().disconnect(getOwner());
+                } catch (DatabaseException exception) {
+                    // Ignore.
+                }
             }
+            resetConnections();
+        } finally {
+            instanceLock.unlock();
         }
-        resetConnections();
     }
 
     /**
      * INTERNAL:
      * Allocate the minimum connections.
      */
-    public synchronized void startUp() {
-        if (isConnected()) {
-            return;
-        }
-        for (int index = getInitialNumberOfConnections(); index > 0; index--) {
-            getConnectionsAvailable().add(buildConnection());
-        }
+    public void startUp() {
+        instanceLock.lock();
+        try {
+            if (isConnected()) {
+                return;
+            }
+            for (int index = getInitialNumberOfConnections(); index > 0; index--) {
+                getConnectionsAvailable().add(buildConnection());
+            }
 
-        setIsConnected(true);
+            setIsConnected(true);
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**

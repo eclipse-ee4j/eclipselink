@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Spliterator;
 import java.util.Vector;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -97,6 +99,8 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * actually instantiating the list from the database.  By default this is set to true.
      */
     private boolean useLazyInstantiation = true;
+
+    private final Lock instanceLock  = new ReentrantLock();
 
     /**
      * PUBLIC:
@@ -350,13 +354,18 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
             before merging collections (again, "un-instantiated" collections are not merged).
     */
     @Override
-    public synchronized Object clone() {
-        IndirectList<E> result = (IndirectList<E>)super.clone();
-        result.delegate = (Vector<E>)this.getDelegate().clone();
-        result.valueHolder = new ValueHolder<>(result.delegate);
-        result.attributeName = null;
-        result.changeListener = null;
-        return result;
+    public Object clone() {
+        instanceLock.lock();
+        try {
+            IndirectList<E> result = (IndirectList<E>)super.clone();
+            result.delegate = (Vector<E>)this.getDelegate().clone();
+            result.valueHolder = new ValueHolder<>(result.delegate);
+            result.attributeName = null;
+            result.changeListener = null;
+            return result;
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -391,8 +400,13 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * @see java.util.Vector#copyInto(java.lang.Object[])
      */
     @Override
-    public synchronized void copyInto(Object[] anArray) {
-        getDelegate().copyInto(anArray);
+    public void copyInto(Object[] anArray) {
+        instanceLock.lock();
+        try {
+            getDelegate().copyInto(anArray);
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -452,11 +466,14 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     protected Vector<E> getDelegate() {
         Vector<E> v = this.delegate;
         if (v == null) {
-            synchronized(this){
+            instanceLock.lock();
+            try {
                 v = this.delegate;
                 if (v == null) {
                     this.delegate = v = this.buildDelegate();
                 }
+            } finally {
+                instanceLock.unlock();
             }
         }
         return v;
@@ -482,11 +499,14 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
         ValueHolderInterface<List<E>> vh = this.valueHolder;
         // PERF: lazy initialize value holder and vector as are normally set after creation.
         if (vh == null) {
-            synchronized(this) {
+            instanceLock.lock();
+            try {
                 vh = this.valueHolder;
                 if (vh == null) {
                         this.valueHolder = vh = new ValueHolder<>(new Vector<>(this.initialCapacity, this.capacityIncrement));
                 }
+            } finally {
+                instanceLock.unlock();
             }
         }
         return vh;
@@ -877,33 +897,43 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     }
 
     @Override
-    public synchronized void replaceAll(UnaryOperator<E> operator) {
-        // Must trigger remove/add events if tracked or uow.
-        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            List<E> del = getDelegate();
-            for (int i = 0; i < del.size(); i++) {
-                set(i, operator.apply(del.get(i)));
+    public void replaceAll(UnaryOperator<E> operator) {
+        instanceLock.lock();
+        try {
+            // Must trigger remove/add events if tracked or uow.
+            if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
+                List<E> del = getDelegate();
+                for (int i = 0; i < del.size(); i++) {
+                    set(i, operator.apply(del.get(i)));
+                }
+            } else {
+                getDelegate().replaceAll(operator);
             }
-        } else {
-            getDelegate().replaceAll(operator);
+        } finally {
+            instanceLock.unlock();
         }
     }
 
     @Override
-    public synchronized boolean removeIf(Predicate<? super E> filter) {
-        // Must trigger remove events if tracked or uow.
-        if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            boolean hasChanged = false;
-            Iterator<E> objects = iterator();
-            while (objects.hasNext()) {
-                if (filter.test(objects.next())) {
-                    objects.remove();
-                    hasChanged |= true;
+    public boolean removeIf(Predicate<? super E> filter) {
+        instanceLock.lock();
+        try {
+            // Must trigger remove events if tracked or uow.
+            if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
+                boolean hasChanged = false;
+                Iterator<E> objects = iterator();
+                while (objects.hasNext()) {
+                    if (filter.test(objects.next())) {
+                        objects.remove();
+                        hasChanged |= true;
+                    }
                 }
+                return hasChanged;
             }
-            return hasChanged;
+            return getDelegate().removeIf(filter);
+        } finally {
+            instanceLock.unlock();
         }
-        return getDelegate().removeIf(filter);
     }
 
     @Override

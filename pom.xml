@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -205,7 +205,8 @@
         <jaxb.version>4.0.5</jaxb.version>
         <jaxb.api.version>4.0.2</jaxb.api.version>
         <soap.api.version>3.0.2</soap.api.version>
-        <jersey.version>3.1.6</jersey.version>
+        <helidon.version>4.0.10</helidon.version>
+        <jersey.version>3.1.7</jersey.version>
         <jms.version>3.1.0</jms.version>
         <json.version>2.1.3</json.version>
         <jpa.api.version>3.1.0</jpa.api.version>
@@ -917,6 +918,16 @@
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
                 <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.helidon.microprofile.bundles</groupId>
+                <artifactId>helidon-microprofile</artifactId>
+                <version>${helidon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.helidon.jersey</groupId>
+                <artifactId>helidon-jersey-client</artifactId>
+                <version>${helidon.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.el</groupId>
@@ -2164,6 +2175,8 @@
                 <module>jpa/eclipselink.jpa.test</module>
                 <!--JPA JSE test module-->
                 <module>jpa/eclipselink.jpa.test.jse</module>
+                <!--JPA Helidon test module-->
+                <module>jpa/eclipselink.jpa.helidon.test</module>
                 <!--JPA Spring test module-->
                 <module>jpa/eclipselink.jpa.spring.test</module>
                 <!--JPA WDF test module-->
