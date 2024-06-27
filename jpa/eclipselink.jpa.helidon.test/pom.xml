@@ -101,46 +101,25 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <skipMain>true</skipMain>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <workingDirectory>${project.build.directory}/test-run</workingDirectory>
-                    <!--Set system properties required for tests-->
-                    <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>test-jpa-helidon</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-jpa-helidon}</skipTests>
-                            <!--Analyze Virtual threads pinning issue
-                                <argLine>-Djdk.tracePinnedThreads=full</argLine>
-                                -->
-                            <reportNameSuffix>test-jpa-helidon</reportNameSuffix>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.helidon.TestMaster</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>verify-integration-tests</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${integration.test.skip.verify}</skip>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.carlspring.maven</groupId>
@@ -166,6 +145,67 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>helidon-tests</id>
+            <activation>
+                <jdk>(21,</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <skip>false</skip>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-compile</id>
+                                <configuration>
+                                    <skipMain>false</skipMain>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <workingDirectory>${project.build.directory}/test-run</workingDirectory>
+                            <!--Set system properties required for tests-->
+                            <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>test-jpa-helidon</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${test-skip-jpa-helidon}</skipTests>
+                                    <!--Analyze Virtual threads pinning issue
+                                        <argLine>-Djdk.tracePinnedThreads=full</argLine>
+                                        -->
+                                    <reportNameSuffix>test-jpa-helidon</reportNameSuffix>
+                                    <includes>
+                                        <include>org.eclipse.persistence.testing.helidon.TestMaster</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>verify-integration-tests</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${integration.test.skip.verify}</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>oracle</id>
             <dependencies>
