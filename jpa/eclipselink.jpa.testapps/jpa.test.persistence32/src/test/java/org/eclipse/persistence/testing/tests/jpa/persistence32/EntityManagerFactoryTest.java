@@ -213,10 +213,10 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         } catch (PersistenceException pe) {
             assertTrue(
                     "Unexpected exception message: " + pe.getMessage(),
-                    pe.getMessage().contains("Cannot create custom persistence unit with name"));
+                    pe.getMessage().contains("Cannot create a custom persistence unit with the name"));
             assertTrue(
                     "Unexpected exception message: " + pe.getMessage(),
-                    pe.getMessage().contains("This name was found in xml configuration."));
+                    pe.getMessage().contains("This name was found in the xml configuration."));
         }
     }
 
@@ -233,7 +233,7 @@ public class EntityManagerFactoryTest extends AbstractPokemon {
         } catch (PersistenceException pe) {
             assertTrue(
                     "Unexpected exception message: " + pe.getMessage(),
-                    pe.getMessage().contains("Cannot create configured persistence unit with name"));
+                    pe.getMessage().contains("Cannot create a configured persistence unit with the name"));
             assertTrue(
                     "Unexpected exception message: " + pe.getMessage(),
                     pe.getMessage().contains("This name was found in custom persistence units."));
