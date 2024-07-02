@@ -558,7 +558,7 @@
                             <Specification-Version>${release.version}</Specification-Version>
                             <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
                             <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
-                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Implementation-Version>${release.version}.${build.qualifier}-${buildNumber}</Implementation-Version>
                             <Premain-Class>${manifest.premain.class}</Premain-Class>
                             <Multi-Release>true</Multi-Release>
                         </manifestEntries>
@@ -599,7 +599,7 @@
                             <Specification-Version>${release.version}</Specification-Version>
                             <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
                             <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
-                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Implementation-Version>${release.version}.${build.qualifier}-${buildNumber}</Implementation-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
