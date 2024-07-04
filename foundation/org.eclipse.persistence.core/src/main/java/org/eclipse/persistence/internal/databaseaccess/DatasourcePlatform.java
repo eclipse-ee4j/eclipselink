@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -297,6 +297,12 @@ public class DatasourcePlatform implements Platform {
     @Override
     public String getEndDelimiter() {
         return endDelimiter;
+    }
+    /**
+     * Return the driver version.
+     */
+    public String getDriverVersion() {
+        return "";
     }
 
     /**
@@ -652,6 +658,10 @@ public class DatasourcePlatform implements Platform {
         return false;
     }
 
+    @Override
+    public boolean isOracle23() {
+        return false;
+    }
     public boolean isPervasive(){
         return false;
     }
