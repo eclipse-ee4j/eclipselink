@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,9 @@ import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * A UnitOfWorkValueHolder is put in a clone object.
@@ -58,6 +61,8 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
     protected transient Object relationshipSourceObject;
     protected String sourceAttributeName;
     protected ObjID wrappedValueHolderRemoteID;
+
+    private final Lock wrappedValueHolderLock = new ReentrantLock();
 
     protected UnitOfWorkValueHolder() {
         super();
@@ -146,7 +151,8 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
         Object value;
         // Bug 3835202 - Ensure access to valueholders is thread safe.  Several of the methods
         // called below are not threadsafe alone.
-        synchronized (this.wrappedValueHolder) {
+        wrappedValueHolderLock.lock();
+        try {
             if (this.wrappedValueHolder instanceof DatabaseValueHolder) {
                 DatabaseValueHolder<T> wrapped = (DatabaseValueHolder<T>)this.wrappedValueHolder;
                 UnitOfWorkImpl unitOfWork = getUnitOfWork();
@@ -174,6 +180,8 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
                 }
             }
             value = this.wrappedValueHolder.getValue();
+        } finally {
+            wrappedValueHolderLock.unlock();
         }
         return buildCloneFor(value);
     }
