@@ -1661,11 +1661,11 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         }
 
         @Override
-        @SuppressWarnings({"unchecked", "deprecation"})
         public T get() {
             try {
+                @SuppressWarnings({"unchecked"})
                 Class<T> parserClass = (Class<T>) Class.forName(DEFAULT_BUILDER_CLASS_NAME);
-                return parserClass.newInstance();
+                return parserClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("missing_jpql_parser_class"), e);
             }
