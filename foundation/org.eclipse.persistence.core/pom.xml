@@ -214,6 +214,8 @@
                         <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.core.test</arg>
                         <arg>--add-exports</arg>
                         <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.jpa.jpql=org.eclipse.persistence.core.test</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>

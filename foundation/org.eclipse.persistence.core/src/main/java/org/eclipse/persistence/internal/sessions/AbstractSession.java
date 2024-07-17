@@ -430,7 +430,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             if (parent != null) {
                 this.queryBuilder = parent.getQueryBuilder();
             } else {
-                this.queryBuilder = buildDefaultQueryBuilder();
+                // Project may not be set
+                Project project = getProject();
+                if (project != null) {
+                    this.queryBuilder = project.getQueryBuilder();
+                }
+                if (this.queryBuilder == null) {
+                    this.queryBuilder = buildDefaultQueryBuilder();
+                }
             }
         }
         return this.queryBuilder;
@@ -468,7 +475,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 builder = PrivilegedAccessHelper.newInstanceFromClass(parserClass);
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Could not load the JPQL parser class." /* TODO: Localize string */, e);
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("missing_jpql_parser_class"), e);
         }
         if (validation != null) {
             builder.setValidationLevel(validation);

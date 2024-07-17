@@ -284,7 +284,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "find_option_class_unknown", "The FindOption implementing the {0} class is not supported"},
                                            { "refresh_option_class_unknown", "The RefreshOption implementing class {0} is not supported"},
                                            { "lock_option_class_unknown", "The LockOption implementing class {0} is not supported"},
-                                           { "typed_query_reference_is_null", "Reference to a named query is null"}
+                                           { "typed_query_reference_is_null", "Reference to a named query is null"},
+                                           { "missing_jpql_parser_class", "Could not load the JPQL parser class."}
                                         };
     /**
      * Return the lookup table.
