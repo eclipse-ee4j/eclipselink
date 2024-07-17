@@ -50,7 +50,6 @@ import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.AttributeGroup;
