@@ -24,10 +24,8 @@ import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.sessions.Project;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class SessionTest {
 
@@ -37,11 +35,12 @@ public class SessionTest {
     public void testDefaultProjectQueryBuilder() {
         AbstractSession session = new DatabaseSessionImpl();
         // Session parent may affect returned JPAQueryBuilder so make sure no one exists
-        assertThat(session.getParent(), is(nullValue()));
+        assertNull(session.getParent());
         // Set Project used to initialize JPAQueryBuilder instance
         session.setProject(new Project());
         JPAQueryBuilder builder = session.getQueryBuilder();
-        assertThat(builder, instanceOf(HermesParser.class));
+        assertTrue("builder is not an instance of HermesParser class",
+                   HermesParser.class.isAssignableFrom(builder.getClass()));
     }
 
     // AbstractSession test. Using DatabaseSessionImpl which does not override tested code.
@@ -73,11 +72,12 @@ public class SessionTest {
         project.setQueryBuilderSupplier(CustomQueryBuilder::new);
         AbstractSession session = new DatabaseSessionImpl();
         // Session parent may affect returned JPAQueryBuilder so make sure no one exists
-        assertThat(session.getParent(), is(nullValue()));
+        assertNull(session.getParent());
         // Set Project used to initialize JPAQueryBuilder instance
         session.setProject(project);
         JPAQueryBuilder builder = session.getQueryBuilder();
-        assertThat(builder, instanceOf(JPAQueryBuilder.class));
+        assertTrue("builder is not an instance of CustomQueryBuilder class",
+                   CustomQueryBuilder.class.isAssignableFrom(builder.getClass()));
     }
 
 }

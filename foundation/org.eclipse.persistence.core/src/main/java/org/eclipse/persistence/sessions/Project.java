@@ -40,8 +40,8 @@
 //       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.sessions;
 
-import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.annotations.CacheIsolationType;
+import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
@@ -50,6 +50,9 @@ import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.jpa.jpql.HermesParser;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.AttributeGroup;
@@ -62,6 +65,7 @@ import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 import java.io.Serializable;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -207,16 +211,11 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      /** Force all queries and relationships to use deferred lock strategy during object building and L2 cache population. */
     protected boolean queryCacheForceDeferredLocks = false;
 
-    /**
-     * {@link JPAQueryBuilder} instance factory.
-     * Initial value is {@code null} because {@link HermesParser} may not be available on the classpath.
-     * Value must always be accessed using {@link #getQueryBuilderSupplier()} to make sure that initial
-     * {@code null} value is replaced by default {@link HermesParser} factory.
-     */
-    private Supplier<JPAQueryBuilder> queryBuilderSupplier;
+    /** {@link JPAQueryBuilder} instance factory. */
+    private Supplier<? extends JPAQueryBuilder> queryBuilderSupplier;
 
-    /** JPA query builder. Default value is {@link HermesParser}. */
-    private JPAQueryBuilder queryBuilder;
+//    /** JPA query builder. Default value is {@link HermesParser}. */
+//    private JPAQueryBuilder queryBuilder;
 
     /**
      * PUBLIC:
@@ -235,8 +234,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         this.mappedSuperclassDescriptors = new HashMap<>(2);
         this.metamodelIdClassMap = new HashMap<>();
         this.attributeGroups = new HashMap<>();
-        this.queryBuilderSupplier = null;
-        this.queryBuilder = null;
+        this.queryBuilderSupplier = new DefaultQueryBuilderSupplier<>();
+//        this.queryBuilder = null;
     }
 
     /**
@@ -1644,18 +1643,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      *
      * @param queryBuilderSupplier the new {@link JPAQueryBuilder} instance factory
      */
-    public void setQueryBuilderSupplier(Supplier<JPAQueryBuilder> queryBuilderSupplier) {
+    public void setQueryBuilderSupplier(Supplier<? extends JPAQueryBuilder> queryBuilderSupplier) {
         Objects.requireNonNull(queryBuilderSupplier, "Value of queryBuilderSupplier is null");
         this.queryBuilderSupplier = queryBuilderSupplier;
-    }
-
-    // queryBuilderSupplier cannot be set to HermesParser::new in the constructor because of issues with moxy tests
-    // so default value is handled in private getter
-    private Supplier<JPAQueryBuilder> getQueryBuilderSupplier() {
-        if (queryBuilderSupplier == null) {
-            queryBuilderSupplier = HermesParser::new;
-        }
-        return queryBuilderSupplier;
     }
 
     /**
@@ -1666,11 +1656,35 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      *
      * @return the JPA query builder
      */
-    public JPAQueryBuilder getQueryBuilder() {
-        if (queryBuilder == null) {
-            queryBuilder = getQueryBuilderSupplier().get();
+    @SuppressWarnings("unchecked")
+    public <T extends JPAQueryBuilder> T getQueryBuilder() {
+        return (T) queryBuilderSupplier.get();
+    }
+
+    // Default JPAQueryBuilder factory.
+    // Returns new instance of HermesParser. Based on buildDefaultQueryBuilder() method of AbstractSession.
+    private static final class DefaultQueryBuilderSupplier<T extends JPAQueryBuilder> implements Supplier<T> {
+
+        private static final String DEFAULT_BUILDER_CLASS_NAME = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
+
+        private DefaultQueryBuilderSupplier() {
         }
-        return queryBuilder;
+
+        @Override
+        public T get() {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    Class<T> parserClass = AccessController.doPrivileged(new PrivilegedClassForName<>(DEFAULT_BUILDER_CLASS_NAME));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(parserClass));
+                } else {
+                    Class<T> parserClass = PrivilegedAccessHelper.getClassForName(DEFAULT_BUILDER_CLASS_NAME);
+                    return PrivilegedAccessHelper.newInstanceFromClass(parserClass);
+                }
+            } catch (Exception e) {
+                throw new IllegalStateException("Could not load the JPQL parser class." /* TODO: Localize string */, e);
+            }
+        }
+
     }
 
 }

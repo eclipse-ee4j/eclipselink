@@ -22,8 +22,7 @@ import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.sessions.Project;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class ProjectTest {
 
@@ -32,7 +31,8 @@ public class ProjectTest {
     public void testDefaultQueryBuilder() {
         Project project = new Project();
         JPAQueryBuilder builder = project.getQueryBuilder();
-        assertThat(builder, instanceOf(HermesParser.class));
+        assertTrue("builder is not an instance of HermesParser class",
+                   HermesParser.class.isAssignableFrom(builder.getClass()));
     }
 
     // Verify that JPAQueryBuilder returned by Project instance matches CustomQueryBuilder
@@ -62,7 +62,8 @@ public class ProjectTest {
         Project project = new Project();
         project.setQueryBuilderSupplier(CustomQueryBuilder::new);
         JPAQueryBuilder builder = project.getQueryBuilder();
-        assertThat(builder, instanceOf(CustomQueryBuilder.class));
+        assertTrue("builder is not an instance of CustomQueryBuilder class",
+                   CustomQueryBuilder.class.isAssignableFrom(builder.getClass()));
     }
 
 }
