@@ -68,6 +68,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -206,7 +207,12 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      /** Force all queries and relationships to use deferred lock strategy during object building and L2 cache population. */
     protected boolean queryCacheForceDeferredLocks = false;
 
-    /** {@link JPAQueryBuilder} instance factory */
+    /**
+     * {@link JPAQueryBuilder} instance factory.
+     * Initial value is {@code null} because {@link HermesParser} may not be available on the classpath.
+     * Value must always be accessed using {@link #getQueryBuilderSupplier()} to make sure that initial
+     * {@code null} value is replaced by default {@link HermesParser} factory.
+     */
     private Supplier<JPAQueryBuilder> queryBuilderSupplier;
 
     /** JPA query builder. Default value is {@link HermesParser}. */
@@ -229,7 +235,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         this.mappedSuperclassDescriptors = new HashMap<>(2);
         this.metamodelIdClassMap = new HashMap<>();
         this.attributeGroups = new HashMap<>();
-        this.queryBuilderSupplier = HermesParser::new;
+        this.queryBuilderSupplier = null;
         this.queryBuilder = null;
     }
 
@@ -1639,7 +1645,17 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * @param queryBuilderSupplier the new {@link JPAQueryBuilder} instance factory
      */
     public void setQueryBuilderSupplier(Supplier<JPAQueryBuilder> queryBuilderSupplier) {
+        Objects.requireNonNull(queryBuilderSupplier, "Value of queryBuilderSupplier is null");
         this.queryBuilderSupplier = queryBuilderSupplier;
+    }
+
+    // queryBuilderSupplier cannot be set to HermesParser::new in the constructor because of issues with moxy tests
+    // so default value is handled in private getter
+    private Supplier<JPAQueryBuilder> getQueryBuilderSupplier() {
+        if (queryBuilderSupplier == null) {
+            queryBuilderSupplier = HermesParser::new;
+        }
+        return queryBuilderSupplier;
     }
 
     /**
@@ -1652,7 +1668,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public JPAQueryBuilder getQueryBuilder() {
         if (queryBuilder == null) {
-            queryBuilder = queryBuilderSupplier.get();
+            queryBuilder = getQueryBuilderSupplier().get();
         }
         return queryBuilder;
     }
