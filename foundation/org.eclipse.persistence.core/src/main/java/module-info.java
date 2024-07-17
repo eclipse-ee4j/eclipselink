@@ -183,7 +183,9 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.internal.sessions.factories.model.transport.naming;
 
     //INTERNAL ONLY exports
-    exports org.eclipse.persistence.internal.jpa.jpql to org.eclipse.persistence.jpa;
+    exports org.eclipse.persistence.internal.jpa.jpql to
+            org.eclipse.persistence.jpa,
+            org.eclipse.persistence.core.test;
     exports org.eclipse.persistence.internal.localization to
             org.eclipse.persistence.dbws,
             org.eclipse.persistence.jpa,

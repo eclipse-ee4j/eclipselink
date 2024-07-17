@@ -49,10 +49,12 @@ import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.internal.jpa.jpql.HermesParser;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
@@ -66,6 +68,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * <b>Purpose</b>: Maintain all of the EclipseLink configuration information for a system.
@@ -203,6 +206,12 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      /** Force all queries and relationships to use deferred lock strategy during object building and L2 cache population. */
     protected boolean queryCacheForceDeferredLocks = false;
 
+    /** {@link JPAQueryBuilder} instance factory */
+    private Supplier<JPAQueryBuilder> queryBuilderSupplier;
+
+    /** JPA query builder. Default value is {@link HermesParser}. */
+    private JPAQueryBuilder queryBuilder;
+
     /**
      * PUBLIC:
      * Create a new project.
@@ -220,6 +229,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         this.mappedSuperclassDescriptors = new HashMap<>(2);
         this.metamodelIdClassMap = new HashMap<>();
         this.attributeGroups = new HashMap<>();
+        this.queryBuilderSupplier = HermesParser::new;
+        this.queryBuilder = null;
     }
 
     /**
@@ -1621,5 +1632,29 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         }
         return this.partitioningPolicies.get(name);
     }
-}
 
+    /**
+     * Set new {@link JPAQueryBuilder} instance factory.
+     *
+     * @param queryBuilderSupplier the new {@link JPAQueryBuilder} instance factory
+     */
+    public void setQueryBuilderSupplier(Supplier<JPAQueryBuilder> queryBuilderSupplier) {
+        this.queryBuilderSupplier = queryBuilderSupplier;
+    }
+
+    /**
+     * Get JPA query builder.
+     * Returned {@link JPAQueryBuilder} instance is initialized with 1st call of this method. Returned value depends
+     * on instance factory, which may be set using {@link #setQueryBuilderSupplier(java.util.function.Supplier)} before
+     * this 1st method call happens. Default instance factory value is {@link HermesParser}.
+     *
+     * @return the JPA query builder
+     */
+    public JPAQueryBuilder getQueryBuilder() {
+        if (queryBuilder == null) {
+            queryBuilder = queryBuilderSupplier.get();
+        }
+        return queryBuilder;
+    }
+
+}

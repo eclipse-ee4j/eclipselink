@@ -430,7 +430,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             if (parent != null) {
                 this.queryBuilder = parent.getQueryBuilder();
             } else {
-                this.queryBuilder = buildDefaultQueryBuilder();
+                this.queryBuilder = getProject().getQueryBuilder();
+                if (this.queryBuilder == null) {
+                    this.queryBuilder = buildDefaultQueryBuilder();
+                }
             }
         }
         return this.queryBuilder;
