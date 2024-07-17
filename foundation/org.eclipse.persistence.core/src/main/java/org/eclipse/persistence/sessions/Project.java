@@ -49,10 +49,8 @@ import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
-import org.eclipse.persistence.internal.jpa.jpql.HermesParser;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.AttributeGroup;
@@ -65,7 +63,6 @@ import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 import java.io.Serializable;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -214,9 +211,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** {@link JPAQueryBuilder} instance factory. */
     private Supplier<? extends JPAQueryBuilder> queryBuilderSupplier;
 
-//    /** JPA query builder. Default value is {@link HermesParser}. */
-//    private JPAQueryBuilder queryBuilder;
-
     /**
      * PUBLIC:
      * Create a new project.
@@ -235,7 +229,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         this.metamodelIdClassMap = new HashMap<>();
         this.attributeGroups = new HashMap<>();
         this.queryBuilderSupplier = new DefaultQueryBuilderSupplier<>();
-//        this.queryBuilder = null;
     }
 
     /**
@@ -1649,10 +1642,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     }
 
     /**
-     * Get JPA query builder.
-     * Returned {@link JPAQueryBuilder} instance is initialized with 1st call of this method. Returned value depends
-     * on instance factory, which may be set using {@link #setQueryBuilderSupplier(java.util.function.Supplier)} before
-     * this 1st method call happens. Default instance factory value is {@link HermesParser}.
+     * Create new instance of {@link JPAQueryBuilder}.
      *
      * @return the JPA query builder
      */
@@ -1671,17 +1661,13 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         }
 
         @Override
+        @SuppressWarnings({"unchecked", "deprecation"})
         public T get() {
             try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    Class<T> parserClass = AccessController.doPrivileged(new PrivilegedClassForName<>(DEFAULT_BUILDER_CLASS_NAME));
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(parserClass));
-                } else {
-                    Class<T> parserClass = PrivilegedAccessHelper.getClassForName(DEFAULT_BUILDER_CLASS_NAME);
-                    return PrivilegedAccessHelper.newInstanceFromClass(parserClass);
-                }
+                Class<T> parserClass = (Class<T>) Class.forName(DEFAULT_BUILDER_CLASS_NAME);
+                return parserClass.newInstance();
             } catch (Exception e) {
-                throw new IllegalStateException("Could not load the JPQL parser class." /* TODO: Localize string */, e);
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("missing_jpql_parser_class"), e);
             }
         }
 
