@@ -15,6 +15,18 @@
 //
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.abstractSchemaName;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.equal;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.from;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.identificationVariableDeclaration;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.numeric;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.rangeVariableDeclaration;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.select;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.selectStatement;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.variable;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.virtualVariable;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.where;
+
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
@@ -105,6 +117,22 @@ public final class JPQLExpressionTestJakartaData extends JPQLParserTest {
         String inputJPQLQuery = "FROM NoAliasEntity this";
         JPQLExpression jpqlExpression = new JPQLExpression(inputJPQLQuery, JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
         assertEquals(expectedJPQLQuery, jpqlExpression.toActualText());
+    }
+
+    @Test
+    public void testFunctionNameAsStateFieldWithImplicitVariable() {
+
+        String inputJPQLQuery = "SELECT this FROM Order WHERE length = 1";
+//        String inputJPQLQuery = "UPDATE Box SET length = length + 1";
+
+        SelectStatementTester selectStatement = selectStatement(
+                select(variable("this")),
+                from(identificationVariableDeclaration(
+                        rangeVariableDeclaration(abstractSchemaName("Order"), virtualVariable("this")))),
+                where(equal(virtualVariable("this", "length"), numeric(1)))
+        );
+
+        testJakartaDataQuery(inputJPQLQuery, selectStatement);
     }
 
     private JPQLExpression checkAliasFrom(String actualQuery, String expectedAlias) {

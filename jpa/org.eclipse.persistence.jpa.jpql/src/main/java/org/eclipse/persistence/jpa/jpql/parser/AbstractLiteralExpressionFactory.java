@@ -122,6 +122,8 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
             if (factory != null) {
                 expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
 
+                expression = AbstractExpression.revertExpressionIfInvalid(expression, wordParser, word);
+
                 if (expression != null) {
                     return new BadExpression(parent, expression);
                 }

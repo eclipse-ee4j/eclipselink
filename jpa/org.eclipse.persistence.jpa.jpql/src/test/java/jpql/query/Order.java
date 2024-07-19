@@ -41,4 +41,5 @@ public class Order {
     private double totalPrice;
     @Id private int id;
     private String number;
+    private int length;
 }
