@@ -275,19 +275,16 @@ public final class RangeVariableDeclaration extends AbstractExpression {
             hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
         }
 
-        // Special case when parsing the range variable declaration of an UPDATE clause that does
-        // not have an identification variable, e.g. "UPDATE DateTime SET date = CURRENT_DATE"
-        if (!wordParser.startsWithIdentifier(SET)) {
-            if (tolerant) {
-                identificationVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
-                if (identificationVariable == null && this.getRoot().isJakartaData()) {
-                    addMissingAlias(Expression.THIS);
-                }
+        if (tolerant) {
+            identificationVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
+            if (identificationVariable == null && this.getRoot().isJakartaData()) {
+                addMissingAlias(Expression.THIS);
             }
-            else {
-                identificationVariable = new IdentificationVariable(this, wordParser.word());
-                identificationVariable.parse(wordParser, tolerant);
-            }
+        } else if (!wordParser.startsWithIdentifier(SET)) {
+            // We need to avoid the special valid case when parsing the range variable declaration of an UPDATE clause that does
+            // not have an identification variable, e.g. "UPDATE DateTime SET date = CURRENT_DATE"
+            identificationVariable = new IdentificationVariable(this, wordParser.word());
+            identificationVariable.parse(wordParser, tolerant);
         }
     }
 
@@ -365,11 +362,21 @@ public final class RangeVariableDeclaration extends AbstractExpression {
      * @param aliasName Entity alias.
      */
     private void addMissingAlias(String aliasName) {
-        if (this.getParent() instanceof IdentificationVariableDeclaration identificationVariableDeclaration &&
-                identificationVariableDeclaration.getParent() instanceof FromClause &&
-                this.getIdentificationVariable() instanceof NullExpression) {
+        if (isMissingAliasInFromClause()
+                || isMissingAliasInUpdateClause()) {
             this.setVirtualIdentificationVariable(aliasName);
             this.getRoot().setGenerateThisPrefix(true);
         }
+    }
+
+    private boolean isMissingAliasInFromClause() {
+        return this.getParent() instanceof IdentificationVariableDeclaration identificationVariableDeclaration
+                && identificationVariableDeclaration.getParent() instanceof FromClause
+                && this.getIdentificationVariable() instanceof NullExpression;
+    }
+
+    private boolean isMissingAliasInUpdateClause() {
+        return this.getParent() instanceof UpdateClause
+                && this.getIdentificationVariable() instanceof NullExpression;
     }
 }
