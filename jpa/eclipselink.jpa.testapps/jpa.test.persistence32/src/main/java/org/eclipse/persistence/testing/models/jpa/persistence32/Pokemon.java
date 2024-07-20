@@ -55,6 +55,9 @@ public class Pokemon {
 
     private String name;
 
+    // to test queries where entity field clashes with a function name in QueryTest
+    private int length = 0;
+
     @ManyToOne
     @JoinColumn(name = "TRAINER_ID")
     private Trainer trainer;
@@ -127,6 +130,14 @@ public class Pokemon {
 
     public void setTrainer(Trainer trainer) {
         this.trainer = trainer;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
 
     @Override

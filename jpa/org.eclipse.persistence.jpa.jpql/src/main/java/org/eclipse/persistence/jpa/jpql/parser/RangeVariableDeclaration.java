@@ -362,14 +362,15 @@ public final class RangeVariableDeclaration extends AbstractExpression {
      * @param aliasName Entity alias.
      */
     private void addMissingAlias(String aliasName) {
-        if (isMissingAliasInFromClause()
-                || isMissingAliasInUpdateClause()) {
+        if (isMissingAliasInSelectFromClause()
+                || isMissingAliasInUpdateClause()
+                || isMissingAliasInDeleteFromClause()) {
             this.setVirtualIdentificationVariable(aliasName);
             this.getRoot().setGenerateThisPrefix(true);
         }
     }
 
-    private boolean isMissingAliasInFromClause() {
+    private boolean isMissingAliasInSelectFromClause() {
         return this.getParent() instanceof IdentificationVariableDeclaration identificationVariableDeclaration
                 && identificationVariableDeclaration.getParent() instanceof FromClause
                 && this.getIdentificationVariable() instanceof NullExpression;
@@ -377,6 +378,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 
     private boolean isMissingAliasInUpdateClause() {
         return this.getParent() instanceof UpdateClause
+                && this.getIdentificationVariable() instanceof NullExpression;
+    }
+
+    private boolean isMissingAliasInDeleteFromClause() {
+        return this.getParent() instanceof DeleteClause deleteClause
                 && this.getIdentificationVariable() instanceof NullExpression;
     }
 }
