@@ -189,6 +189,14 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
         return result;
     }
 
+    public static AbstractExpression revertExpressionIfInvalid(AbstractExpression expression, WordParser wordParser, String word) {
+        if (expression != null && expression.shouldBeReverted()) {
+            wordParser.moveBackward(word);
+            return null;
+        }
+        return expression;
+    }
+
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();

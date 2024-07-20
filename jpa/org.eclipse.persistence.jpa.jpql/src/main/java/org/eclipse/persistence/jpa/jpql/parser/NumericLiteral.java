@@ -104,4 +104,40 @@ public final class NumericLiteral extends AbstractExpression {
     protected void toParsedText(StringBuilder writer, boolean actual) {
         writer.append(getText());
     }
+
+        /**
+     * Determines whether the text of this literal is a valid numeric value or not. There are
+     * two types of numeric values that are supported:
+     * <ul>
+     *    <li>Decimal literal</li>
+     *    <li>Hexadecimal literal</li>
+     * </ul>
+     *
+     * @return <code>true</code> if the text in this literal is a valid numeric value;
+     * <code>false</code> otherwise
+     */
+    public boolean hasValidValue() {
+        String text = getText();
+
+        // The ending 'l' or 'L' for a long number has to be removed, Java will not parse it
+        if (text.endsWith("l") || text.endsWith("L")) {
+            text = text.substring(0, text.length() - 1);
+        }
+
+        // Simply try to parse it as a double number (integer and hexadecimal are handled as well)
+        try {
+            Double.parseDouble(text);
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    protected boolean shouldBeReverted() {
+        return !hasValidValue();
+    }
+
+
 }

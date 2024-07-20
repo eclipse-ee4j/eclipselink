@@ -15,6 +15,8 @@
 //
 package org.eclipse.persistence.jpa.jpql.parser;
 
+
+
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -72,7 +74,12 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
             case NUMERIC_LITERAL: {
                 expression = new NumericLiteral(parent, word);
                 expression.parse(wordParser, tolerant);
-                return expression;
+                expression = revertExpressionIfInvalid(expression, wordParser, word);
+                if (expression != null) {
+                    return expression;
+                }
+                // if not valid numeric literal, continue further parsing
+                break;
             }
 
             case STRING_LITERAL: {
@@ -86,47 +93,47 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
                 expression.parse(wordParser, tolerant);
                 return expression;
             }
-        }
 
-        // Path expression
-        if (word.indexOf(AbstractExpression.DOT) > -1) {
-            char character = word.charAt(0);
+            default: {
+                // Path expression
+                if (word.indexOf(AbstractExpression.DOT) > -1) {
+                    char character = word.charAt(0);
 
-            if ((expression != null) && (character == AbstractExpression.DOT)) {
-                if (isCollection()) {
-                    expression = new CollectionValuedPathExpression(parent, expression, word);
+                    if ((expression != null) && (character == AbstractExpression.DOT)) {
+                        if (isCollection()) {
+                            expression = new CollectionValuedPathExpression(parent, expression, word);
+                        } else {
+                            expression = new StateFieldPathExpression(parent, expression, word);
+                        }
+                    } else {
+                        if (isCollection()) {
+                            expression = new CollectionValuedPathExpression(parent, word);
+                        } else {
+                            expression = new StateFieldPathExpression(parent, word);
+                        }
+                    }
+
+                    expression.parse(wordParser, tolerant);
+                    return expression;
                 }
-                else {
-                    expression = new StateFieldPathExpression(parent, expression, word);
+
+                // Checks for invalid JPQL queries
+                ExpressionRegistry registry = getExpressionRegistry();
+
+                if (tolerant && registry.isIdentifier(word)) {
+                    ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
+                    // TODO: Before creating the expression, check to make sure it's not a function: 'identifier('
+                    if (factory != null) {
+                        expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+
+                        expression = revertExpressionIfInvalid(expression, wordParser, word);
+
+                        if (expression != null) {
+                            return new BadExpression(parent, expression);
+                        }
+                    }
                 }
-            }
-            else {
-                if (isCollection()) {
-                    expression = new CollectionValuedPathExpression(parent, word);
-                }
-                else {
-                    expression = new StateFieldPathExpression(parent, word);
-                }
-            }
 
-            expression.parse(wordParser, tolerant);
-            return expression;
-        }
-
-        // Checks for invalid JPQL queries
-        ExpressionRegistry registry = getExpressionRegistry();
-
-        if (tolerant && registry.isIdentifier(word)) {
-            ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
-            // TODO: Before creating the expression, check to make sure it's not a function: 'identifier('
-            if (factory != null) {
-                expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
-
-                expression = AbstractExpression.revertExpressionIfInvalid(expression, wordParser, word);
-
-                if (expression != null) {
-                    return new BadExpression(parent, expression);
-                }
             }
         }
 

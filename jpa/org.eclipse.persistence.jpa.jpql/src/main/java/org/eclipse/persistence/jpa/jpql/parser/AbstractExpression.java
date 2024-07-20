@@ -769,8 +769,6 @@ public abstract class AbstractExpression implements Expression {
                     if (factory != null) {
                         child = factory.buildExpression(this, wordParser, word, queryBNF, expression, tolerant);
 
-                        child = revertExpressionIfInvalid(child, wordParser, word);
-
                         if (child != null) {
 
                             // The new expression is a child of the previous expression,
@@ -1152,14 +1150,6 @@ public abstract class AbstractExpression implements Expression {
         // should always be recreated in order to reflect the current state while debugging
         parsedText = null;
         return toParsedText();
-    }
-
-    public static AbstractExpression revertExpressionIfInvalid(AbstractExpression child, WordParser wordParser, String word) {
-        if (child != null && child.shouldBeReverted()) {
-            wordParser.moveBackward(word);
-            return null;
-        }
-        return child;
     }
 
     /**

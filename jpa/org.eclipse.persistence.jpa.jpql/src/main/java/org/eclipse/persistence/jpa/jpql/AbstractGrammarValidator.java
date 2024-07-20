@@ -1792,35 +1792,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     /**
-     * Determines whether the given sequence of characters is a numeric literal or not. There are
-     * two types of numeric literal that is supported:
-     * <ul>
-     *    <li>Decimal literal</li>
-     *    <li>Hexadecimal literal</li>
-     * </ul>
-     *
-     * @param text The sequence of characters to validate
-     * @return <code>true</code> if the given sequence of characters is a valid numeric literal;
-     * <code>false</code> otherwise
-     */
-    protected boolean isNumericLiteral(String text) {
-
-        // The ending 'l' or 'L' for a long number has to be removed, Java will not parse it
-        if (text.endsWith("l") || text.endsWith("L")) {
-            text = text.substring(0, text.length() - 1);
-        }
-
-        // Simply try to parse it as a double number (integer and hexadecimal are handled as well)
-        try {
-            Double.parseDouble(text);
-            return true;
-        }
-        catch (Exception e2) {
-            return false;
-        }
-    }
-
-    /**
      * Determines whether the JPA version for which the JPQL grammar was defined represents a version
      * that is older than the given version.
      *
@@ -4394,15 +4365,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     @Override
     public void visit(NumericLiteral expression) {
 
-        String text = expression.getText();
-
         // - Exact numeric literals support the use of Java integer literal syntax as well as SQL
         //   exact numeric literal syntax
         // - Approximate literals support the use Java floating point literal syntax as well as SQL
         //   approximate numeric literal syntax
         // - Appropriate suffixes can be used to indicate the specific type of a numeric literal in
         //   accordance with the Java Language Specification
-        if (!isNumericLiteral(text)) {
+        if (!expression.hasValidValue()) {
+            String text = expression.getText();
             int startPosition = position(expression);
             int endPosition   = startPosition + text.length();
             addProblem(expression, startPosition, endPosition, NumericLiteral_Invalid, text);

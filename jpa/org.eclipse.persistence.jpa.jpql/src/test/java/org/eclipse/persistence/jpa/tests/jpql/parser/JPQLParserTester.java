@@ -2853,7 +2853,7 @@ public final class JPQLParserTester {
         int dotIndex = pathExpression.indexOf('.');
 
         if (dotIndex == 0) {
-            return path(nullExpression(), false, pathExpression);
+            return path(nullExpression(), false, pathExpression.substring(1));
         }
 
         String variable = pathExpression.substring(0, dotIndex);
