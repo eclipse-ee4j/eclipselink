@@ -26,16 +26,16 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-//    AllJPQLParserTests1_0.class,
-//    AllJPQLParserTests2_0.class,
-//    AllJPQLParserTests2_1.class,
-//    AllJPQLParserTests3_1.class,
-//    AllJPQLParserTests3_2.class,
-//    AllEclipseLinkJPQLParserTests.class,
-//    AllEclipseLinkJPQLParserTests2_1.class,
-//    AllEclipseLinkJPQLParserTests2_4.class,
-//    AllEclipseLinkJPQLParserTests2_5.class,
-//    AllJPQLParserConcurrentTests.class,
+    AllJPQLParserTests1_0.class,
+    AllJPQLParserTests2_0.class,
+    AllJPQLParserTests2_1.class,
+    AllJPQLParserTests3_1.class,
+    AllJPQLParserTests3_2.class,
+    AllEclipseLinkJPQLParserTests.class,
+    AllEclipseLinkJPQLParserTests2_1.class,
+    AllEclipseLinkJPQLParserTests2_4.class,
+    AllEclipseLinkJPQLParserTests2_5.class,
+    AllJPQLParserConcurrentTests.class,
     JPQLExpressionTestJakartaData.class
 })
 @RunWith(JPQLTestRunner.class)
