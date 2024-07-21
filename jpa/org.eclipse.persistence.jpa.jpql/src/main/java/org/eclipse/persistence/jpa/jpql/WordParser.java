@@ -256,6 +256,7 @@ public final class WordParser {
      */
     public void moveBackward(CharSequence word) {
         cursor -= word.length();
+        wordEndPosition();
     }
 
     /**

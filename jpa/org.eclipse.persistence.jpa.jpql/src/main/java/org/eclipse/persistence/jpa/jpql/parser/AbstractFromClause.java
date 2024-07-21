@@ -343,7 +343,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
             identificationVariableDeclaration.hasRangeVariableDeclaration() && identificationVariableDeclaration.getRangeVariableDeclaration() instanceof RangeVariableDeclaration rangeVariableDeclaration &&
             rangeVariableDeclaration.hasIdentificationVariable() && rangeVariableDeclaration.getIdentificationVariable() instanceof IdentificationVariable identificationVariable &&
             Expression.THIS.equals(identificationVariable.getText())) {
-            this.getRoot().setGenerateThisPrefix(true);
+            this.getParentExpression().setGenerateThisPrefix(true);
         }
     }
 

@@ -517,6 +517,22 @@ public abstract class AbstractExpression implements Expression {
     }
 
     /**
+     * Returns closest nested expression that encapsulates this expression,
+     * or the root expression if not inside a nested expression.
+     *
+     * @return  Parent expression
+     */
+    public final ParentExpression getParentExpression() {
+        if (this instanceof ParentExpression parentExpression) {
+            return parentExpression;
+        } else if (parent == null) {
+            return null;
+        } else {
+            return parent.getParentExpression();
+        }
+    }
+
+    /**
      * Returns the encapsulated text of this {@link AbstractExpression}, which can be used in various
      * ways, it can be a keyword, a literal, etc.
      *

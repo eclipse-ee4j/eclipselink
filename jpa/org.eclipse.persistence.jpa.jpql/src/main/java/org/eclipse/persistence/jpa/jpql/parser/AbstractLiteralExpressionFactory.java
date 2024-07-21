@@ -15,8 +15,6 @@
 //
 package org.eclipse.persistence.jpa.jpql.parser;
 
-
-
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -74,12 +72,7 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
             case NUMERIC_LITERAL: {
                 expression = new NumericLiteral(parent, word);
                 expression.parse(wordParser, tolerant);
-                expression = revertExpressionIfInvalid(expression, wordParser, word);
-                if (expression != null) {
-                    return expression;
-                }
-                // if not valid numeric literal, continue further parsing
-                break;
+                return expression;
             }
 
             case STRING_LITERAL: {

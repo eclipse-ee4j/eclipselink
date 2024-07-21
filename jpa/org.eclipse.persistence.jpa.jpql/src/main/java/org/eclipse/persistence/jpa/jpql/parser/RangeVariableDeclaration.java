@@ -366,7 +366,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
                 || isMissingAliasInUpdateClause()
                 || isMissingAliasInDeleteFromClause()) {
             this.setVirtualIdentificationVariable(aliasName);
-            this.getRoot().setGenerateThisPrefix(true);
+            this.getParentExpression().setGenerateThisPrefix(true);
         }
     }
 

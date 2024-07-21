@@ -26,12 +26,14 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
  * @since 2.3
  * @author Pascal Filion
  */
-public final class SubExpression extends AbstractSingleEncapsulatedExpression {
+public final class SubExpression extends AbstractSingleEncapsulatedExpression implements ParentExpression {
 
     /**
      * The {@link JPQLQueryBNF} coming from the parent that is used to parse the next portion of the query.
      */
     private JPQLQueryBNF queryBNF;
+
+    private boolean generateThisPrefix = false;
 
     /**
      * Creates a new <code>SubExpression</code>.
@@ -42,6 +44,16 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
     public SubExpression(AbstractExpression parent, JPQLQueryBNF queryBNF) {
         super(parent, ExpressionTools.EMPTY_STRING);
         this.queryBNF = queryBNF;
+    }
+
+    @Override
+    public boolean isGenerateThisPrefix() {
+        return generateThisPrefix;
+    }
+
+    @Override
+    public void setGenerateThisPrefix(boolean generateThisPrefix) {
+        this.generateThisPrefix = generateThisPrefix;
     }
 
     @Override
