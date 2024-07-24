@@ -108,4 +108,4 @@ public class QueryTest extends AbstractPokemon {
                         "SELECT p FROM Pokemon p ", Pokemon.class).getSingleResultOrNull()));
     }
 
-}
+    }

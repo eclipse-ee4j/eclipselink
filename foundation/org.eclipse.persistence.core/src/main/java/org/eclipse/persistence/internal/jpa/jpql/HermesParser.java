@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +17,8 @@
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //     06/02/2023: Radek Felcman
 //       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
+//     07/24/2024: Ondro Mihalyi
+//       - Issues 2197, 2198, and 2199: JPQL query incorrectly parsed when "this" variable used explicitly in path expressions
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.Version;
@@ -162,6 +165,9 @@ public final class HermesParser implements JPAQueryBuilder {
             sb.append(problem.getEndPosition());
             sb.append("] ");
             sb.append(message);
+            String rootExpressionText = problem.getExpression().getRoot().toActualText();
+            sb.append(" (" + rootExpressionText.substring(0, problem.getStartPosition())
+                    + " [ " + problem.getExpression().toActualText() + " ] ...");
         }
 
         String errorMessage = bundle.getString(messageKey);

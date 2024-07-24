@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -279,6 +280,16 @@ public abstract class AbstractPathExpression extends AbstractExpression {
     public final boolean hasVirtualIdentificationVariable() {
         checkPaths();
         return identificationVariable.isVirtual();
+    }
+
+    /**
+     * Determines whether the path's identification variable is virtual and not used in the query with the {@code this} keyword.
+     *
+     * @return <code>true</code> if this identification variable was virtually created and is not explicitly used in this path expression; <code>false</code> otherwise (is not virtual or is virtual and referenced with the {@code this} keyword)
+     */
+    public final boolean hasImplicitIdentificationVariable() {
+        checkPaths();
+        return identificationVariable.isVirtual() && !paths.get(0).equals(Expression.THIS);
     }
 
     @Override

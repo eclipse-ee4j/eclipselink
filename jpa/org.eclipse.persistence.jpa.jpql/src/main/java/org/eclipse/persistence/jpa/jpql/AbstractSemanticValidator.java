@@ -1,7 +1,8 @@
 /*
  * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
- *
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
+ * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0,
@@ -944,7 +945,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
     /**
      * Validates the given {@link Expression} and makes sure it's a valid collection value path expression.
-     * 
+     *
      * join_collection_valued_path_expression::=
      *     identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field
      * join_single_valued_path_expression::=
@@ -992,8 +993,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
                 valid = false;
             }
-            else if (!helper.isCollectionMapping(mapping) && 
-                    !helper.isRelationshipMapping(mapping) && 
+            else if (!helper.isCollectionMapping(mapping) &&
+                    !helper.isRelationshipMapping(mapping) &&
                     !helper.isEmbeddableMapping(mapping)) {
 
                 int startPosition = position(expression);
@@ -2636,7 +2637,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
                 if (managedType != null) {
 
                     // Continue to traverse the path expression
-                    for (int index = pathExpression.hasVirtualIdentificationVariable() ? 0 : 1, count = pathExpression.pathSize(); index < count; index++) {
+                    for (int index = pathExpression.hasImplicitIdentificationVariable() ? 0 : 1, count = pathExpression.pathSize(); index < count; index++) {
 
                         // Retrieve the mapping
                         String path = pathExpression.getPath(index);
