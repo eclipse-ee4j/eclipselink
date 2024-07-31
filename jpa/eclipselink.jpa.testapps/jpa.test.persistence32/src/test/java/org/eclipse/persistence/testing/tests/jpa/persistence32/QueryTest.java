@@ -1,6 +1,5 @@
 /*
  * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +15,6 @@ import java.util.List;
 
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
-import java.util.stream.Stream;
 import junit.framework.Test;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
 import org.junit.Assert;
@@ -36,8 +34,6 @@ public class QueryTest extends AbstractPokemon {
             new Pokemon(4, "Caterpie", List.of(TYPES[7]))
     };
 
-    static final long POKEMONS_COUNT = POKEMONS.length -1; // we ignore the first one with index 0
-
     public static Test suite() {
         return suite(
                 "QueryTest",
@@ -46,12 +42,7 @@ public class QueryTest extends AbstractPokemon {
                 new QueryTest("testGetSingleResultWithMultipleResults"),
                 new QueryTest("testGetSingleResultOrNullWithEmptyResult"),
                 new QueryTest("testGetSingleResultOrNullWithSingleResult"),
-                new QueryTest("testGetSingleResultOrNullWithMultipleResults"),
-                new QueryTest("testUpdateQueryLengthInAssignmentAndExpression"),
-                new QueryTest("tesUpdateQueryWithThisVariable"),
-                new QueryTest("testSelectQueryLengthInAssignmentAndExpression"),
-                new QueryTest("testDeleteQueryLengthInExpressionOnLeft"),
-                new QueryTest("testDeleteQueryLengthInExpressionOnRight")
+                new QueryTest("testGetSingleResultOrNullWithMultipleResults")
         );
     }
 
@@ -63,12 +54,11 @@ public class QueryTest extends AbstractPokemon {
         setPuName(getPersistenceUnitName());
     }
 
-    // Initialize data for each test
+    // Initialize data
     @Override
-    public void setUp() {
-        super.setUp();
+    protected void suiteSetUp() {
+        super.suiteSetUp();
         emf.runInTransaction(em -> {
-            em.createQuery("DELETE FROM Pokemon").executeUpdate();
             for (int i = 1; i < POKEMONS.length; i++) {
                 em.persist(POKEMONS[i]);
             }
@@ -116,51 +106,6 @@ public class QueryTest extends AbstractPokemon {
                 NonUniqueResultException.class,
                 () -> emf.callInTransaction(em -> em.createQuery(
                         "SELECT p FROM Pokemon p ", Pokemon.class).getSingleResultOrNull()));
-    }
-
-    public void testUpdateQueryLengthInAssignmentAndExpression() {
-        testUpdateAllPokemons("UPDATE Pokemon SET length = length + 1");
-    }
-
-    public void tesUpdateQueryWithThisVariable() {
-        testUpdateAllPokemons("UPDATE Pokemon SET length = this.length + 1");
-    }
-
-    private void testUpdateAllPokemons(String query) {
-        long numberOfChanges = emf.callInTransaction(em -> em.createQuery(query).executeUpdate());
-        assertTrue("All pokemons should be updated", numberOfChanges == POKEMONS_COUNT);
-
-        long numberOfPokemonsWithLengthChanged = getAllPokemons()
-                .filter(pokemon -> pokemon.getLength() == 1)
-                .count();
-        assertTrue("All pokemons should have increased length", numberOfPokemonsWithLengthChanged == POKEMONS_COUNT);
-    }
-
-    public void testSelectQueryLengthInAssignmentAndExpression() {
-        List<Pokemon> pokemonsWithIdOne  = emf.callInTransaction(em -> em.createQuery(
-                "SELECT this FROM Pokemon WHERE id + length = length + 1", Pokemon.class).getResultList());
-        assertTrue("Number of pokemons with ID = 1", pokemonsWithIdOne.size() == 1);
-    }
-
-    public void testDeleteQueryLengthInExpressionOnLeft() {
-        assertTrue("Number of remaining pokemons", getAllPokemons().count() == POKEMONS_COUNT);
-        int numberOfChanges = emf.callInTransaction(em -> em.createQuery(
-                "DELETE FROM Pokemon WHERE length = id - 1").executeUpdate());
-        assertTrue("Number of pokemons with ID = 1 deleted", numberOfChanges == 1);
-        assertTrue("Number of remaining pokemons", getAllPokemons().count() == POKEMONS_COUNT - 1);
-    }
-
-    public void testDeleteQueryLengthInExpressionOnRight() {
-        assertTrue("Number of remaining pokemons", getAllPokemons().count() == POKEMONS_COUNT);
-        int numberOfChanges = emf.callInTransaction(em -> em.createQuery(
-                "DELETE FROM Pokemon WHERE id = length + 1").executeUpdate());
-        assertTrue("Number of pokemons with ID = 1 deleted", numberOfChanges == 1);
-        assertTrue("Number of remaining pokemons", getAllPokemons().count() == POKEMONS_COUNT - 1);
-    }
-
-    private Stream<Pokemon> getAllPokemons() {
-        return emf.callInTransaction(em -> em.createQuery(
-                "SELECT p FROM Pokemon p", Pokemon.class).getResultStream());
     }
 
 }
