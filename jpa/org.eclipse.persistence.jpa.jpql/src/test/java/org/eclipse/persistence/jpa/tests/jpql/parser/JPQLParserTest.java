@@ -3816,7 +3816,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             assertEquals(toString(),                       rangeVariableDeclaration.toParsedText());
             assertEquals(hasAs,                            rangeVariableDeclaration.hasAs());
             assertEquals(hasSpaceAfterAs,                  rangeVariableDeclaration.hasSpaceAfterAs());
-//            assertEquals(!identificationVariable.isNull(), rangeVariableDeclaration.hasIdentificationVariable());
+            assertEquals(!identificationVariable.isNull(), rangeVariableDeclaration.hasIdentificationVariable());
             assertEquals(hasSpaceAfterAbstractSchemaName,  rangeVariableDeclaration.hasSpaceAfterRootObject());
 
             abstractSchemaName.test(rangeVariableDeclaration.getRootObject());

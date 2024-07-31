@@ -16,6 +16,7 @@
 //
 package org.eclipse.persistence.jpa.jpql.parser;
 
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -786,6 +787,9 @@ public abstract class AbstractExpression implements Expression {
                     if (factory != null) {
                         child = factory.buildExpression(this, wordParser, word, queryBNF, expression, tolerant);
 
+                        // if an invalid expression came from the factory, ignore it and try fallback
+                        child = revertExpressionIfInvalid(child, wordParser, word);
+
                         if (child != null) {
 
                             // The new expression is a child of the previous expression,
@@ -1005,6 +1009,14 @@ public abstract class AbstractExpression implements Expression {
         );
     }
 
+    static AbstractExpression revertExpressionIfInvalid(AbstractExpression expression, WordParser wordParser, String word) {
+        if (expression != null && expression.isInvalid()) {
+            wordParser.moveBackward(word);
+            return null;
+        }
+        return expression;
+    }
+
     /**
      * Right away parses the text by retrieving the {@link ExpressionFactory} for the first word that
      * is extracted from {@link WordParser} at the current location.
@@ -1157,7 +1169,7 @@ public abstract class AbstractExpression implements Expression {
      *
      * @return True if this expression is invalid and should be discarded, otherwise false. By default returns false, should be overriden if expression should be reverted.
      */
-    protected boolean shouldBeReverted() {
+    protected boolean isInvalid() {
         return false;
     }
 

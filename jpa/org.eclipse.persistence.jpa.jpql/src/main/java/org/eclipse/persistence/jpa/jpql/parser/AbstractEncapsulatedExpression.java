@@ -318,7 +318,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
      * @return Should be reverted and parsed again as a different expression or should be accepted as parsed expression
      */
     @Override
-    protected boolean shouldBeReverted() {
+    protected boolean isInvalid() {
         return getRoot().isJakartaData() && !hasLeftParenthesis();
     }
 

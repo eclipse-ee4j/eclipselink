@@ -136,7 +136,7 @@ public final class NumericLiteral extends AbstractExpression {
     }
 
     @Override
-    protected boolean shouldBeReverted() {
+    protected boolean isInvalid() {
         return !hasValidValue();
     }
 

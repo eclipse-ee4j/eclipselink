@@ -52,7 +52,7 @@ public final class LengthExpressionFactory extends ExpressionFactory {
 
         expression = new LengthExpression(parent);
         expression.parse(wordParser, tolerant);
-        expression = revertExpressionIfInvalid(expression, wordParser, word);
         return expression;
     }
+
 }
