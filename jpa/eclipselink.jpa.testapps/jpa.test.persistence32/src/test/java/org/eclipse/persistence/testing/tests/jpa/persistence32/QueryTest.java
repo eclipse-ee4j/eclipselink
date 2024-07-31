@@ -12,10 +12,6 @@
  */
 package org.eclipse.persistence.testing.tests.jpa.persistence32;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.util.List;
 
 import jakarta.persistence.NoResultException;
@@ -132,34 +128,34 @@ public class QueryTest extends AbstractPokemon {
 
     private void testUpdateAllPokemons(String query) {
         long numberOfChanges = emf.callInTransaction(em -> em.createQuery(query).executeUpdate());
-        assertThat("All pokemons should be updated", numberOfChanges, is(equalTo(POKEMONS_COUNT)));
+        assertTrue("All pokemons should be updated", numberOfChanges == POKEMONS_COUNT);
 
         long numberOfPokemonsWithLengthChanged = getAllPokemons()
                 .filter(pokemon -> pokemon.getLength() == 1)
                 .count();
-        assertThat("All pokemons should have increased length", numberOfPokemonsWithLengthChanged, is(equalTo(POKEMONS_COUNT)));
+        assertTrue("All pokemons should have increased length", numberOfPokemonsWithLengthChanged == POKEMONS_COUNT);
     }
 
     public void testSelectQueryLengthInAssignmentAndExpression() {
         List<Pokemon> pokemonsWithIdOne  = emf.callInTransaction(em -> em.createQuery(
                 "SELECT this FROM Pokemon WHERE id + length = length + 1", Pokemon.class).getResultList());
-        assertThat("Number of pokemons with ID = 1", pokemonsWithIdOne.size(), is(equalTo(1)));
+        assertTrue("Number of pokemons with ID = 1", pokemonsWithIdOne.size() == 1);
     }
 
     public void testDeleteQueryLengthInExpressionOnLeft() {
-        assertThat("Number of remaining pokemons", getAllPokemons().count(), is(equalTo(POKEMONS_COUNT)));
+        assertTrue("Number of remaining pokemons", getAllPokemons().count() == POKEMONS_COUNT);
         int numberOfChanges = emf.callInTransaction(em -> em.createQuery(
                 "DELETE FROM Pokemon WHERE length = id - 1").executeUpdate());
-        assertThat("Number of pokemons with ID = 1 deleted", numberOfChanges, is(equalTo(1)));
-        assertThat("Number of remaining pokemons", getAllPokemons().count(), is(equalTo(POKEMONS_COUNT - 1)));
+        assertTrue("Number of pokemons with ID = 1 deleted", numberOfChanges == 1);
+        assertTrue("Number of remaining pokemons", getAllPokemons().count() == POKEMONS_COUNT - 1);
     }
 
     public void testDeleteQueryLengthInExpressionOnRight() {
-        assertThat("Number of remaining pokemons", getAllPokemons().count(), is(equalTo(POKEMONS_COUNT)));
+        assertTrue("Number of remaining pokemons", getAllPokemons().count() == POKEMONS_COUNT);
         int numberOfChanges = emf.callInTransaction(em -> em.createQuery(
                 "DELETE FROM Pokemon WHERE id = length + 1").executeUpdate());
-        assertThat("Number of pokemons with ID = 1 deleted", numberOfChanges, is(equalTo(1)));
-        assertThat("Number of remaining pokemons", getAllPokemons().count(), is(equalTo(POKEMONS_COUNT - 1)));
+        assertTrue("Number of pokemons with ID = 1 deleted", numberOfChanges == 1);
+        assertTrue("Number of remaining pokemons", getAllPokemons().count() == POKEMONS_COUNT - 1);
     }
 
     private Stream<Pokemon> getAllPokemons() {
