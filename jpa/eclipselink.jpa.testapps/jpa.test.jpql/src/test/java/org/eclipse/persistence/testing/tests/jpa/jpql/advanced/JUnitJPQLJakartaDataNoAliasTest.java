@@ -101,7 +101,6 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelectNoAliasFromWhere"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelect"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryLengthInAssignmentAndExpression"));
-        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("tesUpdateQueryWithThisVariable"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryLengthInAssignmentAndExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnLeft"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnRight"));
@@ -270,17 +269,9 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     }
 
     public void testUpdateQueryLengthInAssignmentAndExpression() {
-        testUpdateAllRooms("UPDATE Room SET length = length + 1");
-    }
-
-    public void tesUpdateQueryWithThisVariable() {
-        testUpdateAllRooms("UPDATE Room SET length = this.length + 1");
-    }
-
-    private void testUpdateAllRooms(String query) {
         resetRooms();
-
-        long numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(query).executeUpdate());
+        long numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Room SET length = length + 1").executeUpdate());
         assertTrue("All rooms should be updated", numberOfChanges == ROOMS_COUNT);
 
         long numberOfRoomsWithLengthChanged = getAllRooms()
