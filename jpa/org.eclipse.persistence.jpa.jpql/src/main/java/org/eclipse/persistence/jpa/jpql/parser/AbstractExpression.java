@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +15,7 @@
 //     Oracle - initial API and implementation
 //
 package org.eclipse.persistence.jpa.jpql.parser;
+
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -517,6 +519,22 @@ public abstract class AbstractExpression implements Expression {
     }
 
     /**
+     * Returns closest nested expression that encapsulates this expression,
+     * or the root expression if not inside a nested expression.
+     *
+     * @return  Parent expression
+     */
+    public final ParentExpression getParentExpression() {
+        if (this instanceof ParentExpression parentExpression) {
+            return parentExpression;
+        } else if (parent == null) {
+            return null;
+        } else {
+            return parent.getParentExpression();
+        }
+    }
+
+    /**
      * Returns the encapsulated text of this {@link AbstractExpression}, which can be used in various
      * ways, it can be a keyword, a literal, etc.
      *
@@ -769,6 +787,9 @@ public abstract class AbstractExpression implements Expression {
                     if (factory != null) {
                         child = factory.buildExpression(this, wordParser, word, queryBNF, expression, tolerant);
 
+                        // if an invalid expression came from the factory, ignore it and try fallback
+                        child = revertExpressionIfInvalid(child, wordParser, word);
+
                         if (child != null) {
 
                             // The new expression is a child of the previous expression,
@@ -988,6 +1009,14 @@ public abstract class AbstractExpression implements Expression {
         );
     }
 
+    static AbstractExpression revertExpressionIfInvalid(AbstractExpression expression, WordParser wordParser, String word) {
+        if (expression != null && expression.isInvalid()) {
+            wordParser.moveBackward(word);
+            return null;
+        }
+        return expression;
+    }
+
     /**
      * Right away parses the text by retrieving the {@link ExpressionFactory} for the first word that
      * is extracted from {@link WordParser} at the current location.
@@ -1132,6 +1161,17 @@ public abstract class AbstractExpression implements Expression {
      * JPQL identifiers
      */
     protected abstract void toParsedText(StringBuilder writer, boolean actual);
+
+    /**
+     * Whether this expression is not valid and should be discarded. If it returns true,
+     * the parser will be reverted to the state before this expression was parsed
+     * and it will attempt to parse a different expression.
+     *
+     * @return True if this expression is invalid and should be discarded, otherwise false. By default returns false, should be overriden if expression should be reverted.
+     */
+    protected boolean isInvalid() {
+        return false;
+    }
 
     @Override
     public final String toString() {

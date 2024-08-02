@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -306,4 +307,19 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
      * like content assist
      */
     protected abstract void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual);
+
+    /**
+     * Should be reverted if Jakarta Data mode is enabled and the expression doesn't contain parenthesis.
+     * For example, the query {@code delete from Box where length = 1} contains function name {@code length}.
+     * The function {@code length} expects parameters but there are not parameters in the query.
+     * Then {@code length} is not a function but a state field with an implicit identification variable this, ie.
+     * the query is equivalent to {@code delete from Box where this.length = 1}.
+     *
+     * @return Should be reverted and parsed again as a different expression or should be accepted as parsed expression
+     */
+    @Override
+    protected boolean isInvalid() {
+        return getRoot().isJakartaData() && !hasLeftParenthesis();
+    }
+
 }

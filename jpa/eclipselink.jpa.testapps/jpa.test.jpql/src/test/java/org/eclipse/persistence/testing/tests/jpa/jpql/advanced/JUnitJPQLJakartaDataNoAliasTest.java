@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +29,11 @@ import org.junit.Assert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.stream.Stream;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Room;
 
 /**
  * <p>
@@ -45,6 +51,14 @@ import java.math.BigInteger;
  */
 public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     private static final String STRING_DATA = "A String";
+    private static final Room[] ROOMS = new Room[] {
+            null, // Skip array index 0
+            aRoom(1, 1, 1, 1),
+            aRoom(2, 1, 1, 1),
+            aRoom(3, 1, 1, 1),
+            aRoom(4, 1, 1, 1)
+    };
+    private static final long ROOMS_COUNT = ROOMS.length -1; // we ignore the first one with index 0
 
     private static int wrapperId;
 
@@ -86,6 +100,10 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasFromWhereAndUPPER"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelectNoAliasFromWhere"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelect"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryLengthInAssignmentAndExpression"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryLengthInAssignmentAndExpression"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnLeft"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnRight"));
         return suite;
     }
 
@@ -95,10 +113,13 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     public void testSetup() {
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
-        //set the session for the comparer to use
-        comparer.setSession(getPersistenceUnitServerSession());
+        final ServerSession session = getPersistenceUnitServerSession();
 
-        new DataTypesTableCreator().replaceTables(getPersistenceUnitServerSession());
+        //set the session for the comparer to use
+        comparer.setSession(session);
+
+        new DataTypesTableCreator().replaceTables(session);
+        new AdvancedTableCreator().replaceTables(session);
         clearCache();
         EntityManager em = createEntityManager();
         WrapperTypes wt;
@@ -245,5 +266,64 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
         WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
         Assert.assertTrue("GeneratedSelectNoAliasFromWhere Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
+    }
+
+    public void testUpdateQueryLengthInAssignmentAndExpression() {
+        resetRooms();
+        long numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Room SET length = length + 1").executeUpdate());
+        assertTrue("All rooms should be updated", numberOfChanges == ROOMS_COUNT);
+
+        long numberOfRoomsWithLengthChanged = getAllRooms()
+                .filter(room -> room.getLength() == 2)
+                .count();
+        assertTrue("All rooms should have increased length", numberOfRoomsWithLengthChanged == ROOMS_COUNT);
+    }
+
+    public void testSelectQueryLengthInAssignmentAndExpression() {
+        List<Room> roomsWithIdOne  = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "SELECT this FROM Room WHERE id + length = length + 1", Room.class).getResultList());
+        assertTrue("Number of rooms with ID = 1", roomsWithIdOne.size() == 1);
+    }
+
+    public void testDeleteQueryLengthInExpressionOnLeft() {
+        resetRooms();
+        assertTrue("Number of remaining rooms", getAllRooms().count() == ROOMS_COUNT);
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "DELETE FROM Room WHERE length = id - 1").executeUpdate());
+        long allRoomsCount = getAllRooms().count();
+        assertTrue("Number of rooms with ID = 1 deleted", numberOfChanges == 1);
+        assertTrue("Number of remaining rooms", allRoomsCount == ROOMS_COUNT - 1);
+    }
+
+    public void testDeleteQueryLengthInExpressionOnRight() {
+        resetRooms();
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "DELETE FROM Room WHERE id = length + 1").executeUpdate());
+        assertTrue("Number of rooms with ID = 1 deleted", numberOfChanges == 1);
+        assertTrue("Number of remaining rooms", getAllRooms().count() == ROOMS_COUNT - 1);
+    }
+
+    private Stream<Room> getAllRooms() {
+        return getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "SELECT r FROM Room r", Room.class).getResultStream());
+    }
+
+    private static Room aRoom(int id, int width, int length, int height) {
+        Room room = new Room();
+        room.setId(id);
+        room.setWidth(width);
+        room.setLength(length);
+        room.setHeight(height);
+        return room;
+    }
+
+    private void resetRooms() {
+        getEntityManagerFactory().runInTransaction(em -> {
+            em.createQuery("DELETE FROM Room").executeUpdate();
+            for (int i = 1; i < ROOMS.length; i++) {
+                em.persist(ROOMS[i]);
+            }
+        });
     }
 }

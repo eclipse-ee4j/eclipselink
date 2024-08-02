@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +42,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class JPQLExpression extends AbstractExpression {
+public final class JPQLExpression extends AbstractExpression implements ParentExpression {
 
     /**
      * The JPQL grammar that defines how to parse a JPQL query.
@@ -88,9 +89,6 @@ public final class JPQLExpression extends AbstractExpression {
      */
     private boolean jakartaData = false;
 
-    /**
-     * Automatically add missing "this" prefixes into where field variables if it doesn't exist.
-     */
     private boolean generateThisPrefix = false;
 
     /**
@@ -258,10 +256,12 @@ public final class JPQLExpression extends AbstractExpression {
         return getQueryBNF(queryBNFId);
     }
 
+    @Override
     public boolean isGenerateThisPrefix() {
         return generateThisPrefix;
     }
 
+    @Override
     public void setGenerateThisPrefix(boolean generateThisPrefix) {
         this.generateThisPrefix = generateThisPrefix;
     }
