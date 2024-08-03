@@ -104,6 +104,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelect"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryLengthInAssignmentAndExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryLengthInAssignmentAndExpression"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateImplicitVariableInArithmeticExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnLeft"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnRight"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("tesUpdateQueryWithThisVariable"));
@@ -277,9 +278,22 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     }
 
     public void testSelectQueryLengthInAssignmentAndExpression() {
+        resetRooms();
         List<Room> roomsWithIdOne = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "SELECT this FROM Room WHERE id + length = length + 1", Room.class).getResultList());
         assertTrue("Number of rooms with ID = 1", roomsWithIdOne.size() == 1);
+    }
+
+    public void testUpdateImplicitVariableInArithmeticExpression() {
+        resetRooms();
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Room SET width = width * :widthMultiplicator WHERE id = :id")
+                .setParameter("widthMultiplicator", 5)
+                .setParameter("id", 1)
+                .executeUpdate());
+        assertTrue("Number of rooms with ID = 1 updated", numberOfChanges == 1);
+        int roomWidth = findRoomById(1).getWidth();
+        assertTrue("Room ID = 1 has width of ", roomWidth == 5);
     }
 
     public void testDeleteQueryLengthInExpressionOnLeft() {
