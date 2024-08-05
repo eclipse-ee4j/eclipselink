@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2006, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +27,8 @@
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
 //     06/02/2023: Radek Felcman
 //       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
+//     07/24/2024: Ondro Mihalyi
+//       - Issues 2197, 2198, and 2199: JPQL query incorrectly parsed when "this" variable used explicitly in path expressions
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -2471,7 +2474,7 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
 
         private void resolvePath(AbstractPathExpression expression) {
 
-            for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = length; index < count; index++) {
+            for (int index = expression.hasImplicitIdentificationVariable() ? 0 : 1, count = length; index < count; index++) {
 
                 String path = expression.getPath(index);
                 DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(path);

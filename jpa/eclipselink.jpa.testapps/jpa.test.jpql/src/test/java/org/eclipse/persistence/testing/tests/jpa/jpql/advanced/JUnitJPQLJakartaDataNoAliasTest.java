@@ -50,15 +50,17 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Room;
  * @see JUnitDomainObjectComparer
  */
 public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
+
     private static final String STRING_DATA = "A String";
-    private static final Room[] ROOMS = new Room[] {
-            null, // Skip array index 0
-            aRoom(1, 1, 1, 1),
-            aRoom(2, 1, 1, 1),
-            aRoom(3, 1, 1, 1),
-            aRoom(4, 1, 1, 1)
+    private static final String STRING_DATA_LIKE_EXPRESSION = "A%"; // should match STRING_DATA
+    private static final Room[] ROOMS = new Room[]{
+        null, // Skip array index 0
+        aRoom(1, 1, 1, 1),
+        aRoom(2, 1, 1, 1),
+        aRoom(3, 1, 1, 1),
+        aRoom(4, 1, 1, 1)
     };
-    private static final long ROOMS_COUNT = ROOMS.length -1; // we ignore the first one with index 0
+    private static final long ROOMS_COUNT = ROOMS.length - 1; // we ignore the first one with index 0
 
     private static int wrapperId;
 
@@ -102,8 +104,13 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelect"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryLengthInAssignmentAndExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryLengthInAssignmentAndExpression"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateImplicitVariableInArithmeticExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnLeft"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnRight"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("tesUpdateQueryWithThisVariable"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testThisVariableInPathExpressionUpdate"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testThisVariableInPathExpressionDelete"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testThisVariableInLikeExpressionDelete"));
         return suite;
     }
 
@@ -121,17 +128,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         new DataTypesTableCreator().replaceTables(session);
         new AdvancedTableCreator().replaceTables(session);
         clearCache();
-        EntityManager em = createEntityManager();
-        WrapperTypes wt;
-
-        beginTransaction(em);
-        wt = new WrapperTypes(BigDecimal.ZERO, BigInteger.ZERO, Boolean.FALSE,
-                Byte.valueOf("0"), 'A', Short.valueOf("0"),
-                0, 0L, 0.0f, 0.0, STRING_DATA);
-        em.persist(wt);
-        wrapperId = wt.getId();
-        commitTransaction(em);
-        closeEntityManager(em);
+        resetWrapperTypes();
     }
 
     public void testNoAlias() {
@@ -173,15 +170,15 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     }
 
     public void testCorrectAliases() {
-          EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager();
 
-          WrapperTypes wrapperTypes = (WrapperTypes) em.createQuery("SELECT this FROM WrapperTypes this").getResultList().get(0);
-          clearCache();
-          ReadObjectQuery tlQuery = new ReadObjectQuery(WrapperTypes.class);
-          tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(wrapperId));
+        WrapperTypes wrapperTypes = (WrapperTypes) em.createQuery("SELECT this FROM WrapperTypes this").getResultList().get(0);
+        clearCache();
+        ReadObjectQuery tlQuery = new ReadObjectQuery(WrapperTypes.class);
+        tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(wrapperId));
 
-          WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
-          Assert.assertTrue("CorrectAliases Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
+        WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
+        Assert.assertTrue("CorrectAliases Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
     }
 
     public void testNoAliasWhere() {
@@ -281,9 +278,22 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     }
 
     public void testSelectQueryLengthInAssignmentAndExpression() {
-        List<Room> roomsWithIdOne  = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+        resetRooms();
+        List<Room> roomsWithIdOne = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "SELECT this FROM Room WHERE id + length = length + 1", Room.class).getResultList());
         assertTrue("Number of rooms with ID = 1", roomsWithIdOne.size() == 1);
+    }
+
+    public void testUpdateImplicitVariableInArithmeticExpression() {
+        resetRooms();
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Room SET width = width * :widthMultiplicator WHERE id = :id")
+                .setParameter("widthMultiplicator", 5)
+                .setParameter("id", 1)
+                .executeUpdate());
+        assertTrue("Number of rooms with ID = 1 updated", numberOfChanges == 1);
+        int roomWidth = findRoomById(1).getWidth();
+        assertTrue("Room ID = 1 has width of ", roomWidth == 5);
     }
 
     public void testDeleteQueryLengthInExpressionOnLeft() {
@@ -304,9 +314,61 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         assertTrue("Number of remaining rooms", getAllRooms().count() == ROOMS_COUNT - 1);
     }
 
+    public void tesUpdateQueryWithThisVariable() {
+        resetRooms();
+        long numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Room SET length = this.length + 1").executeUpdate());
+        assertTrue("All rooms should be updated", numberOfChanges == ROOMS_COUNT);
+
+        long numberOfRoomsWithLengthChanged = getAllRooms()
+                .filter(room -> room.getLength() == 2)
+                .count();
+        assertTrue("All rooms should have increased length", numberOfRoomsWithLengthChanged == ROOMS_COUNT);
+    }
+
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2197
+    public void testThisVariableInPathExpressionUpdate() {
+        resetRooms();
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Room SET this.length = 10 WHERE this.id = 1").executeUpdate());
+        assertTrue("Number of rooms with ID = 1 modified is " + numberOfChanges, numberOfChanges == 1);
+        int length = findRoomById(1).getLength();
+        assertTrue("Length of room with ID = 1 is " + length, length == 10);
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2198
+    public void testThisVariableInPathExpressionDelete() {
+        resetRooms();
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "DELETE FROM Room WHERE this.length < 10").executeUpdate());
+        assertTrue("Number of rooms deleted is " + numberOfChanges, numberOfChanges == ROOMS_COUNT);
+        long numberOfRemainingRooms = getAllRooms().count();
+        assertTrue("Number of remaining rooms is " + numberOfRemainingRooms, numberOfRemainingRooms == 0);
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2199
+    public void testThisVariableInLikeExpressionDelete() {
+        try {
+            int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                    "DELETE FROM WrapperTypes WHERE this.stringData LIKE '" + STRING_DATA_LIKE_EXPRESSION + "'").executeUpdate());
+            assertTrue("Number of wrapper types deleted", numberOfChanges == 1);
+                long remainingTypes = getAllWrapperTypes().count();
+            assertTrue("Number of remaining wrapper types is " + remainingTypes, remainingTypes == 0);
+        } finally {
+            resetWrapperTypes();
+        }
+    }
+
     private Stream<Room> getAllRooms() {
         return getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "SELECT r FROM Room r", Room.class).getResultStream());
+    }
+
+    private Room findRoomById(int i) {
+        return getEntityManagerFactory().callInTransaction(em -> {
+            return em.find(Room.class, 1);
+        });
     }
 
     private static Room aRoom(int id, int width, int length, int height) {
@@ -326,4 +388,21 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
             }
         });
     }
+
+    private Stream<WrapperTypes> getAllWrapperTypes() {
+        return getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "SELECT wt FROM WrapperTypes wt", WrapperTypes.class).getResultStream());
+    }
+
+    private void resetWrapperTypes() {
+        getEntityManagerFactory().runInTransaction(em -> {
+            em.createQuery("DELETE FROM WrapperTypes").executeUpdate();
+            WrapperTypes wt = new WrapperTypes(BigDecimal.ZERO, BigInteger.ZERO, Boolean.FALSE,
+                    Byte.valueOf("0"), 'A', Short.valueOf("0"),
+                    0, 0L, 0.0f, 0.0, STRING_DATA);
+            em.persist(wt);
+            wrapperId = wt.getId();
+        });
+    }
+
 }
