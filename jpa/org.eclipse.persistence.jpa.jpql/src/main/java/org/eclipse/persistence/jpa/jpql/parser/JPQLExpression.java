@@ -18,6 +18,9 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.WordParser;
@@ -421,9 +424,81 @@ public final class JPQLExpression extends AbstractExpression implements ParentEx
     private CharSequence preParse(CharSequence jpqlFragment) {
         WordParser wordParser = new WordParser(jpqlFragment);
         wordParser.skipLeadingWhitespace();
+        // Check if the query is a FROM statement
         if (Expression.FROM.equalsIgnoreCase(wordParser.word())) {
             return Expression.SELECT + " " + Expression.THIS + " " + jpqlFragment;
         }
+        // Check if the query is a SELECT statement
+        if (Expression.SELECT.equalsIgnoreCase(wordParser.word())) {
+            // Extract the query string
+            String query = jpqlFragment.toString();
+            String selectClause = "SELECT ";
+            String fromClause = " FROM ";
+            int selectIndex = query.indexOf(selectClause);
+            int fromIndex = query.indexOf(fromClause, selectIndex);
+            if (fromIndex > selectIndex) {
+                String fields = query.substring(selectIndex + selectClause.length(), fromIndex).trim();
+                // If the fields already contain 'this', no need to modify
+                if (fields.contains("this")||fields.contains(".")) {
+                    return query;
+                }
+                // Check if the query contains an alias
+                if (containsAlias(query)) {
+                return query;
+                }
+                // Add 'this.' to each field, handling edge cases
+                String[] fieldArray = fields.split("\\s*,\\s*"); // Split on commas with optional spaces
+                StringBuilder modifiedFields = new StringBuilder();
+                for (String field : fieldArray) {
+                    if (modifiedFields.length() > 0) {
+                        modifiedFields.append(", ");
+                    }
+                    String trimmedField = field.trim();
+                    if (isPlainField(trimmedField)) {
+                        modifiedFields.append("this.").append(trimmedField);
+                    } else {
+                        modifiedFields.append(trimmedField);
+                    }
+                }
+                // Construct the final query
+                String finalQuery = selectClause + modifiedFields.toString() + query.substring(fromIndex);
+                return finalQuery;
+            }
+        }
         return jpqlFragment;
     }
+    // Helper method to determine if a field is a plain identifier
+    private boolean isPlainField(String field) {
+        // A plain field is one that does not contain functions or special characters
+        return !field.contains("(") && !field.contains(" ");
+    }
+    public static boolean containsAlias(String jpqlQuery) {
+        // Regular expression to match JPQL FROM clause and potential aliases
+        String fromClausePattern = "FROM\\s+([\\w\\.]+)\\s+(\\w+)";
+        // List of common JPQL keywords to exclude as aliases
+        String[] jpqlKeywords = {"WHERE", "GROUP BY", "ORDER BY", "HAVING", "JOIN"};
+        // Compile pattern and create matcher
+        Pattern pattern = Pattern.compile(fromClausePattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(jpqlQuery);
+        // Check if the query matches the pattern
+        if (matcher.find()) {
+            // Extract the table name and alias
+            String tableName = matcher.group(1);
+            String alias = matcher.group(2);
+            // Return true if alias is found
+             if (alias != null && !alias.trim().isEmpty()){
+             // Check if the alias is not a JPQL keyword
+            for (String keyword : jpqlKeywords) {
+                if (alias.equals(keyword)) {
+                    return false;
+                }
+            }
+            return true;
+            }
+        }
+        // Return false if no alias is found
+        return false;
+    }
 }
+
+
