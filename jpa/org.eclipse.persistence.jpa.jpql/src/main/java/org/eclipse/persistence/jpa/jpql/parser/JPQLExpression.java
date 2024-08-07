@@ -424,6 +424,72 @@ public final class JPQLExpression extends AbstractExpression implements ParentEx
         if (Expression.FROM.equalsIgnoreCase(wordParser.word())) {
             return Expression.SELECT + " " + Expression.THIS + " " + jpqlFragment;
         }
+        if(Expression.UPDATE.equalsIgnoreCase(wordParser.word())){
+            return convertUpdateStatement(jpqlFragment);
+        }
+        return jpqlFragment;
+    }
+    private CharSequence convertUpdateStatement(CharSequence jpqlFragment) {
+        /*This for the update queries which are coming from the Jakarta Data 
+         * For eg. UPDATE Coordinate SET x = :newX, y = y / :yDivisor WHERE id = :id
+         */
+        // Check if the jpqlFragment starts with "UPDATE "
+        if (jpqlFragment.toString().startsWith("UPDATE ")) {
+            String jpql = jpqlFragment.toString();
+            // Find the position of " SET " to split the query
+            int setIndex = jpql.indexOf(" SET ");
+            if (setIndex != -1) {
+                // Extract the parts of the query
+                String updateClause = jpql.substring(0, setIndex); // "UPDATE Coordinate"
+                String setClause = jpql.substring(setIndex); // " SET x = :newX, y = y / :yDivisor WHERE id = :id"
+                // Check if alias is already present in the updateClause
+                String[] updateParts = updateClause.split(" ");
+                if (updateParts.length > 2) {
+                    // Return if alias is already present
+                    return jpqlFragment;
+                }
+                // Extract entity name
+                String entityName = updateParts[1];
+                String alias = "c";
+                // Add alias 'c' to the entity in the UPDATE clause
+                String updateAlias = "UPDATE " + entityName + " " + alias;
+                // Split the setClause into SET and WHERE parts
+                String[] setParts = setClause.split(" WHERE ");
+                String setFields = setParts[0].replaceFirst(" SET ", "").trim();
+                String whereClause = setParts.length > 1 ? setParts[1].trim() : "";
+                // Extract field names used in the SET clause
+                String fieldPattern = "\\b([a-zA-Z0-9_]+)\\b\\s*(=|\\+=|-=|\\*=|/=|%=)";
+                java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(fieldPattern);
+                java.util.regex.Matcher matcher = pattern.matcher(setFields);
+                java.util.Set<String> fields = new java.util.HashSet<>();
+                while (matcher.find()) {
+                    fields.add(matcher.group(1));
+                }
+                // Replace field names with 'c.field' in setClause
+                for (String field : fields) {
+                    setFields = setFields.replaceAll("\\b" + field + "\\b", alias + "." + field);
+                }
+                // Correctly handle the WHERE clause
+                if (!whereClause.isEmpty()) {
+                    String whereFieldPattern = "\\b([a-zA-Z0-9_]+)\\b(?=\\s*[:=])";
+                    java.util.regex.Pattern wherePattern = java.util.regex.Pattern.compile(whereFieldPattern);
+                    java.util.regex.Matcher whereMatcher = wherePattern.matcher(whereClause);
+                    StringBuffer whereBuffer = new StringBuffer();
+                    while (whereMatcher.find()) {
+                        whereMatcher.appendReplacement(whereBuffer, alias + "." + whereMatcher.group(1));
+                    }
+                    whereMatcher.appendTail(whereBuffer);
+                    whereClause = whereBuffer.toString();
+                }
+                // Construct the final query
+                String finalQuery = updateAlias + " SET " + setFields;
+                if (!whereClause.isEmpty()) {
+                    finalQuery += " WHERE " + whereClause;
+                }
+                return finalQuery;
+            }
+        }
+        // Return the original jpqlFragment if it's not an update statement or cannot be parsed
         return jpqlFragment;
     }
 }
