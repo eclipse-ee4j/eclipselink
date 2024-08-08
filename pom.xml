@@ -120,7 +120,7 @@
         <build.type>SNAPSHOT</build.type>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
         <build.qualifier>v${maven.build.timestamp}</build.qualifier>
-        <bundle.version>${project.version}.${build.qualifier}</bundle.version>
+        <bundle.version>${release.version}.${build.qualifier}</bundle.version>
         <project.build.testReports.settings>test-report-settings/surefire-report.properties</project.build.testReports.settings>
         <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
         <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
@@ -1664,6 +1664,7 @@
                         <_noextraheaders>true</_noextraheaders>
                         <_noimportjava>true</_noimportjava>
                         <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
+                        <Bundle-Version>${bundle.version}</Bundle-Version>
                     </instructions>
                 </configuration>
                 <executions>
