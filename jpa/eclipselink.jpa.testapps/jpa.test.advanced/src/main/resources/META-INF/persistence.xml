@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,6 +72,20 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.logging.level" value="OFF"/>
+            <!-- Since we don't exclude unlisted classes here, we will       -->
+            <!-- eventually hit the multitenant entities which turn native   -->
+            <!-- sql queries off by default, so we need to be explicit here  -->
+            <!--  and turn them on                                           -->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="customizeAddTarget">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="OFF"/>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.AddTargetCustomizer"/>
             <!-- Since we don't exclude unlisted classes here, we will       -->
             <!-- eventually hit the multitenant entities which turn native   -->
             <!-- sql queries off by default, so we need to be explicit here  -->
