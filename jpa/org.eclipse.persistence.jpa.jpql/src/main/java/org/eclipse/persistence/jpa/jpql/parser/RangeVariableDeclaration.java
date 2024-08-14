@@ -1,6 +1,5 @@
 /*
  * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -276,16 +275,19 @@ public final class RangeVariableDeclaration extends AbstractExpression {
             hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
         }
 
-        if (tolerant) {
-            identificationVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
-            if (identificationVariable == null && this.getRoot().isJakartaData()) {
-                addMissingAlias(Expression.THIS);
+        // Special case when parsing the range variable declaration of an UPDATE clause that does
+        // not have an identification variable, e.g. "UPDATE DateTime SET date = CURRENT_DATE"
+        if (!wordParser.startsWithIdentifier(SET)) {
+            if (tolerant) {
+                identificationVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
+                if (identificationVariable == null && this.getRoot().isJakartaData()) {
+                    addMissingAlias(Expression.THIS);
+                }
             }
-        } else if (!wordParser.startsWithIdentifier(SET)) {
-            // We need to avoid the special valid case when parsing the range variable declaration of an UPDATE clause that does
-            // not have an identification variable, e.g. "UPDATE DateTime SET date = CURRENT_DATE"
-            identificationVariable = new IdentificationVariable(this, wordParser.word());
-            identificationVariable.parse(wordParser, tolerant);
+            else {
+                identificationVariable = new IdentificationVariable(this, wordParser.word());
+                identificationVariable.parse(wordParser, tolerant);
+            }
         }
     }
 
@@ -363,27 +365,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
      * @param aliasName Entity alias.
      */
     private void addMissingAlias(String aliasName) {
-        if (isMissingAliasInSelectFromClause()
-                || isMissingAliasInUpdateClause()
-                || isMissingAliasInDeleteFromClause()) {
+        if (this.getParent() instanceof IdentificationVariableDeclaration identificationVariableDeclaration &&
+                identificationVariableDeclaration.getParent() instanceof FromClause &&
+                this.getIdentificationVariable() instanceof NullExpression) {
             this.setVirtualIdentificationVariable(aliasName);
-            this.getParentExpression().setGenerateThisPrefix(true);
+            this.getRoot().setGenerateThisPrefix(true);
         }
-    }
-
-    private boolean isMissingAliasInSelectFromClause() {
-        return this.getParent() instanceof IdentificationVariableDeclaration identificationVariableDeclaration
-                && identificationVariableDeclaration.getParent() instanceof FromClause
-                && this.getIdentificationVariable() instanceof NullExpression;
-    }
-
-    private boolean isMissingAliasInUpdateClause() {
-        return this.getParent() instanceof UpdateClause
-                && this.getIdentificationVariable() instanceof NullExpression;
-    }
-
-    private boolean isMissingAliasInDeleteFromClause() {
-        return this.getParent() instanceof DeleteClause deleteClause
-                && this.getIdentificationVariable() instanceof NullExpression;
     }
 }

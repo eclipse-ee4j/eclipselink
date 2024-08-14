@@ -20,8 +20,11 @@ import jakarta.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Room;
 import org.eclipse.persistence.testing.models.jpa.datatypes.DataTypesTableCreator;
 import org.eclipse.persistence.testing.models.jpa.datatypes.WrapperTypes;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
@@ -29,11 +32,7 @@ import org.junit.Assert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.stream.Stream;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa.advanced.Room;
 
 /**
  * <p>
@@ -53,14 +52,14 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     private static final String STRING_DATA = "A String";
     private static final String STRING_DATA_LIKE_EXPRESSION = "A%"; // should match STRING_DATA
-    private static final Room[] ROOMS = new Room[]{
-        null, // Skip array index 0
-        aRoom(1, 1, 1, 1),
-        aRoom(2, 1, 1, 1),
-        aRoom(3, 1, 1, 1),
-        aRoom(4, 1, 1, 1)
+    private static final Room[] ROOMS = new Room[] {
+            null, // Skip array index 0
+            aRoom(1, 1, 1, 1),
+            aRoom(2, 1, 1, 1),
+            aRoom(3, 1, 1, 1),
+            aRoom(4, 1, 1, 1)
     };
-    private static final long ROOMS_COUNT = ROOMS.length - 1; // we ignore the first one with index 0
+    private static final long ROOMS_COUNT = ROOMS.length -1; // we ignore the first one with index 0
 
     private static int wrapperId;
 
@@ -102,11 +101,6 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasFromWhereAndUPPER"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelectNoAliasFromWhere"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelect"));
-        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryLengthInAssignmentAndExpression"));
-        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryLengthInAssignmentAndExpression"));
-        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateImplicitVariableInArithmeticExpression"));
-        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnLeft"));
-        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnRight"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("tesUpdateQueryWithThisVariable"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testThisVariableInPathExpressionUpdate"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testThisVariableInPathExpressionDelete"));
@@ -263,55 +257,6 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
         WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
         Assert.assertTrue("GeneratedSelectNoAliasFromWhere Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
-    }
-
-    public void testUpdateQueryLengthInAssignmentAndExpression() {
-        resetRooms();
-        long numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
-                "UPDATE Room SET length = length + 1").executeUpdate());
-        assertTrue("All rooms should be updated", numberOfChanges == ROOMS_COUNT);
-
-        long numberOfRoomsWithLengthChanged = getAllRooms()
-                .filter(room -> room.getLength() == 2)
-                .count();
-        assertTrue("All rooms should have increased length", numberOfRoomsWithLengthChanged == ROOMS_COUNT);
-    }
-
-    public void testSelectQueryLengthInAssignmentAndExpression() {
-        resetRooms();
-        List<Room> roomsWithIdOne = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
-                "SELECT this FROM Room WHERE id + length = length + 1", Room.class).getResultList());
-        assertTrue("Number of rooms with ID = 1", roomsWithIdOne.size() == 1);
-    }
-
-    public void testUpdateImplicitVariableInArithmeticExpression() {
-        resetRooms();
-        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
-                "UPDATE Room SET width = width * :widthMultiplicator WHERE id = :id")
-                .setParameter("widthMultiplicator", 5)
-                .setParameter("id", 1)
-                .executeUpdate());
-        assertTrue("Number of rooms with ID = 1 updated", numberOfChanges == 1);
-        int roomWidth = findRoomById(1).getWidth();
-        assertTrue("Room ID = 1 has width of ", roomWidth == 5);
-    }
-
-    public void testDeleteQueryLengthInExpressionOnLeft() {
-        resetRooms();
-        assertTrue("Number of remaining rooms", getAllRooms().count() == ROOMS_COUNT);
-        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
-                "DELETE FROM Room WHERE length = id - 1").executeUpdate());
-        long allRoomsCount = getAllRooms().count();
-        assertTrue("Number of rooms with ID = 1 deleted", numberOfChanges == 1);
-        assertTrue("Number of remaining rooms", allRoomsCount == ROOMS_COUNT - 1);
-    }
-
-    public void testDeleteQueryLengthInExpressionOnRight() {
-        resetRooms();
-        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
-                "DELETE FROM Room WHERE id = length + 1").executeUpdate());
-        assertTrue("Number of rooms with ID = 1 deleted", numberOfChanges == 1);
-        assertTrue("Number of remaining rooms", getAllRooms().count() == ROOMS_COUNT - 1);
     }
 
     public void tesUpdateQueryWithThisVariable() {

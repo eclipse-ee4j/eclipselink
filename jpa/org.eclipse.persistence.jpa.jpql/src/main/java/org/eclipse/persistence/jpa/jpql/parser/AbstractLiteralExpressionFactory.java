@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
-*
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0,
@@ -65,64 +64,67 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
                                                  WordParser wordParser,
                                                  String word,
                                                  JPQLQueryBNF queryBNF,
-                                                 final AbstractExpression expression,
+                                                 AbstractExpression expression,
                                                  boolean tolerant) {
 
         switch (wordParser.getWordType()) {
 
             case NUMERIC_LITERAL: {
-                NumericLiteral numericLiteral = new NumericLiteral(parent, word);
-                numericLiteral.parse(wordParser, tolerant);
-                return numericLiteral;
+                expression = new NumericLiteral(parent, word);
+                expression.parse(wordParser, tolerant);
+                return expression;
             }
 
             case STRING_LITERAL: {
-                StringLiteral stringLiteral = new StringLiteral(parent, word);
-                stringLiteral.parse(wordParser, tolerant);
-                return stringLiteral;
+                expression = new StringLiteral(parent, word);
+                expression.parse(wordParser, tolerant);
+                return expression;
             }
 
             case INPUT_PARAMETER: {
-                InputParameter inputParameter = new InputParameter(parent, word);
-                inputParameter.parse(wordParser, tolerant);
-                return inputParameter;
+                expression = new InputParameter(parent, word);
+                expression.parse(wordParser, tolerant);
+                return expression;
+            }
+        }
+
+        // Path expression
+        if (word.indexOf(AbstractExpression.DOT) > -1) {
+            char character = word.charAt(0);
+
+            if ((expression != null) && (character == AbstractExpression.DOT)) {
+                if (isCollection()) {
+                    expression = new CollectionValuedPathExpression(parent, expression, word);
+                }
+                else {
+                    expression = new StateFieldPathExpression(parent, expression, word);
+                }
+            }
+            else {
+                if (isCollection()) {
+                    expression = new CollectionValuedPathExpression(parent, word);
+                }
+                else {
+                    expression = new StateFieldPathExpression(parent, word);
+                }
             }
 
-            default: {
-                // Path expression
-                if (word.indexOf(AbstractExpression.DOT) > -1) {
-                    char character = word.charAt(0);
-                    AbstractPathExpression pathExpression;
+            expression.parse(wordParser, tolerant);
+            return expression;
+        }
 
-                    if ((expression != null) && (character == AbstractExpression.DOT)) {
-                        if (isCollection()) {
-                            pathExpression = new CollectionValuedPathExpression(parent, expression, word);
-                        } else {
-                            pathExpression = new StateFieldPathExpression(parent, expression, word);
-                        }
-                    } else {
-                        if (isCollection()) {
-                            pathExpression = new CollectionValuedPathExpression(parent, word);
-                        } else {
-                            pathExpression = new StateFieldPathExpression(parent, word);
-                        }
-                    }
+        // Checks for invalid JPQL queries
+        ExpressionRegistry registry = getExpressionRegistry();
 
-                    pathExpression.parse(wordParser, tolerant);
-                    return pathExpression;
+        if (tolerant && registry.isIdentifier(word)) {
+            ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
+            // TODO: Before creating the expression, check to make sure it's not a function: 'identifier('
+            if (factory != null) {
+                expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+
+                if (expression != null) {
+                    return new BadExpression(parent, expression);
                 }
-
-                // Checks for invalid JPQL queries
-
-                if (tolerant && getExpressionRegistry().isIdentifier(word)) {
-                    // Before creating the expression, check to make sure it's not a function: 'identifier('
-                    AbstractExpression identifierExpression;
-                    identifierExpression = getIdentifierExpression(parent, wordParser, word, queryBNF, expression, tolerant);
-                    if (identifierExpression != null) {
-                        return new BadExpression(parent, identifierExpression);
-                    }
-                }
-
             }
         }
 
@@ -135,17 +137,5 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
      */
     protected boolean isCollection() {
         return false;
-    }
-
-    private AbstractExpression getIdentifierExpression(AbstractExpression parent, WordParser wordParser, String word, JPQLQueryBNF queryBNF, AbstractExpression expression, boolean tolerant) {
-        ExpressionFactory factory = getExpressionRegistry().expressionFactoryForIdentifier(word);
-        // TODO: Before creating the expression, check to make sure it's not a function: 'identifier('
-        if (factory != null) {
-            final AbstractExpression identifierExpression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
-
-            // if an invalid expression came from the factory, e.g. a function without expected arguments, ignore it
-            return AbstractExpression.revertExpressionIfInvalid(identifierExpression, wordParser, word);
-        }
-        return null;
     }
 }

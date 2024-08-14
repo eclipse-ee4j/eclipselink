@@ -1,6 +1,5 @@
 /*
  * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -151,8 +150,6 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder.bui
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
-
-import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_2;
 
 /**
  * This abstract class provides the functionality to test the parsed tree representation of a JPQL
@@ -500,24 +497,6 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
                              boolean tolerant) {
 
         testQuery(jpqlQuery, expressionTester, jpqlGrammar, jpqlQueryBNFId, formatter, tolerant);
-    }
-
-    /**
-     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
-     * with the given tester, which is an equivalent representation of the parsed tree.
-     *
-     * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
-     * @param expressionTester The tester used to verify the parsed tree is correctly representing the
-     * JPQL query
-     */
-    protected void testJakartaDataQuery(String jpqlQuery,
-                             ExpressionTester expressionTester) {
-
-        JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
-        if (expressionTester.getClass() != JPQLExpressionTester.class) {
-            expressionTester = jpqlExpression(expressionTester);
-        }
-        expressionTester.test(jpqlExpression);
     }
 
     /**
