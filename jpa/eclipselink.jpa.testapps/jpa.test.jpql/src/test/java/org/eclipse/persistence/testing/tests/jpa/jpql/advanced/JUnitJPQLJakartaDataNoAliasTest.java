@@ -100,6 +100,9 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasFromWhere"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasFromWhereAnd"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasFromWhereAndUPPER"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasWhereWithBraces01"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasWhereWithBraces02"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasWhereWithBraces03"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelectNoAliasFromWhere"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelect"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryLengthInAssignmentAndExpression"));
@@ -238,6 +241,50 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
         Assert.assertTrue("NoAliasFromWhereAndUPPER Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
     }
+
+    public void testNoAliasWhereWithBraces01() {
+        EntityManager em = createEntityManager();
+
+        Query wrapperTypesQuery = em.createQuery("FROM WrapperTypes WHERE (id = :idParam)");
+        wrapperTypesQuery.setParameter("idParam", wrapperId);
+        WrapperTypes wrapperTypes = (WrapperTypes) wrapperTypesQuery.getResultList().get(0);
+        clearCache();
+        ReadObjectQuery tlQuery = new ReadObjectQuery(WrapperTypes.class);
+        tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(wrapperId));
+
+        WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
+        Assert.assertTrue("NoAliasWhereWithBraces01 Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
+    }
+
+    public void testNoAliasWhereWithBraces02() {
+        EntityManager em = createEntityManager();
+
+        Query wrapperTypesQuery = em.createQuery("FROM WrapperTypes WHERE ((id = :idParam))");
+        wrapperTypesQuery.setParameter("idParam", wrapperId);
+        WrapperTypes wrapperTypes = (WrapperTypes) wrapperTypesQuery.getResultList().get(0);
+        clearCache();
+        ReadObjectQuery tlQuery = new ReadObjectQuery(WrapperTypes.class);
+        tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(wrapperId));
+
+        WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
+        Assert.assertTrue("NoAliasWhereWithBraces02 Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
+    }
+
+    public void testNoAliasWhereWithBraces03() {
+        EntityManager em = createEntityManager();
+
+        Query wrapperTypesQuery = em.createQuery("FROM WrapperTypes WHERE (id <= :idParam AND UPPER(stringData) NOT LIKE UPPER(:stringParam) AND UPPER(stringData) NOT LIKE 'dgdgs') ORDER BY id DESC, stringData");
+        wrapperTypesQuery.setParameter("idParam", wrapperId);
+        wrapperTypesQuery.setParameter("stringParam", "asdadads");
+        WrapperTypes wrapperTypes = (WrapperTypes) wrapperTypesQuery.getResultList().get(0);
+        clearCache();
+        ReadObjectQuery tlQuery = new ReadObjectQuery(WrapperTypes.class);
+        tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(wrapperId));
+
+        WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
+        Assert.assertTrue("NoAliasWhereWithBraces03 Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
+    }
+
 
     public void testGeneratedSelect() {
         EntityManager em = createEntityManager();

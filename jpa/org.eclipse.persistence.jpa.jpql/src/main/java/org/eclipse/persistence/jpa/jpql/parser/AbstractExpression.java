@@ -525,7 +525,7 @@ public abstract class AbstractExpression implements Expression {
      * @return  Parent expression
      */
     public final ParentExpression getParentExpression() {
-        if (this instanceof ParentExpression parentExpression) {
+        if (!(this instanceof SubExpression) && this instanceof ParentExpression parentExpression) {
             return parentExpression;
         } else if (parent == null) {
             return null;
