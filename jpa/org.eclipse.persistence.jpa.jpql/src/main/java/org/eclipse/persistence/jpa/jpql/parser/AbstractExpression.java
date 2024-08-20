@@ -525,10 +525,8 @@ public abstract class AbstractExpression implements Expression {
      * @return  Parent expression
      */
     public final ParentExpression getParentExpression() {
-        if (this instanceof ParentExpression parentExpression) {
-            return parentExpression;
-        } else if (parent == null) {
-            return null;
+        if (!(this.isSubExpression()) && (this.isParentExpression())) {
+            return (ParentExpression)this;
         } else {
             return parent.getParentExpression();
         }
@@ -604,6 +602,10 @@ public abstract class AbstractExpression implements Expression {
         return false;
     }
 
+    public boolean isParentExpression() {
+        return false;
+    }
+
     /**
      * Determines whether the parsing is complete based on what is left in the given text. The text
      * is never empty.
@@ -640,6 +642,10 @@ public abstract class AbstractExpression implements Expression {
      */
     protected boolean isTolerant() {
         return getRoot().isTolerant();
+    }
+
+    protected boolean isSubExpression() {
+        return false;
     }
 
     /**

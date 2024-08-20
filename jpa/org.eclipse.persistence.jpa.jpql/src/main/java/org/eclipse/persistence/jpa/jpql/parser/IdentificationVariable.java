@@ -95,8 +95,24 @@ public final class IdentificationVariable extends AbstractExpression {
      */
     public IdentificationVariable(AbstractExpression parent, String identificationVariable) {
         super(parent, identificationVariable);
-        if (!Expression.THIS.equalsIgnoreCase(identificationVariable) && getParentExpression().isGenerateThisPrefix()) {
+        //In subqueries "this" generation is not allowed. There are expected qualified IdentificationVariable from query string
+        if (!Expression.THIS.equalsIgnoreCase(identificationVariable) && getParentExpression().isGenerateThisPrefix() && !isInsideSubquery()) {
             this.setVirtualIdentificationVariable(Expression.THIS);
+        }
+    }
+
+    private boolean isInsideSubquery() {
+        boolean result = isSubquery(this);
+        return result;
+    }
+
+    private boolean isSubquery(Expression expression) {
+        if (expression == null) {
+            return false;
+        } else if (expression instanceof AbstractSelectStatement && expression.getParent() != null && expression.getParent() instanceof SubExpression) {
+            return true;
+        } else {
+            return isSubquery(expression.getParent());
         }
     }
 

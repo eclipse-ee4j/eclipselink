@@ -23,4 +23,5 @@ public interface ParentExpression extends Expression {
 
     void setGenerateThisPrefix(boolean generateThisPrefix);
 
+    boolean isParentExpression();
 }

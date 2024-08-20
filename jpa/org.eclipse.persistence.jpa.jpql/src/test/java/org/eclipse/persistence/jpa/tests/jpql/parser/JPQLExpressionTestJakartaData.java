@@ -87,8 +87,26 @@ public final class JPQLExpressionTestJakartaData extends JPQLParserTest {
     }
 
     @Test
-    public void testNoAliasFromWhere() {
+    public void testNoAliasFromWhere01() {
         JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE id1 = :id1", Expression.THIS);
+        checkAliasesWhere(jpqlExpression, Expression.THIS);
+    }
+
+    @Test
+    public void testNoAliasFromWhere02() {
+        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE (id1 = :id1)", Expression.THIS);
+        checkAliasesWhere(jpqlExpression, Expression.THIS);
+    }
+
+    @Test
+    public void testNoAliasFromWhere03() {
+        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE (ID <= :idParam AND UPPER(name) NOT LIKE UPPER(:nameParam) AND UPPER(name) NOT LIKE 'dgdgs') ORDER BY ID DESC, name", Expression.THIS);
+        checkAliasesWhere(jpqlExpression, Expression.THIS);
+    }
+
+    @Test
+    public void testNoAliasFromWhere04() {
+        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE (:rate * ID <= :max AND :rate * ID >= :min) ORDER BY name", Expression.THIS);
         checkAliasesWhere(jpqlExpression, Expression.THIS);
     }
 

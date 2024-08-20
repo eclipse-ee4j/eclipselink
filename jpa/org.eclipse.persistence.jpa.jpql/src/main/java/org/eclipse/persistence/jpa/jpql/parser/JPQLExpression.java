@@ -266,6 +266,11 @@ public final class JPQLExpression extends AbstractExpression implements ParentEx
         this.generateThisPrefix = generateThisPrefix;
     }
 
+    @Override
+    public boolean isParentExpression() {
+        return true;
+    }
+
     public boolean isJakartaData() {
         return this.jakartaData;
     }

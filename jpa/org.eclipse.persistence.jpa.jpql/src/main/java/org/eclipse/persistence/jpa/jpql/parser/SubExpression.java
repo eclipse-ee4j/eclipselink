@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -55,6 +55,16 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression im
     @Override
     public void setGenerateThisPrefix(boolean generateThisPrefix) {
         this.generateThisPrefix = generateThisPrefix;
+    }
+
+    @Override
+    public boolean isParentExpression() {
+        return true;
+    }
+
+    @Override
+    public boolean isSubExpression() {
+        return true;
     }
 
     @Override
