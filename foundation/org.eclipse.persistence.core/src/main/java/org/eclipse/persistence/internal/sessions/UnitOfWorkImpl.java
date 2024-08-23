@@ -1077,6 +1077,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
         }
         try {
+            if (isConsideredInvalid(original, parentCacheKey, descriptor) && unitOfWorkCacheKey.getObject() != null) {
+                original = unitOfWorkCacheKey.getObject();
+            }
             // bug:6167576   Must acquire the lock before cloning.
             workingClone = builder.instantiateWorkingCopyClone(original, this);
             // PERF: Cache the primary key if implements PersistenceEntity.
