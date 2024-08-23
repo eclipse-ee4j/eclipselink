@@ -209,4 +209,17 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="pu-with-dynamic-weaving" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.weave.IsolatedEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.weave.Location</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.weave.Node</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.weave.Order</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
+        <properties>
+            <property name="eclipselink.weaving" value="true"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+        </properties>
+    </persistence-unit>
 </persistence>
