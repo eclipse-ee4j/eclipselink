@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -54,6 +54,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryConstructor
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryMultipleReturnTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.SQLResultSetMappingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.UpdateAllQueryAdvancedJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.WeaveVersionTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.ConcurrencyTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
@@ -162,6 +163,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(NamedQueryJUnitTest.suite());
         suite.addTest(EntityEmbeddableTest.suite());
         suite.addTest(InvalidNamedQueryTest.suite());
+        suite.addTest(WeaveVersionTestSuite.suite());
         fullSuite.addTest(suite);
 
         // Inheritance model.
