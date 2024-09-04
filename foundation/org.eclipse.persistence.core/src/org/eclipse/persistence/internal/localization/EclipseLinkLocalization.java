@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,9 @@ import java.util.ResourceBundle;
  * @since TOPLink/Java 5.0
  */
 public abstract class EclipseLinkLocalization {
+
+    // Get the current language's NoTranslationForThisLocale message.
+    private static final String NO_TRANSLATION_MESSAGE = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n.EclipseLinkLocalizationResource", Locale.getDefault()).getString("NoTranslationForThisLocale");
 
     /**
      * Return the message for the given exception class and error number.
@@ -65,13 +68,18 @@ public abstract class EclipseLinkLocalization {
         } catch (java.util.MissingResourceException mre) {
             if (translate) {
                 // Found bundle, but couldn't find translation.
-                // Get the current language's NoTranslationForThisLocale message.
-                bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n.EclipseLinkLocalizationResource", Locale.getDefault());
-                String noTranslationMessage = bundle.getString("NoTranslationForThisLocale");
-                   return MessageFormat.format(message, arguments) + noTranslationMessage;
-            }
+                // Use the current language's NoTranslationForThisLocale message.
+                if (arguments == null) {
+                    return message + NO_TRANSLATION_MESSAGE;
+                } else {
+                    return MessageFormat.format(message, arguments) + NO_TRANSLATION_MESSAGE;
+                }            }
         }
-        return MessageFormat.format(message, arguments);
+        if (arguments == null) {
+            return message;
+        } else {
+            return MessageFormat.format(message, arguments);
+        }
     }
 
 }

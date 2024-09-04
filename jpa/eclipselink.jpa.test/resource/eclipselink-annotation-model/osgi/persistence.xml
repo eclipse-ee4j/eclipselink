@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
     Copyright (c) 2019 IBM Corporation. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -177,4 +177,17 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="pu-with-dynamic-weaving" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.weave.IsolatedEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.weave.Location</class>
+        <class>org.eclipse.persistence.testing.models.jpa.weave.Node</class>
+        <class>org.eclipse.persistence.testing.models.jpa.weave.Order</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
+        <properties>
+            <property name="eclipselink.weaving" value="true"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+        </properties>
+    </persistence-unit>
 </persistence>
