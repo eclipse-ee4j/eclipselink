@@ -78,6 +78,9 @@ public class DynamicPropertiesInitializatonPolicy {
                 value = Byte.MIN_VALUE;
             }
         }
+        else if (mapping.isCollectionMapping()) {
+           value = mapping.getContainerPolicy().containerInstance();
+        }
         else if (mapping.isForeignReferenceMapping()) {
             ForeignReferenceMapping refMapping = (ForeignReferenceMapping)mapping;
             if (refMapping.usesIndirection() &&
