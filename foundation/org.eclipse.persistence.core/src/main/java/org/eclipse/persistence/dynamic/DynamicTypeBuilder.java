@@ -41,6 +41,7 @@ import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -212,6 +213,9 @@ public class DynamicTypeBuilder {
      */
     private boolean requiresInitialization(DatabaseMapping mapping) {
         if (mapping.isDirectToFieldMapping() && mapping.getAttributeClassification() != null && mapping.getAttributeClassification().isPrimitive()) {
+            return true;
+        }
+        if (mapping.isCollectionMapping()) {
             return true;
         }
         if (mapping.isForeignReferenceMapping()) {
