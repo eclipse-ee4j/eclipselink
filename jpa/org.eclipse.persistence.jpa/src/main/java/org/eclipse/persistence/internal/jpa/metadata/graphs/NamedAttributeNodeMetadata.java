@@ -134,21 +134,23 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
      */
     public void process(Map<String, Map<String, AttributeGroup>> attributeGraphs, AttributeGroup graph, AttributeGroup rootGraph) {
         // Process the subgraph.
-        if (getSubgraph() != null) {
-            if (attributeGraphs.containsKey(getSubgraph())) {
-                graph.addAttribute(getName(), attributeGraphs.get(getSubgraph()).values());
+        String subgraph = getSubgraph();
+        if (subgraph != null && !subgraph.isEmpty()) {
+            if (attributeGraphs.containsKey(subgraph)) {
+                graph.addAttribute(getName(), attributeGraphs.get(subgraph).values());
             } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), getSubgraph()}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), subgraph}));
             }
-        }else {
+        } else {
             graph.addAttribute(getName());
         }
 
-        if (getKeySubgraph() != null) {
-            if (attributeGraphs.containsKey(getKeySubgraph())) {
-                graph.getItem(getName()).addKeyGroups(attributeGraphs.get(getKeySubgraph()).values());
+        subgraph = getKeySubgraph();
+        if (subgraph != null && !subgraph.isEmpty()) {
+            if (attributeGraphs.containsKey(subgraph)) {
+                graph.getItem(getName()).addKeyGroups(attributeGraphs.get(subgraph).values());
             } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), getKeySubgraph()}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), subgraph}));
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,14 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.AbstractElementVisitor14;
 import javax.lang.model.util.AbstractElementVisitor8;
 import javax.tools.Diagnostic;
 
@@ -55,7 +58,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnotatedElement, MetadataClass> {
+public class ElementVisitor<R, P> extends AbstractElementVisitor14<MetadataAnnotatedElement, MetadataClass> {
     private ProcessingEnvironment processingEnv;
     private TypeVisitor<MetadataAnnotatedElement, MetadataAnnotatedElement> typeVisitor;
 
@@ -75,7 +78,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
      * and build complete MetadataAnnotation from the mirrors.
      */
     protected void buildMetadataAnnotations(MetadataAnnotatedElement annotatedElement, List<? extends AnnotationMirror> annotationMirrors) {
-        AnnotationValueVisitor<Object, Object> visitor = new AnnotationValueVisitor<>();
+        AnnotationValueVisitor<Object, Object> visitor = new AnnotationValueVisitor<>(processingEnv);
 
         for (AnnotationMirror annotationMirror : annotationMirrors) {
             String annotation = annotationMirror.getAnnotationType().toString() ;
@@ -303,6 +306,25 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
     @Override
     public MetadataAnnotatedElement visitUnknown(Element e, MetadataClass metadataClass) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unsupported element", e);
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unsupported element in " + metadataClass.getName() + ": " + e.toString(), e);
+        return null;
+    }
+
+    @Override
+    public MetadataAnnotatedElement visitRecordComponent(RecordComponentElement recordElement, MetadataClass metadataClass) {
+        MetadataLogger logger = metadataClass.getMetadataFactory().getLogger();
+        logger.getSession().getSessionLog().log(SessionLog.FINE, SessionLog.PROCESSOR,
+                "ElementVisitor Record NOT IMPLEMENTED : {0}",
+                new Object[] {recordElement}, false);
+        return null;
+    }
+
+    @Override
+    public MetadataAnnotatedElement visitModule(ModuleElement moduleElement, MetadataClass metadataClass) {
+        MetadataLogger logger = metadataClass.getMetadataFactory().getLogger();
+        logger.getSession().getSessionLog().log(SessionLog.FINE, SessionLog.PROCESSOR,
+                "ElementVisitor Module NOT IMPLEMENTED : {0}",
+                new Object[] {moduleElement}, false);
         return null;
     }
 }

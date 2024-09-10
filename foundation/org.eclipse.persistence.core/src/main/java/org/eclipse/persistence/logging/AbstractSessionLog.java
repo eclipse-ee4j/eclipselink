@@ -838,66 +838,74 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * Print the prefix string representing EclipseLink logging
      */
-
     //Bug3135111  Prefix strings are not translated until the first time they are used.
     protected void printPrefixString(int level, String category) {
         try {
-            switch (level) {
+                this.getWriter().write(getPrefixString(level, category));
+        } catch (IOException exception) {
+            throw ValidationException.logIOError(exception);
+        }
+    }
+
+    /**
+     * Get the prefix string for the EclipseLink logging
+     */
+    protected String getPrefixString(int level, String category) {
+        StringBuilder sb = new StringBuilder();
+        switch (level) {
             case SEVERE:
                 if (SEVERE_PREFIX == null) {
                     SEVERE_PREFIX = LoggingLocalization.buildMessage("toplink_severe");
                 }
-                this.getWriter().write(SEVERE_PREFIX);
+                sb.append(SEVERE_PREFIX);
                 break;
             case WARNING:
                 if (WARNING_PREFIX == null) {
                     WARNING_PREFIX = LoggingLocalization.buildMessage("toplink_warning");
                 }
-                this.getWriter().write(WARNING_PREFIX);
+                sb.append(WARNING_PREFIX);
                 break;
             case INFO:
                 if (INFO_PREFIX == null) {
                     INFO_PREFIX = LoggingLocalization.buildMessage("toplink_info");
                 }
-                this.getWriter().write(INFO_PREFIX);
+                sb.append(INFO_PREFIX);
                 break;
             case CONFIG:
                 if (CONFIG_PREFIX == null) {
                     CONFIG_PREFIX = LoggingLocalization.buildMessage("toplink_config");
                 }
-                this.getWriter().write(CONFIG_PREFIX);
+                sb.append(CONFIG_PREFIX);
                 break;
             case FINE:
                 if (FINE_PREFIX == null) {
                     FINE_PREFIX = LoggingLocalization.buildMessage("toplink_fine");
                 }
-                this.getWriter().write(FINE_PREFIX);
+                sb.append(FINE_PREFIX);
                 break;
             case FINER:
                 if (FINER_PREFIX == null) {
                     FINER_PREFIX = LoggingLocalization.buildMessage("toplink_finer");
                 }
-                this.getWriter().write(FINER_PREFIX);
+                sb.append(FINER_PREFIX);
                 break;
             case FINEST:
                 if (FINEST_PREFIX == null) {
                     FINEST_PREFIX = LoggingLocalization.buildMessage("toplink_finest");
                 }
-                this.getWriter().write(FINEST_PREFIX);
+                sb.append(FINEST_PREFIX);
                 break;
             default:
                 if (TOPLINK_PREFIX == null) {
                     TOPLINK_PREFIX = LoggingLocalization.buildMessage("toplink");
                 }
-                this.getWriter().write(TOPLINK_PREFIX);
-            }
-            if (category != null) {
-                this.getWriter().write(category);
-                this.getWriter().write(": ");
-            }
-        } catch (IOException exception) {
-            throw ValidationException.logIOError(exception);
+                sb.append(TOPLINK_PREFIX);
         }
+        if (category != null) {
+            sb.append(category);
+            sb.append(": ");
+        }
+        return sb.toString();
     }
 
     /**

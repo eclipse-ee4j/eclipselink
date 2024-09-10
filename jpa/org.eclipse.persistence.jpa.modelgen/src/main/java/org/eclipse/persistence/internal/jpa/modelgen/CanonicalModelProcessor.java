@@ -641,7 +641,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         for (NamedEntityGraphMetadata namedEntityGraph : project.getNamedEntityGraphs(accessor)) {
             String name = namedEntityGraph.getName();
             // if name is not present, default to the entity name
-            if (name == null) {
+            if (name == null || name.isEmpty()) {
                 if (accessor.isEntityAccessor()) {
                     name = ((EntityAccessor) accessor).getEntityName();
                 } else {
