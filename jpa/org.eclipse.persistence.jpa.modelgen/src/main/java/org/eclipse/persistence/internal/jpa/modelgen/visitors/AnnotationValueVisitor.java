@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,14 +17,17 @@ package org.eclipse.persistence.internal.jpa.modelgen.visitors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.AbstractAnnotationValueVisitor8;
+import javax.lang.model.util.AbstractAnnotationValueVisitor14;
+import javax.lang.model.util.Elements;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
@@ -34,11 +37,16 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor8<Object, Object> {
+public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor14<Object, Object> {
+
+    private final Elements elementUtils;
+
     /**
      * INTERNAL:
      */
-    public AnnotationValueVisitor() {}
+    public AnnotationValueVisitor(ProcessingEnvironment processingEnv) {
+        elementUtils = processingEnv.getElementUtils();
+    }
 
     /**
      * INTERNAL:
@@ -52,11 +60,9 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
         annotation.setName(annotationMirror.getAnnotationType().toString());
 
         // Process the values.
-        Set<? extends ExecutableElement> keys = annotationMirror.getElementValues().keySet();
-
-        for (ExecutableElement annotationElement : keys) {
-            AnnotationValue annotationValue = annotationMirror.getElementValues().get(annotationElement);
-            String attribute = annotationElement.getSimpleName().toString();
+        for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : elementUtils.getElementValuesWithDefaults(annotationMirror).entrySet()) {
+            String attribute = entry.getKey().getSimpleName().toString();
+            AnnotationValue annotationValue = entry.getValue();
             Object attributeValue = annotationValue.accept(this, arg1);
             annotation.addAttribute(attribute, attributeValue);
         }

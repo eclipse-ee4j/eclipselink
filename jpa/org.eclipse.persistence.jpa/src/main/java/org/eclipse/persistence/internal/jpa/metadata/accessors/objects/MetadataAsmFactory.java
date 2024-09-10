@@ -44,6 +44,7 @@ import org.eclipse.persistence.asm.EclipseLinkFieldVisitor;
 import org.eclipse.persistence.asm.FieldVisitor;
 import org.eclipse.persistence.asm.EclipseLinkMethodVisitor;
 import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.asm.Type;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -254,6 +255,11 @@ public class MetadataAsmFactory extends MetadataFactory {
         } else {
             return m_loader.getResourceAsStream(name);
         }
+    }
+
+    @Override
+    public boolean isInterface(MetadataClass metadataClass) {
+        return (Opcodes.ACC_INTERFACE & metadataClass.getModifiers()) != 0;
     }
 
     /**

@@ -26,7 +26,7 @@ import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.SimpleTypeVisitor8;
+import javax.lang.model.util.SimpleTypeVisitor14;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -39,7 +39,7 @@ import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-public class TypeVisitor<R, P> extends SimpleTypeVisitor8<MetadataAnnotatedElement, MetadataAnnotatedElement> {
+public class TypeVisitor<R, P> extends SimpleTypeVisitor14<MetadataAnnotatedElement, MetadataAnnotatedElement> {
     public static String GENERIC_TYPE = "? extends Object";
 
     private static final Pattern PATTERN = Pattern.compile("[(@:)\\s]+");

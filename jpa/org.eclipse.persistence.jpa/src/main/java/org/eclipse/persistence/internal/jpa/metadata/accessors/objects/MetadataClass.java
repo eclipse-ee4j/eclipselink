@@ -38,7 +38,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.internal.helper.Helper;
 
 /**
@@ -180,15 +179,15 @@ public class MetadataClass extends MetadataAnnotatedElement {
             return true;
         }
 
-        if (getSuperclassName() == null) {
-            return false;
-        }
-
-        if (getSuperclassName().equals(className)) {
+        if (getSuperclassName() != null && getSuperclassName().equals(className)) {
             return true;
         }
 
-        return getSuperclass().extendsClass(className);
+        if (getSuperclass() != null && getSuperclass().extendsClass(className)) {
+            return true;
+        }
+
+        return m_factory.extendsClass(this, className);
     }
 
     /**
@@ -222,11 +221,15 @@ public class MetadataClass extends MetadataAnnotatedElement {
             }
         }
 
-        if (getSuperclassName() == null) {
-            return false;
+        if (getSuperclassName() != null && getSuperclassName().equals(className)) {
+            return true;
         }
 
-        return getSuperclass().extendsInterface(className);
+        if (getSuperclass() != null && getSuperclass().extendsInterface(className)) {
+            return true;
+        }
+
+        return m_factory.implementsInterface(this, className);
     }
 
     /**
@@ -487,7 +490,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return if this is an interface (super is null).
      */
     public boolean isInterface() {
-        return (Opcodes.ACC_INTERFACE & m_modifiers) != 0;
+        return m_factory.isInterface(this);
     }
 
     /**

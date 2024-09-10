@@ -21,7 +21,6 @@ import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
@@ -200,64 +199,6 @@ final class MessagerLog extends AbstractSessionLog {
                 throw ValidationException.invalidLoggingFile();
             }
         }
-    }
-
-    private CharSequence getPrefixString(int level, String category) {
-        StringBuilder sb = new StringBuilder();
-        switch (level) {
-            case SEVERE:
-                if (SEVERE_PREFIX == null) {
-                    SEVERE_PREFIX = LoggingLocalization.buildMessage("toplink_severe");
-                }
-                sb.append(SEVERE_PREFIX);
-                break;
-            case WARNING:
-                if (WARNING_PREFIX == null) {
-                    WARNING_PREFIX = LoggingLocalization.buildMessage("toplink_warning");
-                }
-                sb.append(WARNING_PREFIX);
-                break;
-            case INFO:
-                if (INFO_PREFIX == null) {
-                    INFO_PREFIX = LoggingLocalization.buildMessage("toplink_info");
-                }
-                sb.append(INFO_PREFIX);
-                break;
-            case CONFIG:
-                if (CONFIG_PREFIX == null) {
-                    CONFIG_PREFIX = LoggingLocalization.buildMessage("toplink_config");
-                }
-                sb.append(CONFIG_PREFIX);
-                break;
-            case FINE:
-                if (FINE_PREFIX == null) {
-                    FINE_PREFIX = LoggingLocalization.buildMessage("toplink_fine");
-                }
-                sb.append(FINE_PREFIX);
-                break;
-            case FINER:
-                if (FINER_PREFIX == null) {
-                    FINER_PREFIX = LoggingLocalization.buildMessage("toplink_finer");
-                }
-                sb.append(FINER_PREFIX);
-                break;
-            case FINEST:
-                if (FINEST_PREFIX == null) {
-                    FINEST_PREFIX = LoggingLocalization.buildMessage("toplink_finest");
-                }
-                sb.append(FINEST_PREFIX);
-                break;
-            default:
-                if (TOPLINK_PREFIX == null) {
-                    TOPLINK_PREFIX = LoggingLocalization.buildMessage("toplink");
-                }
-                sb.append(TOPLINK_PREFIX);
-        }
-        if (category != null) {
-            sb.append(category);
-            sb.append(": ");
-        }
-        return sb;
     }
 
     private Diagnostic.Kind translateLevelToKind(int level) {

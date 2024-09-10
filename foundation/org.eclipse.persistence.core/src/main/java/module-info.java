@@ -187,7 +187,6 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.internal.localization to
             org.eclipse.persistence.dbws,
             org.eclipse.persistence.jpa,
-            org.eclipse.persistence.jpa.modelgen,
             org.eclipse.persistence.jpars.server,
             org.eclipse.persistence.moxy,
             org.eclipse.persistence.oracle,
