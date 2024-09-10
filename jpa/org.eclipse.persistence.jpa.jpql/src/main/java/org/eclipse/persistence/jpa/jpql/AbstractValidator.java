@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
@@ -45,6 +46,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
@@ -965,6 +967,19 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         public void visit(NullExpression expression) {
             // The missing expression is validated by GrammarValidator
             valid = true;
+        }
+
+        @Override
+        public void visit(StateFieldPathExpression expression) {
+            JPQLQueryBNF originQueryBNF = queryBNF;
+            if (Expression.THIS.equalsIgnoreCase(expression.toString()) &&
+                    expression.getParentExpression().isGenerateImplicitThisAlias() &&
+                    expression.getIdentificationVariable() != null &&
+                    ((IdentificationVariable)(expression.getIdentificationVariable())).isVirtual()) {
+                queryBNF = expression.getQueryBNF();
+            }
+            visit((Expression) expression);
+            queryBNF = originQueryBNF;
         }
 
         @Override

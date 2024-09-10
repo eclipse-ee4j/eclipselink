@@ -4035,6 +4035,22 @@ public final class JPQLParserTester {
     }
 
     public static UpdateClauseTester update(String abstractSchemaName,
+                                            String virtualVariable,
+                                            ExpressionTester updateItem,
+                                            boolean dummy) {
+
+        UpdateClauseTester updateClause = update(
+                rangeVariableDeclaration(
+                        abstractSchemaName(abstractSchemaName),
+                        virtualVariable(virtualVariable)
+                ),
+                updateItem
+        );
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        return updateClause;
+    }
+
+    public static UpdateClauseTester update(String abstractSchemaName,
                                             ExpressionTester... updateItems) {
 
         UpdateClauseTester updateClause = update(

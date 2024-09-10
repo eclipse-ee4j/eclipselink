@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,8 +68,8 @@ public final class UpdateItemTest extends JPQLParserTest {
 
         UpdateStatementTester updateStatement = updateStatement(
             update(
-                "Employee",
-                set(bad(avg(numeric(2))), string("'Pascal'"))
+                "Employee", "this",
+                set(bad(avg(numeric(2))), string("'Pascal'")), false
             )
         );
 
@@ -83,8 +83,8 @@ public final class UpdateItemTest extends JPQLParserTest {
 
         UpdateStatementTester updateStatement = updateStatement(
             update(
-                "Employee",
-                set("{employee}.avg", string("'Pascal'"))
+                "Employee", "this",
+                set("{this}.avg", string("'Pascal'")), false
             )
         );
 

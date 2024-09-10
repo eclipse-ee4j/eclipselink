@@ -16,8 +16,15 @@
 //
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.and;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.avg;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.division;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.equal;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.id;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.from;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.inputParameter;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.isNotNull;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.max;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.numeric;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.path;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.select;
@@ -51,74 +58,87 @@ public final class JPQLExpressionTestJakartaData extends JPQLParserTest {
 
     @Test
     public void testNoAlias() {
-        checkAliasFrom("SELECT this FROM NoAliasEntity", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT this FROM NoAliasEntity", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasOBJECT() {
-        checkAliasFrom("SELECT OBJECT(this) FROM NoAliasEntity", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT OBJECT(this) FROM NoAliasEntity", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasCOUNT() {
-        checkAliasFrom("SELECT COUNT(this) FROM NoAliasEntity", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT COUNT(this) FROM NoAliasEntity", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasCASTCOUNT() {
-        checkAliasFrom("SELECT CAST(COUNT(this) AS SMALLINT) FROM NoAliasEntity", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT CAST(COUNT(this) AS SMALLINT) FROM NoAliasEntity", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasCASTCASTCOUNT() {
-        checkAliasFrom("SELECT CAST(CAST(COUNT(this) AS SMALLINT) AS BIGINT) FROM NoAliasEntity", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT CAST(CAST(COUNT(this) AS SMALLINT) AS BIGINT) FROM NoAliasEntity", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testCorrectAliases() {
-        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity this WHERE this.id1 = :id1", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT this FROM NoAliasEntity this WHERE this.id1 = :id1", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
         checkAliasesWhere(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasWhere() {
-        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity this WHERE id1 = :id1", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT this FROM NoAliasEntity this WHERE id1 = :id1", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
         checkAliasesWhere(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasFromWhere01() {
-        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE id1 = :id1", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT this FROM NoAliasEntity WHERE id1 = :id1", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
         checkAliasesWhere(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasFromWhere02() {
-        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE (id1 = :id1)", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT this FROM NoAliasEntity WHERE (id1 = :id1)", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
         checkAliasesWhere(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasFromWhere03() {
-        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE (ID <= :idParam AND UPPER(name) NOT LIKE UPPER(:nameParam) AND UPPER(name) NOT LIKE 'dgdgs') ORDER BY ID DESC, name", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT this FROM NoAliasEntity WHERE (ID <= :idParam AND UPPER(name) NOT LIKE UPPER(:nameParam) AND UPPER(name) NOT LIKE 'dgdgs') ORDER BY ID DESC, name", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
         checkAliasesWhere(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasFromWhere04() {
-        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE (:rate * ID <= :max AND :rate * ID >= :min) ORDER BY name", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT this FROM NoAliasEntity WHERE (:rate * ID <= :max AND :rate * ID >= :min) ORDER BY name", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
         checkAliasesWhere(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasFromWhereAnd() {
-        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE id1 = :id1 AND name = 'Name 1'", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT this FROM NoAliasEntity WHERE id1 = :id1 AND name = 'Name 1'", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
         checkAliasesWhere(jpqlExpression, Expression.THIS);
     }
 
     @Test
     public void testNoAliasFromWhereAndUPPER() {
-        JPQLExpression jpqlExpression = checkAliasFrom("SELECT this FROM NoAliasEntity WHERE id1 = :id1 AND UPPER(name) = 'NAME 1'", Expression.THIS);
+        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery("SELECT this FROM NoAliasEntity WHERE id1 = :id1 AND UPPER(name) = 'NAME 1'", JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        checkAliasFrom(jpqlExpression, Expression.THIS);
         checkAliasesWhere(jpqlExpression, Expression.THIS);
     }
 
@@ -170,6 +190,54 @@ public final class JPQLExpressionTestJakartaData extends JPQLParserTest {
         testJakartaDataQuery(inputJPQLQuery, selectStatement);
     }
 
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2182
+    @Test
+    public void testFunctionNameAsImplicitStateFieldInSelectWhereExpression() {
+
+        String inputJPQLQuery = "SELECT name FROM Order WHERE name IS NOT NULL AND id = :idParam";
+
+        SelectStatementTester selectStatement = selectStatement(
+                select(virtualVariable("this", "name")),
+                from("Order", "{this}"),
+                where(and(isNotNull(virtualVariable("this", "name")),
+                        equal(virtualVariable("this", "id"),
+                                inputParameter(":idParam"))
+                ))
+        );
+
+        testJakartaDataQuery(inputJPQLQuery, selectStatement);
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2192
+    @Test
+    public void testFunctionNameAsImplicitStateFieldInSelectAggregateMaxExpression() {
+
+        String inputJPQLQuery = "SELECT MAX(price) FROM Item WHERE AVG(price) = 100";
+
+        SelectStatementTester selectStatement = selectStatement(
+                select(max(virtualVariable("this", "price"))),
+                from("Item", "{this}"),
+                where(equal(avg(virtualVariable("this", "price")), numeric(100)))
+        );
+
+        testJakartaDataQuery(inputJPQLQuery, selectStatement);
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2247
+    @Test
+    public void testFunctionNameAsImplicitStateFieldInSelectArithmeticExpression() {
+
+        String inputJPQLQuery = "SELECT totalPrice / quantity FROM Order WHERE creationYear = :yearParam";
+
+        SelectStatementTester selectStatement = selectStatement(
+                select(division(virtualVariable("this", "totalPrice"), virtualVariable("this", "quantity"))),
+                from("Order", "{this}"),
+                where(equal(virtualVariable("this", "creationYear"), inputParameter(":yearParam")))
+        );
+
+        testJakartaDataQuery(inputJPQLQuery, selectStatement);
+    }
+
     @Test
     public void testUpdateFunctionNameAsImplicitStateFieldInNumericExpression() {
 
@@ -177,18 +245,39 @@ public final class JPQLExpressionTestJakartaData extends JPQLParserTest {
 
         UpdateStatementTester selectStatement = updateStatement(
                 update(
-                        "Order",
-                         set(path("{order}.length"),
-                                virtualVariable("order", "length")
+                        "Order", "this",
+                         set(path("{this}.length"),
+                                virtualVariable("this", "length")
                                         .add(numeric(1))
-                        ))
+                        ), false)
         );
 
         testJakartaDataQuery(inputJPQLQuery, selectStatement);
     }
 
-    private JPQLExpression checkAliasFrom(String actualQuery, String expectedAlias) {
-        JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(actualQuery, JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2184
+    @Test
+    public void testUpdateFunctionNameAsImplicitStateFieldInIdFunction() {
+
+        String inputJPQLQuery = "UPDATE Order SET length = length + 1 WHERE ID(this) = 1";
+
+        UpdateStatementTester selectStatement = updateStatement(
+                update(
+                        "Order", "this",
+                        set(path("{this}.length"),
+                                virtualVariable("this", "length")
+                                        .add(numeric(1))
+                        ), false),
+                where(equal(
+                        id(virtualVariable("this", "this")),
+                        numeric(1)
+                ))
+        );
+
+        testJakartaDataQuery(inputJPQLQuery, selectStatement);
+    }
+
+    private void checkAliasFrom(JPQLExpression jpqlExpression, String expectedAlias) {
         SelectStatement selectStatement = (SelectStatement) jpqlExpression.getQueryStatement();
         FromClause fromClause = (FromClause) selectStatement.getFromClause();
         IdentificationVariableDeclaration identificationVariableDeclaration = (IdentificationVariableDeclaration) fromClause.getDeclaration();
@@ -196,7 +285,6 @@ public final class JPQLExpressionTestJakartaData extends JPQLParserTest {
         IdentificationVariable identificationVariable = (IdentificationVariable) rangeVariableDeclaration.getIdentificationVariable();
         String alias = identificationVariable.getText();
         assertEquals(expectedAlias, alias);
-        return jpqlExpression;
     }
 
     private void checkAliasesWhere(JPQLExpression jpqlExpression, String expectedAlias) {

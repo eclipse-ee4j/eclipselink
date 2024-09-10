@@ -39,7 +39,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @since 2.3
  * @author Pascal Filion
  */
-public final class RangeVariableDeclaration extends AbstractExpression {
+public final class RangeVariableDeclaration extends AbstractExpression implements ParentExpression {
 
     /**
      * The actual <b>AS</b> identifier found in the string representation of the JPQL query.
@@ -176,6 +176,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
     }
 
     @Override
+    public List<IdentificationVariable> getIdentificationVariablesWithoutAlias() {
+        return null;
+    }
+
+    @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(RangeVariableDeclarationBNF.ID);
     }
@@ -253,6 +258,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
     }
 
     @Override
+    public boolean isGenerateImplicitThisAlias() {
+        return false;
+    }
+
+    @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return word.equalsIgnoreCase(AS)    ||
                word.equalsIgnoreCase(SET)   ||
@@ -287,6 +297,10 @@ public final class RangeVariableDeclaration extends AbstractExpression {
             identificationVariable = new IdentificationVariable(this, wordParser.word());
             identificationVariable.parse(wordParser, tolerant);
         }
+    }
+
+    @Override
+    public void setGenerateImplicitThisAlias(boolean generateImplicitThisAlias) {
     }
 
     /**
@@ -367,7 +381,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
                 || isMissingAliasInUpdateClause()
                 || isMissingAliasInDeleteFromClause()) {
             this.setVirtualIdentificationVariable(aliasName);
-            this.getParentExpression().setGenerateThisPrefix(true);
+            this.getParentExpression().setGenerateImplicitThisAlias(true);
         }
     }
 

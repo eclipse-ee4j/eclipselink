@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -6315,7 +6315,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
     public final void test_Update_24() {
         String jpqlQuery = "UPDATE Employee SET e";
         int position = "UPDATE Employee SET ".length();
-        testHasOnlyTheseProposals(jpqlQuery, position, "employee");
+        testHasOnlyTheseProposals(jpqlQuery, position, "this");
     }
 
     @Test
