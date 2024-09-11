@@ -2598,7 +2598,7 @@ public class ExpressionOperator implements Serializable {
     }
 
     /**
-     * Return the argumentIndices if set, otherwise initialize argumentIndices to the provided size
+     * Returns the argumentIndices if set, otherwise returns an array of indexes of the provided size.
      */
     public int[] getArgumentIndices(int size) {
         int[] indices = this.argumentIndices;
@@ -2610,7 +2610,11 @@ public class ExpressionOperator implements Serializable {
         for (int i = 0; i < indices.length; i++) {
             indices[i] = i;
         }
-        this.argumentIndices = indices;
+
+        // NOTE: Why not cache the newly generated array of indexes like "this.argumentIndices = indices" here?
+        // The reason is that some operators have variable number of arguments like COALESCE and CASE WHEN.
+        // As instances of this class are shared between threads we cannot cache the array of indexes.
+
         return indices;
     }
 

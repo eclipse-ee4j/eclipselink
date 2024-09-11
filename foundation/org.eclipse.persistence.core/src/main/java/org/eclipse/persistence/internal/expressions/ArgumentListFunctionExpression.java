@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -94,10 +94,9 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        ListExpressionOperator realOperator;
-        realOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
+        ListExpressionOperator realOperator = (ListExpressionOperator) getPlatformOperator(printer.getPlatform());
         operator.copyTo(realOperator);
-        ((ListExpressionOperator) realOperator).setIsComplete(true);
+        realOperator.setIsComplete(true);
         realOperator.printCollection(this.children, printer);
     }
 
