@@ -16,8 +16,13 @@
 //
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.WordParser;
@@ -89,7 +94,15 @@ public final class JPQLExpression extends AbstractExpression implements ParentEx
      */
     private boolean jakartaData = false;
 
-    private boolean generateThisPrefix = false;
+    /**
+     * Flag if missing alias {@code this} is automatically generated.
+     */
+    private boolean generateImplicitThisAlias = false;
+
+    /**
+     * List of possible {@code IdentificationVariable} where {@code this} should be generated.
+     */
+    private List<IdentificationVariable> identificationVariablesWithoutAlias = new ArrayList<>();
 
     /**
      * Creates a new <code>JPQLExpression</code>, which is the root of the JPQL parsed tree.
@@ -162,6 +175,12 @@ public final class JPQLExpression extends AbstractExpression implements ParentEx
             jpqlFragment = preParse(jpqlFragment);
         }
         parse(new WordParser(jpqlFragment), tolerant);
+        if (generateImplicitThisAlias && getIdentificationVariablesWithoutAlias() != null) {
+            for (IdentificationVariable identificationVariable : getIdentificationVariablesWithoutAlias()) {
+                identificationVariable.setThisVirtualIdentificationVariable(false);
+            }
+            identificationVariablesWithoutAlias = new ArrayList<>();
+        }
     }
 
     /**
@@ -257,13 +276,13 @@ public final class JPQLExpression extends AbstractExpression implements ParentEx
     }
 
     @Override
-    public boolean isGenerateThisPrefix() {
-        return generateThisPrefix;
+    public boolean isGenerateImplicitThisAlias() {
+        return generateImplicitThisAlias;
     }
 
     @Override
-    public void setGenerateThisPrefix(boolean generateThisPrefix) {
-        this.generateThisPrefix = generateThisPrefix;
+    public void setGenerateImplicitThisAlias(boolean generateImplicitThisAlias) {
+        this.generateImplicitThisAlias = generateImplicitThisAlias;
     }
 
     @Override
@@ -299,6 +318,11 @@ public final class JPQLExpression extends AbstractExpression implements ParentEx
             unknownEndingStatement = buildNullExpression();
         }
         return unknownEndingStatement;
+    }
+
+    @Override
+    public List<IdentificationVariable> getIdentificationVariablesWithoutAlias() {
+        return identificationVariablesWithoutAlias;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -4176,7 +4176,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
         // UPDATE DateTime SET date = CURRENT_DATE
 
         ExpressionTester updateStatement = updateStatement(
-            update("DateTime", set("{datetime}.date", CURRENT_DATE()))
+            update("DateTime", "this", set("{this}.date", CURRENT_DATE()), false)
         );
 
         testQuery(query_177(), updateStatement, jpqlGrammar);
@@ -5248,7 +5248,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
         String jpqlQuery = "UPDATE Employee SET avg = 'JPQL'";
 
         UpdateStatementTester updateStatement = updateStatement(
-            update("Employee", set("{employee}.avg", string("'JPQL'")))
+            update("Employee", "this", set("{this}.avg", string("'JPQL'")), false)
         );
 
         testQuery(jpqlQuery, updateStatement, jpqlGrammar, buildStringFormatter_1());
@@ -5264,7 +5264,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
         String jpqlQuery = "UPDATE Employee SET current_timestamp = 'JPQL'";
 
         UpdateStatementTester updateStatement = updateStatement(
-            update("Employee", set("{employee}.current_timestamp", string("'JPQL'")))
+            update("Employee", "this", set("{this}.current_timestamp", string("'JPQL'")), false)
         );
 
         testQuery(jpqlQuery, updateStatement, jpqlGrammar, buildStringFormatter_2());
@@ -5280,7 +5280,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
         String jpqlQuery = "UPDATE Employee SET end = 'JPQL'";
 
         UpdateStatementTester updateStatement = updateStatement(
-            update("Employee", set("{employee}.end", string("'JPQL'")))
+            update("Employee", "this", set("{this}.end", string("'JPQL'")), false)
         );
 
         testQuery(jpqlQuery, updateStatement, jpqlGrammar, buildStringFormatter_3());

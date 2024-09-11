@@ -18,6 +18,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
+import java.util.List;
+
 /**
  * This expression wraps a sub-expression within parenthesis.
  *
@@ -48,13 +50,13 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression im
     }
 
     @Override
-    public boolean isGenerateThisPrefix() {
+    public boolean isGenerateImplicitThisAlias() {
         return generateThisPrefix;
     }
 
     @Override
-    public void setGenerateThisPrefix(boolean generateThisPrefix) {
-        this.generateThisPrefix = generateThisPrefix;
+    public void setGenerateImplicitThisAlias(boolean generateImplicitThisAlias) {
+        this.generateThisPrefix = generateImplicitThisAlias;
     }
 
     @Override
@@ -100,5 +102,10 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression im
     @Override
     protected boolean handleCollection(JPQLQueryBNF queryBNF) {
         return true;
+    }
+
+    @Override
+    public List<IdentificationVariable> getIdentificationVariablesWithoutAlias() {
+        return null;
     }
 }

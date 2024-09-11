@@ -525,7 +525,7 @@ public abstract class AbstractExpression implements Expression {
      * @return  Parent expression
      */
     public final ParentExpression getParentExpression() {
-        if (!(this.isSubExpression()) && (this.isParentExpression())) {
+        if (parent == null || (!(this.isSubExpression()) && (this.isParentExpression()))) {
             return (ParentExpression)this;
         } else {
             return parent.getParentExpression();
@@ -602,6 +602,12 @@ public abstract class AbstractExpression implements Expression {
         return false;
     }
 
+
+    /**
+     * Flag if expression is a parent/root in the tree.
+     *
+     * @return {@code boolean} {@code true} - yes it's parent/root , {@code false} - if not
+     */
     public boolean isParentExpression() {
         return false;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,7 +79,7 @@ public final class EclipseLinkJPQLParserTests2_5 extends JPQLParserTest {
         // UPDATE DateTime SET timestamp = CURRENT_TIMESTAMP
 
         ExpressionTester updateStatement = updateStatement(
-            update("DateTime", set("{datetime}.timestamp", CURRENT_TIMESTAMP()))
+            update("DateTime", "this", set("{this}.timestamp", CURRENT_TIMESTAMP()), false)
         );
 
         testQuery(query_006(), updateStatement, buildQueryFormatter_1());
@@ -91,7 +91,7 @@ public final class EclipseLinkJPQLParserTests2_5 extends JPQLParserTest {
         // UPDATE DateTime SET scn = CURRENT_TIMESTAMP
 
         ExpressionTester updateStatement = updateStatement(
-            update("DateTime", set("{datetime}.scn", CURRENT_TIMESTAMP()))
+            update("DateTime", "this", set("{this}.scn", CURRENT_TIMESTAMP()), false)
         );
 
         testQuery(query_007(), updateStatement, buildQueryFormatter_2());

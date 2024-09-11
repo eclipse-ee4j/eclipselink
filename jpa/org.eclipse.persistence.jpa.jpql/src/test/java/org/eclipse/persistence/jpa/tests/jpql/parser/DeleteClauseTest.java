@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +67,7 @@ public final class DeleteClauseTest extends JPQLParserTest {
 
         RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclaration(
             abstractSchemaName("Employee"),
-            virtualVariable("employee")
+            virtualVariable("this")
         );
         rangeVariableDeclaration.hasSpaceAfterAbstractSchemaName = false;
 
@@ -87,7 +87,7 @@ public final class DeleteClauseTest extends JPQLParserTest {
             delete(
                 rangeVariableDeclaration(
                     abstractSchemaName("Employee"),
-                    virtualVariable("employee")
+                    virtualVariable("this")
                 )
             )
         );
@@ -102,7 +102,7 @@ public final class DeleteClauseTest extends JPQLParserTest {
 
         RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclarationAs(
             abstractSchemaName("Employee"),
-            virtualVariable("employee")
+            virtualVariable("this")
         );
         rangeVariableDeclaration.hasSpaceAfterAs = false;
 
@@ -131,7 +131,7 @@ public final class DeleteClauseTest extends JPQLParserTest {
         String query = "DELETE FROM Employee AS WHERE";
 
         DeleteStatementTester deleteStatement = deleteStatement(
-            deleteAs(abstractSchemaName("Employee"), virtualVariable("employee")),
+            deleteAs(abstractSchemaName("Employee"), virtualVariable("this")),
             where(nullExpression())
         );
 
@@ -162,7 +162,7 @@ public final class DeleteClauseTest extends JPQLParserTest {
         whereClause.hasSpaceAfterIdentifier = true;
 
         DeleteStatementTester deleteStatement = deleteStatement(
-            deleteAs(abstractSchemaName("Employee"), virtualVariable("employee")),
+            deleteAs(abstractSchemaName("Employee"), virtualVariable("this")),
             whereClause
         );
 
