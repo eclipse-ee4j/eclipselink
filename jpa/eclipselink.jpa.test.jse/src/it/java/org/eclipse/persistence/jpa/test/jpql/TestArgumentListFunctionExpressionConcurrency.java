@@ -47,11 +47,12 @@ public class TestArgumentListFunctionExpressionConcurrency {
         runInParallel((em, i) -> {
             String jpql;
             if (i % 2 == 0) {
-                jpql = "SELECT p FROM JPQLEntity p  WHERE p.string1 = coalesce(p.string2, p.string1, '" + cacheBuster(i) + "')";
-            } else {
                 jpql = "SELECT p FROM JPQLEntity p  WHERE p.string1 = coalesce(p.string2, '" + cacheBuster(i) + "')";
+            } else {
+                jpql = "SELECT p FROM JPQLEntity p  WHERE p.string1 = coalesce(p.string2, p.string1, '" + cacheBuster(i) + "')";
             }
             em.createQuery(jpql, JPQLEntity.class).getResultList();
+            System.out.println(Thread.currentThread().getName() + " - " + i % 2);
         });
     }
 
