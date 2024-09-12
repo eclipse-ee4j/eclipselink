@@ -97,8 +97,7 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        ListExpressionOperator realOperator;
-        realOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
+        ListExpressionOperator realOperator = (ListExpressionOperator) getPlatformOperator(printer.getPlatform());
         operator.copyTo(realOperator);
         realOperator.setIsComplete(true);
         realOperator.printCollection(this.children, printer);
