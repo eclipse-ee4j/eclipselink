@@ -22,6 +22,7 @@ public class BeanValidationTableCreator extends TableCreator {
         setName("BeanValidationEmployeeProject");
 
         addTableDefinition(buildProjectTable());
+        addTableDefinition(buildTaskTable());
         addTableDefinition(buildEmployeeTable());
         addTableDefinition(buildEmployeeProjectTable());
     }
@@ -53,6 +54,54 @@ public class BeanValidationTableCreator extends TableCreator {
         return table;
     }
 
+    public TableDefinition buildTaskTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_BV_TASK");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldVersion = new FieldDefinition();
+        fieldVersion.setName("VERSION");
+        fieldVersion.setTypeName("NUMBER");
+        fieldVersion.setSize(19);
+        fieldVersion.setSubSize(0);
+        fieldVersion.setIsPrimaryKey(false);
+        fieldVersion.setIsIdentity(false);
+        fieldVersion.setShouldAllowNull(false);
+        table.addField(fieldVersion);
+        
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(20);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        FieldDefinition fieldPriority = new FieldDefinition();
+        fieldPriority.setName("PRIORITY");
+        fieldPriority.setTypeName("NUMBER");
+        fieldPriority.setSize(19);
+        fieldPriority.setSubSize(0);
+        fieldPriority.setIsPrimaryKey(false);
+        fieldPriority.setIsIdentity(false);
+        fieldPriority.setShouldAllowNull(false);
+        table.addField(fieldPriority);
+
+        return table;
+    }
+
+    
     public TableDefinition buildEmployeeTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_BV_EMPLOYEE");
