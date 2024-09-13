@@ -14,8 +14,12 @@
 //      Marcel Valovy
 package org.eclipse.persistence.testing.tests.jpa.beanvalidation;
 
+import java.util.Vector;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.RollbackException;
 import jakarta.persistence.TypedQuery;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -23,11 +27,13 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.Address;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.BeanValidationTableCreator;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.Employee;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.Project;
+import org.eclipse.persistence.testing.models.jpa.beanvalidation.Task;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +68,9 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsLoadingOfLazyRelationships"));
         suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsTraversingRelationshipMultipleTimes"));
         suite.addTest(new BeanValidationJunitTest("testValidateChangedData"));
+        suite.addTest(new BeanValidationJunitTest("testPessimisticLockWithInvalidData"));
+        suite.addTest(new BeanValidationJunitTest("testPessimisticLockUpdateObjectWithInvalidData"));
+        suite.addTest(new BeanValidationJunitTest("testPessimisticLockUpdateObjectWithValidData"));
         return suite;
     }
 
@@ -390,6 +399,158 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+    }
+    
+    /**
+     * Strategy:
+     * 1. Update an Employee and related project to trigger validation on it
+     * 2. Find the object using its primary key, with a pessimistic lock
+     * 3. Do not change the object
+     * 4. End the transaction
+     * 5. The version field should be incremented in the database, but no other changes
+     * 6. No validation exceptions should be thrown
+     */
+    public void testPessimisticLockWithInvalidData() throws Exception {
+        try {
+            getDatabaseSession().executeNonSelectingSQL("insert into CMP3_BV_TASK values (900, 1, NULL, 1)");
+        } catch (Throwable t) {
+            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, t);
+        }
+        clearCache();
+        Map<String, Object> props = new HashMap<>();
+        props.put("eclipselink.weaving", "false");
+        EntityManagerFactory factory = getEntityManagerFactory(props);
+        EntityManager em = factory.createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            Task task = em.find(Task.class, 900, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+            
+            commitTransaction(em);
+            
+            Vector<DatabaseRecord> resultSet = getDatabaseSession().executeSQL("select * from CMP3_BV_TASK where ID=900");
+            assertEquals(1, resultSet.size());
+            
+            final DatabaseRecord dr = resultSet.firstElement();
+            assertEquals(900L, dr.get("ID"));
+            assertEquals(2L, dr.get("VERSION")); // should be incremented by the pessimistic lock
+            assertNull(dr.get("NAME")); // should be unchanged
+            assertEquals(1L, dr.get("PRIORITY")); // should be unchanged
+            
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Strategy:
+     * 1. Update an Employee and related project to trigger validation on it
+     * 2. Find the object using its primary key, with a pessimistic lock
+     * 3. Change the object with still invalid data
+     * 4. End the transaction
+     * 5. The version field should be incremented in the database, but no other changes
+     * 6. A validation exception should be thrown
+     */
+    public void testPessimisticLockUpdateObjectWithInvalidData() throws Exception {
+        try {
+            getDatabaseSession().executeNonSelectingSQL("insert into CMP3_BV_TASK values (901, 1, NULL, 1)");
+        } catch (Throwable t) {
+            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, t);
+        }
+        clearCache();
+        Map<String, Object> props = new HashMap<>();
+        props.put("eclipselink.weaving", "false");
+        boolean gotConstraintViolations = false;
+        EntityManagerFactory factory = getEntityManagerFactory(props);
+        EntityManager em = factory.createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            Task task = em.find(Task.class, 901, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+            task.setPriority(2);
+            
+            commitTransaction(em);
+        }  catch (RollbackException e) {
+            // we're expecting a rollback exception because we've changed the object
+            // and it isn't passing validation. Check that the cause is a ConstraintViolationException.
+
+            final ConstraintViolationException cve = (ConstraintViolationException) e.getCause();
+            final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+            final ConstraintViolation constraintViolation = constraintViolations.iterator().next();
+            assertEquals("must not be null", constraintViolation.getMessage());
+            gotConstraintViolations = true;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+
+        assertTrue("Did not get Constraint Violation while persisting invalid data ", gotConstraintViolations);
+        
+        Vector resultSet = getDatabaseSession().executeSQL("select * from CMP3_BV_TASK where ID=901");
+        assertEquals(1, resultSet.size());
+        
+        final DatabaseRecord dr = (DatabaseRecord) resultSet.firstElement();
+        assertEquals(901L, dr.get("ID"));
+        assertEquals(1L, dr.get("VERSION")); // should be unchanged
+        assertNull(dr.get("NAME")); // should be unchanged
+        assertEquals(1L, dr.get("PRIORITY")); // should be unchanged
+    }
+
+    /**
+     * Strategy:
+     * 1. Update an Employee and related project to trigger validation on it
+     * 2. Find the object using its primary key, with a pessimistic lock
+     * 3. Change the object to have valid data
+     * 4. End the transaction
+     * 5. The version field should be incremented in the database along with the other changes
+     * 6. No validation exceptions should be thrown
+     */
+    public void testPessimisticLockUpdateObjectWithValidData() throws Exception {
+        try {
+            getDatabaseSession().executeNonSelectingSQL("insert into CMP3_BV_TASK values (902, 1, NULL, 1)");
+        } catch (Throwable t) {
+            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, t);
+        }
+        clearCache();
+        Map<String, Object> props = new HashMap<>();
+        props.put("eclipselink.weaving", "false");
+        boolean gotConstraintViolations = false;
+        EntityManagerFactory factory = getEntityManagerFactory(props);
+        EntityManager em = factory.createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            Task task = em.find(Task.class, 902, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+            task.setPriority(2);
+            task.setName("Do some work");
+            
+            commitTransaction(em);
+        } catch (ConstraintViolationException e) {
+            gotConstraintViolations = true;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+
+        assertFalse("Got Constraint Violation while persisting valid data ", gotConstraintViolations);
+        
+        Vector resultSet = getDatabaseSession().executeSQL("select * from CMP3_BV_TASK where ID=902");
+        assertEquals(1, resultSet.size());
+        
+        final DatabaseRecord dr = (DatabaseRecord) resultSet.firstElement();
+        assertEquals(902L, dr.get("ID"));
+        assertEquals(2L, dr.get("VERSION")); // should be incremented by the pessimistic lock
+        assertEquals("Do some work", dr.get("NAME")); // new value
+        assertEquals(2L, dr.get("PRIORITY")); // new value
     }
 
     //--------------------Helper Methods ---------------//
