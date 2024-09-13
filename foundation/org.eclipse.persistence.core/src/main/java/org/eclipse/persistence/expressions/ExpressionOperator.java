@@ -2381,10 +2381,10 @@ public class ExpressionOperator implements Serializable {
 
         // Empty `this.argumentIndices` means the operator expects a list of arguments with a variable length.
         // #2136: As operator's state is shared among all threads, we are not allowed to modify the field `this.argumentIndices`.
-        int[] argumentIndexes = (this.argumentIndices != null ? this.argumentIndices : arrayIndexSequence(items.size()));
+        int[] indices = (this.argumentIndices != null ? this.argumentIndices : arrayIndexSequence(items.size()));
 
         String[] dbStrings = getDatabaseStrings(items.size());
-        for (final int index : argumentIndices) {
+        for (final int index : indices) {
             Expression item = items.get(index);
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
                 DatabaseTable alias = item.aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
