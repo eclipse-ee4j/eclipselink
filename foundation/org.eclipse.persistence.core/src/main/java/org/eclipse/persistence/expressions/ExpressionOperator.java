@@ -2384,7 +2384,7 @@ public class ExpressionOperator implements Serializable {
         int[] argumentIndexes = (this.argumentIndices != null ? this.argumentIndices : arrayIndexSequence(items.size()));
 
         String[] dbStrings = getDatabaseStrings(items.size());
-        for (final int index : this.argumentIndices) {
+        for (final int index : argumentIndices) {
             Expression item = items.get(index);
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
                 DatabaseTable alias = item.aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
