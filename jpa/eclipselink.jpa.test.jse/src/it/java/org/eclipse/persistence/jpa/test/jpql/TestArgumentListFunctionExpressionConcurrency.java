@@ -96,8 +96,11 @@ public class TestArgumentListFunctionExpressionConcurrency {
                             return;
                         }
 
-                        try (EntityManager em = emf.createEntityManager()) {
+                        EntityManager em = emf.createEntityManager();
+                        try {
                             runnable.accept(em, i);
+                        } finally {
+                            em.close();
                         }
 
                     }
