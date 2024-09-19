@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,9 +115,10 @@
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
             <fileset dir="${extension.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
+                <include name="${about-file}"/>
+                <include name="${license-file}"/>
+                <include name="${notice-file}"/>
+                <include name="${readme-file}"/>
             </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
@@ -129,9 +130,10 @@
         <delete file="${extension.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
         <jar jarfile="${extension.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" duplicate="preserve" manifest="${extension.manifest.file}">
             <fileset dir="${extension.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
+                <include name="${about-file}"/>
+                <include name="${license-file}"/>
+                <include name="${notice-file}"/>
+                <include name="${readme-file}"/>
             </fileset>
             <fileset dir="${compiled_classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
