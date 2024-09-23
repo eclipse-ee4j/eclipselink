@@ -309,11 +309,13 @@
     <target name="jar-feature" description="General target for packaging a feature">
         <jar jarfile="${feature.build.dir}/${feature.name}_${version.string}.jar" duplicate="preserve">
             <fileset dir="${feature.common.dir}">
-                <include name="*.html"/>
+                <include name="*.MD"/>
             </fileset>
             <fileset dir="${feature.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
+                <include name="${about-file}"/>
+                <include name="${license-file}"/>
+                <include name="${notice-file}"/>
+                <include name="${readme-file}"/>
             </fileset>
             <fileset dir="${classes.dir}/${feature.name}">
                 <include name="*.*"/>

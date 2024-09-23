@@ -314,7 +314,7 @@
                                     <zipgroupfileset dir="../../target">
                                         <include name="${project.artifactId}.source_${release.version}.${build.qualifier}-sources.jar"/>
                                     </zipgroupfileset>
-                                    <fileset dir="../../buildsystem/org.eclipse.persistence.parent/resource" includes="*.html"/>
+                                    <fileset dir="../../buildsystem/org.eclipse.persistence.parent/resource" includes="*.md"/>
                                 </zip>
                             </target>
                         </configuration>

@@ -1142,8 +1142,9 @@
             <!-- Include license files first to ensure the right ones are included -->
             <fileset dir=".">
                 <include name="${about-file}"/>
+                <include name="${license-file}"/>
+                <include name="${notice-file}"/>
                 <include name="${readme-file}"/>
-                <include name="${license-files}"/>
             </fileset>
             <!-- Include all non-duplicate content from bOSGi bundles -->
             <zipgroupfileset dir="${eclipselink.plugins}">
@@ -1250,8 +1251,9 @@
             <!-- Include license files first to ensure the right ones are included -->
             <zipfileset dir=".">
                 <include name="${about-file}"/>
+                <include name="${license-file}"/>
+                <include name="${notice-file}"/>
                 <include name="${readme-file}"/>
-                <include name="${license-files}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
@@ -1295,8 +1297,9 @@
             <!-- Include license files first to ensure the right ones are included -->
             <zipfileset dir=".">
                 <include name="${about-file}"/>
+                <include name="${license-file}"/>
+                <include name="${notice-file}"/>
                 <include name="${readme-file}"/>
-                <include name="${license-files}"/>
             </zipfileset>
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="${asm.src.jar}"/>
@@ -1691,8 +1694,9 @@
             <!-- miscellaneous files -->
             <zipfileset dir="." prefix="eclipselink">
                 <include name="${about-file}"/>
+                <include name="${license-file}"/>
+                <include name="${notice-file}"/>
                 <include name="${readme-file}"/>
-                <include name="${license-files}"/>
                 <include name="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
                 <include name="${jpars.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
             </zipfileset>
@@ -1777,8 +1781,9 @@
         <zip destfile="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir=".">
                 <include name="${about-file}"/>
+                <include name="${license-file}"/>
+                <include name="${notice-file}"/>
                 <include name="${readme-file}"/>
-                <include name="${license-files}"/>
                 <include name="${nosql.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}">
