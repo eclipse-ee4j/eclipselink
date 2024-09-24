@@ -25,7 +25,11 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.fro
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.inputParameter;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.isNotNull;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.max;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.new_;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.numeric;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.orderBy;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.orderByItemAsc;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.orderByItemDesc;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.path;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.select;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.selectStatement;
@@ -233,6 +237,38 @@ public final class JPQLExpressionTestJakartaData extends JPQLParserTest {
                 select(division(virtualVariable("this", "totalPrice"), virtualVariable("this", "quantity"))),
                 from("Order", "{this}"),
                 where(equal(virtualVariable("this", "creationYear"), inputParameter(":yearParam")))
+        );
+
+        testJakartaDataQuery(inputJPQLQuery, selectStatement);
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2185
+    @Test
+    public void testSelectWithImplicitThisAliasAndEnum() {
+
+        String inputJPQLQuery = "SELECT NEW com.oracle.jpa.bugtest.Rebate(id, amount, customerId, purchaseMadeAt, purchaseMadeOn, status, updatedAt, version) " +
+                                "FROM Rebate " +
+                                "WHERE customerId=:customerIdParam AND status=com.oracle.jpa.bugtest.Rebate.Status.PAID " +
+                                "ORDER BY amount DESC, id ASC";
+
+        SelectStatementTester selectStatement = selectStatement(
+                select(
+                        new_(
+                                "com.oracle.jpa.bugtest.Rebate",
+                                virtualVariable("this", "id"),
+                                virtualVariable("this", "amount"),
+                                virtualVariable("this", "customerId"),
+                                virtualVariable("this", "purchaseMadeAt"),
+                                virtualVariable("this", "purchaseMadeOn"),
+                                virtualVariable("this", "status"),
+                                virtualVariable("this", "updatedAt"),
+                                virtualVariable("this", "version")
+                        )
+                ),
+                from("Rebate", "{this}"),
+                where(and(equal(virtualVariable("this", "customerId"), inputParameter(":customerIdParam")),
+                        equal(virtualVariable("this", "status"), path("com.oracle.jpa.bugtest.Rebate.Status.PAID")))),
+                orderBy(orderByItemDesc(virtualVariable("this", "amount")), orderByItemAsc(virtualVariable("this", "id")))
         );
 
         testJakartaDataQuery(inputJPQLQuery, selectStatement);

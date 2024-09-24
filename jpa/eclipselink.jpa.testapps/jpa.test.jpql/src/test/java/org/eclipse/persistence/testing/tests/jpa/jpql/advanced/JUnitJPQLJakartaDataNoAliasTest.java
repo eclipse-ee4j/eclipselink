@@ -55,10 +55,10 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     private static final String STRING_DATA_LIKE_EXPRESSION = "A%"; // should match STRING_DATA
     private static final Room[] ROOMS = new Room[]{
         null, // Skip array index 0
-        aRoom(1, 1, 1, 1),
-        aRoom(2, 1, 1, 1),
-        aRoom(3, 1, 1, 1),
-        aRoom(4, 1, 1, 1)
+        aRoom(1, 1, 1, 1, Room.Status.FREE),
+        aRoom(2, 1, 1, 1, Room.Status.FREE),
+        aRoom(3, 1, 1, 1, Room.Status.OCCUPIED),
+        aRoom(4, 1, 1, 1, Room.Status.OCCUPIED)
     };
     private static final long ROOMS_COUNT = ROOMS.length - 1; // we ignore the first one with index 0
 
@@ -110,6 +110,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableInPath"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableInAggregateFunctionPath"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableInArithmeticExpression"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableAndEnum"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateImplicitVariableInArithmeticExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnLeft"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnRight"));
@@ -367,6 +368,20 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         assertEquals(ROOMS[1].getLength() * ROOMS[1].getWidth() * ROOMS[1].getHeight(), roomCapacity);
     }
 
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2185
+    public void testSelectQueryImplicitThisVariableAndEnum() {
+        resetRooms();
+        List<Room> rooms = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                        "SELECT NEW org.eclipse.persistence.testing.models.jpa.advanced.Room(id, width, length, height, status) " +
+                                "FROM Room " +
+                                "WHERE id = :idParam AND status=org.eclipse.persistence.testing.models.jpa.advanced.Room.Status.FREE " +
+                                "ORDER BY width DESC, id ASC",
+                        Room.class)
+                .setParameter("idParam", ROOMS[1].getId())
+                .getResultList());
+        assertEquals(ROOMS[1], rooms.get(0));
+    }
+
     public void testUpdateImplicitVariableInArithmeticExpression() {
         resetRooms();
         int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
@@ -466,12 +481,13 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         });
     }
 
-    private static Room aRoom(int id, int width, int length, int height) {
+    private static Room aRoom(int id, int width, int length, int height, Room.Status status) {
         Room room = new Room();
         room.setId(id);
         room.setWidth(width);
         room.setLength(length);
         room.setHeight(height);
+        room.setStatus(status);
         return room;
     }
 
