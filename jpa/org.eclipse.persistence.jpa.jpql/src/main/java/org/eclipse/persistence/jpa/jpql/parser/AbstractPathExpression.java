@@ -212,7 +212,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
                 identificationVariable = buildNullExpression();
             }
             else {
-                identificationVariable = new IdentificationVariable(this, paths.get(0));
+                identificationVariable = new IdentificationVariable(this, paths.get(0), false);
             }
         }
     }

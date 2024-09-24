@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2655,6 +2655,16 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldHEIGHT.setUnique(false);
         fieldHEIGHT.setShouldAllowNull(true);
         table.addField(fieldHEIGHT);
+
+        FieldDefinition fieldSTATUS = new FieldDefinition();
+        fieldSTATUS.setName("STATUS");
+        fieldSTATUS.setTypeName("VARCHAR");
+        fieldSTATUS.setSize(32);
+        fieldSTATUS.setIsPrimaryKey(false);
+        fieldSTATUS.setIsIdentity(false);
+        fieldSTATUS.setUnique(false);
+        fieldSTATUS.setShouldAllowNull(true);
+        table.addField(fieldSTATUS);
 
         return table;
     }

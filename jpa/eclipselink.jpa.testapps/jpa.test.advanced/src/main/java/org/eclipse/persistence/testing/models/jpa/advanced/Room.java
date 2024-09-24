@@ -43,14 +43,32 @@ import java.util.Collection;
         })
 })
 public class Room implements Serializable, Cloneable {
+
+    public enum Status {
+        FREE, OCCUPIED;
+    }
+
     @Id
     private int id;
     private int width;
     private int length;
     private int height;
+    private Status status;
 
     @OneToMany(mappedBy="room", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private Collection<Door> doors;
+
+    public Room() {
+    }
+
+    public Room(int id, int width, int length, int height, Status status) {
+        this.id = id;
+        this.width = width;
+        this.length = length;
+        this.height = height;
+        this.status = status;
+        this.doors = doors;
+    }
 
     public int getId() {
         return id;
@@ -82,6 +100,14 @@ public class Room implements Serializable, Cloneable {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Collection<Door> getDoors() {
