@@ -14,16 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.identitymaps;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.eclipse.persistence.exceptions.ConcurrencyException;
-import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Record;
 
+import java.util.concurrent.TimeUnit;
 /**
  * <p><b>Purpose</b>: Container class for storing objects in an IdentityMap.
  * <p><b>Responsibilities</b>:<ul>
@@ -34,51 +32,10 @@ import org.eclipse.persistence.sessions.Record;
  */
 public class CacheKey extends ConcurrencyManager implements Cloneable {
 
-    public static final AtomicLong CACHE_KEY_INSTANCE_CREATION_NUMBER_GENERATOR = new AtomicLong(1l);
-
     //These constants are used in extended cache logging to compare cache item creation thread and thread which picking item from the cache
     public final long CREATION_THREAD_ID = Thread.currentThread().getId();
     public final String CREATION_THREAD_NAME = String.copyValueOf(Thread.currentThread().getName().toCharArray());
     public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
-
-    /**
-     * A technical instanace creation number we use as "last-second" saving value
-     * in case the cache key is found to be corrupted with Null Key value as see in {@code TRK-25534}
-     * we use this value to ensure that the EQUALS and HASH CODE methods never blow up on account of a null corrupted primary key.
-     */
-    protected final long cacheKeyInstanceCreationNumber = CACHE_KEY_INSTANCE_CREATION_NUMBER_GENERATOR.getAndIncrement();
-
-    //TODO RFELCMAN enum - begin?
-    /**
-     * Value we want to set into the field
-     * {@link #org.eclipse.persistence.internal.identitymaps.CacheKey.primaryKeyAtTimeOfCreation}
-     * if the cache key instances is created with the no argument constructor.
-     */
-    protected static final String PRIMARY_KEY_AT_TIME_OF_CONSTRUCTION_NULL_NO_ARGUMENT_CONTRUCTOR_USED = "PRIMARY_KEY_AT_TIME_OF_CONSTRUCTION_NULL_NO_ARGUMENT_CONTRUCTOR_USED";
-    /**
-     *  Value we want to set into the field
-     * {@link #org.eclipse.persistence.internal.identitymaps.CacheKey.primaryKeyAtTimeOfCreation}
-     * if the cache key instances is created with a constructor that allows the primary key as an argument but the primary key is null..
-     */
-    protected static final String PRIMARY_KEY_AT_TIME_OF_CONSTRUCTION_NULL_A_NULL_PRIMARY_KEY_WAS_PASSED_IN_TO_OBJECT_CONSTRUCTOR = "PRIMARY_KEY_AT_TIME_OF_CONSTRUCTION_NULL_A_NULL_PRIMARY_KEY_WAS_PASSED_IN_TO_OBJECT_CONSTRUCTOR";
-    //TODO RFELCMAN enum - end?
-
-    /**
-     * This field relates to an unexpected situation see in issue
-     * {@code TRK-25534}
-     * whereby the manipualted eclipselink code created to trace the acuisition and contention of concurrency manager
-     * resources started blowing up during the release of read locks because for whatever reasons
-     * the cache key bein released from reading managed to find itself with the primary key set to null,
-     * This is something we never saw before.
-     * Even though we normally never see the key field set to null since there is no purpose to cache key without a key
-     * the fact is that it hapened and methods like Equals and HashCode were completely broken.
-     * One could not longer remove cache keys from Lists, Vectors or check if the cache keys existed in an hash map.
-     *
-     * So this field is meant to help us know what was itented purpose with which the key was originally created.
-     *
-     *
-     */
-    protected final Object primaryKeyAtTimeOfCreation;
 
     /** The key holds the vector of primary key values for the object. */
     protected Object key;
@@ -146,18 +103,10 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * by switching to an interface.
      */
     protected CacheKey(){
-        // make sure we trace the primary key for which the cache key was created in an immutable field
-        this.primaryKeyAtTimeOfCreation = PRIMARY_KEY_AT_TIME_OF_CONSTRUCTION_NULL_NO_ARGUMENT_CONTRUCTOR_USED;
     }
 
     public CacheKey(Object primaryKey) {
         this.key = primaryKey;
-        // make sure we trace the primary key for which the cache key was created in an immutable field
-        if(primaryKey == null) {
-            this.primaryKeyAtTimeOfCreation = PRIMARY_KEY_AT_TIME_OF_CONSTRUCTION_NULL_A_NULL_PRIMARY_KEY_WAS_PASSED_IN_TO_OBJECT_CONSTRUCTOR;
-        } else {
-            this.primaryKeyAtTimeOfCreation = primaryKey;
-        }
     }
 
     public CacheKey(Object primaryKey, Object object, Object lockValue) {
@@ -166,13 +115,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         //bug4649617  use setter instead of this.object = object to avoid hard reference on object in subclasses
         if (object != null) {
             setObject(object);
-        }
-
-        // make sure we trace the primary key for which the cache key was created in an immutable field
-        if(primaryKey == null) {
-            this.primaryKeyAtTimeOfCreation = PRIMARY_KEY_AT_TIME_OF_CONSTRUCTION_NULL_A_NULL_PRIMARY_KEY_WAS_PASSED_IN_TO_OBJECT_CONSTRUCTOR;
-        } else {
-            this.primaryKeyAtTimeOfCreation = primaryKey;
         }
     }
 
@@ -185,19 +127,11 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         }
         this.readTime = readTime;
         this.isIsolated = isIsolated;
-
-     // make sure we trace the primary key for which the cache key was created in an immutable field
-        if(primaryKey == null) {
-            this.primaryKeyAtTimeOfCreation = PRIMARY_KEY_AT_TIME_OF_CONSTRUCTION_NULL_A_NULL_PRIMARY_KEY_WAS_PASSED_IN_TO_OBJECT_CONSTRUCTOR;
-        } else {
-            this.primaryKeyAtTimeOfCreation = primaryKey;
-        }
     }
 
     /**
      * Acquire the lock on the cache key object.
      */
-    @Override
     public void acquire() {
         if (this.isIsolated) {
             this.depth.incrementAndGet();
@@ -210,7 +144,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Acquire the lock on the cache key object. For the merge process
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
-    @Override
     public void acquire(boolean forMerge) {
         if (this.isIsolated) {
             this.depth.incrementAndGet();
@@ -223,7 +156,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Acquire the lock on the cache key object. But only if the object has no lock on it
      * Added for CR 2317
      */
-    @Override
     public boolean acquireNoWait() {
         if (this.isIsolated) {
             this.depth.incrementAndGet();
@@ -254,7 +186,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Added for CR 2317
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
-    @Override
     public boolean acquireNoWait(boolean forMerge) {
         if (this.isIsolated) {
             this.depth.incrementAndGet();
@@ -268,7 +199,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Added for CR 2317
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
-    @Override
     public boolean acquireWithWait(boolean forMerge, int wait) {
         if (this.isIsolated) {
             this.depth.incrementAndGet();
@@ -280,7 +210,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Acquire the deferred lock.
      */
-    @Override
     public void acquireDeferredLock() {
         if (this.isIsolated) {
             this.depth.incrementAndGet();
@@ -327,7 +256,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * This can be called to ensure the cache key has a valid built object.
      * It does not hold a lock, so the object could be refreshed afterwards.
      */
-    @Override
     public void checkReadLock() {
         if (this.isIsolated) {
             return;
@@ -340,7 +268,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * This can be called to ensure the cache key has a valid built object.
      * It does not hold a lock, so the object could be refreshed afterwards.
      */
-    @Override
     public void checkDeferredLock() {
         if (this.isIsolated) {
             return;
@@ -351,7 +278,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Acquire the read lock on the cache key object.
      */
-    @Override
     public void acquireReadLock() {
         if (this.isIsolated) {
             return;
@@ -362,7 +288,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Acquire the read lock on the cache key object.  Return true if acquired.
      */
-    @Override
     public boolean acquireReadLockNoWait() {
         if (this.isIsolated) {
             return true;
@@ -374,7 +299,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * INTERNAL:
      * Clones itself.
      */
-    @Override
     public Object clone() {
         Object object = null;
 
@@ -392,7 +316,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * If anObject is a CacheKey, do further comparison, otherwise, return false.
      * @see CacheKey#equals(CacheKey)
      */
-    @Override
     public boolean equals(Object object) {
         try {
             return equals((CacheKey)object);
@@ -406,33 +329,10 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Use an index compare, because it is much faster than enumerations.
      */
     public boolean equals(CacheKey key) {
-        if(key == null) {
-            // Bugfix related to tracker TRK-25534
-            // make sure the key we are comparing against is not the null value
-            // NPE exception on equals was probably not at all that the key to compare against was null
-            // but rather that this instance had as primary key the null value since we also saw blow ups in the has code method
-            // but since it is impossible to tell what data was corrupted we make this code safe to compare against null as well
+        if (key.key == null || this.key == null) {
             return false;
         }
-        if (this == key) {
-            return true;
-        }
-
-        if (key.key == null) {
-            return false;
-        }
-
-     // Bugfix related to tracker TRK-25534
-        // we do not know how it is possible that a cache key existed in the system with primary key set to null
-        // but we have seen a stack trace revealing a release acquired read lock piece locking blowing up
-        // because the HackingEclipseReadLockManager.removeReadLock was dealing with a cache key with null primary key
-        if(this.key != null) {
-            return this.key.equals(key.key);
-        } else {
-            // we could just return false since the only way to cache keys have the same creation number is if they
-            // are the same object instance which is already being checked above
-            return this.getCacheKeyInstanceCreationNumber() == key.getCacheKeyInstanceCreationNumber();
-        }
+        return this.key.equals(key.key);
     }
 
     /**
@@ -451,27 +351,8 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     }
 
     /**
-     * Just like the method getKey {@link #key} but this method is skeptical about the fact
-     * that cache keys are in "sane" state. It assumes that it is possible for cache keys to be corrupted
-     * into having null primary key and in that case return the value of the primary key at the ime of creation.
-     * @return The primary key associated to this cache key if it is not null. If it is null than we return a the primary key at the time of creation of this instance object.
-     */
-    public Object getKeyEnsuredToBeNotNull() {
-        // (a) the default pattern here is to simply return the primary key that was set on the cache key object
-        if(this.key != null) {
-            return this.key;
-        }
-        // (b) however, if for some unexpected reason the key of the cache key has be cleared and set to null
-        // we want to return here the Non null value that we setup into this cache key when the object was originally created
-        // this value is guarnteed to be not null since if the constructor has  null primary key we have used a string to indicate
-        // that the cache key was created with null primary key
-        return this.getPrimaryKeyAtTimeOfCreation();
-    }
-
-    /**
      * Return the active thread.
      */
-    @Override
     public Thread getActiveThread() {
         if (this.isIsolated) {
             if (this.depth.get() > 0) {
@@ -522,21 +403,8 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Overrides hashCode() in Object to use the primaryKey's hashCode for storage in data structures.
      */
-    @Override
     public int hashCode() {
-        if(this.key != null) {
-            return this.key.hashCode();
-        } else {
-            // relates to TRK-25534
-            // We do not know how eclipselink managed to get itself into this situation but we have
-            // seen null pointer exceptions taking place while trying to build a massive dump justification on account of
-            // cache keys found in the read lock manager where the with primary key was set to null
-            // so we need to make this code safe
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + (int) (cacheKeyInstanceCreationNumber ^ (cacheKeyInstanceCreationNumber >>> 32));
-            return result;
-        }
+        return this.key.hashCode();
     }
 
     /**
@@ -586,7 +454,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Release the lock on the cache key object.
      */
-    @Override
     public void release() {
         if (this.isIsolated) {
             this.depth.decrementAndGet();
@@ -598,7 +465,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Release the deferred lock
      */
-    @Override
     public void releaseDeferredLock() {
         if (this.isIsolated) {
             this.depth.decrementAndGet();
@@ -610,7 +476,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     /**
      * Release the read lock on the cache key object.
      */
-    @Override
     public void releaseReadLock() {
         if (this.isIsolated) {
             return;
@@ -687,19 +552,13 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         this.writeLockValue = writeLockValue;
     }
 
-    @Override
     public String toString() {
         int hashCode = 0;
         if (getObject() != null) {
             hashCode = getObject().hashCode();
         }
 
-        return "[" + getKey() + ": " + hashCode + ": " + getWriteLockValue() + ": " + getReadTime() + ": " + getObject()
-
-        // new fields introduced on account of the TRK-25534
-               +  " cacheKeyInstanceCreationNumber "  + this.getCacheKeyInstanceCreationNumber()
-               +  " primaryKeyAtTimeOfCreation "  + this.getPrimaryKeyAtTimeOfCreation()
-               + "]";
+        return "[" + getKey() + ": " + hashCode + ": " + getWriteLockValue() + ": " + getReadTime() + ": " + getObject() + "]";
     }
 
     /**
@@ -744,15 +603,5 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         } finally {
             getInstanceLock().unlock();
         }
-    }
-
-    /** Getter for {@link #cacheKeyInstanceCreationNumber} */
-    public long getCacheKeyInstanceCreationNumber() {
-        return cacheKeyInstanceCreationNumber;
-    }
-
-    /** Getter for {@link #primaryKeyAtTimeOfCreation} */
-    public Object getPrimaryKeyAtTimeOfCreation() {
-        return primaryKeyAtTimeOfCreation;
     }
 }
