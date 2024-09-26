@@ -633,6 +633,26 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         assertEquals("Unexpected date value.", "1976-02-17", node.getTextContent());
     }
 
+    public void testXmlEnumWithNumbers() throws Exception {
+        // Tests XmlEnum and XmlEnumValue
+
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLENUM_NUMBERS);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+        DynamicEntity taxRecord = jaxbContext.newDynamicEntity(PACKAGE + "." + TAX_RECORD);
+        assertNotNull("Could not create Dynamic Entity.", taxRecord);
+
+        Object QTR_1 = jaxbContext.getEnumConstant(PACKAGE + "." + PERIOD, "QTR_1");
+        assertNotNull("Could not find enum constant.", QTR_1);
+
+        taxRecord.set("period", QTR_1);
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(taxRecord, marshalDoc);
+
+        assertEquals("QTR1", marshalDoc.getDocumentElement().getTextContent());
+    }
+
     public void testXmlEnum() throws Exception {
         // Tests XmlEnum and XmlEnumValue
 
@@ -1068,6 +1088,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String XMLELEMENTREF = RESOURCE_DIR + "xmlelementref.xsd";
     private static final String XMLSCHEMATYPE = RESOURCE_DIR + "xmlschematype.xsd";
     private static final String XMLENUM = RESOURCE_DIR + "xmlenum.xsd";
+    private static final String XMLENUM_NUMBERS = RESOURCE_DIR + "xmlenum-numbers.xsd";
     private static final String XMLENUM_BIG = RESOURCE_DIR + "xmlenum-big.xsd";
     private static final String XMLELEMENTDECL = RESOURCE_DIR + "xmlelementdecl.xsd";
     private static final String XMLELEMENTCOLLECTION = RESOURCE_DIR + "xmlelement-collection.xsd";
@@ -1093,6 +1114,8 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String DEF_PACKAGE = "generated";
     private static final String BANK_PACKAGE = "banknamespace";
     private static final String PERSON = "Person";
+    private static final String TAX_RECORD = "TaxRecord";
+    private static final String PERIOD = "Period";
     private static final String EMPLOYEE = "Employee";
     private static final String INDIVIDUO = "Individuo";
     private static final String CDN_CURRENCY = "CdnCurrency";

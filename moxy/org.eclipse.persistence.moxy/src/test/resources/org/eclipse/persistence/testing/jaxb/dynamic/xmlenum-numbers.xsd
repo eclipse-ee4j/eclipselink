@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2024, 2024 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    attributeFormDefault="qualified" elementFormDefault="qualified">
+
+    <xs:element name="tax-record">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="period" type="myns:period"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- This test contains 4 enums with digits to test value conversion for xjc enums, i.e. QTR1 is converted to enum QTR_1 -->
+    <xs:simpleType name="period">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="QTR1"/>
+            <xs:enumeration value="QTR2"/>
+            <xs:enumeration value="QTR3"/>
+            <xs:enumeration value="QTR4"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
