@@ -427,10 +427,10 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             
             commitTransaction(em);
             
-            Vector resultSet = getDatabaseSession().executeSQL("select * from CMP3_BV_TASK where ID=900");
+            Vector<DatabaseRecord> resultSet = getDatabaseSession().executeSQL("select * from CMP3_BV_TASK where ID=900");
             assertEquals(1, resultSet.size());
             
-            final DatabaseRecord dr = (DatabaseRecord) resultSet.firstElement();
+            final DatabaseRecord dr = resultSet.firstElement();
             assertEquals(900L, dr.get("ID"));
             assertEquals(2L, dr.get("VERSION")); // should be incremented by the pessimistic lock
             assertNull(dr.get("NAME")); // should be unchanged
@@ -474,18 +474,13 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             task.setPriority(2);
             
             commitTransaction(em);
-        } catch (ConstraintViolationException e) {
-            assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em));
-            Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
-            ConstraintViolation constraintViolation = constraintViolations.iterator().next();
-            Object invalidValue = constraintViolation.getInvalidValue();
-            System.out.println(invalidValue);
-            gotConstraintViolations = true;
-        } catch (RollbackException e) {
-            e.printStackTrace();
+        }  catch (RollbackException e) {
+            // we're expecting a rollback exception because we've changed the object
+            // and it isn't passing validation. Check that the cause is a ConstraintViolationException.
+
             final ConstraintViolationException cve = (ConstraintViolationException) e.getCause();
-            Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
-            ConstraintViolation constraintViolation = constraintViolations.iterator().next();
+            final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+            final ConstraintViolation constraintViolation = constraintViolations.iterator().next();
             assertEquals("must not be null", constraintViolation.getMessage());
             gotConstraintViolations = true;
         } finally {

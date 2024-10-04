@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,19 +24,18 @@ import jakarta.validation.constraints.NotNull;
 public class Task {
 
     @Id
-    private int        id;
+    private int id;
     
     @Version
-    private int        version;
+    private int version;
     
     @NotNull
-    private String     name;
+    private String name;
     
     @Column
-    private int        priority;
+    private int priority;
     
     public Task() {}
-
 
     public int getId() {
         return id;
@@ -50,11 +49,9 @@ public class Task {
         this.name = name;
     }
 
-
     public int getPriority() {
         return priority;
     }
-
 
     public void setPriority(final int priority) {
         this.priority = priority;
