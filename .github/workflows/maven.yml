@@ -50,7 +50,7 @@ jobs:
           java-version: ${{ matrix.java_version }}
           cache: maven
       - name: Execute Tests on JDK ${{ matrix.java_version }}
-        run: mvn -B -V -U -C -Pstaging,oss-release,test-lrg,mysql clean verify -Dgpg.skip=true -Dwarn.limit=15 -Dcomp.xlint=-Xlint:none
+        run: mvn -B -V -U -C -Pstaging,oss-release,test-lrg,mysql clean verify -Dgpg.skip=true -Dwarn.limit=15 -Dcomp.xlint=-Xlint:none -X
 
   common_validations_job:
     name: Common Validations
