@@ -28,7 +28,7 @@ import org.eclipse.persistence.config.QueryHints;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name="CMP3_ROOM")
@@ -56,7 +56,7 @@ public class Room implements Serializable, Cloneable {
     private Status status;
 
     @OneToMany(mappedBy="room", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    private Collection<Door> doors;
+    private List<Door> doors;
 
     public Room() {
     }
@@ -110,11 +110,11 @@ public class Room implements Serializable, Cloneable {
         this.status = status;
     }
 
-    public Collection<Door> getDoors() {
+    public List<Door> getDoors() {
         return doors;
     }
 
-    public void setDoors(Collection<Door> doors) {
+    public void setDoors(List<Door> doors) {
         this.doors = doors;
     }
 
