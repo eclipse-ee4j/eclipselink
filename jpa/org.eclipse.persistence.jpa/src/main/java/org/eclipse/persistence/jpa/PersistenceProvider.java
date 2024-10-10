@@ -192,6 +192,10 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     // Never call this method from this class because of stack frames removal.
     @Override
     public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
+        // Check whether persistence provider is set and matches EclipseLink known classes
+        if (!isProviderEclipseLink(configuration)) {
+            return null;
+        }
         JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
         // Root URL from method caller
         StackWalker stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
@@ -317,28 +321,57 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     }
 
     /**
-     * Need to check that the provider property is null or set for EclipseLink
+     * The Persistence bootstrap class must locate all the persistence providers using the PersistenceProviderResolver
+     * mechanism described in Section 9.3 and call createEntityManagerFactory on them in turn until an appropriate backing
+     * provider returns an EntityManagerFactory instance. A provider may deem itself as appropriate for the persistence unit
+     * if any of the following are true:
+     * <p> * Its implementation class has been specified in the provider element for that persistence unit in the persistence.xml
+     * file and has not been overridden by a different jakarta.persistence.provider property value included in the Map passed
+     * to the createEntityManagerFactory method.
+     * <p> * The jakarta.persistence.provider property was included in the Map passed to createEntityManagerFactory and the value
+     * of the property is the provider’s implementation class.
+     * <p> * No provider was specified for the persistence unit in either the persistence.xml or the property map.
+     *
+     * @since Jakarta Persistence 3.2
      */
-    public boolean checkForProviderProperty(Map properties){
-        Object provider = properties.get("jakarta.persistence.provider");
-        if (provider != null){
-            //user has specified a provider make sure it is us or abort.
-            if (provider instanceof Class){
-                provider = ((Class)provider).getName();
-            }
-            try{
-                if (!(EntityManagerFactoryProvider.class.getName().equals(provider) || PersistenceProvider.class.getName().equals(provider))){
-                    return false;
-                    //user has requested another provider so lets ignore this request.
-                }
-            }catch(ClassCastException e){
-                return false;
-                // not a recognized provider property value so must be another provider.
-            }
+    private static boolean isProviderEclipseLink(PersistenceConfiguration configuration) {
+        // Property jakarta.persistence.provider has higher priority, EclipseLink accepts it also as class.
+        if (configuration.properties().containsKey(PersistenceUnitProperties.PROVIDER)) {
+            return isProviderPropertyEclipseLink(configuration.properties().get(PersistenceUnitProperties.PROVIDER));
+        }
+        // Persistence unit provider configuration option
+        if (configuration.provider() != null && !configuration.provider().isEmpty()) {
+            return checkEclipseLinkProviderClassName(configuration.provider());
         }
         return true;
-
     }
+
+    /**
+     * Need to check that the provider property is null or set for EclipseLink
+     */
+    public boolean checkForProviderProperty(Map<?, ?> properties) {
+        return !properties.containsKey(PersistenceUnitProperties.PROVIDER)
+                || isProviderPropertyEclipseLink(properties.get(PersistenceUnitProperties.PROVIDER));
+    }
+
+    // Check whether provided jakarta persistence provider property value matches any of known classes.
+    // Supported property value types are String and Class<?>.
+    private static boolean isProviderPropertyEclipseLink(Object providerProperty) {
+        String providerClassName = (providerProperty instanceof String providerString) ? providerString : null;
+        if (providerProperty instanceof Class<?> providerClass) {
+            providerClassName = providerClass.getName();
+        }
+        return providerClassName != null && checkEclipseLinkProviderClassName(providerClassName);
+    }
+
+    // Check whether provided jakarta persistence provider class name matches any of known classes:
+    // * org.eclipse.persistence.jpa.PersistenceProvider
+    // * org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
+    private static boolean checkEclipseLinkProviderClassName(String providerClassName) {
+        return PersistenceProvider.class.getName().equals(providerClassName)
+                || EntityManagerFactoryProvider.class.getName().equals(providerClassName);
+    }
+
     /**
      * Called by the container when an EntityManagerFactory
      * is to be created.
