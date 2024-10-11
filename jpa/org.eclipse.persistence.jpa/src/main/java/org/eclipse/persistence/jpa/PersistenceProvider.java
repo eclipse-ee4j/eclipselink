@@ -320,6 +320,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return JavaSECMPInitializer.getJavaSECMPInitializer(classLoader);
     }
 
+    // Package visibility is required for jUnit
     /**
      * The Persistence bootstrap class must locate all the persistence providers using the PersistenceProviderResolver
      * mechanism described in Section 9.3 and call createEntityManagerFactory on them in turn until an appropriate backing
@@ -334,7 +335,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      *
      * @since Jakarta Persistence 3.2
      */
-    private static boolean isProviderEclipseLink(PersistenceConfiguration configuration) {
+    static boolean isProviderEclipseLink(PersistenceConfiguration configuration) {
         // Property jakarta.persistence.provider has higher priority, EclipseLink accepts it also as class.
         if (configuration.properties().containsKey(PersistenceUnitProperties.PROVIDER)) {
             return isProviderPropertyEclipseLink(configuration.properties().get(PersistenceUnitProperties.PROVIDER));
@@ -349,7 +350,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     /**
      * Need to check that the provider property is null or set for EclipseLink
      */
-    public boolean checkForProviderProperty(Map<?, ?> properties) {
+    public static boolean checkForProviderProperty(Map<?, ?> properties) {
         return !properties.containsKey(PersistenceUnitProperties.PROVIDER)
                 || isProviderPropertyEclipseLink(properties.get(PersistenceUnitProperties.PROVIDER));
     }
