@@ -1287,7 +1287,7 @@
                     <!-- see https://github.com/eclipse-ee4j/eclipselink-build-support -->
                     <groupId>org.eclipse.persistence</groupId>
                     <artifactId>eclipselink-testbuild-plugin</artifactId>
-                    <version>1.1.0</version>
+                    <version>1.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.carlspring.maven</groupId>
