@@ -721,7 +721,7 @@ public class ConcurrencyManager implements Serializable {
                         throw ConcurrencyException.waitWasInterrupted(interrupted.getMessage());
                     }
                 }
-            } catch (Error error) {
+            } catch (Error | Exception error) {
                 if (!releaseAllLocksAquiredByThreadAlreadyPerformed) {
                     THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS.remove(currentThread);
                     AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, error);
