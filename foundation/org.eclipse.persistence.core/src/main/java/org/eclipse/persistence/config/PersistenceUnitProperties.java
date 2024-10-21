@@ -85,6 +85,19 @@ import java.util.concurrent.TimeUnit;
 public final class PersistenceUnitProperties {
 
     /**
+     * The {@code jakarta.persistence.provider} property specifies the name
+     * of a provider-specific implementation of {@link jakarta.persistence.spi.PersistenceProvider}.
+     * This property overrides the value specified in the persistence.xml.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>fully qualified name of the provider-specific implementation class
+     * <li>{@link Class} instance of the provider-specific implementation class
+     * </ul>
+     */
+    public static final String PROVIDER = "jakarta.persistence.provider";
+
+    /**
      * The {@code jakarta.persistence.transactionType} property specifies the
      * transaction type for the persistence unit. This property overrides the
      * value specified in the persistence.xml.
