@@ -515,7 +515,7 @@ public class DynamicTypeBuilder {
 
     public DynamicEnumBuilder addEnum(String fieldName, String className, String columnName,
         DynamicClassLoader dcl) {
-        dcl.addEnum(className, (Object)null);
+        dcl.addEnum(className, (Object) null);
         AbstractDirectMapping adm = addDirectMappingForEnum(fieldName, className, columnName);
         return new DynamicEnumBuilder(className, adm, dcl);
     }

@@ -14,20 +14,18 @@
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.jaxb.dynamic.metadata;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.sun.codemodel.ClassType;
+import com.sun.codemodel.JAnnotationStringValue;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JPackage;
+import com.sun.tools.xjc.Plugin;
+import com.sun.tools.xjc.api.ErrorListener;
+import com.sun.tools.xjc.api.S2JJAXBModel;
+import com.sun.tools.xjc.api.SchemaCompiler;
+import com.sun.tools.xjc.api.XJC;
 import jakarta.xml.bind.JAXBException;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-
+import jakarta.xml.bind.annotation.XmlEnumValue;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -45,20 +43,23 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
-import com.sun.codemodel.ClassType;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JEnumConstant;
-import com.sun.codemodel.JPackage;
-import com.sun.tools.xjc.Plugin;
-import com.sun.tools.xjc.api.ErrorListener;
-import com.sun.tools.xjc.api.S2JJAXBModel;
-import com.sun.tools.xjc.api.SchemaCompiler;
-import com.sun.tools.xjc.api.XJC;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SchemaMetadata extends Metadata {
 
     private static final String DEFAULT_SYSTEM_ID = "sysid";
+    private static final String XML_ENUM_VALUE_VALUE = "value";
 
     private SchemaCompiler schemaCompiler;
 
@@ -216,9 +217,7 @@ public class SchemaMetadata extends Metadata {
                 // If this is an enum, trigger a dynamic class generation, because we won't
                 // be creating a descriptor for it
                 if (definedClass.getClassType().equals(ClassType.ENUM)) {
-                    Map<String, JEnumConstant> enumConstants = definedClass.enumConstants();
-                    Object[] enumValues = enumConstants.keySet().toArray();
-                    dynamicClassLoader.addEnum(definedClass.fullName(), enumValues);
+                    dynamicClassLoader.addEnum(definedClass.fullName(), getEnumValues(definedClass));
                 }
             }
 
@@ -226,6 +225,23 @@ public class SchemaMetadata extends Metadata {
         } catch (Exception e) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
+    }
+
+    private Map<String, String> getEnumValues(JDefinedClass definedClass) {
+        return definedClass.enumConstants()
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry ->
+                        entry.getValue()
+                                .annotations()
+                                .stream()
+                                .filter(annotation -> XmlEnumValue.class.getName().equals(annotation.getAnnotationClass().binaryName()))
+                                .map(annotation -> annotation.getAnnotationMembers().get(XML_ENUM_VALUE_VALUE))
+                                .filter(value -> value instanceof JAnnotationStringValue)
+                                .map(Object::toString)
+                                .findFirst()
+                                .orElse(entry.getKey()))
+                );
     }
 
     private static InputSource createInputSourceFromSource(Source aSource) {
