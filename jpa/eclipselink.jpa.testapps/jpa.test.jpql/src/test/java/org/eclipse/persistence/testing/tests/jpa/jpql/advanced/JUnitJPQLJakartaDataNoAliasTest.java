@@ -29,10 +29,13 @@ import org.junit.Assert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Door;
 import org.eclipse.persistence.testing.models.jpa.advanced.Room;
 
 /**
@@ -55,10 +58,10 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     private static final String STRING_DATA_LIKE_EXPRESSION = "A%"; // should match STRING_DATA
     private static final Room[] ROOMS = new Room[]{
         null, // Skip array index 0
-        aRoom(1, 1, 1, 1, Room.Status.FREE),
-        aRoom(2, 1, 1, 1, Room.Status.FREE),
-        aRoom(3, 1, 1, 1, Room.Status.OCCUPIED),
-        aRoom(4, 1, 1, 1, Room.Status.OCCUPIED)
+        aRoom(1, 1, 1, 1, Room.Status.FREE, 1001, 100, 100, new Date(1L)),
+        aRoom(2, 1, 1, 1, Room.Status.FREE, 2001, 200, 200, new Date(2L)),
+        aRoom(3, 1, 1, 1, Room.Status.OCCUPIED, 3001, 300, 300, new Date(3L)),
+        aRoom(4, 1, 1, 1, Room.Status.OCCUPIED, 4001, 400, 400, new Date(4L)),
     };
     private static final long ROOMS_COUNT = ROOMS.length - 1; // we ignore the first one with index 0
 
@@ -111,6 +114,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableInAggregateFunctionPath"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableInArithmeticExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableAndEnum"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableAndRelationalAttributes"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateImplicitVariableInArithmeticExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnLeft"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnRight"));
@@ -318,7 +322,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     }
 
     public void testUpdateQueryLengthInAssignmentAndExpression() {
-        resetRooms();
+        resetRooms(false);
         long numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "UPDATE Room SET length = length + 1").executeUpdate());
         assertTrue("All rooms should be updated", numberOfChanges == ROOMS_COUNT);
@@ -330,7 +334,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     }
 
     public void testSelectQueryLengthInAssignmentAndExpression() {
-        resetRooms();
+        resetRooms(false);
         List<Room> roomsWithIdOne = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "SELECT this FROM Room WHERE id + length = length + 1", Room.class).getResultList());
         assertTrue("Number of rooms with ID = 1", roomsWithIdOne.size() == 1);
@@ -339,7 +343,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2182
     public void testSelectQueryImplicitThisVariableInPath() {
-        resetRooms();
+        resetRooms(false);
         List<Integer> roomsLengthWithIdOne = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "SELECT length FROM Room WHERE length IS NOT NULL AND id = :idParam", Integer.class)
                 .setParameter("idParam", ROOMS[1].getId())
@@ -351,7 +355,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2192
     public void testSelectQueryImplicitThisVariableInAggregateFunctionPath() {
-        resetRooms();
+        resetRooms(false);
         Integer roomsMaxWidth = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                         "SELECT MAX(width) FROM Room", Integer.class)
                 .getSingleResult());
@@ -360,7 +364,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2247
     public void testSelectQueryImplicitThisVariableInArithmeticExpression() {
-        resetRooms();
+        resetRooms(false);
         int roomCapacity = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                         "SELECT length * width * height  FROM Room WHERE id = :idParam", Integer.class)
                 .setParameter("idParam", ROOMS[1].getId())
@@ -370,7 +374,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2185
     public void testSelectQueryImplicitThisVariableAndEnum() {
-        resetRooms();
+        resetRooms(false);
         List<Room> rooms = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                         "SELECT NEW org.eclipse.persistence.testing.models.jpa.advanced.Room(id, width, length, height, status) " +
                                 "FROM Room " +
@@ -382,8 +386,21 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         assertEquals(ROOMS[1], rooms.get(0));
     }
 
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2188
+    public void testSelectQueryImplicitThisVariableAndRelationalAttributes() {
+        resetRooms(false);
+        List<Door> doors = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                                "FROM Door " +
+                                "WHERE room.id = :idParam " +
+                                "ORDER BY width",
+                        Door.class)
+                .setParameter("idParam", ROOMS[1].getId())
+                .getResultList());
+        assertEquals(ROOMS[1].getDoors().get(0).getId(), doors.get(0).getId());
+    }
+
     public void testUpdateImplicitVariableInArithmeticExpression() {
-        resetRooms();
+        resetRooms(false);
         int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "UPDATE Room SET width = width * :widthMultiplicator WHERE id = :id")
                 .setParameter("widthMultiplicator", 5)
@@ -395,7 +412,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     }
 
     public void testDeleteQueryLengthInExpressionOnLeft() {
-        resetRooms();
+        resetRooms(true);
         assertTrue("Number of remaining rooms", getAllRooms().count() == ROOMS_COUNT);
         int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "DELETE FROM Room WHERE length = id - 1").executeUpdate());
@@ -405,7 +422,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     }
 
     public void testDeleteQueryLengthInExpressionOnRight() {
-        resetRooms();
+        resetRooms(true);
         int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "DELETE FROM Room WHERE id = length + 1").executeUpdate());
         assertTrue("Number of rooms with ID = 1 deleted", numberOfChanges == 1);
@@ -413,7 +430,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     }
 
     public void tesUpdateQueryWithThisVariable() {
-        resetRooms();
+        resetRooms(false);
         long numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "UPDATE Room SET length = this.length + 1").executeUpdate());
         assertTrue("All rooms should be updated", numberOfChanges == ROOMS_COUNT);
@@ -427,7 +444,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2197
     public void testThisVariableInPathExpressionUpdate() {
-        resetRooms();
+        resetRooms(false);
         int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "UPDATE Room SET this.length = 10 WHERE this.id = 1").executeUpdate());
         assertTrue("Number of rooms with ID = 1 modified is " + numberOfChanges, numberOfChanges == 1);
@@ -437,7 +454,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2184
     public void testThisVariableInPathAndIdFunctionExpressionUpdate() {
-        resetRooms();
+        resetRooms(false);
         int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "UPDATE Room SET length = 10 WHERE ID(this) = :idParam")
                 .setParameter("idParam", 1)
@@ -449,7 +466,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2198
     public void testThisVariableInPathExpressionDelete() {
-        resetRooms();
+        resetRooms(true);
         int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "DELETE FROM Room WHERE this.length < 10").executeUpdate());
         assertTrue("Number of rooms deleted is " + numberOfChanges, numberOfChanges == ROOMS_COUNT);
@@ -481,21 +498,28 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         });
     }
 
-    private static Room aRoom(int id, int width, int length, int height, Room.Status status) {
+    private static Room aRoom(int id, int width, int length, int height, Room.Status status, int doorId, int doorWidth, int doorHeight, Date doorWarrantyDate) {
         Room room = new Room();
         room.setId(id);
         room.setWidth(width);
         room.setLength(length);
         room.setHeight(height);
         room.setStatus(status);
+        List<Door> doors = new ArrayList<>();
+        doors.add(new Door(doorId, doorWidth, doorHeight, room, doorWarrantyDate));
+        room.setDoors(doors);
         return room;
     }
 
-    private void resetRooms() {
+    private void resetRooms(boolean noDoors) {
         getEntityManagerFactory().runInTransaction(em -> {
+            em.createQuery("DELETE FROM Door ").executeUpdate();
             em.createQuery("DELETE FROM Room").executeUpdate();
             for (int i = 1; i < ROOMS.length; i++) {
                 em.persist(ROOMS[i]);
+            }
+            if (noDoors) {
+                em.createQuery("DELETE FROM Door ").executeUpdate();
             }
         });
     }

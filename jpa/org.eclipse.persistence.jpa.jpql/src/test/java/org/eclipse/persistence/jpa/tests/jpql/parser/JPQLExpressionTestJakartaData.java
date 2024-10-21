@@ -28,6 +28,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.max
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.new_;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.numeric;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.orderBy;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.orderByItem;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.orderByItemAsc;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.orderByItemDesc;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.path;
@@ -269,6 +270,25 @@ public final class JPQLExpressionTestJakartaData extends JPQLParserTest {
                 where(and(equal(virtualVariable("this", "customerId"), inputParameter(":customerIdParam")),
                         equal(virtualVariable("this", "status"), path("com.oracle.jpa.bugtest.Rebate.Status.PAID")))),
                 orderBy(orderByItemDesc(virtualVariable("this", "amount")), orderByItemAsc(virtualVariable("this", "id")))
+        );
+
+        testJakartaDataQuery(inputJPQLQuery, selectStatement);
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2188
+    // This is just basic syntax tests. Semantic validation from org.eclipse.persistence.core Maven module is required for full test
+    // to resolve that path "location.address.city" is correct.
+    // Full test is in org.eclipse.persistence.jpa.testapps.jpql Maven module
+    @Test
+    public void testSelectWithImplicitThisAliasAndRelationalAttributes() {
+
+        String inputJPQLQuery = "FROM Business WHERE location.address.city=:cityParam ORDER BY name";
+
+        SelectStatementTester selectStatement = selectStatement(
+                select(variable("this")),
+                from("Business", "{this}"),
+                where(equal(path("location.address.city"), inputParameter(":cityParam"))),
+                orderBy(orderByItem(virtualVariable("this", "name")))
         );
 
         testJakartaDataQuery(inputJPQLQuery, selectStatement);

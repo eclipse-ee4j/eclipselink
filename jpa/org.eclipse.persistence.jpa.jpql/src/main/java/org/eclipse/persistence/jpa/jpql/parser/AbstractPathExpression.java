@@ -323,7 +323,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
      *
      * @param variableName The identification variable that was generated to identify the "root" object
      */
-    protected final void setVirtualIdentificationVariable(String variableName) {
+    public final void setVirtualIdentificationVariable(String variableName) {
 
         identificationVariable = new IdentificationVariable(this, variableName, true);
 
