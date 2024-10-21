@@ -40,9 +40,11 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -93,7 +95,10 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         // preUpdate is also generated for deleted objects that were modified in this UOW.
         // Do not perform preUpdate validation for such objects as preRemove would have already been called.
         if(!unitOfWork.isObjectDeleted(source)) {
-            validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
+            ObjectChangeSet changeSet = event.getChangeSet();
+            if (changeSet != null && (changeSet.isNew() || (changeSet.getChanges() != null && changeSet.getChanges().size() > 0))) {
+                validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
+            }
         }
     }
 
