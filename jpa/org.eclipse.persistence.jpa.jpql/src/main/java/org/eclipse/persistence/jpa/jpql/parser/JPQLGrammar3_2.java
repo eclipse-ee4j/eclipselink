@@ -143,12 +143,14 @@ public class JPQLGrammar3_2 extends AbstractJPQLGrammar {
         // ID function
         addChildBNF(SelectExpressionBNF.ID,              IdExpressionBNF.ID);
         addChildBNF(ComparisonExpressionBNF.ID,          IdExpressionBNF.ID);
+        addChildBNF(ScalarExpressionBNF.ID,              IdExpressionBNF.ID);
         addChildBNF(IdExpressionBNF.ID, GeneralIdentificationVariableBNF.ID);
         addChildBNF(IdExpressionBNF.ID, SingleValuedObjectPathExpressionBNF.ID);
 
         // VERSION function
         addChildBNF(SelectExpressionBNF.ID,              VersionExpressionBNF.ID);
         addChildBNF(ComparisonExpressionBNF.ID,          VersionExpressionBNF.ID);
+        addChildBNF(ScalarExpressionBNF.ID,              VersionExpressionBNF.ID);
     }
 
     @Override
