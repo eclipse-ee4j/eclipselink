@@ -24,6 +24,8 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_Concat
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_ConcatPipes_Where;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_IdFunction_Select01;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_IdFunction_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_IdFunctionNestedInArithmeticFunction_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_IdFunctionNestedInStringFunction_Where;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select01;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select02;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_LeftFunction_Select03;
@@ -39,7 +41,11 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightF
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_RightFunction_Where;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_VersionFunction_Select01;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_VersionFunction_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_VersionFunctionNestedInArithmeticFunction_Where;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_VersionFunctionNestedInStringFunction_Where;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries3_2.query_Union01;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.abs;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.castAs;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.concatPipes;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.count;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.except;
@@ -50,6 +56,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.id;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.intersect;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.left;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.leftJoin;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.lower;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.numeric;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.path;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.replace;
@@ -413,6 +420,34 @@ public class JPQLQueriesTest3_2 extends JPQLParserTest {
     }
 
     @Test
+    public final void test_Query_IdFunctionNestedInArithmeticFunction_Where() {
+        //SELECT this
+        // FROM Customer this
+        // WHERE ABS(CAST(ID(this) AS INTEGER)) = 1"
+
+        ExpressionTester selectStatement = selectStatement(
+                select(variable("this")),
+                from("Customer", "this"),
+                where(abs(castAs(id("this"), "INTEGER")).equal(numeric(1))));
+
+        testQuery(query_IdFunctionNestedInArithmeticFunction_Where(), selectStatement);
+    }
+
+    @Test
+    public final void test_Query_IdFunctionNestedInStringFunction_Where() {
+        // SELECT this
+        // FROM Customer this
+        // WHERE LOWER(CAST(ID(this) AS STRING)) = 'a'
+
+        ExpressionTester selectStatement = selectStatement(
+                select(variable("this")),
+                from("Customer", "this"),
+                where(lower(castAs(id("this"), "STRING")).equal(string("'abc'"))));
+
+        testQuery(query_IdFunctionNestedInStringFunction_Where(), selectStatement);
+    }
+
+    @Test
     public final void test_Query_VersionFunction_Select01() {
         // select version(c)
         // FROM Customer c
@@ -436,5 +471,33 @@ public class JPQLQueriesTest3_2 extends JPQLParserTest {
                 where(version("c").equal(numeric(1))));
 
         testQuery(query_VersionFunction_Where(), selectStatement);
+    }
+
+    @Test
+    public final void test_Query_VersionFunctionNestedInArithmeticFunction_Where() {
+        //SELECT this
+        // FROM Customer this
+        // WHERE ABS(CAST(VERSION(this) AS INTEGER)) = 1"
+
+        ExpressionTester selectStatement = selectStatement(
+                select(variable("this")),
+                from("Customer", "this"),
+                where(abs(castAs(version("this"), "INTEGER")).equal(numeric(1))));
+
+        testQuery(query_VersionFunctionNestedInArithmeticFunction_Where(), selectStatement);
+    }
+
+    @Test
+    public final void test_Query_VersionFunctionNestedInStringFunction_Where() {
+        // SELECT this
+        // FROM Customer this
+        // WHERE LOWER(CAST(VERSION(this) AS STRING)) = '1'
+
+        ExpressionTester selectStatement = selectStatement(
+                select(variable("this")),
+                from("Customer", "this"),
+                where(lower(castAs(version("this"), "STRING")).equal(string("'1'"))));
+
+        testQuery(query_VersionFunctionNestedInStringFunction_Where(), selectStatement);
     }
 }

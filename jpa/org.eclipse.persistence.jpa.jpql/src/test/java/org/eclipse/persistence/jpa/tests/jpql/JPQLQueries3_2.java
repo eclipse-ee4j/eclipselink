@@ -111,6 +111,14 @@ public class JPQLQueries3_2 {
         return "SELECT c FROM Customer c WHERE ID(c) = 1";
     }
 
+    public static String query_IdFunctionNestedInArithmeticFunction_Where() {
+        return "SELECT this FROM Customer this WHERE ABS(CAST(ID(this) AS INTEGER)) = 1";
+    }
+
+    public static String query_IdFunctionNestedInStringFunction_Where() {
+        return "SELECT this FROM Customer this WHERE LOWER(CAST(ID(this) AS STRING)) = 'abc'";
+    }
+
     public static String query_VersionFunction_Select01() {
         return "SELECT VERSION(c) FROM Customer c";
     }
@@ -118,4 +126,13 @@ public class JPQLQueries3_2 {
     public static String query_VersionFunction_Where() {
         return "SELECT c FROM Customer c WHERE VERSION(c) = 1";
     }
+
+    public static String query_VersionFunctionNestedInArithmeticFunction_Where() {
+        return "SELECT this FROM Customer this WHERE ABS(CAST(VERSION(this) AS INTEGER)) = 1";
+    }
+
+    public static String query_VersionFunctionNestedInStringFunction_Where() {
+        return "SELECT this FROM Customer this WHERE LOWER(CAST(VERSION(this) AS STRING)) = '1'";
+    }
+
 }
