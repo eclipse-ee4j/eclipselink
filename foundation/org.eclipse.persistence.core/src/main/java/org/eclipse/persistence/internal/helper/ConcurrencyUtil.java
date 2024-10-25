@@ -469,16 +469,16 @@ public class ConcurrencyUtil {
         }
 
         // do the "MassiveDump" logging if enough time has passed since the previous massive dump logging
-        Map<Thread, DeferredLockManager> deferredLockManagers = ConcurrencyManager.getDeferredLockManagers();
-        Map<Thread, ReadLockManager> readLockManagersOriginal = ConcurrencyManager.getReadLockManagers();
-        Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireOriginal = ConcurrencyManager.getThreadsToWaitOnAcquire();
-        Map<Thread, String> mapThreadToWaitOnAcquireMethodNameOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireMethodName();
-        Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireReadLock();
-        Map<Thread, String> mapThreadToWaitOnAcquireReadLockMethodNameOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireReadLockMethodName();
-        Map<Thread, Set<ConcurrencyManager>> mapThreadToWaitOnAcquireInsideWriteLockManagerOriginal = WriteLockManager.getThreadToFailToAcquireCacheKeys();
-        Set<Thread> setThreadWaitingToReleaseDeferredLocksOriginal = ConcurrencyManager.getThreadsWaitingToReleaseDeferredLocks();
-        Map<Thread, String> mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone = ConcurrencyManager.getThreadsWaitingToReleaseDeferredLocksJustification();
-        Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesOriginal = WriteLockManager.getMapWriteLockManagerThreadToObjectIdsWithChangeSet();
+        Map<Thread, DeferredLockManager> deferredLockManagers = ConcurrencyManager.getDeferredLockManagersSnapshot();
+        Map<Thread, ReadLockManager> readLockManagersOriginal = ConcurrencyManager.getReadLockManagersSnapshot();
+        Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireSnapshot();
+        Map<Thread, String> mapThreadToWaitOnAcquireMethodNameOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireMethodNameSnapshot();
+        Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireReadLockSnapshot();
+        Map<Thread, String> mapThreadToWaitOnAcquireReadLockMethodNameOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireReadLockMethodNameSnapshot();
+        Map<Thread, Set<ConcurrencyManager>> mapThreadToWaitOnAcquireInsideWriteLockManagerOriginal = WriteLockManager.getThreadToFailToAcquireCacheKeysSnapshot();
+        Set<Thread> setThreadWaitingToReleaseDeferredLocksOriginal = ConcurrencyManager.getThreadsWaitingToReleaseDeferredLocksSnapshot();
+        Map<Thread, String> mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone = ConcurrencyManager.getThreadsWaitingToReleaseDeferredLocksJustificationSnapshot();
+        Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesOriginal = WriteLockManager.getMapWriteLockManagerThreadToObjectIdsWithChangeSetSnapshot();
         dumpConcurrencyManagerInformationStep01(
                 deferredLockManagers,
                 readLockManagersOriginal,
