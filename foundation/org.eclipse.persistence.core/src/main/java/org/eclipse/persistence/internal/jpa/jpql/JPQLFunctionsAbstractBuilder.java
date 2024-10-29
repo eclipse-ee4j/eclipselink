@@ -55,21 +55,22 @@ public abstract class JPQLFunctionsAbstractBuilder extends EclipseLinkAnonymousE
      */
     @Override
     public void visit(IdExpression expression) {
-        //Fetch identification variable info
         IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
         String variableText = identificationVariable.getText();
         String variableName = identificationVariable.getVariableName();
-
         //Get id attribute name
         ClassDescriptor descriptor = this.queryContext.getDeclaration(variableName).getDescriptor();
         List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();
-        String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyFields.get(0));
-        StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(expression.getParent(), variableText + "." + idAttributeName);
+        for(DatabaseField primaryKeyField : primaryKeyFields) {
+        String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyField);
+        StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(
+                     expression.getParent(), variableText + "." + idAttributeName
+             );
         expression.setStateFieldPathExpression(stateFieldPathExpression);
-
-        //Continue with created StateFieldPathExpression
-        //It handle by ObjectBuilder booth @Id/primary key types (simple/composite)
+             //Continue with created StateFieldPathExpression
+             //It handle by ObjectBuilder booth @Id/primary key types (simple/composite)
         expression.getStateFieldPathExpression().accept(this);
+        }
     }
 
     /**
@@ -96,7 +97,7 @@ public abstract class JPQLFunctionsAbstractBuilder extends EclipseLinkAnonymousE
 
     private String getIdAttributeNameByField(List<DatabaseMapping> databaseMappings, DatabaseField field) {
         for (DatabaseMapping mapping : databaseMappings) {
-            if (field.equals(mapping.getField()) || mapping.isPrimaryKeyMapping()) {
+            if (field.equals(mapping.getField())) {
                 return mapping.getAttributeName();
             }
         }
