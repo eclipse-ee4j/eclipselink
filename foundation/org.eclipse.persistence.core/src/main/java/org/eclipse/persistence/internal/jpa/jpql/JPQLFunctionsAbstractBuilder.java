@@ -28,10 +28,14 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import java.util.List;
 
 /**
- * JPQL exclusive ID(), VERSION() functions/expressions are transformed there to StateFieldPathExpression.
- * It should be used in the future for another JPQL functions/expressions which are not available at the DB level.
- * E.g. For Entity e with idAttr as a primary key: <code>SELECT ID(e) FROM Entity e -> SELECT e.idAttr FROM Entity e</code>
- * For Entity e with versionAttr as a version attribute: <code>SELECT VERSION(e) FROM Entity e -> SELECT e.versionAttr FROM Entity e</code>
+ * JPQL exclusive ID(), VERSION() functions/expressions are transformed there to
+ * StateFieldPathExpression.
+ * It should be used in the future for another JPQL functions/expressions which
+ * are not available at the DB level.
+ * E.g. For Entity e with idAttr as a primary key:
+ * <code>SELECT ID(e) FROM Entity e -> SELECT e.idAttr FROM Entity e</code>
+ * For Entity e with versionAttr as a version attribute:
+ * <code>SELECT VERSION(e) FROM Entity e -> SELECT e.versionAttr FROM Entity e</code>
  *
  * @author Radek Felcman
  * @since 5.0
@@ -39,7 +43,8 @@ import java.util.List;
 public abstract class JPQLFunctionsAbstractBuilder extends EclipseLinkAnonymousExpressionVisitor {
 
     /**
-     * The {@link JPQLQueryContext} is used to query information about the application metadata and
+     * The {@link JPQLQueryContext} is used to query information about the
+     * application metadata and
      * cached information.
      */
     final JPQLQueryContext queryContext;
@@ -49,57 +54,94 @@ public abstract class JPQLFunctionsAbstractBuilder extends EclipseLinkAnonymousE
     }
 
     /**
-     * For Entity e with idAttr as a primary key: <code>SELECT ID(e) FROM Entity e -> SELECT e.idAttr FROM Entity e</code>
+     * For Entity e with idAttr as a primary key:
+     * <code>SELECT ID(e) FROM Entity e -> SELECT e.idAttr FROM Entity e</code>
      *
      * @param expression The {@link IdExpression} to visit
      */
     @Override
     public void visit(IdExpression expression) {
-        //Fetch identification variable info
+        System.out.println("INSIDE  VISIT *******");
         IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
         String variableText = identificationVariable.getText();
         String variableName = identificationVariable.getVariableName();
-
-        //Get id attribute name
+        // Get id attribute name
         ClassDescriptor descriptor = this.queryContext.getDeclaration(variableName).getDescriptor();
         List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();
-        String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyFields.get(0));
-        StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(expression.getParent(), variableText + "." + idAttributeName);
-        expression.setStateFieldPathExpression(stateFieldPathExpression);
+        // String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(),
+        // primaryKeyFields.get(0));
+        // StateFieldPathExpression stateFieldPathExpression = new
+        // StateFieldPathExpression(expression.getParent(), variableText + "." +
+        // idAttributeName);
+        // expression.setStateFieldPathExpression(stateFieldPathExpression);
+        // expression.getStateFieldPathExpression().accept(this);
+        if (!isEmbeddable(descriptor.getMappings())) {
+            for (DatabaseField primaryKeyField : primaryKeyFields) {
+                String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyField);
+                StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(
+                        expression.getParent(), variableText + "." + idAttributeName);
+                expression.setStateFieldPathExpression(stateFieldPathExpression);
+                // Continue with created StateFieldPathExpression
+                // It handle by ObjectBuilder booth @Id/primary key types (simple/composite)
+                expression.getStateFieldPathExpression().accept(this);
+            }
+        } else {
+            String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyFields.get(0));
+            StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(
+                    expression.getParent(), variableText + "." + idAttributeName);
+            expression.setStateFieldPathExpression(stateFieldPathExpression);
+            // Continue with created StateFieldPathExpression
+            // It handle by ObjectBuilder booth @Id/primary key types (simple/composite)
+            expression.getStateFieldPathExpression().accept(this);
 
-        //Continue with created StateFieldPathExpression
-        //It handle by ObjectBuilder booth @Id/primary key types (simple/composite)
-        expression.getStateFieldPathExpression().accept(this);
+        }
     }
 
     /**
-     * For Entity e with versionAttr as a version attribute: <code>SELECT VERSION(e) FROM Entity e -> SELECT e.versionAttr FROM Entity e</code>
+     * For Entity e with versionAttr as a version attribute:
+     * <code>SELECT VERSION(e) FROM Entity e -> SELECT e.versionAttr FROM Entity e</code>
      *
      * @param expression The {@link VersionExpression} to visit
      */
     @Override
     public void visit(VersionExpression expression) {
-        //Fetch identification variable info
+        // Fetch identification variable info
         IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
         String variableText = identificationVariable.getText();
         String variableName = identificationVariable.getVariableName();
 
-        //Get version attribute name
+        // Get version attribute name
         ClassDescriptor descriptor = this.queryContext.getDeclaration(variableName).getDescriptor();
-        String versionAttributeName = ((VersionLockingPolicy) descriptor.getOptimisticLockingPolicy()).getVersionMapping().getAttributeName();
-        StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(expression.getParent(), variableText + "." + versionAttributeName);
+        String versionAttributeName = ((VersionLockingPolicy) descriptor.getOptimisticLockingPolicy())
+                .getVersionMapping().getAttributeName();
+        StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(expression.getParent(),
+                variableText + "." + versionAttributeName);
         expression.setStateFieldPathExpression(stateFieldPathExpression);
 
-        //Continue with created StateFieldPathExpression
+        // Continue with created StateFieldPathExpression
         expression.getStateFieldPathExpression().accept(this);
     }
 
     private String getIdAttributeNameByField(List<DatabaseMapping> databaseMappings, DatabaseField field) {
         for (DatabaseMapping mapping : databaseMappings) {
-            if (field.equals(mapping.getField()) || mapping.isPrimaryKeyMapping()) {
+            if (mapping.getFields().size() > 1 && (field.equals(mapping.getField()) || mapping.isPrimaryKeyMapping())) {
                 return mapping.getAttributeName();
+            } else {
+                if ((field.equals(mapping.getField()) && mapping.isPrimaryKeyMapping())) {
+                    return mapping.getAttributeName();
+                }
             }
         }
         return null;
+    }
+
+    private boolean isEmbeddable(List<DatabaseMapping> databaseMappings) {
+
+        for (DatabaseMapping databaseMapping : databaseMappings) {
+            if (databaseMapping.isPrimaryKeyMapping() && databaseMapping.getFields().size() > 1) {
+                return true;
+            }
+        }
+        return false;
     }
 }
