@@ -97,10 +97,12 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
 
     private String getEnumValue(Enum theEnum) {
         try {
-            Field field = theEnum.getClass().getField(theEnum.name());
-            XmlEnumValue annotation = field.getAnnotation(XmlEnumValue.class);
-            return annotation != null ? annotation.value() : theEnum.name();
-        } catch (NoSuchFieldException exc) {
+            return PrivilegedAccessHelper.callDoPrivilegedWithException(() -> {
+                Field field = theEnum.getClass().getField(theEnum.name());
+                XmlEnumValue annotation = field.getAnnotation(XmlEnumValue.class);
+                return annotation != null ? annotation.value() : theEnum.name();
+            });
+        } catch (Exception exc) {
            return theEnum.name();
         }
     }
