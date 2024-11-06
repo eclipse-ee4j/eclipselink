@@ -43,6 +43,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -838,6 +839,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             timestamp = Helper.timestampFromLong((Long)sourceObject);
         } else if (sourceObject instanceof LocalDateTime) {
             timestamp = Timestamp.valueOf((LocalDateTime) sourceObject);
+        } else if (sourceObject instanceof OffsetDateTime) {
+            timestamp = Timestamp.valueOf(((OffsetDateTime)sourceObject).toLocalDateTime());
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIMESTAMP);
         }
