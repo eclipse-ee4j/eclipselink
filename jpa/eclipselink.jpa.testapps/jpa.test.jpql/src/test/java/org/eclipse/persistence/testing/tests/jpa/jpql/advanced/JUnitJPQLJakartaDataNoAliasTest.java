@@ -115,6 +115,8 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableInArithmeticExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableAndEnum"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryImplicitThisVariableAndRelationalAttributes"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryIdFunctionNestedInArithmeticFunction_Where"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryIdFunctionNestedInStringFunction_Where"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateImplicitVariableInArithmeticExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnLeft"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryLengthInExpressionOnRight"));
@@ -384,6 +386,33 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
                 .setParameter("idParam", ROOMS[1].getId())
                 .getResultList());
         assertEquals(ROOMS[1], rooms.get(0));
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2286
+    public void testSelectQueryIdFunctionNestedInArithmeticFunction_Where() {
+        final String typeName = getPlatform().isMySQL() ? "UNSIGNED": "INTEGER";
+        resetRooms(false);
+        Room room = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                        "SELECT this " +
+                                "FROM Room " +
+                                "WHERE ABS(CAST(ID(this) AS " + typeName + "))= :idParam",
+                        Room.class)
+                .setParameter("idParam", ROOMS[1].getId())
+                .getSingleResult());
+        assertEquals(ROOMS[1], room);
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2286
+    public void testSelectQueryIdFunctionNestedInStringFunction_Where() {
+        resetRooms(false);
+        Room room = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                        "SELECT this " +
+                                "FROM Room " +
+                                "WHERE LOWER(CAST(ID(this) AS CHAR))= :idParam",
+                        Room.class)
+                .setParameter("idParam", String.valueOf(ROOMS[1].getId()))
+                .getSingleResult());
+        assertEquals(ROOMS[1], room);
     }
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2188
