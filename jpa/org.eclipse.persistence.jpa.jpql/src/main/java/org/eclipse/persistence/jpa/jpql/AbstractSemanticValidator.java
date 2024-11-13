@@ -2421,7 +2421,18 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
                         // Third path extension did not validate the path expression, continue validating it
                         else {
                             type = helper.getType(expression);
-
+                            if (type == null && expression.getParentExpression().isGenerateImplicitThisAlias()) {
+                                //Seems path is not available. Try again with new virtual "this" IdentificationVariable.
+                                // Remove the used identification variable since it is not
+                                // Entity identification variable as generated/implicit "this" is expected.
+                                usedIdentificationVariables.remove(expression.getIdentificationVariable());
+                                //Add generated/implicit "this" alias.
+                                expression.setVirtualIdentificationVariable(Expression.THIS);
+                                type = helper.getType(expression);
+                                if (helper.isTypeResolvable(type)) {
+                                    return valid;
+                                }
+                            }
                             // Does not resolve to a valid path
                             if (!helper.isTypeResolvable(type)) {
                                 addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toActualText());
