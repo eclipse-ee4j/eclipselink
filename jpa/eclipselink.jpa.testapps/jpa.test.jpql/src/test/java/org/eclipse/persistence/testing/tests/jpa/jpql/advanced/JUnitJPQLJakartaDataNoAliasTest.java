@@ -366,7 +366,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2247
     public void testSelectQueryImplicitThisVariableInArithmeticExpression() {
-        resetRooms();
+        resetRooms(false);
         int roomCapacity = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                         "SELECT length * width * height  FROM Room WHERE id = :idParam", Integer.class)
                 .setParameter("idParam", ROOMS[1].getId())
@@ -391,7 +391,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2286
     public void testSelectQueryIdFunctionNestedInArithmeticFunction_Where() {
         final String typeName = getPlatform().isMySQL() ? "UNSIGNED": "INTEGER";
-        resetRooms();
+        resetRooms(false);
         Room room = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                         "SELECT this " +
                                 "FROM Room " +
@@ -404,7 +404,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
 
     // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2286
     public void testSelectQueryIdFunctionNestedInStringFunction_Where() {
-        resetRooms();
+        resetRooms(false);
         Room room = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                         "SELECT this " +
                                 "FROM Room " +
