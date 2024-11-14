@@ -20,8 +20,10 @@ package org.eclipse.persistence.dynamic;
 
 //static imports
 
+import org.eclipse.persistence.asm.AnnotationVisitor;
 import org.eclipse.persistence.asm.ClassWriter;
 import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
+import org.eclipse.persistence.asm.FieldVisitor;
 import org.eclipse.persistence.asm.MethodVisitor;
 import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.asm.Type;
@@ -33,6 +35,7 @@ import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD;
 
@@ -223,7 +226,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
 
     protected byte[] createEnum(EnumInfo enumInfo) {
 
-        String[] enumValues = enumInfo.getLiteralLabels();
+        Map<String, String> enumValues = enumInfo.getEnumValues();
         String className = enumInfo.getClassName();
 
         String internalClassName = className.replace('.', '/');
@@ -232,8 +235,10 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_SUPER + Opcodes.ACC_ENUM, internalClassName, null, "java/lang/Enum", null);
 
         // Add the individual enum values
-        for (String enumValue : enumValues) {
-            cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC + Opcodes.ACC_ENUM, enumValue, "L" + internalClassName + ";", null, null);
+        for (Map.Entry<String, String> enumValue : enumValues.entrySet()) {
+            FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC + Opcodes.ACC_ENUM, enumValue.getKey(), "L" + internalClassName + ";", null, null);
+            AnnotationVisitor av = fv.visitAnnotation("Ljakarta/xml/bind/annotation/XmlEnumValue;", true);
+            av.visit("value", enumValue.getValue());
         }
 
         // add the synthetic "$VALUES" field
@@ -270,8 +275,9 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         mv = cw.visitMethod(Opcodes.ACC_STATIC, CLINIT, "()V", null, null);
 
         int lastCount = 0;
-        for (int i = 0; i < enumValues.length; i++) {
-            String enumValue = enumValues[i];
+        String[] enumLiterals = enumInfo.getLiteralLabels();
+        for (int i = 0; i < enumLiterals.length; i++) {
+            String enumValue = enumLiterals[i];
             mv.visitTypeInsn(Opcodes.NEW, internalClassName);
             mv.visitInsn(Opcodes.DUP);
             mv.visitLdcInsn(enumValue);
@@ -296,8 +302,8 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         }
         mv.visitTypeInsn(Opcodes.ANEWARRAY, internalClassName);
 
-        for (int i = 0; i < enumValues.length; i++) {
-            String enumValue = enumValues[i];
+        for (int i = 0; i < enumLiterals.length; i++) {
+            String enumValue = enumLiterals[i];
             mv.visitInsn(Opcodes.DUP);
             if (i <= 5) {
                 mv.visitInsn(ICONST[i]);

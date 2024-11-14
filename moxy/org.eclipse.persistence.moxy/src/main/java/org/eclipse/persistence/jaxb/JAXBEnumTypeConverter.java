@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.Iterator;
 
+import jakarta.xml.bind.annotation.XmlEnumValue;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
@@ -83,13 +86,25 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
                     if (m_usesOrdinalValues) {
                         addConversionValue(theEnum.ordinal(), theEnum);
                     } else {
-                        addConversionValue(theEnum.name(), theEnum);
+                        addConversionValue(getEnumValue(theEnum), theEnum);
                     }
                 }
             }
         }
 
         super.initialize(mapping, session);
+    }
+
+    private String getEnumValue(Enum theEnum) {
+        try {
+            return PrivilegedAccessHelper.callDoPrivilegedWithException(() -> {
+                Field field = theEnum.getClass().getField(theEnum.name());
+                XmlEnumValue annotation = field.getAnnotation(XmlEnumValue.class);
+                return annotation != null ? annotation.value() : theEnum.name();
+            });
+        } catch (Exception exc) {
+           return theEnum.name();
+        }
     }
 
     /**
