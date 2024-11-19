@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,20 +12,23 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-package org.eclipse.persistence.jpa.test.cachedeadlock.model;
+package org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "cachedeadlock_master")
+@Table(name = "CACHEDEADLOCK_MASTER")
 @Cacheable(true)
 @NamedQuery(name="MasterEntity.findById", query="SELECT t FROM CacheDeadLockDetectionMaster t WHERE t.id = :id")
 public class CacheDeadLockDetectionMaster {
+
     @Id
+    @Column(name = "ID")
     private long id;
 
+    @Column(name = "NAME")
     private String name;
 
     private List<CacheDeadLockDetectionDetail> details = new ArrayList<>();
@@ -60,7 +63,7 @@ public class CacheDeadLockDetectionMaster {
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "master", cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_fk", referencedColumnName = "id")
+    @JoinColumn(name = "CACHEDEADLOCK_MASTER_FK", referencedColumnName = "ID")
     public List<CacheDeadLockDetectionDetail> getDetails() {
         return details;
     }
