@@ -18,8 +18,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.testapps.batchfetch.BatchFetchTableCreator;
 import org.eclipse.persistence.jpa.testapps.batchfetch.Company;
+import org.eclipse.persistence.jpa.testapps.batchfetch.Count;
 import org.eclipse.persistence.jpa.testapps.batchfetch.Employee;
 import org.eclipse.persistence.jpa.testapps.batchfetch.Record;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
@@ -43,6 +45,7 @@ public class BatchFetchJUnitTest extends JUnitTestCase {
         suite.addTest(new BatchFetchJUnitTest("testSetup"));
         suite.addTest(new BatchFetchJUnitTest("testSelectRoot"));
         suite.addTest(new BatchFetchJUnitTest("testSelectNonRoot"));
+        suite.addTest(new BatchFetchJUnitTest("testSelectNonRootWithOffsetAndLimit"));
         return suite;
     }
 
@@ -115,6 +118,25 @@ public class BatchFetchJUnitTest extends JUnitTestCase {
             List<Employee> result = q.getResultList();
             assertEquals("Not all rows are selected", 3, result.size());
             List<Company> companies = result.stream().map(Employee::getCompany).filter(Objects::nonNull).toList();
+            assertEquals("Not all employees have companies", 3, companies.size());
+        } catch (RuntimeException e) {
+            closeEntityManager(em);
+            throw e;
+        }
+    }
+
+    public void testSelectNonRootWithOffsetAndLimit() {
+        EntityManager em = createEntityManager();
+        em.getEntityManagerFactory().getCache().evictAll();
+
+        try {
+            TypedQuery<Count> q = em.createQuery("SELECT new org.eclipse.persistence.jpa.testapps.batchfetch.Count(count(r.employee), r.employee) FROM Record r group by r.employee", Count.class);
+            q.setHint(QueryHints.BATCH_SIZE, 1);
+            List<Count> result = q.getResultList();
+            assertEquals("Not all rows are selected", 3, result.size());
+            List<Employee> employees = result.stream().map(Count::employee).filter(Objects::nonNull).toList();
+            assertEquals("Not all counts have employees", 3, result.size());
+            List<Company> companies = employees.stream().map(Employee::getCompany).filter(Objects::nonNull).toList();
             assertEquals("Not all employees have companies", 3, companies.size());
         } catch (RuntimeException e) {
             closeEntityManager(em);
