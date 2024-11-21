@@ -26,8 +26,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
-import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
@@ -36,17 +34,14 @@ import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.SQLCall;
-import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -304,20 +299,6 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     }
 
     /**
-     * Calling a stored procedure query on PostgreSQL with no output parameters
-     * always returns true from an execute call regardless if a result set is
-     * returned or not. This flag will help avoid throwing a JPA mandated
-     * exception on an executeUpdate call (which calls jdbc execute and checks
-     * the return value to ensure no results sets are returned (true))
-     *
-     * @see PostgreSQLPlatform
-     */
-    @Override
-    public boolean isJDBCExecuteCompliant() {
-        return false;
-    }
-
-    /**
      * INTERNAL: Answers whether platform is Postgres.
      */
     @Override
@@ -520,7 +501,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      */
     @Override
     public String getProcedureBeginString() {
-        return "AS $$  BEGIN ";
+        return "$$  BEGIN ";
     }
 
     /**
@@ -528,55 +509,17 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      */
     @Override
     public String getProcedureEndString() {
-        return "; END ; $$ LANGUAGE plpgsql;";
+        return "END; $$ LANGUAGE plpgsql;";
     }
 
     /**
-     * INTERNAL: Used for sp calls.  PostGreSQL uses a different method for executing StoredProcedures than other platforms.
+     * INTERNAL: Used for sp calls.
      */
     @Override
-    public String buildProcedureCallString(StoredProcedureCall call, AbstractSession session, AbstractRecord row) {
-        StringWriter tailWriter = new StringWriter();
-        StringWriter writer = new StringWriter();
-        boolean outParameterFound = false;
-
-        tailWriter.write(call.getProcedureName());
-        tailWriter.write("(");
-
-        int indexFirst = call.getFirstParameterIndexForCallString();
-        int size = call.getParameters().size();
-        String nextBindString = "?";
-
-        for (int index = indexFirst; index < size; index++) {
-             String name = call.getProcedureArgumentNames().get(index);
-             Object parameter = call.getParameters().get(index);
-             ParameterType parameterType = call.getParameterTypes().get(index);
-             // If the argument is optional and null, ignore it.
-             if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
-                  if (!DatasourceCall.isOutputParameterType(parameterType)) {
-                       tailWriter.write(nextBindString);
-                       nextBindString = ", ?";
-                  } else {
-                       if (outParameterFound) {
-                            //multiple outs found
-                            throw ValidationException.multipleOutParamsNotSupported(getClass().getSimpleName(), call.getProcedureName());
-                       }
-                       outParameterFound = true; //PostGreSQL uses a very different header to execute when there are out params
-                  }
-             }
-        }
-        tailWriter.write(")");
-
-        if (outParameterFound) {
-             writer.write("{?= CALL ");
-             tailWriter.write("}");
-        } else {
-             writer.write("SELECT * FROM ");
-        }
-        writer.write(tailWriter.toString());
-
-        return writer.toString();
+    public String getProcedureCallHeader() {
+        return "CALL ";
     }
+
     /**
      * INTERNAL Used for stored function calls.
      */
