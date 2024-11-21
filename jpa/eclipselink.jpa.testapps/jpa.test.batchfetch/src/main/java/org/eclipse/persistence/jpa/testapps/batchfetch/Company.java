@@ -26,7 +26,7 @@ import org.eclipse.persistence.annotations.BatchFetchType;
 import java.util.List;
 
 @Entity
-@Table(name = "COMPANY")
+@Table(name = "BATCH_IN_COMPANY")
 public class Company {
     @Id
     private long id;

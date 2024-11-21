@@ -29,7 +29,7 @@ public class BatchFetchTableCreator extends TableCreator {
 
     public TableDefinition buildRecordTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("RECORD");
+        table.setName("BATCH_IN_RECORD");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -49,7 +49,7 @@ public class BatchFetchTableCreator extends TableCreator {
         fieldUSER.setIsPrimaryKey(false);
         fieldUSER.setIsIdentity(false);
         fieldUSER.setShouldAllowNull(false);
-        fieldUSER.setForeignKeyFieldName("EMPLOYEE.ID");
+        fieldUSER.setForeignKeyFieldName("BATCH_IN_EMPLOYEE.ID");
         table.addField(fieldUSER);
 
         return table;
@@ -57,7 +57,7 @@ public class BatchFetchTableCreator extends TableCreator {
 
     public TableDefinition buildCompanyTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("COMPANY");
+        table.setName("BATCH_IN_COMPANY");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -75,7 +75,7 @@ public class BatchFetchTableCreator extends TableCreator {
 
     public TableDefinition buildEmployeeTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("EMPLOYEE");
+        table.setName("BATCH_IN_EMPLOYEE");
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
@@ -95,7 +95,7 @@ public class BatchFetchTableCreator extends TableCreator {
         fieldCompany.setIsPrimaryKey(false);
         fieldCompany.setIsIdentity(false);
         fieldCompany.setShouldAllowNull(false);
-        fieldCompany.setForeignKeyFieldName("COMPANY.ID");
+        fieldCompany.setForeignKeyFieldName("BATCH_IN_COMPANY.ID");
         table.addField(fieldCompany);
 
         return table;
