@@ -12,6 +12,6 @@
 
 // Contributors:
 
-package org.eclipse.persistence.jpa.testapps.batchfetch;
+package org.eclipse.persistence.testing.models.jpa.batchfetch;
 
 public record Count(long value, Employee employee) {}

@@ -12,11 +12,10 @@
 
 // Contributors:
 
-package org.eclipse.persistence.jpa.testapps.batchfetch;
+package org.eclipse.persistence.testing.models.jpa.batchfetch;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -25,22 +24,22 @@ import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
 
 @Entity
-@Table(name = "BATCH_IN_EMPLOYEE")
-public class Employee {
+@Table(name = "BATCH_IN_RECORD")
+public class Record {
     @Id
     private long id;
-
+    
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "COMPANY_ID")
+    @JoinColumn(name = "EMPLOYEE_ID")
     @BatchFetch(value = BatchFetchType.IN)
-    private Company company;
+    private Employee employee;
 
-    public Employee() {
+    public Record() {
     }
 
-    public Employee(long id, Company company) {
+    public Record(long id, Employee employee) {
         this.id = id;
-        this.company = company;
+        this.employee = employee;
     }
 
     public long getId() {
@@ -51,11 +50,11 @@ public class Employee {
         this.id = id;
     }
 
-    public Company getCompany() {
-        return company;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 }

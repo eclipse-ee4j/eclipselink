@@ -12,7 +12,7 @@
 
 // Contributors:
 
-package org.eclipse.persistence.jpa.testapps.batchfetch;
+package org.eclipse.persistence.testing.models.jpa.batchfetch;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

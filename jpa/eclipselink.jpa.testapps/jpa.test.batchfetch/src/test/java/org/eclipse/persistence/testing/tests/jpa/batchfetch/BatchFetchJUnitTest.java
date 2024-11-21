@@ -12,18 +12,18 @@
 
 // Contributors:
 
-package batchfetch;
+package org.eclipse.persistence.testing.tests.jpa.batchfetch;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.jpa.testapps.batchfetch.BatchFetchTableCreator;
-import org.eclipse.persistence.jpa.testapps.batchfetch.Company;
-import org.eclipse.persistence.jpa.testapps.batchfetch.Count;
-import org.eclipse.persistence.jpa.testapps.batchfetch.Employee;
-import org.eclipse.persistence.jpa.testapps.batchfetch.Record;
+import org.eclipse.persistence.testing.models.jpa.batchfetch.BatchFetchTableCreator;
+import org.eclipse.persistence.testing.models.jpa.batchfetch.Company;
+import org.eclipse.persistence.testing.models.jpa.batchfetch.Count;
+import org.eclipse.persistence.testing.models.jpa.batchfetch.Employee;
+import org.eclipse.persistence.testing.models.jpa.batchfetch.Record;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 import java.util.List;
@@ -53,7 +53,8 @@ public class BatchFetchJUnitTest extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new BatchFetchTableCreator().replaceTables(JUnitTestCase.getServerSession("batchfetch"));
+        new BatchFetchTableCreator().replaceTables(JUnitTestCase.getServerSession(
+                "batchfetch"));
         EntityManager em = createEntityManager();
         createRecords(em);
     }
@@ -130,7 +131,7 @@ public class BatchFetchJUnitTest extends JUnitTestCase {
         em.getEntityManagerFactory().getCache().evictAll();
 
         try {
-            TypedQuery<Count> q = em.createQuery("SELECT new org.eclipse.persistence.jpa.testapps.batchfetch.Count(count(r.employee), r.employee) FROM Record r group by r.employee", Count.class);
+            TypedQuery<Count> q = em.createQuery("SELECT new org.eclipse.persistence.testing.models.jpa.batchfetch.Count(count(r.employee), r.employee) FROM Record r group by r.employee", Count.class);
             q.setHint(QueryHints.BATCH_SIZE, 1);
             List<Count> result = q.getResultList();
             assertEquals("Not all rows are selected", 3, result.size());

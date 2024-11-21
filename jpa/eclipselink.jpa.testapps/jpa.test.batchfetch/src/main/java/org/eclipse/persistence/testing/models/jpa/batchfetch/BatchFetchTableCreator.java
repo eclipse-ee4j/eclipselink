@@ -12,7 +12,7 @@
 
 // Contributors:
 
-package org.eclipse.persistence.jpa.testapps.batchfetch;
+package org.eclipse.persistence.testing.models.jpa.batchfetch;
 
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;

@@ -17,9 +17,9 @@
 	version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
 	<persistence-unit name="batchfetch">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		<class>org.eclipse.persistence.jpa.testapps.batchfetch.Company</class>
-		<class>org.eclipse.persistence.jpa.testapps.batchfetch.Employee</class>
-		<class>org.eclipse.persistence.jpa.testapps.batchfetch.Record</class>
+		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.Company</class>
+		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.Employee</class>
+		<class>org.eclipse.persistence.testing.models.jpa.batchfetch.Record</class>
 		<properties>
 			<property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
 			<property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
