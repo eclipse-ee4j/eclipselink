@@ -1438,16 +1438,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Returns true if this platform complies with the expected behavior from
-     * a jdbc execute call. Most platforms do, some have issues:
-     *
-     * @see PostgreSQLPlatform
-     */
-    public boolean isJDBCExecuteCompliant() {
-        return true;
-    }
-
-    /**
      * Return true is the given exception occurred as a result of a lock
      * time out exception (WAIT clause). If sub-platform supports this clause,
      * this method should be necessary checks should be made.
