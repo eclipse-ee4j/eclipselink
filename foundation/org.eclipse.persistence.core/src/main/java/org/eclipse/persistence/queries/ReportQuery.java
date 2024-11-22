@@ -933,7 +933,12 @@ public class ReportQuery extends ReadAllQuery {
             return getDescriptor().getInterfacePolicy().selectAllObjectsUsingMultipleTableSubclassRead(this);
         }
 
-        return buildObjects(getQueryMechanism().selectAllReportQueryRows());
+        List<AbstractRecord> rows = getQueryMechanism().selectAllReportQueryRows();
+        if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
+            this.batchFetchPolicy.setDataResults(rows);
+        }
+
+        return buildObjects((Vector) rows);
     }
 
     /**

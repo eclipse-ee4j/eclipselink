@@ -290,6 +290,7 @@
         <module>jpa.test.advanced.embeddable</module>
         <module>jpa.test.advanced.fetchgroup</module>
         <module>jpa.test.advanced.multitenant</module>
+        <module>jpa.test.batchfetch</module>
         <module>jpa.test.beanvalidation</module>
         <module>jpa.test.beanvalidation.dynamic</module>
         <module>jpa.test.cacheable</module>
