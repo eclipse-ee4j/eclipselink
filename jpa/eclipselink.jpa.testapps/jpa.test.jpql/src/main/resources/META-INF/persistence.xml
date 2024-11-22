@@ -49,6 +49,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyD</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
@@ -97,6 +98,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyD</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>

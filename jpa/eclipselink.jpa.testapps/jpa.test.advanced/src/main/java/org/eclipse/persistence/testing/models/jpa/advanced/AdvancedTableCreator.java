@@ -37,6 +37,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
@@ -130,6 +131,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPlanarbeitsgangTable());
         addTableDefinition(buildPlanarbeitsgangHistTable());
         addTableDefinition(buildMaterialReignisTable());
+        addTableDefinition(EntityFloat.Populator.buildTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -3649,7 +3651,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return tabledefinition;
     }
-    
+
     @Override
     public void replaceTables(DatabaseSession session) {
         DatabasePlatform dbPlatform = session.getPlatform();
