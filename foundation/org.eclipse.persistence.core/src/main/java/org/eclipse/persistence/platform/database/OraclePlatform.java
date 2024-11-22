@@ -1077,8 +1077,16 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                     printer.printString(primaryKeyFields);
                     printer.printString(FROM_ID);
                     printer.printString(queryString);
-                    printer.printString(ORDER_BY_ID);
-                    printer.printString(primaryKeyFields);
+                    if (statement.hasOrderByExpressions()) {
+                        try {
+                            statement.printSQLOrderByClause(printer);
+                        } catch (IOException exception) {
+                            throw ValidationException.fileError(exception);
+                        }
+                    } else {
+                        printer.printString(ORDER_BY_ID);
+                        printer.printString(primaryKeyFields);
+                    }
                     printer.printString(END_FROM_ID);
                     printer.printString(MAX_ROW);
                     printer.printParameter(DatabaseCall.MAXROW_FIELD);
