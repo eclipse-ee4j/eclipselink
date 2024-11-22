@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -364,6 +364,7 @@
                                 <item>eclipselink-remote</item>
                                 <item>jpa-performance</item>
                                 <item>jpa-performance2</item>
+                                <item>eclipselink-batchfetch-model</item>
                                 <item>eclipselink-beanvalidation-model</item>
                                 <item>eclipselink-beanvalidation-dynamic-model</item>
                                 <item>eclipselink-identity-model</item>
@@ -504,6 +505,7 @@
                                 <item>eclipselink-metamodel-model</item>
                                 <item>eclipselink-delimited-model</item>
                                 <item>eclipselink-extensibility-model</item>
+                                <item>eclipselink-batchfetch-model</item>
                                 <item>eclipselink-beanvalidation-model</item>
                                 <item>eclipselink-beanvalidation-dynamic-model</item>
                                 <item>eclipselink-xml-mapping-metadata-complete</item>
@@ -1058,6 +1060,7 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
+                                <additionalClasspathElement>${project.build.directory}/eclipselink-batchfetch-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                             </additionalClasspathElements>
@@ -1649,6 +1652,20 @@
                 <extra-model>eclipselink-jpa22-model-server</extra-model>
                 <packageName>jpa22</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa22.advanced.JPA22TestSuite</test-client-class>
+            </properties>
+        </profile>
+        <profile>
+            <id>server-test-jpa-batchfetch</id>
+            <properties>
+                <skip-test-jpa-srg>true</skip-test-jpa-srg>
+                <skip-server-test-jpa>false</skip-server-test-jpa>
+                <skip-jpa-jse-build>true</skip-jpa-jse-build>
+                <puName>batchfetch</puName>
+                <!--modelname property name is used there due substitution string in application.xml-->
+                <modelname>eclipselink-batchfetch-model</modelname>
+                <extra-model>eclipselink-batchfetch-model</extra-model>
+                <packageName>batchfetch</packageName>
+                <test-client-class>org.eclipse.persistence.testing.tests.jpa.batchfetch.BatchFetchJUnitTest</test-client-class>
             </properties>
         </profile>
         <profile>
