@@ -61,6 +61,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJ
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantSchemaJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.batchfetch.BatchFetchJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTestEnableSelective;
 import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
@@ -372,6 +373,9 @@ public class FullRegressionTestSuite extends TestSuite {
 
         // Persistence Unit Processor tests.
         fullSuite.addTest(PersistenceUnitProcessorTest.suite());
+
+        // Batchfetch tests
+        fullSuite.addTest(BatchFetchJUnitTest.suite());
 
         return fullSuite;
     }
