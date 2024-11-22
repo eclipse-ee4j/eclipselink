@@ -239,9 +239,26 @@ public class ReportQueryResult implements Serializable, Map {
                 AbstractRecord subRow = row;
                 // Check if at the start of the row, then avoid building a subRow.
                 if (itemIndex > 0) {
-                    Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), itemIndex, rowSize);
-                    Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
-                    subRow = new DatabaseRecord(trimedFields, trimedValues);
+                    BatchFetchPolicy batchFetchPolicy = query.getBatchFetchPolicy();
+                    if (batchFetchPolicy != null && batchFetchPolicy.isIN()) {
+
+                        List<AbstractRecord> subRows = new ArrayList(toManyData.size());
+                        for (AbstractRecord parentRow : (Vector<AbstractRecord>) toManyData) {
+                            Vector trimedParentFields = new NonSynchronizedSubVector(parentRow.getFields(), itemIndex, rowSize);
+                            Vector trimedParentValues = new NonSynchronizedSubVector(parentRow.getValues(), itemIndex, rowSize);
+                            subRows.add(new DatabaseRecord(trimedParentFields, trimedParentValues));
+                        }
+
+                        for (DatabaseMapping subMapping : descriptor.getMappings()) {
+                            batchFetchPolicy.setDataResults(subMapping, subRows);
+                        }
+
+                        subRow = subRows.get(toManyData.indexOf(row));
+                    } else {
+                        Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), itemIndex, rowSize);
+                        Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
+                        subRow = new DatabaseRecord(trimedFields, trimedValues);
+                    }
                 }
                 if (mapping != null && mapping.isAggregateObjectMapping()){
                     value = ((AggregateObjectMapping)mapping).buildAggregateFromRow(subRow, null, null, joinManager, query, false, query.getSession(), true);
