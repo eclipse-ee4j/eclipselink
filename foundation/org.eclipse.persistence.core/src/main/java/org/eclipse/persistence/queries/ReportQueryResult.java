@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -250,9 +251,26 @@ public class ReportQueryResult implements Serializable, Map {
                 AbstractRecord subRow = row;
                 // Check if at the start of the row, then avoid building a subRow.
                 if (itemIndex > 0) {
-                    Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), itemIndex, rowSize);
-                    Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
-                    subRow = new DatabaseRecord(trimedFields, trimedValues);
+                    BatchFetchPolicy batchFetchPolicy = query.getBatchFetchPolicy();
+                    if (batchFetchPolicy != null && batchFetchPolicy.isIN()) {
+
+                        List<AbstractRecord> subRows = new ArrayList<>(toManyData.size());
+                        for (AbstractRecord parentRow : (Vector<AbstractRecord>) toManyData) {
+                            Vector trimedParentFields = new NonSynchronizedSubVector(parentRow.getFields(), itemIndex, rowSize);
+                            Vector trimedParentValues = new NonSynchronizedSubVector(parentRow.getValues(), itemIndex, rowSize);
+                            subRows.add(new DatabaseRecord(trimedParentFields, trimedParentValues));
+                        }
+
+                        for (DatabaseMapping subMapping : descriptor.getMappings()) {
+                            batchFetchPolicy.setDataResults(subMapping, subRows);
+                        }
+
+                        subRow = subRows.get(toManyData.indexOf(row));
+                    } else {
+                        Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), itemIndex, rowSize);
+                        Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
+                        subRow = new DatabaseRecord(trimedFields, trimedValues);
+                    }
                 }
                 if (mapping != null && mapping.isAggregateObjectMapping()){
                     value = ((AggregateObjectMapping)mapping).buildAggregateFromRow(subRow, null, null, joinManager, query, false, query.getSession(), true);
