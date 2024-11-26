@@ -14,8 +14,8 @@
 
 package org.eclipse.persistence.testing.tests.jpa.batchfetch;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
