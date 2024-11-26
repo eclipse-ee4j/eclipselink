@@ -22,8 +22,6 @@ import jakarta.persistence.Table;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 // Based on reproduction scenario from issue #2301 (https://github.com/eclipse-ee4j/eclipselink/issues/2301)
@@ -132,9 +130,9 @@ public class EntityFloat {
             TableDefinition table = new TableDefinition();
             table.setName(TABLE_NAME);
             table.addField(createNumericPk("ID", 10));
-            table.addField(createDoubleColumn("HEIGHT", false));
-            table.addField(createDoubleColumn("LENGTH", false));
-            table.addField(createDoubleColumn("WIDTH", false));
+            table.addField(createFloatColumn("HEIGHT", false));
+            table.addField(createFloatColumn("LENGTH", false));
+            table.addField(createFloatColumn("WIDTH", false));
             table.addField(createStringColumn("DESCRIPTION", 255,false));
             return table;
         }

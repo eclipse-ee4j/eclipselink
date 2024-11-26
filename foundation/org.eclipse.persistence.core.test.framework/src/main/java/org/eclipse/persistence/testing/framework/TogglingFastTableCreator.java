@@ -286,14 +286,40 @@ public class TogglingFastTableCreator extends TableCreator {
 
     /**
      * Helper method to create {@link FieldDefinition} instance for numeric column
-     * with given name to store float or double type values.
+     * with given name to store float type values.
+     * @param name Column name.
+     * @param allowNull Allow {@code null} values for column.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createFloatColumn(
+            final String name, final boolean allowNull) {
+        final FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setType(Float.class);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance for numeric column
+     * with given name to store double type values.
      * @param name Column name.
      * @param allowNull Allow {@code null} values for column.
      * @return Initialized {@link FieldDefinition} instance.
      */
     protected static FieldDefinition createDoubleColumn(
             final String name, final boolean allowNull) {
-        return createNumericColumn(name, 19, 4, allowNull);
+        final FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setType(Double.class);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
     }
 
     /**
