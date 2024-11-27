@@ -2888,6 +2888,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateConcurrencyManagerMaxAllowedFrequencyToProduceMassiveDumpLogMessage(m);
             updateConcurrencyManagerAllowInterruptedExceptionFired(m);
             updateConcurrencyManagerAllowConcurrencyExceptionToBeFiredUp(m);
+            updateAbstractSessionModeOfOperationOfMergeManagerGetCacheKey(m);
             updateConcurrencyManagerAllowTakingStackTraceDuringReadLockAcquisition(m);
             updateConcurrencyManagerUseObjectBuildingSemaphore(m);
             updateConcurrencyManagerUseWriteLockManagerSemaphore(m);
@@ -3833,6 +3834,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(allowConcurrencyExceptionToBeFiredUp, PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, exception));
+        }
+    }
+
+
+    /**
+     * Relates to https://github.com/eclipse-ee4j/eclipselink/issues/2094
+     * and is telling us what sort of behavior we want to have when executing the
+     * {@code org.eclipse.persistence.internal.sessions.AbstractSession.getCacheKeyFromTargetSessionForMerge(Object, ObjectBuilder, ClassDescriptor, MergeManager)}
+     */
+    private void updateAbstractSessionModeOfOperationOfMergeManagerGetCacheKey(Map persistenceProperties) {
+        String abstractSessionModeOfOperationOfMergeManagerGetCacheKey = EntityManagerFactoryProvider
+                .getConfigPropertyAsStringLogDebug(
+                        PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_ABSTRACT_SESSION_GET_CACHE_KEY_FOR_MERGE_MANAGER_MODE_OF_OPERATION,
+                        persistenceProperties, session);
+        if (abstractSessionModeOfOperationOfMergeManagerGetCacheKey != null) {
+            ConcurrencyUtil.SINGLETON.setAbstractSessionModeOfOperationOfMergeManagerGetCacheKey(
+                    abstractSessionModeOfOperationOfMergeManagerGetCacheKey.trim());
         }
     }
 
