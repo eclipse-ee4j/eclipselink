@@ -593,6 +593,7 @@
             <fileset file="${jpatest.basedir}/${eclipselink.cascade.deletes}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.delimited.model}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.extensibility.model}.jar"/>
+            <fileset file="${jpatest.basedir}/${eclipselink.batchfetch.model}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.beanvalidation.model}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.beanvalidation.dynamic.model}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.composite.advanced.model}.jar"/>
@@ -656,6 +657,7 @@
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.metamodel.model}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.delimited.model}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.extensibility.model}"/>
+        <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.batchfetch.model}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.model}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.dynamic.model}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.composite.advanced.model}"/>
@@ -935,7 +937,7 @@
     <target name="package" depends="config-classpath, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model,
     package-jpa22-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties,
     package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes,
-    package-jpa-metamodel, package-delimited, package-beanvalidation, package-beanvalidation-dynamic, package-composite-advanced,
+    package-jpa-metamodel, package-delimited, package-batchfetch, package-beanvalidation, package-beanvalidation-dynamic, package-composite-advanced,
     package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, package-xml-composite-advanced,
     package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
     package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, 
@@ -1385,6 +1387,20 @@
         </jar>
     </target>
 
+    <target name="package-batchfetch" depends="">
+        <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.batchfetch.model}/META-INF">
+            <fileset dir="${jpatest.basedir}/resource/${eclipselink.batchfetch.model}" includes="*.xml"/>
+        </copy>
+        <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.batchfetch.model}">
+            <fileset dir="${jpatest.basedir}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/batchfetch/**"/>
+        </copy>
+        <jar jarfile="${jpatest.basedir}/${eclipselink.batchfetch.model}.jar">
+            <fileset dir="${jpatest.basedir}/${build.dir}/${eclipselink.batchfetch.model}">
+            </fileset>
+        </jar>
+    </target>
+
     <target name="package-beanvalidation" depends="">
         <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.beanvalidation.model}/META-INF">
             <fileset dir="${jpatest.basedir}/resource/${eclipselink.beanvalidation.model}" includes="*.xml"/>
@@ -1609,6 +1625,7 @@
             <!--pathelement path="${jpatest.basedir}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${jpatest.basedir}/${eclipselink.delimited.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.extensibility.model}.jar"/>
+            <pathelement path="${jpatest.basedir}/${eclipselink.batchfetch.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.beanvalidation.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.composite.advanced.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.composite.advanced.model.member_1}.jar"/>
@@ -1646,6 +1663,7 @@
             <!--pathelement path="${jpatest.basedir}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${jpatest.basedir}/${eclipselink.delimited.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.extensibility.model}.jar"/>
+            <pathelement path="${jpatest.basedir}/${eclipselink.batchfetch.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.beanvalidation.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.composite.advanced.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.composite.advanced.model.member_1}.jar"/>
@@ -1683,6 +1701,7 @@
             <!--pathelement path="${jpatest.basedir}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${jpatest.basedir}/${eclipselink.delimited.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.extensibility.model}.jar"/>
+            <pathelement path="${jpatest.basedir}/${eclipselink.batchfetch.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.beanvalidation.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.composite.advanced.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.composite.advanced.model.member_1}.jar"/>
@@ -2204,6 +2223,7 @@
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.metamodel.model}.jar"/>
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.delimited.model}.jar"/>
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.extensibility.model}.jar"/>
+            <pathelement path="${jpatest.basedir}/woven-${eclipselink.batchfetch.model}.jar"/>
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.beanvalidation.model}.jar"/>
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.beanvalidation.dynamic.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.composite.advanced.model}.jar"/>
@@ -2802,6 +2822,13 @@
                <classpath>
                     <path refid="run.classpath"/>
                </classpath>
+        </weave>
+        <weave source= "${jpatest.basedir}/${eclipselink.batchfetch.model}.jar"
+               target = "${jpatest.basedir}/woven-${eclipselink.batchfetch.model}.jar"
+               loglevel="${logging.level}">
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
         </weave>
         <weave source= "${jpatest.basedir}/${eclipselink.beanvalidation.model}.jar"
                target = "${jpatest.basedir}/woven-${eclipselink.beanvalidation.model}.jar"
@@ -3997,6 +4024,7 @@
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
         <antcall target="server-test-advanced-multitenant" inheritRefs="true"/>
+        <antcall target="server-test-batchfetch" inheritRefs="true"/>
         <antcall target="server-test-beanvalidation" inheritRefs="true"/>
         <antcall target="server-test-cacheable" inheritRefs="true"/>
         <antcall target="server-test-cascadedeletes" inheritRefs="true"/>
@@ -4142,6 +4170,20 @@
                               *.jdbc"/>
         </delete>
     </target>
+
+    <target name="server-test-batchfetch">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="batchfetch"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/batchfetch"/>
+            <param name="MODEL_NAME" value="eclipselink-batchfetch-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/batchfetch"/>
+            <param name="TEST_NAME" value="eclipselink-batchfetch-model"/>
+            <param name="EAR_NAME" value="eclipselink-batchfetch-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.batchfetch.BatchFetchJUnitTest"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
     <target name="server-test-beanvalidation">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="beanvalidation"/>
