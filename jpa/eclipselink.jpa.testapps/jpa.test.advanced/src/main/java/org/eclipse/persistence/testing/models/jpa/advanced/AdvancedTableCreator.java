@@ -131,7 +131,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPlanarbeitsgangTable());
         addTableDefinition(buildPlanarbeitsgangHistTable());
         addTableDefinition(buildMaterialReignisTable());
-        addTableDefinition(EntityFloat.Populator.buildTable());
+        addTableDefinition(buildEntityFloatTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -3650,6 +3650,18 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         tabledefinition.addField(fieldChgObjID);
 
         return tabledefinition;
+    }
+
+    // Supported data types according to https://docs.oracle.com/cd/E19501-01/819-3659/gcmaz/
+    private static TableDefinition buildEntityFloatTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName(EntityFloat.TABLE_NAME);
+        table.addField(createNumericPk("ID", 10));
+        table.addField(createFloatColumn("HEIGHT", false));
+        table.addField(createFloatColumn("LENGTH", false));
+        table.addField(createFloatColumn("WIDTH", false));
+        table.addField(createStringColumn("DESCRIPTION", 255,false));
+        return table;
     }
 
     @Override

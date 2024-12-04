@@ -187,7 +187,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
         //Persist the examples in the database
         employeePopulator.persistExample(session);
         // EntityFloat instances to test issue #2301
-        EntityFloat.Populator.populate(session);
+        EntityFloatPopulator.populate(session);
     }
 
     public void testTearDown() {

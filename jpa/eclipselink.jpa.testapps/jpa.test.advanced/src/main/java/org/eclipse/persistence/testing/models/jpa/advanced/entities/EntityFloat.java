@@ -12,24 +12,17 @@
  */
 package org.eclipse.persistence.testing.models.jpa.advanced.entities;
 
-import java.util.Arrays;
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
-import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 // Based on reproduction scenario from issue #2301 (https://github.com/eclipse-ee4j/eclipselink/issues/2301)
 @Entity
 @Table(name = EntityFloat.TABLE_NAME)
 public class EntityFloat {
 
-    static final String TABLE_NAME = "ADV_ENTITY_FLOAT";
+    public static final String TABLE_NAME = "ADV_ENTITY_FLOAT";
 
     @Id
     @Column(name = "ID")
@@ -104,43 +97,6 @@ public class EntityFloat {
         return String.format(
                 "EntityFloat{ id=%d, length=%f, width=%f, height=%f, description=\"%s\"}",
                 id, length, width, height, description);
-    }
-
-    // Based on reproduction scenario from issue #2301 (https://github.com/eclipse-ee4j/eclipselink/issues/2301)
-    public static final class Populator extends TogglingFastTableCreator {
-
-        public static EntityFloat[] ENTITY_FLOAT = new EntityFloat[] {
-                // Tallest and smallest length
-                new EntityFloat(70071, 17.0f, 17.1f, 7.7f, "testOLGH28289#70071"),
-                // Tallest and largest length
-                new EntityFloat(70077, 77.0f, 17.7f, 7.7f, "testOLGH28289#70077"),
-                new EntityFloat(70007, 70.0f, 10.7f, 0.7f, "testOLGH28289#70007")
-        };
-
-        public static void populate(Session session) {
-            List<Object> entities = Arrays.asList(ENTITY_FLOAT);
-            UnitOfWork unitOfWork = session.acquireUnitOfWork();
-            unitOfWork.removeAllReadOnlyClasses();
-            unitOfWork.registerAllObjects(entities);
-            unitOfWork.commit();
-        }
-
-        // Supported data types according to https://docs.oracle.com/cd/E19501-01/819-3659/gcmaz/
-        public static TableDefinition buildTable() {
-            TableDefinition table = new TableDefinition();
-            table.setName(TABLE_NAME);
-            table.addField(createNumericPk("ID", 10));
-            table.addField(createFloatColumn("HEIGHT", false));
-            table.addField(createFloatColumn("LENGTH", false));
-            table.addField(createFloatColumn("WIDTH", false));
-            table.addField(createStringColumn("DESCRIPTION", 255,false));
-            return table;
-        }
-
-        private Populator() {
-            throw new UnsupportedOperationException("No instances of EntityFloatPopulator are allowed");
-        }
-
     }
 
 }
