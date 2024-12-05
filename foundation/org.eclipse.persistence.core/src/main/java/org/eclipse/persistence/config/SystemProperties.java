@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -270,6 +271,18 @@ public final class SystemProperties {
      * </ul>
      */
     public static final String ASM_SERVICE = "eclipselink.asm.service";
+
+    /**
+     * <p>
+     * This property control the random number generator (RNG) used for password encryption.
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"{@code false}" (DEFAULT) - use default RNG of Java platform
+     * <li>"{@code true}" - use RNG indicated by the securerandom.strongAlgorithms security property of Java platform
+     * </ul>
+     */
+    public static final String SECURITY_ENCRYPTOR_USE_STRONG_RANDOM_NUMBER_GENERATOR = "eclipselink.security.encryptor.use.strong.random.number.generator";
 
     private SystemProperties() {
         // no instance please
