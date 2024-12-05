@@ -37,6 +37,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
@@ -130,6 +131,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPlanarbeitsgangTable());
         addTableDefinition(buildPlanarbeitsgangHistTable());
         addTableDefinition(buildMaterialReignisTable());
+        addTableDefinition(buildEntityFloatTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -3649,7 +3651,19 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return tabledefinition;
     }
-    
+
+    // Supported data types according to https://docs.oracle.com/cd/E19501-01/819-3659/gcmaz/
+    private static TableDefinition buildEntityFloatTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName(EntityFloat.TABLE_NAME);
+        table.addField(createNumericPk("ID", 10));
+        table.addField(createFloatColumn("HEIGHT", false));
+        table.addField(createFloatColumn("LENGTH", false));
+        table.addField(createFloatColumn("WIDTH", false));
+        table.addField(createStringColumn("DESCRIPTION", 255,false));
+        return table;
+    }
+
     @Override
     public void replaceTables(DatabaseSession session) {
         DatabasePlatform dbPlatform = session.getPlatform();
