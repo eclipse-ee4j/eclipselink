@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -54,6 +54,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 import org.junit.Assert;
 
@@ -162,6 +163,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTest("testVersionChangeWithReadLock"));
         suite.addTest(new AdvancedQueryTest("testVersionChangeWithWriteLock"));
         suite.addTest(new AdvancedQueryTest("testNamedQueryAnnotationOverwritePersistenceXML"));
+        suite.addTest(new AdvancedQueryTest("testFloatSortWithPessimisticLock"));
         suite.addTest(new AdvancedQueryTest("testTearDown"));
         return suite;
     }
@@ -184,6 +186,8 @@ public class AdvancedQueryTest extends JUnitTestCase {
         employeePopulator.buildExamples();
         //Persist the examples in the database
         employeePopulator.persistExample(session);
+        // EntityFloat instances to test issue #2301
+        EntityFloatPopulator.populate(session);
     }
 
     public void testTearDown() {
@@ -2707,4 +2711,27 @@ public class AdvancedQueryTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+
+    // Based on reproduction scenario from issue #2301 (https://github.com/eclipse-ee4j/eclipselink/issues/2301)
+    public void testFloatSortWithPessimisticLock() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List<EntityFloat> entities;
+        try {
+            entities = em.createQuery("SELECT f FROM EntityFloat f WHERE (f.height < ?1) ORDER BY f.height DESC, f.length",
+                           EntityFloat.class)
+                    .setParameter(1, 8.0)
+                    .setLockMode(LockModeType.PESSIMISTIC_WRITE) // Cause of issue
+                    .setMaxResults(2)
+                    .getResultList();
+            commitTransaction(em);
+        } catch (PersistenceException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+        assertEquals(2, entities.size());
+        assertEquals(70071, entities.get(0).getId());
+        assertEquals(70077, entities.get(1).getId());
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1077,8 +1077,16 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                     printer.printString(primaryKeyFields);
                     printer.printString(FROM_ID);
                     printer.printString(queryString);
-                    printer.printString(ORDER_BY_ID);
-                    printer.printString(primaryKeyFields);
+                    if (statement.hasOrderByExpressions()) {
+                        try {
+                            statement.printSQLOrderByClause(printer);
+                        } catch (IOException exception) {
+                            throw ValidationException.fileError(exception);
+                        }
+                    } else {
+                        printer.printString(ORDER_BY_ID);
+                        printer.printString(primaryKeyFields);
+                    }
                     printer.printString(END_FROM_ID);
                     printer.printString(MAX_ROW);
                     printer.printParameter(DatabaseCall.MAXROW_FIELD);

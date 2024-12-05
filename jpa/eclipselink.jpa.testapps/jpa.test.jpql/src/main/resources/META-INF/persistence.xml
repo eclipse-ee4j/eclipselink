@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyD</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
@@ -95,6 +96,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyD</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
