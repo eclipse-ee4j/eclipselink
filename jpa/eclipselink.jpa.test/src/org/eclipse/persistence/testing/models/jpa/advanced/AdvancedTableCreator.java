@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -124,6 +124,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildORD_ENTITYATable());
         addTableDefinition(buildORD_ENTITYZTable());
         addTableDefinition(buildMyTestEntityTable());
+        addTableDefinition(buildEntityFloatTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -3377,7 +3378,20 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
+
+    // Supported data types according to https://docs.oracle.com/cd/E19501-01/819-3659/gcmaz/
+    private TableDefinition buildEntityFloatTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName(EntityFloat.TABLE_NAME);
+        table.addField(createNumericPk("ID", 10));
+        table.addField(createFloatColumn("HEIGHT", false));
+        table.addField(createFloatColumn("LENGTH", false));
+        table.addField(createFloatColumn("WIDTH", false));
+        table.addField(createStringColumn("DESCRIPTION", 255,false));
+        return table;
+    }
+
     @Override
     public void replaceTables(DatabaseSession session) {
         DatabasePlatform dbPlatform = session.getPlatform();
