@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2015 IBM Corporation.
  * Copyright (c) 2010, 2015 Dies Koper (Fujitsu).
  *
@@ -241,20 +241,35 @@ public class TogglingFastTableCreator extends TableCreator {
      * with given name and size and without any additional constraints.
      * @param name Column name.
      * @param size Column numeric type size.
+     * @param subSize Column numeric type sub size.
      * @param allowNull Allow {@code null} values for column.
      * @return Initialized {@link FieldDefinition} instance.
      */
     protected static FieldDefinition createNumericColumn(
-            final String name, final int size, final boolean allowNull) {
+            final String name, final int size, final int subSize, final boolean allowNull) {
         final FieldDefinition field = new FieldDefinition();
         field.setName(name);
         field.setTypeName("NUMERIC");
         field.setSize(size);
+        field.setSubSize(subSize);
         field.setShouldAllowNull(allowNull);
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
         return field;
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance for numeric column
+     * with given name and size and without any additional constraints.
+     * @param name Column name.
+     * @param size Column numeric type size.
+     * @param allowNull Allow {@code null} values for column.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createNumericColumn(
+            final String name, final int size, final boolean allowNull) {
+        return createNumericColumn(name, size, 0, allowNull);
     }
 
     /**
@@ -267,6 +282,44 @@ public class TogglingFastTableCreator extends TableCreator {
     protected static FieldDefinition createNumericColumn(
             final String name) {
         return createNumericColumn(name, 15, true);
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance for numeric column
+     * with given name to store float type values.
+     * @param name Column name.
+     * @param allowNull Allow {@code null} values for column.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createFloatColumn(
+            final String name, final boolean allowNull) {
+        final FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setType(Float.class);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance for numeric column
+     * with given name to store double type values.
+     * @param name Column name.
+     * @param allowNull Allow {@code null} values for column.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createDoubleColumn(
+            final String name, final boolean allowNull) {
+        final FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setType(Double.class);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
     }
 
     /**
@@ -317,7 +370,7 @@ public class TogglingFastTableCreator extends TableCreator {
      */
     protected static FieldDefinition createStringColumn(
             final String name) {
-        return createStringColumn(name, 32, true);
+        return createStringColumn(name, 255, true);
     }
 
     /**
