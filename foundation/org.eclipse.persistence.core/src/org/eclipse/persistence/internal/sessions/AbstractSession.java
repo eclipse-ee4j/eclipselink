@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -77,8 +78,11 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
+import org.eclipse.persistence.internal.helper.DeferredLockManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.QueryCounter;
+import org.eclipse.persistence.internal.helper.ReadLockManager;
 import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.persistence.internal.history.HistoricalSession;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -164,6 +168,36 @@ import org.eclipse.persistence.sessions.serializers.Serializer;
  * @see DatabaseSessionImpl
  */
 public abstract class AbstractSession extends CoreAbstractSession<ClassDescriptor, Login, Platform, Project, SessionEventManager> implements org.eclipse.persistence.sessions.Session, CommandProcessor, Serializable, Cloneable {
+
+    /**
+     * This flag we use if the abstract session is stuck trying to merge the change set to the main server cache
+     * is stuck trying to get a cache key with object different than null set on the cache key.
+     *
+     * We are more than willing to allow an interrupted exception to be fired up
+     * because we have seen the method playing a role as protagonist in deadlocks
+     * and since the metho can set the cache key to invalid we are more than happy to get an interrupt exception
+     * it that has any chance to  out of the dead lock.
+     */
+    private static final Boolean ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_TRUE = true;
+
+
+    /**
+     * See the issue: <br>
+     *  https://github.com/eclipse-ee4j/eclipselink/issues/2094.
+     *
+     *  These are threads involved in the "getCacheKeyFromTargetSessionForMerge" and that detect that the cache key
+     *  somehow still has the Object of the cache key set to null.
+     *  If the cache key is acquired by different thread, the thread will bwaiting and hoping for that cache key
+     *  to eventually stop being acquired.
+     *
+     *  But this process is highly risk as the thread doing the wait might be the owner of resources of the thread
+     *  that is currently the owner of the cache key it desires.
+     */
+    private static final Map<Thread, String> THREADS_INVOLVED_WITH_MERGE_MANAGER_WAITING_FOR_DEFERRED_CACHE_KEYS_TO_NO_LONGER_BE_ACQUIRED = new ConcurrentHashMap<>();
+
+
+
+
     /** ExceptionHandler handles database exceptions. */
     transient protected ExceptionHandler exceptionHandler;
 
@@ -2835,8 +2869,331 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * For use within the merge process this method will get an object from the shared
      * cache using a readlock.  If a readlock is unavailable then the merge manager will be
      * transitioned to deferred locks and a deferred lock will be used.
+     *
+     * <p> 2024.04.27: This is a method we might see being used in the commmit phase of transaction.
+     * Take note that the snippet of stack trace we provide bellow does not necessarily the lines of code of present data
+     * but the stack trace is good enough to give clarity of the context in which we meight be seeing this method in use.
+     * <pre>
+     * [ACTIVE] ExecuteThread: '164' for queue: 'weblogic.kernel.Default (self-tuning)'"
+   java.lang.Thread.State: WAITING
+        at java.base@11.0.13/java.lang.Object.wait(Native Method)
+        at java.base@11.0.13/java.lang.Object.wait(Object.java:328)
+        at org.eclipse.persistence.internal.sessions.AbstractSession.getCacheKeyFromTargetSessionForMerge(AbstractSession.java:2858) <--- This is the point we are attacking this code could get stuck forever.
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChangesOfWorkingCopyIntoOriginal(MergeManager.java:782)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChangesOfWorkingCopyIntoOriginal(MergeManager.java:716)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChanges(MergeManager.java:320)
+        at org.eclipse.persistence.mappings.ObjectReferenceMapping.mergeIntoObject(ObjectReferenceMapping.java:524)
+        at org.eclipse.persistence.internal.descriptors.ObjectBuilder.mergeIntoObject(ObjectBuilder.java:4202)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChangesOfWorkingCopyIntoOriginal(MergeManager.java:825)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChangesOfWorkingCopyIntoOriginal(MergeManager.java:716)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChanges(MergeManager.java:320)
+        at org.eclipse.persistence.mappings.CollectionMapping.mergeIntoObject(CollectionMapping.java:1643)
+        at org.eclipse.persistence.internal.descriptors.ObjectBuilder.mergeIntoObject(ObjectBuilder.java:4202)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChangesOfWorkingCopyIntoOriginal(MergeManager.java:847)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChangesOfWorkingCopyIntoOriginal(MergeManager.java:716)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChanges(MergeManager.java:320)
+        at org.eclipse.persistence.mappings.CollectionMapping.mergeIntoObject(CollectionMapping.java:1643)
+        at org.eclipse.persistence.internal.descriptors.ObjectBuilder.mergeIntoObject(ObjectBuilder.java:4202)
+        at org.eclipse.persistence.internal.descriptors.ObjectBuilder.mergeChangesIntoObject(ObjectBuilder.java:4135)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChangesOfWorkingCopyIntoOriginal(MergeManager.java:854)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChangesOfWorkingCopyIntoOriginal(MergeManager.java:716)
+        at org.eclipse.persistence.internal.sessions.MergeManager.mergeChanges(MergeManager.java:320)
+        at org.eclipse.persistence.internal.sessions.UnitOfWorkImpl.mergeChangesIntoParent(UnitOfWorkImpl.java:3394)
+        at org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork.mergeChangesIntoParent(RepeatableWriteUnitOfWork.java:382)
+        at org.eclipse.persistence.internal.sessions.UnitOfWorkImpl.mergeClonesAfterCompletion(UnitOfWorkImpl.java:3527)
+        at org.eclipse.persistence.transaction.AbstractSynchronizationListener.afterCompletion(AbstractSynchronizationListener.java:219)
+        at org.eclipse.persistence.transaction.JTASynchronizationListener.afterCompletion(JTASynchronizationListener.java:81)
+        at weblogic.transaction.internal.ServerSCInfo.doAfterCompletion(ServerSCInfo.java:1145)
+        at weblogic.transaction.internal.ServerSCInfo.callAfterCompletionsForTier(ServerSCInfo.java:1121)
+        at weblogic.transaction.internal.ServerSCInfo.callAfterCompletions(ServerSCInfo.java:1093)
+        at weblogic.transaction.internal.ServerTransactionImpl.callAfterCompletions(ServerTransactionImpl.java:3773)
+        at weblogic.transaction.internal.ServerTransactionImpl.afterCommittedStateHousekeeping(ServerTransactionImpl.java:3662)
+        at weblogic.transaction.internal.ServerTransactionImpl.setCommitted(ServerTransactionImpl.java:3716)
+        at weblogic.transaction.internal.ServerTransactionImpl.globalRetryCommit(ServerTransactionImpl.java:3432)
+        at weblogic.transaction.internal.ServerTransactionImpl.globalCommit(ServerTransactionImpl.java:3327)
+        at weblogic.transaction.internal.ServerTransactionImpl.internalCommit(ServerTransactionImpl.java:322)
+        at weblogic.transaction.internal.ServerTransactionImpl.commit(ServerTransactionImpl.java:270)
+        at weblogic.ejb.container.internal.MDListener.execute(MDListener.java:465)
+        at weblogic.ejb.container.internal.MDListener.transactionalOnMessage(MDListener.java:361)
+        at weblogic.ejb.container.internal.MDListener.onMessage(MDListener.java:297)
+        at weblogic.jms.client.JMSSession.onMessage(JMSSession.java:5141)
+        at weblogic.jms.client.JMSSession.execute(JMSSession.java:4795)
+        at weblogic.jms.client.JMSSession.executeMessage(JMSSession.java:4190)
+        at weblogic.jms.client.JMSSession.access$000(JMSSession.java:132)
+        at weblogic.jms.client.JMSSession$UseForRunnable.run(JMSSession.java:5666)
+        at weblogic.work.SelfTuningWorkManagerImpl$WorkAdapterImpl.run(SelfTuningWorkManagerImpl.java:677)
+     * </pre>
+     *
+     *
+     * If we look at the {@code   at org.eclipse.persistence.transaction.JTASynchronizationListener.afterCompletion(JTASynchronizationListener.java:81)}
+     * we see that the javadoc tells us that
+     * {@code Called by the JTA transaction manager after the transaction is committed
+     * or rolled back. This method executes without a transaction context.}
+     *
+     * That is the DB is already up to date.
+     * And now the eclipselink cache must move forward and update the server session cache to match the changes of the merge manager.
+     *
+     * @throws
      */
-    protected CacheKey getCacheKeyFromTargetSessionForMerge(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor, MergeManager mergeManager){
+    protected CacheKey getCacheKeyFromTargetSessionForMerge(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor, MergeManager mergeManager)  {
+        // (backwards-compatibility-mode)
+        // Check the concurrency Util configuration
+        // if explictly says we want to run the original code which is not a smart idea
+        // since we will likely face the bug https://github.com/eclipse-ee4j/eclipselink/issues/2094
+        // then we still have this possibility
+        if(ConcurrencyUtil.SINGLETON.isAbstractSessionModeOfOperationOfMergeManagerGetCacheKeyBackwardsCompatibility()) {
+            return getCacheKeyFromTargetSessionForMergeDeprecated(implementation, builder, descriptor, mergeManager);
+        }
+
+        // (a) Initiate the hunt for the cache key
+        // if the object does not yet have a primary key we can get out of this method
+        // note: assuming this is because the object is brand new object
+        Object original = null;
+       Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this, true);
+       if (primaryKey == null) {
+           return null;
+       }
+
+       // (b) scenario of getting a cache key where a merge manager is not involved in the process
+       // note: this step is somewhat strange because if the cache key is different than null
+       // then the code will do this step called checkReadLock that acquires and releases the cache keys for reading
+       // somewhat like testing if you can startup a car by rotating the key but then immedaitely shutting down the car
+       // not obvious what the added valueof this checkReadLock actually, expert knowledge is neeeded here
+       CacheKey cacheKey = null;
+       if (mergeManager == null){
+           cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor, true);
+           if (cacheKey != null){
+               cacheKey.checkReadLock();
+           }
+           return cacheKey;
+       }
+
+       // (c) We are trying acquire the key as part of some merge process
+       // here the approach number one is trying acquire a read lock but not being willing to wait anytime
+       // so we see the call to acquireReadLockNoWait
+      // then the strange thing is that the method bothers itself with doing
+       // cacheKey.getObject() does not check if the object is null or not
+       // essentially returns.
+       // Otherwise, the code here seems activate a deferred lock approach
+       // by calling upon acquireDeferredLock()
+       // when the thread comes out of a acquireDeferredLock it either is the active thread on the cache key
+       // or it is just another thread that indicates that it deferred on the cache key.
+       // This thread then wants to somehow make sure that the cache keys has the object field
+       // evovling to a non null value. or at least this is what it looks like
+       // NOTE: The section of code bellow where see the check " is the original on the cacheKey null? " and if it is it goes
+       // into an eternal wait is simply super dangerous:
+       // https://github.com/eclipse-ee4j/eclipselink/issues/2094
+       // we have seen that we had thread eternally blocked.
+       // What was happening here was that the thread going via merge mmanager was owning several CachKeys for writing.
+       // the thread A stuck on this are of code was owning a total of 56 cache keys
+       // we then had another thread B that was politely doing a
+       // ConcurrencyManager.releaseDeferredLock(ConcurrencyManager.java:654)
+       // this thread B was the owner of the cache key that thread A was wanting to merge changes into
+       // the thread B was doomed to never finish object building because the thread A stuck here in aneternal loop
+       // wanting for the cache key to be freed up
+
+       cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor, true);
+       if (cacheKey != null) {
+           if (cacheKey.acquireReadLockNoWait()) {
+               original = cacheKey.getObject();
+               cacheKey.releaseReadLock();
+           } else {
+               if (!mergeManager.isTransitionedToDeferredLocks()) {
+                   getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
+               }
+               cacheKey.acquireDeferredLock();
+               try {
+
+                   getCacheKeyFromTargetSessionForMergeScenarioMergeManagerNotNullAndCacheKeyOriginalStillNull(cacheKey, implementation, builder, descriptor, mergeManager);
+
+               } finally {
+                   cacheKey.releaseDeferredLock();
+               }
+
+
+           }
+       }
+       return cacheKey;
+    }
+
+    /**
+     * This method is a sub-setep of the {@link org.eclipse.persistence.internal.sessions.AbstractSession#getCacheKeyFromTargetSessionForMerge(Object, ObjectBuilder, ClassDescriptor, MergeManager)}.
+     * In this case we are dealing with a scenario where the mergeManager parameter is knowng to be not null and the cache key is knowng to be no null
+     * however the CacheKey object is still found to be null.
+     * The original implementation wanted to wait for a signal that the cache key has been released and is no longer acquired, presumebly because
+     * that should technically imly that the previous owner of the cache key has finished building the object
+     * and has now set it on the cache key. That is what the old code seemed to imply.
+     *
+     * The old implementation was bugy, potentially leading to an eternal wait and creating a dead lock where the thread involved in the dead lock
+     * is not aware that it is the middle of dead lock and cuasing problems.
+     *
+     * @param cacheKey
+     *  guaranteed to no longer be null
+     *
+     * @param implementation
+     *       we assume this is the CLONED object that has been modified and should eventually be merged to the server session cache.
+     * @param builder
+     *      this is the object builder
+     * @param descriptor
+     *      metadata about the entity associated to the present object
+     * @param mergeManager
+     *   the merge manager that is want to grab the cache key for the current object and it appears to be the case
+     *   that it is hoping for the cache key to ideally have and object set on it.
+     * @return A non null cache key
+     * @throws InterruptedException
+     * unexpected blow up either during wait call the thread gets interrupted or the concurrency util decides
+     * that it is time to kill the deadlocked thread.
+     */
+    @SuppressWarnings("java:S2445")
+    protected CacheKey getCacheKeyFromTargetSessionForMergeScenarioMergeManagerNotNullAndCacheKeyOriginalStillNull(
+            final CacheKey cacheKey, final Object implementation, final ObjectBuilder builder,
+            final ClassDescriptor descriptor, final MergeManager mergeManager) {
+        // (a) basic pre-conditions to call this method
+        // we know exactly from where we call this method and we know that these assumptions are true 100% of the time
+        assert cacheKey != null;
+        assert mergeManager != null;
+
+        // (b) basic variable initialization
+        final Thread currentThread = Thread.currentThread();
+        final String currentThreadName = currentThread.getName();
+        final long whileStartTimeMillis = System.currentTimeMillis();
+        final DeferredLockManager lockManager = cacheKey.getDeferredLockManager(currentThread);
+        final ReadLockManager readLockManager = cacheKey.getReadLockManager(currentThread);
+        Object original = cacheKey.getObject();
+        boolean originalIsStillNull = original == null;
+        boolean weBlieveToBeStuckInADeadlock = false;
+
+        // (c) This method we are writing here is a new implementation for the old deprecated code
+        // around the topic of the problematic eternal wait on a cache key
+        // that original code would never go into the eternal wait if the cache key get object was different than null
+        // so that is what we are doing in this if. The cache key already has an object set we can just get out of here
+        if (!originalIsStillNull) {
+            return cacheKey;
+        }
+
+        // (d) At this point we really the dangerous terriroty of the defect
+        // https://github.com/eclipse-ee4j/eclipselink/issues/2094
+        // this is where the old code would just start doing an eternal wait and hope to one day be notified on the
+        // cache key
+        // back into work and out of the method.
+        // That old approach is not good because we might be living a deadlock right now
+        // so if we are in dead lock the last thing we need is an eternal wait
+        // we hope to get out of the deadlock by returning out of this method and making the cache key invalid
+        synchronized (cacheKey) {
+            // (e) the old code would do cacheKey.isAcquired()
+            // we have enhance the concurreny manager with a better API the
+            // isAcquiredForWritingAndOwneddByADifferentThread
+            // it is possible that the cache key we are dealing with was acquired by ourselves in the step above
+            boolean someOtherThreadCurrentlyOwningTheCacheKey = cacheKey
+                    .isAcquiredForWritingAndOwneddByADifferentThread();
+
+            // (f) if we look at the old code we would see it checking the synchronized block if
+            // cacheKey.isAcquired() if not the method would just end. That is what we are doing here
+            if (!someOtherThreadCurrentlyOwningTheCacheKey) {
+                return cacheKey;
+            }
+
+            // (g) At this point ar really getting into a dangerous terriotory
+            // prepare a justificaton string to explain why our thread is stuck
+            final String cacheKeyToStringOwnedByADifferentThread = ConcurrencyUtil.SINGLETON
+                    .createToStringExplainingOwnedCacheKey(cacheKey);
+            String justifiCationAsToWhyWeAreStuckHere = String.format(
+                    " Merge manager logic is currently stuck in the process of trying to return the cache key: %1$s  "
+                            + " this cache key is currently acquired by a competing thread: %2$s . "
+                            + " This cache key has the problem that its original object is still set to NULL. "
+                            + "  The ope of this current thread is that by waiting for some time the current owner of the cache key will finish object building and release the cache key. "
+                            + " Note: There is real risk that we are in a deadlock. The daedlock exists if the current thread: %3$s "
+                            + " is owning other cache key resources as a writer. Any lock acquired by the current thread might be needed by competing threads. "
+                            + " Much in the same manner that our current thread is stuck hoping to see this specific cache key being released.   ",
+                    cacheKeyToStringOwnedByADifferentThread, cacheKey.getActiveThread(), currentThreadName);
+
+            // (g) let us start our wait loop, hoping for the competing thread (e.g. most likely working on object
+            // building) to finish its activity
+            try {
+                setJustificationWhyThreadInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired(
+                        justifiCationAsToWhyWeAreStuckHere);
+                while (
+                // (i) as soon as the cache key is not owned by anybody we can safely leave.
+                // This is based on the original deprecated code would only be doing its eternal wait on the cache key
+                // if in the key had been flagged as acquired. If the flag was not flagged as acquired it would not
+                // enter that eternal wait
+                someOtherThreadCurrentlyOwningTheCacheKey &&
+
+                // (ii) for us to enter this loop and stay on this loop we do it only if
+                // the cache key has the object set to null
+                // again this is because the original deprecate code would only be doing its eternal wait
+                // if and only if the cache key object was found to be null
+                        originalIsStillNull &&
+                        // (iii) THis check here is code inroduced in 2024.04.27 essentially
+                        // it is part of our approach to try to escape the dead lock of issue
+                        // https://github.com/eclipse-ee4j/eclipselink/issues/2094
+                        // what we are doing here is to check if we are convinced to be stuck
+                        // in a deadlock if we are, we probably should be releasing all of our cache keys
+                        // flagging them all as invalid cache keys and simply interrupt the merge process completely
+                        // but since we do not have the experience to do this sort of change
+                        // we just just do somethign soft we get return out of the method
+                        // as the parent called in MergeManager.mergeChangesOfWorkingCopyIntoOriginal
+                        // seems to be robust enough to handle our early exit with all its if-else logic
+                        !weBlieveToBeStuckInADeadlock) {
+
+                    // (i) instead of doing an eternal wait we do a timed wait
+                    cacheKey.wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
+
+                    // (ii) each time we wake up, check if we might be in a dead lock
+                    // Run a method that will fire up an exception if we having been sleeping for too long
+                    // if the persistence.xml eclipselink.concurrency.manager.allow.concurrency.exception is set to true
+                    // than the method we are calling here will fire up an exception
+                    // if not it will swallow exceptions, but we will still know via the return that we are stuck in a
+                    // deadlock
+                    weBlieveToBeStuckInADeadlock = ConcurrencyUtil.SINGLETON
+                            .determineIfReleaseDeferredLockAppearsToBeDeadLocked(cacheKey, whileStartTimeMillis,
+                                    lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_TRUE);
+
+                    // (ii) Update all loop control variables
+                    someOtherThreadCurrentlyOwningTheCacheKey = cacheKey
+                            .isAcquiredForWritingAndOwneddByADifferentThread();
+                    original = cacheKey.getObject();
+                    originalIsStillNull = original == null;
+
+                } // close the parameterized while block.
+
+            } catch (InterruptedException e) {
+                // here we do not follow the original approach of simply returning out of the method
+                // the code above this method in the merge manager exuecting the mergeChangesOfWorkingCopyIntoOriginal
+                // seems to cater for million different scenarios of the original cache key get object returning null
+                // So just returning here should actually wor more or less ok.
+                // But do not trust that the merge process will go alright at this point
+                // the safest course of action is to state that the cache key is invalid
+                // this means the cache should self heal by needing to recompute this object
+                // this a small prices to pay compared to getting a corrupted cache
+                cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                return cacheKey;
+            } finally {
+                if (weBlieveToBeStuckInADeadlock) {
+                    cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                }
+                clearJustificationWhyThreadInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired();
+            }
+
+        } // close synchronized block
+        return cacheKey;
+
+    }
+
+
+
+
+    /**
+     * INTERNAL:
+     * For use within the merge process this method will get an object from the shared
+     * cache using a readlock.  If a readlock is unavailable then the merge manager will be
+     * transitioned to deferred locks and a deferred lock will be used.
+     * @deprecated see bug https://github.com/eclipse-ee4j/eclipselink/issues/2094
+     *
+     *
+     */
+    @Deprecated
+    protected CacheKey getCacheKeyFromTargetSessionForMergeDeprecated(Object implementation, ObjectBuilder builder, ClassDescriptor descriptor, MergeManager mergeManager){
       Object original = null;
        Object primaryKey = builder.extractPrimaryKeyFromObject(implementation, this, true);
        if (primaryKey == null) {
@@ -5476,5 +5833,17 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     */
    public boolean shouldTolerateInvalidJPQL() {
        return this.tolerateInvalidJPQL;
+   }
+
+   public static Map<Thread, String> getThreadsInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired() {
+       return new HashMap<>(THREADS_INVOLVED_WITH_MERGE_MANAGER_WAITING_FOR_DEFERRED_CACHE_KEYS_TO_NO_LONGER_BE_ACQUIRED);
+   }
+
+   public static void clearJustificationWhyThreadInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired() {
+       THREADS_INVOLVED_WITH_MERGE_MANAGER_WAITING_FOR_DEFERRED_CACHE_KEYS_TO_NO_LONGER_BE_ACQUIRED.remove(Thread.currentThread());
+   }
+
+   public static void setJustificationWhyThreadInvolvedWithMergeManagerWaitingForDeferredCacheKeysToNoLongerBeAcquired(String justification) {
+       THREADS_INVOLVED_WITH_MERGE_MANAGER_WAITING_FOR_DEFERRED_CACHE_KEYS_TO_NO_LONGER_BE_ACQUIRED.put(Thread.currentThread(), justification);
    }
 }
