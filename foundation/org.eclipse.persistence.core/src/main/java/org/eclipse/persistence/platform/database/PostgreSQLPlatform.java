@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -439,6 +439,8 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME", false));
+
+        fieldTypeMapping.put(java.util.UUID.class, new FieldTypeDefinition("UUID", false));
 
         return fieldTypeMapping;
     }
