@@ -25,8 +25,6 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -249,35 +247,11 @@ public class ReportQueryResult implements Serializable, Map {
                 if (itemIndex + size > rowSize) {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + size, rowSize);
                 }
-                AbstractRecord subRow = row;
-                // Check if at the start of the row, then avoid building a subRow.
-                if (itemIndex > 0) {
-                    BatchFetchPolicy batchFetchPolicy = query.getBatchFetchPolicy();
-                    if (batchFetchPolicy != null && batchFetchPolicy.isIN()) {
-
-                        List<AbstractRecord> subRows = new ArrayList<>(toManyData.size());
-                        for (AbstractRecord parentRow : (Vector<AbstractRecord>) toManyData) {
-                            Vector<DatabaseField> trimedParentFields = new NonSynchronizedSubVector<>(parentRow.getFields(), itemIndex, rowSize);
-                            Vector trimedParentValues = new NonSynchronizedSubVector<>(parentRow.getValues(), itemIndex, rowSize);
-                            subRows.add(new DatabaseRecord(trimedParentFields, trimedParentValues));
-                        }
-
-                        for (DatabaseMapping subMapping : descriptor.getMappings()) {
-                            batchFetchPolicy.setDataResults(subMapping, subRows);
-                        }
-
-                        subRow = subRows.get(toManyData.indexOf(row));
-                    } else {
-                        Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), itemIndex, rowSize);
-                        Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
-                        subRow = new DatabaseRecord(trimedFields, trimedValues);
-                    }
-                }
                 if (mapping != null && mapping.isAggregateObjectMapping()){
-                    value = ((AggregateObjectMapping)mapping).buildAggregateFromRow(subRow, null, null, joinManager, query, false, query.getSession(), true);
+                    value = ((AggregateObjectMapping)mapping).buildAggregateFromRow(row, null, null, joinManager, query, false, query.getSession(), true);
                 } else {
                     //TODO : Support prefrechedCacheKeys in report query
-                    value = descriptor.getObjectBuilder().buildObject(query, subRow, joinManager);
+                    value = descriptor.getObjectBuilder().buildObject(query, row, joinManager);
                 }
 
                 // this covers two possibilities
@@ -289,7 +263,7 @@ public class ReportQueryResult implements Serializable, Map {
                     if (mapping.getContainerPolicy().isMapPolicy() && !mapping.getContainerPolicy().isMappedKeyMapPolicy()){
                         rowKey = mapping.getContainerPolicy().keyFrom(value, query.getSession());
                     } else {
-                        rowKey = mapping.getContainerPolicy().buildKey(subRow, query, null, query.getSession(), true);
+                        rowKey = mapping.getContainerPolicy().buildKey(row, query, null, query.getSession(), true);
                     }
                     if (((MapEntryExpression)item.getAttributeExpression()).shouldReturnMapEntry()){
                         value = new Association(rowKey, value);
@@ -299,7 +273,7 @@ public class ReportQueryResult implements Serializable, Map {
                 }
                 // GF_ISSUE_395
                 if (this.key != null) {
-                    Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(subRow, query.getSession());
+                    Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(row, query.getSession());
                     if (primaryKey != null){//GF3233 NPE is caused by processing the null PK being extracted from referenced target with null values in database.
                         this.key.append(primaryKey);
                     }
