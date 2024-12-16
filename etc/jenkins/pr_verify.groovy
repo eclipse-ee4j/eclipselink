@@ -189,6 +189,15 @@ spec:
                 }
             }
         }
+        stage('JPA Spring, JPA Spring Boot') {
+            steps {
+                container('el-build') {
+                    sh """
+                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.spring.test,:org.eclipse.persistence.jpa.springboot.test -P staging,mysql
+                            """
+                }
+            }
+        }
         stage('JPA Modelgen, JPA JSE, WDF, JPARS, DBWS, DBWS Builder, Distribution') {
             steps {
                 container('el-build') {
