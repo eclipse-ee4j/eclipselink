@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,21 +23,6 @@
 //       - 254437: Added getSystemProperty methods and fixed line separator property.
 package org.eclipse.persistence.internal.security;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -47,16 +33,29 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * INTERNAL:
  * Privileged Access Helper provides a utility so all calls that require privileged access can use the same code.
- *
+ * <p>
  * Do privileged blocks can be used with a security manager to grant a code base (eclipselink.jar) access to certain
  * Java operations such as reflection.  Generally a security manager is not enabled in a JVM, so this is not an issue.
  * If a security manager is enabled, then either the application can be configured to have access to operations such as
  * reflection, or only EclipseLink can be given access.  If only EclipseLink is desired to be given access then
  * do privileged must be enabled through the System property "eclipselink.security.usedoprivileged"=true.
- *
+ * <p>
  * Note the usage of do privileged has major impacts on performance, so should normally be avoided.
  */
 public class PrivilegedAccessHelper {
@@ -65,7 +64,7 @@ public class PrivilegedAccessHelper {
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
 
-    private final static String[] legalProperties = { "file.separator", "java.io.tmpdir", JavaVersion.VM_VERSION_PROPERTY, "line.separator", "path.separator", "user.dir",
+    private final static String[] legalProperties = { "java.io.tmpdir", JavaVersion.VM_VERSION_PROPERTY, "user.dir",
             "org.eclipse.persistence.fetchgroupmonitor", "org.eclipse.persistence.querymonitor", "SAP_J2EE_Engine_Version",
             PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.JAVASE_DB_INTERACTION,
             PersistenceUnitProperties.LOGGING_FILE, PersistenceUnitProperties.LOGGING_LEVEL,
@@ -75,12 +74,12 @@ public class PrivilegedAccessHelper {
             SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, SystemProperties.CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME, SystemProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME,
             SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE, SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE,
             SystemProperties.CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION, SystemProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, SystemProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK,
+            SystemProperties.SECURITY_ENCRYPTOR_USE_STRONG_RANDOM_NUMBER_GENERATOR,
             ServerPlatformBase.JMX_REGISTER_RUN_MBEAN_PROPERTY, ServerPlatformBase.JMX_REGISTER_DEV_MBEAN_PROPERTY,
             XMLPlatformFactory.XML_PLATFORM_PROPERTY};
-    private final static Set<String> legalPropertiesSet = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(legalProperties)));
+    private final static Set<String> legalPropertiesSet = Set.of(legalProperties);
 
-    private final static String[] exemptedProperties = { "line.separator" };
-    private final static Set<String> exemptedPropertiesSet = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(exemptedProperties)));
+    private static final Set<String> exemptedPropertiesSet = Collections.emptySet();
 
     private static final Map<String, Class<?>> primitiveClasses;
 
@@ -669,15 +668,6 @@ public class PrivilegedAccessHelper {
     public static boolean getSystemPropertyBoolean(final String key, final boolean def) {
         return TRUE_STRING.equalsIgnoreCase(
                 getSystemProperty(key, def ? TRUE_STRING : ""));
-    }
-
-    /**
-     * INTERNAL:
-     * Get the line separator character.
-     * @return The {@link String} containing the platform-appropriate characters for line separator.
-     */
-    public static String getLineSeparator() {
-        return getSystemProperty("line.separator");
     }
 
     /**
