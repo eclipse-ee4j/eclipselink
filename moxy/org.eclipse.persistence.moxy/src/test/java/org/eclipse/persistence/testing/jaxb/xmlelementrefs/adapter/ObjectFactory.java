@@ -53,7 +53,7 @@ public class ObjectFactory {
  }
 
  /**
-  * Create an instance of {@link JAXBElement }{@code <}{@link byte[]}{@code >}}
+  * Create an instance of {@link JAXBElement }{@code byte[]}
   *
   */
  @XmlElementDecl(namespace = "", name = "e1", scope = Foo.class)
@@ -63,7 +63,7 @@ public class ObjectFactory {
  }
 
  /**
-  * Create an instance of {@link JAXBElement }{@code <}{@link byte[]}{@code >}}
+  * Create an instance of {@link JAXBElement }{@code byte[]}
   *
   */
  @XmlElementDecl(namespace = "", name = "e2", scope = Foo.class)

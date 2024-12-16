@@ -36,7 +36,7 @@ public class WrappedByteArray {
      *
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link byte[]}{@code >}
+     *     {@link JAXBElement }{@code byte[]}
      *
      */
     public JAXBElement<byte[]> getInByteArray() {
@@ -48,7 +48,7 @@ public class WrappedByteArray {
      *
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link byte[]}{@code >}
+     *     {@link JAXBElement }{@code byte[]}
      *
      */
     public void setInByteArray(JAXBElement<byte[]> value) {
