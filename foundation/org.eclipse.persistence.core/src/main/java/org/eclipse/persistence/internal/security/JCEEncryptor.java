@@ -128,14 +128,16 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             byte[] ivGCM = new byte[IV_GCM_LENGTH];
             SecureRandom random = null;
             String useStrongRNG = PrivilegedAccessHelper.getSystemProperty(SystemProperties.SECURITY_ENCRYPTOR_USE_STRONG_RANDOM_NUMBER_GENERATOR);
-            if (Boolean.parseBoolean(useStrongRNG)) {
+            if (useStrongRNG == null || useStrongRNG.equalsIgnoreCase("false")) {
+                random = new SecureRandom();
+            } else if (useStrongRNG.equalsIgnoreCase("true")) {
                 try {
                     random = SecureRandom.getInstanceStrong();
                 } catch (NoSuchAlgorithmException e) {
                     throw new RuntimeException(e);
                 }
             } else {
-                random = new SecureRandom();
+                throw ValidationException.invalidBooleanValueForProperty(useStrongRNG, SystemProperties.SECURITY_ENCRYPTOR_USE_STRONG_RANDOM_NUMBER_GENERATOR);
             }
             random.nextBytes(ivGCM);
             return ivGCM;
