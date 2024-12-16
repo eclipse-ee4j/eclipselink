@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,13 +51,13 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 /**
  * INTERNAL:
  * Privileged Access Helper provides a utility so all calls that require privileged access can use the same code.
- *
+ * <p>
  * Do privileged blocks can be used with a security manager to grant a code base (eclipselink.jar) access to certain
  * Java operations such as reflection.  Generally a security manager is not enabled in a JVM, so this is not an issue.
  * If a security manager is enabled, then either the application can be configured to have access to operations such as
  * reflection, or only EclipseLink can be given access.  If only EclipseLink is desired to be given access then
  * do privileged must be enabled through the System property "eclipselink.security.usedoprivileged"=true.
- *
+ * <p>
  * Note the usage of do privileged has major impacts on performance, so should normally be avoided.
  */
 public class PrivilegedAccessHelper {
@@ -75,6 +76,7 @@ public class PrivilegedAccessHelper {
             SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, SystemProperties.CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME, SystemProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME,
             SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE, SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE,
             SystemProperties.CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION, SystemProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, SystemProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK,
+            SystemProperties.SECURITY_ENCRYPTOR_USE_STRONG_RANDOM_NUMBER_GENERATOR,
             ServerPlatformBase.JMX_REGISTER_RUN_MBEAN_PROPERTY, ServerPlatformBase.JMX_REGISTER_DEV_MBEAN_PROPERTY,
             XMLPlatformFactory.XML_PLATFORM_PROPERTY};
     private final static Set<String> legalPropertiesSet = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(legalProperties)));
