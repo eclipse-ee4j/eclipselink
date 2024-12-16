@@ -131,7 +131,6 @@ public class WriteLockManager {
     /*  the first element in this list will be the prevailing thread */
     protected ExposedNodeLinkedList prevailingQueue;
 
-    private final Lock toWaitOnLock = new ReentrantLock();
     private final Lock instancePrevailingQueueLock = new ReentrantLock();
 
     public WriteLockManager() {
