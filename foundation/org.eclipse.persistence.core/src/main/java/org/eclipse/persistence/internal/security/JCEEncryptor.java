@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +15,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.security;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -125,10 +127,17 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         private static byte[] getIvGCM() {
             byte[] ivGCM = new byte[IV_GCM_LENGTH];
             SecureRandom random = null;
-            try {
-                random = SecureRandom.getInstanceStrong();
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
+            String useStrongRNG = PrivilegedAccessHelper.getSystemProperty(SystemProperties.SECURITY_ENCRYPTOR_USE_STRONG_RANDOM_NUMBER_GENERATOR);
+            if (useStrongRNG == null || useStrongRNG.equalsIgnoreCase("false")) {
+                random = new SecureRandom();
+            } else if (useStrongRNG.equalsIgnoreCase("true")) {
+                try {
+                    random = SecureRandom.getInstanceStrong();
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                throw ValidationException.invalidBooleanValueForProperty(useStrongRNG, SystemProperties.SECURITY_ENCRYPTOR_USE_STRONG_RANDOM_NUMBER_GENERATOR);
             }
             random.nextBytes(ivGCM);
             return ivGCM;
