@@ -120,7 +120,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      */
     private boolean useLazyInstantiation = false;
 
-    private final Lock instanceLock  = new ReentrantLock();
+    private Lock instanceLock  = new ReentrantLock();
 
     /**
      * Construct an empty IndirectSet.
@@ -297,12 +297,20 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
     @Override
     public Object clone() {
         try {
-            IndirectSet<E> result = (IndirectSet<E>)super.clone();
-            result.delegate = this.cloneDelegate();
-            result.valueHolder = new ValueHolder<>(result.delegate);
-            result.attributeName = null;
-            result.changeListener = null;
+            //Keep origin pointer to lock in local variable as instance variable is updated inside
+            Lock lock = instanceLock;
+            lock.lock();
+            try {
+                IndirectSet<E> result = (IndirectSet<E>)super.clone();
+                result.delegate = this.cloneDelegate();
+                result.valueHolder = new ValueHolder<>(result.delegate);
+                result.instanceLock = new ReentrantLock();
+                result.attributeName = null;
+                result.changeListener = null;
             return result;
+            } finally {
+                lock.unlock();
+            }
         } catch (CloneNotSupportedException e) {
             throw new InternalError("clone not supported");
         }

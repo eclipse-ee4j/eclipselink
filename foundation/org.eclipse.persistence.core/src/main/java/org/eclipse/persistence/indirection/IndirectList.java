@@ -100,7 +100,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      */
     private boolean useLazyInstantiation = true;
 
-    private final Lock instanceLock  = new ReentrantLock();
+    private Lock instanceLock  = new ReentrantLock();
 
     /**
      * PUBLIC:
@@ -355,16 +355,19 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     */
     @Override
     public Object clone() {
-        instanceLock.lock();
+        //Keep origin pointer to lock in local variable as instance variable is updated inside
+        Lock lock = instanceLock;
+        lock.lock();
         try {
             IndirectList<E> result = (IndirectList<E>)super.clone();
             result.delegate = (Vector<E>)this.getDelegate().clone();
             result.valueHolder = new ValueHolder<>(result.delegate);
+            result.instanceLock = new ReentrantLock();
             result.attributeName = null;
             result.changeListener = null;
             return result;
         } finally {
-            instanceLock.unlock();
+            lock.unlock();
         }
     }
 

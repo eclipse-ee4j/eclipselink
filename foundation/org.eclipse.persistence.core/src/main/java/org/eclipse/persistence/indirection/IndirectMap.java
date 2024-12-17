@@ -76,7 +76,7 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     /** Store load factor for lazy init. */
     protected float loadFactor = 0.75f;
 
-    private final Lock instanceLock  = new ReentrantLock();
+    private Lock instanceLock  = new ReentrantLock();
 
     /**
      * PUBLIC:
@@ -186,16 +186,19 @@ public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChan
     */
     @Override
     public Object clone() {
-        instanceLock.lock();
+        //Keep origin pointer to lock in local variable as instance variable is updated inside
+        Lock lock = instanceLock;
+        lock.lock();
         try {
             IndirectMap<K, V> result = (IndirectMap<K, V>)super.clone();
             result.delegate = (Hashtable<K, V>)this.getDelegate().clone();
             result.valueHolder = new ValueHolder<>(result.delegate);
+            result.instanceLock = new ReentrantLock();
             result.attributeName = null;
             result.changeListener = null;
             return result;
         } finally {
-            instanceLock.unlock();
+            lock.unlock();
         }
     }
 
