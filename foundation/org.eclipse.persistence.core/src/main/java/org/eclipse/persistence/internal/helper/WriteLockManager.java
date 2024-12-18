@@ -476,7 +476,7 @@ public class WriteLockManager {
                                         }
                                     }
                                 } catch (InterruptedException exception) {
-                                    throw org.eclipse.persistence.exceptions.ConcurrencyException.waitWasInterrupted(exception.getMessage());
+                                    throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
                                 } finally {
                                     activeCacheKey.getInstanceLock().unlock();
                                 }
