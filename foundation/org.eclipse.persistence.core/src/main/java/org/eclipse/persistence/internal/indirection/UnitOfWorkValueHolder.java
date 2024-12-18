@@ -25,9 +25,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * A UnitOfWorkValueHolder is put in a clone object.
  * It wraps the value holder in the original object to delay
@@ -61,8 +58,6 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
     protected transient Object relationshipSourceObject;
     protected String sourceAttributeName;
     protected ObjID wrappedValueHolderRemoteID;
-
-    private final Lock wrappedValueHolderLock = new ReentrantLock();
 
     protected UnitOfWorkValueHolder() {
         super();
@@ -151,10 +146,10 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
         Object value;
         // Bug 3835202 - Ensure access to valueholders is thread safe.  Several of the methods
         // called below are not threadsafe alone.
-        wrappedValueHolderLock.lock();
-        try {
-            if (this.wrappedValueHolder instanceof DatabaseValueHolder) {
-                DatabaseValueHolder<T> wrapped = (DatabaseValueHolder<T>)this.wrappedValueHolder;
+        if (this.wrappedValueHolder instanceof DatabaseValueHolder) {
+            DatabaseValueHolder<T> wrapped = (DatabaseValueHolder<T>) this.wrappedValueHolder;
+            wrapped.getInstanceLock().lock();
+            try {
                 UnitOfWorkImpl unitOfWork = getUnitOfWork();
                 if (!wrapped.isEasilyInstantiated()) {
                     if (wrapped.isPessimisticLockingValueHolder()) {
@@ -170,19 +165,19 @@ public abstract class UnitOfWorkValueHolder<T> extends DatabaseValueHolder<T> im
                         return wrapped.instantiateForUnitOfWorkValueHolder(this);
                     }
                 }
-                if (!wrapped.isInstantiated()){
+                if (!wrapped.isInstantiated()) {
                     //if not instantiated then try and load the UOW versions to prevent the whole loading from the cache and cloning
                     //process
                     T result = wrapped.getValue((UnitOfWorkImpl) this.session);
-                    if (result != null){
+                    if (result != null) {
                         return result;
                     }
                 }
+            } finally {
+                wrapped.getInstanceLock().unlock();
             }
-            value = this.wrappedValueHolder.getValue();
-        } finally {
-            wrappedValueHolderLock.unlock();
         }
+        value = this.wrappedValueHolder.getValue();
         return buildCloneFor(value);
     }
 
