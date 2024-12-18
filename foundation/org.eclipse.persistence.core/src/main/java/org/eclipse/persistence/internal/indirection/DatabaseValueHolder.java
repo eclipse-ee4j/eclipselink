@@ -346,7 +346,7 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
         }
     }
 
-    public Lock getInstanceLock() {
+    Lock getInstanceLock() {
         return this.instanceLock;
     }
 }
