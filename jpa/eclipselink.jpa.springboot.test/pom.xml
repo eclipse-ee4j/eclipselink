@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>EclipseLink JPA Spring Test</name>
+    <name>EclipseLink JPA Spring Boot Test</name>
     <groupId>org.eclipse.persistence</groupId>
-    <artifactId>org.eclipse.persistence.jpa.spring.test</artifactId>
+    <artifactId>org.eclipse.persistence.jpa.springboot.test</artifactId>
     <packaging>jar</packaging>
 
     <parent>
@@ -47,10 +47,9 @@
     </properties>
 
     <dependencies>
-        <!--Test dependencies-->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
             <scope>test</scope>
         </dependency>
         <!--Other modules-->
@@ -60,12 +59,6 @@
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink JPA test framework-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--API dependencies-->
         <dependency>
             <groupId>jakarta.transaction</groupId>
@@ -73,31 +66,35 @@
             <scope>test</scope>
         </dependency>
         <!--Other libraries dependencies-->
+        <!-- Spring Boot Data JPA -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-entitymanager</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Spring Boot Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-instrument</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- Spring FW -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <scope>test</scope>
-        </dependency>
+
         <!--JDBC driver (test dependency)-->
         <dependency>
             <groupId>${db.driver.groupId}</groupId>
@@ -117,29 +114,6 @@
         </testResources>
 
         <plugins>
-            <!--Required for EL Weaving (-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar})-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
-                    <execution>
-                        <id>get-test-classpath-to-properties</id>
-                        <goals>
-                            <goal>properties</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgs>
-                        <arg>-Werror</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -157,40 +131,14 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>test-jpa-spring-local</id>
+                        <id>test-jpa-springboot</id>
                         <goals>
                             <goal>integration-test</goal>
                         </goals>
                         <configuration>
-                            <!--EclipseLink Weaving is enabled.
-                                When it will be disabled by -Dignore it leads into test errors
-                                ...SpringJunitTestCase.testAddressVH:182 Exception when Address value holder retrieved-->
-                            <!--<argLine>-Dignore</argLine>-->
-                            <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}</argLine>
-                            <reportNameSuffix>test-jpa-spring</reportNameSuffix>
+                            <reportNameSuffix>test-jpa-springboot</reportNameSuffix>
                             <includes>
-                                <include>**.spring.TestLocalEMF</include>
-                                <include>**.spring.TestLocalEMFtransactional</include>
-                                <include>**.spring.dao.TestLocalEMFwithDao</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-jpa-spring-container</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <argLine>-javaagent:${org.springframework:spring-instrument:jar}</argLine>
-                            <!--EclipseLink Weaving is enabled.
-                                When it will be disabled by -Dignore it leads into test errors
-                                ...SpringJunitTestCase.testAddressVH:182 Exception when Address value holder retrieved-->
-                            <!--<argLine>-Dignore</argLine>-->
-                            <reportNameSuffix>test-jpa-spring</reportNameSuffix>
-                            <includes>
-                                <include>**.spring.TestContainerEMF</include>
-                                <include>**.spring.TestContainerEMFtransactional</include>
-                                <include>**.spring.dao.TestContainerEMFwithDao</include>
+                                <include>org.eclipse.persistence.testing.tests.jpa.springboot.TestPersonRepository</include>
                             </includes>
                         </configuration>
                     </execution>
@@ -199,9 +147,6 @@
                         <goals>
                             <goal>verify</goal>
                         </goals>
-                        <configuration>
-                            <skip>${integration.test.skip.verify}</skip>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -227,18 +172,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>oracle</id>
-            <dependencies>
-                <!--db.platform=org.eclipse.persistence.platform.database.oracle.Oracle12Platform comes from there-->
-                <dependency>
-                    <groupId>org.eclipse.persistence</groupId>
-                    <artifactId>org.eclipse.persistence.oracle</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>

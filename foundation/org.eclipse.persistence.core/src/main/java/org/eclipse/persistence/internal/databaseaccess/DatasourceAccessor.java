@@ -155,7 +155,7 @@ public abstract class DatasourceAccessor implements Accessor {
 
     protected ConnectionPool pool;
 
-    private final Lock instanceLock  = new ReentrantLock();
+    private Lock instanceLock  = new ReentrantLock();
 
     /**
      *    Default Constructor.
@@ -174,6 +174,7 @@ public abstract class DatasourceAccessor implements Accessor {
     public Object clone() {
         try {
             DatasourceAccessor accessor = (DatasourceAccessor)super.clone();
+            accessor.instanceLock = new ReentrantLock();
             if(accessor.customizer != null) {
                 accessor.customizer.setAccessor(accessor);
             }
