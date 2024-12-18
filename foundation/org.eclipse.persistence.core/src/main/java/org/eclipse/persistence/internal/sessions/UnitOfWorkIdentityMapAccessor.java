@@ -171,7 +171,8 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         // in which GC could remove the object and we would end up with a null pointer
         // as well we must inspect the cacheKey without locking on it.
         if ((cacheKey != null) && (shouldReturnInvalidatedObjects || !descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey))) {
-            synchronized (cacheKey) {
+            cacheKey.getInstanceLock().lock();
+            try {
                 //if the object in the cachekey is null but the key is acquired then
                 //someone must be rebuilding it or creating a new one.  Sleep until
                 // it's finished. A plain wait here would be more efficient but we may not
@@ -184,6 +185,8 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
                     }
                 } catch (InterruptedException ex) {
                 }
+            } finally {
+                cacheKey.getInstanceLock().unlock();
             }
 
             // check for inheritance.
