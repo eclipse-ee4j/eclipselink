@@ -1867,6 +1867,18 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>spring-modules</id>
+            <activation>
+                <jdk>[17,)</jdk>
+            </activation>
+            <modules>
+                <!--JPA Spring test module-->
+                <module>jpa/eclipselink.jpa.spring.test</module>
+                <!--JPA Spring Boot test module-->
+                <module>jpa/eclipselink.jpa.springboot.test</module>
+            </modules>
+        </profile>
         <!--Testing database profiles-->
         <!--TODO simplify properties part db.driver.XXXX to load it from file-->
         <profile>
@@ -2189,10 +2201,6 @@
                 <module>jpa/eclipselink.jpa.test.jse</module>
                 <!--JPA Helidon test module-->
                 <module>jpa/eclipselink.jpa.helidon.test</module>
-                <!--JPA Spring test module-->
-                <module>jpa/eclipselink.jpa.spring.test</module>
-                <!--JPA Spring Boot test module-->
-                <module>jpa/eclipselink.jpa.springboot.test</module>
                 <!--JPA WDF test module-->
                 <module>jpa/eclipselink.jpa.wdf.test</module>
 
