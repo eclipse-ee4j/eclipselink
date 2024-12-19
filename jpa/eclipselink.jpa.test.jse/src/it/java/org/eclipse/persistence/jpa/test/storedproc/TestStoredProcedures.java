@@ -121,6 +121,8 @@ public class TestStoredProcedures {
      */
     @Test
     public void testStoredProcedure_SetOrdered_NamedParameters() {
+        Assume.assumeFalse("pgjdbc does not support named parameters", getPlatform(storedProcedureEmf).isPostgreSQL());
+
         EntityManager em = storedProcedureEmf.createEntityManager();
         try {
             StoredProcedureQuery storedProcedure = em.createStoredProcedureQuery("simple_order_procedure");
@@ -152,6 +154,8 @@ public class TestStoredProcedures {
      */
     @Test
     public void testStoredProcedure_SetUnordered_NamedParameters() {
+        Assume.assumeFalse("pgjdbc does not support named parameters", getPlatform(storedProcedureEmf).isPostgreSQL());
+
         EntityManager em = storedProcedureEmf.createEntityManager();
         try {
             StoredProcedureQuery storedProcedure = em.createStoredProcedureQuery("simple_order_procedure");
@@ -201,7 +205,7 @@ public class TestStoredProcedures {
             //Add more platform specific diction to support more platforms
             if(platform.isMySQL()) {
                 proc.addStatement("SET out_param_one = CONCAT('One: ',in_param_one,' Two: ',in_param_two,' Three: ',in_param_three)");
-            } else if(platform.isOracle()) {
+            } else if(platform.isOracle() || platform.isPostgreSQL()) {
                 proc.addStatement("out_param_one := 'One: ' || in_param_one || ' Two: ' || in_param_two || ' Three: ' || in_param_three");
             } else if (platform.isDB2() || platform.isDB2Z()) {
                 proc.addStatement("SET out_param_one = 'One: ' || in_param_one || ' Two: ' || in_param_two || ' Three: ' || in_param_three");
