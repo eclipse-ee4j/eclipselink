@@ -379,7 +379,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
             // If the return value is true indicating a result set then throw an exception.
             if (execute()) {
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
+                if (getActiveSession().getPlatform().isJDBCExecuteCompliant()) {
+                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
+                } else {
+                    return getUpdateCount();
+                }
             } else {
                 return getUpdateCount();
             }
