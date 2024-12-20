@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * @author tware
  *
  */
-public class SystemProperties {
+public final class SystemProperties {
 
     /**
      * Configures the factory class we use to produce instances of org.eclispe.persistence.jpa.Archive
@@ -60,7 +61,7 @@ public class SystemProperties {
      * the lock acquisition and print it along with the identity map locks. This
      * should only be set if the thread that owns a lock is not 'stuck' but
      * still owns the lock when a normal printIdentityMapLocks is done.
-     *
+     * <p>
      * This can also be set in code statically through ConcurrencyManager.setShouldTrackStack(true)
      */
     public static final String RECORD_STACK_ON_LOCK = "eclipselink.cache.record-stack-on-lock";
@@ -75,7 +76,7 @@ public class SystemProperties {
 
     /**
      * This system property can be set to override target server platform set by the Java EE container
-     * with the one either set in persistence.xml or auto detected.
+     * with the one either set in persistence.xml or auto-detected.
      */
     public static final String ENFORCE_TARGET_SERVER = "eclipselink.target-server.enforce";
 
@@ -94,7 +95,7 @@ public class SystemProperties {
     public static final String CONVERSION_USE_DEFAULT_TIMEZONE = "org.eclipse.persistence.conversion.useDefaultTimeZoneForJavaTime";
 
     /**
-     * This property can be set to <code>false</code> to enable UPDATE call to set
+     * This property can be set to {@code false} to enable UPDATE call to set
      * foreign key value in the target row in unidirectional 1-Many mapping
      * with not nullable FK. In previous versions of EclipseLink this was
      * the default behaviour.
@@ -104,7 +105,7 @@ public class SystemProperties {
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
-     * It control how much time loop wait before it try acquire lock for current thread again. It value is set above above 0 dead lock detection
+     * It controls how much time loop wait before it tries to acquire lock for current thread again. If the value is set above 0 deadlock detection
      * mechanism and related extended logging will be activated.
      * Default value is 0 (unit is ms). Allowed values are: long
      */
@@ -112,46 +113,46 @@ public class SystemProperties {
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
-     * It control how much time ConcurrencyManager will wait before it will identify, that thread which builds new object/entity instance
-     * should be identified as a potential dead lock source. It leads into some additional log messages.
+     * It controls how much time ConcurrencyManager will wait before it will identify, that thread which builds new object/entity instance
+     * should be identified as a potential deadlock source. It leads into some additional log messages.
      * Default value is 0 (unit is ms). In this case extended logging is not active. Allowed values are: long
      */
     public static final String CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME = "eclipselink.concurrency.manager.build.object.complete.waittime";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
-     * It control how long we are willing to wait before firing up an exception
+     * It controls how long we are willing to wait before firing up an exception
      * Default value is 40000 (unit is ms). Allowed values are: long
      */
     public static final String CONCURRENCY_MANAGER_MAX_SLEEP_TIME  = "eclipselink.concurrency.manager.maxsleeptime";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager and org.eclipse.persistence.internal.helper.ConcurrencyUtil.
-     * It control how frequently the tiny dump log message is created.
+     * It controls how frequently the tiny dump log message is created.
      * Default value is 40000 (unit is ms). Allowed values are: long
      */
     public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE = "eclipselink.concurrency.manager.maxfrequencytodumptinymessage";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager and org.eclipse.persistence.internal.helper.ConcurrencyUtil.
-     * It control how frequently the massive dump log message is created.
+     * It controls how frequently the massive dump log message is created.
      * Default value is 60000 (unit is ms). Allowed values are: long
      */
     public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE  = "eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage";
 
     /**
      * <p>
-     * This property control (enable/disable) if <code>InterruptedException</code> fired when dead-lock diagnostic is enabled.
+     * This property control (enable/disable) if {@code InterruptedException} fired when dead-lock diagnostic is enabled.
      * <p>
      * <b>Allowed Values</b> (case sensitive String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" - if aborting frozen thread is not effective it is preferable to not fire the interrupted exception let the system
+     * <li>"{@code false}" - if aborting frozen thread is not effective it is preferable to not fire the interrupted exception let the system
      * In the places where use this property normally if a thread is stuck it is because it is doing object building.
      * Blowing the threads ups is not that dangerous. It can be very dangerous for production if the dead lock ends up
      * not being resolved because the productive business transactions will become cancelled if the application has a
      * limited number of retries to for example process an MDB. However, the code spots where we use this constant are
      * not as sensible as when the write lock manager is starving to run commit.
-     * <li>"<code>true</code>" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired locks and allow other
+     * <li>"{@code true}" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired locks and allow other
      * threads to progress.
      * </ul>
      */
@@ -159,16 +160,16 @@ public class SystemProperties {
 
     /**
      * <p>
-     * This property control (enable/disable) if <code>ConcurrencyException</code> fired when dead-lock diagnostic is enabled.
+     * This property control (enable/disable) if {@code ConcurrencyException} fired when dead-lock diagnostic is enabled.
      * <p>
      * <b>Allowed Values</b> (case sensitive String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" - if aborting frozen thread is not effective it is preferable to not fire the concurrency exception let the system
+     * <li>"{@code false}" - if aborting frozen thread is not effective it is preferable to not fire the concurrency exception let the system
      * freeze and die and force the administration to kill the server. This is preferable to aborting the transactions
      * multiple times without success in resolving the dead lock and having business critical messages that after 3 JMS
      * retries are discarded out. Failing to resolve a dead lock can have terrible impact in system recovery unless we
      * have infinite retries for the business transactions.
-     * <li>"<code>true</code>" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired
+     * <li>"{@code true}" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired
      * locks and allow other threads to progress.
      * </ul>
      */
@@ -180,8 +181,8 @@ public class SystemProperties {
      * <p>
      * <b>Allowed Values</b> (case sensitive String)<b>:</b>
      * <ul>
-     * <li>"<code>false</code>" (DEFAULT) - don't collect debug/trace information during ReadLock acquisition
-     * <li>"<code>true</code>" - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
+     * <li>"{@code false}" (DEFAULT) - don't collect debug/trace information during ReadLock acquisition
+     * <li>"{@code true}" - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
      * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK = "eclipselink.concurrency.manager.allow.readlockstacktrace";
@@ -192,13 +193,13 @@ public class SystemProperties {
      * </p>
      * Object building see {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder} could be one of the
      * primary sources pressure on concurrency manager. Most of the cache key acquisition and releasing is taking place during object building.
-     * Enable <code>true</code> this property to try reduce the likelihood of having dead locks is to allow less threads to start object
+     * Enable {@code true} this property to try reduce the likelihood of having dead locks is to allow less threads to start object
      * building in parallel. In this case there should be negative impact to the performance.
      * Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
      * <ul>
-     * <li>"<code>true</code>" - means we want to override vanilla behavior and use a semaphore to not allow too many
+     * <li>"{@code true}" - means we want to override vanilla behavior and use a semaphore to not allow too many
      * threads in parallel to do object building
-     * <li>"<code>false</code>" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
+     * <li>"{@code false}" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
      * vanilla behavior).
      * </ul>
      */
@@ -215,9 +216,9 @@ public class SystemProperties {
      * one-to-many relations of master detail being enriched with more details on this master).
      * Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
      * <ul>
-     * <li>"<code>true</code>" - means we want to override vanilla behavior and use a semaphore to not allow too many
+     * <li>"{@code true}" - means we want to override vanilla behavior and use a semaphore to not allow too many
      * threads. In this case there should be negative impact to the performance.
-     * <li>"<code>false</code>" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
+     * <li>"{@code false}" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
      * vanilla behavior).
      * </ul>
      */
@@ -226,8 +227,8 @@ public class SystemProperties {
     /**
      * <p>
      * This property control number of threads in semaphore in {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder}
-     * If "eclipselink.concurrency.manager.object.building.semaphore" property is <code>true</code> default value is 10. Allowed values are: int
-     * If "eclipselink.concurrency.manager.object.building.semaphore" property is <code>false</code> (DEFAULT) number of threads is unlimited.
+     * If "eclipselink.concurrency.manager.object.building.semaphore" property is {@code true} default value is 10. Allowed values are: int
+     * If "eclipselink.concurrency.manager.object.building.semaphore" property is {@code false} (DEFAULT) number of threads is unlimited.
      * </p>
      */
     public static final String CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS = "eclipselink.concurrency.manager.object.building.no.threads";
@@ -235,8 +236,8 @@ public class SystemProperties {
     /**
      * <p>
      * This property control number of threads in semaphore in {@link org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks}
-     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is <code>true</code> default value is 2. Allowed values are: int
-     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is <code>false</code> (DEFAULT) number of threads is unlimited.
+     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is {@code true} default value is 2. Allowed values are: int
+     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is {@code false} (DEFAULT) number of threads is unlimited.
      * </p>
      */
     public static final String CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS = "eclipselink.concurrency.manager.write.lock.manager.no.threads";
@@ -265,17 +266,25 @@ public class SystemProperties {
      * <p>
      * <b>Allowed Values</b> (case sensitive String)<b>:</b>
      * <ul>
-     * <li>"<code>eclipselink</code>" (DEFAULT) - use ASM implementation from  <i>org.eclipse.persistence.asm</i> project.</li>
-     * <li>"<code>ow2</code>" - use ASM implementation from  <i>org.ow2.asm</i> project.</li>
+     * <li>"{@code eclipselink}" (DEFAULT) - use ASM implementation from  <i>org.eclipse.persistence.asm</i> project.</li>
+     * <li>"{@code ow2}" - use ASM implementation from  <i>org.ow2.asm</i> project.</li>
      * </ul>
      */
     public static final String ASM_SERVICE = "eclipselink.asm.service";
 
     /**
-     * @deprecated This constructor will be marked private and the class final. It is not designed for extensibility.
+     * <p>
+     * This property control the random number generator (RNG) used for password encryption.
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"{@code false}" (DEFAULT) - use default RNG of Java platform
+     * <li>"{@code true}" - use RNG indicated by the securerandom.strongAlgorithms security property of Java platform
+     * </ul>
      */
-    @Deprecated(since = "4.0.3", forRemoval = true)
-    public SystemProperties() {
+    public static final String SECURITY_ENCRYPTOR_USE_STRONG_RANDOM_NUMBER_GENERATOR = "eclipselink.security.encryptor.use.strong.random.number.generator";
+
+    private SystemProperties() {
         // no instance please
     }
 }
