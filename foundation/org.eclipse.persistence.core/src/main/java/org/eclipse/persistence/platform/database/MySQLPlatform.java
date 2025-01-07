@@ -273,6 +273,7 @@ public class MySQLPlatform extends DatabasePlatform {
             fd.setIsSizeRequired(true);
         }
         fieldTypeMapping.put(java.time.OffsetTime.class, fd);
+        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
         return fieldTypeMapping;
     }
 
