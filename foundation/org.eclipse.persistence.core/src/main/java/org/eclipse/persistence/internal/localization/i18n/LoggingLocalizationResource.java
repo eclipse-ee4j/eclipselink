@@ -479,7 +479,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "corrupt_object", "corrupt object: {0}" },
 
         { "encryptor_script_usage", "Usage is `passwordUpdate.sh|.cmd -ip <old encrypted password>`"},
-        { "encryptor_script_description", "This application internally decrypt old encrypted password used by some previous version EclipseLink and encrypt it by latest algorithm."},
+        { "encryptor_script_description", "This application internally decrypts an old encrypted password that was used by a previous EclipseLink version and encrypts it by the latest algorithm."},
         { "encryptor_script_output", "Re-encrypted password is: {0}"}
     };
 
