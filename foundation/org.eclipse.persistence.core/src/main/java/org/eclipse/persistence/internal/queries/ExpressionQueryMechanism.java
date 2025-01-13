@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2024 IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2030,6 +2030,31 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     }
                     baseExpressions.add(new FieldExpression(fields.get(i), ((QueryKeyExpression)baseExpression).getBaseExpression()));
                 }
+            } else if (mapping != null && mapping.isAggregateMapping() && isValueObjectEmbeddableAndParameter(valueObject)) {
+                fields = mapping.getFields();
+                int fieldsSize = fields.size();
+                values = new ArrayList<>(fieldsSize);
+                baseExpressions = new ArrayList<>(fieldsSize);
+                for(int i=0; i<fieldsSize; i++) {
+                    String aName = mapping.getReferenceDescriptor().getMappings().get(i).getAttributeName();
+                    Expression attributeBaseExpression = baseExpression.get(aName);
+                    baseExpressions.add(attributeBaseExpression);
+                    ParameterExpression exp = (ParameterExpression) ((ParameterExpression)valueObject).clone().getField(new DatabaseField(aName));
+                    builder.setSession(getSession());
+                    if (baseExpression.isQueryKeyExpression()) {
+                        //It will set mapping if it was not initialized before
+                        ((QueryKeyExpression)baseExpression).getMapping();
+                    }
+                    if (attributeBaseExpression.isQueryKeyExpression()) {
+                        //It will set mapping if it was not initialized before
+                        ((QueryKeyExpression)attributeBaseExpression).getMapping();
+                    }
+
+                    exp.setLocalBase(attributeBaseExpression);
+                    exp.getBaseExpression().setLocalBase(((ParameterExpression)valueObject).getLocalBase());
+
+                    values.add(exp);
+                }
             } else {
                 fields = new ArrayList<>(1);
                 fields.add(field);
@@ -2920,5 +2945,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             parentDescriptor =  parentDescriptor.getInheritancePolicy().getParentDescriptor();
         }
         return desc;
+    }
+
+    private boolean isValueObjectEmbeddableAndParameter(Object valueObject) {
+        if (valueObject instanceof ParameterExpression) {
+            Class type = (Class) ((ParameterExpression)valueObject).getType();
+            if (getSession().getDescriptor(type) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 }

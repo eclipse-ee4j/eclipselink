@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -239,7 +239,11 @@ public class ParameterExpression extends BaseExpression {
             ClassDescriptor descriptor = session.getDescriptor(value);
             //Bug4924639  Aggregate descriptors have to be acquired from their mapping as they are cloned and initialized by each mapping
             if (descriptor != null && descriptor.isAggregateDescriptor() && ((ParameterExpression)getBaseExpression()).getLocalBase().isObjectExpression()) {
-                descriptor = ((ObjectExpression)((ParameterExpression)getBaseExpression()).getLocalBase()).getDescriptor();
+                if (getLocalBase() != null && getLocalBase().isQueryKeyExpression()) {
+                    descriptor = ((QueryKeyExpression)getLocalBase()).getMapping().getDescriptor();
+                } else {
+                    descriptor = ((ObjectExpression) ((ParameterExpression) getBaseExpression()).getLocalBase()).getDescriptor();
+                }
             }
 
             if (descriptor == null) {
